@@ -366,6 +366,24 @@
 }
 
 /**
+* mentions.css
+*/
+
+/* Mention block
+---------------------------------------- */
+
+/* Mention dropdown
+---------------------------------------- */
+.rtl .mention-container { /* mention-container */
+	text-align: right;
+}
+
+.rtl .mention-media {
+	margin-right: 0;
+	margin-left: 16px;
+}
+
+/**
 * content.css
 */
 .rtl ul.topiclist dt,

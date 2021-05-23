@@ -908,6 +908,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	// Notifications types to delete
 	$delete_notifications_types = array(
+		'notification.type.mention',
 		'notification.type.quote',
 		'notification.type.approve_post',
 		'notification.type.post_in_queue',

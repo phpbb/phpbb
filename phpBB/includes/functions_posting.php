@@ -2443,6 +2443,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		{
 			case 'post':
 				$phpbb_notifications->add_notifications(array(
+					'notification.type.mention',
 					'notification.type.quote',
 					'notification.type.topic',
 				), $notification_data);
@@ -2451,6 +2452,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			case 'reply':
 			case 'quote':
 				$phpbb_notifications->add_notifications(array(
+					'notification.type.mention',
 					'notification.type.quote',
 					'notification.type.bookmark',
 					'notification.type.post',
@@ -2465,6 +2467,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				if ($user->data['user_id'] == $poster_id)
 				{
 					$phpbb_notifications->update_notifications(array(
+						'notification.type.mention',
 						'notification.type.quote',
 					), $notification_data);
 				}

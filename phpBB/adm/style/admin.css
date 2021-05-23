@@ -1670,6 +1670,103 @@ fieldset.submit-buttons legend {
 	}
 }
 
+/* Mentions and mention dropdown
+---------------------------------------- */
+.mention {
+	font-weight: bold;
+}
+
+.mention-container {
+	text-align: left;
+	background-color: #ffffff;
+	border-radius: 2px;
+	box-shadow:
+		0 3px 1px -2px rgba(0, 0, 0, 0.2),
+		0 2px 2px 0 rgba(0, 0, 0, 0.14),
+		0 1px 5px 0 rgba(0, 0, 0, 0.12);
+	position: absolute;
+	z-index: 999;
+	overflow: auto; /* placed here for list to scroll with arrow key press */
+	max-height: 200px;
+	transition: all 0.2s ease;
+}
+
+.rtl .mention-container {
+	text-align: right;
+}
+
+.mention-list {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+}
+
+.mention-media {
+	color: #757575;
+	display: inline-flex;
+	flex-shrink: 0;
+	justify-content: center;
+	align-items: center;
+	margin-right: 8px;
+	margin-left: 0;
+}
+
+.rtl .mention-media {
+	margin-right: 0;
+	margin-left: 16px;
+}
+
+.mention-media-avatar {
+	width: 40px;
+	height: 40px;
+}
+
+.mention-item {
+	font-size: 16px;
+	font-weight: 400;
+	line-height: 1.5;
+	letter-spacing: 0.04em;
+	border-bottom: 1px solid #dddddd;
+	color: #212121;
+	position: relative;
+	display: flex;
+	overflow: hidden;
+	justify-content: flex-start;
+	align-items: center;
+	padding: 8px;
+	cursor: pointer;
+}
+
+.mention-item:hover,
+.mention-item.is-active {
+	text-decoration: none;
+	background-color: #eeeeee;
+	color: #2d80d2;
+}
+
+.mention-item:hover .mention-media-avatar,
+.mention-item.is-active .mention-media-avatar {
+	color: #2d80d2;
+}
+
+.mention-name,
+.mention-rank {
+	display: block;
+}
+
+.mention-name {
+	line-height: 1.25;
+	margin-right: 20px; /* needed to account for scrollbar bug on Firefox for Windows */
+}
+
+.mention-rank {
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 1.2871;
+	letter-spacing: 0.04em;
+	color: #757575;
+}
+
 /* Input field styles
 ---------------------------------------- */
 input.radio,

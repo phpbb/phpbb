@@ -33,6 +33,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'notification.type.disapprove_post',
 			'notification.type.disapprove_topic',
 			'notification.type.forum',
+			'notification.type.mention',
 			'notification.type.pm',
 			'notification.type.post',
 			'notification.type.post_in_queue',
@@ -73,6 +74,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 			'allow_topic_notify'	=> true,
 			'allow_forum_notify'	=> true,
 			'allow_board_notifications'	=> true,
+			'allow_mentions'		=> true,
 		));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
@@ -105,6 +107,16 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
+		$phpbb_container->set(
+			'text_formatter.s9e.mention_helper',
+			new \phpbb\textformatter\s9e\mention_helper(
+				$this->db,
+				$auth,
+				$this->user,
+				$phpbb_root_path,
+				$phpEx
+			)
+		);
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);

@@ -84,6 +84,12 @@ class factory implements \phpbb\textformatter\cache_interface
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
 		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext} #createChild=LI]{TEXT}[/LIST]',
 		'li'    => '[* $tagName=LI]{TEXT}[/*]',
+		'mention' =>
+			"[MENTION={PARSE=/^g:(?'group_id'\d+)|u:(?'user_id'\d+)$/}
+				group_id={UINT;optional}
+				profile_url={URL;optional;postFilter=#false}
+				user_id={UINT;optional}
+			]{TEXT}[/MENTION]",
 		'quote' =>
 			"[QUOTE
 				author={TEXT1;optional}
@@ -108,13 +114,13 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @var array Default templates, taken from bbcode::bbcode_tpl()
 	*/
 	protected $default_templates = array(
-		'b'     => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
-		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
-		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
-		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
-		'size'	=> '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
-		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
-		'email' => '<a>
+		'b'       => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
+		'i'       => '<span style="font-style: italic"><xsl:apply-templates/></span>',
+		'u'       => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
+		'img'     => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
+		'size'	  => '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
+		'color'   => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
+		'email'   => '<a>
 			<xsl:attribute name="href">
 				<xsl:text>mailto:</xsl:text>
 				<xsl:value-of select="@email"/>
@@ -126,6 +132,19 @@ class factory implements \phpbb\textformatter\cache_interface
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</a>',
+		'mention' => '<xsl:text>@</xsl:text>
+		<xsl:choose>
+			<xsl:when test="@profile_url">
+				<a class="mention" href="{@profile_url}">
+					<xsl:apply-templates/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<span class="mention">
+					<xsl:apply-templates/>
+				</span>
+			</xsl:otherwise>
+		</xsl:choose>',
 	);
 
 	/**
@@ -287,8 +306,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			$configurator->tags['QUOTE']->nestingLimit = PHP_INT_MAX;
 		}
 
-		// Modify the template to disable images/flash depending on user's settings
-		foreach (array('FLASH', 'IMG') as $name)
+		// Modify the template to disable images/flash/mentions depending on user's settings
+		foreach (array('FLASH', 'IMG', 'MENTION') as $name)
 		{
 			$tag = $configurator->tags[$name];
 			$tag->template = '<xsl:choose><xsl:when test="$S_VIEW' . $name . '">' . $tag->template . '</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose>';

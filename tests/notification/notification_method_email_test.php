@@ -91,6 +91,16 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
 		$phpbb_container->setParameter('tables.notification_emails', 'phpbb_notification_emails');
+		$phpbb_container->set(
+			'text_formatter.s9e.mention_helper',
+			new \phpbb\textformatter\s9e\mention_helper(
+				$this->db,
+				$auth,
+				$this->user,
+				$phpbb_root_path,
+				$phpEx
+			)
+		);
 
 		$this->notification_method_email = $this->getMockBuilder('\phpbb\notification\method\email')
 			->setConstructorArgs([

@@ -21,6 +21,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_live_searches', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mentions', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', 'USERNAME_CHARS_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors', '0');
@@ -234,6 +235,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_height
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('mention_batch_size', '50');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('mention_names_limit', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
@@ -380,6 +383,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_ignoreflood', 1
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_img', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_list', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_list_topics', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_mention', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_noapprove', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_poll', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_post', 1);
@@ -478,6 +482,7 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_hideonline', 1
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_ignoreflood', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_masspm_group', 1);
+INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_mention', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_attach', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_bbcode', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_delete', 1);
@@ -590,7 +595,7 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 7, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_pm_flash', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim', 'u_masspm', 'u_masspm_group');
 
 # No Private Messages (u_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_', 'u_chgavatar', 'u_chgcensors', 'u_chgemail', 'u_chgpasswd', 'u_download', 'u_hideonline', 'u_sig', 'u_viewprofile');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_', 'u_chgavatar', 'u_chgcensors', 'u_chgemail', 'u_chgpasswd', 'u_download', 'u_hideonline', 'u_mention', 'u_sig', 'u_viewprofile');
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_readpm', 'u_sendpm', 'u_masspm', 'u_masspm_group');
 
 # No Avatar (u_)

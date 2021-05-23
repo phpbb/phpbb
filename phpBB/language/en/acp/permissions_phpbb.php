@@ -76,6 +76,7 @@ $lang = array_merge($lang, array(
 
 	'ACL_U_ATTACH'		=> 'Can attach files',
 	'ACL_U_DOWNLOAD'	=> 'Can download files',
+	'ACL_U_MENTION'		=> 'Can mention users and groups',
 	'ACL_U_SAVEDRAFTS'	=> 'Can save drafts',
 	'ACL_U_CHGCENSORS'	=> 'Can disable word censors',
 	'ACL_U_SIG'			=> 'Can use signature',
@@ -123,6 +124,7 @@ $lang = array_merge($lang, array(
 	'ACL_F_STICKY'		=> 'Can post stickies',
 	'ACL_F_ANNOUNCE'	=> 'Can post announcements',
 	'ACL_F_ANNOUNCE_GLOBAL'	=> 'Can post global announcements',
+	'ACL_F_MENTION'		=> 'Can mention users and groups',
 	'ACL_F_REPLY'		=> 'Can reply to topics',
 	'ACL_F_EDIT'		=> 'Can edit own posts',
 	'ACL_F_DELETE'		=> 'Can permanently delete own posts',

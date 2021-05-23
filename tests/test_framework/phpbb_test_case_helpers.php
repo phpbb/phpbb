@@ -579,6 +579,9 @@ class phpbb_test_case_helpers
 		}
 		$user->add_lang('common');
 
+		// Get an auth interface
+		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
+
 		// Create and register a quote_helper
 		$quote_helper = new \phpbb\textformatter\s9e\quote_helper(
 			$container->get('user'),
@@ -586,6 +589,16 @@ class phpbb_test_case_helpers
 			$phpEx
 		);
 		$container->set('text_formatter.s9e.quote_helper', $quote_helper);
+
+		// Create and register a mention_helper
+		$mention_helper = new \phpbb\textformatter\s9e\mention_helper(
+			($container->has('dbal.conn')) ? $container->get('dbal.conn') : $db_driver,
+			$auth,
+			$container->get('user'),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$container->set('text_formatter.s9e.mention_helper', $mention_helper);
 
 		// Create and register the text_formatter.s9e.parser service and its alias
 		$parser = new \phpbb\textformatter\s9e\parser(
@@ -607,8 +620,8 @@ class phpbb_test_case_helpers
 		);
 
 		// Calls configured in services.yml
-		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
 		$renderer->configure_quote_helper($quote_helper);
+		$renderer->configure_mention_helper($mention_helper);
 		$renderer->configure_smilies_path($config, $path_helper);
 		$renderer->configure_user($user, $config, $auth);
 

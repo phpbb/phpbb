@@ -575,6 +575,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			// Mark all topic notifications read for this user
 			$phpbb_notifications->mark_notifications(array(
 				'notification.type.topic',
+				'notification.type.mention',
 				'notification.type.quote',
 				'notification.type.bookmark',
 				'notification.type.post',
@@ -660,6 +661,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$db->sql_freeresult($result);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -771,6 +773,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		), $topic_id, $user->data['user_id'], $post_time);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -3943,6 +3946,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
+		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention') && (empty($forum_id) || $auth->acl_get('f_mention', $forum_id))) ? true : false,
+		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
+		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
+
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
@@ -3964,6 +3971,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
+		'S_USER_ID'				=> $user->data['user_id'],
 
 		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> $s_login_redirect,
