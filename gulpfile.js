@@ -23,7 +23,7 @@ function styles() {
 			postcss([
 				autoprefixer(),
 				sorting(sortOrder),
-			]),
+			])
 		)
 		.pipe(gulp.dest(paths.styles.css));
 }
@@ -48,7 +48,7 @@ function minify() {
 		.pipe(
 			postcss([
 				cssnano(),
-			]),
+			])
 		)
 		.pipe(rename({
 			suffix: '.min',
