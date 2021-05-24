@@ -146,7 +146,7 @@ if ($view && !$post_id)
 				WHERE forum_id = ' . $forum_id . "
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-					AND " . $phpbb_content_visibility->get_visibility_sql('topic', $row['forum_id']) . "
+					AND " . $phpbb_content_visibility->get_visibility_sql('topic', $forum_id) . "
 				ORDER BY topic_last_post_time $sql_ordering, topic_last_post_id $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
