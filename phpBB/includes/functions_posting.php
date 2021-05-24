@@ -2541,23 +2541,24 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		}
 	}
 
-	$params = $add_anchor = '';
+	$params = [];
+	$add_anchor = '';
 
 	if ($post_visibility == ITEM_APPROVED ||
 		($auth->acl_get('m_softdelete', $data_ary['forum_id']) && $post_visibility == ITEM_DELETED) ||
 		($auth->acl_get('m_approve', $data_ary['forum_id']) && in_array($post_visibility, array(ITEM_UNAPPROVED, ITEM_REAPPROVE))))
 	{
-		$params .= '&amp;t=' . $data_ary['topic_id'];
+		$params['t'] = $data_ary['topic_id'];
 
 		if ($mode != 'post')
 		{
-			$params .= '&amp;p=' . $data_ary['post_id'];
+			$params['p'] = $data_ary['post_id'];
 			$add_anchor = '#p' . $data_ary['post_id'];
 		}
 	}
 	else if ($mode != 'post' && $post_mode != 'edit_first_post' && $post_mode != 'edit_topic')
 	{
-		$params .= '&amp;t=' . $data_ary['topic_id'];
+		$params['t'] = $data_ary['topic_id'];
 	}
 
 	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
