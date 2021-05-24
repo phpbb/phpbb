@@ -55,7 +55,6 @@ class acp_database
 				switch ($action)
 				{
 					case 'download':
-						$type	= $request->variable('type', '');
 						$table	= array_intersect($this->db_tools->sql_list_tables(), $request->variable('table', array('')));
 						$format	= $request->variable('method', '');
 
@@ -69,20 +68,6 @@ class acp_database
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$store = true;
-						$structure = false;
-						$schema_data = false;
-
-						if ($type == 'full' || $type == 'structure')
-						{
-							$structure = true;
-						}
-
-						if ($type == 'full' || $type == 'data')
-						{
-							$schema_data = true;
-						}
-
 						@set_time_limit(1200);
 						@set_time_limit(0);
 
@@ -92,46 +77,17 @@ class acp_database
 
 						/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
 						$extractor = $phpbb_container->get('dbal.extractor');
-						$extractor->init_extractor($format, $filename, $time, false, $store);
+						$extractor->init_extractor($format, $filename, $time, false, true);
 
 						$extractor->write_start($table_prefix);
 
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
-							if ($structure)
-							{
-								$extractor->write_table($table_name);
-							}
-							else
-							{
-								// We might wanna empty out all that junk :D
-								switch ($db->get_sql_layer())
-								{
-									case 'sqlite3':
-										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
-									break;
-
-									case 'mssql_odbc':
-									case 'mssqlnative':
-										$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
-									break;
-
-									case 'oracle':
-										$extractor->flush('TRUNCATE TABLE ' . $table_name . "/\n");
-									break;
-
-									default:
-										$extractor->flush('TRUNCATE TABLE ' . $table_name . ";\n");
-									break;
-								}
-							}
+							$extractor->write_table($table_name);
 
 							// Data
-							if ($schema_data)
-							{
-								$extractor->write_data($table_name);
-							}
+							$extractor->write_data($table_name);
 						}
 
 						$extractor->write_end();
