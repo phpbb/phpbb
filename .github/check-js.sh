@@ -14,8 +14,5 @@ set +x
 sudo npm install -g > /dev/null
 npm ci > /dev/null
 set -x
-# node_modules/eslint/bin/eslint.js "phpBB/adm/style/*.js" # Currently disabled as no file is linted
-node_modules/eslint/bin/eslint.js "phpBB/assets/javascript/*.js"
-# node_modules/eslint/bin/eslint.js "phpBB/style/all/js/*.js" # Currently disabled as no file is linted
-# node_modules/eslint/bin/eslint.js "phpBB/style/prosilver/template/*.js" # Currently disabled as no file is linted
+node_modules/eslint/bin/eslint.js "phpBB/**/*.js"
 node_modules/eslint/bin/eslint.js "gulpfile.js"
