@@ -55,6 +55,7 @@ class acp_database
 				switch ($action)
 				{
 					case 'download':
+						$type	= $request->variable('type', '');
 						$table	= array_intersect($this->db_tools->sql_list_tables(), $request->variable('table', array('')));
 						$format	= $request->variable('method', '');
 
@@ -84,9 +85,34 @@ class acp_database
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
-							$extractor->write_table($table_name);
+							if ($type == 'full')
+							{
+								$extractor->write_table($table_name);
+							}
+							else
+							{
+								// We might wanna empty out all that junk :D
+								switch ($db->get_sql_layer())
+								{
+									case 'sqlite3':
+										$extractor->flush('DELETE FROM ' . $table_name . ";\n");
+									break;
 
-							// Data
+									case 'mssql_odbc':
+									case 'mssqlnative':
+										$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
+									break;
+
+									case 'oracle':
+										$extractor->flush('TRUNCATE TABLE ' . $table_name . "/\n");
+									break;
+
+									default:
+										$extractor->flush('TRUNCATE TABLE ' . $table_name . ";\n");
+								}
+							}
+
+							// Only supported types are full and data, therefore always write the data
 							$extractor->write_data($table_name);
 						}
 
