@@ -131,7 +131,7 @@ class attachment extends controller
 		if ($attachment['is_orphan'])
 		{
 			// We allow admins having attachment permissions to see orphan attachments...
-			$own_attachment = ($this->auth->acl_get('a_attach') || $attachment['poster_id'] == $this->user->data['user_id']) ? true : false;
+			$own_attachment = $this->auth->acl_get('a_attach') || $attachment['poster_id'] == $this->user->data['user_id'];
 
 			if (!$own_attachment || ($attachment['in_message'] && !$this->auth->acl_get('u_pm_download')) ||
 				(!$attachment['in_message'] && !$this->auth->acl_get('u_download')))
@@ -301,9 +301,11 @@ class attachment extends controller
 	 *
 	 * @param int $topic_id The id of the topic that we are downloading from
 	 *
-	 * @return null
+	 * @return void
+	 * @throws http_exception If attachment is not found
+	 *                        If user don't have permission to download the attachment
 	 */
-	protected function phpbb_download_handle_forum_auth($topic_id)
+	protected function phpbb_download_handle_forum_auth($topic_id): void
 	{
 		$sql_array = array(
 			'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
@@ -343,9 +345,10 @@ class attachment extends controller
 	 *
 	 * @param int $msg_id The id of the PM that we are downloading from
 	 *
-	 * @return null
+	 * @return void
+	 * @throws http_exception If attachment is not found
 	 */
-	protected function phpbb_download_handle_pm_auth($msg_id)
+	protected function phpbb_download_handle_pm_auth(int $msg_id): void
 	{
 		if (!$this->auth->acl_get('u_pm_download'))
 		{
@@ -379,7 +382,7 @@ class attachment extends controller
 	 *
 	 * @return bool Whether the user is allowed to download from that PM or not
 	 */
-	protected function phpbb_download_check_pm_auth($msg_id)
+	protected function phpbb_download_check_pm_auth(int $msg_id): bool
 	{
 		$user_id = $this->user->data['user_id'];
 
@@ -403,9 +406,9 @@ class attachment extends controller
 	 *
 	 * @param array|int $ids The attach_id of each attachment
 	 *
-	 * @return null
+	 * @return void
 	 */
-	protected function phpbb_increment_downloads($ids)
+	protected function phpbb_increment_downloads($ids): void
 	{
 		if (!is_array($ids))
 		{
@@ -422,7 +425,7 @@ class attachment extends controller
 	 * Check if downloading item is allowed
 	 * FIXME (See: https://tracker.phpbb.com/browse/PHPBB3-15264 and http://area51.phpbb.com/phpBB/viewtopic.php?f=81&t=51921)
 	 */
-	protected function download_allowed()
+	protected function download_allowed(): bool
 	{
 		if (!$this->config['secure_downloads'])
 		{

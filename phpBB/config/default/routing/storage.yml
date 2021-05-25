@@ -1,10 +1,10 @@
 phpbb_storage_avatar:
-    path:             /download/avatar/{file}
+    path:             /avatar/{file}
     defaults:
         _controller:  storage.controller.avatar:handle
 
 phpbb_storage_attachment:
-    path:             /download/attachment/{id}
+    path:             /attachment/{id}
     defaults:
         _controller:  storage.controller.attachment:handle
     requirements:

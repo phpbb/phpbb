@@ -33,3 +33,4 @@ phpbb_ucp_routing:
 
 phpbb_storage_routing:
     resource: storage.yml
+    prefix: /download
