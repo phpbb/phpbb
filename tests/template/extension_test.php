@@ -150,7 +150,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				],
 				[],
 				[],
-				'<img class="avatar" src="phpBB/download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
+				'<img class="avatar" src="download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
 				[]
 			],
 			[
@@ -168,7 +168,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				],
 				[],
 				[],
-				'<img class="avatar" src="phpBB/styles//theme/images/no_avatar.gif" data-src="phpBB/download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
+				'<img class="avatar" src="phpBB/styles//theme/images/no_avatar.gif" data-src="download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
 				[]
 			],
 			[
