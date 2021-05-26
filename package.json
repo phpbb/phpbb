@@ -20,6 +20,7 @@
 			"phpBB/styles/prosilver/template/ajax.js",
 			"phpBB/styles/prosilver/template/forum_fn.js",
 			"phpBB/**/*.min.js",
+			"phpBB/vendor/**/*.js",
 			"phpBB/phpbb/**/*.js",
 			"phpBB/tests/**/*.js"
 		],
