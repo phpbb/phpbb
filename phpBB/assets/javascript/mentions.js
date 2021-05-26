@@ -293,7 +293,7 @@
 				itemClass: 'mention-item',
 				menuItemTemplate,
 				selectTemplate(item) {
-					return '[mention=' + item.type + ':' + item.id + ']' + item.name + '[/mention]';
+					return '[mention ' + (item.type === 'g' ? 'group_id=' : 'user_id=') + item.id + ']' + item.name + '[/mention]';
 				},
 				menuItemLimit: mentionNamesLimit,
 				values(text, cb) {
