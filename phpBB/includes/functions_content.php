@@ -1286,14 +1286,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = $controller_helper->route('phpbb_storage_attachment', ['id' => (int) $attachment['attach_id']]);
+			$download_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
 			$l_downloaded_viewed = 'VIEWED_COUNTS';
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$inline_link = $controller_helper->route('phpbb_storage_attachment', ['id' => (int) $attachment['attach_id']]);
+					$inline_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -1305,7 +1305,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$thumbnail_link = $controller_helper->route('phpbb_storage_attachment', ['id' => (int) $attachment['attach_id'], 't' => 1]);
+					$thumbnail_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id'], 't' => 1]);
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,

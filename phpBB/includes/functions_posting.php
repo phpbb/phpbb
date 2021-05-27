@@ -807,7 +807,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = $phpbb_container->get('controller.helper')->route('phpbb_storage_attachment', ['id' => (int) $attach_row['attach_id']]);
+			$download_link = $phpbb_container->get('controller.helper')->route('phpbb_storage_attachment', ['file' => (int) $attach_row['attach_id']]);
 
 			$attachrow_template_vars[(int) $attach_row['attach_id']] = array(
 				'FILENAME'			=> utf8_basename($attach_row['real_filename']),

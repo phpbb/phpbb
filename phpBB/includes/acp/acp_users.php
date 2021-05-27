@@ -2298,7 +2298,7 @@ class acp_users
 
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> $controller_helper->route('phpbb_storage_attachment', ['id' => (int) $row['attach_id']]),
+						'U_DOWNLOAD'		=> $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $row['attach_id']]),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

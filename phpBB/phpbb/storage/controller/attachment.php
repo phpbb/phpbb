@@ -26,7 +26,9 @@ use phpbb\storage\storage;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller for /download/attachment/{id} routes
@@ -85,9 +87,9 @@ class attachment extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handle($id)
+	public function handle(string $file): Response
 	{
-		$attach_id = (int) $id;
+		$attach_id = (int) $file;
 		$thumbnail = $this->request->variable('t', false);
 
 		$this->language->add_lang('viewtopic');
@@ -246,13 +248,15 @@ class attachment extends controller
 		// TODO: The next lines should go better in prepare, also the mimetype is handled by the storage table
 		// so probably can be removed
 
+		$response = new StreamedResponse();
+
 		// Content-type header
-		$this->response->headers->set('Content-Type', $attachment['mimetype']);
+		$response->headers->set('Content-Type', $attachment['mimetype']);
 
 		// Display images in browser and force download for other file types
 		if (strpos($attachment['mimetype'], 'image') !== false)
 		{
-			$disposition = $this->response->headers->makeDisposition(
+			$disposition = $response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
@@ -260,18 +264,18 @@ class attachment extends controller
 		}
 		else
 		{
-			$disposition = $this->response->headers->makeDisposition(
+			$disposition = $response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
 			);
 		}
 
-		$this->response->headers->set('Content-Disposition', $disposition);
+		$response->headers->set('Content-Disposition', $disposition);
 
 		// Set expires header for browser cache
 		$time = new \Datetime();
-		$this->response->setExpires($time->modify('+1 year'));
+		$response->setExpires($time->modify('+1 year'));
 
 		return parent::handle($attachment['physical_filename']);
 	}
@@ -289,11 +293,11 @@ class attachment extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function prepare($file)
+	protected function prepare(StreamedResponse $response, string $file): void
 	{
-		$this->response->setPrivate();	// But default should be private, but make sure of it
+		$response->setPrivate();	// By default should be private, but make sure of it
 
-		parent::prepare($file);
+		parent::prepare($response, $file);
 	}
 
 	/**
@@ -305,7 +309,7 @@ class attachment extends controller
 	 * @throws http_exception If attachment is not found
 	 *                        If user don't have permission to download the attachment
 	 */
-	protected function phpbb_download_handle_forum_auth($topic_id): void
+	protected function phpbb_download_handle_forum_auth(int $topic_id): void
 	{
 		$sql_array = array(
 			'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
@@ -404,20 +408,15 @@ class attachment extends controller
 	/**
 	 * Increments the download count of all provided attachments
 	 *
-	 * @param array|int $ids The attach_id of each attachment
+	 * @param int $id The attach_id of the attachment
 	 *
 	 * @return void
 	 */
-	protected function phpbb_increment_downloads($ids): void
+	protected function phpbb_increment_downloads(int $id): void
 	{
-		if (!is_array($ids))
-		{
-			$ids = array($ids);
-		}
-
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 			SET download_count = download_count + 1
-			WHERE ' . $this->db->sql_in_set('attach_id', $ids);
+			WHERE attach_id = ' . $id;
 		$this->db->sql_query($sql);
 	}
 

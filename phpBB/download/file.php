@@ -47,7 +47,7 @@ $thumbnail = $request->variable('t', false);
 
 $response = new RedirectResponse(
 	$controller_helper->route('phpbb_storage_attachment', array(
-		'id'	=> $attach_id,
+		'file'	=> $attach_id,
 		't'		=> $thumbnail,
 	), false),
 	301

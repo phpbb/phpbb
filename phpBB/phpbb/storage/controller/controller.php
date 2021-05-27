@@ -16,8 +16,10 @@ namespace phpbb\storage\controller;
 use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
+use phpbb\storage\exception\exception;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -33,9 +35,6 @@ class controller
 
 	/** @var storage */
 	protected $storage;
-
-	/** @var StreamedResponse */
-	protected $response;
 
 	/** @var symfony_request */
 	protected $symfony_request;
@@ -54,48 +53,50 @@ class controller
 		$this->db = $db;
 		$this->storage = $storage;
 		$this->symfony_request = $symfony_request;
-		$this->response = new StreamedResponse();
 	}
 
 	/**
 	 * Handler
 	 *
-	 * @param string		$file		File path
+	 * @param string $file		File path
+	 *
+	 * @return Response a Symfony response object
 	 *
 	 * @throws http_exception when can't access $file
-	 *
-	 * @return StreamedResponse a Symfony response object
+	 * @throws exception when there is an error reading the file
 	 */
-	public function handle($file)
+	public function handle(string $file): Response
 	{
-		if (!$this->is_allowed($file))
+		$response = new StreamedResponse();
+
+		if (!static::is_allowed($file))
 		{
 			throw new http_exception(403, 'Forbidden');
 		}
 
-		if (!$this->file_exists($file))
+		if (!static::file_exists($file))
 		{
 			throw new http_exception(404, 'Not Found');
 		}
 
-		$this->prepare($file);
+		static::prepare($response, $file);
 
 		if (headers_sent())
 		{
 			throw new http_exception(500, 'Headers already sent');
 		}
 
-		return $this->response;
+		return $response;
 	}
 
 	/**
 	 * If the user is allowed to download the file
 	 *
-	 * @param string		$file		File path
+	 * @param string $file		File path
 	 *
 	 * @return bool
 	 */
-	protected function is_allowed($file)
+	protected function is_allowed(string $file): bool
 	{
 		return true;
 	}
@@ -103,11 +104,11 @@ class controller
 	/**
 	 * Check if file exists
 	 *
-	 * @param string		$file		File path
+	 * @param string $file		File path
 	 *
 	 * @return bool
 	 */
-	protected function file_exists($file)
+	protected function file_exists(string $file): bool
 	{
 		return $this->storage->exists($file);
 	}
@@ -115,33 +116,39 @@ class controller
 	/**
 	 * Prepare response
 	 *
-	 * @param string		$file		File path
+	 * @param StreamedResponse $response
+	 * @param string $file File path
+	 *
+	 * @return void
+	 * @throws exception when there is an error reading the file
 	 */
-	protected function prepare($file)
+	protected function prepare(StreamedResponse $response, string $file): void
 	{
 		$file_info = $this->storage->file_info($file);
 
-		if (!$this->response->headers->has('Content-Type'))
+		// Add Content-Type header
+		if (!$response->headers->has('Content-Type'))
 		{
 			try
 			{
 				$content_type = $file_info->get('mimetype');
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (exception $e)
 			{
 				$content_type = 'application/octet-stream';
 			}
 
-			$this->response->headers->set('Content-Type', $content_type);
+			$response->headers->set('Content-Type', $content_type);
 		}
 
-		if (!$this->response->headers->has('Content-Length'))
+		// Add Content-Length header if we have the file size
+		if (!$response->headers->has('Content-Length'))
 		{
 			try
 			{
-				$this->response->headers->set('Content-Length', $file_info->get('size'));
+				$response->headers->set('Content-Length', $file_info->get('size'));
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (exception $e)
 			{
 				// Just don't send this header
 			}
@@ -156,7 +163,7 @@ class controller
 
 		$output = fopen('php://output', 'w+b');
 
-		$this->response->setCallback(function () use ($fp, $output) {
+		$response->setCallback(function () use ($fp, $output) {
 			stream_copy_to_stream($fp, $output);
 			fclose($fp);
 			fclose($output);
@@ -167,19 +174,15 @@ class controller
 			exit;
 		});
 
-		$this->response->isNotModified($this->symfony_request);
+		$response->isNotModified($this->symfony_request);
 	}
 
 	/**
 	* Garbage Collection
 	*/
-	protected function file_gc()
+	protected function file_gc(): void
 	{
-		if (!empty($this->cache))
-		{
-			$this->cache->unload();
-		}
-
+		$this->cache->unload(); // Equivalent to $this->cache->get_driver()->unload();
 		$this->db->sql_close();
 	}
 }

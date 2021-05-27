@@ -18,7 +18,9 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller for /download/avatar/{file} routes
@@ -50,7 +52,7 @@ class avatar extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	public function handle($file)
+	public function handle(string $file): Response
 	{
 		$file = $this->decode_filename($file);
 
@@ -60,22 +62,22 @@ class avatar extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function is_allowed($file)
+	protected function is_allowed(string $file): bool
 	{
 		$ext = substr(strrchr($file, '.'), 1);
 
 		// If filename have point and have an allowed extension
-		return strpos($file, '.') && in_array($ext, $this->allowed_extensions);
+		return strpos($file, '.') && in_array($ext, $this->allowed_extensions, true);
 	}
 
 	/**
 	 * Decode avatar filename
 	 *
-	 * @param string		$file		Filename
+	 * @param string $file		Filename
 	 *
 	 * @return string Filename in filesystem
 	 */
-	protected function decode_filename($file)
+	protected function decode_filename(string $file): string
 	{
 		$avatar_group = false;
 
@@ -94,20 +96,20 @@ class avatar extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function prepare($file)
+	protected function prepare(StreamedResponse $response, string $file): void
 	{
-		$this->response->setPublic();
+		$response->setPublic();
 
-		$disposition = $this->response->headers->makeDisposition(
+		$disposition = $response->headers->makeDisposition(
 			ResponseHeaderBag::DISPOSITION_INLINE,
 			rawurlencode($file)
 		);
 
-		$this->response->headers->set('Content-Disposition', $disposition);
+		$response->headers->set('Content-Disposition', $disposition);
 
 		$time = new \Datetime();
-		$this->response->setExpires($time->modify('+1 year'));
+		$response->setExpires($time->modify('+1 year'));
 
-		parent::prepare($file);
+		parent::prepare($response, $file);
 	}
 }
