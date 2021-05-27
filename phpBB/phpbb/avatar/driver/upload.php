@@ -83,8 +83,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function get_data($row)
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
-
 		return array(
 			'src' => $this->controller_helper->route('phpbb_storage_avatar', ['file' => $row['avatar']]),
 			'width' => $row['avatar_width'],
