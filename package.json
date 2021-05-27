@@ -6,58 +6,24 @@
 	"directories": {
 		"doc": "docs"
 	},
-	"xo": {
-		"ignores": [
-			"./**/adm/style/admin.js",
-			"./**/adm/style/ajax.js",
-			"./**/adm/style/permissions.js",
-			"./**/adm/style/tooltip.js",
-			"./**/assets/javascript/core.js",
-			"./**/assets/javascript/editor.js",
-			"./**/assets/javascript/installer.js",
-			"./**/assets/javascript/plupload.js",
-			"./**/styles/prosilver/template/ajax.js",
-			"./**/styles/prosilver/template/forum_fn.js",
-			"./**/phpbb/**/*.js",
-			"./**/tests/**/*.js"
-		],
-		"rules": {
-			"quotes": [
-				"error",
-				"single"
-			],
-			"comma-dangle": [
-				"error",
-				"always-multiline"
-			],
-			"max-params": [
-				"error",
-				6
-			],
-			"block-spacing": "error",
-			"array-bracket-spacing": [
-				"error",
-				"always"
-			],
-			"object-curly-spacing": [
-				"error",
-				"always"
-			],
-			"multiline-comment-style": "off",
-			"computed-property-spacing": "off",
-			"space-in-parens": "off",
-			"capitalized-comments": "off",
-			"no-lonely-if": "off"
-		},
-		"env": [
-			"es6",
-			"browser",
-			"node",
-			"jquery"
-		]
-	},
 	"eslintConfig": {
 		"extends": "xo",
+		"ignorePatterns": [
+			"phpBB/adm/style/admin.js",
+			"phpBB/adm/style/ajax.js",
+			"phpBB/adm/style/permissions.js",
+			"phpBB/adm/style/tooltip.js",
+			"phpBB/assets/javascript/core.js",
+			"phpBB/assets/javascript/editor.js",
+			"phpBB/assets/javascript/installer.js",
+			"phpBB/assets/javascript/plupload.js",
+			"phpBB/styles/prosilver/template/ajax.js",
+			"phpBB/styles/prosilver/template/forum_fn.js",
+			"phpBB/**/*.min.js",
+			"phpBB/vendor/**/*.js",
+			"phpBB/phpbb/**/*.js",
+			"phpBB/tests/**/*.js"
+		],
 		"rules": {
 			"quotes": [
 				"error",
@@ -130,19 +96,16 @@
 	"devDependencies": {
 		"autoprefixer": "^10.2.5",
 		"cssnano": "^5.0.2",
-		"del": "^6.0.0",
+		"eslint": "^7.27.0",
+		"eslint-config-xo": "^0.36.0",
 		"gulp": "^4.0.2",
+		"gulp-concat-css": "^3.1.0",
 		"gulp-postcss": "^9.0.0",
 		"gulp-rename": "^2.0.0",
-		"gulp-sass": "^4.1.0",
-		"gulp-sourcemaps": "^3.0.0",
+		"gulp-sourcemaps": "^2.6.5",
 		"postcss": "^8.2.15",
-		"postcss-import": "^14.0.2",
-		"postcss-pxtorem": "^6.0.0",
 		"postcss-sorting": "^6.0.0",
 		"stylelint": "^13.13.1",
-		"stylelint-order": "^4.1.0",
-		"xo": "^0.40.1",
-		"yargs-parser": "^20.2.7"
+		"stylelint-order": "^4.1.0"
 	}
 }

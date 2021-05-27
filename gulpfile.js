@@ -1,47 +1,57 @@
 'use strict';
 
-const del = require('del');
 const gulp = require('gulp');
-const autoprefixer = require('autoprefixer');
-// const sass = require('gulp-sass');
 const rename = require('gulp-rename');
 const sourcemaps = require('gulp-sourcemaps');
-const cssnano = require('cssnano');
+const concat = require('gulp-concat-css');
 const postcss = require('gulp-postcss');
+const autoprefixer = require('autoprefixer');
+const cssnano = require('cssnano');
 const sorting = require('postcss-sorting');
-const atimport = require('postcss-import');
-// const torem = require('postcss-pxtorem');
 const sortOrder = require('./.postcss-sorting.json');
-// const pkg = require('./package.json');
 
 // Config
-const build = {
-	css: './phpBB/styles/prosilver/theme/',
+const paths = {
+	styles: {
+		src: './phpBB/styles/prosilver/theme/*.css',
+		css: './phpBB/styles/prosilver/theme/',
+	},
 };
 
-gulp.task('css', gulp.series(() => {
-	return gulp
-		.src(build.css + '*.css')
+function styles() {
+	return gulp.src(paths.styles.src)
+		.pipe(sourcemaps.init())
 		.pipe(
 			postcss([
 				autoprefixer(),
 				sorting(sortOrder),
 			]),
 		)
-		.pipe(gulp.dest(build.css));
-}));
+		.pipe(sourcemaps.write('./'))
+		.pipe(gulp.dest(paths.styles.css));
+}
 
-gulp.task('clean', gulp.series(() => {
-	del([ 'dist' ]);
-}));
-
-gulp.task('minify', gulp.series(() => {
-	return gulp
-		.src(build.css + '/bidi.css')
+function minify() {
+	return gulp.src([
+		paths.styles.css + 'normalize.css',
+		paths.styles.css + 'base.css',
+		paths.styles.css + 'utilities.css',
+		paths.styles.css + 'icons.css',
+		paths.styles.css + 'common.css',
+		paths.styles.css + 'buttons.css',
+		paths.styles.css + 'links.css',
+		paths.styles.css + 'mentions.css',
+		paths.styles.css + 'content.css',
+		paths.styles.css + 'cp.css',
+		paths.styles.css + 'forms.css',
+		paths.styles.css + 'colours.css',
+		paths.styles.css + 'responsive.css',
+		paths.styles.css + 'bidi.css',
+	])
 		.pipe(sourcemaps.init())
+		.pipe(concat('stylesheet.css'))
 		.pipe(
 			postcss([
-				atimport(),
 				cssnano(),
 			]),
 		)
@@ -50,11 +60,15 @@ gulp.task('minify', gulp.series(() => {
 			extname: '.css',
 		}))
 		.pipe(sourcemaps.write('./'))
-		.pipe(gulp.dest(build.css));
-}));
+		.pipe(gulp.dest(paths.styles.css));
+}
 
-gulp.task('watch', gulp.series(() => {
-	gulp.watch('phpBB/styles/prosilver/theme/*.css', gulp.series('css'));
-}));
+function watch() {
+	gulp.watch(paths.styles.src, styles);
+}
 
-gulp.task('default', gulp.series('css', 'watch'));
+exports.style = styles;
+exports.minify = minify;
+exports.watch = watch;
+
+exports.default = gulp.series(styles, minify, watch);

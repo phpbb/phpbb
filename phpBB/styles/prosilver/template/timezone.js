@@ -1,6 +1,6 @@
 /* global phpbb */
 
-(function ($) { // Avoid conflicts with other libraries
+(function($) { // Avoid conflicts with other libraries
 	'use strict';
 
 	$('#tz_date').change(() => {
