@@ -30,3 +30,4 @@ node_modules
 .vagrant
 .idea
 *.DS_Store*
+/.vscode
