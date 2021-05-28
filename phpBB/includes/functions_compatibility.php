@@ -927,7 +927,7 @@ function parse_cfg_file($filename, $lines = false)
 		}
 		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
 		{
-			$value = htmlspecialchars(substr($value, 1, strlen($value)-2), ENT_COMPAT);
+			$value = htmlspecialchars(substr($value, 1, strlen($value) - 2), ENT_COMPAT);
 		}
 		else
 		{
@@ -943,4 +943,28 @@ function parse_cfg_file($filename, $lines = false)
 	}
 
 	return $parsed_items;
+}
+
+/**
+* Wraps an url into a simple html page. Used to display attachments in IE.
+* this is a workaround for now; might be moved to template system later
+* direct any complaints to 1 Microsoft Way, Redmond
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
+*/
+function wrap_img_in_html($src, $title)
+{
+	echo '<!DOCTYPE html>';
+	echo '<html>';
+	echo '<head>';
+	echo '<meta charset="utf-8">';
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+	echo '<title>' . $title . '</title>';
+	echo '</head>';
+	echo '<body>';
+	echo '<div>';
+	echo '<img src="' . $src . '" alt="' . $title . '" />';
+	echo '</div>';
+	echo '</body>';
+	echo '</html>';
 }

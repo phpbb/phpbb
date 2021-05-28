@@ -14,7 +14,13 @@
 namespace phpbb\avatar\driver;
 
 use bantu\IniGetWrapper\IniGetWrapper;
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\event\dispatcher_interface;
+use phpbb\files\factory;
+use phpbb\path_helper;
 use phpbb\storage\exception\exception as storage_exception;
+use phpbb\storage\storage;
 
 /**
 * Handles avatars uploaded to the board
@@ -22,17 +28,22 @@ use phpbb\storage\exception\exception as storage_exception;
 class upload extends \phpbb\avatar\driver\driver
 {
 	/**
-	 * @var \phpbb\storage\storage
+	 * @var helper
+	 */
+	private $controller_helper;
+
+	/**
+	 * @var storage
 	 */
 	protected $storage;
 
 	/**
-	* @var \phpbb\event\dispatcher_interface
+	* @var dispatcher_interface
 	*/
 	protected $dispatcher;
 
 	/**
-	 * @var \phpbb\files\factory
+	 * @var factory
 	 */
 	protected $files_factory;
 
@@ -42,20 +53,22 @@ class upload extends \phpbb\avatar\driver\driver
 	protected $php_ini;
 
 	/**
-	* Construct a driver object
-	*
-	* @param \phpbb\config\config $config phpBB configuration
-	* @param string $phpbb_root_path Path to the phpBB root
-	* @param string $php_ext PHP file extension
-	* @param \phpbb\storage\storage phpBB avatar storage
-	* @param \phpbb\path_helper $path_helper phpBB path helper
-	* @param \phpbb\event\dispatcher_interface $dispatcher phpBB Event dispatcher object
-	* @param \phpbb\files\factory $files_factory File classes factory
-	* @param IniGetWrapper		$php_ini	ini_get() wrapper
-	*/
-	public function __construct(\phpbb\config\config $config, $phpbb_root_path, $php_ext, \phpbb\storage\storage $storage, \phpbb\path_helper $path_helper, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\files\factory $files_factory, IniGetWrapper $php_ini)
+	 * Construct a driver object
+	 *
+	 * @param config $config phpBB configuration
+	 * @param helper $controller_helper
+	 * @param string $phpbb_root_path Path to the phpBB root
+	 * @param string $php_ext PHP file extension
+	 * @param storage $storage phpBB avatar storage
+	 * @param path_helper $path_helper phpBB path helper
+	 * @param dispatcher_interface $dispatcher phpBB Event dispatcher object
+	 * @param factory $files_factory File classes factory
+	 * @param IniGetWrapper $php_ini ini_get() wrapper
+	 */
+	public function __construct(config $config, helper $controller_helper, string $phpbb_root_path, string $php_ext, storage $storage, path_helper $path_helper, dispatcher_interface $dispatcher, factory $files_factory, IniGetWrapper $php_ini)
 	{
 		$this->config = $config;
+		$this->controller_helper = $controller_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->storage = $storage;
@@ -70,10 +83,8 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	public function get_data($row)
 	{
-		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
-
 		return array(
-			'src' => $root_path . 'download/file.' . $this->php_ext . '?avatar=' . $row['avatar'],
+			'src' => $this->controller_helper->route('phpbb_storage_avatar', ['file' => $row['avatar']]),
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);

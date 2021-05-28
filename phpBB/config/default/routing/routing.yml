@@ -35,3 +35,7 @@ phpbb_report_routing:
 phpbb_ucp_routing:
     resource: ucp.yml
     prefix: /user
+
+phpbb_storage_routing:
+    resource: storage.yml
+    prefix: /download

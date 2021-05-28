@@ -14,6 +14,9 @@
 /**
 * @ignore
 */
+
+use phpbb\controller\helper;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -35,6 +38,9 @@ class acp_users
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $phpbb_dispatcher, $request;
 		global $phpbb_container, $phpbb_log;
+
+		/** @var helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -2126,9 +2132,6 @@ class acp_users
 					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
 
-				/** @var \phpbb\controller\helper $controller_helper */
-				$controller_helper = $phpbb_container->get('controller.helper');
-
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
 
@@ -2298,7 +2301,7 @@ class acp_users
 
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $row['attach_id']]),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

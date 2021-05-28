@@ -817,7 +817,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
+	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher, $phpbb_container;
 
 	// Some default template variables
 	$template->assign_vars(array(
@@ -845,7 +845,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
+			$download_link = $phpbb_container->get('controller.helper')->route('phpbb_storage_attachment', ['file' => (int) $attach_row['attach_id']]);
 
 			$attachrow_template_vars[(int) $attach_row['attach_id']] = array(
 				'FILENAME'			=> utf8_basename($attach_row['real_filename']),
