@@ -43,7 +43,7 @@ class file_downloader
 		$this->error_string = '';
 
 		if (function_exists('fsockopen') &&
-			$socket = fsockopen(($port == 443 ? 'ssl://' : '') . $host, $port, $this->error_number, $this->error_string, $timeout)
+			$socket = @fsockopen(($port == 443 ? 'ssl://' : '') . $host, $port, $this->error_number, $this->error_string, $timeout)
 		)
 		{
 			@fputs($socket, "GET $directory/$filename HTTP/1.0\r\n");
