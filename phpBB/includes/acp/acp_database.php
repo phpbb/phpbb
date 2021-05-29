@@ -73,20 +73,6 @@ class acp_database
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$store = true;
-						$structure = false;
-						$schema_data = false;
-
-						if ($type == 'full' || $type == 'structure')
-						{
-							$structure = true;
-						}
-
-						if ($type == 'full' || $type == 'data')
-						{
-							$schema_data = true;
-						}
-
 						@set_time_limit(1200);
 						@set_time_limit(0);
 
@@ -98,14 +84,14 @@ class acp_database
 						{
 							/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
 							$extractor = $phpbb_container->get('dbal.extractor');
-							$extractor->init_extractor($format, $filename, $time, false, $store);
+							$extractor->init_extractor($format, $filename, $time, false, true);
 
 							$extractor->write_start($table_prefix);
 
 							foreach ($table as $table_name)
 							{
 								// Get the table structure
-								if ($structure)
+								if ($type == 'full')
 								{
 									// Add table structure to the backup
 									// This method also add a "drop the table if exists" after trying to write the table structure
@@ -135,11 +121,8 @@ class acp_database
 									}
 								}
 
-								// Write schema data if it exists
-								if ($schema_data)
-								{
-									$extractor->write_data($table_name);
-								}
+								// Only supported types are full and data, therefore always write the data
+								$extractor->write_data($table_name);
 							}
 
 							$extractor->write_end();
@@ -151,49 +134,48 @@ class acp_database
 
 						try
 						{
-							if ($store)
+							// Get file name
+							switch ($format)
 							{
-								// Get file name
-								switch ($format)
-								{
-									case 'text':
-										$ext = '.sql';
-										break;
-									case 'bzip2':
-										$ext = '.sql.gz2';
-										break;
-									case 'gzip':
-										$ext = '.sql.gz';
-										break;
-								}
+								case 'text':
+									$ext = '.sql';
+								break;
 
-								$file = $filename . $ext;
+								case 'bzip2':
+									$ext = '.sql.gz2';
+								break;
 
-								// Copy to storage using streams
-								$temp_dir = $this->temp->get_dir();
-
-								$fp = fopen($temp_dir . '/' . $file, 'rb');
-
-								if ($fp === false)
-								{
-									throw new \phpbb\exception\runtime_exception('CANNOT_OPEN_FILE');
-								}
-
-								$storage->write_stream($file, $fp);
-
-								if (is_resource($fp))
-								{
-									fclose($fp);
-								}
-
-								// Remove file from tmp
-								@unlink($temp_dir . '/' . $file);
-
-								// Save to database
-								$sql = "INSERT INTO " . $table_prefix . "backups (filename)
-									VALUES ('$file');";
-								$db->sql_query($sql);
+								case 'gzip':
+									$ext = '.sql.gz';
+								break;
 							}
+
+							$file = $filename . $ext;
+
+							// Copy to storage using streams
+							$temp_dir = $this->temp->get_dir();
+
+							$fp = fopen($temp_dir . '/' . $file, 'rb');
+
+							if ($fp === false)
+							{
+								throw new \phpbb\exception\runtime_exception('CANNOT_OPEN_FILE');
+							}
+
+							$storage->write_stream($file, $fp);
+
+							if (is_resource($fp))
+							{
+								fclose($fp);
+							}
+
+							// Remove file from tmp
+							@unlink($temp_dir . '/' . $file);
+
+							// Save to database
+							$sql = "INSERT INTO " . $table_prefix . "backups (filename)
+								VALUES ('$file');";
+							$db->sql_query($sql);
 						}
 						catch (\phpbb\exception\runtime_exception $e)
 						{
