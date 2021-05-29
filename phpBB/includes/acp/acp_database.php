@@ -69,20 +69,6 @@ class acp_database
 							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$store = true;
-						$structure = false;
-						$schema_data = false;
-
-						if ($type == 'full' || $type == 'structure')
-						{
-							$structure = true;
-						}
-
-						if ($type == 'full' || $type == 'data')
-						{
-							$schema_data = true;
-						}
-
 						@set_time_limit(1200);
 						@set_time_limit(0);
 
@@ -92,14 +78,14 @@ class acp_database
 
 						/** @var phpbb\db\extractor\extractor_interface $extractor Database extractor */
 						$extractor = $phpbb_container->get('dbal.extractor');
-						$extractor->init_extractor($format, $filename, $time, false, $store);
+						$extractor->init_extractor($format, $filename, $time, false, true);
 
 						$extractor->write_start($table_prefix);
 
 						foreach ($table as $table_name)
 						{
 							// Get the table structure
-							if ($structure)
+							if ($type == 'full')
 							{
 								$extractor->write_table($table_name);
 							}
@@ -123,15 +109,11 @@ class acp_database
 
 									default:
 										$extractor->flush('TRUNCATE TABLE ' . $table_name . ";\n");
-									break;
 								}
 							}
 
-							// Data
-							if ($schema_data)
-							{
-								$extractor->write_data($table_name);
-							}
+							// Only supported types are full and data, therefore always write the data
+							$extractor->write_data($table_name);
 						}
 
 						$extractor->write_end();
