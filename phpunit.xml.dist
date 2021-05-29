@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<phpunit backupGlobals="true"
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
+         backupGlobals="true"
          backupStaticAttributes="false"
          colors="true"
          convertErrorsToExceptions="true"
@@ -10,30 +11,28 @@
          stopOnFailure="false"
          bootstrap="tests/bootstrap.php"
 >
-    <testsuites>
-        <testsuite name="phpBB Test Suite">
-            <directory suffix="_test.php">./tests</directory>
-            <exclude>./tests/functional</exclude>
-            <exclude>./tests/lint_test.php</exclude>
-        </testsuite>
-        <testsuite name="phpBB Functional Tests">
-            <directory suffix="_test.php">./tests/functional</directory>
-        </testsuite>
-        <testsuite name="phpBB Lint Test">
-            <file>./tests/lint_test.php</file>
-        </testsuite>
-    </testsuites>
-
-    <groups>
-        <exclude>
-            <group>slow</group>
-        </exclude>
-    </groups>
-
-    <filter>
-        <whitelist>
-            <directory suffix=".php">./phpBB/includes/</directory>
-            <directory suffix=".php">./phpBB/phpbb/</directory>
-        </whitelist>
-    </filter>
+  <coverage>
+    <include>
+      <directory suffix=".php">./phpBB/includes/</directory>
+      <directory suffix=".php">./phpBB/phpbb/</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="phpBB Test Suite">
+      <directory suffix="_test.php">./tests</directory>
+      <exclude>./tests/functional</exclude>
+      <exclude>./tests/lint_test.php</exclude>
+    </testsuite>
+    <testsuite name="phpBB Functional Tests">
+      <directory suffix="_test.php">./tests/functional</directory>
+    </testsuite>
+    <testsuite name="phpBB Lint Test">
+      <file>./tests/lint_test.php</file>
+    </testsuite>
+  </testsuites>
+  <groups>
+    <exclude>
+      <group>slow</group>
+    </exclude>
+  </groups>
 </phpunit>
