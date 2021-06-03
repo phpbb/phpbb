@@ -425,7 +425,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 /**
  * Delete user(s) and their related data
  *
- * @param string	$mode				Mode of posts deletion (retain|delete)
+ * @param string	$mode				Mode of posts deletion (retain|remove)
  * @param mixed		$user_ids			Either an array of integers or an integer
  * @param bool		$retain_username	True if username should be retained, false otherwise
  * @return bool
@@ -464,7 +464,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	 * Event before of the performing of the user(s) delete action
 	 *
 	 * @event core.delete_user_before
-	 * @var string	mode				Mode of posts deletion (retain|delete)
+	 * @var string	mode				Mode of posts deletion (retain|remove)
 	 * @var array	user_ids			ID(s) of the user(s) bound to be deleted
 	 * @var bool	retain_username		True if username should be retained, false otherwise
 	 * @var array	user_rows			Array containing data of the user(s) bound to be deleted
