@@ -774,7 +774,7 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	 * Event after the user(s) delete action has been performed
 	 *
 	 * @event core.delete_user_after
-	 * @var string	mode				Mode of posts deletion (retain|delete)
+	 * @var string	mode				Mode of posts deletion (retain|remove)
 	 * @var array	user_ids			ID(s) of the deleted user(s)
 	 * @var bool	retain_username		True if username should be retained, false otherwise
 	 * @var array	user_rows			Array containing data of the deleted user(s)
