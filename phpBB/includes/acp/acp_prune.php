@@ -110,6 +110,7 @@ class acp_prune
 				if ($row = $db->sql_fetchrow($result))
 				{
 					$prune_ids = array();
+					$p_result = [];
 					$p_result['topics'] = 0;
 					$p_result['posts'] = 0;
 					$log_data = '';

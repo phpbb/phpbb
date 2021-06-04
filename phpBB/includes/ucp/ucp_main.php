@@ -658,6 +658,7 @@ class ucp_main
 						WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 					$result = $db->sql_query($sql);
 
+					$topic_rows = [];
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$topic_rows[$row['topic_id']] = $row;
@@ -882,7 +883,7 @@ class ucp_main
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-		$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
+		$topic_list = $topic_forum_list = $rowset = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = (isset($row['b_topic_id'])) ? $row['b_topic_id'] : $row['topic_id'];
@@ -892,11 +893,6 @@ class ucp_main
 
 			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $topic_id;
-
-			if ($row['topic_type'] == POST_GLOBAL)
-			{
-				$global_announce_list[] = $topic_id;
-			}
 		}
 		$db->sql_freeresult($result);
 

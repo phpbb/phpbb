@@ -37,7 +37,7 @@ class ucp_profile
 		$user->add_lang('posting');
 
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$error = $data = array();
+		$error = array();
 		$s_hidden_fields = '';
 
 		switch ($mode)

@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 
 class acp_storage
 {
-	/** @var \phpbb\config $config */
+	/** @var \phpbb\config\config $config */
 	protected $config;
 
 	/** @var \phpbb\language\language $lang */
@@ -32,9 +32,6 @@ class acp_storage
 
 	/** @var \phpbb\template\template */
 	protected $template;
-
-	/** @var \phpbb\user */
-	protected $user;
 
 	/** @var \phpbb\di\service_collection */
 	protected $provider_collection;
@@ -70,7 +67,6 @@ class acp_storage
 		$this->lang = $phpbb_container->get('language');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
-		$this->user = $phpbb_container->get('user');
 		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
 		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
 		$this->phpbb_root_path = $phpbb_root_path;
