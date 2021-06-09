@@ -148,7 +148,7 @@ class content_visibility
 
 		$is_visible = ($visibility == ITEM_APPROVED) ||
 			($this->config['display_unapproved_posts']
-				&& ($this->user->data['user_id'] != ANONYMOUS)#
+				&& ($this->user->data['user_id'] != ANONYMOUS)
 				&& ($visibility == ITEM_UNAPPROVED || $visibility == ITEM_REAPPROVE)
 			) ||
 			$this->auth->acl_get('m_approve', $forum_id);
