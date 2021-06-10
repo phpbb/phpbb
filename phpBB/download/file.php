@@ -220,7 +220,7 @@ else
 		{
 			phpbb_download_handle_forum_auth($db, $auth, $attachment['topic_id']);
 
-			$sql = 'SELECT forum_id, post_visibility
+			$sql = 'SELECT forum_id, poster_id, post_visibility
 				FROM ' . POSTS_TABLE . '
 				WHERE post_id = ' . (int) $attachment['post_msg_id'];
 			$result = $db->sql_query($sql);
