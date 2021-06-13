@@ -150,7 +150,7 @@ class attachment extends controller
 			{
 				$this->phpbb_download_handle_forum_auth($attachment['topic_id']);
 
-				$sql = 'SELECT forum_id, post_visibility
+				$sql = 'SELECT forum_id, poster_id, post_visibility
 					FROM ' . POSTS_TABLE . '
 					WHERE post_id = ' . (int) $attachment['post_msg_id'];
 				$result = $this->db->sql_query($sql);
@@ -311,15 +311,15 @@ class attachment extends controller
 	 */
 	protected function phpbb_download_handle_forum_auth(int $topic_id): void
 	{
-		$sql_array = array(
-			'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
-			'FROM'		=> array(
+		$sql_array = [
+			'SELECT'	=> 't.forum_id, t.topic_poster, t.topic_visibility, f.forum_name, f.forum_password, f.parent_id',
+			'FROM'		=> [
 				TOPICS_TABLE => 't',
 				FORUMS_TABLE => 'f',
-			),
-			'WHERE'	=> 't.topic_id = ' . (int) $topic_id . '
+			],
+			'WHERE'		=> 't.topic_id = ' . (int) $topic_id . '
 				AND t.forum_id = f.forum_id',
-		);
+		];
 
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
