@@ -656,15 +656,15 @@ function phpbb_download_handle_forum_auth($db, $auth, $topic_id)
 {
 	global $phpbb_container;
 
-	$sql_array = array(
-		'SELECT'	=> 't.topic_visibility, t.forum_id, f.forum_name, f.forum_password, f.parent_id',
-		'FROM'		=> array(
+	$sql_array = [
+		'SELECT'	=> 't.forum_id, t.topic_poster, t.topic_visibility, f.forum_name, f.forum_password, f.parent_id',
+		'FROM'		=> [
 			TOPICS_TABLE => 't',
 			FORUMS_TABLE => 'f',
-		),
-		'WHERE'	=> 't.topic_id = ' . (int) $topic_id . '
+		],
+		'WHERE'		=> 't.topic_id = ' . (int) $topic_id . '
 			AND t.forum_id = f.forum_id',
-	);
+	];
 
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql);
