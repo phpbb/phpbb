@@ -3359,6 +3359,20 @@ viewtopic_body_postrow_rank_before
 * Purpose: Add data before the rank on the user profile when viewing
 a post
 
+viewtopic_body_postrow_signature_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.3.5-RC1
+* Purpose: Add content after the signature
+
+viewtopic_body_postrow_signature_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.3.5-RC1
+* Purpose: Add content before the signature
+
 viewtopic_body_topic_actions_before
 ===
 * Locations:
