@@ -23,7 +23,7 @@ class extend_bbcode_tooltip extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\v335rc1'
+			'\phpbb\db\migration\data\v33x\v334'
 		];
 	}
 
