@@ -2311,16 +2311,16 @@
         },
         {
             "name": "s9e/text-formatter",
-            "version": "2.9.0",
+            "version": "2.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/s9e/TextFormatter.git",
-                "reference": "d764e9e4ac70b9bc398afe15b45b27568aa3ff23"
+                "reference": "a8767be0fd9febecf4d1f88a76b8fc01c26abed9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/d764e9e4ac70b9bc398afe15b45b27568aa3ff23",
-                "reference": "d764e9e4ac70b9bc398afe15b45b27568aa3ff23",
+                "url": "https://api.github.com/repos/s9e/TextFormatter/zipball/a8767be0fd9febecf4d1f88a76b8fc01c26abed9",
+                "reference": "a8767be0fd9febecf4d1f88a76b8fc01c26abed9",
                 "shasum": ""
             },
             "require": {
@@ -2347,7 +2347,7 @@
             },
             "type": "library",
             "extra": {
-                "version": "2.9.0"
+                "version": "2.9.3"
             },
             "autoload": {
                 "psr-4": {
@@ -2379,9 +2379,9 @@
             ],
             "support": {
                 "issues": "https://github.com/s9e/TextFormatter/issues",
-                "source": "https://github.com/s9e/TextFormatter/tree/2.9.0"
+                "source": "https://github.com/s9e/TextFormatter/tree/2.9.3"
             },
-            "time": "2021-04-17T23:41:09+00:00"
+            "time": "2021-05-30T11:33:06+00:00"
         },
         {
             "name": "seld/jsonlint",
