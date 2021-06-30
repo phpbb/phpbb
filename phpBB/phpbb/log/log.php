@@ -695,7 +695,7 @@ class log implements \phpbb\log\log_interface
 					}
 
 					$lang_arguments = array_merge(array($log[$i]['action']), $log_data_ary);
-					$log[$i]['action'] = call_user_func_array(array($this->user, 'lang'), $lang_arguments);
+					$log[$i]['action'] = call_user_func_array(array($this->user, 'lang'), array_values($lang_arguments));
 
 					// If within the admin panel we do not censor text out
 					if ($this->get_is_admin())
