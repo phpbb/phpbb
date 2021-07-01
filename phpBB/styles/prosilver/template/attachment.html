@@ -35,7 +35,7 @@
 			{% if _file.COMMENT %}<dd><em>{{ _file.COMMENT }}</em></dd>{% endif %}
 			<dd>{{ _file.DOWNLOAD_NAME }} ({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</dd>
 			<dd>
-				<audio class="file-audio-controls" controls="controls" preload="none">
+				<audio class="file-audio-controls" controls="controls" preload="metadata">
 					<source src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
 				</audio>
 			</dd>
