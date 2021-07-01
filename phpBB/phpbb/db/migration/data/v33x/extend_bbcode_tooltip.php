@@ -17,7 +17,7 @@ class extend_bbcode_tooltip extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return $this->db_tools->sql_table_exists($this->table_prefix . 'bbcodes');
+		return !$this->db_tools->sql_column_exists($this->table_prefix . 'bbcodes', 'bbcode_helpline');
 	}
 
 	static public function depends_on()
