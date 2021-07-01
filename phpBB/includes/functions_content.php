@@ -1318,14 +1318,10 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 				// Audio files
 				case ATTACHMENT_CATEGORY_AUDIO:
-					$inline_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
 					$block_array += [
 						'S_AUDIO_FILE'			=> true,
-						'U_FORUM'			=> generate_board_url(),
-						'ATTACH_ID'			=> $attachment['attach_id'],
 					];
 
-					// Heard File ... update the download count
 					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
