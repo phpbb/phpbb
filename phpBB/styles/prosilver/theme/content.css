@@ -682,7 +682,11 @@ dl.thumbnail dt a:hover img {
 	border: 1px solid transparent;
 }
 
-audio.file-audio-controls {
+.c-file-comment {
+	font-style: italic;
+}
+
+.c-file-audio-controls {
 	max-width: 100%;
 }
 
