@@ -978,7 +978,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
 
 		if ($status_code !== false)
 		{
