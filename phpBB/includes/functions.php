@@ -2929,7 +2929,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ($phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
