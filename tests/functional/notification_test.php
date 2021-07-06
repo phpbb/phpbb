@@ -16,7 +16,7 @@
 */
 class phpbb_functional_notification_test extends phpbb_functional_test_case
 {
-	static public function user_subscription_data()
+	public static function user_subscription_data()
 	{
 		return array(
 			// Rows inserted by phpBB/install/schemas/schema_data.sql
@@ -77,12 +77,12 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications');
 
 		// At least one notification should exist
-		$this->assertGreaterThan(0, $crawler->filter('#notification_list_button strong')->text());
+		$this->assertGreaterThan(0, $crawler->filter('#notification-button strong')->text());
 
 		// Get form token
 		$link = $crawler->selectLink($this->lang('NOTIFICATIONS_MARK_ALL_READ'))->link()->getUri();
 		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
-		$this->assertCount(1, $crawler->filter('#notification_list_button strong.badge.hidden'));
-		$this->assertEquals("0", $crawler->filter('#notification_list_button strong.badge.hidden')->text());
+		$this->assertCount(1, $crawler->filter('#notification-button strong.badge.hidden'));
+		$this->assertEquals("0", $crawler->filter('#notification-button strong.badge.hidden')->text());
 	}
 }

@@ -14,6 +14,9 @@
 /**
 * @ignore
 */
+
+use phpbb\controller\helper;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -35,6 +38,9 @@ class acp_users
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $phpbb_dispatcher, $request;
 		global $phpbb_container, $phpbb_log;
+
+		/** @var helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -1968,18 +1974,21 @@ class acp_users
 					$error = $phpbb_avatar_manager->localize_errors($user, $error);
 				}
 
-				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$avatar = $avatar_helper->get_user_avatar($user_row, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'S_AVATAR'	=> true,
-					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+					'S_AVATAR'			=> true,
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> $user->lang(($config['avatar_filesize'] == 0) ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN', $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 
-					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
+					'S_AVATARS_ENABLED'	=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 
 			break;
@@ -2122,9 +2131,6 @@ class acp_users
 				{
 					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
-
-				/** @var \phpbb\controller\helper $controller_helper */
-				$controller_helper = $phpbb_container->get('controller.helper');
 
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
@@ -2295,7 +2301,7 @@ class acp_users
 
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $row['attach_id']]),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

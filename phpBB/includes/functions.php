@@ -575,6 +575,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			// Mark all topic notifications read for this user
 			$phpbb_notifications->mark_notifications(array(
 				'notification.type.topic',
+				'notification.type.mention',
 				'notification.type.quote',
 				'notification.type.bookmark',
 				'notification.type.post',
@@ -660,6 +661,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		$db->sql_freeresult($result);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -771,6 +773,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		), $topic_id, $user->data['user_id'], $post_time);
 
 		$phpbb_notifications->mark_notifications_by_parent(array(
+			'notification.type.mention',
 			'notification.type.quote',
 			'notification.type.bookmark',
 			'notification.type.post',
@@ -918,7 +921,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 /**
 * Get topic tracking info by using already fetched info
 */
-function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
+function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time)
 {
 	global $user;
 
@@ -962,7 +965,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 /**
 * Get topic tracking info from db (for cookie based tracking only this function is used)
 */
-function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
+function get_complete_topic_tracking($forum_id, $topic_ids)
 {
 	global $config, $user, $request;
 
@@ -1453,7 +1456,6 @@ function tracking_unserialize($string, $max_depth = 3)
 
 /**
 * Append session id to url.
-* This function supports hooks.
 *
 * @param string $url The url the session id needs to be appended to (can have params)
 * @param mixed $params String or array of additional url parameters
@@ -1474,7 +1476,7 @@ function tracking_unserialize($string, $max_depth = 3)
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false, $is_route = false)
 {
-	global $_SID, $_EXTRA_URL, $phpbb_hook, $phpbb_path_helper;
+	global $_SID, $_EXTRA_URL, $phpbb_path_helper;
 	global $phpbb_dispatcher;
 
 	if ($params === '' || (is_array($params) && empty($params)))
@@ -1519,18 +1521,6 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false, 
 	if ($append_sid_overwrite)
 	{
 		return $append_sid_overwrite;
-	}
-
-	// The following hook remains for backwards compatibility, though use of
-	// the event above is preferred.
-	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropriately.
-	// They could mimic most of what is within this function
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
-	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
 	}
 
 	$params_is_array = is_array($params);
@@ -2682,63 +2672,6 @@ function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = f
 }
 
 /**
-* Parse cfg file
-*/
-function parse_cfg_file($filename, $lines = false)
-{
-	$parsed_items = array();
-
-	if ($lines === false)
-	{
-		$lines = file($filename);
-	}
-
-	foreach ($lines as $line)
-	{
-		$line = trim($line);
-
-		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
-		{
-			continue;
-		}
-
-		// Determine first occurrence, since in values the equal sign is allowed
-		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))), ENT_COMPAT);
-		$value = trim(substr($line, $delim_pos + 1));
-
-		if (in_array($value, array('off', 'false', '0')))
-		{
-			$value = false;
-		}
-		else if (in_array($value, array('on', 'true', '1')))
-		{
-			$value = true;
-		}
-		else if (!trim($value))
-		{
-			$value = '';
-		}
-		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
-		{
-			$value = htmlspecialchars(substr($value, 1, strlen($value)-2), ENT_COMPAT);
-		}
-		else
-		{
-			$value = htmlspecialchars($value, ENT_COMPAT);
-		}
-
-		$parsed_items[$key] = $value;
-	}
-
-	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
-	{
-		unset($parsed_items['parent']);
-	}
-
-	return $parsed_items;
-}
-
-/**
 * Return a nicely formatted backtrace.
 *
 * Turns the array returned by debug_backtrace() into HTML markup.
@@ -2996,7 +2929,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ($phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
+			if (($errno & ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -3232,21 +3165,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 */
 function phpbb_filter_root_path($errfile)
 {
-	global $phpbb_filesystem;
-
 	static $root_path;
 
 	if (empty($root_path))
 	{
-		if ($phpbb_filesystem)
-		{
-			$root_path = $phpbb_filesystem->realpath(__DIR__ . '/../');
-		}
-		else
-		{
-			$filesystem = new \phpbb\filesystem\filesystem();
-			$root_path = $filesystem->realpath(__DIR__ . '/../');
-		}
+		$root_path = \phpbb\filesystem\helper::realpath(__DIR__ . '/../');
 	}
 
 	return str_replace(array($root_path, '\\'), array('[ROOT]', '/'), $errfile);
@@ -3603,6 +3526,8 @@ function phpbb_quoteattr($data, $entities = null)
 /**
 * Get user avatar
 *
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_user_avatar() instead
+*
 * @param array $user_row Row from the users table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
@@ -3619,6 +3544,8 @@ function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config =
 /**
 * Get group avatar
 *
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_group_avatar() instead
+*
 * @param array $group_row Row from the groups table
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
 * @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
@@ -3634,6 +3561,8 @@ function phpbb_get_group_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_confi
 
 /**
 * Get avatar
+*
+* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_avatar() instead
 *
 * @param array $row Row cleaned by \phpbb\avatar\manager::clean_row
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
@@ -3934,22 +3863,19 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');
 
-	/**
-	 * Workaround for missing template variable in pre phpBB 3.2.6 styles.
-	 * @deprecated 3.2.7 (To be removed: 4.0.0-a1)
-	 */
-	$form_token_login = $template->retrieve_var('S_FORM_TOKEN_LOGIN');
-	if (!empty($form_token_login))
-	{
-		$s_login_redirect .= $form_token_login;
-		// Remove S_FORM_TOKEN_LOGIN as it's already appended to S_LOGIN_REDIRECT
-		$template->assign_var('S_FORM_TOKEN_LOGIN', '');
-	}
+	/** @var \phpbb\avatar\helper $avatar_helper */
+	$avatar_helper = $phpbb_container->get('avatar.helper');
+
+	$avatar = $avatar_helper->get_user_avatar($user->data);
+	$template->assign_vars($avatar_helper->get_template_vars($avatar, 'CURRENT_USER_'));
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
@@ -3964,10 +3890,11 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 
+		'NO_AVATAR_SOURCE'				=> $avatar_helper->get_no_avatar_source(),
 		'PRIVATE_MESSAGE_COUNT'			=> (!empty($user->data['user_unread_privmsg'])) ? $user->data['user_unread_privmsg'] : 0,
-		'CURRENT_USER_AVATAR'			=> phpbb_get_user_avatar($user->data),
 		'CURRENT_USERNAME_SIMPLE'		=> get_username_string('no_profile', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
 		'CURRENT_USERNAME_FULL'			=> get_username_string('full', $user->data['user_id'], $user->data['username'], $user->data['user_colour']),
+		'CURRENT_USER_GROUP_COLOR'		=> $user->data['user_colour'],
 		'UNREAD_NOTIFICATIONS_COUNT'	=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'NOTIFICATIONS_COUNT'			=> ($notifications !== false) ? $notifications['unread_count'] : '',
 		'U_VIEW_ALL_NOTIFICATIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_notifications'),
@@ -3984,6 +3911,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
 		'BOARD_URL'			=> $board_url,
+		'PHPBB_VERSION'		=> PHPBB_VERSION,
+		'PHPBB_MAJOR'		=> $phpbb_major,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
@@ -4017,6 +3946,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
 
+		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention') && (empty($forum_id) || $auth->acl_get('f_mention', $forum_id))) ? true : false,
+		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
+		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
+
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
@@ -4038,6 +3971,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
+		'S_USER_ID'				=> $user->data['user_id'],
 
 		'S_LOGIN_ACTION'		=> ((!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("{$phpbb_admin_path}index.$phpEx", false, true, $user->session_id)),
 		'S_LOGIN_REDIRECT'		=> $s_login_redirect,
@@ -4060,11 +3994,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_SUPER_TEMPLATE_PATH'	=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/template',
 		'T_IMAGES_PATH'			=> "{$web_path}images/",
 		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
-		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/stylesheet.css?assets_version=' . $config['assets_version'],
 		'T_STYLESHEET_LANG_LINK'=> "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme/' . $user->lang_name . '/stylesheet.css?assets_version=' . $config['assets_version'],
 
@@ -4080,11 +4012,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'T_SUPER_TEMPLATE_NAME'	=> rawurlencode((isset($user->style['style_parent_tree']) && $user->style['style_parent_tree']) ? $user->style['style_parent_tree'] : $user->style['style_path']),
 		'T_IMAGES'				=> 'images',
 		'T_SMILIES'				=> $config['smilies_path'],
-		'T_AVATAR'				=> $config['avatar_path'],
 		'T_AVATAR_GALLERY'		=> $config['avatar_gallery_path'],
 		'T_ICONS'				=> $config['icons_path'],
 		'T_RANKS'				=> $config['ranks_path'],
-		'T_UPLOAD'				=> $config['upload_path'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
@@ -4131,25 +4061,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	return;
-}
-
-/**
-* Check and display the SQL report if requested.
-*
-* @param \phpbb\request\request_interface		$request	Request object
-* @param \phpbb\auth\auth						$auth		Auth object
-* @param \phpbb\db\driver\driver_interface		$db			Database connection
- *
- * @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
-*/
-function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
-{
-	global $phpbb_container;
-
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
-
-	$controller_helper->display_sql_report();
 }
 
 /**
@@ -4298,7 +4209,7 @@ function garbage_collection()
 		* @event core.garbage_collection
 		* @since 3.1.0-a1
 		*/
-		$phpbb_dispatcher->dispatch('core.garbage_collection');
+		$phpbb_dispatcher->trigger_event('core.garbage_collection');
 	}
 
 	// Unload cache, must be done before the DB connection if closed
@@ -4316,58 +4227,39 @@ function garbage_collection()
 
 /**
 * Handler for exit calls in phpBB.
-* This function supports hooks.
 *
 * Note: This function is called after the template has been outputted.
+ *
+ * @return void
 */
 function exit_handler()
 {
-	global $phpbb_hook;
+	global $phpbb_dispatcher;
 
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
+	$exit_handler_override = false;
+
+	/**
+	 * This event can either supplement or override the exit_handler() function
+	 *
+	 * To override this function, the event must set $exit_handler_override to
+	 * true to force it to exit directly after calling this event.
+	 *
+	 * @event core.exit_handler
+	 * @var	bool	exit_handler_override		Flag to signify exit is handled elsewhere
+	 * @since 4.0.0-a1
+	 */
+	$vars = ['exit_handler_override'];
+	extract($phpbb_dispatcher->trigger_event('core.exit_handler', compact($vars)));
+
+	if ($exit_handler_override)
 	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
+		return;
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
 	(ob_get_level() > 0) ? @ob_flush() : @flush();
 
 	exit;
-}
-
-/**
-* Handler for init calls in phpBB. This function is called in \phpbb\user::setup();
-* This function supports hooks.
-*/
-function phpbb_user_session_handler()
-{
-	global $phpbb_hook;
-
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
-	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
-	}
-
-	return;
-}
-
-/**
-* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
-*
-* @param string $input		A numeric string.
-*
-* @return int|float			Integer $input if $input fits integer,
-*							float $input otherwise.
-*/
-function phpbb_to_numeric($input)
-{
-	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
 }
 
 /**

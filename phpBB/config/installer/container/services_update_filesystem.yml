@@ -41,7 +41,6 @@ services:
             - '@installer.helper.iohandler'
             - '@installer.file_updater.factory'
             - '@installer.helper.update_helper'
-            - '%core.root_path%'
         tags:
             - { name: update_filesystem, order: 40 }
 
@@ -69,4 +68,4 @@ services:
             - true
             - false
         tags:
-            - { name: installer_update_module, order: 30 }
+            - { name: installer_update_module, order: 3 }

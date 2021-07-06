@@ -55,9 +55,6 @@ class manager_test extends phpbb_database_test_case
 		$container	= new phpbb_mock_container_builder();
 		$dispatcher	= new phpbb_mock_event_dispatcher();
 
-		$request	= $this->getMockBuilder('\phpbb\request\request')
-			->disableOriginalConstructor()
-			->getMock();
 		$template	= $this->getMockBuilder('\phpbb\template\template')
 			->disableOriginalConstructor()
 			->getMock();
@@ -79,7 +76,6 @@ class manager_test extends phpbb_database_test_case
 			$dispatcher,
 			$language,
 			$this->log,
-			$request,
 			$template,
 			$collection,
 			$user,

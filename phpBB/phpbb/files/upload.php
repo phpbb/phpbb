@@ -13,7 +13,6 @@
 
 namespace phpbb\files;
 
-use phpbb\filesystem\filesystem_interface;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 
@@ -47,12 +46,6 @@ class upload
 	/** @var string Prefix for language variables of errors */
 	public $error_prefix = '';
 
-	/** @var int Timeout for remote upload */
-	public $upload_timeout = 6;
-
-	/** @var filesystem_interface */
-	protected $filesystem;
-
 	/** @var \phpbb\files\factory Files factory */
 	protected $factory;
 
@@ -68,15 +61,13 @@ class upload
 	/**
 	 * Init file upload class.
 	 *
-	 * @param filesystem_interface $filesystem
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
 	 * @param \bantu\IniGetWrapper\IniGetWrapper $php_ini ini_get() wrapper
 	 * @param request_interface $request Request class
 	 */
-	public function __construct(filesystem_interface $filesystem, factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request)
+	public function __construct(factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request)
 	{
-		$this->filesystem = $filesystem;
 		$this->factory = $factory;
 		$this->language = $language;
 		$this->php_ini = $php_ini;
@@ -98,13 +89,13 @@ class upload
 	/**
 	 * Set allowed extensions
 	 *
-	 * @param array $allowed_extensions Allowed file extensions
+	 * @param array|bool $allowed_extensions Allowed file extensions
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
 	public function set_allowed_extensions($allowed_extensions)
 	{
-		if ($allowed_extensions !== false && is_array($allowed_extensions))
+		if ($allowed_extensions !== false)
 		{
 			$this->allowed_extensions = $allowed_extensions;
 		}
@@ -152,13 +143,13 @@ class upload
 	/**
 	 * Set disallowed strings
 	 *
-	 * @param array $disallowed_content Disallowed content
+	 * @param array|bool $disallowed_content Disallowed content
 	 *
 	 * @return \phpbb\files\upload This instance of upload
 	 */
 	public function set_disallowed_content($disallowed_content)
 	{
-		if ($disallowed_content !== false && is_array($disallowed_content))
+		if ($disallowed_content !== false)
 		{
 			$this->disallowed_content = array_diff($disallowed_content, array(''));
 		}
@@ -185,7 +176,7 @@ class upload
 	 *
 	 * @param string $type Upload type
 	 *
-	 * @return \phpbb\files\filespec|bool A filespec instance if upload was
+	 * @return \phpbb\files\filespec_storage|bool A filespec instance if upload was
 	 *		successful, false if there were issues or the type is not supported
 	 */
 	public function handle_upload($type)
@@ -259,7 +250,7 @@ class upload
 	/**
 	 * Perform common file checks
 	 *
-	 * @param filespec $file Instance of filespec class
+	 * @param filespec_storage $file Instance of filespec class
 	 */
 	public function common_checks($file)
 	{
@@ -293,7 +284,7 @@ class upload
 	/**
 	 * Check for allowed extension
 	 *
-	 * @param filespec $file Instance of filespec class
+	 * @param filespec_storage $file Instance of filespec class
 	 *
 	 * @return bool True if extension is allowed, false if not
 	 */
@@ -305,7 +296,7 @@ class upload
 	/**
 	 * Check for allowed dimension
 	 *
-	 * @param filespec $file Instance of filespec class
+	 * @param filespec_storage $file Instance of filespec class
 	 *
 	 * @return bool True if dimensions are valid or no constraints set, false
 	 *			if not
@@ -346,7 +337,7 @@ class upload
 	/**
 	 * Check for bad content (IE mime-sniffing)
 	 *
-	 * @param filespec $file Instance of filespec class
+	 * @param filespec_storage $file Instance of filespec class
 	 *
 	 * @return bool True if content is valid, false if not
 	 */
@@ -360,7 +351,7 @@ class upload
 	 *
 	 * @return array Array containing the image types and their extensions
 	 */
-	static public function image_types()
+	public static function image_types()
 	{
 		$result = [
 			IMAGETYPE_GIF		=> ['gif'],

@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v32x;
 
 class smtp_dynamic_data extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v32x\v326rc1',

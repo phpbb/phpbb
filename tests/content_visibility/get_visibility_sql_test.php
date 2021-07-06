@@ -146,7 +146,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = $user_id;
-		$config = $this->config = new \phpbb\config\config(array(
+		$config = new \phpbb\config\config(array(
 			'display_unapproved_posts'			=> $display_unapproved,
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();

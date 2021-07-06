@@ -13,21 +13,31 @@
 
 namespace phpbb\install\module\install_finish\task;
 
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception as DoctrineException;
 use phpbb\config\db;
-use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\db\driver\driver_interface;
+use phpbb\install\database_task;
+use phpbb\install\helper\config;
+use phpbb\install\helper\container_factory;
+use phpbb\install\helper\database;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use phpbb\install\sequential_task;
 
 /**
  * Installs extensions that exist in ext folder upon install
  */
-class install_extensions extends \phpbb\install\task_base
+class install_extensions extends database_task
 {
+	use sequential_task;
+
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $install_config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $iohandler;
 
@@ -49,40 +59,38 @@ class install_extensions extends \phpbb\install\task_base
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
-	/** @var \Symfony\Component\Finder\Finder */
-	protected $finder;
-
 	/** @var string Extension table */
 	protected $extension_table;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var Connection */
 	protected $db;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\container_factory				$container
-	 * @param \phpbb\install\helper\config							$install_config
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path phpBB root path
+	 * @param container_factory		$container
+	 * @param config				$install_config
+	 * @param database				$db_helper
+	 * @param iohandler_interface	$iohandler
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $phpbb_root_path)
+	public function __construct(
+		container_factory $container,
+		config $install_config,
+		database $db_helper,
+		iohandler_interface $iohandler)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
-		$this->extension_table = $container->get_parameter('tables.ext');
+		$this->extension_table	= $container->get_parameter('tables.ext');
+		$this->db				= self::get_doctrine_connection($db_helper, $install_config);
 
-		$this->log				= $container->get('log');
-		$this->config			= $container->get('config');
-		$this->user				= $container->get('user');
-		$this->extension_manager = $container->get('ext.manager');
-		$this->db				= $container->get('dbal.conn');
-		$this->finder = new \Symfony\Component\Finder\Finder();
-		$this->finder->in($phpbb_root_path . 'ext/')
-			->ignoreUnreadableDirs()
-			->depth('< 3')
-			->files()
-			->name('composer.json');
+		$this->log					= $container->get('log');
+		$this->config				= $container->get('config');
+		$this->user					= $container->get('user');
+		$this->extension_manager 	= $container->get('ext.manager');
+
+		/** @var driver_interface $db */
+		$db = $container->get('dbal.conn');
 
 		/** @var \phpbb\cache\driver\driver_interface $cache */
 		$cache = $container->get('cache.driver');
@@ -90,7 +98,7 @@ class install_extensions extends \phpbb\install\task_base
 
 		global $config;
 		$config = new db(
-			$this->db,
+			$db,
 			$cache,
 			$container->get_parameter('tables.config')
 		);
@@ -103,7 +111,11 @@ class install_extensions extends \phpbb\install\task_base
 			$this->config['assets_version'] = 0;
 		}
 
-		parent::__construct(true);
+		parent::__construct(
+			$this->db,
+			$this->iohandler,
+			true
+		);
 	}
 
 	/**
@@ -113,72 +125,57 @@ class install_extensions extends \phpbb\install\task_base
 	{
 		$this->user->session_begin();
 		$this->user->setup(array('common', 'acp/common', 'cli'));
+		$all_available_extensions = $this->extension_manager->all_available();
+		$this->execute($this->install_config, $all_available_extensions);
+	}
 
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function execute_step($key, $value) : void
+	{
 		$install_extensions = $this->iohandler->get_input('install-extensions', array());
 
-		$all_available_extensions = $this->extension_manager->all_available();
-		$i = $this->install_config->get('install_extensions_index', 0);
-		$available_extensions = array_slice($all_available_extensions, $i);
-
-		// Install extensions
-		foreach ($available_extensions as $ext_name => $ext_path)
+		if (!empty($install_extensions) && $install_extensions !== ['all'] && !in_array($key, $install_extensions))
 		{
-			if (!empty($install_extensions) && $install_extensions !== ['all'] && !in_array($ext_name, $install_extensions))
-			{
-				continue;
-			}
-
-			try
-			{
-				$extension = $this->extension_manager->get_extension($ext_name);
-
-				if (!$extension->is_enableable())
-				{
-					$this->iohandler->add_log_message(array('CLI_EXTENSION_NOT_ENABLEABLE', $ext_name));
-					continue;
-				}
-
-				$this->extension_manager->enable($ext_name);
-				$extensions = $this->get_extensions();
-
-				if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
-				{
-					// Create log
-					$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($ext_name));
-					$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $ext_name));
-				}
-				else
-				{
-					$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
-				}
-			}
-			catch (\Exception $e)
-			{
-				// Add fail log and continue
-				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $ext_name));
-			}
-
-			$i++;
-
-			// Stop execution if resource limit is reached
-			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
-			{
-				break;
-			}
+			return;
 		}
 
-		$this->install_config->set('install_extensions_index', $i);
-
-		if ($i < count($all_available_extensions))
+		try
 		{
-			throw new resource_limit_reached_exception();
+			$extension = $this->extension_manager->get_extension($key);
+
+			if (!$extension->is_enableable())
+			{
+				$this->iohandler->add_log_message(array('CLI_EXTENSION_NOT_ENABLEABLE', $key));
+				return;
+			}
+
+			$this->extension_manager->enable($key);
+			$extensions = $this->get_extensions();
+
+			if (isset($extensions[$key]) && $extensions[$key]['ext_active'])
+			{
+				// Create log
+				$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($key));
+				$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $key));
+			}
+			else
+			{
+				$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $key));
+			}
+		}
+		catch (\Exception $e)
+		{
+			// Add fail log and continue
+			$this->iohandler->add_log_message(array('CLI_EXTENSION_ENABLE_FAILURE', $key));
 		}
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}
@@ -196,17 +193,19 @@ class install_extensions extends \phpbb\install\task_base
 	 *
 	 * @return array List of extensions
 	 */
-	private function get_extensions()
+	private function get_extensions() : array
 	{
-		$sql = 'SELECT *
-			FROM ' . $this->extension_table;
+		try
+		{
+			$extensions_row = $this->db->fetchAllAssociative('SELECT * FROM ' . $this->extension_table);
+		}
+		catch (DoctrineException $e)
+		{
+			$this->iohandler->add_error_message('INST_ERR_DB', $e->getMessage());
+			return [];
+		}
 
-		$result = $this->db->sql_query($sql);
-		$extensions_row = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		$extensions = array();
-
+		$extensions = [];
 		foreach ($extensions_row as $extension)
 		{
 			$extensions[$extension['ext_name']] = $extension;

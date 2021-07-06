@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v32x;
 
 class user_notifications_table_index_p1 extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v32x\cookie_notice_p2',

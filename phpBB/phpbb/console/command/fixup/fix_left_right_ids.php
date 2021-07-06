@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\fixup;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -64,7 +65,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return void
+	* @return int
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -87,6 +88,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 		$this->cache->purge();
 
 		$io->success($this->user->lang('CLI_FIXUP_FIX_LEFT_RIGHT_IDS_SUCCESS'));
+		return symfony_command::SUCCESS;
 	}
 
 	/**

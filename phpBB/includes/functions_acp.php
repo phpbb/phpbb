@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $user, $template;
+	global $config, $user, $template, $auth;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 	global $phpbb_dispatcher, $phpbb_container;
 
@@ -66,6 +66,12 @@ function adm_page_header($page_title)
 		}
 	}
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
@@ -75,15 +81,20 @@ function adm_page_header($page_title)
 		'SESSION_ID'			=> $user->session_id,
 		'ROOT_PATH'				=> $phpbb_root_path,
 		'ADMIN_ROOT_PATH'		=> $phpbb_admin_path,
+		'PHPBB_VERSION'			=> PHPBB_VERSION,
+		'PHPBB_MAJOR'			=> $phpbb_major,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
 		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
 		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 
+		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention')) ? true : false,
+		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
+		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
+
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
@@ -104,6 +115,7 @@ function adm_page_header($page_title)
 		'ICON_SYNC'					=> '<i class="icon acp-icon acp-icon-resync fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
 		'ICON_SYNC_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
 
+		'S_USER_ID'				=> $user->data['user_id'],
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
@@ -148,8 +160,11 @@ function adm_page_header($page_title)
 function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth;
-	global $phpbb_root_path;
-	global $request, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpbb_container;
+	global $phpbb_dispatcher;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
@@ -171,7 +186,7 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	phpbb_check_and_display_sql_report($request, $auth, $db);
+	$controller_helper->display_sql_report();
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
@@ -707,6 +722,7 @@ function validate_range($value_ary, &$error)
 /**
 * Inserts new config display_vars into an exisiting display_vars array
 * at the given position.
+* Used by extensions.
 *
 * @param array $display_vars An array of existing config display vars
 * @param array $add_config_vars An array of new config display vars

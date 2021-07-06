@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\thumbnail;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -57,7 +58,7 @@ class recreate extends \phpbb\console\command\command
 		$input_delete = new ArrayInput($parameters);
 		$return = $this->getApplication()->run($input_delete, $output);
 
-		if ($return === 0)
+		if ($return === symfony_command::SUCCESS)
 		{
 			$parameters['command'] = 'thumbnail:generate';
 

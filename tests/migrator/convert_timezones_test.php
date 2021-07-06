@@ -13,7 +13,7 @@
 
 class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 {
-	protected $notifications, $db, $container, $user, $config, $auth, $cache;
+	protected $db;
 
 	public function getDataSet()
 	{
@@ -64,7 +64,8 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 			$factory->get($this->db),
 			$phpbb_root_path,
 			$phpEx,
-			'phpbb_'
+			'phpbb_',
+			self::get_core_tables()
 		);
 	}
 

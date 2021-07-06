@@ -222,17 +222,6 @@ class ucp_register
 
 			$template->assign_vars($template_vars);
 
-			/**
-			* Allows to modify the agreements.
-			*
-			* To assign data to the template, use $template->assign_vars()
-			*
-			* @event core.ucp_register_agreement
-			* @since 3.1.6-RC1
-			* @deprecated 3.2.2-RC1 Replaced by core.ucp_register_agreement_modify_template_data and to be removed in 3.3.0-RC1
-			*/
-			$phpbb_dispatcher->dispatch('core.ucp_register_agreement');
-
 			$this->tpl_name = $tpl_name;
 			return;
 		}

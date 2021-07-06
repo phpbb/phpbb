@@ -18,7 +18,7 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(__DIR__.'/fixtures/language_select.xml');
 	}
 
-	static public function language_select_data()
+	public static function language_select_data()
 	{
 		return array(
 			array('', '<option value="cs">Čeština</option><option value="en">English</option>'),

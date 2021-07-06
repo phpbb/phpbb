@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v30x;
 
 class local_url_bbcode extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_12_rc1');
 	}
@@ -46,7 +46,7 @@ class local_url_bbcode extends \phpbb\db\migration\migration
 			{
 				if (function_exists('phpbb_require_updated'))
 				{
-					phpbb_require_updated('includes/acp/acp_bbcodes.' . $this->php_ext);
+					phpbb_require_updated('includes/acp/acp_bbcodes.' . $this->php_ext, $this->phpbb_root_path);
 				}
 				else
 				{

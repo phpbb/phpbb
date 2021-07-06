@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../phpBB/includes/message_parser.php';
 
 class phpbb_text_processing_message_parser_test extends phpbb_test_case
 {
-	public static function setUpBeforeClass(): void
+	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 

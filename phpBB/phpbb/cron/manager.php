@@ -193,6 +193,6 @@ class manager
 	*/
 	public function wrap_task(\phpbb\cron\task\task $task)
 	{
-		return new wrapper($task, $this->routing_helper, $this->phpbb_root_path, $this->php_ext);
+		return new wrapper($task, $this->routing_helper);
 	}
 }

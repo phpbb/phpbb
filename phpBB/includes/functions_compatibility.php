@@ -87,7 +87,7 @@ function phpbb_check_hash($password, $hash)
 /**
 * Eliminates useless . and .. components from specified path.
 *
-* Deprecated, use filesystem class instead
+* Deprecated, use storage helper class instead
 *
 * @param string $path Path to clean
 * @return string Cleaned path
@@ -96,36 +96,7 @@ function phpbb_check_hash($password, $hash)
 */
 function phpbb_clean_path($path)
 {
-	global $phpbb_path_helper, $phpbb_container;
-
-	if (!$phpbb_path_helper && $phpbb_container)
-	{
-		/* @var $phpbb_path_helper \phpbb\path_helper */
-		$phpbb_path_helper = $phpbb_container->get('path_helper');
-	}
-	else if (!$phpbb_path_helper)
-	{
-		global $phpbb_root_path, $phpEx;
-
-		// The container is not yet loaded, use a new instance
-		if (!class_exists('\phpbb\path_helper'))
-		{
-			require($phpbb_root_path . 'phpbb/path_helper.' . $phpEx);
-		}
-
-		$request = new phpbb\request\request();
-		$phpbb_path_helper = new phpbb\path_helper(
-			new phpbb\symfony_request(
-				$request
-			),
-			new phpbb\filesystem\filesystem(),
-			$request,
-			$phpbb_root_path,
-			$phpEx
-		);
-	}
-
-	return $phpbb_path_helper->clean_path($path);
+	return \phpbb\filesystem\helper::clean_path($path);
 }
 
 /**
@@ -464,25 +435,21 @@ function phpbb_is_writable($file)
  * @param string $path Path to check absoluteness of
  * @return boolean
  *
- * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::is_absolute_path() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::is_absolute_path() instead
  */
 function phpbb_is_absolute($path)
 {
-	global $phpbb_filesystem;
-
-	return $phpbb_filesystem->is_absolute_path($path);
+	return \phpbb\filesystem\helper::is_absolute_path($path);
 }
 
 /**
  * A wrapper for realpath
  *
- * @deprecated 3.2.0-dev	use \phpbb\filesystem\filesystem::realpath() instead
+ * @deprecated 3.2.0-dev	use \phpbb\filesystem\helper::realpath() instead
  */
 function phpbb_realpath($path)
 {
-	global $phpbb_filesystem;
-
-	return $phpbb_filesystem->realpath($path);
+	return \phpbb\filesystem\helper::realpath($path);
 }
 
 /**
@@ -880,4 +847,124 @@ function phpbb_delete_user_pms($user_id)
 	}
 
 	return phpbb_delete_users_pms(array($user_id));
+}
+
+/**
+* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
+*
+* @param string $input		A numeric string.
+*
+* @return int|float			Integer $input if $input fits integer,
+*							float $input otherwise.
+*
+* @deprecated 3.2.10 (To be removed 4.0.0)
+*/
+function phpbb_to_numeric($input)
+{
+	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
+}
+
+/**
+* Check and display the SQL report if requested.
+*
+* @param \phpbb\request\request_interface		$request	Request object
+* @param \phpbb\auth\auth						$auth		Auth object
+* @param \phpbb\db\driver\driver_interface		$db			Database connection
+*
+* @deprecated 3.3.1 (To be removed: 4.0.0-a1); use controller helper's display_sql_report()
+*/
+function phpbb_check_and_display_sql_report(\phpbb\request\request_interface $request, \phpbb\auth\auth $auth, \phpbb\db\driver\driver_interface $db)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$controller_helper->display_sql_report();
+}
+
+/**
+ * Parse cfg file
+ * @param string $filename
+ * @param bool|array $lines
+ * @return array
+ *
+ * @deprecated 4.0.0-a1 (To be removed: 5.0.0)
+ */
+function parse_cfg_file($filename, $lines = false)
+{
+	$parsed_items = array();
+
+	if ($lines === false)
+	{
+		$lines = file($filename);
+	}
+
+	foreach ($lines as $line)
+	{
+		$line = trim($line);
+
+		if (!$line || $line[0] == '#' || ($delim_pos = strpos($line, '=')) === false)
+		{
+			continue;
+		}
+
+		// Determine first occurrence, since in values the equal sign is allowed
+		$key = htmlspecialchars(strtolower(trim(substr($line, 0, $delim_pos))), ENT_COMPAT);
+		$value = trim(substr($line, $delim_pos + 1));
+
+		if (in_array($value, array('off', 'false', '0')))
+		{
+			$value = false;
+		}
+		else if (in_array($value, array('on', 'true', '1')))
+		{
+			$value = true;
+		}
+		else if (!trim($value))
+		{
+			$value = '';
+		}
+		else if (($value[0] == "'" && $value[strlen($value) - 1] == "'") || ($value[0] == '"' && $value[strlen($value) - 1] == '"'))
+		{
+			$value = htmlspecialchars(substr($value, 1, strlen($value) - 2), ENT_COMPAT);
+		}
+		else
+		{
+			$value = htmlspecialchars($value, ENT_COMPAT);
+		}
+
+		$parsed_items[$key] = $value;
+	}
+
+	if (isset($parsed_items['parent']) && isset($parsed_items['name']) && $parsed_items['parent'] == $parsed_items['name'])
+	{
+		unset($parsed_items['parent']);
+	}
+
+	return $parsed_items;
+}
+
+/**
+* Wraps an url into a simple html page. Used to display attachments in IE.
+* this is a workaround for now; might be moved to template system later
+* direct any complaints to 1 Microsoft Way, Redmond
+*
+* @deprecated: 3.3.0-dev (To be removed: 4.0.0)
+*/
+function wrap_img_in_html($src, $title)
+{
+	echo '<!DOCTYPE html>';
+	echo '<html>';
+	echo '<head>';
+	echo '<meta charset="utf-8">';
+	echo '<meta http-equiv="X-UA-Compatible" content="IE=edge">';
+	echo '<title>' . $title . '</title>';
+	echo '</head>';
+	echo '<body>';
+	echo '<div>';
+	echo '<img src="' . $src . '" alt="' . $title . '" />';
+	echo '</div>';
+	echo '</body>';
+	echo '</html>';
 }

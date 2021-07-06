@@ -60,6 +60,7 @@ $lang = array_merge($lang, array(
 	'LANG_ENGLISH_NAME'					=> 'English name',
 	'LANG_ISO_CODE'						=> 'ISO code',
 	'LANG_LOCAL_NAME'					=> 'Local name',
+	'LANG_VERSION'						=> 'Language version',
 
 	'MISSING_LANG_FILES'		=> 'Missing language files',
 	'MISSING_LANG_VARIABLES'	=> 'Missing language variables',

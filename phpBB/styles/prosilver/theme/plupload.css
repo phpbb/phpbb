@@ -1,6 +1,10 @@
+/* -------------------------------------------------------------- /*
+	$Plupload
+/* -------------------------------------------------------------- */
+
 .attach-panel-multi {
 	display: none;
-	margin-bottom: 1em;
+	margin-bottom: 10px;
 }
 
 .attach-row-tpl {
@@ -20,8 +24,8 @@
 }
 
 .attach-comment .inputbox {
-	resize: vertical;
 	width: 100%;
+	resize: vertical;
 }
 
 .attach-filesize {
@@ -32,12 +36,12 @@
 	width: 5%;
 }
 
-.attach-filesize, .attach-status {
+.attach-filesize,
+.attach-status {
 	text-align: center;
 }
 
 .attach-controls {
-	display: inline-block;
 	float: right;
 }
 
@@ -46,45 +50,46 @@
 }
 
 .file-total-progress {
-	height: 2px;
-	display: block;
 	position: relative;
-	margin: 4px -10px -6px -10px;
+	display: block;
+	height: 2px;
+	margin: 4px -10px -6px;
 }
 
 .file-progress {
-	background-color: #CCCCCC;
-	display:inline-block;
-	height: 8px;
+	background-color: #cccccc;
+	display: inline-block;
 	width: 50px;
+	height: 8px;
 }
 
-.file-progress-bar, .file-total-progress-bar {
-	background-color: green;
+.file-progress-bar,
+.file-total-progress-bar {
+	background-color: #008000;
 	display: block;
-	height: 100%;
 	width: 0;
+	height: 100%;
 }
 
 .file-status.file-working {
-	background: url('./images/plupload/throbber.gif');
+	background: url("./images/plupload/throbber.gif");
 }
 
 .file-status.file-uploaded {
-	background: url('./images/plupload/done.gif');
+	background: url("./images/plupload/done.gif");
 }
 
 .file-status.file-error {
-	background: url('./images/plupload/error.gif');
+	background: url("./images/plupload/error.gif");
 }
 
 .file-status {
 	display: inline-block;
-	height: 16px;
 	width: 16px;
+	height: 16px;
 }
 
 .file-name {
-	max-width: 65%;
 	vertical-align: bottom;
+	max-width: 65%;
 }

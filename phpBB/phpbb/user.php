@@ -51,6 +51,8 @@ class user extends \phpbb\session
 	// Able to add new options (up to id 31)
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'sig_bbcode' => 15, 'sig_smilies' => 16, 'sig_links' => 17);
 
+	public $profile_fields;
+
 	/**
 	* Constructor to set the lang path
 	*
@@ -334,17 +336,13 @@ class user extends \phpbb\session
 
 		$this->img_lang = $this->lang_name;
 
-		// Call phpbb_user_session_handler() in case external application want to "bend" some variables or replace classes...
-		// After calling it we continue script execution...
-		phpbb_user_session_handler();
-
 		/**
 		* Execute code at the end of user setup
 		*
 		* @event core.user_setup_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.user_setup_after');
+		$phpbb_dispatcher->trigger_event('core.user_setup_after');
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))
@@ -672,7 +670,7 @@ class user extends \phpbb\session
 	*
 	* @since 3.1
 	* @param string $time String in a format accepted by strtotime().
-	* @param DateTimeZone $timezone Time zone of the time.
+	* @param DateTimeZone|null $timezone Time zone of the time.
 	* @return \phpbb\datetime Date time object linked to the current users locale
 	*/
 	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
@@ -686,7 +684,7 @@ class user extends \phpbb\session
 	*
 	* @param	string			$format		Format of the entered date/time
 	* @param	string			$time		Date/time with the timezone applied
-	* @param	DateTimeZone	$timezone	Timezone of the date/time, falls back to timezone of current user
+	* @param	DateTimeZone|null	$timezone	Timezone of the date/time, falls back to timezone of current user
 	* @return	int			Returns the unix timestamp
 	*/
 	public function get_timestamp_from_format($format, $time, \DateTimeZone $timezone = null)

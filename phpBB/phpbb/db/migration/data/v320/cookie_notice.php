@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v320;
 
 class cookie_notice extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v320\v320rc2',

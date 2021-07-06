@@ -154,7 +154,7 @@ class phpbb_test_case_helpers
 			extract($config_php_file->get_all());
 
 			$config = array_merge($config, array(
-				'dbms'		=> $config_php_file->convert_30_dbms_to_31($dbms),
+				'dbms'		=> \phpbb\config_php_file::convert_30_dbms_to_31($dbms),
 				'dbhost'	=> $dbhost,
 				'dbport'	=> $dbport,
 				'dbname'	=> $dbname,
@@ -196,7 +196,7 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_DBMS']))
 		{
 			$config = array_merge($config, array(
-				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? $config_php_file->convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
+				'dbms'		=> isset($_SERVER['PHPBB_TEST_DBMS']) ? \phpbb\config_php_file::convert_30_dbms_to_31($_SERVER['PHPBB_TEST_DBMS']) : '',
 				'dbhost'	=> isset($_SERVER['PHPBB_TEST_DBHOST']) ? $_SERVER['PHPBB_TEST_DBHOST'] : '',
 				'dbport'	=> isset($_SERVER['PHPBB_TEST_DBPORT']) ? $_SERVER['PHPBB_TEST_DBPORT'] : '',
 				'dbname'	=> isset($_SERVER['PHPBB_TEST_DBNAME']) ? $_SERVER['PHPBB_TEST_DBNAME'] : '',
@@ -455,7 +455,7 @@ class phpbb_test_case_helpers
 		$cache_key_renderer = $prefix . '_renderer';
 		$container->set('cache.driver', $cache);
 
-		if (!$container->isFrozen())
+		if (!$container->isCompiled())
 		{
 			$container->setParameter('cache.dir', $cache_dir);
 		}
@@ -579,6 +579,9 @@ class phpbb_test_case_helpers
 		}
 		$user->add_lang('common');
 
+		// Get an auth interface
+		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
+
 		// Create and register a quote_helper
 		$quote_helper = new \phpbb\textformatter\s9e\quote_helper(
 			$container->get('user'),
@@ -586,6 +589,16 @@ class phpbb_test_case_helpers
 			$phpEx
 		);
 		$container->set('text_formatter.s9e.quote_helper', $quote_helper);
+
+		// Create and register a mention_helper
+		$mention_helper = new \phpbb\textformatter\s9e\mention_helper(
+			($container->has('dbal.conn')) ? $container->get('dbal.conn') : $db_driver,
+			$auth,
+			$container->get('user'),
+			$phpbb_root_path,
+			$phpEx
+		);
+		$container->set('text_formatter.s9e.mention_helper', $mention_helper);
 
 		// Create and register the text_formatter.s9e.parser service and its alias
 		$parser = new \phpbb\textformatter\s9e\parser(
@@ -607,8 +620,8 @@ class phpbb_test_case_helpers
 		);
 
 		// Calls configured in services.yml
-		$auth = ($container->has('auth')) ? $container->get('auth') : new \phpbb\auth\auth;
 		$renderer->configure_quote_helper($quote_helper);
+		$renderer->configure_mention_helper($mention_helper);
 		$renderer->configure_smilies_path($config, $path_helper);
 		$renderer->configure_user($user, $config, $auth);
 

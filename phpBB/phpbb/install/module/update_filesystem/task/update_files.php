@@ -49,7 +49,7 @@ class update_files extends task_base
 	protected $factory;
 
 	/**
-	 * @var file_updater_interface
+	 * @var file_updater_interface|null
 	 */
 	protected $file_updater;
 
@@ -59,11 +59,6 @@ class update_files extends task_base
 	protected $update_helper;
 
 	/**
-	 * @var string
-	 */
-	protected $phpbb_root_path;
-
-	/**
 	 * Constructor
 	 *
 	 * @param container_factory		$container
@@ -71,15 +66,13 @@ class update_files extends task_base
 	 * @param iohandler_interface	$iohandler
 	 * @param factory				$file_updater_factory
 	 * @param update_helper			$update_helper
-	 * @param string				$phpbb_root_path
 	 */
-	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, factory $file_updater_factory, update_helper $update_helper, $phpbb_root_path)
+	public function __construct(container_factory $container, config $config, iohandler_interface $iohandler, factory $file_updater_factory, update_helper $update_helper)
 	{
 		$this->factory			= $file_updater_factory;
 		$this->installer_config	= $config;
 		$this->iohandler		= $iohandler;
 		$this->update_helper	= $update_helper;
-		$this->phpbb_root_path	= $phpbb_root_path;
 
 		$this->cache			= $container->get('cache.driver');
 		$this->file_updater		= null;
@@ -283,7 +276,7 @@ class update_files extends task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 0;
 	}

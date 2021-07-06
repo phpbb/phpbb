@@ -26,7 +26,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		// Need global $db, $user for delete_module function in acp_modules
 		global $phpbb_root_path, $phpEx, $skip_add_log, $db, $user, $phpbb_log;
 
-		parent::setup();
+		parent::setUp();
 
 		// Disable the logs
 		$skip_add_log = true;
@@ -48,7 +48,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$phpbb_extension_manager = new phpbb_mock_extension_manager($phpbb_root_path);
 		$module_manager = new \phpbb\module\module_manager($cache, $this->db, $phpbb_extension_manager, MODULES_TABLE, $phpbb_root_path, $phpEx);
 
-		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->cache, $this->user, $module_manager, $phpbb_root_path, $phpEx, 'phpbb_modules');
+		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->user, $module_manager, 'phpbb_modules');
 	}
 
 	public function exists_data_acp()

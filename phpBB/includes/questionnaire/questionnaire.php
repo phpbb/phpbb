@@ -258,7 +258,7 @@ class phpbb_questionnaire_phpbb_data_provider
 		extract($phpbb_config_php_file->get_all());
 		unset($dbhost, $dbport, $dbname, $dbuser, $dbpasswd); // Just a precaution
 
-		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
+		$dbms = \phpbb\config_php_file::convert_30_dbms_to_31($dbms);
 
 		// Only send certain config vars
 		$config_vars = array(
@@ -267,7 +267,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'allow_autologin' => true,
 			'allow_avatar' => true,
 			'allow_avatar_local' => true,
-			'allow_avatar_remote' => true,
 			'allow_avatar_upload' => true,
 			'allow_bbcode' => true,
 			'allow_birthdays' => true,
@@ -326,7 +325,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'cookie_secure' => true,
 			'coppa_enable' => true,
 			'database_gc' => true,
-			'dbms_version' => true,
 			'default_dateformat' => true,
 			'default_lang' => true,
 			'display_last_edited' => true,

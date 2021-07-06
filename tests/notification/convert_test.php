@@ -36,7 +36,8 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 			$factory->get($this->db),
 			$phpbb_root_path,
 			$phpEx,
-			'phpbb_'
+			'phpbb_',
+			self::get_core_tables()
 		);
 	}
 

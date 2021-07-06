@@ -101,7 +101,7 @@ class jabber
 	/**
 	* Able to use the SSL functionality?
 	*/
-	static public function can_use_ssl()
+	public static function can_use_ssl()
 	{
 		return @extension_loaded('openssl');
 	}
@@ -109,7 +109,7 @@ class jabber
 	/**
 	* Able to use TLS?
 	*/
-	static public function can_use_tls()
+	public static function can_use_tls()
 	{
 		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('stream_set_blocking') || !function_exists('stream_get_wrappers'))
 		{

@@ -904,10 +904,11 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container, $phpbb_dispatcher;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	// Notifications types to delete
 	$delete_notifications_types = array(
+		'notification.type.mention',
 		'notification.type.quote',
 		'notification.type.approve_post',
 		'notification.type.post_in_queue',
@@ -978,7 +979,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$approved_posts = 0;
-	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
+	$post_ids = $poster_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
 	$sql = 'SELECT post_id, poster_id, post_visibility, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
@@ -1086,19 +1087,21 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = $config['search_type'];
-
-	if (!class_exists($search_type))
+	try
 	{
-		trigger_error('NO_SUCH_SEARCH_MODULE');
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
 	}
-
-	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-	if ($error)
+	catch (RuntimeException $e)
 	{
-		trigger_error($error);
+		if (strpos($e->getMessage(), 'No service found') === 0)
+		{
+			trigger_error('NO_SUCH_SEARCH_MODULE');
+		}
+		else
+		{
+			throw $e;
+		}
 	}
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
@@ -1518,7 +1521,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_reported should be empty by now, if it's not it contains
 			// posts that are falsely flagged as reported
-			foreach ($post_reported as $post_id => $void)
+			foreach (array_keys($post_reported) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1623,7 +1626,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_attachment should be empty by now, if it's not it contains
 			// posts that are falsely flagged as having attachments
-			foreach ($post_attachment as $post_id => $void)
+			foreach (array_keys($post_attachment) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1696,7 +1699,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$where_sql";
 			$result = $db->sql_query($sql);
 
-			$forum_data = $forum_ids = $post_ids = $last_post_id = $post_info = array();
+			$forum_data = $forum_ids = $post_ids = $post_info = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['forum_type'] == FORUM_LINK)
@@ -2062,7 +2065,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			if (count($delete_topics))
 			{
 				$delete_topic_ids = array();
-				foreach ($delete_topics as $topic_id => $void)
+				foreach (array_keys($delete_topics) as $topic_id)
 				{
 					unset($topic_data[$topic_id]);
 					$delete_topic_ids[] = $topic_id;

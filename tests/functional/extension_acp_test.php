@@ -16,9 +16,9 @@
 */
 class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 {
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'./',
 	);
 
@@ -243,5 +243,27 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->logout();
 		$this->install_ext('vendor/moo');
 		$this->uninstall_ext('vendor/moo');
+	}
+
+	public function test_extensions_catalog()
+	{
+		// Access extensions catalog main page
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		$this->assertContainsLang('BROWSE_EXTENSIONS_DATABASE', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(0)->text());
+		$this->assertContainsLang('SETTINGS', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(1)->text());
+
+		$form = $crawler->selectButton('Submit')->form();
+		$form['minimum_stability']->select('dev');
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('div[class="successbox"] > p')->text());
+
+		// Revisit extensions catalog main page after configuration change
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		// Ensure catalog has any records in extensions list
+		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
 	}
 }

@@ -69,7 +69,7 @@ class email extends \phpbb\notification\method\messenger_base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param type_interface $notification_type  An optional instance of a notification type. If provided, this
+	* @param type_interface|null $notification_type  An optional instance of a notification type. If provided, this
 	*											method additionally checks if the type provides an email template.
 	* @return bool
 	*/
@@ -150,7 +150,7 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param array $data Notification data
 	 * @return array Cleaned notification data
 	 */
-	static public function clean_data(array $data)
+	public static function clean_data(array $data)
 	{
 		$row = [
 			'notification_type_id'	=> null,

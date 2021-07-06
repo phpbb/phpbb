@@ -39,9 +39,11 @@ class phpbb_functional_avatar_acp_users_test extends phpbb_functional_common_ava
 			// Remote avatar with correct link
 			array(
 				'USER_AVATAR_UPDATED',
-				'avatar_driver_upload',
+				'avatar_driver_gravatar',
 				array(
-					'avatar_upload_url'	=> 'https://secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
+					'avatar_gravatar_email'		=> 'test@example.com',
+					'avatar_gravatar_width'		=> 80,
+					'avatar_gravatar_height'	=> 80,
 				),
 			),
 			// Reset avatar settings

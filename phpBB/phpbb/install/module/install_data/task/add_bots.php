@@ -13,10 +13,21 @@
 
 namespace phpbb\install\module\install_data\task;
 
-use phpbb\install\exception\resource_limit_reached_exception;
+use Doctrine\DBAL\Driver\Statement as DriverStatement;
+use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Statement;
+use phpbb\install\database_task;
+use phpbb\install\helper\config;
+use phpbb\install\helper\container_factory;
+use phpbb\install\helper\database;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use phpbb\install\sequential_task;
+use phpbb\language\language;
 
-class add_bots extends \phpbb\install\task_base
+class add_bots extends database_task
 {
+	use sequential_task;
+
 	/**
 	 * A list of the web-crawlers/bots we recognise by default
 	 *
@@ -106,22 +117,17 @@ class add_bots extends \phpbb\install\task_base
 	);
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $db;
-
-	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $install_config;
 
 	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
+	 * @var iohandler_interface
 	 */
 	protected $io_handler;
 
 	/**
-	 * @var \phpbb\language\language
+	 * @var language
 	 */
 	protected $language;
 
@@ -136,30 +142,58 @@ class add_bots extends \phpbb\install\task_base
 	protected $php_ext;
 
 	/**
+	 * @var string
+	 */
+	protected $groups_table;
+
+	/**
+	 * @var string
+	 */
+	protected $bots_table;
+
+	/**
+	 * @var DriverStatement|Statement
+	 */
+	protected $stmt;
+
+	/**
+	 * @var int
+	 */
+	protected $group_id;
+
+	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\config							$install_config		Installer's config
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler			Input-output handler for the installer
-	 * @param \phpbb\install\helper\container_factory				$container			Installer's DI container
-	 * @param \phpbb\language\language								$language			Language provider
-	 * @param string												$phpbb_root_path	Relative path to phpBB root
-	 * @param string												$php_ext			PHP extension
+	 * @param config				$install_config		Installer's config
+	 * @param database				$db_helper			Database helper.
+	 * @param iohandler_interface	$iohandler			Input-output handler for the installer
+	 * @param container_factory		$container			Installer's DI container
+	 * @param language				$language			Language provider
+	 * @param string				$phpbb_root_path	Relative path to phpBB root
+	 * @param string				$php_ext			PHP extension
 	 */
-	public function __construct(\phpbb\install\helper\config $install_config,
-								\phpbb\install\helper\iohandler\iohandler_interface $iohandler,
-								\phpbb\install\helper\container_factory $container,
-								\phpbb\language\language $language,
-								$phpbb_root_path,
-								$php_ext)
+	public function __construct(config $install_config,
+								database $db_helper,
+								iohandler_interface $iohandler,
+								container_factory $container,
+								language $language,
+								string $phpbb_root_path,
+								string $php_ext)
 	{
-		parent::__construct(true);
-
-		$this->db				= $container->get('dbal.conn');
 		$this->install_config	= $install_config;
 		$this->io_handler		= $iohandler;
 		$this->language			= $language;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
+
+		$this->bots_table	= $container->get_parameter('tables.bots');
+		$this->groups_table	= $container->get_parameter('tables.groups');
+
+		parent::__construct(
+			self::get_doctrine_connection($db_helper, $install_config),
+			$this->io_handler,
+			true
+		);
 	}
 
 	/**
@@ -167,89 +201,84 @@ class add_bots extends \phpbb\install\task_base
 	 */
 	public function run()
 	{
-		$this->db->sql_return_on_error(true);
+		$this->group_id = $this->install_config->get('bots_group_id');
+		if ($this->group_id === false)
+		{
+			$sql = 'SELECT group_id FROM ' . $this->groups_table . " WHERE group_name = 'BOTS'";
+			$result = $this->query($sql);
 
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'BOTS'";
-		$result = $this->db->sql_query($sql);
-		$group_id = (int) $this->db->sql_fetchfield('group_id');
-		$this->db->sql_freeresult($result);
+			try
+			{
+				$this->group_id = (int) $result->fetchOne();
+				$result->free();
+			}
+			catch (Exception $e)
+			{
+				$this->group_id = 0;
+			}
 
-		if (!$group_id)
+			$this->install_config->set('bots_group_id', $this->group_id);
+		}
+
+		if (!$this->group_id)
 		{
 			// If we reach this point then something has gone very wrong
 			$this->io_handler->add_error_message('NO_GROUP');
 		}
 
-		$i = $this->install_config->get('add_bot_index', 0);
-		$bot_list = array_slice($this->bot_list, $i);
-
-		foreach ($bot_list as $bot_name => $bot_ary)
-		{
-			$user_row = array(
-				'user_type'				=> USER_IGNORE,
-				'group_id'				=> $group_id,
-				'username'				=> $bot_name,
-				'user_regdate'			=> time(),
-				'user_password'			=> '',
-				'user_colour'			=> '9E8DA7',
-				'user_email'			=> '',
-				'user_lang'				=> $this->install_config->get('default_lang'),
-				'user_style'			=> 1,
-				'user_timezone'			=> 'UTC',
-				'user_dateformat'		=> $this->language->lang('default_dateformat'),
-				'user_allow_massemail'	=> 0,
-				'user_allow_pm'			=> 0,
-			);
-
-			if (!function_exists('user_add'))
-			{
-				include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-			}
-
-			$user_id = user_add($user_row);
-
-			if (!$user_id)
-			{
-				// If we can't insert this user then continue to the next one to avoid inconsistent data
-				$this->io_handler->add_error_message('CONV_ERROR_INSERT_BOT');
-
-				$i++;
-				continue;
-			}
-
-			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
-				'bot_active'	=> 1,
-				'bot_name'		=> (string) $bot_name,
-				'user_id'		=> (int) $user_id,
-				'bot_agent'		=> (string) $bot_ary[0],
-				'bot_ip'		=> (string) $bot_ary[1],
-			));
-
-			$this->db->sql_query($sql);
-
-			$i++;
-
-			// Stop execution if resource limit is reached
-			if ($this->install_config->get_time_remaining() <= 0 || $this->install_config->get_memory_remaining() <= 0)
-			{
-				break;
-			}
-		}
-
-		$this->install_config->set('add_bot_index', $i);
-
-		if ($i < count($this->bot_list))
-		{
-			throw new resource_limit_reached_exception();
-		}
+		$sql = 'INSERT INTO ' . $this->bots_table . ' '
+			. '(bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES '
+			. '(:bot_active, :bot_name, :user_id, :bot_agent, :bot_ip)';
+		$this->stmt = $this->create_prepared_stmt($sql);
+		$this->execute($this->install_config, $this->bot_list);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	protected function execute_step($key, $value) : void
+	{
+		if (!function_exists('user_add'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+		}
+
+		$user_id = user_add([
+			'user_type'				=> USER_IGNORE,
+			'group_id'				=> $this->group_id,
+			'username'				=> $key,
+			'user_regdate'			=> time(),
+			'user_password'			=> '',
+			'user_colour'			=> '9E8DA7',
+			'user_email'			=> '',
+			'user_lang'				=> $this->install_config->get('default_lang'),
+			'user_style'			=> 1,
+			'user_timezone'			=> 'UTC',
+			'user_dateformat'		=> $this->language->lang('default_dateformat'),
+			'user_allow_massemail'	=> 0,
+			'user_allow_pm'			=> 0,
+		]);
+
+		if (!$user_id)
+		{
+			// If we can't insert this user then continue to the next one to avoid inconsistent data
+			$this->io_handler->add_error_message('CONV_ERROR_INSERT_BOT');
+			return;
+		}
+
+		$this->exec_prepared_stmt($this->stmt, [
+			'bot_active'	=> 1,
+			'bot_name'		=> (string) $key,
+			'user_id'		=> (int) $user_id,
+			'bot_agent'		=> (string) $value[0],
+			'bot_ip'		=> (string) $value[1],
+		]);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_step_count() : int
 	{
 		return 1;
 	}
@@ -257,7 +286,7 @@ class add_bots extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_task_lang_name()
+	public function get_task_lang_name() : string
 	{
 		return 'TASK_ADD_BOTS';
 	}

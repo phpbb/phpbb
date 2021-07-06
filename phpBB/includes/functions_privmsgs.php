@@ -455,7 +455,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	}
 	else
 	{
-		$user_rules = $zebra = $check_rows = array();
+		$zebra = $check_rows = array();
 		$user_ids = $memberships = array();
 
 		// First of all, grab all rules and retrieve friends/foes
@@ -551,7 +551,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		// It is allowed to execute actions more than once, except placing messages into folder
 		$folder_action = $message_removed = false;
 
-		foreach ($msg_ary as $pos => $rule_ary)
+		foreach ($msg_ary as $rule_ary)
 		{
 			if ($folder_action && $rule_ary['action'] == ACTION_PLACE_INTO_FOLDER)
 			{
@@ -1598,7 +1598,9 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $user, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $request;
+	global $db, $auth, $config, $user, $phpbb_container, $phpbb_dispatcher, $request;
+
+	$attachment_storage = $phpbb_container->get('storage.attachment');
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1825,7 +1827,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 		$space_taken = $files_added = 0;
 		$orphan_rows = array();
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
@@ -1848,7 +1850,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			$db->sql_freeresult($result);
 		}
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			if ($attach_row['is_orphan'] && !isset($orphan_rows[$attach_row['attach_id']]))
 			{
@@ -1867,7 +1869,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!$attachment_storage->exists(utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}

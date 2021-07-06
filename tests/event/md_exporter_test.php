@@ -126,7 +126,7 @@ class phpbb_event_md_exporter_test extends phpbb_test_case
 		);
 		foreach ($styles as $path => $filter)
 		{
-			$files = $exporter->get_recursive_file_list($phpbb_root_path . $path, $path);
+			$files = $exporter->get_recursive_file_list($phpbb_root_path . $path);
 			foreach ($files as $file)
 			{
 				$data_provider[] = array($filter, $path . $file);

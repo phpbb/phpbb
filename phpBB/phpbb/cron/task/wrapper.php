@@ -32,31 +32,17 @@ class wrapper
 	protected $task;
 
 	/**
-	 * @var string
-	 */
-	protected $phpbb_root_path;
-
-	/**
-	 * @var string
-	 */
-	protected $php_ext;
-
-	/**
 	* Constructor.
 	*
 	* Wraps a task $task, which must implement cron_task interface.
 	*
 	* @param task	$task				The cron task to wrap.
 	* @param helper	$routing_helper		Routing helper for route generation
-	* @param string	$phpbb_root_path	Relative path to phpBB root
-	* @param string	$php_ext			PHP file extension
 	*/
-	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext)
+	public function __construct(task $task, helper $routing_helper)
 	{
 		$this->task = $task;
 		$this->routing_helper = $routing_helper;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 	}
 
 	/**
@@ -96,6 +82,7 @@ class wrapper
 	*/
 	public function get_url()
 	{
+		$params = [];
 		$params['cron_type'] = $this->get_name();
 		if ($this->is_parametrized())
 		{

@@ -13,22 +13,25 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * Session class
 */
 class session
 {
-	var $cookie_data = array();
-	var $page = array();
-	var $data = array();
-	var $browser = '';
-	var $forwarded_for = '';
-	var $host = '';
-	var $session_id = '';
-	var $ip = '';
-	var $load = 0;
-	var $time_now = 0;
-	var $update_session_page = true;
+	public $cookie_data = array();
+	public $page = array();
+	public $data = array();
+	public $browser = '';
+	public $referer = '';
+	public $forwarded_for = '';
+	public $host = '';
+	public $session_id = '';
+	public $ip = '';
+	public $load = 0;
+	public $time_now = 0;
+	public $update_session_page = true;
 
 	/**
 	 * Extract current session page
@@ -38,7 +41,7 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request, $phpbb_filesystem;
+		global $request, $symfony_request;
 
 		$page_array = array();
 
@@ -65,7 +68,7 @@ class session
 		$find = array('"', "'", '<', '>', '&quot;', '&lt;', '&gt;');
 		$replace = array('%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E');
 
-		foreach ($args as $key => $argument)
+		foreach ($args as $argument)
 		{
 			if (strpos($argument, 'sid=') === 0)
 			{
@@ -85,7 +88,7 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name, ENT_COMPAT));
 
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = filesystem_helper::clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
@@ -99,8 +102,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
@@ -1051,7 +1054,7 @@ class session
 		* @event core.session_gc_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.session_gc_after');
+		$phpbb_dispatcher->trigger_event('core.session_gc_after');
 
 		return;
 	}
@@ -1326,8 +1329,6 @@ class session
 
 	/**
 	 * Check the current session for bans
-	 *
-	 * @return true if session user is banned.
 	 */
 	protected function check_ban_for_current_session($config)
 	{
@@ -1463,7 +1464,7 @@ class session
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$key = ($key === false) ? (($this->cookie_data['k']) ? $this->cookie_data['k'] : false) : $key;
 
-		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
+		$key_id = unique_id();
 
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),

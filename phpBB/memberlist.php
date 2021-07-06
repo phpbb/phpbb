@@ -81,7 +81,6 @@ switch ($mode)
 
 			login_box('', ((isset($user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)])) ? $user->lang['LOGIN_EXPLAIN_' . strtoupper($mode)] : $user->lang['LOGIN_EXPLAIN_MEMBERLIST']));
 		}
-	break;
 }
 
 /** @var \phpbb\group\helper $group_helper */
@@ -1291,8 +1290,6 @@ switch ($mode)
 				break;
 			}
 
-			$avatar_img = phpbb_get_group_avatar($group_row);
-
 			// ... same for group rank
 			$group_rank_data = array(
 				'title'		=> null,
@@ -1332,6 +1329,12 @@ switch ($mode)
 				'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g=$group_id"),
 			));
 
+			/** @var \phpbb\avatar\helper $avatar_helper */
+			$avatar_helper = $phpbb_container->get('avatar.helper');
+
+			$group_avatar = $avatar_helper->get_group_avatar($group_row);
+			$template->assign_vars($avatar_helper->get_template_vars($group_avatar));
+
 			$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 				'GROUP_NAME'	=> $group_helper->get_name($group_row['group_name']),
@@ -1339,7 +1342,6 @@ switch ($mode)
 				'GROUP_TYPE'	=> $user->lang['GROUP_IS_' . $group_row['l_group_type']],
 				'GROUP_RANK'	=> $group_rank_data['title'],
 
-				'AVATAR_IMG'	=> $avatar_img,
 				'RANK_IMG'		=> $group_rank_data['img'],
 				'RANK_IMG_SRC'	=> $group_rank_data['img_src'],
 

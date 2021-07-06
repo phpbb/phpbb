@@ -320,7 +320,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 * Generates a text with approx. the specified length which contains the specified words and their context
 *
 * @param	string	$text	The full text from which context shall be extracted
-* @param	string	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
+* @param	array	$words	An array of words which should be contained in the result, has to be a valid part of a PCRE pattern (escape with preg_quote!)
 * @param	int		$length	The desired length of the resulting text, however the result might be shorter or longer than this value
 *
 * @return	string			Context of the specified words separated by "..."
@@ -845,7 +845,6 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			$relative_url	= substr($relative_url, 0, $split);
 		}
 	}
-
 	// if the last character of the url is a punctuation mark, exclude it from the url
 	$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
 
@@ -1121,6 +1120,12 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 	global $template, $cache, $user, $phpbb_dispatcher;
 	global $extensions, $config, $phpbb_root_path, $phpEx;
+	global $phpbb_container;
+
+	$storage_attachment = $phpbb_container->get('storage.attachment');
+
+	/** @var \phpbb\controller\helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	//
 	$compiled_attachments = array();
@@ -1198,7 +1203,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$filename = utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 		$download_link = '';
@@ -1256,16 +1261,15 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							$dimension = @getimagesize($filename);
+							try
+							{
+								$file_info = $storage_attachment->file_info($filename);
 
-							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
-							if ($dimension === false || empty($dimension[0]) || empty($dimension[1]))
+								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
+							}
+							catch (\Exception $e)
 							{
 								$display_cat = ATTACHMENT_CATEGORY_NONE;
-							}
-							else
-							{
-								$display_cat = ($dimension[0] <= $config['img_link_width'] && $dimension[1] <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
 							}
 						}
 					}
@@ -1282,15 +1286,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
+			$download_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
 			$l_downloaded_viewed = 'VIEWED_COUNTS';
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$inline_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
-					$download_link .= '&amp;mode=view';
+					$inline_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -1302,8 +1305,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$thumbnail_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
-					$download_link .= '&amp;mode=view';
+					$thumbnail_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id'], 't' => 1]);
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
@@ -1377,7 +1379,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 	preg_match_all('#<!\-\- ia([0-9]+) \-\->(.*?)<!\-\- ia\1 \-\->#', $message, $matches, PREG_PATTERN_ORDER);
 
 	$replace = array();
-	foreach ($matches[0] as $num => $capture)
+	foreach (array_keys($matches[0]) as $num)
 	{
 		$index = $matches[1][$num];
 

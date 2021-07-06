@@ -1,0 +1,7 @@
+{% apply spaceless %}
+	<svg class="o-icon o-icon-svg svg-{{ ICON ~ (CLASSES ? ' ' ~ CLASSES) }}" xmlns="http://www.w3.org/2000/svg" viewBox="{{ VIEW_BOX }}"{% if TITLE %}{% if S_HIDDEN %} aria-hidden="true"{% endif %} aria-labelledby="{{ TITLE_ID }}"{% endif %} role="img"{{ ATTRIBUTES }}>
+		{% if TITLE %}<title id="{{ TITLE_ID }}">{{ TITLE }}</title>{% endif %}
+
+		{{ SOURCE }}
+	</svg>
+{% endapply %}

@@ -2,11 +2,11 @@
 
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
-<h2>{TITLE}</h2>
+<h2 class="cp-title">{TITLE}</h2>
 <div class="panel">
 	<div class="inner">
 
-		<p>{TITLE_EXPLAIN}</p>
+		<p class="cp-desc">{TITLE_EXPLAIN}</p>
 
 		<!-- IF MODE == 'notification_options' -->
 			<table class="table1">
@@ -52,7 +52,7 @@
 					</div>
 				</div>
 
-			<div class="notification_list">
+			<div class="notification-list">
 				<ul class="topiclist two-columns">
 					<li class="header">
 						<dl>
@@ -66,15 +66,15 @@
 						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF --><!-- IF notification_list.STYLING --> {notification_list.STYLING}<!-- ENDIF -->">
 							<dl>
 								<dt>
-									<div class="list-inner">
-										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF -->
-										<div class="notifications">
+									<div class="list-inner notification-item">
+										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR_HTML}<!-- ELSE --><img class="avatar notification-avatar" src="{{ NO_AVATAR_SOURCE }}" alt="" /><!-- ENDIF -->
+										<div class="notification-text">
 											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
-											<p class="notifications_title">{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF --></p>
+												<p class="notification-title">{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF --></p>
 											<!-- IF notification_list.URL --></a><!-- ENDIF -->
-											<!-- IF notification_list.FORUM --><p class="notifications_forum">{notification_list.FORUM}</p><!-- ENDIF -->
-											<!-- IF notification_list.REASON --><p class="notifications_reason">{notification_list.REASON}</p><!-- ENDIF -->
-											<p class="notifications_time">{notification_list.TIME}</p>
+											<!-- IF notification_list.FORUM --><p class="notifications-forum">{notification_list.FORUM}</p><!-- ENDIF -->
+											<!-- IF notification_list.REASON --><p class="notifications-reason">{notification_list.REASON}</p><!-- ENDIF -->
+											<p class="notifications-time">{notification_list.TIME}</p>
 										</div>
 									</div>
 								</dt>
@@ -109,7 +109,7 @@
 <fieldset class="display-actions">
 	<input type="hidden" name="form_time" value="{FORM_TIME}" />
 	{S_HIDDEN_FIELDS}
-	<input type="submit" name="submit" value="<!-- IF MODE == 'notification_options' -->{L_SUBMIT}<!-- ELSE -->{L_MARK_READ}<!-- ENDIF -->" class="button1" />
+	<input type="submit" name="submit" value="<!-- IF MODE == 'notification_options' -->{L_SUBMIT}<!-- ELSE -->{L_MARK_READ}<!-- ENDIF -->" class="button1 button button-form" />
 	<div><a href="#" onclick="$('#ucp input:checkbox').prop('checked', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').prop('checked', false); return false;">{L_UNMARK_ALL}</a></div>
 	{S_FORM_TOKEN}
 </fieldset>

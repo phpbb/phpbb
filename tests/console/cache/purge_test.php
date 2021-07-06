@@ -24,6 +24,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	protected $command_name;
 	protected $db;
 	protected $config;
+	protected $user;
 
 	protected function setUp(): void
 	{
@@ -44,10 +45,8 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));
-		$this->user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime')
-		);
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 	}
 
 	public function test_purge()

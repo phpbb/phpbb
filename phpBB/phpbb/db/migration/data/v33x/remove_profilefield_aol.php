@@ -20,7 +20,7 @@ class remove_profilefield_aol extends \phpbb\db\migration\migration
 		return !$this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_phpbb_aol');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v33x\v331',

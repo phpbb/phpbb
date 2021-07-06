@@ -308,12 +308,6 @@ class twig extends \phpbb\template\base
 	*/
 	public function display($handle)
 	{
-		$result = $this->call_hook($handle, __FUNCTION__);
-		if ($result !== false)
-		{
-			return $result[0];
-		}
-
 		$this->twig->display($this->get_filename_from_handle($handle), $this->get_template_vars());
 
 		return $this;

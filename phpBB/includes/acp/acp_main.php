@@ -484,7 +484,7 @@ class acp_main
 		* @event core.acp_main_notice
 		* @since 3.1.0-RC3
 		*/
-		$phpbb_dispatcher->dispatch('core.acp_main_notice');
+		$phpbb_dispatcher->trigger_event('core.acp_main_notice');
 
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
@@ -503,26 +503,8 @@ class acp_main
 
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
 
-		$avatar_dir_size = 0;
-
-		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
-		{
-			while (($file = readdir($avatar_dir)) !== false)
-			{
-				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
-				{
-					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
-				}
-			}
-			closedir($avatar_dir);
-
-			$avatar_dir_size = get_formatted_filesize($avatar_dir_size);
-		}
-		else
-		{
-			// Couldn't open Avatar dir.
-			$avatar_dir_size = $user->lang['NOT_AVAILABLE'];
-		}
+		$storage_avatar = $phpbb_container->get('storage.avatar');
+		$avatar_dir_size = get_formatted_filesize($storage_avatar->get_size());
 
 		if ($posts_per_day > $total_posts)
 		{
@@ -658,17 +640,30 @@ class acp_main
 		}
 
 		// Warn if install is still present
-		if (!defined('IN_INSTALL') && !$phpbb_container->getParameter('allow_install_dir') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
+		if (!$phpbb_container->getParameter('allow_install_dir') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
 		// Warn if no search index is created
-		if ($config['num_posts'] && class_exists($config['search_type']))
+		if ($config['num_posts'])
 		{
-			$error = false;
-			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			try
+			{
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (RuntimeException $e)
+			{
+				if (strpos($e->getMessage(), 'No service found') === 0)
+				{
+					trigger_error('NO_SUCH_SEARCH_MODULE');
+				}
+				else
+				{
+					throw $e;
+				}
+			}
 
 			if (!$search->index_created())
 			{
@@ -706,12 +701,6 @@ class acp_main
 				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !empty($http_output),
 				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && strtolower($default_charset) !== 'utf-8',
 			]);
-		}
-
-		// Fill dbms version if not yet filled
-		if (empty($config['dbms_version']))
-		{
-			$config->set('dbms_version', $db->sql_server_info(true));
 		}
 
 		$this->tpl_name = 'acp_main';

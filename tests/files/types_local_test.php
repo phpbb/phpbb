@@ -13,8 +13,7 @@
 
 class phpbb_files_types_local_test extends phpbb_test_case
 {
-	private $path;
-
+	/** @var \phpbb\filesystem\filesystem */
 	private $filesystem;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
@@ -51,7 +50,7 @@ class phpbb_files_types_local_test extends phpbb_test_case
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 
-		$this->container = new phpbb_mock_container_builder($phpbb_root_path, $phpEx);
+		$this->container = new phpbb_mock_container_builder();
 		$this->container->set('files.filespec', new \phpbb\files\filespec(
 			$this->filesystem,
 			$this->language,
@@ -69,7 +68,6 @@ class phpbb_files_types_local_test extends phpbb_test_case
 			->method('handle_upload')
 			->willReturn(array());
 
-		$this->path = __DIR__ . '/fixture/';
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -154,7 +152,7 @@ class phpbb_files_types_local_test extends phpbb_test_case
 		$this->factory = new \phpbb\files\factory($this->container);
 
 		$type_local = new \phpbb\files\types\local($this->factory, $this->language, $this->php_ini, $this->request);
-		$upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
+		$upload = new \phpbb\files\upload($this->factory, $this->language, $this->php_ini, $this->request);
 		$upload->set_allowed_extensions(array('png'));
 		$type_local->set_upload($upload);
 

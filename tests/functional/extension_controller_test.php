@@ -18,9 +18,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'foo/bar/config/',
 		'foo/bar/controller/',
 		'foo/bar/event/',
@@ -107,7 +107,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
-		$this->assertStringContainsString('Missing value for argument #1: test in class foo\bar\controller\controller:baz', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz()" requires that you provide a value for the "$test" argument', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 

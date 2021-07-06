@@ -1,96 +1,137 @@
-/* --------------------------------------------------------------
+/* -------------------------------------------------------------- /*
 	$Icons
--------------------------------------------------------------- */
+/* -------------------------------------------------------------- */
 
 /* Global module setup
---------------------------------*/
+---------------------------------------- */
 
-/* Renamed version of .fa class for agnostic usage of icon fonts.
- * Just change the name of the font after the 14/1 to the name of
- * the font you wish to use.
- */
-.icon, .button .icon, blockquote cite:before, .uncited:before {
+/* Globaly fix svg colors */
+svg {
+	fill: currentColor;
+}
+
+.o-icon {
+	vertical-align: middle !important;
+	width: 14px;
+	height: 14px;
+	margin-top: -4px;
+}
+
+.o-icon-src-mdi,
+.o-icon-src-ic {
+	width: 18px;
+	height: 18px;
+}
+
+.o-icon-src-fa {
+	padding: 2px;
+}
+
+.o-icon-font {
+	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+	font-size: 14px;
+	font-weight: normal;
+	font-style: normal;
+	font-variant: normal;
+	-webkit-font-smoothing: antialiased;
+	line-height: 1;
+	vertical-align: baseline;
 	display: inline-block;
-  	font-family: FontAwesome;
-  	font-weight: normal;
-  	font-style: normal;
-  	font-variant: normal;
-  	font-size: 14px;
-  	line-height: 1;
-  	text-rendering: auto; /* optimizelegibility throws things off #1094 */
-  	-webkit-font-smoothing: antialiased;
-  	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-disable order/properties-order */
+	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-enable order/properties-order */
+	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
-.icon:before { padding-right: 2px; }
-
-.button .icon:before {
-	padding-right: 0;
+.o-icon + span,
+span + .o-icon {
+	padding-left: 4px;
 }
 
-/* Icon size classes - Default size is 14px, use these for small variations */
-
-.icon.icon-xl {
-	font-size: 20px;
+blockquote cite:before,
+.uncited:before {
+	font-size: 36px;
+	vertical-align: bottom;
+	display: inline-block;
+	margin-top: 8px;
+	margin-bottom: -8px;
+	content: "\201C";
 }
 
-.icon.icon-lg {
-	font-size: 16px;
+.rtl blockquote cite:before,
+.rtl .uncited:before {
+	content: "\201D";
 }
 
-.icon.icon-md {
-	font-size: 10px;
+.c-forum-row-icon,
+.c-notification-check-icon {
+	width: 20px;
+	height: 20px;
+	margin-top: 0;
 }
 
-.icon.icon-sm {
-	font-size: 8px;
+.row-item-link {
+	border-radius: 50%;
+	position: absolute;
+	top: 50%;
+	left: 0;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 32px;
+	height: 32px;
+	margin-top: -17px;
+	margin-left: 9px;
 }
 
-/* icon modifiers */
-.icon-tiny {
-	width: 12px;
-	transform: scale(0.65, 0.75);
-	vertical-align: text-bottom;
-	font-size: 16px;
-}
-
-.arrow-left .icon {
+.row-item-link-mine {
+	background-color: #b353c6;
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	position: absolute;
+	z-index: 101;
+	top: 50%;
+	left: 32px;
+	display: block;
 	float: left;
+	width: 8px;
+	height: 8px;
+	margin-top: -17px;
 }
 
-.arrow-left:hover .icon {
-	margin-left: -5px;
-	margin-right: 5px;
+.row-item-sub {
+	position: absolute;
+	z-index: 101;
+	bottom: 3px;
+	left: 4px;
+	display: block;
+	float: left;
+	width: 16px;
+	height: 16px;
 }
 
-.arrow-right .icon {
-	float: right;
+.alert_close .o-icon {
+	width: 18px;
+	height: 18px;
 }
 
-.arrow-right:hover .icon {
-	margin-left: 5px;
-	margin-right: -5px;
+/* Contact icons
+---------------------------------------- */
+.contact-icon {
+	background-repeat: no-repeat;
+	display: block;
+	width: 24px;
+	height: 24px;
 }
 
-.post-buttons .dropdown-contents .icon {
-    float: right;
-    margin-left: 5px;
+.c-button-icon {
+	margin-top: 0;
 }
 
-.alert_close .icon:before {
-	padding: 0;
-    border-radius: 50%;
-    width: 11px;
-    display: block;
-    line-height: .9;
-    height: 12px;
+.c-subscribe-icon {
+	display: none !important;
 }
 
-blockquote cite:before, .uncited:before {
-	content: '\f10d'; /* Font Awesome quote-left */
+.c-subscribe-icon.is-active {
+	display: inline !important;
 }
-
-.rtl blockquote cite:before, .rtl .uncited:before {
-	content: '\f10e'; /* Font Awesome quote-right */
-}
-

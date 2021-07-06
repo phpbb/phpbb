@@ -11,13 +11,13 @@
 
 	<div>
 		<div class="column1">
-			<!-- IF AVATAR_IMG --><div>{AVATAR_IMG}</div><!-- ENDIF -->
+			<!-- IF AVATAR_HTML --><div>{AVATAR_HTML}</div><!-- ENDIF -->
 		</div>
 
 		<div class="column2">
 			<dl class="details">
 				<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-				<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}{L_COLON}<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+				{% if RANK_IMG %}<dt>{% if RANK_TITLE %}&nbsp;{% else %}{{ lang('RANK') ~ lang('COLON') }}{% endif %}</dt><dd class="rank-img">{{ RANK_IMG }}</dd>{% endif %}
 				<dt>{L_JOINED}{L_COLON}</dt><dd>{JOINED}</dd>
 				<dt>{L_TOTAL_POSTS}{L_COLON}</dt><dd>{POSTS}</dd>
 				<dt>{L_WARNINGS}{L_COLON} </dt><dd>{WARNINGS}</dd>
@@ -43,7 +43,7 @@
 
 <fieldset class="submit-buttons">
 	{S_HIDDEN_FIELDS}
-	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1" />
+	<input type="submit" name="action[add_feedback]" value="{L_SUBMIT}" class="button1 button button-form" />
 	{S_FORM_TOKEN}
 </fieldset>
 
@@ -51,7 +51,7 @@
 	<div class="inner">
 
 	<div class="action-bar bar-top">
-		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button1 button button-form-bold" name="filter" value="{L_SEARCH}" />
 		<div class="pagination">
 			{TOTAL_REPORTS}
 			<!-- IF .pagination -->
@@ -108,8 +108,8 @@
 
 <!-- IF S_CLEAR_ALLOWED -->
 <fieldset class="display-actions">
-	<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
-	&nbsp;<input class="button1" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+	<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
+	&nbsp;<input class="button1 button button-form" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
 </fieldset>
 
 <fieldset class="display-actions">

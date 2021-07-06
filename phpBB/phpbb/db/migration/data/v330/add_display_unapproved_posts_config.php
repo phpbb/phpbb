@@ -20,7 +20,7 @@ class add_display_unapproved_posts_config extends \phpbb\db\migration\migration
 		return $this->config->offsetExists('display_unapproved_posts');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return ['\phpbb\db\migration\data\v330\dev',];
 	}

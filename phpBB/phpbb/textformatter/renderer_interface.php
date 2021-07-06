@@ -89,4 +89,12 @@ interface renderer_interface
 	* @return null
 	*/
 	public function set_viewsmilies($value);
+
+	/**
+	* Set the "usemention" option
+	*
+	* @param  bool $value Option's value
+	* @return null
+	*/
+	public function set_usemention($value);
 }

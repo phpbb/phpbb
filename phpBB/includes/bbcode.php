@@ -33,6 +33,8 @@ class bbcode
 
 	var $template_bitfield;
 
+	protected $template_filename;
+
 	/**
 	* Constructor
 	*/
@@ -149,7 +151,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container;
 
 		if (empty($this->template_filename))
 		{
@@ -165,9 +167,7 @@ class bbcode
 					$phpbb_container->get('path_helper'),
 					$phpbb_container->getParameter('core.cache_dir'),
 					$phpbb_container->get('ext.manager'),
-					new \phpbb\template\twig\loader(
-						$phpbb_filesystem
-					)
+					new \phpbb\template\twig\loader()
 				),
 				$phpbb_container->getParameter('core.cache_dir'),
 				$phpbb_container->get('user'),

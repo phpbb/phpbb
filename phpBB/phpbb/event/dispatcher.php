@@ -14,7 +14,6 @@
 namespace phpbb\event;
 
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
 * Extension of the Symfony EventDispatcher
@@ -43,26 +42,24 @@ class dispatcher extends EventDispatcher implements dispatcher_interface
 	public function trigger_event($eventName, $data = [])
 	{
 		$event = new \phpbb\event\data($data);
-		$this->dispatch($eventName, $event);
+		foreach ((array) $eventName as $name)
+		{
+			$this->dispatch($event, $name);
+		}
 		return $event->get_data_filtered(array_keys($data));
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function dispatch($eventName, Event $event = null)
+	public function dispatch(object $event, string $eventName = null) : object
 	{
 		if ($this->disabled)
 		{
 			return $event;
 		}
 
-		foreach ((array) $eventName as $name)
-		{
-			$event = parent::dispatch($name, $event);
-		}
-
-		return $event;
+		return parent::dispatch($event, $eventName);
 	}
 
 	/**

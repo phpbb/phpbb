@@ -25,8 +25,6 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 	*/
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$db = $this->createMock('phpbb\\db\\driver\\driver');
 
 		$user = $this->createMock('\phpbb\user');

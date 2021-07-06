@@ -14,6 +14,7 @@
 namespace phpbb\console\command\cron;
 
 use phpbb\exception\runtime_exception;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -90,7 +91,8 @@ class run extends \phpbb\console\command\command
 			}
 
 			$this->lock_db->release();
-			return $exit_status;
+
+			return !$exit_status ? symfony_command::SUCCESS : symfony_command::FAILURE;
 		}
 		else
 		{

@@ -13,6 +13,10 @@
 
 namespace phpbb\cache;
 
+use phpbb\cache\driver\driver_interface;
+use phpbb\config\config;
+use phpbb\json\sanitizer as json_sanitizer;
+
 /**
 * Class for grabbing/handling cached entries
 */
@@ -21,14 +25,14 @@ class service
 	/**
 	* Cache driver.
 	*
-	* @var \phpbb\cache\driver\driver_interface
+	* @var driver_interface
 	*/
 	protected $driver;
 
 	/**
 	* The config.
 	*
-	* @var \phpbb\config\config
+	* @var config
 	*/
 	protected $config;
 
@@ -56,13 +60,13 @@ class service
 	/**
 	* Creates a cache service around a cache driver
 	*
-	* @param \phpbb\cache\driver\driver_interface $driver The cache driver
-	* @param \phpbb\config\config $config The config
+	* @param driver_interface $driver The cache driver
+	* @param config $config The config
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(\phpbb\cache\driver\driver_interface $driver, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext)
+	public function __construct(driver_interface $driver, config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
 		$this->config = $config;
@@ -74,7 +78,7 @@ class service
 	/**
 	* Returns the cache driver used by this cache service.
 	*
-	* @return \phpbb\cache\driver\driver_interface The cache driver
+	* @return driver_interface The cache driver
 	*/
 	public function get_driver()
 	{
@@ -84,9 +88,9 @@ class service
 	/**
 	* Replaces the cache driver used by this cache service.
 	*
-	* @param \phpbb\cache\driver\driver_interface $driver The cache driver
+	* @param driver_interface $driver The cache driver
 	*/
-	public function set_driver(\phpbb\cache\driver\driver_interface $driver)
+	public function set_driver(driver_interface $driver)
 	{
 		$this->driver = $driver;
 	}
@@ -214,7 +218,6 @@ class service
 
 				$extensions[$extension] = array(
 					'display_cat'	=> (int) $row['cat_id'],
-					'download_mode'	=> (int) $row['download_mode'],
 					'upload_icon'	=> trim($row['upload_icon']),
 					'max_filesize'	=> (int) $row['max_filesize'],
 					'allow_group'	=> $row['allow_group'],
@@ -345,7 +348,7 @@ class service
 			$parsed_array = array();
 		}
 
-		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/style.cfg';
+		$filename = $this->phpbb_root_path . 'styles/' . $style['style_path'] . '/composer.json';
 
 		if (!file_exists($filename))
 		{
@@ -355,7 +358,8 @@ class service
 		if (!isset($parsed_array['filetime']) || (($this->config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
 		{
 			// Re-parse cfg file
-			$parsed_array = parse_cfg_file($filename);
+			$json = file_get_contents($filename);
+			$parsed_array = json_sanitizer::decode($json);
 			$parsed_array['filetime'] = @filemtime($filename);
 
 			$this->driver->put('_cfg_' . $style['style_path'], $parsed_array);

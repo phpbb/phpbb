@@ -22,7 +22,6 @@ class get_callable_from_step_test extends phpbb_database_test_case
 		$phpbb_log = $this->getMockBuilder('\phpbb\log\log')->disableOriginalConstructor()->getMock();
 		$db = $this->new_dbal();
 		$factory = new \phpbb\db\tools\factory();
-		$cache_service = $this->getMockBuilder('\phpbb\cache\service')->disableOriginalConstructor()->getMock();
 		$user = $this->getMockBuilder('\phpbb\user')->disableOriginalConstructor()->getMock();
 		$user->ip = '127.0.0.1';
 		$module_manager = new \phpbb\module\module_manager(
@@ -33,7 +32,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 			$phpbb_root_path,
 			$php_ext
 		);
-		$module_tools = new \phpbb\db\migration\tool\module($db, $cache_service, $user, $module_manager, $phpbb_root_path, $php_ext, 'phpbb_modules');
+		$module_tools = new \phpbb\db\migration\tool\module($db, $user, $module_manager, 'phpbb_modules');
 		$this->migrator = new \phpbb\db\migrator(
 			new phpbb_mock_container_builder(),
 			new \phpbb\config\config(array()),
@@ -43,6 +42,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 			$phpbb_root_path,
 			$php_ext,
 			$table_prefix,
+			self::get_core_tables(),
 			array($module_tools),
 			new \phpbb\db\migration\helper()
 		);

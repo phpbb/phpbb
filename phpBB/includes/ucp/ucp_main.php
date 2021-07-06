@@ -262,7 +262,7 @@ class ucp_main
 				 * @event core.ucp_main_subscribed_post_data
 				 * @since 3.1.10-RC1
 				 */
-				$phpbb_dispatcher->dispatch('core.ucp_main_subscribed_post_data');
+				$phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_post_data');
 
 				if ($unwatch)
 				{
@@ -962,7 +962,7 @@ class ucp_main
 				'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 				'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
+				'S_DELETED_TOPIC'	=> !$row['topic_id'],
 
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
@@ -977,9 +977,14 @@ class ucp_main
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+				'S_POST_ANNOUNCE'		=> $row['topic_type'] == POST_ANNOUNCE,
+				'S_POST_GLOBAL'			=> $row['topic_type'] == POST_GLOBAL,
+				'S_POST_STICKY'			=> $row['topic_type'] == POST_STICKY,
+				'S_TOPIC_LOCKED'		=> $row['topic_status'] == ITEM_LOCKED,
+				'S_TOPIC_MOVED'			=> $row['topic_status'] == ITEM_MOVED,
 
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
-				'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
+				'S_USER_POSTED'			=> !empty($row['topic_posted']),
 				'S_UNREAD_TOPIC'		=> $unread_topic,
 
 				'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread',

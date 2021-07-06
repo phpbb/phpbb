@@ -11,6 +11,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%core.table_prefix%'
+            - '%tables%'
             - '@migrator.tool_collection'
             - '@migrator.helper'
 
@@ -43,11 +44,8 @@ services:
         class: phpbb\db\migration\tool\module
         arguments:
             - '@dbal.conn'
-            - '@cache'
             - '@user'
             - '@module.manager'
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '%tables.modules%'
         tags:
             - { name: migrator.tool }

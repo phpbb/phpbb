@@ -85,7 +85,7 @@ abstract class base implements provider_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function login_link_has_necessary_data($login_link_data)
+	public function login_link_has_necessary_data(array $login_link_data)
 	{
 		return;
 	}
