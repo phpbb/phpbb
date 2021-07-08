@@ -37,6 +37,9 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->assertContainsLang('PREFERENCES_UPDATED', $crawler->filter('#message')->text());
 	}
 
+	/**
+	 * @depends test_submitting_preferences_view
+	 */
 	public function test_submitting_invalid_preferences_view()
 	{
 		$this->add_lang('ucp');
@@ -66,6 +69,9 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->assertContainsLang('WRONG_DATA_TOPIC_SK', $crawler->filter('#cp-main')->text());
 	}
 
+	/**
+	 * @depends test_submitting_invalid_preferences_view
+	 */
 	public function test_read_preferences_view()
 	{
 		$this->add_lang('ucp');
@@ -81,5 +87,29 @@ class phpbb_functional_ucp_preferences_test extends phpbb_functional_test_case
 		$this->assertEquals('a', $form->get('post_sk')->getValue());
 		$this->assertEquals('a', $form->get('post_sd')->getValue());
 		$this->assertEquals('1', $form->get('post_st')->getValue());
+	}
+
+	/**
+	 * @depends test_read_preferences_view
+	 */
+	public function test_reset_preferences_default()
+	{
+		$this->add_lang('ucp');
+		$this->login();
+
+		$crawler = self::request('GET', 'ucp.php?i=ucp_prefs&mode=view');
+		$this->assertContainsLang('UCP_PREFS_VIEW', $crawler->filter('#cp-main h2')->text());
+
+		$form = $crawler->selectButton('Submit')->form(array(
+			'topic_sk'	=> 't',
+			'topic_sd'	=> 'd',
+			'topic_st'	=> '0',
+			'post_sk'	=> 't',
+			'post_sd'	=> 'a',
+			'post_st'	=> '0',
+		));
+
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PREFERENCES_UPDATED', $crawler->filter('#message')->text());
 	}
 }
