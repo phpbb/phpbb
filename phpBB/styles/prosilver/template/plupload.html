@@ -71,5 +71,26 @@ phpbb.plupload = {
 	data: {S_ATTACH_DATA},
 }
 </script>
+<script>
+"use strict";  /*jshint -W097 */ /* not concatenating any other modules so the scope is ok => ignore lint warning */
+// Returns a promise that resolves to true if the browser automatically rotates images
+// based on exif data and false otherwise
+var browserRotates = false;  //global and default
+
+var myPromise = new Promise(function(resolve, reject) {
+	// load an image with exif rotation and see if the browser rotates it
+	const image = new Image();
+	image.onload = () => {
+    	resolve(image.naturalWidth === 1);
+	};
+	image.onerror = reject;
+	// this jpeg is 2x1 with orientation=6 so it should rotate to 1x2
+	image.src = 'data:image/jpeg;base64,/9j/4QBiRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAYAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAAITAAMAAAABAAEAAAAAAAAAAABIAAAAAQAAAEgAAAAB/9sAQwAEAwMEAwMEBAMEBQQEBQYKBwYGBgYNCQoICg8NEBAPDQ8OERMYFBESFxIODxUcFRcZGRsbGxAUHR8dGh8YGhsa/9sAQwEEBQUGBQYMBwcMGhEPERoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoaGhoa/8IAEQgAAQACAwERAAIRAQMRAf/EABQAAQAAAAAAAAAAAAAAAAAAAAf/xAAUAQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAF/P//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAQUCf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQMBAT8Bf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIBAT8Bf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEABj8Cf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAT8hf//aAAwDAQACAAMAAAAQH//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQMBAT8Qf//EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQIBAT8Qf//EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAT8Qf//Z';
+});
+
+myPromise.then(
+	function(value) { browserRotates = value; }
+);
+</script>
 <!-- INCLUDEJS {T_ASSETS_PATH}/plupload/plupload.full.min.js -->
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/plupload.js -->
