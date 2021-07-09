@@ -96,10 +96,10 @@
 	<thead>
 	<tr>
 		<th>{L_STYLE_NAME}</th>
-		<th width="10%" style="white-space: nowrap; text-align: center;">{{ lang('STYLE_VERSION') }}</th>
-		<th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_PHPBB_VERSION}</th>
-		<!-- IF not STYLES_LIST_HIDE_COUNT --><th width="10%" style="white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th><!-- ENDIF -->
-		<th width="25%" style="white-space: nowrap; text-align: center;">{L_ACTIONS}</th>
+		<th style="width: 10%; white-space: nowrap; text-align: center;">{{ lang('STYLE_VERSION') }}</th>
+		<th style="width: 10%; white-space: nowrap; text-align: center;">{L_STYLE_PHPBB_VERSION}</th>
+		<!-- IF not STYLES_LIST_HIDE_COUNT --><th style="width: 10%; white-space: nowrap; text-align: center;">{L_STYLE_USED_BY}</th><!-- ENDIF -->
+		<th style="width: 25%; white-space: nowrap; text-align: center;">{L_ACTIONS}</th>
 		{STYLES_LIST_EXTRA}
 		<th>&nbsp;</th>
 	</tr>
@@ -146,7 +146,7 @@
 			<!-- END actions -->
 		</td>
 		{styles_list.EXTRA}
-		<td class="{$ROW_CLASS} mark" width="20">
+		<td class="{$ROW_CLASS} mark" style="width: 20px;">
 			<!-- IF styles_list.STYLE_ID -->
 				{% if styles_list.STYLE_NAME !== 'prosilver' %}
 					<input class="checkbox" type="checkbox" name="ids[]" value="{styles_list.STYLE_ID}" />
