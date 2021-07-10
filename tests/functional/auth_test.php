@@ -109,7 +109,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->assertContainsLang('REGISTRATION', $crawler->filter('div.content h2')->text());
 		$form = $crawler->selectButton('I agree to these terms')->form();
 		$crawler = self::submit($form);
-		$this->assertContainsLang('AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE', $crawler->filter('a[class="button2"]')->text());
+		$this->assertContainsLang('AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE', $crawler->filter('div[class="content"]')->text());
 		$crawler = self::request('GET', 'ucp.php?mode=login&login=external&oauth_service=google');
 		$this->assertStringContainsString('Google Accounts', $crawler->filter('title')->text());
 
