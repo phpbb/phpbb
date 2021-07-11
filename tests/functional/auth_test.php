@@ -101,7 +101,7 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->assertStringContainsString($this->lang('AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'), $crawler->filter('h3')->text());
 		$form = $crawler->selectButton($this->lang('UCP_AUTH_LINK_LINK'))->form();
 		$crawler = self::submit($form);
-		$this->assertStringContainsString('Google Accounts', $crawler->filter('title')->text());
+		$this->assertStringContainsString('accounts.google.com', $crawler->filter('base')->attr('href'));
 
 		// Test OAuth linking for registration
 		$this->logout();
@@ -109,9 +109,9 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 		$this->assertContainsLang('REGISTRATION', $crawler->filter('div.content h2')->text());
 		$form = $crawler->selectButton('I agree to these terms')->form();
 		$crawler = self::submit($form);
-		$this->assertContainsLang('AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE', $crawler->filter('a[class="button2"]')->text());
+		$this->assertContainsLang('AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE', $crawler->filter('a.button1')->text());
 		$crawler = self::request('GET', 'ucp.php?mode=login&login=external&oauth_service=google');
-		$this->assertStringContainsString('Google Accounts', $crawler->filter('title')->text());
+		$this->assertStringContainsString('accounts.google.com', $crawler->filter('base')->attr('href'));
 
 		// Restore default auth method, but unset random keys first
 		// Restart webclient as we were redirected to external site before
