@@ -40,7 +40,6 @@ class acp_icons
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
 		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = $request->variable('id', 0);
-		$submit = $request->is_set_post('submit', false);
 
 		$form_key = 'acp_icons';
 		add_form_key($form_key);
@@ -148,7 +147,7 @@ class acp_icons
 			case 'add':
 
 				$smilies = $default_row = array();
-				$smiley_options = $order_list = $add_order_list = '';
+				$smiley_options = '';
 
 				if ($action == 'add' && $mode == 'smilies')
 				{

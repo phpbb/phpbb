@@ -361,7 +361,7 @@ class auth_admin extends \phpbb\auth\auth
 			$s_role_js_array = array();
 
 			// Make sure every role (even if empty) has its array defined
-			foreach ($roles as $_role_id => $null)
+			foreach (array_keys($roles) as $_role_id)
 			{
 				$s_role_js_array[$_role_id] = "\n" . 'role_options[' . $_role_id . '] = new Array();' . "\n";
 			}

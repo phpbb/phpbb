@@ -228,7 +228,6 @@ class acp_permissions
 
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
-			break;
 		}
 
 		$template->assign_vars(array(
@@ -1060,11 +1059,11 @@ class acp_permissions
 
 			foreach ($hold_ary as $group_id => $forum_ary)
 			{
-				$groups[$group_id]['auth_setting'] = $hold_ary[$group_id][$forum_id][$permission];
+				$groups[$group_id]['auth_setting'] = $forum_ary[$forum_id][$permission];
 			}
 			unset($hold_ary);
 
-			foreach ($groups as $id => $row)
+			foreach ($groups as $row)
 			{
 				switch ($row['auth_setting'])
 				{

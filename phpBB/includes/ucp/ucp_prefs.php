@@ -139,7 +139,7 @@ class ucp_prefs
 
 				$dateformat_options = '';
 
-				foreach ($user->lang['dateformats'] as $format => $null)
+				foreach (array_keys($user->lang['dateformats']) as $format)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
 					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');

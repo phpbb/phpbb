@@ -129,7 +129,7 @@ function mcp_post_details($id, $mode, $action)
 
 	// Set some vars
 	$users_ary = $usernames_ary = array();
-	$attachments = $extensions = array();
+	$attachments = array();
 	$post_id = $post_info['post_id'];
 
 	// Get topic tracking info

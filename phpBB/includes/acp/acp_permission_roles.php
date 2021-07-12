@@ -84,7 +84,6 @@ class acp_permission_roles
 
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
-			break;
 		}
 
 		$template->assign_vars(array(

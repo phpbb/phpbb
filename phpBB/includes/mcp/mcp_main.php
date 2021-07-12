@@ -594,11 +594,6 @@ function mcp_move_topic($topic_ids)
 		$topic_data = phpbb_get_topic_data($topic_ids);
 		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
 
-		$forum_sync_data = array();
-
-		$forum_sync_data[$forum_id] = current($topic_data);
-		$forum_sync_data[$to_forum_id] = $forum_data;
-
 		$topics_moved = $topics_moved_unapproved = $topics_moved_softdeleted = 0;
 		$posts_moved = $posts_moved_unapproved = $posts_moved_softdeleted = 0;
 
@@ -636,12 +631,8 @@ function mcp_move_topic($topic_ids)
 		}
 
 		$shadow_topics = 0;
-		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
-			// Get the list of forums to resync
-			$forum_ids[] = $row['forum_id'];
-
 			// We add the $to_forum_id twice, because 'forum_id' is updated
 			// when the topic is moved again later.
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MOVE', false, array(
@@ -1202,7 +1193,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 
 		$post_data = phpbb_get_post_data($post_ids);
 
-		foreach ($post_data as $id => $row)
+		foreach ($post_data as $row)
 		{
 			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_POST', false, array(
@@ -1741,7 +1732,7 @@ function mcp_fork_topic($topic_ids)
 		$config->increment('num_topics', count($new_topic_id_list), false);
 		$config->increment('num_posts', $total_posts, false);
 
-		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
+		foreach ($new_topic_id_list as $new_topic_id)
 		{
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_FORK', false, array(
 				'forum_id' => $to_forum_id,

@@ -153,7 +153,7 @@ class acp_users
 		}
 		$db->sql_freeresult($result);
 
-		foreach ($dropdown_modes as $module_mode => $null)
+		foreach (array_keys($dropdown_modes) as $module_mode)
 		{
 			$selected = ($mode == $module_mode) ? ' selected="selected"' : '';
 			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($module_mode)] . '</option>';
@@ -1742,7 +1742,7 @@ class acp_users
 				}
 
 				$dateformat_options = '';
-				foreach ($user->lang['dateformats'] as $format => $null)
+				foreach (array_keys($user->lang['dateformats']) as $format)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
 					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');

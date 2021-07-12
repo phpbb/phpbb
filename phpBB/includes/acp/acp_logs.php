@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 
 class acp_logs
 {
-	var $u_action;
+	public $u_action;
 
 	function main($id, $mode)
 	{
@@ -45,7 +45,6 @@ class acp_logs
 		$sort_dir	= $request->variable('sd', 'd');
 
 		$this->tpl_name = 'acp_logs';
-		$this->log_type = constant('LOG_' . strtoupper($mode));
 
 		/* @var $pagination \phpbb\pagination */
 		$pagination = $phpbb_container->get('pagination');
