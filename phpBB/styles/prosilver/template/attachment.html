@@ -29,6 +29,26 @@
 		</dl>
 		<!-- ENDIF -->
 
+		{% if _file.S_AUDIO_FILE %}
+			<dl class="file">
+				<dt class="c-file-header">
+					<audio class="c-file-audio-controls" controls="controls" preload="metadata">
+						<source class="c-file-audio-source" src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
+					</audio>
+				</dt>
+				{% if _file.COMMENT %}
+					<dd class="c-file-comment">{{ _file.COMMENT }}</dd>
+				{% endif %}
+				<dd class="c-file-actions">
+					{% if _file.UPLOAD_ICON %}
+						<span class="o-icon c-file-icon">{{ _file.UPLOAD_ICON }}</span>
+					{% endif %}
+					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}" download>{{ _file.DOWNLOAD_NAME }}</a>
+					<span class="c-file-actions-meta">({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</span>
+				</dd>
+			</dl>
+		{% endif %}
+
 		<!-- EVENT attachment_file_append -->
 	<!-- ENDIF -->
 <!-- END _file -->
