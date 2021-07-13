@@ -986,7 +986,7 @@ switch ($mode)
 		{
 			$user_list[] = array(
 				'user_id'		=> (int) $row['user_id'],
-				'result'		=> $row['username'],
+				'result'		=> htmlspecialchars_decode($row['username']),
 				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
 			);
