@@ -980,23 +980,26 @@ switch ($mode)
 			WHERE ' . $db->sql_in_set('user_type', $user_types) . '
 				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->get_any_char());
 		$result = $db->sql_query_limit($sql, 10);
-		$user_list = array();
+
+		$user_list = [];
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$user_list[] = array(
+			$user_list[] = [
 				'user_id'		=> (int) $row['user_id'],
-				'result'		=> $row['username'],
+				'result'		=> htmlspecialchars_decode($row['username']),
 				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
-			);
+			];
 		}
 		$db->sql_freeresult($result);
+
 		$json_response = new \phpbb\json_response();
-		$json_response->send(array(
+
+		$json_response->send([
 			'keyword' => $username_chars,
 			'results' => $user_list,
-		));
+		]);
 
 	break;
 
