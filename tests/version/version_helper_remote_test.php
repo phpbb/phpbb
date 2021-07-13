@@ -62,16 +62,18 @@ class version_helper_remote_test extends \phpbb_test_case
     "stable": {
         "1.0": {
             "current": "1.0.1",
+            "checksum": "5d01d12961ed9b67d87ce2408cdefbbe8e6f00f24cbc75ce10d410f473179b86",
             "download": "https://www.phpbb.com/customise/db/download/104136",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": null,
             "security": false
         }
     }
-}', true, array (
+}', true, array(
 				'stable' => array (
 					'1.0' => array (
 						'current' => '1.0.1',
+						'checksum' => '5d01d12961ed9b67d87ce2408cdefbbe8e6f00f24cbc75ce10d410f473179b86',
 						'download' => 'https://www.phpbb.com/customise/db/download/104136',
 						'announcement' => 'https://www.phpbb.com/customise/db/extension/boardrules/',
 						'eol' => NULL,
@@ -81,6 +83,7 @@ class version_helper_remote_test extends \phpbb_test_case
 				'unstable' => array (
 					'1.0' => array (
 						'current' => '1.0.1',
+						'checksum' => '5d01d12961ed9b67d87ce2408cdefbbe8e6f00f24cbc75ce10d410f473179b86',
 						'download' => 'https://www.phpbb.com/customise/db/download/104136',
 						'announcement' => 'https://www.phpbb.com/customise/db/extension/boardrules/',
 						'eol' => NULL,
@@ -89,9 +92,22 @@ class version_helper_remote_test extends \phpbb_test_case
 				),
 			)),
 			array('{
+    "stable": {
+        "1.0": {
+            "current": "1.0.1",
+            "checksum": "phpbb-12345",
+            "download": "https://www.phpbb.com/customise/db/download/104136",
+            "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
+            "eol": null,
+            "security": false
+        }
+    }
+}', false, '', 'VERSIONCHECK_INVALID_SHA256'),
+			array('{
     "foobar": {
         "1.0": {
             "current": "1.0.1",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": null,
@@ -103,6 +119,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "stable": {
         "1.0": {
             "current": "1.0.1<script>alert(\'foo\');</script>",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136<script>alert(\'foo\');</script>",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/<script>alert(\'foo\');</script>",
             "eol": "<script>alert(\'foo\');</script>",
@@ -114,6 +131,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "unstable": {
         "1.0": {
             "current": "1.0.1<script>alert(\'foo\');</script>",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136<script>alert(\'foo\');</script>",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/<script>alert(\'foo\');</script>",
             "eol": "<script>alert(\'foo\');</script>",
@@ -125,6 +143,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "unstable": {
         "1.0<script>alert(\'foo\');</script>": {
             "current": "1.0.1",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": "",
@@ -137,6 +156,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "stable": {
         "1.0": {
             "current": "1.0.1",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": null,
@@ -147,6 +167,7 @@ class version_helper_remote_test extends \phpbb_test_case
 				'stable' => array (
 					'1.0' => array (
 						'current' => '1.0.1',
+						'checksum' => '',
 						'download' => 'https://www.phpbb.com/customise/db/download/104136',
 						'announcement' => 'https://www.phpbb.com/customise/db/extension/boardrules/',
 						'eol' => NULL,
@@ -156,6 +177,7 @@ class version_helper_remote_test extends \phpbb_test_case
 				'unstable' => array (
 					'1.0' => array (
 						'current' => '1.0.1',
+						'checksum' => '',
 						'download' => 'https://www.phpbb.com/customise/db/download/104136',
 						'announcement' => 'https://www.phpbb.com/customise/db/extension/boardrules/',
 						'eol' => NULL,
@@ -167,6 +189,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "unstable": {
         "1.0": {
             "current": "1.0.1",
+            "checksum": "",
             "download": "https://www.phpbb.com/customise/db/download/104136",
             "announcement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": null,
@@ -176,6 +199,7 @@ class version_helper_remote_test extends \phpbb_test_case
     }
 }', true, array('stable' => array(), 'unstable' => array('1.0' => array(
 				'current' => '1.0.1',
+				'checksum' => '',
 				'download'	=> 'https://www.phpbb.com/customise/db/download/104136',
 				'announcement'	=> 'https://www.phpbb.com/customise/db/extension/boardrules/',
 				'security'	=> false,
@@ -184,6 +208,7 @@ class version_helper_remote_test extends \phpbb_test_case
     "unstable": {
         "1.0": {
             "current<script>alert(\'foo\');</script>": "1.0.1",
+            "checksum": "",
             "download2": "https://www.phpbb.com/customise/db/download/104136",
             "bannouncement": "https://www.phpbb.com/customise/db/extension/boardrules/",
             "eol": null,
@@ -192,6 +217,7 @@ class version_helper_remote_test extends \phpbb_test_case
         }
     }
 }', true, array('stable' => array(), 'unstable' => array('1.0' => array(
+				'checksum'	=> '',
 				'security'	=> false,
 			))), 'VERSIONCHECK_INVALID_ENTRY'),
 		);

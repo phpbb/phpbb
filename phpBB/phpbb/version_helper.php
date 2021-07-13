@@ -61,22 +61,24 @@ class version_helper
 	/** @var \phpbb\file_downloader */
 	protected $file_downloader;
 
-	protected $version_schema = array(
-		'stable' => array(
+	protected $version_schema = [
+		'stable' => [
 			'current'		=> 'version',
+			'checksum'		=> 'sha256',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'bool',
-		),
-		'unstable' => array(
+		],
+		'unstable' => [
 			'current'		=> 'version',
+			'checksum'		=> 'sha256',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'bool',
-		),
-	);
+		],
+	];
 
 	/**
 	 * Constructor
@@ -485,6 +487,13 @@ class version_helper
 							if (!empty($value) && !preg_match(get_preg_expression('semantic_version'), $value))
 							{
 								throw new version_check_exception('VERSIONCHECK_INVALID_VERSION');
+							}
+						break;
+
+						case 'sha256':
+							if (!empty($value) && !preg_match('#^[a-f0-9]{64}$#', $value))
+							{
+								throw new version_check_exception('VERSIONCHECK_INVALID_SHA256');
 							}
 						break;
 

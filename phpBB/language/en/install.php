@@ -476,7 +476,7 @@ $lang = array_merge($lang, array(
 	// File updater
 	'UPDATE_UPDATING_FILES'	=> 'Updating files',
 
-	'UPDATE_FILE_UPDATER_HAS_FAILED'	=> 'File updater “%1$s“ has failed. The installer will try to fallback to “%2$s“.',
+	'UPDATE_FILE_UPDATER_HAS_FAILED'	=> 'File updater “%1$s” has failed. The installer will try to fallback to “%2$s”.',
 	'UPDATE_FILE_UPDATERS_HAVE_FAILED'	=> 'The file updater failed. No further fallback methods are available.',
 
 	'UPDATE_CONTINUE_UPDATE_PROCESS'	=> 'Continue update process',
@@ -491,6 +491,46 @@ $lang = array_merge($lang, array(
 
 	'TASK_UPDATE_EXTENSIONS'	=> 'Updating extensions',
 ));
+
+// Instant update
+$lang = array_merge($lang, [
+	'INSTANT_UPDATE'			=> 'Instant update',
+	'INSTANT_UPDATE_CONFIRM'	=> 'Are you sure you want to perform an instant update?
+		<p style="margin-top: 10px; font-size: 1em;">This will perform the following actions:</p>
+		<ol style="margin-left: 20px; font-size: 1.1em;">
+			<li>Set “prosilver” as the default style.</li>
+			<li>Set “British English” as the default language.</li>
+			<li>Download the new version’s full package from phpBB.</li>
+			<li>Verify the sha256 checksum against the one provided by phpBB.</li>
+			<li>Remove the <code>config.php</code> and <code>.htaccess</code> files from the downloaded package.</li>
+			<li>Remove the <code>/images</code>, <code>/files</code> and <code>/store</code> directories from the downloaded package.</li>
+			<li>Remove the <code>/cache</code> and <code>/vendor</code> directories from the current installation.</li>
+			<li>Copy all the files from the downloaded package to the current installation.</li>
+		</ol>
+
+		<p style="margin-top: 10px; font-size: 1em;">
+			Once done, you will be redirected to “Update database only” page.<br>
+			After the database has been updated as well, you will have to perform a few follow up tasks:
+		</p>
+
+		<ol style="margin-left: 20px; font-size: 1.1em;">
+			<li>Via FTP or SSH delete or rename the <code>/install</code> directory.</li>
+			<li>Update your language pack to the new version.</li>
+			<li>Update your style to the new version.</li>
+		</ol>
+
+		<p style="margin-top: 10px; font-size: 1em;">
+			Before continuing, <strong class="error">backup all board files and the database</strong>!
+		</p>
+	',
+
+	'INSTANT_UPDATE_ERROR'						=> 'There was an error while trying to perform an instant update.',
+	'INSTANT_UPDATE_ERROR_CHECKSUM_MISMATCH'	=> 'The sha256 checksum of the downloaded package does not match the checksum provided by phpBB.',
+	'INSTANT_UPDATE_ERROR_DOWNLOAD'				=> 'The update package could not be downloaded.<br>» %s',
+	'INSTANT_UPDATE_ERROR_ENGLISH_REQUIRED'		=> 'The “British English” language pack has to be installed.',
+	'INSTANT_UPDATE_ERROR_ZIP_EXTRACT'			=> 'The zip archive for the downloaded package could not be extracted.',
+	'INSTANT_UPDATE_ERROR_ZIP_OPEN'				=> 'The zip archive for the downloaded package could not be opened.<br>» %s',
+]);
 
 // Converter
 $lang = array_merge($lang, array(
