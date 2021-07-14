@@ -167,7 +167,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertStringContainsString('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'] . '&t=' . $this->data['topics']['Reapprove Test Topic #1'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?t=' . $this->data['topics']['Reapprove Test Topic #1'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
 		$this->assertStringContainsString('Reapprove Test Topic #1', $crawler->filter('h2')->text());
@@ -226,7 +226,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		$link = $crawler->selectLink($this->lang('RETURN_PAGE', '', ''))->link();
 		$link_url = $link->getUri();
-		$this->assertStringContainsString('viewtopic.php?f=' . $this->data['forums']['Reapprove Test #1'], $link_url);
+		$this->assertStringContainsString('viewtopic.php?t=' . $this->data['topics']['Reapprove Test Topic #2'], $link_url);
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}");
 		$this->assertStringContainsString('Reapprove Test Topic #2', $crawler->filter('h2')->text());
@@ -264,7 +264,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->add_user_group('NEWLY_REGISTERED', array('reapprove_testuser'));
 
 		// Test editing a post
-		$posting_url = "posting.php?mode=edit&f={$this->data['forums']['Reapprove Test #1']}&p={$this->data['posts']['Re: Reapprove Test Topic #1-#2']}&sid={$this->sid}";
+		$posting_url = "posting.php?mode=edit&p={$this->data['posts']['Re: Reapprove Test Topic #1-#2']}&sid={$this->sid}";
 		$form_data = array(
 			'message'	=> 'Post edited by testing framework',
 			'subject'	=> 'Re: Reapprove Test Topic #1-#2',
@@ -287,7 +287,7 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		), 'after editing post');
 
 		// Test editing a topic
-		$posting_url = "posting.php?mode=edit&f={$this->data['forums']['Reapprove Test #1']}&p={$this->data['posts']['Reapprove Test Topic #2']}&sid={$this->sid}";
+		$posting_url = "posting.php?mode=edit&p={$this->data['posts']['Reapprove Test Topic #2']}&sid={$this->sid}";
 		$form_data = array(
 			'message'	=> 'Post edited by testing framework',
 			'subject'	=> 'Reapprove Test Topic #2',

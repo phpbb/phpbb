@@ -524,7 +524,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 		$this->add_lang('posting');
 
-		$crawler = self::request('GET', "posting.php?mode=delete&f={$this->data['forums']['Feeds #1']}&p={$this->data['posts']['Re: Feeds #1 - Topic #2']}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=delete&p={$this->data['posts']['Re: Feeds #1 - Topic #2']}&sid={$this->sid}");
 		self::assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();

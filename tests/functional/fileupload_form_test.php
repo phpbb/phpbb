@@ -63,7 +63,7 @@ class phpbb_functional_fileupload_form_test extends phpbb_functional_test_case
 
 		$crawler = self::$client->request(
 			'POST',
-			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid,
+			'posting.php?mode=reply&t=1&sid=' . $this->sid,
 			$file_form_data,
 			array('fileupload' => $file)
 		);

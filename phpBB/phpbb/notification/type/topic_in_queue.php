@@ -119,7 +119,7 @@ class topic_in_queue extends \phpbb\notification\type\topic
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "i=queue&amp;mode=approve_details&amp;f={$this->item_parent_id}&amp;t={$this->item_id}");
+		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "i=queue&amp;mode=approve_details&amp;t={$this->item_id}");
 	}
 
 	/**
