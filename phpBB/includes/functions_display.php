@@ -1120,7 +1120,7 @@ function display_custom_bbcodes()
 		$row['bbcode_helpline'] = utf8_decode_ncr($row['bbcode_helpline']);
 
 		// Does the closing bbcode tag exists? If so display it.
-		$bbcode_close_tag	= '%\[\/' . utf8_strtolower($row['bbcode_tag']) . ']%';
+		$bbcode_close_tag	= '%\[\/' . utf8_strtolower($row['bbcode_tag']) . '\]%';
 		$bbcode_match_str	= utf8_strtolower($row['bbcode_match']);
 		$bbcode_name_clean	= preg_match($bbcode_close_tag, $bbcode_match_str) ? "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'" : "'[{$row['bbcode_tag']}]', ''";
 
