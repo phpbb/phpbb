@@ -1228,6 +1228,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
 			'FILESIZE'			=> $filesize['value'],
+			'MIMETYPE'			=> $attachment['mimetype'],
 			'SIZE_LANG'			=> $filesize['unit'],
 			'DOWNLOAD_NAME'		=> utf8_basename($attachment['real_filename']),
 			'COMMENT'			=> $comment,
@@ -1311,6 +1312,15 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 						'S_THUMBNAIL'		=> true,
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
+
+					$update_count_ary[] = $attachment['attach_id'];
+				break;
+
+				// Audio files
+				case ATTACHMENT_CATEGORY_AUDIO:
+					$block_array += [
+						'S_AUDIO_FILE'			=> true,
+					];
 
 					$update_count_ary[] = $attachment['attach_id'];
 				break;
