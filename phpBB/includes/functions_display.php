@@ -1132,7 +1132,6 @@ function display_custom_bbcodes()
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
 		];
 
-
 		/**
 		* Event to modify the template data block of a custom bbcode
 		*
