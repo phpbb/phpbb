@@ -1086,12 +1086,12 @@ function display_custom_bbcodes()
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = NUM_PREDEFINED_BBCODES;
 
-	$sql_ary = array(
-		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline',
-		'FROM'		=> array(BBCODES_TABLE => 'b'),
+	$sql_ary = [
+		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline, b.bbcode_match',
+		'FROM'		=> [BBCODES_TABLE => 'b'],
 		'WHERE'		=> 'b.display_on_posting = 1',
 		'ORDER_BY'	=> 'b.bbcode_tag',
-	);
+	];
 
 	/**
 	* Event to modify the SQL query before custom bbcode data is queried
@@ -1119,13 +1119,19 @@ function display_custom_bbcodes()
 		// Convert Numeric Character References to UTF-8 chars.
 		$row['bbcode_helpline'] = utf8_decode_ncr($row['bbcode_helpline']);
 
-		$custom_tags = array(
-			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+		// Does the closing bbcode tag exists? If so display it.
+		$bbcode_close_tag	= '%\[\/' . utf8_strtolower($row['bbcode_tag']) . '\]%';
+		$bbcode_match_str	= utf8_strtolower($row['bbcode_match']);
+		$bbcode_name_clean	= preg_match($bbcode_close_tag, $bbcode_match_str) ? "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'" : "'[{$row['bbcode_tag']}]', ''";
+
+		$custom_tags = [
+			'BBCODE_NAME'		=> $bbcode_name_clean,
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
-		);
+		];
+
 
 		/**
 		* Event to modify the template data block of a custom bbcode
