@@ -478,7 +478,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $db, $config, $cache, $phpbb_container, $phpbb_dispatcher;
+		global $SID, $_SID, $db, $config, $cache, $phpbb_container, $phpbb_dispatcher;
 
 		$this->data = array();
 
@@ -689,6 +689,8 @@ class session
 					$db->sql_query($sql);
 				}
 
+				$SID = '?sid=';
+				$_SID = '';
 				return true;
 			}
 			else
@@ -781,6 +783,11 @@ class session
 		}
 
 		// refresh data
+		if ($phpbb_container->getParameter('session.force_sid'))
+		{
+			$SID = '?sid=' . $this->session_id;
+			$_SID = $this->session_id;
+		}
 		$this->data = array_merge($this->data, $sql_ary);
 
 		if (!$bot)
@@ -820,6 +827,12 @@ class session
 				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
+
+			if ($phpbb_container->getParameter('session.force_sid'))
+			{
+				$SID = '?sid=';
+				$_SID = '';
+			}
 		}
 
 		$session_data = $sql_ary;
