@@ -542,7 +542,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
+	$s_action = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=$mode&amp;action=$action");
 	$s_action .= (($folder_id) ? "&amp;f=$folder_id" : '') . (($msg_id) ? "&amp;p=$msg_id" : '');
 
 	// Delete triggered ?

@@ -307,7 +307,7 @@ class helper
 				'TRANSLATION_INFO'		=> $this->language->is_set('TRANSLATION_INFO') ? $this->language->lang('TRANSLATION_INFO') : '',
 				'CREDIT_LINE'			=> $this->language->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
 
-				'U_ACP'					=> ($this->auth->acl_get('a_') && !empty($this->user->data['is_registered'])) ? append_sid("{$this->admin_path}index.{$this->php_ext}", false, true, $this->user->session_id) : '',
+				'U_ACP'					=> ($this->auth->acl_get('a_') && !empty($this->user->data['is_registered'])) ? append_sid("{$this->admin_path}index.{$this->php_ext}") : '',
 		]);
 
 		if ($run_cron)

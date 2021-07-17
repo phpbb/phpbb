@@ -3716,7 +3716,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout');
 		$l_login_logout = $user->lang['LOGOUT'];
 	}
 	else
