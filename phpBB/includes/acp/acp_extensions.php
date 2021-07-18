@@ -53,7 +53,7 @@ class acp_extensions
 		$this->phpbb_container = $phpbb_container;
 		$this->php_ini = $this->phpbb_container->get('php_ini');
 
-		$this->user->add_lang(array('install', 'acp/extensions', 'migrator'));
+		$this->user->add_lang(array('install', 'acp/extensions', 'acp/modules', 'migrator'));
 
 		$this->page_title = 'ACP_EXTENSIONS';
 
