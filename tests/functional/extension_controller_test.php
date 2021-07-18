@@ -136,7 +136,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'app.php/does/not/exist', array(), false);
 		$this->assert_response_html(404);
-		$this->assertStringContainsString('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
+
+		// Since version 5.3.0-BETA1, Symfony shows full URI when route not found. See https://github.com/symfony/symfony/pull/39893
+		$full_uri = self::$client->getRequest()->getUri();
+		$this->assertStringContainsString('No route found for "GET ' . $full_uri . '"', $crawler->filter('body')->text());
 	}
 
 	/**
