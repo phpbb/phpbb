@@ -1835,7 +1835,7 @@ function build_url($strip_vars = false)
 		$redirect = str_replace('&', '&amp;', $redirect);
 	}
 
-	return $redirect . ((strpos($redirect, '?') === false) ? '?' : '');
+	return $redirect;
 }
 
 /**

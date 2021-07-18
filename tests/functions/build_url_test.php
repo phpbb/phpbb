@@ -39,12 +39,12 @@ class phpbb_build_url_test extends phpbb_test_case
 			array(
 				'index.php',
 				false,
-				'phpBB/index.php?',
+				'phpBB/index.php',
 			),
 			array(
 				'index.php',
 				't',
-				'phpBB/index.php?',
+				'phpBB/index.php',
 			),
 			array(
 				'viewtopic.php?t=5&f=4',
@@ -59,12 +59,12 @@ class phpbb_build_url_test extends phpbb_test_case
 			array(
 				'viewtopic.php?f=2&style=1&t=6',
 				array('f', 'style', 't'),
-				'phpBB/viewtopic.php?',
+				'phpBB/viewtopic.php',
 			),
 			array(
 				'http://test.phpbb.com/viewtopic.php?f=2&style=1&t=6',
 				array('f', 'style', 't'),
-				'http://test.phpbb.com/viewtopic.php?',
+				'http://test.phpbb.com/viewtopic.php',
 			),
 			array(
 				'posting.php?f=2&mode=delete&p=20%22%3Cscript%3Ealert%281%29%3B%3C%2Fscript%3E',
