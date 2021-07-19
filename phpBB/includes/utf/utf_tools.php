@@ -22,11 +22,9 @@ if (!defined('IN_PHPBB'))
 setlocale(LC_CTYPE, 'C');
 
 /**
-* Setup the UTF-8 portability layer
-*/
-Patchwork\Utf8\Bootup::initUtf8Encode();
-Patchwork\Utf8\Bootup::initMbstring();
-Patchwork\Utf8\Bootup::initIntl();
+ * UTF-8 portability layer is provided by
+ * symfony/polyfill-mbstring, symfony/polyfill-intl-normalizer, symfony/polyfill-php72
+ */
 
 /**
 * UTF-8 tools
