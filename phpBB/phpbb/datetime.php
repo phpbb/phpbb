@@ -97,7 +97,7 @@ class datetime extends \DateTime
 
 				$midnight	= $midnight->getTimestamp();
 
-				if ($timestamp <= $midnight + 2 * 86400)
+				if ($timestamp < $midnight + 2 * 86400)
 				{
 					$day = false;
 
