@@ -67,7 +67,7 @@ class acp_extensions
 		$this->php_ini = $this->phpbb_container->get('php_ini');
 		$this->phpbb_root_path = $phpbb_root_path;
 
-		$this->user->add_lang(['install', 'acp/extensions', 'migrator']);
+		$this->user->add_lang(['install', 'acp/extensions', 'acp/modules', 'migrator']);
 
 		switch ($mode)
 		{
