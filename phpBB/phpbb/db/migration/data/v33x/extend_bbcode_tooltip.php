@@ -20,7 +20,7 @@ class extend_bbcode_tooltip extends \phpbb\db\migration\migration
 		return !$this->db_tools->sql_column_exists($this->table_prefix . 'bbcodes', 'bbcode_helpline');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v33x\v334'
