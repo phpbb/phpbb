@@ -184,7 +184,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 			$row_num = str_replace('redirect_expected_', '', $redirect);
 
 			$redirect = $crawler->filter('#redirect_' . $row_num)->text();
-			$redirect = substr($redirect, 0, strpos($redirect, 'sid') - 1);
 			$this->assertEquals($crawler->filter('#redirect_expected_' .  $row_num)->text(), $redirect);
 		}
 

@@ -34,6 +34,8 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	*/
 	public function test_handle_quickmod($crawler)
 	{
+		$this->login();
+
 		// Test moving a post
 		return $this->get_quickmod_page(0, 'MERGE_POSTS', $crawler);
 	}
@@ -43,6 +45,8 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	*/
 	public function test_move_post_to_topic($crawler)
 	{
+		$this->login();
+
 		// Select the post in MCP
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form(array(
 			'to_topic_id'	=> 1,

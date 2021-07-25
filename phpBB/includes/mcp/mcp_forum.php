@@ -50,10 +50,17 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?$url_extra");
 
+	add_form_key('mcp_forum');
+
 	// Resync Topics
 	switch ($action)
 	{
 		case 'resync':
+			if (!check_form_key('mcp_forum'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$topic_ids = $request->variable('topic_id_list', array(0));
 			mcp_resync_topics($topic_ids);
 		break;

@@ -62,6 +62,7 @@ class container_configuration implements ConfigurationInterface
 				->arrayNode('session')
 					->addDefaultsIfNotSet()
 					->children()
+						->booleanNode('force_sid')->defaultValue(false)->end()
 						->booleanNode('log_errors')->defaultValue(false)->end()
 					->end()
 				->end()

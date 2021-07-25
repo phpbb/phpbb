@@ -272,8 +272,8 @@ class session
 			$this->cookie_data['k'] = $request->variable($config['cookie_name'] . '_k', '', false, \phpbb\request\request_interface::COOKIE);
 			$this->session_id 		= $request->variable($config['cookie_name'] . '_sid', '', false, \phpbb\request\request_interface::COOKIE);
 
-			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
-			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
+			$SID = '?sid=';
+			$_SID = '';
 
 			if (empty($this->session_id))
 			{
@@ -341,14 +341,6 @@ class session
 				$config->set('limit_load', '0');
 				$config->set('limit_search_load', '0');
 			}
-		}
-
-		// if no session id is set, redirect to index.php
-		$session_id = $request->variable('sid', '');
-		if (defined('NEED_SID') && (empty($session_id) || $this->session_id !== $session_id))
-		{
-			send_status_line(401, 'Unauthorized');
-			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
 		// if session id is set
@@ -791,8 +783,11 @@ class session
 		}
 
 		// refresh data
-		$SID = '?sid=' . $this->session_id;
-		$_SID = $this->session_id;
+		if ($phpbb_container->getParameter('session.force_sid'))
+		{
+			$SID = '?sid=' . $this->session_id;
+			$_SID = $this->session_id;
+		}
 		$this->data = array_merge($this->data, $sql_ary);
 
 		if (!$bot)
@@ -833,8 +828,11 @@ class session
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 
-			$SID = '?sid=';
-			$_SID = '';
+			if ($phpbb_container->getParameter('session.force_sid'))
+			{
+				$SID = '?sid=';
+				$_SID = '';
+			}
 		}
 
 		$session_data = $sql_ary;
