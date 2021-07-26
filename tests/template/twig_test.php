@@ -35,7 +35,7 @@ class phpbb_template_twig_test extends phpbb_test_case
 	 */
 	private $lang;
 
-	protected function setUp()
+	protected function setUp(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
