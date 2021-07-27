@@ -11,10 +11,12 @@
  *
  */
 
+namespace phpbb\tests\template;
+
 use phpbb\filesystem\helper as filesystem_helper;
 use phpbb\template\twig\twig;
 
-class phpbb_template_twig_test extends phpbb_test_case
+class twig_test extends \phpbb_test_case
 {
 	/** @var twig */
 	public $twig;
@@ -49,7 +51,7 @@ class phpbb_template_twig_test extends phpbb_test_case
 
 		$path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
-				new phpbb_mock_request()
+				new \phpbb_mock_request()
 			),
 			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
@@ -76,7 +78,7 @@ class phpbb_template_twig_test extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 
@@ -98,7 +100,6 @@ class phpbb_template_twig_test extends phpbb_test_case
 	public function data_get_user_style(): array
 	{
 		return [
-			[['foo'], [null]], // invalid data
 			[['style_path' => 'prosilver', 'style_parent_id' => 0], ['prosilver']],
 			[['style_path' => 'prosilver_se', 'style_parent_id' => 5, 'style_parent_tree' => 'prosilver'], ['prosilver_se', 'prosilver']],
 		];
@@ -122,7 +123,7 @@ class phpbb_template_twig_test extends phpbb_test_case
 		$test_template_absolute_path = filesystem_helper::realpath($phpbb_root_path . trim($tests_template_relative_path, '/'));
 
 		// Get loader instance
-		$template_reflection = new ReflectionObject($this->template);
+		$template_reflection = new \ReflectionObject($this->template);
 		$loader_reflection = $template_reflection->getProperty('loader');
 		$loader_reflection->setAccessible(true);
 		/** @var \phpbb\template\twig\loader $loader */
@@ -132,6 +133,7 @@ class phpbb_template_twig_test extends phpbb_test_case
 		$this->assertEmpty($loader->getSafeDirectories());
 
 		// set_style() to add default elements
+		$this->user->style = ['style_path' => '', 'style_parent_id' => 0];
 		$this->template->set_style();
 		$safe_directories = $loader->getSafeDirectories();
 		$this->assertFalse(in_array($test_template_absolute_path, $safe_directories));
