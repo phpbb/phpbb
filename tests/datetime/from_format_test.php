@@ -58,7 +58,6 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		$this->assertEquals($expected, $user->format_date($timestamp, $format, true));
 	}
 
-
 	public function relative_format_date_data()
 	{
 		// If the current time is too close to the testing time,
@@ -102,6 +101,20 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 			array(
 				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time, false,
 				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time,
+			),
+
+			// Test edge cases: Yesterday 00:00, Today 00:00, Tomorrow 00:00
+			array(
+				gmdate('Y-m-d', strtotime('yesterday')) . ' 00:00', false,
+				'Yesterday 00:00',
+			),
+			array(
+				gmdate('Y-m-d', strtotime('today')) . ' 00:00', false,
+				'Today 00:00',
+			),
+			array(
+				gmdate('Y-m-d', strtotime('tomorrow')) . ' 00:00', false,
+				'Tomorrow 00:00',
 			),
 		);
 	}

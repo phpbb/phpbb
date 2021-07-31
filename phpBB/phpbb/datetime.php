@@ -97,19 +97,19 @@ class datetime extends \DateTime
 
 				$midnight	= $midnight->getTimestamp();
 
-				if ($timestamp <= $midnight + 2 * 86400)
+				if ($timestamp < $midnight + 2 * 86400)
 				{
 					$day = false;
 
-					if ($timestamp > $midnight + 86400)
+					if ($timestamp >= $midnight + 86400)
 					{
 						$day = 'TOMORROW';
 					}
-					else if ($timestamp > $midnight)
+					else if ($timestamp >= $midnight)
 					{
 						$day = 'TODAY';
 					}
-					else if ($timestamp > $midnight - 86400)
+					else if ($timestamp >= $midnight - 86400)
 					{
 						$day = 'YESTERDAY';
 					}
