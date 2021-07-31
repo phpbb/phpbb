@@ -46,6 +46,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 	public function test_move_post_to_topic($crawler)
 	{
 		$this->login();
+		$this->add_lang('mcp');
 
 		// Select the post in MCP
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form(array(
@@ -55,18 +56,11 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('MERGE_POSTS'), $crawler->filter('html')->text());
 
-		return $crawler;
-	}
-
-	/**
-	* @depends test_move_post_to_topic
-	*/
-	public function test_confirm_result($crawler)
-	{
-		$this->add_lang('mcp');
 		$form = $crawler->selectButton('Yes')->form();
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('POSTS_MERGED_SUCCESS'), $crawler->text());
+
+		return $crawler;
 	}
 
 	public function test_delete_logs()
