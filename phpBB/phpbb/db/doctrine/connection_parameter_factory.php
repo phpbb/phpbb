@@ -151,6 +151,7 @@ class connection_parameter_factory
 			],
 			'oci8' => [
 				'charset' => 'UTF8',
+				'platform' => new oracle_platform(),
 			],
 			'pdo_pgsql' => [
 				'charset' => 'UTF8',

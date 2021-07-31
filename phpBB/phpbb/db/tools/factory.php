@@ -25,6 +25,7 @@ class factory
 	 */
 	public function get($db_driver, $return_statements = false)
 	{
+		// @todo: only create the doctrine tools object.
 		if ($db_driver instanceof \phpbb\db\driver\mssql_base)
 		{
 			return new \phpbb\db\tools\mssql($db_driver, $return_statements);

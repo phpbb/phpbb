@@ -40,41 +40,40 @@ interface tools_interface
 	 *
 	 *
 	 * @param array $schema_changes
-	 * @return null
 	 */
-	public function perform_schema_changes($schema_changes);
+	public function perform_schema_changes(array $schema_changes): void;
 
 	/**
 	 * Gets a list of tables in the database.
 	 *
 	 * @return array		Array of table names  (all lower case)
 	 */
-	public function sql_list_tables();
+	public function sql_list_tables(): array;
 
 	/**
 	 * Check if table exists
 	 *
 	 * @param string	$table_name	The table name to check for
-	 * @return bool true if table exists, else false
+	 * @return bool True if table exists, else false
 	 */
-	public function sql_table_exists($table_name);
+	public function sql_table_exists(string $table_name): bool;
 
 	/**
 	 * Create SQL Table
 	 *
 	 * @param string	$table_name		The table name to create
 	 * @param array		$table_data		Array containing table data.
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool True if the statements have been executed
 	 */
-	public function sql_create_table($table_name, $table_data);
+	public function sql_create_table(string $table_name, array $table_data): bool;
 
 	/**
 	 * Drop Table
 	 *
 	 * @param string	$table_name		The table name to drop
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_table_drop($table_name);
+	public function sql_table_drop(string $table_name): bool;
 
 	/**
 	 * Gets a list of columns of a table.
@@ -82,7 +81,7 @@ interface tools_interface
 	 * @param string $table_name	Table name
 	 * @return array		Array of column names (all lower case)
 	 */
-	public function sql_list_columns($table_name);
+	public function sql_list_columns(string $table_name): array;
 
 	/**
 	 * Check whether a specified column exist in a table
@@ -91,7 +90,7 @@ interface tools_interface
 	 * @param string	$column_name	Column to check
 	 * @return bool		True if column exists, false otherwise
 	 */
-	public function sql_column_exists($table_name, $column_name);
+	public function sql_column_exists(string $table_name, string $column_name): bool;
 
 	/**
 	 * Add new column
@@ -99,11 +98,10 @@ interface tools_interface
 	 * @param string	$table_name		Table to modify
 	 * @param string	$column_name	Name of the column to add
 	 * @param array		$column_data	Column data
-	 * @param bool		$inline			Whether the query should actually be run,
-	 *						or return a string for adding the column
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 *
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_column_add($table_name, $column_name, $column_data, $inline = false);
+	public function sql_column_add(string $table_name, string $column_name, array $column_data): bool;
 
 	/**
 	 * Change column type (not name!)
@@ -111,22 +109,20 @@ interface tools_interface
 	 * @param string	$table_name		Table to modify
 	 * @param string	$column_name	Name of the column to modify
 	 * @param array		$column_data	Column data
-	 * @param bool		$inline			Whether the query should actually be run,
-	 *						or return a string for modifying the column
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 *
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_column_change($table_name, $column_name, $column_data, $inline = false);
+	public function sql_column_change(string $table_name, string $column_name, array $column_data): bool;
 
 	/**
 	 * Drop column
 	 *
 	 * @param string	$table_name		Table to modify
 	 * @param string	$column_name	Name of the column to drop
-	 * @param bool		$inline			Whether the query should actually be run,
-	 *						or return a string for deleting the column
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 *
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_column_remove($table_name, $column_name, $inline = false);
+	public function sql_column_remove(string $table_name, string $column_name): bool;
 
 	/**
 	 * List all of the indices that belong to a table
@@ -138,7 +134,7 @@ interface tools_interface
 	 * @param string	$table_name		Table to check
 	 * @return array		Array with index names
 	 */
-	public function sql_list_index($table_name);
+	public function sql_list_index(string $table_name): array;
 
 	/**
 	 * Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
@@ -147,7 +143,7 @@ interface tools_interface
 	 * @param string	$index_name		The index name to check
 	 * @return bool			True if index exists, else false
 	 */
-	public function sql_index_exists($table_name, $index_name);
+	public function sql_index_exists(string $table_name, string $index_name): bool;
 
 	/**
 	 * Add index
@@ -155,18 +151,18 @@ interface tools_interface
 	 * @param string	$table_name		Table to modify
 	 * @param string	$index_name		Name of the index to create
 	 * @param string|array	$column		Either a string with a column name, or an array with columns
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_create_index($table_name, $index_name, $column);
+	public function sql_create_index(string $table_name, string $index_name, $column): bool;
 
 	/**
 	 * Drop Index
 	 *
 	 * @param string	$table_name		Table to modify
 	 * @param string	$index_name		Name of the index to delete
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_index_drop($table_name, $index_name);
+	public function sql_index_drop(string $table_name, string $index_name): bool;
 
 	/**
 	 * Check if a specified index exists in table.
@@ -177,7 +173,7 @@ interface tools_interface
 	 * @param string	$index_name		The index name to check
 	 * @return bool True if index exists, else false
 	 */
-	public function sql_unique_index_exists($table_name, $index_name);
+	public function sql_unique_index_exists(string $table_name, string $index_name): bool;
 
 	/**
 	 * Add unique index
@@ -185,18 +181,16 @@ interface tools_interface
 	 * @param string	$table_name		Table to modify
 	 * @param string	$index_name		Name of the unique index to create
 	 * @param string|array	$column		Either a string with a column name, or an array with columns
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_create_unique_index($table_name, $index_name, $column);
+	public function sql_create_unique_index(string $table_name, string $index_name, $column): bool;
 
 	/**
 	 * Add primary key
 	 *
 	 * @param string	$table_name		Table to modify
 	 * @param string|array	$column		Either a string with a column name, or an array with columns
-	 * @param bool		$inline			Whether the query should actually be run,
-	 *						or return a string for creating the key
-	 * @return array|true	Statements to run, or true if the statements have been executed
+	 * @return bool	True if the statements have been executed
 	 */
-	public function sql_create_primary_key($table_name, $column, $inline = false);
+	public function sql_create_primary_key(string $table_name, $column): bool;
 }

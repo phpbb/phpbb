@@ -1,0 +1,5 @@
+services:
+    doctrine.connection:
+        class: Doctrine\DBAL\Connection
+        factory: ['phpbb\db\doctrine\connection_factory', 'get_connection']
+        arguments: ['@config.php']
