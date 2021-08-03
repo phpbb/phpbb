@@ -36,8 +36,8 @@ textarea {
 	line-height: inherit;
 }
 
-figure { margin: 0 }
-img { vertical-align: middle }
+figure { margin: 0; }
+img { vertical-align: middle; }
 
 hr {
 	margin-top: 20px;
@@ -69,7 +69,7 @@ h5,
 h6,
 figure,
 p,
-pre { margin: 0 }
+pre { margin: 0; }
 button {
 	background: transparent;
 	border: 0;
@@ -91,7 +91,7 @@ fieldset {
 	padding: 0;
 }
 
-iframe { border: 0 }
+iframe { border: 0; }
 ol,
 ul {
 	list-style: none;
@@ -104,7 +104,7 @@ ul {
  * This prevents an unwanted focus outline from appearing around elements that
  * might still respond to pointer events.
  */
-[tabindex="-1"]:focus { outline: none !important }
+[tabindex="-1"]:focus { outline: none !important; }
 
 /**
  * Remove double underline from recent version of firefox
@@ -112,4 +112,3 @@ ul {
 abbr[title] {
 	text-decoration: none;
 }
-

@@ -73,17 +73,17 @@
 }
 
 .post-buttons .dropdown-contents .icon {
-    float: right;
-    margin-left: 5px;
+	float: right;
+	margin-left: 5px;
 }
 
 .alert_close .icon:before {
 	padding: 0;
-    border-radius: 50%;
-    width: 11px;
-    display: block;
-    line-height: .9;
-    height: 12px;
+	border-radius: 50%;
+	width: 11px;
+	display: block;
+	line-height: .9;
+	height: 12px;
 }
 
 blockquote cite:before, .uncited:before {

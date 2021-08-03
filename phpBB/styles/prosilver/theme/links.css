@@ -90,13 +90,15 @@ a.lastsubject:hover {
 }
 
 .row-item a:hover {
-	text-decoration: none
+	text-decoration: none;
 }
 
+.row-item .forumtitle:hover,
 .row-item .topictitle:hover,
+.row-item .lastsubject:hover,
 .row-item .subforum:hover,
-.row-item .username:hover,
-.row-item .username-coloured:hover {
+.row-item a.username:hover,
+.row-item a.username-coloured:hover {
 	text-decoration: underline;
 }
 
@@ -161,17 +163,13 @@ a.lastsubject:hover {
 	border-bottom-width: 0;
 }
 
-.arrow-up:hover {
-
-}
+.arrow-up:hover { }
 
 .arrow-down {
 	padding-right: 10px;
 }
 
-.arrow-down:hover {
-
-}
+.arrow-down:hover { }
 
 .arrow-left:hover {
 	text-decoration: none;

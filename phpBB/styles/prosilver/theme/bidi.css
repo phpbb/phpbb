@@ -582,7 +582,6 @@ li.breadcrumbs span:first-child > a {
 .rtl .postprofile {
 	border-width: 0 1px 0 0;
 	float: left;
-/*	text-align: right; */
 }
 
 .rtl .pm .postprofile {

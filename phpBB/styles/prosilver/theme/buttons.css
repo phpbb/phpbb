@@ -155,7 +155,7 @@
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
 	padding: 0;
-	border: 0
+	border: 0;
 }
 
 /* Deprecated as of version 3.2
