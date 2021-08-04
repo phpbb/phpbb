@@ -2543,25 +2543,32 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 
 	$params = [];
 	$add_anchor = '';
+	$url = "{$phpbb_root_path}viewtopic.$phpEx";
 
 	if ($post_visibility == ITEM_APPROVED ||
 		($auth->acl_get('m_softdelete', $data_ary['forum_id']) && $post_visibility == ITEM_DELETED) ||
 		($auth->acl_get('m_approve', $data_ary['forum_id']) && in_array($post_visibility, array(ITEM_UNAPPROVED, ITEM_REAPPROVE))))
 	{
-		$params['t'] = $data_ary['topic_id'];
-
 		if ($mode != 'post')
 		{
 			$params['p'] = $data_ary['post_id'];
 			$add_anchor = '#p' . $data_ary['post_id'];
+		}
+		else
+		{
+			$params['t'] = $data_ary['topic_id'];
 		}
 	}
 	else if ($mode != 'post' && $post_mode != 'edit_first_post' && $post_mode != 'edit_topic')
 	{
 		$params['t'] = $data_ary['topic_id'];
 	}
+	else
+	{
+		$url = "{$phpbb_root_path}viewforum.$phpEx";
+		$params['f'] = $data_ary['forum_id'];
+	}
 
-	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
 	$url = append_sid($url, $params) . $add_anchor;
 
 	$poll = $poll_ary;
