@@ -161,8 +161,7 @@
 		 */
 		onCrop(event) {
 			const data = phpbb.avatars.$data.data();
-			let width = event.detail.width;
-			let height = event.detail.height;
+			let { width, height } = event.detail;
 
 			if (width < data.minWidth || height < data.minHeight) {
 				width = Math.max(data.minWidth, Math.min(data.maxWidth, width));
