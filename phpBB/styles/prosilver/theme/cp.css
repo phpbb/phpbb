@@ -5,7 +5,7 @@
 /* Main CP box
 ----------------------------------------*/
 .cp-menu {
-	float:left;
+	float: left;
 	width: 19%;
 	margin-top: 1em;
 	margin-bottom: 5px;
@@ -299,13 +299,6 @@ ol.def-rules li {
 .pmlist li.bg2 {
 	padding: 0 3px;
 }
-
-/* DEPRECATED 3.2.6
-.pmlist li.pm_message_reported_colour, .pm_message_reported_colour {
-	border-left-color: transparent;
-	border-right-color: transparent;
-}
-*/
 
 .pmlist li.pm_message_reported_colour, .pm_message_reported_colour,
 .pmlist li.pm_marked_colour, .pm_marked_colour,

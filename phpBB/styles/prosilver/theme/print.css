@@ -32,10 +32,10 @@ img, .noprint, .navbar, .box1, .divider, .signature { display: none; }
 
 p { font-size: 85%; }
 .copyright { font-size: 75%; }
-.page-number { float:right; width: auto; text-align: right; font-size: 75%; }
+.page-number { float: right; width: auto; text-align: right; font-size: 75%; }
 
 h1, h2, h3, h1 a, h2 a, h3 a {
-	font-family: "Trebuchet MS",georgia,Verdana,Sans-serif;
+	font-family: "Trebuchet MS", georgia, Verdana, Sans-serif;
 	color: #000000;
 	background: none;
 	text-decoration: none;
@@ -121,13 +121,13 @@ html>body .postbody h1 a:link:after, html>body .postbody h2 a:link:after {
 .postquote span .postquote { font-size: 100%; }
 .quote-by, blockquote cite {
 	color: black;
-	display : block;
+	display: block;
 	font-weight: bold;
 }
 
 /* List */
 ol, ul {
-	margin-left: 15pt
+	margin-left: 15pt;
 }
 
 /* Misc page elements */
