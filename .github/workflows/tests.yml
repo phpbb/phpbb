@@ -527,8 +527,6 @@ jobs:
                   Set-ACL -Path "${env:TEMP_DIR}" -ACLObject $acl
                   cd ${env:GITHUB_WORKSPACE}\phpBB
                   php ..\composer.phar install
-                  php ..\composer.phar remove phpunit/dbunit --dev --update-with-dependencies
-                  php ..\composer.phar require symfony/yaml:~4.4 misantron/dbunit:~5.0 phpunit/phpunit:^9.3 --dev --update-with-all-dependencies --ignore-platform-reqs
                   cd ..
             - name: Setup database
               run: |
