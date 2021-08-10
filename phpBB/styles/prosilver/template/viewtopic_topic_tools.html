@@ -12,11 +12,11 @@
 					<li>
 						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">
 							{% if S_WATCHING_TOPIC %}
-								{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon') }}
-								{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon is-active') }}
+								{{ Icon('iconify', 'vaadin:sign-out', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'vaadin:sign-in', '', true, 'c-subscribe-icon is-active') }}
 							{% else %}
-								{{ Icon('iconify', 'mdi:checkbox-blank-outline', '', true, 'c-subscribe-icon is-active') }}
-								{{ Icon('iconify', 'mdi:checkbox-marked', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'vaadin:sign-in', '', true, 'c-subscribe-icon is-active') }}
+								{{ Icon('iconify', 'vaadin:sign-out', '', true, 'c-subscribe-icon') }}
 							{% endif %}
 							<span>{S_WATCH_TOPIC_TITLE}</span>
 						</a>
