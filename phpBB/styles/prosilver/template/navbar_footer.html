@@ -35,11 +35,11 @@
 					<li class="in-menu">
 						<a href="{{ U_WATCH_FORUM_LINK }}" title="{{ S_WATCH_FORUM_TITLE }}" data-ajax="toggle_link" data-toggle-text="{{ S_WATCH_FORUM_TOGGLE }}" data-toggle-url="{{ U_WATCH_FORUM_TOGGLE }}">
 							{% if S_WATCHING_FORUM %}
-								{{ Icon('iconify', 'mdi:bookmark-minus-outline', '', true, 'c-subscribe-icon') }}
-								{{ Icon('iconify', 'mdi:bookmark-plus-outline', '', true, 'c-subscribe-icon is-active') }}
+								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-subscribe-icon  is-active') }}
+								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-subscribe-icon') }}
 							{% else %}
-								{{ Icon('iconify', 'mdi:bookmark-plus-outline', '', true, 'c-subscribe-icon is-active') }}
-								{{ Icon('iconify', 'mdi:bookmark-minus-outline', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-subscribe-icon is-active') }}
+								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-subscribe-icon') }}
 							{% endif %}
 							<span>{{ S_WATCH_FORUM_TITLE }}</span>
 						</a>
