@@ -195,11 +195,11 @@ class icon extends AbstractExtension
 		$doc = new \DOMDocument();
 		$doc->preserveWhiteSpace = false;
 
-		/**
-		 * Suppression is needed as DOMDocument does not like HTML5 and SVGs.
-		 * Options parameter prevents $dom->saveHTML() from adding an <html> element.
-		 */
-		@$doc->loadHTML($code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+		// Hide html5/svg errors
+		libxml_use_internal_errors(true);
+
+		// Options parameter prevents $dom->saveHTML() from adding an <html> element.
+		$doc->loadHTML($code, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
 		// Remove any DOCTYPE
 		foreach ($doc->childNodes as $child)
