@@ -76,7 +76,7 @@
 
 			<hgroup id="site-description" class="site-description c-hero">
 				<a id="logo" class="c-hero-logo" href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
-					<img src="{{ T_THEME_PATH }}/svg/logo.svg" alt="{{ SITENAME }}" title="{{ SITENAME }}" class="c-hero-logo-img">
+					{{ Icon('svg', 'logo', SITENAME, true, 'c-hero-logo-img') }}
 				</a>
 
 				<h1 class="c-hero-heading">
