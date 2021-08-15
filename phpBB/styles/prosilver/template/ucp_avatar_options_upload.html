@@ -10,9 +10,8 @@
 	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/phpbb-avatars.js' %}
 
 	<input type="hidden" id="avatar-cropper-data" name="avatar_cropper_data" value=""
-		   data-min-width="{{ AVATAR_MIN_WIDTH }}" data-max-width="{{ AVATAR_MAX_WIDTH }}"
-		   data-min-height="{{ AVATAR_MIN_HEIGHT }}" data-max-height="{{ AVATAR_MAX_HEIGHT }}"
-	/>
+		data-min-width="{{ AVATAR_MIN_WIDTH }}" data-max-width="{{ AVATAR_MAX_WIDTH }}"
+		data-min-height="{{ AVATAR_MIN_HEIGHT }}" data-max-height="{{ AVATAR_MAX_HEIGHT }}" />
 
 	{% apply spaceless %}
 		<div class="avatar-cropper-buttons" id="avatar-cropper-buttons">

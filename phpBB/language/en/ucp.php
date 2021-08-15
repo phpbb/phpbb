@@ -473,6 +473,7 @@ $lang = array_merge($lang, array(
 	'RESIGN_SELECTED'					=> 'Resign selected',
 	'RETURN_FOLDER'						=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'						=> '%sReturn to the User Control Panel%s',
+	'RETURN_TO_UCP'						=> 'Return to the User Control Panel',
 	'ROTATE_LEFT'						=> 'Rotate left',
 	'ROTATE_RIGHT'						=> 'Rotate right',
 	'RULE_ADDED'						=> 'Rule successfully added.',

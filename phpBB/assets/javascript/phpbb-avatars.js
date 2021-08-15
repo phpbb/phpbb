@@ -12,6 +12,9 @@
 		image: null,
 
 		/** @type {jQuery} */
+		$form: null,
+
+		/** @type {jQuery} */
 		$buttons: $('#avatar-cropper-buttons'),
 
 		/** @type {jQuery} */
@@ -45,6 +48,7 @@
 
 			this.bindInput();
 			this.bindSelect();
+			this.bindSubmit();
 		},
 
 		/**
@@ -53,9 +57,11 @@
 		destroy() {
 			this.$buttons.find('[data-cropper-action]').off('click.phpbb.avatars');
 			this.image.off('crop.phpbb.avatars');
+			this.$form.off('submit');
 
 			this.$data.val('');
 			this.$buttons.hide();
+			this.$box.removeClass('c-cropper-avatar-box');
 
 			if (this.cropper !== null) {
 				this.cropper.destroy();
@@ -95,6 +101,7 @@
 
 					fileReader.addEventListener('load', function() {
 						phpbb.avatars.image.cropper('destroy').attr('src', this.result).addClass('avatar');
+						phpbb.avatars.$box.addClass('c-cropper-avatar-box');
 						phpbb.avatars.initCropper();
 						phpbb.avatars.initButtons();
 					});
@@ -102,6 +109,73 @@
 					phpbb.avatars.destroy();
 				}
 			});
+		},
+
+		bindSubmit() {
+			const $this = this;
+			$this.$form = this.$input.closest('form');
+			$this.$form.on('submit', () => {
+				const data = phpbb.avatars.$data.data();
+
+				phpbb.avatars.cropper.getCroppedCanvas({
+					width: data.maxWidth,
+					height: data.maxHeight,
+					maxWidth: 4096, // High values for max quality cropping
+					maxHeight: 4096, // High values for max quality cropping
+					imageSmoothingEnabled: false,
+					imageSmoothingQuality: 'high',
+				}).toBlob(blob => {
+					const formData = new FormData($this.$form[0]);
+					formData.set('avatar_upload_file', blob, $this.getUploadFileName());
+					formData.set('submit', '1');
+
+					$.ajax({
+						url: $this.$form.attr('action'),
+						type: 'POST',
+						data: formData,
+						processData: false,
+						contentType: false,
+						success: $this.uploadDone,
+						error: () => {
+							console.log('Upload error');
+						},
+					}).done($this.uploadDone);
+				}, 'image/png', 1);
+
+				return false;
+			});
+		},
+
+		/**
+		 * Get upload filename for the blob data
+		 *
+		 * As the blob data is always in png format, we'll replace the file
+		 * extension in the upload name with one that ends with .png
+		 *
+		 * @return {string} Upload file name
+		 */
+		getUploadFileName() {
+			const originalName = this.$input[0].files[0].name;
+
+			return originalName.replace(/\.[^/\\.]+$/, '.png');
+		},
+
+		uploadDone(response) {
+			if (typeof response !== 'object') {
+				return;
+			}
+
+			// trigger_error() was called which likely means a permission error was encountered.
+			if (typeof response.title !== 'undefined') {
+				return;
+			}
+
+			// Handle errors while deleting file
+			if (typeof response.error !== 'undefined') {
+				phpbb.alert(response.error.title, response.error.message);
+			}
+
+			phpbb.avatars.destroy();
 		},
 
 		/**
@@ -171,14 +245,6 @@
 					height,
 				});
 			}
-
-			phpbb.avatars.$data.val(JSON.stringify(phpbb.avatars.cropper.getCroppedCanvas({
-				minWidth: data.minWidth,
-				minHeight: data.minHeight,
-				maxWidth: data.maxWidth,
-				maxHeight: data.maxHeight,
-				imageSmoothingEnabled: false, // smoothing will just look blurry
-			})));
 		},
 	};
 
