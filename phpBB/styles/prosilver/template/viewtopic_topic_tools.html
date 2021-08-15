@@ -12,11 +12,11 @@
 					<li>
 						<a href="{U_WATCH_TOPIC}" class="watch-topic-link" title="{S_WATCH_TOPIC_TITLE}" data-ajax="toggle_link" data-toggle-text="{S_WATCH_TOPIC_TOGGLE}" data-toggle-url="{U_WATCH_TOPIC_TOGGLE}" data-update-all=".watch-topic-link">
 							{% if S_WATCHING_TOPIC %}
-								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-subscribe-icon is-active') }}
-								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-watch-icon is-active') }}
+								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-watch-icon') }}
 							{% else %}
-								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-subscribe-icon is-active') }}
-								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-subscribe-icon') }}
+								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-watch-icon is-active') }}
+								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-watch-icon') }}
 							{% endif %}
 							<span>{S_WATCH_TOPIC_TITLE}</span>
 						</a>
@@ -25,7 +25,7 @@
 				<!-- IF U_BOOKMARK_TOPIC -->
 					<li>
 						<a href="{U_BOOKMARK_TOPIC}" class="bookmark-link" title="{L_BOOKMARK_TOPIC}" data-ajax="alt_text" data-alt-text="{S_BOOKMARK_TOGGLE}" data-update-all=".bookmark-link">
-							{{ Icon('iconify', 'mdi:heart-outline', S_BOOKMARK_TOPIC, false) }}
+							{{ Icon('iconify', 'mdi:bookmark-plus-outline', S_BOOKMARK_TOPIC, false) }}
 						</a>
 					</li>
 				<!-- ENDIF -->
