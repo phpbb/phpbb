@@ -128,8 +128,8 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.0'
                       db: "mysql:5.7"
-                    #- php: '8.1'
-                    #  db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -447,6 +447,10 @@ jobs:
             matrix:
                 include:
                     - php: '7.4'
+                      db: "postgres"
+                    - php: '8.0'
+                      db: "postgres"
+                    - php: '8.1'
                       db: "postgres"
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}

@@ -207,14 +207,16 @@ class postgres extends \phpbb\db\driver\driver
 					return false;
 				}
 
+				$safe_query_id = $this->clean_query_id($this->query_result);
+
 				if ($cache && $cache_ttl)
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
+					$this->open_queries[$safe_query_id] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0)
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
+					$this->open_queries[$safe_query_id] = $this->query_result;
 				}
 			}
 			else if ($this->debug_sql_explain)
@@ -555,6 +557,15 @@ class postgres extends \phpbb\db\driver\driver
 	 */
 	private function clean_query_id($query_id)
 	{
-		return is_resource($query_id) ? (int) $query_id : $query_id;
+		// As of PHP 8.1 PgSQL functions accept/return \PgSQL\* objects instead of "pgsql *" resources
+		// Attempting to cast object to int will throw error, hence correctly handle all cases
+		if (is_resource($query_id))
+		{
+			return function_exists('get_resource_id') ? get_resource_id($query_id) : (int) $query_id;
+		}
+		else
+		{
+			return is_object($query_id) ? spl_object_id($query_id) : $query_id;
+		}
 	}
 }
