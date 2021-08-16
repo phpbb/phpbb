@@ -124,8 +124,8 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.0'
                       db: "mysql:5.7"
-                    #- php: '8.1'
-                    #  db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -448,6 +448,10 @@ jobs:
                 include:
                     - php: '7.4'
                       db: "postgres"
+                    - php: '8.0'
+                      db: "postgres"
+                    - php: '8.1'
+                      db: "postgres"
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -519,6 +523,8 @@ jobs:
                   Set-ACL -Path "${env:TEMP_DIR}" -ACLObject $acl
                   cd ${env:GITHUB_WORKSPACE}\phpBB
                   php ..\composer.phar install
+                  php ..\composer.phar remove phpunit/dbunit --dev --update-with-dependencies
+                  php ..\composer.phar require symfony/yaml:~4.4 misantron/dbunit:~5.0 phpunit/phpunit:^9.3 --dev --update-with-all-dependencies --ignore-platform-reqs
                   cd ..
             - name: Setup database
               run: |
