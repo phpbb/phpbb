@@ -694,15 +694,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	 * @var bool	bbcode_status	BBCode status
 	 * @var bool	smilies_status	Smilies status
 	 * @var bool	img_status		Image BBCode status
-	 * @var bool	flash_status	Flash BBCode status
 	 * @var bool	url_status		URL BBCode status
 	 * @since 3.3.3-RC1
+	 * @changed 4.0.0-a1 Removed flash_status
 	 */
 	$vars = [
 		'bbcode_status',
 		'smilies_status',
 		'img_status',
-		'flash_status',
 		'url_status',
 	];
 	extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_bbcode_status', compact($vars)));
