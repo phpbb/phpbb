@@ -23,7 +23,7 @@ interface stream_interface
 	 * @param string $path File to read
 	 *
 	 * @return resource Returns a file pointer
-	 * @throws exception\exception When unable to open file
+	 * @throws exception When unable to open file
 	 */
 	public function read_stream(string $path);
 
