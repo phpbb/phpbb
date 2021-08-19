@@ -275,7 +275,7 @@ class session
 			$SID = '?sid=';
 			$_SID = '';
 
-			if (empty($this->session_id))
+			if (empty($this->session_id) && $phpbb_container->getParameter('session.force_sid'))
 			{
 				$this->session_id = $_SID = $request->variable('sid', '');
 				$SID = '?sid=' . $this->session_id;
@@ -284,7 +284,7 @@ class session
 		}
 		else
 		{
-			$this->session_id = $_SID = $request->variable('sid', '');
+			$this->session_id = $_SID = $phpbb_container->getParameter('session.force_sid') ? $request->variable('sid', '') : '';
 			$SID = '?sid=' . $this->session_id;
 		}
 

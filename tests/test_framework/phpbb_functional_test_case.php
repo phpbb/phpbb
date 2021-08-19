@@ -829,10 +829,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$crawler = self::request('GET', 'index.php');
+		$logout_link = $crawler->filter('a[title="' . $this->lang('LOGOUT') . '"]')->attr('href');
+		self::request('GET', $logout_link);
+
+		$crawler = self::request('GET', $logout_link);
 		$this->assertStringContainsString($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
-
 	}
 
 	/**

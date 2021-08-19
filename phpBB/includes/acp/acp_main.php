@@ -60,8 +60,15 @@ class acp_main
 		{
 			if ($action === 'admlogout')
 			{
-				$user->unset_admin();
-				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				if (check_link_hash($request->variable('hash', ''), 'acp_logout'))
+				{
+					$user->unset_admin();
+					redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				}
+				else
+				{
+					redirect(append_sid("{$phpbb_admin_path}index.$phpEx"));
+				}
 			}
 
 			if (!confirm_box(true))
