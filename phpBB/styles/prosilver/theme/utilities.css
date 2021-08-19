@@ -15,12 +15,12 @@
 
 .sr-only-focusable:active,
 .sr-only-focusable:focus {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  clip: auto;
+	position: static;
+	width: auto;
+	height: auto;
+	margin: 0;
+	overflow: visible;
+	clip: auto;
 }
 
 .clearfix:before,
@@ -37,7 +37,7 @@
 .clearfix:after,
 .container:after,
 .container-fluid:after,
-.row:after { clear: both }
+.row:after { clear: both; }
 
 .center-block {
 	display: block;
@@ -45,11 +45,11 @@
 	margin-right: auto;
 }
 
-.pull-right { float: right !important }
-.pull-left { float: left !important }
-.hide { display: none !important }
-.show { display: block !important }
-.invisible { visibility: hidden }
+.pull-right { float: right !important; }
+.pull-left { float: left !important; }
+.hide { display: none !important; }
+.show { display: block !important; }
+.invisible { visibility: hidden; }
 
 .text-hide {
 	font: 0/0 a;
@@ -60,7 +60,7 @@
 }
 
 .hidden {
-	display: none ;
+	display: none;
 }
 
-.affix { position: fixed }
+.affix { position: fixed; }

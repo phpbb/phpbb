@@ -90,7 +90,7 @@ a.lastsubject:hover {
 }
 
 .row-item a:hover {
-	text-decoration: none
+	text-decoration: none;
 }
 
 .row-item .topictitle:hover,
@@ -161,17 +161,13 @@ a.lastsubject:hover {
 	border-bottom-width: 0;
 }
 
-.arrow-up:hover {
-
-}
+.arrow-up:hover { }
 
 .arrow-down {
 	padding-right: 10px;
 }
 
-.arrow-down:hover {
-
-}
+.arrow-down:hover { }
 
 .arrow-left:hover {
 	text-decoration: none;
