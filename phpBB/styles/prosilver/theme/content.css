@@ -189,7 +189,7 @@ dl.row-item dt {
 }
 
 dl.row-item dt .list-inner {
-	padding-left: 52px;					/* Space for folder icon */
+	padding-left: 52px;			/* Space for folder icon */
 }
 
 dl.row-item dt,
@@ -628,8 +628,6 @@ blockquote .codebox {
 
 .attach-image img {
 	border: 1px solid transparent;
-
-	/*	cursor: move; */
 	cursor: default;
 }
 
