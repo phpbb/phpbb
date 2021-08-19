@@ -71,12 +71,12 @@ class twig_test extends \phpbb_test_case
 			null,
 			$loader,
 			new \phpbb\event\dispatcher(),
-			array(
+			[
 				'cache'			=> false,
 				'debug'			=> false,
 				'auto_reload'	=> true,
 				'autoescape'	=> false,
-			)
+			]
 		);
 		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
