@@ -44,7 +44,15 @@
 			// Correctly position the cropper buttons
 			this.$buttons.appendTo(this.$box);
 
-			this.image = this.$box.children('img');
+			// Ensure we have an img for the cropping
+			if (this.$box.children('img').length === 0) {
+				const $avatarImg = $('<img/>');
+				$avatarImg.addClass('avatar');
+				this.image = $avatarImg;
+				this.$box.prepend($avatarImg);
+			} else {
+				this.image = this.$box.children('img');
+			}
 
 			this.bindInput();
 			this.bindSelect();
@@ -111,6 +119,9 @@
 			});
 		},
 
+		/**
+		 * Bind submit button to be handled by ajax submit
+		 */
 		bindSubmit() {
 			const $this = this;
 			$this.$form = this.$input.closest('form');
@@ -160,6 +171,10 @@
 			return originalName.replace(/\.[^/\\.]+$/, '.png');
 		},
 
+		/**
+		 * Handle response from avatar submission
+		 * @param {Object} response AJAX response object
+		 */
 		uploadDone(response) {
 			if (typeof response !== 'object') {
 				return;

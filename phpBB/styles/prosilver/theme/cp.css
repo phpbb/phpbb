@@ -359,6 +359,7 @@ ol.def-rules li {
 
 .c-cropper-avatar-box {
 	min-height: 240px;
+	max-height: 400px;
 }
 
 p.notification-title,
