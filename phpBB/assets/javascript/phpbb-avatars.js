@@ -165,17 +165,17 @@
 				return;
 			}
 
-			// trigger_error() was called which likely means a permission error was encountered.
-			if (typeof response.title !== 'undefined') {
-				return;
-			}
-
 			// Handle errors while deleting file
 			if (typeof response.error !== 'undefined') {
-				phpbb.alert(response.error.title, response.error.message);
-			}
+				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
+			} else {
+				alert = phpbb.alert(response.MESSAGE_TITLE, response.MESSAGE_TEXT);
 
-			phpbb.avatars.destroy();
+				setTimeout(function() {
+					window.location = response.REFRESH_DATA.url.replace('&amp;', '&');
+				}, response.REFRESH_DATA.time * 1000);
+				phpbb.avatars.destroy();
+			}
 		},
 
 		/**

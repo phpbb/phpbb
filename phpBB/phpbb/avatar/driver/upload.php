@@ -107,7 +107,7 @@ class upload extends \phpbb\avatar\driver\driver
 		$template->assign_vars([
 			'AVATAR_ALLOWED_EXTENSIONS' => implode(',', preg_replace('/^/', '.', $this->allowed_extensions)),
 			'AVATAR_UPLOAD_SIZE'		=> $this->config['avatar_filesize'],
-			'S_CROPPING_AVAILABLE'		=> image_cropper::is_available(),
+			'S_CROPPING_AVAILABLE'		=> true,
 			'T_ASSETS_PATH'				=> $web_path . '/assets',
 		]);
 

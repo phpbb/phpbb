@@ -711,6 +711,19 @@ class ucp_profile
 										trigger_error($message);
 									}
 								}
+								else if ($request->is_ajax())
+								{
+									$error = $phpbb_avatar_manager->localize_errors($user, $error);
+
+									$json_response = new \phpbb\json_response;
+									$json_response->send([
+										'success' => false,
+										'error' => [
+											'title'		=> $language->lang('INFORMATION'),
+											'messages'	=> $error,
+										],
+									]);
+								}
 							}
 						}
 						else
