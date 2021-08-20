@@ -2,7 +2,7 @@
 /**
 * Rebuild BOTS
 *
-* You should make a backup from your whole database. Things can and will go wrong. 
+* You should make a backup from your whole database. Things can and will go wrong.
 * This will only work if no BOTs were added.
 *
 */
@@ -24,10 +24,14 @@ $user->setup();
 
 $bots = array(
 	'AdsBot [Google]'			=> array('AdsBot-Google', ''),
+	'Ahrefs [Bot]'				=> array('AhrefsBot/', ''),
 	'Alexa [Bot]'				=> array('ia_archiver', ''),
 	'Alta Vista [Bot]'			=> array('Scooter/', ''),
+	'Amazon [Bot]'				=> array('Amazonbot/', ''),
 	'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
-	'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+	'Baidu [Spider]'			=> array('Baiduspider', ''),
+	'Bing [Bot]'				=> array('bingbot/', ''),
+	'DuckDuckGo [Bot]'			=> array('DuckDuckBot/', ''),
 	'Exabot [Bot]'				=> array('Exabot/', ''),
 	'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
 	'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
@@ -41,7 +45,7 @@ $bots = array(
 	'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
 	'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
 	'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-	'ichiro [Crawler]'			=> array('ichiro/2', ''),
+	'ichiro [Crawler]'			=> array('ichiro/', ''),
 	'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
 	'Metager [Bot]'				=> array('MetagerBot/', ''),
 	'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
@@ -54,6 +58,7 @@ $bots = array(
 	'Online link [Validator]'	=> array('online link validator', ''),
 	'psbot [Picsearch]'			=> array('psbot/0', ''),
 	'Seekport [Bot]'			=> array('Seekbot/', ''),
+	'Semrush [Bot]'				=> array('SemrushBot/', ''),
 	'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
 	'SEO Crawler'				=> array('SEO search Crawler/', ''),
 	'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
@@ -63,7 +68,7 @@ $bots = array(
 	'Synoo [Bot]'				=> array('SynooBot/', ''),
 	'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
 	'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
-	'Voyager [Bot]'				=> array('voyager/1.0', ''),
+	'Voyager [Bot]'				=> array('voyager/', ''),
 	'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
 	'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
 	'W3C [Validator]'			=> array('W3C_*Validator', ''),
@@ -74,7 +79,7 @@ $bots = array(
 	'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
 	'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 );
-	
+
 $bot_ids = array();
 user_get_id_name($bot_ids, array_keys($bots), USER_IGNORE);
 foreach($bot_ids as $bot)
