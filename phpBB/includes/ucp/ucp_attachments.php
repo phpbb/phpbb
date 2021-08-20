@@ -200,7 +200,7 @@ class ucp_attachments
 
 		$template->assign_vars(array(
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
-			'NUM_ATTACHMENTS'		=> $user->lang('NUM_ATTACHMENTS', $num_attachments),
+			'NUM_ATTACHMENTS'		=> $user->lang('NUM_ATTACHMENTS', (int) $num_attachments),
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
 
