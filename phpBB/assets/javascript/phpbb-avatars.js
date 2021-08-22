@@ -46,7 +46,7 @@
 
 			// Ensure we have an img for the cropping
 			if (this.$box.children('img').length === 0) {
-				const $avatarImg = $('<img/>');
+				const $avatarImg = $('<img src="" alt="">');
 				$avatarImg.addClass('avatar');
 				this.image = $avatarImg;
 				this.$box.prepend($avatarImg);
@@ -181,15 +181,16 @@
 			}
 
 			// Handle errors while deleting file
-			if (typeof response.error !== 'undefined') {
-				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
-			} else {
-				alert = phpbb.alert(response.MESSAGE_TITLE, response.MESSAGE_TEXT);
+			if (typeof response.error === 'undefined') {
+				const alert = phpbb.alert(response.MESSAGE_TITLE, response.MESSAGE_TEXT);
 
-				setTimeout(function() {
+				setTimeout(() => {
 					window.location = response.REFRESH_DATA.url.replace('&amp;', '&');
+					alert.hide();
 				}, response.REFRESH_DATA.time * 1000);
 				phpbb.avatars.destroy();
+			} else {
+				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
 			}
 		},
 
