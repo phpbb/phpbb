@@ -123,7 +123,7 @@ class topic_form extends form
 		$this->message->set_template('email_notify');
 		$this->message->set_template_vars(array(
 			'TOPIC_NAME'	=> htmlspecialchars_decode($this->topic_row['topic_title'], ENT_COMPAT),
-			'U_TOPIC'		=> generate_board_url() . '/viewtopic.' . $this->phpEx . '?f=' . $this->topic_row['forum_id'] . '&t=' . $this->topic_id,
+			'U_TOPIC'		=> generate_board_url() . '/viewtopic.' . $this->phpEx . '?t=' . $this->topic_id,
 		));
 		$this->message->set_body($this->body);
 		$this->message->add_recipient(
@@ -142,7 +142,7 @@ class topic_form extends form
 	*/
 	public function get_return_message()
 	{
-		return sprintf($this->user->lang['RETURN_TOPIC'],  '<a href="' . append_sid($this->phpbb_root_path . 'viewtopic.' . $this->phpEx, 'f=' . $this->topic_row['forum_id'] . '&amp;t=' . $this->topic_id) . '">', '</a>');
+		return sprintf($this->user->lang['RETURN_TOPIC'],  '<a href="' . append_sid($this->phpbb_root_path . 'viewtopic.' . $this->phpEx, 't=' . $this->topic_id) . '">', '</a>');
 	}
 
 	/**

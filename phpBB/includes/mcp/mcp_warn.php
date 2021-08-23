@@ -238,10 +238,10 @@ class mcp_warn
 
 		$user_id = $user_row['user_id'];
 
-		if (strpos($this->u_action, "&amp;f=$forum_id&amp;p=$post_id") === false)
+		if (strpos($this->u_action, "&amp;p=$post_id") === false)
 		{
-			$this->p_master->adjust_url("&amp;f=$forum_id&amp;p=$post_id");
-			$this->u_action .= "&amp;f=$forum_id&amp;p=$post_id";
+			$this->p_master->adjust_url("&amp;p=$post_id");
+			$this->u_action .= "&amp;p=$post_id";
 		}
 
 		// Check if can send a notification
@@ -358,7 +358,7 @@ class mcp_warn
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $user_rank_data['img'],
 
-			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id#p$post_id"),
+			'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?p=$post_id#p$post_id"),
 
 			'S_CAN_NOTIFY'		=> $s_can_notify,
 		));

@@ -33,7 +33,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->assertStringContainsString('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 
 		// Test quoting a message
-		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post2['topic_id']}&p={$post2['post_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=quote&p={$post2['post_id']}&sid={$this->sid}");
 		$this->assertStringContainsString('This is a test post posted by the testing framework.', $crawler->filter('html')->text());
 	}
 
@@ -76,7 +76,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
 		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
 
-		$crawler = self::request('GET', "posting.php?mode=quote&f=2&t={$post['topic_id']}&p={$post['post_id']}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=quote&p={$post['post_id']}&sid={$this->sid}");
 
 		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
 	}
@@ -91,7 +91,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		$url =  self::$client->getCrawler()->selectLink('Edit')->link()->getUri();
 		$post_id = $this->get_parameter_from_link($url, 'p');
-		$crawler = self::request('GET', "posting.php?mode=edit&f=2&p={$post_id}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=edit&p={$post_id}&sid={$this->sid}");
 		$form = $crawler->selectButton('Submit')->form();
 		$form->setValues(array('message' => 'Edited post'));
 		$crawler = self::submit($form);
@@ -115,7 +115,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->login();
 		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
 		$post  = $this->create_post(2, $topic['topic_id'], 'Re: Test Topic 1', $text);
-		$quote_url = "posting.php?mode=quote&f=2&t={$post['topic_id']}&p={$post['post_id']}&sid={$this->sid}";
+		$quote_url = "posting.php?mode=quote&p={$post['post_id']}&sid={$this->sid}";
 
 		$this->admin_login();
 		foreach ($expected as $quote_depth => $expected_text)
