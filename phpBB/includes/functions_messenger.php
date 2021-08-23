@@ -1851,14 +1851,22 @@ class smtp_class
 */
 function mail_encode($str, $eol = "\r\n")
 {
-	// define start delimimter, end delimiter and spacer
-	$start = "=?UTF-8?B?";
+	// Check if string contains ASCII only characters
+	$is_ascii = strlen($str) === utf8_strlen($str);
+
+	// Define start delimimter, end delimiter and spacer
+	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
+	$start = $is_ascii ? "=?US-ASCII?Q?" : "=?UTF-8?B?";
 	$end = "?=";
 	$delimiter = "$eol ";
 
-	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
-	$split_length = 60;
-	$encoded_str = base64_encode($str);
+	// Maximum encoded-word length is 75 as per RFC 2047 section 2.
+	// $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	$split_length = 75 - strlen($start . $delimiter . $end);
+	$split_length = $split_length - $split_length % 4;
+
+	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
+	$encoded_str = $is_ascii ? quoted_printable_encode($str) : base64_encode($str);
 
 	// If encoded string meets the limits, we just return with the correct data.
 	if (strlen($encoded_str) <= $split_length)
@@ -1867,7 +1875,7 @@ function mail_encode($str, $eol = "\r\n")
 	}
 
 	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
-	if (strlen($str) === utf8_strlen($str))
+	if ($is_ascii)
 	{
 		return $start . implode($end . $delimiter . $start, str_split($encoded_str, $split_length)) . $end;
 	}
