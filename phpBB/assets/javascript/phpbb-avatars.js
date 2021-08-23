@@ -18,7 +18,7 @@
 		$buttons: $('#avatar-cropper-buttons'),
 
 		/** @type {jQuery} */
-		$box: $('#avatar-box'),
+		$box: $('.c-avatar-box'),
 
 		/** @type {jQuery} */
 		$data: $('#avatar-cropper-data'),
