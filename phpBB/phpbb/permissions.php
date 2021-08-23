@@ -251,7 +251,6 @@ class permissions
 		'u_pm_bbcode'	=> array('lang' => 'ACL_U_PM_BBCODE', 'cat' => 'pm'),
 		'u_pm_smilies'	=> array('lang' => 'ACL_U_PM_SMILIES', 'cat' => 'pm'),
 		'u_pm_img'		=> array('lang' => 'ACL_U_PM_IMG', 'cat' => 'pm'),
-		'u_pm_flash'	=> array('lang' => 'ACL_U_PM_FLASH', 'cat' => 'pm'),
 
 		'u_sendemail'	=> array('lang' => 'ACL_U_SENDEMAIL', 'cat' => 'misc'),
 		'u_sendim'		=> array('lang' => 'ACL_U_SENDIM', 'cat' => 'misc'),
@@ -289,7 +288,6 @@ class permissions
 		'f_attach'		=> array('lang' => 'ACL_F_ATTACH', 'cat' => 'content'),
 		'f_icons'		=> array('lang' => 'ACL_F_ICONS', 'cat' => 'content'),
 		'f_bbcode'		=> array('lang' => 'ACL_F_BBCODE', 'cat' => 'content'),
-		'f_flash'		=> array('lang' => 'ACL_F_FLASH', 'cat' => 'content'),
 		'f_img'			=> array('lang' => 'ACL_F_IMG', 'cat' => 'content'),
 		'f_sigs'		=> array('lang' => 'ACL_F_SIGS', 'cat' => 'content'),
 		'f_smilies'		=> array('lang' => 'ACL_F_SMILIES', 'cat' => 'content'),

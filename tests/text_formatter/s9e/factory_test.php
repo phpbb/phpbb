@@ -87,7 +87,6 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$this->assertTrue(isset($configurator->BBCodes['CODE']));
 		$this->assertTrue(isset($configurator->BBCodes['COLOR']));
 		$this->assertTrue(isset($configurator->BBCodes['EMAIL']));
-		$this->assertTrue(isset($configurator->BBCodes['FLASH']));
 		$this->assertTrue(isset($configurator->BBCodes['I']));
 		$this->assertTrue(isset($configurator->BBCodes['IMG']));
 		$this->assertTrue(isset($configurator->BBCodes['LIST']));

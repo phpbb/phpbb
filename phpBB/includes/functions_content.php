@@ -666,14 +666,13 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * @param bool $allow_urls If urls is allowed
 * @param bool $allow_smilies If smilies are allowed
 * @param bool $allow_img_bbcode
-* @param bool $allow_flash_bbcode
 * @param bool $allow_quote_bbcode
 * @param bool $allow_url_bbcode
 * @param string $mode Mode to parse text as, e.g. post or sig
 *
 * @return array	An array of string with the errors that occurred while parsing
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
 {
 	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
@@ -689,12 +688,12 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_urls		Whether or not to parse URLs
 	* @var bool		allow_smilies	Whether or not to parse Smilies
 	* @var bool		allow_img_bbcode	Whether or not to parse the [img] BBCode
-	* @var bool		allow_flash_bbcode	Whether or not to parse the [flash] BBCode
 	* @var bool		allow_quote_bbcode	Whether or not to parse the [quote] BBCode
 	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
 	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
 	* @changed 3.2.0-a1 Added mode
+	* @changed 4.0.0-a1 Removed allow_flash_bbcode
 	*/
 	$vars = array(
 		'text',
@@ -705,7 +704,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		'allow_urls',
 		'allow_smilies',
 		'allow_img_bbcode',
-		'allow_flash_bbcode',
 		'allow_quote_bbcode',
 		'allow_url_bbcode',
 		'mode',
@@ -721,7 +719,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	}
 
 	$message_parser = new parse_message($text);
-	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
+	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
 
 	$text = $message_parser->message;
 	$uid = $message_parser->bbcode_uid;

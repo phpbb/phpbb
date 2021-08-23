@@ -887,7 +887,6 @@ function set_user_options()
 	// Key need to be set in row, else default value is chosen
 	$keyoptions = array(
 		'viewimg'		=> array('bit' => 0, 'default' => 1),
-		'viewflash'		=> array('bit' => 1, 'default' => 1),
 		'viewsmilies'	=> array('bit' => 2, 'default' => 1),
 		'viewsigs'		=> array('bit' => 3, 'default' => 1),
 		'viewavatars'	=> array('bit' => 4, 'default' => 1),

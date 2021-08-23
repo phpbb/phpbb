@@ -743,12 +743,11 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
 }
 
-// HTML, BBCode, Smilies, Images and Flash status
+// HTML, BBCode, Smilies and Images status
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
 $img_status		= ($bbcode_status && $auth->acl_get('f_img', $forum_id)) ? true : false;
 $url_status		= ($config['allow_post_links']) ? true : false;
-$flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && $config['allow_post_flash']) ? true : false;
 $quote_status	= true;
 
 /**
@@ -760,16 +759,15 @@ $quote_status	= true;
  * @var bool	smilies_status	Smilies status
  * @var bool	img_status		Image BBCode status
  * @var bool	url_status		URL BBCode status
- * @var bool	flash_status	Flash BBCode status
  * @var bool	quote_status	Quote BBCode status
  * @since 3.3.3-RC1
+ * @changed 4.0.0-a1 Removed flash_status
  */
 $vars = [
 	'bbcode_status',
 	'smilies_status',
 	'img_status',
 	'url_status',
-	'flash_status',
 	'quote_status',
 ];
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_bbcode_status', compact($vars)));
@@ -792,7 +790,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 		if (confirm_box(true))
 		{
 			$message_parser->message = $message;
-			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $quote_status, $config['allow_post_links']);
 
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'user_id'		=> (int) $user->data['user_id'],
@@ -1131,7 +1129,7 @@ if ($submit || $preview || $refresh)
 
 		if (!$preview || !empty($message_parser->message))
 		{
-			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $quote_status, $config['allow_post_links']);
 		}
 
 		// On a refresh we do not care about message parsing errors
@@ -1918,7 +1916,6 @@ $page_data = array(
 	'MESSAGE'				=> $post_data['post_text'],
 	'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 	'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
@@ -1965,7 +1962,6 @@ $page_data = array(
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,
-	'S_BBCODE_FLASH'		=> $flash_status,
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,

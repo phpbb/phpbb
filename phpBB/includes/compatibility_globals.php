@@ -24,7 +24,6 @@ if (!defined('IN_PHPBB'))
 define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
-define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files - @deprecated 3.3
 
 /**
  * Sets compatibility globals in the global scope
