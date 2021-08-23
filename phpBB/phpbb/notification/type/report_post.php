@@ -113,11 +113,11 @@ class report_post extends \phpbb\notification\type\post_in_queue
 			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject')), ENT_COMPAT),
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 
-			'U_VIEW_REPORT'				=> "{$board_url}/mcp.{$this->php_ext}?f={$this->get_data('forum_id')}&p={$this->item_id}&i=reports&mode=report_details#reports",
+			'U_VIEW_REPORT'				=> "{$board_url}/mcp.{$this->php_ext}?p={$this->item_id}&i=reports&mode=report_details#reports",
 			'U_VIEW_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_NEWEST_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&view=unread#unread",
-			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-			'U_VIEW_TOPIC'				=> "{$board_url}/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_NEWEST_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?t={$this->item_parent_id}&view=unread#unread",
+			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
+			'U_VIEW_TOPIC'				=> "{$board_url}/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
 			'U_FORUM'					=> "{$board_url}/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
 		);
 	}
@@ -129,7 +129,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "f={$this->get_data('forum_id')}&amp;p={$this->item_id}&amp;i=reports&amp;mode=report_details#reports");
+		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "p={$this->item_id}&amp;i=reports&amp;mode=report_details#reports");
 	}
 
 	/**

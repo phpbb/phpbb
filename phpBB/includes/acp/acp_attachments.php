@@ -1284,7 +1284,7 @@ class acp_attachments
 
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 
-						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
+						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
 						'U_FILE'			=> $this->controller_helper->route('phpbb_storage_attachment', ['file' => $row['attach_id']])
 					));
 				}

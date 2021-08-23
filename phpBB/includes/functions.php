@@ -1466,10 +1466,9 @@ function tracking_unserialize($string, $max_depth = 3)
 * @return string The corrected url.
 *
 * Examples:
-* <code>
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx?t=1&amp;f=2");
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1&amp;f=2');
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1&f=2', false);
+* <code> append_sid("{$phpbb_root_path}viewtopic.$phpEx?t=1");
+* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1');
+* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1', false);
 * append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
 * </code>
 *
