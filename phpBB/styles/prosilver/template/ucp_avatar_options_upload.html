@@ -3,68 +3,66 @@
 	<dd><input type="hidden" name="MAX_FILE_SIZE" value="{AVATAR_UPLOAD_SIZE}" /><input type="file" name="avatar_upload_file" id="avatar_upload_file" class="inputbox autowidth" accept="{{ AVATAR_ALLOWED_EXTENSIONS }}" /></dd>
 </dl>
 
-{% if S_CROPPING_AVAILABLE %}
-	{% INCLUDECSS T_ASSETS_PATH ~ '/css/cropper.min.css' %}
-	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/cropper.min.js' %}
-	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/jquery-cropper.js' %}
-	{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/phpbb-avatars.js' %}
+{% INCLUDECSS T_ASSETS_PATH ~ '/css/cropper.min.css' %}
+{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/cropper.min.js' %}
+{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/jquery-cropper.js' %}
+{% INCLUDEJS T_ASSETS_PATH ~ '/javascript/phpbb-avatars.js' %}
 
-	<input type="hidden" id="avatar-cropper-data" name="avatar_cropper_data" value=""
-		data-min-width="{{ AVATAR_MIN_WIDTH }}" data-max-width="{{ AVATAR_MAX_WIDTH }}"
-		data-min-height="{{ AVATAR_MIN_HEIGHT }}" data-max-height="{{ AVATAR_MAX_HEIGHT }}" />
+<input type="hidden" id="avatar-cropper-data" name="avatar_cropper_data" value=""
+	data-min-width="{{ AVATAR_MIN_WIDTH }}" data-max-width="{{ AVATAR_MAX_WIDTH }}"
+	data-min-height="{{ AVATAR_MIN_HEIGHT }}" data-max-height="{{ AVATAR_MAX_HEIGHT }}" />
 
-	{% apply spaceless %}
-		<div class="avatar-cropper-buttons" id="avatar-cropper-buttons">
-			<div class="button-group">
-				<button class="button" type="button" title="{{ lang('ZOOM_IN') }}" data-cropper-action="zoom,0.1">
-					{{ Icon('iconify', 'fa:search-plus', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('ZOOM_OUT') }}" data-cropper-action="zoom,-0.1">
-					{{ Icon('iconify', 'fa:search-minus', '', true) }}
-				</button>
-			</div>
-
-			<div class="button-group">
-				<button class="button" type="button" title="{{ lang('MOVE_LEFT') }}" data-cropper-action="move,-10,0">
-					{{ Icon('iconify', 'fa:arrow-left', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('MOVE_RIGHT') }}" data-cropper-action="move,10,0">
-					{{ Icon('iconify', 'fa:arrow-right', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('MOVE_UP') }}" data-cropper-action="move,0,-10">
-					{{ Icon('iconify', 'fa:arrow-up', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('MOVE_DOWN') }}" data-cropper-action="move,0,10">
-					{{ Icon('iconify', 'fa:arrow-down', '', true) }}
-				</button>
-			</div>
-
-			<div class="button-group">
-				<button class="button" type="button" title="{{ lang('ROTATE_LEFT') }}" data-cropper-action="rotate,-90">
-					{{ Icon('iconify', 'fa:rotate-left', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('ROTATE_RIGHT') }}" data-cropper-action="rotate,90">
-					{{ Icon('iconify', 'fa:rotate-right', '', true) }}
-				</button>
-			</div>
-
-			<div class="button-group">
-				<button class="button" type="button" title="{{ lang('FLIP_HORIZONTALLY') }}" data-cropper-action="scaleX">
-					{{ Icon('iconify', 'fa:arrows-h', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('FLIP_VERTICALLY') }}" data-cropper-action="scaleY">
-					{{ Icon('iconify', 'fa:arrows-v', '', true) }}
-				</button>
-			</div>
-
-			<div class="button-group">
-				<button class="button" type="button" title="{{ lang('RESET') }}" data-cropper-action="reset">
-					{{ Icon('iconify', 'fa:refresh', '', true) }}
-				</button>
-				<button class="button" type="button" title="{{ lang('CLEAR') }}" data-cropper-action="clear">
-					{{ Icon('iconify', 'fa:times', '', true) }}
-				</button>
-			</div>
+{% apply spaceless %}
+	<div class="avatar-cropper-buttons" id="avatar-cropper-buttons">
+		<div class="button-group">
+			<button class="button" type="button" title="{{ lang('ZOOM_IN') }}" data-cropper-action="zoom,0.1">
+				{{ Icon('iconify', 'fa:search-plus', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('ZOOM_OUT') }}" data-cropper-action="zoom,-0.1">
+				{{ Icon('iconify', 'fa:search-minus', '', true) }}
+			</button>
 		</div>
-	{% endapply %}
-{% endif %}
+
+		<div class="button-group">
+			<button class="button" type="button" title="{{ lang('MOVE_LEFT') }}" data-cropper-action="move,-10,0">
+				{{ Icon('iconify', 'fa:arrow-left', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('MOVE_RIGHT') }}" data-cropper-action="move,10,0">
+				{{ Icon('iconify', 'fa:arrow-right', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('MOVE_UP') }}" data-cropper-action="move,0,-10">
+				{{ Icon('iconify', 'fa:arrow-up', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('MOVE_DOWN') }}" data-cropper-action="move,0,10">
+				{{ Icon('iconify', 'fa:arrow-down', '', true) }}
+			</button>
+		</div>
+
+		<div class="button-group">
+			<button class="button" type="button" title="{{ lang('ROTATE_LEFT') }}" data-cropper-action="rotate,-90">
+				{{ Icon('iconify', 'fa:rotate-left', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('ROTATE_RIGHT') }}" data-cropper-action="rotate,90">
+				{{ Icon('iconify', 'fa:rotate-right', '', true) }}
+			</button>
+		</div>
+
+		<div class="button-group">
+			<button class="button" type="button" title="{{ lang('FLIP_HORIZONTALLY') }}" data-cropper-action="scaleX">
+				{{ Icon('iconify', 'fa:arrows-h', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('FLIP_VERTICALLY') }}" data-cropper-action="scaleY">
+				{{ Icon('iconify', 'fa:arrows-v', '', true) }}
+			</button>
+		</div>
+
+		<div class="button-group">
+			<button class="button" type="button" title="{{ lang('RESET') }}" data-cropper-action="reset">
+				{{ Icon('iconify', 'fa:refresh', '', true) }}
+			</button>
+			<button class="button" type="button" title="{{ lang('CLEAR') }}" data-cropper-action="clear">
+				{{ Icon('iconify', 'fa:times', '', true) }}
+			</button>
+		</div>
+	</div>
+{% endapply %}
