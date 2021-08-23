@@ -157,14 +157,6 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		// Lets try to crop the avatar
-		$data = $request->variable('avatar_cropper_data', '', true);
-
-		if (!empty($upload_file['name']) && $data && image_cropper::is_file_supported($file))
-		{
-			image_cropper::crop_file_by_data($file, json_decode(htmlspecialchars_decode($data, ENT_COMPAT), true));
-		}
-
 		$filedata = array(
 			'filename'			=> $file->get('filename'),
 			'filesize'			=> $file->get('filesize'),
