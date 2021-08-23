@@ -18,7 +18,6 @@ use phpbb\config\config;
 use phpbb\controller\helper;
 use phpbb\event\dispatcher_interface;
 use phpbb\files\factory;
-use phpbb\image\image_cropper;
 use phpbb\path_helper;
 use phpbb\storage\exception\exception as storage_exception;
 use phpbb\storage\storage;
