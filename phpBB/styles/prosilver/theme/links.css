@@ -98,10 +98,12 @@ a.lastsubject:hover {
 	text-decoration: none;
 }
 
+.row-item .forumtitle:hover,
 .row-item .topictitle:hover,
+.row-item .lastsubject:hover,
 .row-item .subforum:hover,
-.row-item .username:hover,
-.row-item .username-coloured:hover {
+.row-item a.username:hover,
+.row-item a.username-coloured:hover {
 	text-decoration: underline;
 }
 
