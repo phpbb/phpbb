@@ -202,7 +202,6 @@ class extension extends \Twig\Extension\AbstractExtension
 		return call_user_func_array([$this->language, 'is_set'], [$key]);
 	}
 
-
 	/**
 	 * Get output for language variable in JS code
 	 *
