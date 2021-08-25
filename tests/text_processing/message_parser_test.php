@@ -321,26 +321,6 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 				array(true, true, true, true, true, true),
 				function ($phpbb_container)
 				{
-					$phpbb_container->get('config')->set('max_post_img_height', 0);
-					$phpbb_container->get('config')->set('max_post_img_width', 0);
-				}
-			),
-			array(
-				'[img]http://example.org/100x100.png[/img]',
-				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
-				array(true, true, true, true, true, true),
-				function ($phpbb_container)
-				{
-					$phpbb_container->get('config')->set('max_post_img_height', 100);
-					$phpbb_container->get('config')->set('max_post_img_width', 100);
-				}
-			),
-			array(
-				'[img]http://example.org/100x100.png[/img]',
-				'<r><IMG src="http://example.org/100x100.png"><s>[img]</s><URL url="http://example.org/100x100.png">http://example.org/100x100.png</URL><e>[/img]</e></IMG></r>',
-				array(true, true, true, true, true, true),
-				function ($phpbb_container)
-				{
 					$phpbb_container->get('config')->set('max_sig_img_height', 12);
 					$phpbb_container->get('config')->set('max_sig_img_width', 34);
 				}

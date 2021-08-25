@@ -400,8 +400,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'max_poll_options' => true,
 			'max_post_chars' => true,
 			'max_post_font_size' => true,
-			'max_post_img_height' => true,
-			'max_post_img_width' => true,
 			'max_post_smilies' => true,
 			'max_post_urls' => true,
 			'max_quote_depth' => true,
