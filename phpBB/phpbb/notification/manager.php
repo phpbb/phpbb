@@ -255,6 +255,31 @@ class manager
 			'ignore_users'		=> array(),
 		), $options);
 
+		$break = false;
+
+		/**
+		* Get notification data before find_users_for_notification() execute
+		*
+		* @event core.notification_manager_add_notifications_before
+		* @var	bool	break					Flag indicating if the function return after hook
+		* @var	array	notification_type_name	Type identifier or array of item types
+		* @var	string	data					Data specific for this type that will be inserted
+		* @var	string	options					Optional options to control what notifications are loaded
+		* @since 3.3.5-RC1
+		*/
+		$vars = [
+			'break',
+			'notification_type_name',
+			'data',
+			'options',
+		];
+		extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications_before', compact($vars)));
+
+		if ($break)
+		{
+			return [];
+		}
+
 		if (is_array($notification_type_name))
 		{
 			$notified_users = array();
