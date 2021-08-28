@@ -154,11 +154,7 @@ class ucp_register
 				FROM ' . LANG_TABLE;
 			$result = $db->sql_query($sql);
 
-			$lang_row = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$lang_row[] = $row;
-			}
+			$lang_row = (array) $db->sql_fetchrowset($result);
 			$db->sql_freeresult($result);
 
 			if ($coppa === false && $config['coppa_enable'])
@@ -633,6 +629,14 @@ class ucp_register
 		// Assign template vars for timezone select
 		phpbb_timezone_select($template, $user, $data['tz'], true);
 
+		// Checking amount of available languages
+		$sql = 'SELECT lang_id
+			FROM ' . LANG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$lang_row = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
 		$template_vars = array(
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -643,7 +647,7 @@ class ucp_register
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars'])),
 
-			'S_LANG_OPTIONS'	=> language_select($data['lang']),
+			'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($data['lang']) : '',
 			'S_TZ_PRESELECT'	=> !$submit,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,
