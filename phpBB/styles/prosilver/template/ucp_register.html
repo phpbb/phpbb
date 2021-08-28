@@ -57,12 +57,12 @@
 	<hr />
 
 	<!-- EVENT ucp_register_options_before -->
-	<!-- IF S_LANG_OPTIONS -->
+	{% if S_LANG_OPTIONS %}
 	<dl>
 		<dt><label for="lang">{L_LANGUAGE}{L_COLON}</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
 	</dl>
-	<!-- ENDIF -->
+	{% endif %}
 
 	<!-- INCLUDE timezone_option.html -->
 

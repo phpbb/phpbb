@@ -264,23 +264,32 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 
 /**
 * Pick a language, any language ...
+*
+* @param string $default	Language ISO code to be selected by default in the dropdown list
+* @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
+*
+* @return string			HTML options for language selection dropdown list.
 */
-function language_select($default = '')
+function language_select($default = '', array $langdata = [])
 {
 	global $db;
 
-	$sql = 'SELECT lang_iso, lang_local_name
-		FROM ' . LANG_TABLE . '
-		ORDER BY lang_english_name';
-	$result = $db->sql_query($sql);
+	if (empty($langdata))
+	{
+		$sql = 'SELECT lang_iso, lang_local_name
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
+		$result = $db->sql_query($sql);
+		$langdata = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+	}
 
 	$lang_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($langdata as $row)
 	{
 		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
 		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
 
 	return $lang_options;
 }
