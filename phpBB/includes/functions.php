@@ -263,13 +263,13 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 // functions used for building option fields
 
 /**
-* Pick a language, any language ...
-*
-* @param string $default	Language ISO code to be selected by default in the dropdown list
-* @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
-*
-* @return string			HTML options for language selection dropdown list.
-*/
+ * Pick a language, any language ...
+ *
+ * @param string $default	Language ISO code to be selected by default in the dropdown list
+ * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
+ *
+ * @return string			HTML options for language selection dropdown list.
+ */
 function language_select($default = '', array $langdata = [])
 {
 	global $db;
@@ -295,26 +295,36 @@ function language_select($default = '', array $langdata = [])
 }
 
 /**
-* Pick a template/theme combo,
-*/
-function style_select($default = '', $all = false)
+ * Pick a template/theme combo
+ *
+ * @param string $default	Style ID to be selected by default in the dropdown list
+ * @param bool $all			Flag indicating if all styles data including inactive ones should be fetched
+ * @param array $styledata	Style data in format of array(array('style_id' => int, style_name => string), ...)
+ *
+ * @return string			HTML options for style selection dropdown list.
+ */
+function style_select($default = '', $all = false, array $styledata = [])
 {
 	global $db;
 
-	$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
-	$sql = 'SELECT style_id, style_name
-		FROM ' . STYLES_TABLE . "
-		$sql_where
-		ORDER BY style_name";
-	$result = $db->sql_query($sql);
+	if (empty($styledata))
+	{
+		$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
+		$sql = 'SELECT style_id, style_name
+			FROM ' . STYLES_TABLE . "
+			$sql_where
+			ORDER BY style_name";
+		$result = $db->sql_query($sql);
+		$styledata = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+	}
 
 	$style_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($styledata as $row)
 	{
 		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
 		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
 
 	return $style_options;
 }
