@@ -2,7 +2,6 @@
 	<div class="inner">
 
 		<ul id="nav-main" class="nav-main linklist" role="menubar">
-
 			<li id="quick-links" class="quick-links dropdown-container responsive-menu{% if not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH %} hidden{% endif %}">
 				<a href="#" class="dropdown-trigger">
 					{{ Icon('iconify', 'fa:bars', lang('QUICK_LINKS'), false) }}
@@ -105,9 +104,13 @@
 			{% endif %}
 
 			{% if S_REGISTERED_USER %}
+
 				{% EVENT navbar_header_user_profile_prepend %}
+
 				<li id="username_logged_in" class="rightside {% if CURRENT_USER_AVATAR_HTML %} no-bulletin{% endif %}">
+
 					{% EVENT navbar_header_username_prepend %}
+
 					<div class="header-profile dropdown-container">
 						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
 							{% if CURRENT_USER_AVATAR_HTML %}{{ CURRENT_USER_AVATAR_HTML }} {% endif %}
@@ -151,8 +154,10 @@
 							</ul>
 						</div>
 					</div>
+
 					{% EVENT navbar_header_username_append %}
-					</li>
+
+				</li>
 				{% if S_DISPLAY_PM %}
 					<li class="rightside">
 						<a href="{{ U_PRIVATEMSGS }}" role="menuitem">
@@ -160,15 +165,20 @@
 						</a>
 					</li>
 				{% endif %}
+
 				{% if S_NOTIFICATIONS_DISPLAY %}
 					<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside">
 						<a href="{{ U_VIEW_ALL_NOTIFICATIONS }}" id="notification-button" class="dropdown-trigger">
 							{{ Icon('iconify', 'fa:bell', lang('NOTIFICATIONS'), false) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
 						</a>
+
 						{% include 'notification_dropdown.html' %}
+
 					</li>
 				{% endif %}
+
 			{% EVENT navbar_header_user_profile_append %}
+
 			{% elseif not S_IS_BOT %}
 				<li class="rightside" >
 					<a href="{{ U_LOGIN_LOGOUT }}" title="{{ lang('LOGIN_LOGOUT') }}" accesskey="x" role="menuitem">
@@ -182,7 +192,9 @@
 						</a>
 					</li>
 				{% endif %}
+
 				{% EVENT navbar_header_logged_out_content %}
+
 			{% endif %}
 		</ul>
 
@@ -193,7 +205,6 @@
 			{% EVENT overall_header_breadcrumbs_before %}
 
 			<li class="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList">
-
 				{% if U_SITE_HOME %}
 					<span class="crumb" {{ MICRODATA }}>
 						{% apply spaceless %}
@@ -207,6 +218,7 @@
 				{% endif %}
 
 				{% EVENT overall_header_breadcrumb_prepend %}
+
 				<span class="crumb" {{ MICRODATA }}>
 					{% apply spaceless %}
 					<a itemprop="item" href="{{ U_INDEX }}" accesskey="h" data-navbar-reference="index">
@@ -232,7 +244,9 @@
 					</span>
 					{% EVENT overall_header_navlink_append %}
 				{% endfor %}
+
 				{% EVENT overall_header_breadcrumb_append %}
+
 			</li>
 
 			{% EVENT overall_header_breadcrumbs_after %}
