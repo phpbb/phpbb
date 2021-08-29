@@ -68,7 +68,7 @@ class table_helper
 			{
 				$doctrine_options['autoincrement'] = true;
 			}
-			elseif ($dbms_layer === 'mysql' && $column_data[2] === 'true_sort')
+			else if ($dbms_layer === 'mysql' && $column_data[2] === 'true_sort')
 			{
 				$doctrine_options['platformoptions']['collation'] = 'utf8_unicode_ci';
 			}
