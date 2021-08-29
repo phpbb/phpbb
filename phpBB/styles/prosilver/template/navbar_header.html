@@ -196,18 +196,24 @@
 
 				{% if U_SITE_HOME %}
 					<span class="crumb" {{ MICRODATA }}>
+						{% apply spaceless %}
 						<a itemprop="item" href="{{ U_SITE_HOME }}" data-navbar-reference="home">
-							{{ Icon('iconify', 'fa:home', '', true) }}<span itemprop="name">{{ L_SITE_HOME }}</span>
+							{{ Icon('iconify', 'fa:home', '', true) }}
+							<span itemprop="name">{{ L_SITE_HOME }}</span>
 						</a>
+						{% endapply %}
 						<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
 					</span>
 				{% endif %}
 
 				{% EVENT overall_header_breadcrumb_prepend %}
 				<span class="crumb" {{ MICRODATA }}>
+					{% apply spaceless %}
 					<a itemprop="item" href="{{ U_INDEX }}" accesskey="h" data-navbar-reference="index">
-						{% if not U_SITE_HOME %}{{ Icon('iconify', 'fa:home', '', true) }}{% endif %}<span itemprop="name">{{ L_INDEX }}</span>
+						{% if not U_SITE_HOME %}{{ Icon('iconify', 'fa:home', '', true) }}{% endif %}
+						<span itemprop="name">{{ L_INDEX }}</span>
 					</a>
+					{% endapply %}
 					<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
 				</span>
 
@@ -217,9 +223,11 @@
 
 					{% EVENT overall_header_navlink_prepend %}
 					<span class="crumb" {{ MICRODATA }}{% if navlink.MICRODATA %} {{ navlink.MICRODATA }}{% endif %}>
+						{% apply spaceless %}
 						<a itemprop="item" href="{{ NAVLINK_LINK }}">
 							<span itemprop="name">{{ NAVLINK_NAME }}</span>
 						</a>
+						{% endapply %}
 						<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
 					</span>
 					{% EVENT overall_header_navlink_append %}
