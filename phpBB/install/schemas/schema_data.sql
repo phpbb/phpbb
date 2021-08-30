@@ -843,9 +843,9 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'm4a');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'webm');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mp4');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'webm');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'mp4');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'webm');
 
 
 # Add default profile fields
