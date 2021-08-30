@@ -1323,7 +1323,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					$update_count_ary[] = $attachment['attach_id'];
 				break;
 
-				// Audio files
+				// Video files
 				case ATTACHMENT_CATEGORY_VIDEO:
 					$block_array += [
 						'S_VIDEO_FILE'			=> true,
