@@ -69,6 +69,7 @@ $lang = array_merge($lang, array(
 	'ATTACH_TO_POST'					=> 'Attach file to post',
 
 	'CAT_AUDIO_FILES'			=> 'Audio files',
+	'CAT_VIDEO_FILES'			=> 'Video files',
 	'CAT_IMAGES'				=> 'Images',
 	'CHECK_CONTENT'				=> 'Check attachment files',
 	'CHECK_CONTENT_EXPLAIN'		=> 'Some browsers can be tricked to assume an incorrect mimetype for uploaded files. This option ensures that such files likely to cause this are rejected.',

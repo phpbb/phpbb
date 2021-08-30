@@ -637,6 +637,7 @@ class acp_attachments
 					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
 					ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
+					ATTACHMENT_CATEGORY_VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
 				);
 
 				$group_id = $request->variable('g', 0);
@@ -1412,6 +1413,7 @@ class acp_attachments
 			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
 			ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
+			ATTACHMENT_CATEGORY_VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
 		);
 
 		if ($group_id)
