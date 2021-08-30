@@ -103,6 +103,7 @@ $lang = array_merge($lang, array(
 	'EXT_GROUP_IMAGES'				=> 'Images',
 	'EXT_GROUP_PLAIN_TEXT'			=> 'Plain Text',
 	'EXT_GROUP_AUDIO_FILES'			=> 'Audio Files',
+	'EXT_GROUP_VIDEO_FILES'			=> 'Video Files',
 
 	'FILES_GONE'			=> 'Some of the attachments you selected for deletion do not exist. They may have been already deleted. Attachments that did exist were deleted.',
 	'FILES_STATS_WRONG'		=> 'Your file statistics are likely inaccurate and need to be resynchronised. Actual values: number of attachments = %1$d, total size of attachments = %2$s.<br />Click %3$shere%4$s to resynchronise them.',
