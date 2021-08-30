@@ -32,9 +32,7 @@
 		{% if _file.S_AUDIO_FILE %}
 			<dl class="file">
 				<dt class="c-file-header">
-					<audio class="c-file-audio-controls" controls="controls" preload="metadata">
-						<source class="c-file-audio-source" src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
-					</audio>
+					<audio src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}" class="c-file-audio-controls" controls="controls" preload="metadata"></audio>
 				</dt>
 				{% if _file.COMMENT %}
 					<dd class="c-file-comment">{{ _file.COMMENT }}</dd>
@@ -43,7 +41,7 @@
 					{% if _file.UPLOAD_ICON %}
 						<span class="o-icon c-file-icon">{{ _file.UPLOAD_ICON }}</span>
 					{% endif %}
-					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}" download>{{ _file.DOWNLOAD_NAME }}</a>
+					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}">{{ _file.DOWNLOAD_NAME }}</a>
 					<span class="c-file-actions-meta">({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</span>
 				</dd>
 			</dl>
@@ -52,9 +50,7 @@
 		{% if _file.S_VIDEO_FILE %}
 			<dl class="file">
 				<dt class="c-file-header">
-					<video class="c-file-video-controls" controls="controls" preload="metadata">
-						<source class="c-file-video-source" src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
-					</video>
+					<video src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}" class="c-file-video-controls" controls="controls" preload="metadata"></video>
 				</dt>
 				{% if _file.COMMENT %}
 					<dd class="c-file-comment">{{ _file.COMMENT }}</dd>
@@ -63,7 +59,7 @@
 					{% if _file.UPLOAD_ICON %}
 						<span class="o-icon c-file-icon">{{ _file.UPLOAD_ICON }}</span>
 					{% endif %}
-					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}" download>{{ _file.DOWNLOAD_NAME }}</a>
+					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}">{{ _file.DOWNLOAD_NAME }}</a>
 					<span class="c-file-actions-meta">({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</span>
 				</dd>
 			</dl>

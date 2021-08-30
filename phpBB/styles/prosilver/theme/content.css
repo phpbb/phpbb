@@ -688,16 +688,8 @@ dl.thumbnail dt a:hover img {
 	max-width: 100%;
 }
 
-.c-file-audio-source {
-	/** placeholder */
-}
-
 .c-file-video-controls {
 	max-width: 100%;
-}
-
-.c-file-video-source {
-	/** placeholder */
 }
 
 /* Post poll styles

@@ -253,7 +253,7 @@ class attachment extends controller
 		// Content-type header
 		$response->headers->set('Content-Type', $attachment['mimetype']);
 
-		// Display images in browser and force download for other file types
+		// Display file types in browser and force download for others
 		if (strpos($attachment['mimetype'], 'image') !== false
 			|| strpos($attachment['mimetype'], 'audio') !== false
 			|| strpos($attachment['mimetype'], 'video') !== false
