@@ -212,5 +212,5 @@ UI tests will take a different form in phpBB 4.
 More Information
 ================
 
-Further information is available on phpbb wiki:
-http://wiki.phpbb.com/Automated_Tests
+Further information is available on phpBB development documentation:
+https://area51.phpbb.com/docs/dev/master/testing/index.html

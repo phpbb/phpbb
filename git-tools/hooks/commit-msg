@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # A hook to check syntax of a phpBB3 commit message, per:
-# * <http://wiki.phpbb.com/display/DEV/Git>
+# * <https://area51.phpbb.com/docs/dev/master/development/git.html>
 # * <http://area51.phpbb.com/phpBB/viewtopic.php?p=209919#p209919>
 #
 # This is a commit-msg hook.
