@@ -13,6 +13,8 @@
 
 namespace phpbb\template\twig;
 
+use Twig\Error\RuntimeError;
+
 class extension extends \Twig\Extension\AbstractExtension
 {
 	/** @var \phpbb\template\context */
@@ -90,6 +92,7 @@ class extension extends \Twig\Extension\AbstractExtension
 		return array(
 			new \Twig\TwigFunction('lang', array($this, 'lang')),
 			new \Twig\TwigFunction('lang_defined', array($this, 'lang_defined')),
+			new \Twig\TwigFunction('lang_js', [$this, 'lang_js']),
 			new \Twig\TwigFunction('get_class', 'get_class'),
 		);
 	}
@@ -197,5 +200,17 @@ class extension extends \Twig\Extension\AbstractExtension
 	public function lang_defined($key)
 	{
 		return call_user_func_array([$this->language, 'is_set'], [$key]);
+	}
+
+	/**
+	 * Get output for language variable in JS code
+	 *
+	 * @throws RuntimeError When data passed to twig_escape_filter is not a UTF8 string
+	 */
+	public function lang_js(): string
+	{
+		$args = func_get_args();
+
+		return twig_escape_filter($this->environment, call_user_func_array([$this, 'lang'], $args), 'js');
 	}
 }
