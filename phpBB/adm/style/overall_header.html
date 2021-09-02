@@ -12,10 +12,10 @@
 
 <script>
 // <![CDATA[
-var jump_page = '{LA_JUMP_PAGE}{L_COLON}';
-var on_page = '{CURRENT_PAGE}';
-var per_page = '{PER_PAGE}';
-var base_url = '{BASE_URL|e('js')}';
+var jump_page = "{{ lang_js('JUMP_PAGE') ~ lang_js('COLON') }}";
+var on_page = '{{ CURRENT_PAGE }}';
+var per_page = '{{ PER_PAGE }}';
+var base_url = "{{ BASE_URL|e('js') }}";
 
 /**
 * Jump to page
