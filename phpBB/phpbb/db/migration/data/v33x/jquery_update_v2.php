@@ -22,7 +22,7 @@ class jquery_update_v2 extends migration
 		return $this->config['load_jquery_url'] === '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js';
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return ['\phpbb\db\migration\data\v33x\v334'];
 	}
