@@ -163,7 +163,6 @@ class extension_guesser extends guesser_base
 		'ivr'		=> 'i-world/i-vrml',
 		'ivy'		=> 'application/x-livescreen',
 		'jam'		=> 'audio/x-jam',
-		'jav'		=> 'text/plain',
 		'jav'		=> 'text/x-java-source',
 		'java'		=> 'text/x-java-source',
 		'jcm'		=> 'application/x-java-commerce',
