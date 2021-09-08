@@ -38,7 +38,7 @@ class google_recaptcha_v3 extends \phpbb\db\migration\migration
 
 		foreach (\phpbb\captcha\plugins\recaptcha_v3::get_actions() as $action)
 		{
-			$data[] = ['config.add', ["recaptcha_v3_threshold_{$action}", 0.5]];
+			$data[] = ['config.add', ["recaptcha_v3_threshold_{$action}", '0.5']];
 		}
 
 		return $data;
