@@ -1387,9 +1387,6 @@ switch ($mode)
 				],
 				'ON' => 'u.user_id = ug.user_id',
 			];
-			//$sql_from[] = array(
-			//	USER_GROUP_TABLE	=> 'ug'
-			//);
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
@@ -1674,11 +1671,11 @@ switch ($mode)
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
 			$sql_array['WHERE'] .= ' AND u.user_id = pd.user_id';
 		}
-		if (!empty($sql_from))
+		if (count($sql_from) > 0)
 		{
 			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
-		if (!empty($sql_join))
+		if (count($sql_join) > 0)
 		{
 			$sql_array['LEFT_JOIN'] = $sql_join;
 		}
