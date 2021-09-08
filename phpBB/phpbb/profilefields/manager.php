@@ -749,7 +749,7 @@ class manager
 			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
 			'FROM'	=> array(
 				$this->fields_table	=> 'pf',
-				$this->fields_language_table	=> 'pl',
+				$this->fields_lang_table	=> 'pl',
 			),
 			'WHERE'	=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
 		);
@@ -774,7 +774,7 @@ class manager
 		$sql_array = array(
 			'SELECT'	=> 'l.*, f.*',
 			'FROM'	=> array(
-				$this->fields_language_table	=> 'l',
+				$this->fields_lang_table	=> 'l',
 				$this->fields_table	=> 'f'
 			),
 			'WHERE'	=> 'f.field_active = 1 AND f.field_show_on_ml = 1 AND l.lang_id = ' . $this->user->get_iso_lang_id() . ' AND l.field_id = f.field_id',
@@ -812,7 +812,7 @@ class manager
 			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
 			'FROM'		=> array(
 				$this->fields_table	=> 'pf',
-				$this->fields_language_table	=> 'pl',
+				$this->fields_lang_table	=> 'pl',
 			),
 			'WHERE'		=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
 		);
