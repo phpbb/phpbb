@@ -723,7 +723,7 @@ class manager
 	}
 	/**
 	* Check for data in CUSTOM_PROFILE_FIELDS_DATA
-	* @return boolean
+	* @return bool
 	*/
 	public function profile_fields_data_exists()
 	{
