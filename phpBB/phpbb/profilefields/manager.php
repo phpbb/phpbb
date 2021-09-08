@@ -722,7 +722,7 @@ class manager
 		return array_column($rowset, 'field_ident', 'field_id');
 	}
 	/**
-	* Check for data in CUSTOM_PROFILE_FILEDS_DATA
+	* Check for data in CUSTOM_PROFILE_FIELDS_DATA
 	* @return boolean
 	*/
 	public function profile_fields_data_exists()
