@@ -722,8 +722,7 @@ class manager
 		return array_column($rowset, 'field_ident', 'field_id');
 	}
 	/**
-	* Check if there is any record in CUSTOM_PROFILE_FILEDS_DATA
-	* so we have any requests
+	* Check for data in CUSTOM_PROFILE_FILEDS_DATA
 	* @return boolean
 	*/
 	public function profile_fields_data_exists()
@@ -742,17 +741,17 @@ class manager
 	*/
 	public function build_custom_fields_search_array()
 	{
-		$custom_search_array = array();
+		$custom_search_array = [];
 
 		// Expand filter to include custom profile fields
-		$sql_array = array (
+		$sql_array = [
 			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
-			'FROM'	=> array(
+			'FROM'	=> [
 				$this->fields_table	=> 'pf',
 				$this->fields_lang_table	=> 'pl',
-			),
+			],
 			'WHERE'	=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
-		);
+		];
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
