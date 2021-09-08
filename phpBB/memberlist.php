@@ -1061,7 +1061,7 @@ switch ($mode)
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
 		$sql_select = $sql_where_data = $sql_where = $order_by = '';
-		$sql_from = array();
+		$sql_from = [];
 
 
 		$form			= $request->variable('form', '');
@@ -1183,9 +1183,9 @@ switch ($mode)
 
 			if ($search_group_id)
 			{
-				$sql_from = array(
+				$sql_from = [
 					USER_GROUP_TABLE	=> 'ug',
-				);
+				];
 			}
 
 			if ($ipdomain && $auth->acl_getf_global('m_info'))
@@ -1381,12 +1381,12 @@ switch ($mode)
 			);
 
 			$sql_select = ', ug.group_leader';
-			$sql_join[] = array(
-				'FROM'	=> array(
+			$sql_join[] = [
+				'FROM'	=> [
 					USER_GROUP_TABLE	=> 'ug',
-				),
+				],
 				'ON' => 'u.user_id = ug.user_id',
-			);
+			];
 			//$sql_from[] = array(
 			//	USER_GROUP_TABLE	=> 'ug'
 			//);
@@ -1437,13 +1437,13 @@ switch ($mode)
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_sql_query_data', compact($vars)));
 
 		// Count the users ...
-		$sql_array = array(
+		$sql_array = [
 			'SELECT'	=> 'COUNT(u.user_id) as total_users',
-			'FROM'		=> array(
+			'FROM'		=> [
 				USERS_TABLE	=> 'u',
-			),
+			],
 			'WHERE'	=> $db->sql_in_set('u.user_type', $user_types) . $sql_where
-		);
+		];
 		if ($config['load_cpf_memberlist'] && !empty($search_profilefields_params))
 		{
 			$sql_array['FROM'][PROFILE_FIELDS_DATA_TABLE] = 'pd';
@@ -1660,14 +1660,14 @@ switch ($mode)
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $total_users);
 
 		// Get us some users :D
-		$sql_array = array(
+		$sql_array = [
 			'SELECT'	=> 'u.user_id',
-			'FROM'		=> array(
+			'FROM'		=> [
 				USERS_TABLE	=> 'u',
-			),
+			],
 			'WHERE'	=> $db->sql_in_set('u.user_type', $user_types) . $sql_where,
 			'ORDER_BY'	=> $order_by,
-		);
+		];
 
 		if ($config['load_cpf_memberlist'] && $additional_cpf_exist)
 		{
