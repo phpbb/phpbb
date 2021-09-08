@@ -13,6 +13,8 @@
 
 class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 {
+	protected $db;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/obtain_online.xml');

@@ -33,14 +33,17 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 
 		$config = new \phpbb\config\config(array(
 			'load_online_time'	=> 5,
-			'search_type'		=> '\phpbb\search\fulltext_mysql',
+			'search_type'		=> '\phpbb\search\backend\fulltext_mysql',
 		));
 		$cache = new phpbb_mock_null_cache();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
+
+		$storage = $this->createMock('\phpbb\storage\storage');
+
 		// Works as a workaround for tests
-		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path));
+		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage));
 		$phpbb_container->set(
 			'auth.provider.db',
 			new phpbb_mock_auth_provider()
@@ -51,6 +54,13 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 			'auth.provider_collection',
 			$provider_collection
 		);
+
+		$search_backend = $this->createMock(\phpbb\search\backend\search_backend_interface::class);
+		$search_backend_factory = $this->createMock(\phpbb\search\search_backend_factory::class);
+		$search_backend_factory->method('get_active')->willReturn($search_backend);
+		$phpbb_container->set('search.backend_factory', $search_backend_factory);
+
+
 		$phpbb_container->setParameter('tables.auth_provider_oauth_token_storage', 'phpbb_oauth_tokens');
 		$phpbb_container->setParameter('tables.auth_provider_oauth_states', 'phpbb_oauth_states');
 		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');
@@ -193,8 +203,6 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	*/
 	public function test_first_last_post_info($mode, $retain_username, $expected_posts, $expected_topics, $expected_forums)
 	{
-		global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
-
 		$this->assertFalse(user_delete($mode, 2, $retain_username));
 
 		$sql = 'SELECT post_id, poster_id, post_username

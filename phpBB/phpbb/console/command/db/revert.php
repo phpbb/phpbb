@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\db;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use phpbb\db\output_handler\log_wrapper_migrator_output_handler;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +21,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class revert extends \phpbb\console\command\db\migrate
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -33,6 +37,16 @@ class revert extends \phpbb\console\command\db\migrate
 		;
 	}
 
+	/**
+	 * Executes the command db:revert.
+	 *
+	 * Reverts a migration
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
@@ -46,12 +60,12 @@ class revert extends \phpbb\console\command\db\migrate
 		if (!in_array($name, $this->load_migrations()))
 		{
 			$io->error($this->language->lang('MIGRATION_NOT_VALID', $name));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 		else if ($this->migrator->migration_state($name) === false)
 		{
 			$io->error($this->language->lang('MIGRATION_NOT_INSTALLED', $name));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		try
@@ -65,10 +79,11 @@ class revert extends \phpbb\console\command\db\migrate
 		{
 			$io->error($e->getLocalisedMessage($this->user));
 			$this->finalise_update();
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		$this->finalise_update();
 		$io->success($this->language->lang('INLINE_UPDATE_SUCCESSFUL'));
+		return symfony_command::SUCCESS;
 	}
 }

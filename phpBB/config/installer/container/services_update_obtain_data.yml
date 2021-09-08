@@ -50,4 +50,4 @@ services:
             - true
             - false
         tags:
-            - { name: installer_update_module, order: 20 }
+            - { name: installer_update_module, order: 2 }

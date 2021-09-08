@@ -1330,7 +1330,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 */
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $config;
+	global $auth, $user, $db, $template, $config, $phpbb_container;
 	global $phpEx, $phpbb_root_path, $phpbb_log, $request, $phpbb_dispatcher;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
@@ -1398,28 +1398,30 @@ function mcp_fork_topic($topic_ids)
 
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
-			if (!isset($search_type) && $topic_row['enable_indexing'])
+			if (!isset($search) && $topic_row['enable_indexing'])
 			{
 				// Select the search method and do some additional checks to ensure it can actually be utilised
-				$search_type = $config['search_type'];
-
-				if (!class_exists($search_type))
+				try
 				{
-					trigger_error('NO_SUCH_SEARCH_MODULE');
+					$search_backend_factory = $phpbb_container->get('search.backend_factory');
+					$search = $search_backend_factory->get_active();
 				}
-
-				$error = false;
-				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+				catch (RuntimeException $e)
+				{
+					if (strpos($e->getMessage(), 'No service found') === 0)
+					{
+						trigger_error('NO_SUCH_SEARCH_MODULE');
+					}
+					else
+					{
+						throw $e;
+					}
+				}
 				$search_mode = 'post';
-
-				if ($error)
-				{
-					trigger_error($error);
-				}
 			}
-			else if (!isset($search_type) && !$topic_row['enable_indexing'])
+			else if (!isset($search) && !$topic_row['enable_indexing'])
 			{
-				$search_type = false;
+				$search = false;
 			}
 
 			$sql_ary = array(
@@ -1584,7 +1586,7 @@ function mcp_fork_topic($topic_ids)
 				];
 				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_post_sql', compact($vars)));
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				$new_post_id = $db->sql_nextid();
+				$new_post_id = (int) $db->sql_nextid();
 
 				/**
 				* Perform actions after forked topic is created.
@@ -1621,9 +1623,9 @@ function mcp_fork_topic($topic_ids)
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
 
-				if (!empty($search_type))
+				if (!empty($search))
 				{
-					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
+					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], (int) $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
 					$search_mode = 'reply'; // After one we index replies
 				}
 

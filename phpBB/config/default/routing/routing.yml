@@ -24,9 +24,18 @@ phpbb_help_routing:
     resource: help.yml
     prefix: /help
 
+phpbb_mention_controller:
+    path: /mention
+    methods: [GET, POST]
+    defaults: { _controller: mention.controller:handle }
+
 phpbb_report_routing:
     resource: report.yml
 
 phpbb_ucp_routing:
     resource: ucp.yml
     prefix: /user
+
+phpbb_storage_routing:
+    resource: storage.yml
+    prefix: /download

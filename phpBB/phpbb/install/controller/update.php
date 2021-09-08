@@ -21,6 +21,7 @@ use phpbb\install\installer;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\template\template;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**

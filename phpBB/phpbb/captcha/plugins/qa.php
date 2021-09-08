@@ -177,7 +177,7 @@ class qa
 	/**
 	*  API function
 	*/
-	static public function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
@@ -442,7 +442,7 @@ class qa
 		{
 			return;
 		}
-		$this->confirm_id = md5(unique_id($user->ip));
+		$this->confirm_id = md5(unique_id());
 		$this->question = (int) array_rand($this->question_ids);
 
 		$sql = 'INSERT INTO ' . $this->table_qa_confirm . ' ' . $db->sql_build_array('INSERT', array(

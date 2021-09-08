@@ -1,0 +1,34 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<script>
+    // <![CDATA[
+    /**
+     * Popup search progress bar
+     */
+    function popup_progress_bar(progress_type)
+    {
+        close_waitscreen = 0;
+        // no scrollbars
+        popup('{{ UA_PROGRESS_BAR }}&amp;type=' + progress_type, 400, 240, '_index');
+    }
+    // ]]>
+</script>
+
+<h1>{{ lang('CONTINUE') }}</h1>
+
+<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
+
+<form id="acp_search_continue" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" onclick="popup_progress_bar('{{ S_ACTION }}');" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+		</p>
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

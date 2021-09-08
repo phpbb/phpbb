@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v31x;
 
 class style_update extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\gold');
 	}
@@ -52,8 +52,8 @@ class style_update extends \phpbb\db\migration\migration
 			// Try to parse config file
 			$cfg = parse_cfg_file($this->phpbb_root_path . 'styles/prosilver/style.cfg');
 
-			// Stop running this if prosilver cfg file can't be read
-			if (empty($cfg))
+			// Stop running this if both prosilver cfg file and composer.json file can't be read
+			if (empty($cfg) && !file_exists($this->phpbb_root_path . 'styles/prosilver/composer.json'))
 			{
 				throw new \RuntimeException('No styles available and could not fall back to prosilver.');
 			}
@@ -83,7 +83,7 @@ class style_update extends \phpbb\db\migration\migration
 			// Set prosilver to default style
 			$this->config->set('default_style', $style_id);
 		}
-		else if (empty($styles) && empty($available_styles))
+		else if (empty($styles) && empty($style_paths))
 		{
 			throw new \RuntimeException('No valid styles available');
 		}
@@ -123,7 +123,7 @@ class style_update extends \phpbb\db\migration\migration
 					continue;
 				}
 
-				if (file_exists("{$dir}/style.cfg"))
+				if (file_exists("{$dir}/composer.json") || file_exists("{$dir}/style.cfg"))
 				{
 					$styles[] = $file;
 				}

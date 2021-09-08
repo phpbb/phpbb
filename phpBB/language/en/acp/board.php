@@ -92,7 +92,6 @@ $lang = array_merge($lang, array(
 	'ALLOW_QUICK_REPLY_BUTTON'	=> 'Submit and enable quick reply in all forums',
 	'ALLOW_SIG'					=> 'Allow signatures',
 	'ALLOW_SIG_BBCODE'			=> 'Allow BBCode in user signatures',
-	'ALLOW_SIG_FLASH'			=> 'Allow use of <code>[FLASH]</code> BBCode tag in user signatures',
 	'ALLOW_SIG_IMG'				=> 'Allow use of <code>[IMG]</code> BBCode tag in user signatures',
 	'ALLOW_SIG_LINKS'			=> 'Allow use of links in user signatures',
 	'ALLOW_SIG_LINKS_EXPLAIN'	=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
@@ -106,16 +105,12 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
 	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br>If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
 	'ALLOW_GRAVATAR'				=> 'Enable gravatar avatars',
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
-	'ALLOW_REMOTE'					=> 'Enable remote avatars',
-	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
-	'ALLOW_REMOTE_UPLOAD'			=> 'Enable remote avatar uploading',
-	'ALLOW_REMOTE_UPLOAD_EXPLAIN'	=> 'Allow uploading of avatars from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.<br>Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
@@ -134,8 +129,6 @@ $lang = array_merge($lang, array(
 	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
-	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
-	'ALLOW_FLASH_PM_EXPLAIN'	=> 'Note that the ability to use flash in private messages, if enabled here, also depends on the permissions.',
 	'ALLOW_FORWARD_PM'			=> 'Allow forwarding of private messages',
 	'ALLOW_IMG_PM'				=> 'Allow use of <code>[IMG]</code> BBCode tag',
 	'ALLOW_MASS_PM'				=> 'Allow sending of private messages to multiple users and groups',
@@ -161,12 +154,11 @@ $lang = array_merge($lang, array(
 // Post Settings
 $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
+	'ALLOW_MENTIONS'					=> 'Allow mentions of users and groups boardwide',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOWED_SCHEMES_LINKS'				=> 'Allowed schemes in links',
 	'ALLOWED_SCHEMES_LINKS_EXPLAIN'		=> 'Users can only post schemeless URLs or one of the comma-separated list of allowed schemes.',
-	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts',
-	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump that topic. Setting the value to 0 disables bumping entirely.',
@@ -185,12 +177,12 @@ $lang = array_merge($lang, array(
 	'MAX_POLL_OPTIONS'				=> 'Maximum number of poll options',
 	'MAX_POST_FONT_SIZE'			=> 'Maximum font size per post',
 	'MAX_POST_FONT_SIZE_EXPLAIN'	=> 'Maximum font size allowed in a post. Set to 0 for unlimited font size.',
-	'MAX_POST_IMG_HEIGHT'			=> 'Maximum flash height per post',
-	'MAX_POST_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of a flash file in postings. Set to 0 for unlimited size.',
-	'MAX_POST_IMG_WIDTH'			=> 'Maximum flash width per post',
-	'MAX_POST_IMG_WIDTH_EXPLAIN'	=> 'Maximum width of a flash file in postings. Set to 0 for unlimited size.',
 	'MAX_POST_URLS'					=> 'Maximum links per post',
 	'MAX_POST_URLS_EXPLAIN'			=> 'Maximum number of URLs in a post. Set to 0 for unlimited links.',
+	'MENTIONS'						=> 'Mentions',
+	'MENTION_BATCH_SIZE'			=> 'Maximum number of names fetched from each source of names for a single request',
+	'MENTION_BATCH_SIZE_EXPLAIN'	=> 'Examples of sources: friends, topic repliers, group members etc.',
+	'MENTION_NAMES_LIMIT'			=> 'Maximum number of names in dropdown list',
 	'MIN_CHAR_LIMIT'				=> 'Minimum characters per post/message',
 	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message. The minimum for this setting is 1.',
 	'POSTING'						=> 'Posting',
@@ -210,9 +202,9 @@ $lang = array_merge($lang, array(
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
 	'MAX_SIG_IMG_HEIGHT'			=> 'Maximum signature image height',
-	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image/flash file in user signatures. Set to 0 for unlimited height.',
+	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image file in user signatures. Set to 0 for unlimited height.',
 	'MAX_SIG_IMG_WIDTH'				=> 'Maximum signature image width',
-	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image/flash file in user signatures. Set to 0 for unlimited width.',
+	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image file in user signatures. Set to 0 for unlimited width.',
 	'MAX_SIG_LENGTH'				=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'		=> 'Maximum number of characters in user signatures.',
 	'MAX_SIG_SMILIES'				=> 'Maximum smilies per signature',
@@ -548,8 +540,6 @@ $lang = array_merge($lang, array(
 	'REFERRER_VALID_EXPLAIN'		=> 'If enabled, the referrer of POST requests will be checked against the host/script path settings. This may cause issues with boards using several domains and or external logins.',
 	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
 	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
-	'UPLOAD_CERT_VALID'				=> 'Validate upload certificate',
-	'UPLOAD_CERT_VALID_EXPLAIN'		=> 'If enabled, certificates of remote uploads will be validated. This requires the CA bundle to be defined by the <samp>openssl.cafile</samp> or <samp>curl.cainfo</samp> setting in your php.ini.',
 ));
 
 // Email Settings

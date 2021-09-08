@@ -40,10 +40,7 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		$config = $this->config = new \phpbb\config\config(array('cron_lock' => '0'));
 		$this->lock = new \phpbb\lock\db('cron_lock', $this->config, $this->db);
 
-		$this->user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$this->user = $this->createMock('\phpbb\user');
 		$this->user->method('lang')->will($this->returnArgument(0));
 
 		$this->task = new phpbb_cron_task_simple();
@@ -73,7 +70,6 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
-			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -152,7 +148,6 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
-			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);
@@ -200,7 +195,6 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
-			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);

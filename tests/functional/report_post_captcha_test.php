@@ -64,8 +64,8 @@ class phpbb_functional_report_post_captcha_test extends phpbb_functional_test_ca
 		$values = $form->getValues();
 		$values["setting[1][2][f_report]"] = $report_post_allowed;
 		$form->setValues($values);
-		$crawler = self::submit($form);
+		self::submit($form);
 
-		$crawler = self::request('GET', 'ucp.php?mode=logout&sid=' . $this->sid);
+		$this->logout();
 	}
 }

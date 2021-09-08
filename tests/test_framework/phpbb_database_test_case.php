@@ -15,7 +15,7 @@ use PHPUnit\DbUnit\TestCase;
 
 abstract class phpbb_database_test_case extends TestCase
 {
-	static private $already_connected;
+	private static $already_connected;
 
 	private $db_connections;
 
@@ -23,13 +23,13 @@ abstract class phpbb_database_test_case extends TestCase
 
 	protected $fixture_xml_data;
 
-	static protected $schema_file;
+	protected static $schema_file;
 
-	static protected $phpbb_schema_copy;
+	protected static $phpbb_schema_copy;
 
-	static protected $install_schema_file;
+	protected static $install_schema_file;
 
-	static protected $phpunit_version;
+	protected static $phpunit_version;
 
 	public function __construct($name = NULL, array $data = [], $dataName = '')
 	{
@@ -63,18 +63,18 @@ abstract class phpbb_database_test_case extends TestCase
 	/**
 	* @return array List of extensions that should be set up
 	*/
-	static protected function setup_extensions()
+	protected static function setup_extensions()
 	{
 		return array();
 	}
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		global $phpbb_root_path, $phpEx;
 
 		$setup_extensions = static::setup_extensions();
 
-		$finder = new \phpbb\finder(new \phpbb\filesystem\filesystem(), $phpbb_root_path, null, $phpEx);
+		$finder = new \phpbb\finder($phpbb_root_path, null, $phpEx);
 		$finder->core_path('phpbb/db/migration/data/');
 		if (!empty($setup_extensions))
 		{
@@ -89,14 +89,13 @@ abstract class phpbb_database_test_case extends TestCase
 
 		if (!file_exists(self::$schema_file))
 		{
-
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite3();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($db, true);
 
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix);
+			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, self::get_core_tables());
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
 		}
 
@@ -105,7 +104,7 @@ abstract class phpbb_database_test_case extends TestCase
 		parent::setUpBeforeClass();
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		if (file_exists(self::$install_schema_file))
 		{
@@ -366,6 +365,25 @@ abstract class phpbb_database_test_case extends TestCase
 			// increase assertion count
 			$this->assertTrue(true);
 		}
+	}
+
+	public static function get_core_tables() : array
+	{
+		global $phpbb_root_path, $table_prefix;
+
+		static $core_tables = [];
+
+		if (empty($core_tables))
+		{
+			$tables_yml_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
+
+			foreach ($tables_yml_data['parameters'] as $parameter => $table)
+			{
+				$core_tables[str_replace('tables.', '', $parameter)] = str_replace('%core.table_prefix%', $table_prefix, $table);
+			}
+		}
+
+		return $core_tables;
 	}
 
 	/**

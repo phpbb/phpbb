@@ -15,7 +15,6 @@
 */
 define('IN_PHPBB', true);
 define('ADMIN_START', true);
-define('NEED_SID', true);
 
 // Include files
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';

@@ -1,0 +1,11 @@
+phpbb_storage_avatar:
+    path:             /avatar/{file}
+    defaults:
+        _controller:  storage.controller.avatar:handle
+
+phpbb_storage_attachment:
+    path:             /attachment/{file}
+    defaults:
+        _controller:  storage.controller.attachment:handle
+    requirements:
+        id:         \d+

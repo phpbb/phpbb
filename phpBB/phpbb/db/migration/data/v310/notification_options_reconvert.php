@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class notification_options_reconvert extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\notifications_schema_fix');
 	}
@@ -122,7 +122,7 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 	* @param string $item_type
 	* @param int $item_id
 	* @param int $user_id
-	* @param string $methods
+	* @param array $methods
 	*/
 	protected function add_method_rows(\phpbb\db\sql_insert_buffer $insert_buffer, $item_type, $item_id, $user_id, array $methods)
 	{

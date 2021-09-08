@@ -52,7 +52,7 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 		parent::tearDown();
 	}
 
-	static protected function get_default_values()
+	protected static function get_default_values()
 	{
 		return array(
 			'c_uint' => 0,
@@ -62,7 +62,7 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 	public function test_auto_increment()
 	{
 		$sql = 'DELETE FROM prefix_table_name';
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 
 		$row1 = array_merge(self::get_default_values(), array(
 			'c_uint' => 1,
@@ -72,11 +72,11 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 		));
 
 		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row1);
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 		$id1 = $this->db->sql_nextid();
 
 		$sql = 'INSERT INTO prefix_table_name ' . $this->db->sql_build_array('INSERT', $row2);
-		$result = $this->db->sql_query($sql);
+		$this->db->sql_query($sql);
 		$id2 = $this->db->sql_nextid();
 
 		$this->assertGreaterThan($id1, $id2, 'Auto increment should increase the id value');

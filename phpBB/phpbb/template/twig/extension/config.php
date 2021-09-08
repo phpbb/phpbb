@@ -13,7 +13,9 @@
 
 namespace phpbb\template\twig\extension;
 
-class config extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+
+class config extends AbstractExtension
 {
 	/** @var \phpbb\config\config */
 	protected $config;

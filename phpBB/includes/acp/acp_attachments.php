@@ -14,6 +14,16 @@
 /**
 * @ignore
 */
+
+use phpbb\attachment\manager;
+use phpbb\config\config;
+use phpbb\controller\helper;
+use phpbb\db\driver\driver_interface;
+use phpbb\filesystem\filesystem_interface;
+use phpbb\language\language;
+use phpbb\template\template;
+use phpbb\user;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -21,29 +31,32 @@ if (!defined('IN_PHPBB'))
 
 class acp_attachments
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
 	/** @var ContainerBuilder */
 	protected $phpbb_container;
 
-	/** @var \phpbb\template\template */
+	/** @var template */
 	protected $template;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var  \phpbb\filesystem\filesystem_interface */
+	/** @var  filesystem_interface */
 	protected $filesystem;
 
-	/** @var \phpbb\attachment\manager */
+	/** @var manager */
 	protected $attachment_manager;
+
+	/** @var helper */
+	protected $controller_helper;
 
 	public $id;
 	public $u_action;
@@ -63,6 +76,7 @@ class acp_attachments
 		$this->phpbb_container = $phpbb_container;
 		$this->filesystem = $phpbb_filesystem;
 		$this->attachment_manager = $phpbb_container->get('attachment.manager');
+		$this->controller_helper = $phpbb_container->get('controller.helper');
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -165,7 +179,6 @@ class acp_attachments
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
-						'upload_path'			=> array('lang' => 'UPLOAD_DIR',			'validate' => 'wpath',	'type' => 'text:25:100', 'explain' => true),
 						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
 						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
@@ -242,9 +255,6 @@ class acp_attachments
 				if ($submit)
 				{
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_ATTACH');
-
-					// Check Settings
-					$this->test_upload($error, $this->new_config['upload_path'], false);
 
 					if (!count($error))
 					{
@@ -582,11 +592,6 @@ class acp_attachments
 							'allow_in_pm'	=> ($allow_in_pm) ? 1 : 0,
 						);
 
-						if ($action == 'add')
-						{
-							$group_ary['download_mode'] = INLINE_LINK;
-						}
-
 						$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
 						$sql .= $db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
 						$sql .= ($action == 'edit') ? " WHERE group_id = $group_id" : '';
@@ -631,6 +636,7 @@ class acp_attachments
 				$cat_lang = array(
 					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
+					ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
 				);
 
 				$group_id = $request->variable('g', 0);
@@ -1091,8 +1097,8 @@ class acp_attachments
 						'PHYSICAL_FILENAME'	=> utf8_basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'U_FILE'			=> $this->controller_helper->route('phpbb_storage_attachment', ['file' => (int) $row['attach_id']])
+					));
 				}
 				$db->sql_freeresult($result);
 
@@ -1279,8 +1285,8 @@ class acp_attachments
 						'S_IN_MESSAGE'		=> (bool) $row['in_message'],
 
 						'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}",
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'U_FILE'			=> $this->controller_helper->route('phpbb_storage_attachment', ['file' => $row['attach_id']])
+					));
 				}
 
 			break;
@@ -1405,6 +1411,7 @@ class acp_attachments
 		$types = array(
 			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
+			ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
 		);
 
 		if ($group_id)
@@ -1479,50 +1486,6 @@ class acp_attachments
 		$group_select .= '</select>';
 
 		return $group_select;
-	}
-
-	/**
-	* Test Settings
-	*/
-	function test_upload(&$error, $upload_dir, $create_directory = false)
-	{
-		global $user, $phpbb_root_path;
-
-		// Does the target directory exist, is it a directory and writable.
-		if ($create_directory)
-		{
-			if (!file_exists($phpbb_root_path . $upload_dir))
-			{
-				@mkdir($phpbb_root_path . $upload_dir, 0777);
-
-				try
-				{
-					$this->filesystem->phpbb_chmod($phpbb_root_path . $upload_dir, \phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE);
-				}
-				catch (\phpbb\filesystem\exception\filesystem_exception $e)
-				{
-					// Do nothing
-				}
-			}
-		}
-
-		if (!file_exists($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $upload_dir);
-			return;
-		}
-
-		if (!is_dir($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $upload_dir);
-			return;
-		}
-
-		if (!$this->filesystem->is_writable($phpbb_root_path . $upload_dir))
-		{
-			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
-			return;
-		}
 	}
 
 	/**

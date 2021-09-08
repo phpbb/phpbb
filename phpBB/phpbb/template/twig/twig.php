@@ -21,71 +21,59 @@ use phpbb\template\exception\user_object_not_available;
 class twig extends \phpbb\template\base
 {
 	/**
-	* Path of the cache directory for the template
-	*
-	* Cannot be changed during runtime.
-	*
-	* @var string
-	*/
+	 * Path of the cache directory for the template
+	 * Cannot be changed during runtime.
+	 *
+	 * @var string
+	 */
 	private $cachepath = '';
 
-	/**
-	* phpBB path helper
-	* @var \phpbb\path_helper
-	*/
+	/** @var \phpbb\path_helper */
 	protected $path_helper;
 
-	/**
-	* phpBB root path
-	* @var string
-	*/
+	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	/**
-	* PHP file extension
-	* @var string
-	*/
+	/** @var string php File extension	*/
 	protected $php_ext;
 
-	/**
-	* phpBB config instance
-	* @var \phpbb\config\config
-	*/
+	/** @var \phpbb\config\config */
 	protected $config;
 
-	/**
-	* Current user
-	* @var \phpbb\user
-	*/
+	/** @var \phpbb\user */
 	protected $user;
 
-	/**
-	* Extension manager.
-	*
-	* @var \phpbb\extension\manager
-	*/
+	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
-	/**
-	* Twig Environment
-	*
-	* @var \Twig\Environment
-	*/
+	/** @var environment */
 	protected $twig;
+
+	/** @var loader */
+	protected $loader;
 
 	/**
 	* Constructor.
 	*
-	* @param \phpbb\path_helper $path_helper
-	* @param \phpbb\config\config $config
-	* @param \phpbb\template\context $context template context
-	* @param \phpbb\template\twig\environment $twig_environment
-	* @param string $cache_path
-	* @param \phpbb\user|null $user
-	* @param array|\ArrayAccess $extensions
-	* @param \phpbb\extension\manager $extension_manager extension manager, if null then template events will not be invoked
+	* @param \phpbb\path_helper				$path_helper		Path helper object
+	* @param \phpbb\config\config			$config				Config object
+	* @param \phpbb\template\context		$context			Template context
+	* @param environment					$twig_environment	Twig environment
+	* @param string							$cache_path			Template's cache directory path
+	* @param null|\phpbb\user				$user				User object
+	* @param array|\ArrayAccess				$extensions			Template extensions
+	* @param null|\phpbb\extension\manager	$extension_manager	If null then template events will not be invoked
 	*/
-	public function __construct(\phpbb\path_helper $path_helper, $config, \phpbb\template\context $context, \phpbb\template\twig\environment $twig_environment, $cache_path, \phpbb\user $user = null, $extensions = array(), \phpbb\extension\manager $extension_manager = null)
+	public function __construct(
+		\phpbb\path_helper $path_helper,
+		\phpbb\config\config $config,
+		\phpbb\template\context $context,
+		environment $twig_environment,
+		$cache_path,
+		\phpbb\user $user = null,
+		$extensions = [],
+		\phpbb\extension\manager $extension_manager = null
+	)
 	{
 		$this->path_helper = $path_helper;
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
@@ -96,6 +84,7 @@ class twig extends \phpbb\template\base
 		$this->extension_manager = $extension_manager;
 		$this->cachepath = $cache_path;
 		$this->twig = $twig_environment;
+		$this->loader = $twig_environment->getLoader();
 
 		foreach ($extensions as $extension)
 		{
@@ -105,7 +94,7 @@ class twig extends \phpbb\template\base
 		// Add admin namespace
 		if ($this->path_helper->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/'))
 		{
-			$this->twig->getLoader()->setPaths($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/', 'admin');
+			$this->loader->setPaths($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/', 'admin');
 		}
 	}
 
@@ -138,9 +127,9 @@ class twig extends \phpbb\template\base
 			throw new user_object_not_available();
 		}
 
-		$style_list = array(
+		$style_list = [
 			$this->user->style['style_path'],
-		);
+		];
 
 		if ($this->user->style['style_parent_id'])
 		{
@@ -158,55 +147,61 @@ class twig extends \phpbb\template\base
 	* 	Default: array('styles') (phpBB's style directory)
 	* @return \phpbb\template\template $this
 	*/
-	public function set_style($style_directories = array('styles'))
+	public function set_style($style_directories = ['styles'])
 	{
-		if ($style_directories !== array('styles') && $this->twig->getLoader()->getPaths('core') === array())
+		if ($style_directories !== ['styles'] && $this->loader->getPaths('core') === [])
 		{
 			// We should set up the core styles path since not already setup
 			$this->set_style();
 		}
 
-		$names = $this->get_user_style();
+		$paths = [];
+
 		// Add 'all' folder to $names array
 		//	It allows extensions to load a template file from 'all' folder,
 		//	if a style doesn't include it.
+		$names = $this->get_user_style();
 		$names[] = 'all';
 
-		$paths = array();
 		foreach ($style_directories as $directory)
 		{
 			foreach ($names as $name)
 			{
-				$path = $this->phpbb_root_path . trim($directory, '/') . "/{$name}/";
-				$template_path = $path . 'template/';
-				$theme_path = $path . 'theme/';
+				$path	= $this->phpbb_root_path . trim($directory, '/') . "/{$name}/";
+				$handle	= @opendir($path);
+				$valid	= false;
 
-				$is_valid_dir = false;
-				if (is_dir($template_path))
+				if ($handle)
 				{
-					$is_valid_dir = true;
-					$paths[] = $template_path;
-				}
-				if (is_dir($theme_path))
-				{
-					$is_valid_dir = true;
-					$paths[] = $theme_path;
+					while (($file = readdir($handle)) !== false)
+					{
+						$dir = $path . $file;
+
+						if ($file[0] !== '.' && is_dir($dir))
+						{
+							$paths[] = $dir;
+
+							$valid = true;
+						}
+					}
+
+					closedir($handle);
 				}
 
-				if ($is_valid_dir)
+				if ($valid)
 				{
 					// Add the base style directory as a safe directory
-					$this->twig->getLoader()->addSafeDirectory($path);
+					$this->loader->addSafeDirectory($path);
 				}
 			}
 		}
 
 		// If we're setting up the main phpBB styles directory and the core
 		// namespace isn't setup yet, we will set it up now
-		if ($style_directories === array('styles') && $this->twig->getLoader()->getPaths('core') === array())
+		if ($style_directories === ['styles'] && $this->loader->getPaths('core') === [])
 		{
 			// Set up the core style paths namespace
-			$this->twig->getLoader()->setPaths($paths, 'core');
+			$this->loader->setPaths($paths, 'core');
 		}
 
 		$this->set_custom_style($names, $paths);
@@ -229,11 +224,11 @@ class twig extends \phpbb\template\base
 	*/
 	public function set_custom_style($names, $paths)
 	{
-		$paths = (is_string($paths)) ? array($paths) : $paths;
-		$names = (is_string($names)) ? array($names) : $names;
+		$paths = (is_string($paths)) ? [$paths] : $paths;
+		$names = (is_string($names)) ? [$names] : $names;
 
 		// Set as __main__ namespace
-		$this->twig->getLoader()->setPaths($paths);
+		$this->loader->setPaths($paths);
 
 		// Add all namespaces for all extensions
 		if ($this->extension_manager instanceof \phpbb\extension\manager)
@@ -244,7 +239,7 @@ class twig extends \phpbb\template\base
 			{
 				// namespaces cannot contain /
 				$namespace = str_replace('/', '_', $ext_namespace);
-				$paths = array();
+				$paths = [];
 
 				foreach ($names as $template_dir)
 				{
@@ -285,11 +280,11 @@ class twig extends \phpbb\template\base
 					if ($is_valid_dir)
 					{
 						// Add the base style directory as a safe directory
-						$this->twig->getLoader()->addSafeDirectory($ext_style_path);
+						$this->loader->addSafeDirectory($ext_style_path);
 					}
 				}
 
-				$this->twig->getLoader()->setPaths($paths, $namespace);
+				$this->loader->setPaths($paths, $namespace);
 			}
 		}
 
@@ -308,12 +303,6 @@ class twig extends \phpbb\template\base
 	*/
 	public function display($handle)
 	{
-		$result = $this->call_hook($handle, __FUNCTION__);
-		if ($result !== false)
-		{
-			return $result[0];
-		}
-
 		$this->twig->display($this->get_filename_from_handle($handle), $this->get_template_vars());
 
 		return $this;
@@ -351,10 +340,10 @@ class twig extends \phpbb\template\base
 
 		$vars = array_merge(
 			$context_vars['.'][0], // To get normal vars
-			array(
+			[
 				'definition'	=> new \phpbb\template\twig\definition(),
 				'loops'			=> $context_vars, // To get loops
-			)
+			]
 		);
 
 		if ($this->user instanceof \phpbb\user)
@@ -379,6 +368,6 @@ class twig extends \phpbb\template\base
 	*/
 	public function get_source_file_for_handle($handle)
 	{
-		return $this->twig->getLoader()->getCacheKey($this->get_filename_from_handle($handle));
+		return $this->loader->getCacheKey($this->get_filename_from_handle($handle));
 	}
 }

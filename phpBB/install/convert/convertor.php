@@ -71,7 +71,7 @@ class convertor
 		require_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		require_once($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
 
-		$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
+		$dbms = \phpbb\config_php_file::convert_30_dbms_to_31($dbms);
 
 		/** @var \phpbb\db\driver\driver_interface $db */
 		$db = new $dbms();
@@ -215,21 +215,13 @@ class convertor
 		// For conversions we are a bit less strict and set to a search backend we know exist...
 		if (!class_exists($search_type))
 		{
-			$search_type = '\phpbb\search\fulltext_native';
+			$search_type = 'phpbb\search\backend\fulltext_native';
 			$config->set('search_type', $search_type);
 		}
 
 		if (!class_exists($search_type))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
-		}
-
-		$error = false;
-		$convert->fulltext_search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
-		{
-			trigger_error($error);
 		}
 
 		include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
@@ -271,7 +263,7 @@ class convertor
 				$bad_folders = array();
 
 				$local_paths = array(
-					'avatar_path'			=> path($config['avatar_path']),
+					'avatar_path'			=> path($config['storage\\avatar\\config\\path']),
 					'avatar_gallery_path'	=> path($config['avatar_gallery_path']),
 					'icons_path'			=> path($config['icons_path']),
 					'ranks_path'			=> path($config['ranks_path']),

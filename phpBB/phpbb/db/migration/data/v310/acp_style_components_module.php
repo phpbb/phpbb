@@ -28,7 +28,7 @@ class acp_style_components_module extends \phpbb\db\migration\migration
 		return $module_id == false;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
 	}

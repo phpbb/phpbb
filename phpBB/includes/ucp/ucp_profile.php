@@ -538,7 +538,6 @@ class ucp_profile
 					$enable_urls,
 					$enable_smilies,
 					$config['allow_sig_img'],
-					$config['allow_sig_flash'],
 					true,
 					$config['allow_sig_links'],
 					'sig'
@@ -612,7 +611,6 @@ class ucp_profile
 					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 					'MAX_FONT_SIZE'			=> (int) $config['max_sig_font_size'],
 
@@ -621,7 +619,6 @@ class ucp_profile
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
 
@@ -757,11 +754,14 @@ class ucp_profile
 					$error = $phpbb_avatar_manager->localize_errors($user, $error);
 				}
 
-				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'ERROR'			=> (count($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> $avatar,
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 

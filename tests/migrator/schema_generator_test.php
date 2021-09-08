@@ -41,7 +41,7 @@ class schema_generator_test extends phpbb_test_case
 
 	protected function get_schema_generator(array $class_names)
 	{
-		$this->generator = new \phpbb\db\migration\schema_generator($class_names, $this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix);
+		$this->generator = new \phpbb\db\migration\schema_generator($class_names, $this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix, phpbb_database_test_case::get_core_tables());
 
 		return $this->generator;
 	}

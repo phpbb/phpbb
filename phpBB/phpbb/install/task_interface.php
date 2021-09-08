@@ -25,7 +25,7 @@ interface task_interface
 	 *
 	 * @return int	The number of steps that the task contains
 	 */
-	static public function get_step_count();
+	public static function get_step_count();
 
 	/**
 	 * Checks if the task is essential to install phpBB or it can be skipped

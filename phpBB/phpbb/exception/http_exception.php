@@ -40,7 +40,7 @@ class http_exception extends runtime_exception implements HttpExceptionInterface
 	 * @param integer		$status_code	The http status code.
 	 * @param string		$message		The Exception message to throw (must be a language variable).
 	 * @param array			$parameters		The parameters to use with the language var.
-	 * @param \Exception	$previous		The previous exception used for the exception chaining.
+	 * @param \Exception|null	$previous		The previous exception used for the exception chaining.
 	 * @param array			$headers		Additional headers to set in the response.
 	 * @param integer		$code			The Exception code.
 	 */

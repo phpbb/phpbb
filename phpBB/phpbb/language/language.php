@@ -41,12 +41,12 @@ class language
 	protected $common_language_files_loaded;
 
 	/**
-	 * @var string	ISO code of the default board language
+	 * @var string|null	ISO code of the default board language
 	 */
 	protected $default_language;
 
 	/**
-	 * @var string	ISO code of the User's language
+	 * @var string|null	ISO code of the User's language
 	 */
 	protected $user_language;
 
@@ -81,8 +81,8 @@ class language
 		$this->loader = $loader;
 
 		// Set up default information
-		$this->user_language		= false;
-		$this->default_language		= false;
+		$this->user_language		= null;
+		$this->default_language		= null;
 		$this->lang					= array();
 		$this->loaded_language_sets	= array(
 			'core'	=> array(),
@@ -112,7 +112,7 @@ class language
 	 * @param string	$user_lang_iso		ISO code of the User's language
 	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_user_language($user_lang_iso, $reload = false)
+	public function set_user_language(string $user_lang_iso, $reload = false)
 	{
 		$this->user_language = $user_lang_iso;
 
@@ -125,7 +125,7 @@ class language
 	 * @param string	$default_lang_iso	ISO code of the board's default language
 	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_default_language($default_lang_iso, $reload = false)
+	public function set_default_language(string $default_lang_iso, $reload = false)
 	{
 		$this->default_language = $default_lang_iso;
 
@@ -582,19 +582,17 @@ class language
 	 * Returns language fallback data
 	 *
 	 * @param bool	$reload	Whether or not to reload language files
-	 *
-	 * @return array
 	 */
 	protected function set_fallback_array($reload = false)
 	{
 		$fallback_array = array();
 
-		if ($this->user_language)
+		if ($this->user_language !== null)
 		{
 			$fallback_array[] = $this->user_language;
 		}
 
-		if ($this->default_language)
+		if ($this->default_language !== null)
 		{
 			$fallback_array[] = $this->default_language;
 		}

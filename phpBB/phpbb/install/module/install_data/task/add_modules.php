@@ -31,11 +31,6 @@ class add_modules extends \phpbb\install\task_base
 	protected $db;
 
 	/**
-	 * @var \phpbb\extension\manager
-	 */
-	protected $extension_manager;
-
-	/**
 	 * @var iohandler_interface
 	 */
 	protected $iohandler;
@@ -146,7 +141,7 @@ class add_modules extends \phpbb\install\task_base
 	/**
 	 * Constructor
 	 *
-	 * @parma config				$config		Installer's config
+	 * @param config				$config		Installer's config
 	 * @param iohandler_interface	$iohandler	Installer's input-output handler
 	 * @param container_factory		$container	Installer's DI container
 	 */
@@ -154,7 +149,6 @@ class add_modules extends \phpbb\install\task_base
 	{
 		$this->config				= $config;
 		$this->db					= $container->get('dbal.conn');
-		$this->extension_manager	= $container->get('ext.manager');
 		$this->iohandler			= $iohandler;
 		$this->module_manager		= $container->get('module.manager');
 
@@ -553,7 +547,7 @@ class add_modules extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}

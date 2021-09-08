@@ -51,7 +51,6 @@ $lang = array_merge($lang, array(
 	'BBCODE_A_HELP'				=> 'Inline uploaded attachment: [attachment=]filename.ext[/attachment]',
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]',
-	'BBCODE_D_HELP'				=> 'Flash: [flash=width,height]http://url[/flash]',
 	'BBCODE_F_HELP'				=> 'Font size: [size=85]small text[/size]',
 	'BBCODE_IS_OFF'				=> '%sBBCode%s is <em>OFF</em>',
 	'BBCODE_IS_ON'				=> '%sBBCode%s is <em>ON</em>',
@@ -121,10 +120,7 @@ $lang = array_merge($lang, array(
 	'EDIT_REASON'				=> 'Reason for editing this post',
 	'EMPTY_FILEUPLOAD'			=> 'The uploaded file is empty.',
 	'EMPTY_MESSAGE'				=> 'You must enter a message when posting.',
-	'EMPTY_REMOTE_DATA'			=> 'File could not be uploaded, please try uploading the file manually.',
 
-	'FLASH_IS_OFF'				=> '[flash] is <em>OFF</em>',
-	'FLASH_IS_ON'				=> '[flash] is <em>ON</em>',
 	'FLOOD_ERROR'				=> 'You cannot make another post so soon after your last.',
 	'FONT_COLOR'				=> 'Font colour',
 	'FONT_COLOR_HIDE'			=> 'Hide font colour',
@@ -153,14 +149,6 @@ $lang = array_merge($lang, array(
 
 	'MAX_ATTACHMENT_FILESIZE'	=> 'Maximum filesize per attachment: %s.',
 	'MAX_FONT_SIZE_EXCEEDED'	=> 'You may only use fonts up to size %d.',
-	'MAX_FLASH_HEIGHT_EXCEEDED'	=> array(
-		1	=> 'Your flash files may only be up to %d pixel high.',
-		2	=> 'Your flash files may only be up to %d pixels high.',
-	),
-	'MAX_FLASH_WIDTH_EXCEEDED'	=> array(
-		1	=> 'Your flash files may only be up to %d pixel wide.',
-		2	=> 'Your flash files may only be up to %d pixels wide.',
-	),
 	'MAX_IMG_HEIGHT_EXCEEDED'	=> array(
 		1	=> 'Your images may only be up to %1$d pixel high.',
 		2	=> 'Your images may only be up to %1$d pixels high.',
@@ -236,7 +224,6 @@ $lang = array_merge($lang, array(
 	),
 	'QUOTE_NO_NESTING'			=> 'You may not embed quotes within each other.',
 
-	'REMOTE_UPLOAD_TIMEOUT'		=> 'The specified file could not be uploaded because the request timed out.',
 	'SAVE'						=> 'Save',
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',

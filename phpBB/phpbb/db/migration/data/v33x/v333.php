@@ -20,7 +20,7 @@ class v333 extends \phpbb\db\migration\migration
 		return version_compare($this->config['version'], '3.3.3', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v33x\v333rc1',

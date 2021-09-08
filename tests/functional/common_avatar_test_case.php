@@ -17,7 +17,6 @@
 abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional_test_case
 {
 	private $path;
-	private $form_content;
 
 	abstract function get_url();
 
@@ -36,7 +35,6 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=avatar&sid=' . $this->sid);
 		// Check the default entries we should have
 		$this->assertContainsLang('ALLOW_GRAVATAR', $crawler->text());
-		$this->assertContainsLang('ALLOW_REMOTE_UPLOAD', $crawler->text());
 		$this->assertContainsLang('ALLOW_AVATARS', $crawler->text());
 		$this->assertContainsLang('ALLOW_LOCAL', $crawler->text());
 
@@ -44,8 +42,6 @@ abstract class phpbb_functional_common_avatar_test_case extends phpbb_functional
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$form['config[allow_avatar_local]']->select(1);
 		$form['config[allow_avatar_gravatar]']->select(1);
-		$form['config[allow_avatar_remote]']->select(1);
-		$form['config[allow_avatar_remote_upload]']->select(1);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
 	}

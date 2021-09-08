@@ -20,7 +20,7 @@ class reported_posts_display extends \phpbb\db\migration\migration
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'reports', 'reported_post_enable_bbcode');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}

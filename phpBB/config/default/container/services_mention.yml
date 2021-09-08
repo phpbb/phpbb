@@ -1,0 +1,75 @@
+services:
+# ----- Controller -----
+    mention.controller:
+        class: phpbb\mention\controller\mention
+        arguments:
+            - '@mention.source_collection'
+            - '@request'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# ----- Sources for mention -----
+    mention.source_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: mention.source }
+
+    mention.source.base_group:
+        abstract: true
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@group_helper'
+            - '@user'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    mention.source.base_user:
+        abstract: true
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@user_loader'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    mention.source.friend:
+        class: phpbb\mention\source\friend
+        parent: mention.source.base_user
+        calls:
+            - [set_user, ['@user']]
+        tags:
+            - { name: mention.source }
+
+    mention.source.group:
+        class: phpbb\mention\source\group
+        parent: mention.source.base_group
+        tags:
+            - { name: mention.source }
+
+    mention.source.team:
+        class: phpbb\mention\source\team
+        parent: mention.source.base_user
+        tags:
+            - { name: mention.source }
+
+    mention.source.topic:
+        class: phpbb\mention\source\topic
+        parent: mention.source.base_user
+        tags:
+            - { name: mention.source }
+
+    mention.source.user:
+        class: phpbb\mention\source\user
+        parent: mention.source.base_user
+        tags:
+            - { name: mention.source }
+
+    mention.source.usergroup:
+        class: phpbb\mention\source\usergroup
+        parent: mention.source.base_group
+        tags:
+            - { name: mention.source }

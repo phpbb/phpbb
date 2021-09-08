@@ -15,7 +15,7 @@ installer:
         dbport: ~
         dbuser: homestead
         dbpasswd: secret
-        dbname: phpbb
+        dbname: homestead
         table_prefix: phpbb_
 #    database:
 #        dbms: postgres

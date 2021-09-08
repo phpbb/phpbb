@@ -15,12 +15,12 @@ namespace phpbb\console\command\user;
 
 use phpbb\config\config;
 use phpbb\console\command\command;
-use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\notification\manager;
 use phpbb\user;
 use phpbb\user_loader;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -29,9 +29,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class activate extends command
 {
-	/** @var driver_interface */
-	protected $db;
-
 	/** @var config */
 	protected $config;
 
@@ -65,7 +62,6 @@ class activate extends command
 	 * Construct method
 	 *
 	 * @param user             $user
-	 * @param driver_interface $db
 	 * @param config           $config
 	 * @param language         $language
 	 * @param log_interface    $log
@@ -74,9 +70,8 @@ class activate extends command
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
-		$this->db = $db;
 		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
@@ -143,19 +138,19 @@ class activate extends command
 		if ($user_row['user_id'] == ANONYMOUS)
 		{
 			$io->error($this->language->lang('NO_USER'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		// Check if the user is already active (or inactive)
 		if ($mode == 'activate' && $user_row['user_type'] != USER_INACTIVE)
 		{
 			$io->error($this->language->lang('CLI_DESCRIPTION_USER_ACTIVATE_ACTIVE'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 		else if ($mode == 'deactivate' && $user_row['user_type'] == USER_INACTIVE)
 		{
 			$io->error($this->language->lang('CLI_DESCRIPTION_USER_ACTIVATE_INACTIVE'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		// Activate the user account
@@ -183,7 +178,7 @@ class activate extends command
 
 		$io->success($this->language->lang($msg));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

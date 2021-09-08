@@ -230,7 +230,6 @@ class ucp_prefs
 					'post_st'		=> $request->variable('post_st', (!empty($user->data['user_post_show_days'])) ? (int) $user->data['user_post_show_days'] : 0),
 
 					'images'		=> $request->variable('images', (bool) $user->optionget('viewimg')),
-					'flash'			=> $request->variable('flash', (bool) $user->optionget('viewflash')),
 					'smilies'		=> $request->variable('smilies', (bool) $user->optionget('viewsmilies')),
 					'sigs'			=> $request->variable('sigs', (bool) $user->optionget('viewsigs')),
 					'avatars'		=> $request->variable('avatars', (bool) $user->optionget('viewavatars')),
@@ -280,7 +279,6 @@ class ucp_prefs
 					if (!count($error))
 					{
 						$user->optionset('viewimg', $data['images']);
-						$user->optionset('viewflash', $data['flash']);
 						$user->optionset('viewsmilies', $data['smilies']);
 						$user->optionset('viewsigs', $data['sigs']);
 						$user->optionset('viewavatars', $data['avatars']);
@@ -415,7 +413,6 @@ class ucp_prefs
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_IMAGES'			=> $data['images'],
-					'S_FLASH'			=> $data['flash'],
 					'S_SMILIES'			=> $data['smilies'],
 					'S_SIGS'			=> $data['sigs'],
 					'S_AVATARS'			=> $data['avatars'],

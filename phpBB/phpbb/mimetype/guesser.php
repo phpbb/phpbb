@@ -49,6 +49,7 @@ class guesser
 		{
 			$is_supported = (method_exists($guesser, 'is_supported')) ? 'is_supported' : '';
 			$is_supported = (method_exists($guesser, 'isSupported')) ? 'isSupported' : $is_supported;
+			$is_supported = (method_exists($guesser, 'isGuesserSupported')) ? 'isGuesserSupported' : $is_supported;
 
 			if (empty($is_supported))
 			{
@@ -117,9 +118,13 @@ class guesser
 
 		$mimetype = 'application/octet-stream';
 
+		$args = (array) func_get_args();
 		foreach ($this->guessers as $guesser)
 		{
-			$mimetype_guess = $guesser->guess($file, $file_name);
+			$guess = (method_exists($guesser, 'guess')) ? 'guess' : '';
+			$guess = (method_exists($guesser, 'guessMimeType')) ? 'guessMimeType' : $guess;
+
+			$mimetype_guess = $guesser->$guess(...$args);
 
 			$mimetype = $this->choose_mime_type($mimetype, $mimetype_guess);
 		}

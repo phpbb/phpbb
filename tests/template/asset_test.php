@@ -41,7 +41,7 @@ class phpbb_template_asset_test extends phpbb_test_case
 		$path_helper->method('get_phpbb_root_path')
 			->willReturn($phpbb_root_path);
 
-		$asset = new asset('', $path_helper, new phpbb\filesystem\filesystem());
+		$asset = new asset('', $path_helper);
 
 		$asset->set_path($path, true);
 		$this->assertEquals($expected, $asset->get_path());

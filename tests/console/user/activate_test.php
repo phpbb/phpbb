@@ -35,7 +35,6 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 		$application = new Application();
 		$application->add(new activate(
 			$this->user,
-			$this->db,
 			$this->config,
 			$this->language,
 			$this->log,

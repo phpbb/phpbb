@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\extension;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,6 +20,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class purge extends command
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -32,6 +36,16 @@ class purge extends command
 		;
 	}
 
+	/**
+	 * Executes the command extension:purge.
+	 *
+	 * Purges the specified extension
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
@@ -43,14 +57,14 @@ class purge extends command
 		if ($this->manager->is_enabled($name))
 		{
 			$io->error($this->user->lang('CLI_EXTENSION_PURGE_FAILURE', $name));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 		else
 		{
 			$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_PURGE', time(), array($name));
 			$this->check_apcu_cache($io);
 			$io->success($this->user->lang('CLI_EXTENSION_PURGE_SUCCESS', $name));
-			return 0;
+			return symfony_command::SUCCESS;
 		}
 	}
 }

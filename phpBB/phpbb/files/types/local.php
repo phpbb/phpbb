@@ -24,17 +24,8 @@ class local extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var language */
-	protected $language;
-
-	/** @var IniGetWrapper */
-	protected $php_ini;
-
 	/** @var request_interface */
 	protected $request;
-
-	/** @var \phpbb\files\upload */
-	protected $upload;
 
 	/**
 	 * Construct a form upload type
@@ -108,7 +99,7 @@ class local extends base
 	 * Retrieve upload array
 	 *
 	 * @param string $source_file Source file name
-	 * @param array $filedata File data array
+	 * @param array|bool $filedata File data array
 	 *
 	 * @return array Upload array
 	 */

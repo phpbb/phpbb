@@ -32,7 +32,7 @@ class recaptcha_v3 extends captcha_abstract
 	const RECAPTCHA		= 'recaptcha.net';
 
 	/** @var array CAPTCHA types mapped to their action */
-	static protected $actions = [
+	protected static $actions = [
 		0				=> 'default',
 		CONFIRM_REG		=> 'register',
 		CONFIRM_LOGIN	=> 'login',
@@ -46,7 +46,7 @@ class recaptcha_v3 extends captcha_abstract
 	 * @static
 	 * @return array
 	 */
-	static public function get_actions()
+	public static function get_actions()
 	{
 		return self::$actions;
 	}

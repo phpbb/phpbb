@@ -13,8 +13,7 @@
 
 class lint_test extends phpbb_test_case
 {
-	static protected $php_binary;
-	static protected $exclude;
+	protected static $php_binary;
 
 	static public function setUpBeforeClass(): void
 	{

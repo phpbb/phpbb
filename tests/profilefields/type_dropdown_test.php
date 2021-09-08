@@ -20,13 +20,10 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 	/**
 	* Sets up basic test objects
 	*
-	* @access public
-	* @return null
+	* @access protected
 	*/
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$db = $this->createMock('phpbb\\db\\driver\\driver');
 
 		$user = $this->createMock('\phpbb\user');

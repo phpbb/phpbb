@@ -38,13 +38,6 @@ interface renderer_interface
 	public function get_viewcensors();
 
 	/**
-	* Return the value of the "viewflash" option
-	*
-	* @return bool Option's value
-	*/
-	public function get_viewflash();
-
-	/**
 	* Return the value of the "viewimg" option
 	*
 	* @return bool Option's value
@@ -67,14 +60,6 @@ interface renderer_interface
 	public function set_viewcensors($value);
 
 	/**
-	* Set the "viewflash" option
-	*
-	* @param  bool $value Option's value
-	* @return null
-	*/
-	public function set_viewflash($value);
-
-	/**
 	* Set the "viewimg" option
 	*
 	* @param  bool $value Option's value
@@ -89,4 +74,12 @@ interface renderer_interface
 	* @return null
 	*/
 	public function set_viewsmilies($value);
+
+	/**
+	* Set the "usemention" option
+	*
+	* @param  bool $value Option's value
+	* @return null
+	*/
+	public function set_usemention($value);
 }

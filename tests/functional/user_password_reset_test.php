@@ -152,7 +152,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie);
+		foreach ($cookies as $cookie)
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{

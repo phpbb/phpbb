@@ -1264,7 +1264,7 @@ function phpbb_prepare_message($message)
 	$enable_smilies = (!isset($convert->row['enable_smilies'])) ? true : $convert->row['enable_smilies'];
 	$enable_magic_url = (!isset($convert->row['enable_magic_url'])) ? true : $convert->row['enable_magic_url'];
 
-	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
+	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	$message_parser->parse($enable_bbcode, $enable_magic_url, $enable_smilies);
 
 	if (count($message_parser->warn_msg))
@@ -1508,15 +1508,9 @@ function phpbb_avatar_type($type)
 	{
 		case 1:
 			return AVATAR_UPLOAD;
-		break;
-
-		case 2:
-			return AVATAR_REMOTE;
-		break;
 
 		case 3:
 			return AVATAR_GALLERY;
-		break;
 	}
 
 	return 0;
@@ -1547,11 +1541,6 @@ function phpbb_import_avatar($user_avatar)
 	{
 		// Uploaded avatar
 		return import_avatar($user_avatar, false, $convert_row['user_id']);
-	}
-	else if ($convert_row['user_avatar_type'] == 2)
-	{
-		// Remote avatar
-		return $user_avatar;
 	}
 	else if ($convert_row['user_avatar_type'] == 3)
 	{

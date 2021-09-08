@@ -28,7 +28,7 @@ if (!defined('IN_PHPBB'))
 */
 
 // phpBB Version
-@define('PHPBB_VERSION', '3.3.5-dev');
+@define('PHPBB_VERSION', '4.0.0-a1-dev');
 
 // QA-related
 // define('PHPBB_QA', 1);
@@ -42,7 +42,6 @@ define('USER_ACTIVATION_ADMIN', 2);
 define('USER_ACTIVATION_DISABLE', 3);
 
 define('AVATAR_UPLOAD', 1);
-define('AVATAR_REMOTE', 2);
 define('AVATAR_GALLERY', 3);
 
 define('USER_NORMAL', 0);
@@ -61,7 +60,6 @@ define('ACL_YES', 1);
 define('ACL_NO', -1);
 
 // Login error codes
-define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
 define('LOGIN_SUCCESS', 3);
 define('LOGIN_SUCCESS_CREATE_PROFILE', 20);
@@ -121,10 +119,6 @@ define('POST_STICKY', 1);
 define('POST_ANNOUNCE', 2);
 define('POST_GLOBAL', 3);
 
-// Lastread types
-define('TRACK_NORMAL', 0);
-define('TRACK_POSTED', 1);
-
 // Notify methods
 define('NOTIFY_EMAIL', 0);
 define('NOTIFY_IM', 1);
@@ -157,11 +151,6 @@ define('FULL_FOLDER_NONE', -3);
 define('FULL_FOLDER_DELETE', -2);
 define('FULL_FOLDER_HOLD', -1);
 
-// Download Modes - Attachments
-define('INLINE_LINK', 1);
-// This mode is only used internally to allow modders extending the attachment functionality
-define('PHYSICAL_LINK', 2);
-
 // Confirm types
 define('CONFIRM_REG', 1);
 define('CONFIRM_LOGIN', 2);
@@ -172,6 +161,7 @@ define('CONFIRM_REPORT', 4);
 define('ATTACHMENT_CATEGORY_NONE', 0);
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
+define('ATTACHMENT_CATEGORY_AUDIO', 7); // Browser-playable audio files
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);
@@ -192,7 +182,6 @@ define('BBCODE_ID_U', 7);
 define('BBCODE_ID_CODE', 8);
 define('BBCODE_ID_LIST', 9);
 define('BBCODE_ID_EMAIL', 10);
-define('BBCODE_ID_FLASH', 11);
 define('BBCODE_ID_ATTACH', 12);
 
 // BBCode hard limit
@@ -243,6 +232,7 @@ define('ACL_ROLES_DATA_TABLE',		$table_prefix . 'acl_roles_data');
 define('ACL_ROLES_TABLE',			$table_prefix . 'acl_roles');
 define('ACL_USERS_TABLE',			$table_prefix . 'acl_users');
 define('ATTACHMENTS_TABLE',			$table_prefix . 'attachments');
+define('BACKUPS_TABLE',				$table_prefix . 'backups');
 define('BANLIST_TABLE',				$table_prefix . 'banlist');
 define('BBCODES_TABLE',				$table_prefix . 'bbcodes');
 define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');
@@ -294,6 +284,7 @@ define('SESSIONS_KEYS_TABLE',		$table_prefix . 'sessions_keys');
 define('SITELIST_TABLE',			$table_prefix . 'sitelist');
 define('SMILIES_TABLE',				$table_prefix . 'smilies');
 define('SPHINX_TABLE',				$table_prefix . 'sphinx');
+define('STORAGE_TABLE',				$table_prefix . 'storage');
 define('STYLES_TABLE',				$table_prefix . 'styles');
 define('STYLES_TEMPLATE_TABLE',		$table_prefix . 'styles_template');
 define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');

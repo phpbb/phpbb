@@ -40,7 +40,7 @@ class local extends \phpbb\avatar\driver\driver
 		$avatar_list = $this->get_avatar_list($user);
 		$category = $request->variable('avatar_local_cat', key($avatar_list));
 
-		foreach ($avatar_list as $cat => $null)
+		foreach (array_keys($avatar_list) as $cat)
 		{
 			if (!empty($avatar_list[$cat]))
 			{
@@ -63,7 +63,7 @@ class local extends \phpbb\avatar\driver\driver
 			));
 
 			$table_cols = isset($row['avatar_gallery_cols']) ? $row['avatar_gallery_cols'] : 4;
-			$row_count = $col_count = $avatar_pos = 0;
+			$col_count = $avatar_pos = 0;
 			$avatar_count = count($avatar_list[$category]);
 
 			reset($avatar_list[$category]);
@@ -75,7 +75,6 @@ class local extends \phpbb\avatar\driver\driver
 
 				if ($col_count == 0)
 				{
-					++$row_count;
 					$template->assign_block_vars('avatar_local_row', array(
 					));
 				}

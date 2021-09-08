@@ -58,7 +58,6 @@
     <table name="phpbb_extension_groups">
         <column>cat_id</column>
         <column>group_id</column>
-        <column>download_mode</column>
         <column>upload_icon</column>
         <column>max_filesize</column>
         <column>allow_group</column>
@@ -66,7 +65,6 @@
         <column>allowed_forums</column>
         <column>group_name</column>
         <row>
-            <value>1</value>
             <value>1</value>
             <value>1</value>
             <value> </value>

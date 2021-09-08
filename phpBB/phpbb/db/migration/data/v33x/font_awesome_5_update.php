@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v33x;
 
 class font_awesome_5_update extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v330\v330',

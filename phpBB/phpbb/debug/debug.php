@@ -24,7 +24,7 @@ use Symfony\Component\Debug\ExceptionHandler;
  */
 class debug
 {
-	static private $enabled = false;
+	private static $enabled = false;
 
 	/**
 	 * Enables the debug tools.
@@ -37,7 +37,7 @@ class debug
 	 * @param int  $errorReportingLevel The level of error reporting you want
 	 * @param bool $displayErrors       Whether to display errors (for development) or just log them (for production)
 	 */
-	static public function enable($errorReportingLevel = null, $displayErrors = true)
+	public static function enable($errorReportingLevel = null, $displayErrors = true)
 	{
 		if (static::$enabled)
 		{

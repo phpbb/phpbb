@@ -13,36 +13,56 @@
 	<ul class="topiclist cplist two-long-columns">
 	<!-- BEGIN topicrow -->
 		<li class="row<!-- IF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
-				<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF -->>
-					<!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+			<dl class="row-item">
+				<dt>
+					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+						{{ Icon('iconify', {
+							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
+							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
+							'mdi:star' : topicrow.S_POST_STICKY,
+							'mdi:lock' : topicrow.S_TOPIC_LOCKED,
+							'mdi:arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+							'mdi:fire' : topicrow.S_TOPIC_HOT,
+							'mdi:file-document-outline' : true,
+						}, '', true, 'c-forum-row-icon') }}
+					</a>
+					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}
+						<span class="row-item-link-mine"></span>
+					{% endif%}
+					{% if topicrow.TOPIC_ICON_IMG and S_TOPIC_ICONS %}
+						<img class="row-item-sub" src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" alt="">
+					{% endif %}
 					<div class="list-inner">
 						<!-- IF topicrow.S_UNREAD -->
 							<a class="unread" href="{topicrow.U_NEWEST_POST}">
-								<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{NEW_POST}</span>
+								{{ Icon('iconify', 'fa:file', NEW_POST, true, 'c-topic-unread-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><br />
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
+							<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>
 							<ul>
-							<!-- BEGIN pagination -->
-								<!-- IF topicrow.pagination.S_IS_PREV -->
-								<!-- ELSEIF topicrow.pagination.S_IS_CURRENT --><li class="active"><span>{topicrow.pagination.PAGE_NUMBER}</span></li>
-								<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS --><li class="ellipsis"><span>{L_ELLIPSIS}</span></li>
-								<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
-								<!-- ELSE --><li><a href="{topicrow.pagination.PAGE_URL}">{topicrow.pagination.PAGE_NUMBER}</a></li>
-								<!-- ENDIF -->
-							<!-- END pagination -->
+								<!-- BEGIN pagination -->
+									<!-- IF topicrow.pagination.S_IS_PREV -->
+									<!-- ELSEIF topicrow.pagination.S_IS_CURRENT -->
+										<li class="active"><span>{{ topicrow.pagination.PAGE_NUMBER }}</span></li>
+									<!-- ELSEIF topicrow.pagination.S_IS_ELLIPSIS -->
+										<li class="ellipsis"><span>{{ lang('ELLIPSIS') }}</span></li>
+									<!-- ELSEIF topicrow.pagination.S_IS_NEXT -->
+									<!-- ELSE -->
+										<li><a class="button" href="{{ topicrow.pagination.PAGE_URL }}" role="button">{{ topicrow.pagination.PAGE_NUMBER }}</a></li>
+									<!-- ENDIF -->
+								<!-- END pagination -->
 							</ul>
 						</div>
 						<!-- ENDIF -->
 						<div class="responsive-hide">
-							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }} <!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
-							<!-- IF topicrow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }} <!-- ENDIF -->
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 						</div>
 					</div>
@@ -50,7 +70,7 @@
 				<dd class="lastpost">
 					<span>{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 						<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-							<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
+							{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
 						</a>
 						<br />{topicrow.LAST_POST_TIME}
 					</span>
@@ -71,7 +91,7 @@
 		<dt>{L_TOTAL_POSTS}{L_COLON}</dt> <dd><!-- IF POSTS_PCT -->{POSTS}<!-- IF S_DISPLAY_SEARCH --> | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_YOUR_POSTS}</a></strong><!-- ENDIF --><br />({POSTS_DAY} / {POSTS_PCT})<!-- ELSE -->{POSTS}<!-- ENDIF --></dd>
 		<!-- IF ACTIVE_FORUM != '' --><dt>{L_ACTIVE_IN_FORUM}{L_COLON}</dt> <dd><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})</dd><!-- ENDIF -->
 		<!-- IF ACTIVE_TOPIC != '' --><dt>{L_ACTIVE_IN_TOPIC}{L_COLON}</dt> <dd><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})</dd><!-- ENDIF -->
-		<!-- IF WARNINGS --><dt>{L_YOUR_WARNINGS}{L_COLON}</dt> <dd class="error"><i class="icon fa-exclamation-triangle fa-fw icon-red" aria-hidden="true"></i> [{WARNINGS}]</dd><!-- ENDIF -->
+		<!-- IF WARNINGS --><dt>{L_YOUR_WARNINGS}{L_COLON}</dt> <dd class="error">{{ Icon('iconify', 'fa:external-triangle', '', true, 'c-warning-icon') }} [{WARNINGS}]</dd><!-- ENDIF -->
 		<!-- EVENT ucp_main_front_user_activity_append -->
 	</dl>
 <!-- EVENT ucp_main_front_user_activity_after -->

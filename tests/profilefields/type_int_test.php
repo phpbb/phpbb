@@ -19,17 +19,11 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 	/**
 	* Sets up basic test objects
 	*
-	* @access public
-	* @return null
+	* @access protected
 	*/
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
-
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

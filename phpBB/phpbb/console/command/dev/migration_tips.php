@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\dev;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -26,6 +27,9 @@ class migration_tips extends \phpbb\console\command\command
 		parent::__construct($user);
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -34,6 +38,16 @@ class migration_tips extends \phpbb\console\command\command
 		;
 	}
 
+	/**
+	 * Executes the command dev:migration-tips.
+	 *
+	 * Finds migrations that are not depended upon
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$migrations = $this->extension_manager->get_finder()
@@ -60,5 +74,7 @@ class migration_tips extends \phpbb\console\command\command
 			$output->writeln("\t\t\t'{$migration}',");
 		}
 		$output->writeln("\t\t];");
+
+		return symfony_command::SUCCESS;
 	}
 }

@@ -88,6 +88,11 @@ $lang = array_merge($lang, array(
 	'ACP_EXTENSION_GROUPS'		=> 'Manage attachment extension groups',
 	'ACP_EXTENSION_MANAGEMENT'	=> 'Extension management',
 	'ACP_EXTENSIONS'			=> 'Manage extensions',
+	'ACP_EXTENSIONS_CATALOG'	=> 'Extensions catalog',
+	'ACP_EXTENSIONS_INSTALL'	=> 'Install extensions',
+	'ACP_EXTENSIONS_REMOVE'		=> 'Remove extensions',
+	'ACP_EXTENSIONS_UPDATE'		=> 'Update extensions',
+	'ACP_EXTENSIONS_MANAGE'		=> 'Manage extension automatically',
 
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
@@ -173,6 +178,9 @@ $lang = array_merge($lang, array(
 	'ACP_SERVER_SETTINGS'		=> 'Server settings',
 	'ACP_SIGNATURE_SETTINGS'	=> 'Signature settings',
 	'ACP_SMILIES'				=> 'Smilies',
+
+	'ACP_STORAGE_SETTINGS'		=> 'Storage settings',
+
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
 	'ACP_STYLES_CACHE'			=> 'Purge Cache',
@@ -230,6 +238,17 @@ $lang = array_merge($lang, array(
 	'EXCEPTION' => 'Exception',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
+
+	'COMPOSER_UNSUPPORTED_OPERATION'	=> 'Operation unsupported for the package type “%s”.',
+	'COMPOSER_UPDATING_DEPENDENCIES'	=> 'Updating packages',
+	'COMPOSER_LOADING_REPOSITORIES'		=> 'Loading remote repositories with package information',
+	'COMPOSER_ERROR_CONFLICT'			=> 'Your requirements could not be resolved to an installable set of packages.',
+	'COMPOSER_REPOSITORY_UNAVAILABLE'	=> 'An error occurred while fetching the repository %s.',
+	'COMPOSER_INSTALLING_PACKAGE'		=> '  - Installing %1$s (%2$s)',
+	'COMPOSER_DELETING'					=> '  - Deleting %s',
+	'COMPOSER_UPDATE_NOTHING'			=> 'Nothing to update',
+	'COMPOSER_OUTPUT'					=> 'Composer output',
+
 	'CONFIG_UPDATED'		=> 'Configuration updated successfully.',
 	'CRON_LOCK_ERROR'		=> 'Could not obtain cron lock.',
 	'CRON_NO_SUCH_TASK'		=> 'Could not find cron task “%s”.',
@@ -742,30 +761,6 @@ $lang = array_merge($lang, array(
 	'LOG_STYLE_DELETE'			=> '<strong>Deleted style</strong><br />» %s',
 	'LOG_STYLE_EDIT_DETAILS'	=> '<strong>Edited style</strong><br />» %s',
 	'LOG_STYLE_EXPORT'			=> '<strong>Exported style</strong><br />» %s',
-
-	// @deprecated 3.1
-	'LOG_TEMPLATE_ADD_DB'			=> '<strong>Added new template set to database</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_TEMPLATE_ADD_FS'			=> '<strong>Add new template set on filesystem</strong><br />» %s',
-	'LOG_TEMPLATE_CACHE_CLEARED'	=> '<strong>Deleted cached versions of template files in template set <em>%1$s</em></strong><br />» %2$s',
-	'LOG_TEMPLATE_DELETE'			=> '<strong>Deleted template set</strong><br />» %s',
-	'LOG_TEMPLATE_EDIT'				=> '<strong>Edited template set <em>%1$s</em></strong><br />» %2$s',
-	'LOG_TEMPLATE_EDIT_DETAILS'		=> '<strong>Edited template details</strong><br />» %s',
-	'LOG_TEMPLATE_EXPORT'			=> '<strong>Exported template set</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_TEMPLATE_REFRESHED'		=> '<strong>Refreshed template set</strong><br />» %s',
-
-	// @deprecated 3.1
-	'LOG_THEME_ADD_DB'			=> '<strong>Added new theme to database</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_THEME_ADD_FS'			=> '<strong>Add new theme on filesystem</strong><br />» %s',
-	'LOG_THEME_DELETE'			=> '<strong>Theme deleted</strong><br />» %s',
-	'LOG_THEME_EDIT_DETAILS'	=> '<strong>Edited theme details</strong><br />» %s',
-	'LOG_THEME_EDIT'			=> '<strong>Edited theme <em>%1$s</em></strong>',
-	'LOG_THEME_EDIT_FILE'		=> '<strong>Edited theme <em>%1$s</em></strong><br />» Modified file <em>%2$s</em>',
-	'LOG_THEME_EXPORT'			=> '<strong>Exported theme</strong><br />» %s',
-	// @deprecated 3.1
-	'LOG_THEME_REFRESHED'		=> '<strong>Refreshed theme</strong><br />» %s',
 
 	'LOG_UPDATE_DATABASE'	=> '<strong>Updated Database from version %1$s to version %2$s</strong>',
 	'LOG_UPDATE_PHPBB'		=> '<strong>Updated phpBB from version %1$s to version %2$s</strong>',

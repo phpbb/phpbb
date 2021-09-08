@@ -16,7 +16,7 @@ namespace phpbb\db\migration\data\v31x;
 
 class remove_duplicate_migrations extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v31x\v3110');
 	}

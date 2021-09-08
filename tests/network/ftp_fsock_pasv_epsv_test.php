@@ -18,7 +18,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_transfer.php';
 */
 class phpbb_network_ftp_fsock_pasv_epsv_test extends phpbb_test_case
 {
-	static protected $ipv4;
+	protected static $ipv4;
 
 	static public function setUpBeforeClass(): void
 	{

@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v31x;
 
 class add_smtp_ssl_context_config_options extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v31x\v3110');
 	}

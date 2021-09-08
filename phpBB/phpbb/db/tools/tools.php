@@ -40,7 +40,7 @@ class tools implements tools_interface
 	*
 	* @return array
 	*/
-	static public function get_dbms_type_map()
+	public static function get_dbms_type_map()
 	{
 		return array(
 			'mysql_41'	=> array(

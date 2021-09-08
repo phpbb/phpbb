@@ -13,32 +13,34 @@
 
 namespace phpbb\install\module\install_database\task;
 
-use phpbb\install\exception\resource_limit_reached_exception;
+use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\tools_interface;
+use phpbb\install\helper\config;
+use phpbb\install\helper\database;
+use phpbb\install\sequential_task;
+use phpbb\install\task_base;
 
 /**
  * Create tables
  */
-class add_tables extends \phpbb\install\task_base
+class add_tables extends task_base
 {
+	use sequential_task;
+
 	/**
-	 * @var \phpbb\install\helper\config
+	 * @var config
 	 */
 	protected $config;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
+	 * @var driver_interface
 	 */
 	protected $db;
 
 	/**
-	 * @var \phpbb\db\tools\tools_interface
+	 * @var tools_interface
 	 */
 	protected $db_tools;
-
-	/**
-	 * @var \phpbb\filesystem\filesystem_interface
-	 */
-	protected $filesystem;
 
 	/**
 	 * @var string
@@ -46,17 +48,25 @@ class add_tables extends \phpbb\install\task_base
 	protected $schema_file_path;
 
 	/**
+	 * @var string
+	 */
+	protected $table_prefix;
+
+	/**
+	 * @var bool
+	 */
+	protected $change_prefix;
+
+	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\config				$config
-	 * @param \phpbb\install\helper\database			$db_helper
-	 * @param \phpbb\filesystem\filesystem_interface	$filesystem
-	 * @param string									$phpbb_root_path
+	 * @param config	$config
+	 * @param database	$db_helper
+	 * @param string	$phpbb_root_path
 	 */
-	public function __construct(\phpbb\install\helper\config $config,
-								\phpbb\install\helper\database $db_helper,
-								\phpbb\filesystem\filesystem_interface $filesystem,
-								$phpbb_root_path)
+	public function __construct(config $config,
+								database $db_helper,
+								string $phpbb_root_path)
 	{
 		$dbms = $db_helper->get_available_dbms($config->get('dbms'));
 		$dbms = $dbms[$config->get('dbms')]['DRIVER'];
@@ -75,8 +85,9 @@ class add_tables extends \phpbb\install\task_base
 
 		$this->config			= $config;
 		$this->db_tools			= $factory->get($this->db);
-		$this->filesystem		= $filesystem;
 		$this->schema_file_path	= $phpbb_root_path . 'store/schema.json';
+		$this->table_prefix		= $this->config->get('table_prefix');
+		$this->change_prefix	= $this->config->get('change_table_prefix', true);
 
 		parent::__construct(true);
 	}
@@ -88,55 +99,37 @@ class add_tables extends \phpbb\install\task_base
 	{
 		$this->db->sql_return_on_error(true);
 
-		$table_prefix = $this->config->get('table_prefix');
-		$change_prefix = $this->config->get('change_table_prefix', true);
-
 		if (!defined('CONFIG_TABLE'))
 		{
 			// CONFIG_TABLE is required by sql_create_index() to check the
 			// length of index names. However table_prefix is not defined
 			// here yet, so we need to create the constant ourselves.
-			define('CONFIG_TABLE', $table_prefix . 'config');
+			define('CONFIG_TABLE', $this->table_prefix . 'config');
 		}
 
 		$db_table_schema = @file_get_contents($this->schema_file_path);
 		$db_table_schema = json_decode($db_table_schema, true);
-		$total = count($db_table_schema);
-		$i = $this->config->get('add_table_index', 0);
-		$db_table_schema = array_slice($db_table_schema, $i);
 
-		foreach ($db_table_schema as $table_name => $table_data)
-		{
-			$i++;
+		$this->execute($this->config, $db_table_schema);
 
-			$this->db_tools->sql_create_table(
-				( ($change_prefix) ? ($table_prefix . substr($table_name, 6)) : $table_name ),
-				$table_data
-			);
-
-			// Stop execution if resource limit is reached
-			if ($this->config->get_time_remaining() <= 0 || $this->config->get_memory_remaining() <= 0)
-			{
-				break;
-			}
-		}
-
-		$this->config->set('add_table_index', $i);
-
-		if ($i < $total)
-		{
-			throw new resource_limit_reached_exception();
-		}
-		else
-		{
-			@unlink($this->schema_file_path);
-		}
+		@unlink($this->schema_file_path);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	protected function execute_step($key, $value) : void
+	{
+		$this->db_tools->sql_create_table(
+			($this->change_prefix) ? ($this->table_prefix . substr($key, 6)) : $key,
+			$value
+		);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function get_step_count() : int
 	{
 		return 1;
 	}
@@ -144,7 +137,7 @@ class add_tables extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_task_lang_name()
+	public function get_task_lang_name() : string
 	{
 		return 'TASK_CREATE_TABLES';
 	}

@@ -14,6 +14,7 @@
 namespace phpbb\group;
 
 use phpbb\auth\auth;
+use phpbb\avatar\helper as avatar_helper;
 use phpbb\cache\service as cache;
 use phpbb\config\config;
 use phpbb\language\language;
@@ -25,6 +26,9 @@ class helper
 {
 	/** @var auth */
 	protected $auth;
+
+	/** @var avatar_helper */
+	protected $avatar_helper;
 
 	/** @var cache */
 	protected $cache;
@@ -54,6 +58,7 @@ class helper
 	 * Constructor
 	 *
 	 * @param auth					$auth			Authentication object
+	 * @param avatar_helper			$avatar_helper	Avatar helper object
 	 * @param cache					$cache			Cache service object
 	 * @param config				$config			Configuration object
 	 * @param language				$language		Language object
@@ -61,9 +66,10 @@ class helper
 	 * @param path_helper			$path_helper	Path helper object
 	 * @param user					$user			User object
 	 */
-	public function __construct(auth $auth, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
+	public function __construct(auth $auth, avatar_helper $avatar_helper, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
 	{
 		$this->auth = $auth;
+		$this->avatar_helper = $avatar_helper;
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->language = $language;
@@ -278,17 +284,17 @@ class helper
 
 	/**
 	 * Get group avatar.
-	 * Wrapper function for phpbb_get_group_avatar()
+	 * Wrapper function for \phpbb\avatar\helper::get_group_avatar()
 	 *
 	 * @param array		$group_row		Row from the groups table
 	 * @param string	$alt			Optional language string for alt tag within image, can be a language key or text
 	 * @param bool		$ignore_config	Ignores the config-setting, to be still able to view the avatar in the UCP
 	 * @param bool		$lazy			If true, will be lazy loaded (requires JS)
 	 *
-	 * @return string 					Avatar html
+	 * @return array 					Avatar data
 	 */
 	function get_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
 	{
-		return phpbb_get_group_avatar($group_row, $alt, $ignore_config, $lazy);
+		return $this->avatar_helper->get_group_avatar($group_row, $alt, $ignore_config, $lazy);
 	}
 }

@@ -117,10 +117,17 @@ class create_schema_file extends \phpbb\install\task_base
 				include ($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 			}
 
-			$finder = new \phpbb\finder($this->filesystem, $this->phpbb_root_path, null, $this->php_ext);
+			$finder = new \phpbb\finder($this->phpbb_root_path, null, $this->php_ext);
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db, true);
+			$tables_data = \Symfony\Component\Yaml\Yaml::parseFile($this->phpbb_root_path . '/config/default/container/tables.yml');
+			$tables = [];
+			foreach ($tables_data['parameters'] as $parameter => $table)
+			{
+				$tables[str_replace('tables.', '', $parameter)] = str_replace('%core.table_prefix%', $table_prefix, $table);
+			}
+
 			$schema_generator = new \phpbb\db\migration\schema_generator(
 				$migrator_classes,
 				new \phpbb\config\config(array()),
@@ -128,7 +135,8 @@ class create_schema_file extends \phpbb\install\task_base
 				$db_tools,
 				$this->phpbb_root_path,
 				$this->php_ext,
-				$table_prefix
+				$table_prefix,
+				$tables
 			);
 			$db_table_schema = $schema_generator->get_schema();
 			$db_table_schema = json_encode($db_table_schema, JSON_PRETTY_PRINT);
@@ -149,7 +157,7 @@ class create_schema_file extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}

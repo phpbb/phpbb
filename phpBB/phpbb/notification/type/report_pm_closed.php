@@ -50,7 +50,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = [
+	public static $notification_option = [
 		'id'	=> 'notification.type.report_pm_closed',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT_PM_CLOSED',
 		'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',

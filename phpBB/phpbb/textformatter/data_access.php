@@ -136,7 +136,6 @@ class data_access
 			'list'  => 9,
 			'*'     => 9,
 			'email' => 10,
-			'flash' => 11,
 			'attachment' => 12,
 		);
 

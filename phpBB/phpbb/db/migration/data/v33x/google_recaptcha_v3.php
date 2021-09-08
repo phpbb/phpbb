@@ -20,7 +20,7 @@ class google_recaptcha_v3 extends \phpbb\db\migration\migration
 		return $this->config->offsetExists('recaptcha_v3_key');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v330\v330',
@@ -38,7 +38,7 @@ class google_recaptcha_v3 extends \phpbb\db\migration\migration
 
 		foreach (\phpbb\captcha\plugins\recaptcha_v3::get_actions() as $action)
 		{
-			$data[] = ['config.add', ["recaptcha_v3_threshold_{$action}", 0.5]];
+			$data[] = ['config.add', ["recaptcha_v3_threshold_{$action}", '0.5']];
 		}
 
 		return $data;
