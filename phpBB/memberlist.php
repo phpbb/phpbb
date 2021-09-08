@@ -1079,7 +1079,7 @@ switch ($mode)
 		{
 			$cp = $phpbb_container->get('profilefields.manager');
 			$additional_cpf_exist = $cp->profile_fields_data_exists();
-			$search_profilefields_params = $cp->build_custom_fields_search_array(); 
+			$search_profilefields_params = $cp->build_custom_fields_search_array();
 			//Let's get search fields up
 			$cp->generate_search_fields();
 		}
@@ -1453,7 +1453,7 @@ switch ($mode)
 		{
 			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
-		if(!empty($sql_join))
+		if (!empty($sql_join))
 		{
 			$sql_array['LEFT_JOIN'] = $sql_join;
 		}
@@ -1486,7 +1486,7 @@ switch ($mode)
 			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
-		foreach ($search_profilefields_params as $additional_search_params) 
+		foreach ($search_profilefields_params as $additional_search_params)
 		{
 			$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
 		}
@@ -1678,7 +1678,7 @@ switch ($mode)
 		{
 			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
-		if(!empty($sql_join))
+		if (!empty($sql_join))
 		{
 			$sql_array['LEFT_JOIN'] = $sql_join;
 		}
@@ -1726,18 +1726,18 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql_array = array(
+				$sql_array =[
 					'SELECT'        => 'u.*',
-					'FROM'  => array(
+					'FROM'  => [
 						USERS_TABLE     => 'u',
-					),
+					],
 					'WHERE' => $db->sql_in_set('u.user_id', $user_list) . ' ' . $sql_where_data
-					);
+					];
 					if (!empty($sql_from))
 					{
 						$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 					}
-					if(!empty($sql_join))
+					if (!empty($sql_join))
 					{
 						$sql_array['LEFT_JOIN'] = $sql_join;
 					}
