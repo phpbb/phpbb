@@ -68,7 +68,6 @@ class type_dropdown extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$profile_row = [];
 		$profile_row[0] = [
 			'var_name'				=> 'field_default_value',
 			'field_id'				=> 1,
