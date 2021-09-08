@@ -60,7 +60,7 @@ class type_date extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$profile_row = array(
+		$profile_row = [
 			'var_name'				=> 'field_default_value',
 			'lang_name'				=> $field_data['lang_name'],
 			'lang_explain'			=> $field_data['lang_explain'],
@@ -70,7 +70,7 @@ class type_date extends type_base
 			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
 			'lang_options'			=> $field_data['lang_options'],
-		);
+		];
 
 		$always_now = $this->request->variable('always_now', -1);
 		if ($always_now == -1)
@@ -82,10 +82,10 @@ class type_date extends type_base
 			$s_checked = ($always_now) ? true : false;
 		}
 
-		$options = array(
+		$options = [
 			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
 			1 => array('TITLE' => $this->user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['NO'] . '</label>'),
-		);
+		];
 
 		return $options;
 	}
@@ -95,14 +95,14 @@ class type_date extends type_base
 	*/
 	public function get_default_option_values()
 	{
-		return array(
+		return [
 			'field_length'		=> 10,
 			'field_minlen'		=> 10,
 			'field_maxlen'		=> 10,
 			'field_validation'	=> '',
 			'field_novalue'		=> ' 0- 0-   0',
 			'field_default_value'	=> ' 0- 0-   0',
-		);
+		];
 	}
 
 	/**
@@ -286,11 +286,11 @@ class type_date extends type_base
 	*/
 	public function get_search_array($profile_row)
 	{
-		$output = array(
+		$output = [
 			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
 			'field_novalue'	=> $profile_row['field_novalue'],
 			'field_multibyte'	=> true,
-		);
+		];
 		return $output;
 	}
 
@@ -324,9 +324,9 @@ class type_date extends type_base
 	*/
 	public function get_language_options($field_data)
 	{
-		$options = array(
+		$options = [
 			'lang_name' => 'string',
-		);
+		];
 
 		if ($field_data['lang_explain'])
 		{

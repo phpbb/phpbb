@@ -60,12 +60,12 @@ class type_int extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'),
-			1 => array('TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="number" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'),
-		);
+		$options = [
+			0 => ['TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'],
+			1 => ['TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'],
+			2 => ['TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'],
+			3 => ['TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="number" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'],
+		];
 
 		return $options;
 	}
@@ -75,14 +75,14 @@ class type_int extends type_base
 	*/
 	public function get_default_option_values()
 	{
-		return array(
+		return [
 			'field_length'		=> 5,
 			'field_minlen'		=> 0,
 			'field_maxlen'		=> 100,
 			'field_validation'	=> '',
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
-		);
+		];
 	}
 
 	/**
@@ -224,11 +224,11 @@ class type_int extends type_base
 	*/
 	public function get_search_array($profile_row)
 	{
-		$output = array(
+		$output = [
 			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
 			'field_novalue'	=> $profile_row['field_novalue'],
 			'field_multibyte'	=> true,
-		);
+		];
 		return $output;
 	}
 
@@ -272,9 +272,9 @@ class type_int extends type_base
 	*/
 	public function get_language_options($field_data)
 	{
-		$options = array(
+		$options = [
 			'lang_name' => 'string',
-		);
+		];
 
 		if ($field_data['lang_explain'])
 		{

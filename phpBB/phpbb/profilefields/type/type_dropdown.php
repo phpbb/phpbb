@@ -68,7 +68,7 @@ class type_dropdown extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$profile_row[0] = array(
+		$profile_row[0] = [
 			'var_name'				=> 'field_default_value',
 			'field_id'				=> 1,
 			'lang_name'				=> $field_data['lang_name'],
@@ -78,17 +78,17 @@ class type_dropdown extends type_base
 			'field_ident'			=> 'field_default_value',
 			'field_type'			=> $this->get_service_name(),
 			'lang_options'			=> $field_data['lang_options'],
-		);
+		];
 
 		$profile_row[1] = $profile_row[0];
 		$profile_row[1]['var_name'] = 'field_novalue';
 		$profile_row[1]['field_ident'] = 'field_novalue';
 		$profile_row[1]['field_default_value']	= $field_data['field_novalue'];
 
-		$options = array(
+		$options = [
 			0 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
 			1 => array('TITLE' => $this->user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $this->user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1])),
-		);
+		];
 
 		return $options;
 	}
@@ -98,14 +98,14 @@ class type_dropdown extends type_base
 	*/
 	public function get_default_option_values()
 	{
-		return array(
+		return [
 			'field_length'		=> 0,
 			'field_minlen'		=> 0,
 			'field_maxlen'		=> 5,
 			'field_validation'	=> '',
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
-		);
+		];
 	}
 
 	/**
@@ -233,11 +233,11 @@ class type_dropdown extends type_base
 		$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
 		foreach ($options as $option_id => $option_value)
 		{
-			$this->template->assign_block_vars('dropdown.options', array(
+			$this->template->assign_block_vars('dropdown.options', [
 				'OPTION_ID'	=> $option_id,
 				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
 				'VALUE'		=> $option_value,
-			));
+			]);
 		}
 	}
 
@@ -264,11 +264,11 @@ class type_dropdown extends type_base
 
 		foreach ($options as $option_id => $option_value)
 		{
-			$this->template->assign_block_vars('dropdown.options', array(
+			$this->template->assign_block_vars('dropdown.options', [
 				'OPTION_ID'	=> $option_id,
 				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
 				'VALUE'		=> $option_value,
-			));
+			]);
 		}
 	}
 
@@ -277,11 +277,11 @@ class type_dropdown extends type_base
 	*/
 	public function get_search_array($profile_row)
 	{
-		$output = array(
+		$output = [
 			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
 			'field_novalue'	=> $profile_row['field_novalue'],
 			'field_multibyte'	=> true,
-		);
+		];
 		return $output;
 	}
 
@@ -317,10 +317,10 @@ class type_dropdown extends type_base
 	*/
 	public function get_language_options($field_data)
 	{
-		$options = array(
+		$options = [
 			'lang_name'		=> 'string',
 			'lang_options'	=> 'optionfield',
-		);
+		];
 
 		if ($field_data['lang_explain'])
 		{
@@ -376,13 +376,13 @@ class type_dropdown extends type_base
 		if (!count($field_data['lang_options']))
 		{
 			// No options have been defined for the dropdown menu
-			$field_data['lang_options'] = array();
+			$field_data['lang_options'] = [];
 		}
 
-		$template_vars = array_merge($template_vars, array(
+		$template_vars = array_merge($template_vars, [
 			'S_DROPDOWN'				=> true,
 			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['DROPDOWN_ENTRIES_EXPLAIN'],
 			'LANG_OPTIONS'				=> implode("\n", $field_data['lang_options']),
-		));
+		]);
 	}
 }
