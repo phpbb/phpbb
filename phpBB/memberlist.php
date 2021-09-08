@@ -1726,30 +1726,22 @@ switch ($mode)
 			// Do the SQL thang
 			if ($mode == 'group')
 			{
-				$sql_from_ary = explode(',', $sql_from);
-				$extra_tables = [];
-				foreach ($sql_from_ary as $entry)
-				{
-					$table_data = explode(' ', trim($entry));
-
-					if (empty($table_data[0]) || empty($table_data[1]))
-					{
-						continue;
-					}
-
-					$extra_tables[$table_data[0]] = $table_data[1];
-					$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
-				}
-				if(!empty($sql_join))
-				{
-					$sql_array['LEFT_JOIN'] = $sql_join;
-				}
-
 				$sql_array = array(
-					'SELECT'	=> 'u.*' . $sql_select,
-					'FROM'		=> array_merge([USERS_TABLE => 'u'], $extra_tables),
-					'WHERE'		=> $db->sql_in_set('u.user_id', $user_list) . $sql_where_data . '',
-				);
+					'SELECT'        => 'u.*',
+					'FROM'  => array(
+						USERS_TABLE     => 'u',
+					),
+					'WHERE' => $db->sql_in_set('u.user_id', $user_list) . ' ' . $sql_where_data
+					);
+					if (!empty($sql_from))
+					{
+						$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
+					}
+					if(!empty($sql_join))
+					{
+						$sql_array['LEFT_JOIN'] = $sql_join;
+					}
+					$sql = $db->sql_build_query('SELECT', $sql_array);
 			}
 			else
 			{
