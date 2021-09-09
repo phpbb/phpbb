@@ -493,7 +493,7 @@ class convertor
 			$error[] = $this->language->lang('INST_ERR_DB_CONNECT');
 		}
 
-		$src_dbms = $this->config_php_file->convert_30_dbms_to_31($src_dbms);
+		$src_dbms = \phpbb\config_php_file::convert_30_dbms_to_31($src_dbms);
 
 		// Check table prefix
 		if (empty($error))

@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\db;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,6 +20,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class list_command extends \phpbb\console\command\db\migration_command
 {
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function configure()
 	{
 		$this
@@ -33,6 +37,16 @@ class list_command extends \phpbb\console\command\db\migration_command
 		;
 	}
 
+	/**
+	 * Executes the command db:list.
+	 *
+	 * Lists all installed and available migrations
+	 *
+	 * @param InputInterface  $input  An InputInterface instance
+	 * @param OutputInterface $output An OutputInterface instance
+	 *
+	 * @return int
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
 		$io = new SymfonyStyle($input, $output);
@@ -77,5 +91,7 @@ class list_command extends \phpbb\console\command\db\migration_command
 			$io->text($this->user->lang('CLI_MIGRATIONS_EMPTY'));
 			$io->newLine();
 		}
+
+		return symfony_command::SUCCESS;
 	}
 }

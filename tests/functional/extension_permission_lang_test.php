@@ -18,9 +18,9 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'foo/bar/config/',
 		'foo/bar/event/',
 		'foo/bar/language/en/',

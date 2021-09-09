@@ -32,22 +32,15 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	*/
 	protected $db;
 
-	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface	$db		Database object
-	* @param \phpbb\user			$user	User object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user)
+	public function __construct(\phpbb\db\driver\driver_interface $db)
 	{
 		$this->db = $db;
-		$this->user = $user;
 	}
 
 	/**
@@ -224,7 +217,7 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	* @param	int		$group_type	group_type from the groups-table
 	* @return	string		name of the language variable for the given group-type.
 	*/
-	static public function group_type_language($group_type)
+	public static function group_type_language($group_type)
 	{
 		switch ($group_type)
 		{

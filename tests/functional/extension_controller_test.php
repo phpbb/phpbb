@@ -18,9 +18,9 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'foo/bar/config/',
 		'foo/bar/controller/',
 		'foo/bar/event/',
@@ -107,7 +107,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->phpbb_extension_manager->enable('foo/bar');
 		$crawler = self::request('GET', 'app.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
-		$this->assertStringContainsString('Missing value for argument #1: test in class foo\bar\controller\controller:baz', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz()" requires that you provide a value for the "$test" argument', $crawler->filter('body')->text());
 		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 
@@ -136,7 +136,10 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'app.php/does/not/exist', array(), false);
 		$this->assert_response_html(404);
-		$this->assertStringContainsString('No route found for "GET /does/not/exist"', $crawler->filter('body')->text());
+
+		// Since version 5.3.0-BETA1, Symfony shows full URI when route not found. See https://github.com/symfony/symfony/pull/39893
+		$full_uri = self::$client->getRequest()->getUri();
+		$this->assertStringContainsString('No route found for "GET ' . $full_uri . '"', $crawler->filter('body')->text());
 	}
 
 	/**
@@ -181,7 +184,6 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 			$row_num = str_replace('redirect_expected_', '', $redirect);
 
 			$redirect = $crawler->filter('#redirect_' . $row_num)->text();
-			$redirect = substr($redirect, 0, strpos($redirect, 'sid') - 1);
 			$this->assertEquals($crawler->filter('#redirect_expected_' .  $row_num)->text(), $redirect);
 		}
 

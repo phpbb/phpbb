@@ -20,7 +20,7 @@ class includenode extends \Twig\Node\IncludeNode
 	*
 	* @param \Twig\Compiler A Twig\Compiler instance
 	*/
-	public function compile(\Twig\Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler) : void
 	{
 		$compiler->addDebugInfo($this);
 

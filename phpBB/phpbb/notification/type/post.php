@@ -50,7 +50,7 @@ class post extends \phpbb\notification\type\base
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = array(
+	public static $notification_option = array(
 		'lang'	=> 'NOTIFICATION_TYPE_POST',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	);
@@ -85,7 +85,7 @@ class post extends \phpbb\notification\type\base
 	* @param array $post The data from the post
 	* @return int The post id
 	*/
-	static public function get_item_id($post)
+	public static function get_item_id($post)
 	{
 		return (int) $post['post_id'];
 	}
@@ -96,7 +96,7 @@ class post extends \phpbb\notification\type\base
 	* @param array $post The data from the post
 	* @return int The topic id
 	*/
-	static public function get_item_parent_id($post)
+	public static function get_item_parent_id($post)
 	{
 		return (int) $post['topic_id'];
 	}

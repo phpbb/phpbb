@@ -48,7 +48,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param type_interface $notification_type	An optional instance of a notification type. This method returns false
+	* @param type_interface|null $notification_type	An optional instance of a notification type. This method returns false
 	*											only if the type is provided and if it doesn't provide an email template.
 	* @return bool
 	*/
@@ -73,7 +73,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 		}
 
 		// Load all users we want to notify (we need their email address)
-		$user_ids = $users = array();
+		$user_ids = array();
 		foreach ($this->queue as $notification)
 		{
 			$user_ids[] = $notification->user_id;

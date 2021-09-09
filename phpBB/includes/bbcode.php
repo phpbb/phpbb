@@ -33,6 +33,8 @@ class bbcode
 
 	var $template_bitfield;
 
+	protected $template_filename;
+
 	/**
 	* Constructor
 	*/
@@ -149,7 +151,7 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container, $phpbb_filesystem;
+		global $user, $phpbb_dispatcher, $phpbb_extension_manager, $phpbb_container;
 
 		if (empty($this->template_filename))
 		{
@@ -165,9 +167,7 @@ class bbcode
 					$phpbb_container->get('path_helper'),
 					$phpbb_container->getParameter('core.cache_dir'),
 					$phpbb_container->get('ext.manager'),
-					new \phpbb\template\twig\loader(
-						$phpbb_filesystem
-					)
+					new \phpbb\template\twig\loader()
 				),
 				$phpbb_container->getParameter('core.cache_dir'),
 				$phpbb_container->get('user'),
@@ -353,25 +353,6 @@ class bbcode
 					);
 				break;
 
-				case BBCODE_ID_FLASH:
-					if ($user->optionget('viewflash'))
-					{
-						$this->bbcode_cache[$bbcode_id] = array(
-							'preg' => array(
-								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> $this->bbcode_tpl('flash', $bbcode_id),
-							)
-						);
-					}
-					else
-					{
-						$this->bbcode_cache[$bbcode_id] = array(
-							'preg' => array(
-								'#\[flash=([0-9]+),([0-9]+):$uid\](.*?)\[/flash:$uid\]#'	=> str_replace('$1', '$3', str_replace('$2', '[ flash ]', $this->bbcode_tpl('url', $bbcode_id, true)))
-							)
-						);
-					}
-				break;
-
 				case BBCODE_ID_ATTACH:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'str'	=> array(
@@ -539,7 +520,6 @@ class bbcode
 			'color'					=> array('{COLOR}'		=> '$1', '{TEXT}'			=> '$2'),
 			'size'					=> array('{SIZE}'		=> '$1', '{TEXT}'			=> '$2'),
 			'img'					=> array('{URL}'		=> '$1'),
-			'flash'					=> array('{WIDTH}'		=> '$1', '{HEIGHT}'			=> '$2', '{URL}'	=> '$3'),
 			'url'					=> array('{URL}'		=> '$1', '{DESCRIPTION}'	=> '$2'),
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);

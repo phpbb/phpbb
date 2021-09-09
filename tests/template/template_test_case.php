@@ -23,9 +23,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
 
-	static protected $language_reflection_lang;
+	protected static $language_reflection_lang;
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -86,7 +86,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
 			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -94,10 +93,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = $this->test_path . '/templates';
 
-		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -105,7 +103,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

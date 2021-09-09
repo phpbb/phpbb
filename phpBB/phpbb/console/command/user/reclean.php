@@ -17,6 +17,7 @@ use phpbb\console\command\command;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\user;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -98,7 +99,7 @@ class reclean extends command
 		$io->newLine(2);
 		$io->success($this->language->lang('CLI_USER_RECLEAN_DONE', $this->processed));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

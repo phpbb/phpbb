@@ -90,7 +90,7 @@ class gd
 			}
 		}
 
-		if ($config['captcha_gd_wave'] && ($config['captcha_gd_y_grid'] || $config['captcha_gd_y_grid']))
+		if ($config['captcha_gd_wave'] && ($config['captcha_gd_x_grid'] || $config['captcha_gd_y_grid']))
 		{
 			$this->wave($img);
 		}

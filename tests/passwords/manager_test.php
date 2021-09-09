@@ -301,13 +301,13 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	{
 		if ($use_new_interface)
 		{
-			$test_driver = $this->createMock('\phpbb\passwords\driver\rehashable_driver_interface', array('needs_rehash', 'get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\rehashable_driver_interface');
 			$test_driver->method('needs_rehash')
 				->willReturn($needs_rehash);
 		}
 		else
 		{
-			$test_driver = $this->createMock('\phpbb\passwords\driver\driver_interface', array('get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\driver_interface');
 		}
 		$config = new \phpbb\config\config(array());
 

@@ -1,7 +1,7 @@
 <?php
 /**
 * Only adjust bitfields, do not rewrite text...
-* All new parsings have the img, flash and quote modes set to true
+* All new parsings have the img and quote modes set to true
 *
 * You should make a backup from your users, posts and privmsgs table in case something goes wrong
 * Forum descriptions and rules need to be re-submitted manually.

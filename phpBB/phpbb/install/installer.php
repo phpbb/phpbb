@@ -45,7 +45,7 @@ class installer
 	protected $install_config;
 
 	/**
-	 * @var ordered_service_collection
+	 * @var ordered_service_collection|null
 	 */
 	protected $installer_modules;
 

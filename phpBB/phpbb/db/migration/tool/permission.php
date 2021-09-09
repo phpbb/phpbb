@@ -115,9 +115,6 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			return;
 		}
 
-		// We've added permissions, so set to true to notify the user.
-		$this->permissions_added = true;
-
 		if (!class_exists('auth_admin'))
 		{
 			include($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);

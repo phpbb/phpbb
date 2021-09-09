@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v320;
 
 class icons_alt extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v320\dev',

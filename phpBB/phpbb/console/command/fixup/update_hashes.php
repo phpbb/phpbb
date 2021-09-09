@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\fixup;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -114,5 +115,6 @@ class update_hashes extends \phpbb\console\command\command
 		$progress_bar->finish();
 
 		$output->writeln('<info>' . $this->user->lang('CLI_FIXUP_UPDATE_HASH_BCRYPT_SUCCESS') . '</info>');
+		return symfony_command::SUCCESS;
 	}
 }

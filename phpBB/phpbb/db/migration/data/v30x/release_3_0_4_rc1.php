@@ -20,7 +20,7 @@ class release_3_0_4_rc1 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.0.4-RC1', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_3');
 	}
@@ -121,7 +121,7 @@ class release_3_0_4_rc1 extends \phpbb\db\migration\migration
 				$sql_ary['field_show_profile'] = 1;
 			}
 
-			$this->sql_query('UPDATE ' . $this->table_prefix . 'profile_fields SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id'], $errored, $error_ary);
+			$this->sql_query('UPDATE ' . $this->table_prefix . 'profile_fields SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id']);
 		}
 
 		$this->db->sql_freeresult($result);

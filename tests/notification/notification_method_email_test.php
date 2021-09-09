@@ -34,7 +34,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		];
 	}
 
-	protected function setUp() : void
+	protected function setUp(): void
 	{
 		phpbb_database_test_case::setUp();
 
@@ -44,6 +44,9 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 		global $db, $config, $user, $auth, $cache, $phpbb_container;
 
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+							  ->disableOriginalConstructor()
+							  ->getMock();
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config([
 			'allow_privmsg'			=> true,
@@ -56,7 +59,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$this->user = $user;
-		$this->user_loader = new \phpbb\user_loader($this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
+		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
@@ -88,6 +91,16 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
 		$phpbb_container->setParameter('tables.notification_emails', 'phpbb_notification_emails');
+		$phpbb_container->set(
+			'text_formatter.s9e.mention_helper',
+			new \phpbb\textformatter\s9e\mention_helper(
+				$this->db,
+				$auth,
+				$this->user,
+				$phpbb_root_path,
+				$phpEx
+			)
+		);
 
 		$this->notification_method_email = $this->getMockBuilder('\phpbb\notification\method\email')
 			->setConstructorArgs([
@@ -129,6 +142,9 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		);
 
 		$phpbb_container->set('notification_manager', $this->notifications);
+
+		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
+
 		$phpbb_container->compile();
 
 		$this->notifications->setDependencies($this->auth, $this->config);

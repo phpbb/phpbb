@@ -40,7 +40,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	*/
 	public function get_custom_html($user, $row, $alt = '')
 	{
-		return '<img src="' . $this->get_gravatar_url($row) . '" ' .
+		return '<img class="gravatar" src="' . $this->get_gravatar_url($row) . '" ' .
 			($row['avatar_width'] ? ('width="' . $row['avatar_width'] . '" ') : '') .
 			($row['avatar_height'] ? ('height="' . $row['avatar_height'] . '" ') : '') .
 			'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
@@ -114,7 +114,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 				return false;
 			}
 
-			if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['width'] <= 0))
+			if (!empty($image_data) && ($image_data['width'] <= 0 || $image_data['height'] <= 0))
 			{
 				$error[] = 'AVATAR_NO_SIZE';
 				return false;

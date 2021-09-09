@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class bot_update extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\rc6');
 	}
@@ -54,6 +54,7 @@ class bot_update extends \phpbb\db\migration\migration
 			if (!$group_row)
 			{
 				// default fallback, should never get here
+				$group_row = [];
 				$group_row['group_id'] = 6;
 				$group_row['group_colour'] = '9E8DA7';
 			}

@@ -37,12 +37,6 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	protected $db;
 
 	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
-
-	/**
 	* Cache object
 	* @var \phpbb\cache\driver\driver_interface
 	*/
@@ -52,13 +46,11 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface				$db		Database object
-	* @param \phpbb\user						$user	User object
 	* @param \phpbb\cache\driver\driver_interface	$cache	Cache object
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\cache\driver\driver_interface $cache)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\driver\driver_interface $cache)
 	{
 		$this->db = $db;
-		$this->user = $user;
 		$this->cache = $cache;
 	}
 
@@ -578,7 +570,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* @param	int		$group_type	group_type from the groups-table
 	* @return	string		name of the language variable for the given group-type.
 	*/
-	static public function group_type_language($group_type)
+	public static function group_type_language($group_type)
 	{
 		switch ($group_type)
 		{

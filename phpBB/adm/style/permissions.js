@@ -1,3 +1,5 @@
+/* global phpbb */
+
 /**
 * Hide and show all checkboxes
 * status = true (show boxes), false (hide boxes)

@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 class phpbb_test_case extends TestCase
 {
 	protected $test_case_helpers;
-	static protected $phpunit_version; 
+	protected static $phpunit_version;
 
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{

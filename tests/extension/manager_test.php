@@ -167,6 +167,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$phpbb_root_path,
 			$php_ext,
 			$table_prefix,
+			self::get_core_tables(),
 			array(),
 			new \phpbb\db\migration\helper()
 		);
@@ -176,7 +177,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$container,
 			$db,
 			$config,
-			new \phpbb\filesystem\filesystem(),
 			'phpbb_ext',
 			__DIR__ . '/',
 			$php_ext,

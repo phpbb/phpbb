@@ -35,7 +35,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		// Global $db and $cache are needed in acp/auth.php constructor
 		global $phpbb_root_path, $phpEx, $db, $cache;
 
-		parent::setup();
+		parent::setUp();
 
 		$db = $this->db = $this->new_dbal();
 		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);

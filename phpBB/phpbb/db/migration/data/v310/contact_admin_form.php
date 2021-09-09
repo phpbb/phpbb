@@ -20,7 +20,7 @@ class contact_admin_form extends \phpbb\db\migration\migration
 		return isset($this->config['contact_admin_form_enable']);
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\config_db_text');
 	}

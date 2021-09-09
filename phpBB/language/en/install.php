@@ -294,6 +294,7 @@ $lang = array_merge($lang, array(
 
 	// Install database
 	'TASK_ADD_CONFIG_SETTINGS'			=> 'Adding configuration settings',
+	'TASK_UPDATE_POSTS'					=> 'Adding default forums, topics and posts',
 	'TASK_ADD_DEFAULT_DATA'				=> 'Adding default settings to the database',
 	'TASK_CREATE_DATABASE_SCHEMA_FILE'	=> 'Creating database schema file',
 	'TASK_SETUP_DATABASE'				=> 'Setting up database',
@@ -302,6 +303,7 @@ $lang = array_merge($lang, array(
 	// Install data
 	'TASK_ADD_BOTS'				=> 'Registering bots',
 	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
+	'TASK_SET_LANGUAGES'		=> 'Adding language profile fields',
 	'TASK_ADD_MODULES'			=> 'Installing modules',
 	'TASK_CREATE_SEARCH_INDEX'	=> 'Creating search index',
 
@@ -566,7 +568,7 @@ $lang = array_merge($lang, array(
 
 	// Finish conversion
 	'CONVERT_COMPLETE'			=> 'Conversion completed',
-	'CONVERT_COMPLETE_EXPLAIN'	=> 'You have now successfully converted your board to phpBB 3.3. You can now login and <a href="../">access your board</a>. Please ensure that the settings were transferred correctly before enabling your board by deleting the install directory. Remember that help on using phpBB is available online via the <a href="https://www.phpbb.com/support/docs/en/3.3/ug/">Documentation</a> and the <a href="https://www.phpbb.com/community/viewforum.php?f=661">support forums</a>.',
+	'CONVERT_COMPLETE_EXPLAIN'	=> 'You have now successfully converted your board to phpBB 4.0. You can now login and <a href="../">access your board</a>. Please ensure that the settings were transferred correctly before enabling your board by deleting the install directory. Remember that help on using phpBB is available online via the <a href="https://www.phpbb.com/support/docs/en/3.3/ug/">Documentation</a> and the <a href="https://www.phpbb.com/community/viewforum.php?f=661">support forums</a>.',
 
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',

@@ -63,7 +63,7 @@ class permissions
 		* @since 3.1.0-a1
 		*/
 		$vars = array('types', 'categories', 'permissions');
-		extract($phpbb_dispatcher->trigger_event('core.permissions', compact($vars)));
+		extract($this->dispatcher->trigger_event('core.permissions', compact($vars)));
 
 		$this->categories = $categories;
 		$this->types = $types;
@@ -231,6 +231,7 @@ class permissions
 
 		'u_attach'		=> array('lang' => 'ACL_U_ATTACH', 'cat' => 'post'),
 		'u_download'	=> array('lang' => 'ACL_U_DOWNLOAD', 'cat' => 'post'),
+		'u_mention'		=> array('lang' => 'ACL_U_MENTION', 'cat' => 'post'),
 		'u_savedrafts'	=> array('lang' => 'ACL_U_SAVEDRAFTS', 'cat' => 'post'),
 		'u_chgcensors'	=> array('lang' => 'ACL_U_CHGCENSORS', 'cat' => 'post'),
 		'u_sig'			=> array('lang' => 'ACL_U_SIG', 'cat' => 'post'),
@@ -250,7 +251,6 @@ class permissions
 		'u_pm_bbcode'	=> array('lang' => 'ACL_U_PM_BBCODE', 'cat' => 'pm'),
 		'u_pm_smilies'	=> array('lang' => 'ACL_U_PM_SMILIES', 'cat' => 'pm'),
 		'u_pm_img'		=> array('lang' => 'ACL_U_PM_IMG', 'cat' => 'pm'),
-		'u_pm_flash'	=> array('lang' => 'ACL_U_PM_FLASH', 'cat' => 'pm'),
 
 		'u_sendemail'	=> array('lang' => 'ACL_U_SENDEMAIL', 'cat' => 'misc'),
 		'u_sendim'		=> array('lang' => 'ACL_U_SENDIM', 'cat' => 'misc'),
@@ -276,6 +276,7 @@ class permissions
 		'f_sticky'		=> array('lang' => 'ACL_F_STICKY', 'cat' => 'post'),
 		'f_announce'	=> array('lang' => 'ACL_F_ANNOUNCE', 'cat' => 'post'),
 		'f_announce_global'	=> array('lang' => 'ACL_F_ANNOUNCE_GLOBAL', 'cat' => 'post'),
+		'f_mention'		=> array('lang' => 'ACL_F_MENTION', 'cat' => 'post'),
 		'f_reply'		=> array('lang' => 'ACL_F_REPLY', 'cat' => 'post'),
 		'f_edit'		=> array('lang' => 'ACL_F_EDIT', 'cat' => 'post'),
 		'f_delete'		=> array('lang' => 'ACL_F_DELETE', 'cat' => 'post'),
@@ -287,7 +288,6 @@ class permissions
 		'f_attach'		=> array('lang' => 'ACL_F_ATTACH', 'cat' => 'content'),
 		'f_icons'		=> array('lang' => 'ACL_F_ICONS', 'cat' => 'content'),
 		'f_bbcode'		=> array('lang' => 'ACL_F_BBCODE', 'cat' => 'content'),
-		'f_flash'		=> array('lang' => 'ACL_F_FLASH', 'cat' => 'content'),
 		'f_img'			=> array('lang' => 'ACL_F_IMG', 'cat' => 'content'),
 		'f_sigs'		=> array('lang' => 'ACL_F_SIGS', 'cat' => 'content'),
 		'f_smilies'		=> array('lang' => 'ACL_F_SMILIES', 'cat' => 'content'),
@@ -350,6 +350,7 @@ class permissions
 		'a_roles'		=> array('lang' => 'ACL_A_ROLES', 'cat' => 'permissions'),
 		'a_switchperm'	=> array('lang' => 'ACL_A_SWITCHPERM', 'cat' => 'permissions'),
 
+		'a_storage'		=> array('lang' => 'ACL_A_STORAGE', 'cat' => 'misc'),
 		'a_styles'		=> array('lang' => 'ACL_A_STYLES', 'cat' => 'misc'),
 		'a_extensions'	=> array('lang' => 'ACL_A_EXTENSIONS', 'cat' => 'misc'),
 		'a_viewlogs'	=> array('lang' => 'ACL_A_VIEWLOGS', 'cat' => 'misc'),

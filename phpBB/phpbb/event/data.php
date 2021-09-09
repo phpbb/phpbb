@@ -13,7 +13,7 @@
 
 namespace phpbb\event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class data extends Event implements \ArrayAccess
 {

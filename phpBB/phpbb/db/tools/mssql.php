@@ -30,7 +30,7 @@ class mssql extends tools
 	 *
 	 * @return array
 	 */
-	static public function get_dbms_type_map()
+	public static function get_dbms_type_map()
 	{
 		return array(
 			'mssql'		=> array(

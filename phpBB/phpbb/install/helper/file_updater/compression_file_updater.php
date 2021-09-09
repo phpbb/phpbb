@@ -21,7 +21,7 @@ use phpbb\install\helper\update_helper;
 class compression_file_updater implements file_updater_interface
 {
 	/**
-	 * @var \compress
+	 * @var \compress|null
 	 */
 	protected $compress;
 

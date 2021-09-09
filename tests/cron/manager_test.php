@@ -20,6 +20,9 @@ require_once __DIR__ . '/tasks/simple_should_not_run.php';
 
 class phpbb_cron_manager_test extends \phpbb_test_case
 {
+	protected $manager;
+	protected $task_name;
+
 	protected function setUp(): void
 	{
 		$this->manager = $this->create_cron_manager(array(
@@ -97,7 +100,6 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 			$mock_router,
 			new \phpbb\symfony_request($request),
 			$request,
-			new \phpbb\filesystem\filesystem(),
 			$phpbb_root_path,
 			$phpEx
 		);

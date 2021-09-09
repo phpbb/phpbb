@@ -23,6 +23,9 @@ namespace phpbb;
 */
 class user_loader
 {
+	/** @var \phpbb\avatar\helper */
+	protected $avatar_helper;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db = null;
 
@@ -45,13 +48,15 @@ class user_loader
 	/**
 	* User loader constructor
 	*
+	* @param \phpbb\avatar\helper $avatar_helper Avatar helper object
 	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
 	* @param string $php_ext php file extension
 	* @param string $users_table The name of the database table (phpbb_users)
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $users_table)
+	public function __construct(\phpbb\avatar\helper $avatar_helper, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $users_table)
 	{
+		$this->avatar_helper = $avatar_helper;
 		$this->db = $db;
 
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -182,23 +187,23 @@ class user_loader
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
 	* @param bool $lazy If true, will be lazy loaded (requires JS)
-	* @return string
+	* @return array
 	*/
 	public function get_avatar($user_id, $query = false, $lazy = false)
 	{
 		if (!($user = $this->get_user($user_id, $query)))
 		{
-			return '';
+			return [];
 		}
 
-		$row = array(
+		$row = [
 			'avatar'		=> $user['user_avatar'],
 			'avatar_type'	=> $user['user_avatar_type'],
 			'avatar_width'	=> $user['user_avatar_width'],
 			'avatar_height'	=> $user['user_avatar_height'],
-		);
+		];
 
-		return phpbb_get_avatar($row, 'USER_AVATAR', false, $lazy);
+		return $this->avatar_helper->get_avatar($row, 'USER_AVATAR', false, $lazy);
 	}
 
 	/**

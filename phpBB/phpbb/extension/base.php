@@ -35,7 +35,7 @@ class base implements \phpbb\extension\extension_interface
 	/** @var string */
 	protected $extension_path;
 
-	/** @var string[] */
+	/** @var string[]|bool */
 	private $migrations = false;
 
 	/**

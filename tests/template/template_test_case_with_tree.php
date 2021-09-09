@@ -28,7 +28,6 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
 			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -37,10 +36,9 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$this->template_path = $this->test_path . '/templates';
 		$this->parent_template_path = $this->test_path . '/parent_templates';
 
-		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -48,7 +46,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

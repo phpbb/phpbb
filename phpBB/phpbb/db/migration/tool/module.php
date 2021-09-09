@@ -20,9 +20,6 @@ use phpbb\module\exception\module_exception;
 */
 class module implements \phpbb\db\migration\tool\tool_interface
 {
-	/** @var \phpbb\cache\service */
-	protected $cache;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -31,12 +28,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 	/** @var \phpbb\module\module_manager */
 	protected $module_manager;
-
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
 
 	/** @var string */
 	protected $modules_table;
@@ -48,21 +39,15 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
 	* @param \phpbb\module\module_manager	$module_manager
-	* @param string $phpbb_root_path
-	* @param string $php_ext
 	* @param string $modules_table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $phpbb_root_path, $php_ext, $modules_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $modules_table)
 	{
 		$this->db = $db;
-		$this->cache = $cache;
 		$this->user = $user;
 		$this->module_manager = $module_manager;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 		$this->modules_table = $modules_table;
 	}
 

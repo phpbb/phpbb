@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class rename_too_long_indexes extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_0');
 	}

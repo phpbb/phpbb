@@ -16,11 +16,19 @@ services:
             - '@mimetype.guesser'
             - '@plupload'
 
+    files.filespec_storage:
+        class: phpbb\files\filespec_storage
+        shared: false
+        arguments:
+            - '@language'
+            - '@upload_imagesize'
+            - '@mimetype.guesser'
+            - '@plupload'
+
     files.upload:
         class: phpbb\files\upload
         shared: false
         arguments:
-            - '@filesystem'
             - '@files.factory'
             - '@language'
             - '@php_ini'
@@ -28,6 +36,16 @@ services:
 
     files.types.form:
         class: phpbb\files\types\form
+        shared: false
+        arguments:
+            - '@files.factory'
+            - '@language'
+            - '@php_ini'
+            - '@plupload'
+            - '@request'
+
+    files.types.form_storage:
+        class: phpbb\files\types\form_storage
         shared: false
         arguments:
             - '@files.factory'
@@ -44,14 +62,3 @@ services:
             - '@language'
             - '@php_ini'
             - '@request'
-
-    files.types.remote:
-        class: phpbb\files\types\remote
-        shared: false
-        arguments:
-            - '@config'
-            - '@files.factory'
-            - '@language'
-            - '@php_ini'
-            - '@request'
-            - '%core.root_path%'

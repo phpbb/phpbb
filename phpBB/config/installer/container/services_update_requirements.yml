@@ -38,4 +38,4 @@ services:
             - true
             - false
         tags:
-            - { name: installer_update_module, order: 10 }
+            - { name: installer_update_module, order: 1 }

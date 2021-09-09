@@ -155,7 +155,7 @@ class show_file_status extends task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 0;
 	}

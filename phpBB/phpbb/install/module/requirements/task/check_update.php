@@ -183,7 +183,7 @@ class check_update extends task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 0;
 	}

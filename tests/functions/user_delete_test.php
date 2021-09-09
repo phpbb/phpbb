@@ -77,10 +77,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$config,
 			$db,
 			$passwords_manager,
-			$request,
-			$user,
-			$phpbb_root_path,
-			$phpEx
+			$user
 		);
 
 		$oauth_provider = new \phpbb\auth\provider\oauth\oauth(

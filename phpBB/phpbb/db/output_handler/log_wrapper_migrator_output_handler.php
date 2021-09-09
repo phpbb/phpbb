@@ -31,7 +31,7 @@ class log_wrapper_migrator_output_handler implements migrator_output_handler_int
 
 	/**
 	 * Log file handle
-	 * @var resource
+	 * @var resource|bool
 	 */
 	protected $file_handle = false;
 

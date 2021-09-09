@@ -42,7 +42,7 @@ class avatars extends \phpbb\db\migration\migration
 		return $effectively_installed !== false;
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}

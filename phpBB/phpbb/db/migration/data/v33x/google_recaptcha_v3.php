@@ -20,7 +20,7 @@ class google_recaptcha_v3 extends \phpbb\db\migration\migration
 		return $this->config->offsetExists('recaptcha_v3_key');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v330\v330',

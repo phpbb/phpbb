@@ -69,6 +69,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			__DIR__ . '/../../phpBB/',
 			'php',
 			'phpbb_',
+			self::get_core_tables(),
 			$tools,
 			new \phpbb\db\migration\helper()
 		);
@@ -79,7 +80,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new phpbb\filesystem\filesystem(),
 			'phpbb_ext',
 			__DIR__ . '/../../phpBB/',
 			'php',

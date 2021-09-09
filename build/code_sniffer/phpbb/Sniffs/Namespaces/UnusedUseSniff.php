@@ -192,6 +192,9 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			{
 				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 			}
+
+			$method_properties = $phpcsFile->getMethodProperties($function_declaration);
+			$ok = $this->check($phpcsFile, $method_properties['return_type'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 		}
 
 		// Checks in catch blocks

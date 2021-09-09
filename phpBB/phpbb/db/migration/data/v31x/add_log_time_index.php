@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v31x;
 
 class add_log_time_index extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v31x\v319',

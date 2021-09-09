@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v310;
 
+use phpbb\json\sanitizer as json_sanitizer;
+
 class style_update_p1 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
@@ -20,7 +22,7 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		return !$this->db_tools->sql_table_exists($this->table_prefix . 'styles_imageset');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v30x\release_3_0_11');
 	}
@@ -69,13 +71,26 @@ class style_update_p1 extends \phpbb\db\migration\migration
 		$skip_dirs = array('.', '..', 'prosilver');
 		foreach ($iterator as $fileinfo)
 		{
-			if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs) && file_exists($fileinfo->getPathname() . '/style.cfg'))
+			if ($fileinfo->isDir() && !in_array($fileinfo->getFilename(), $skip_dirs))
 			{
-				$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
-				if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+				if (file_exists($fileinfo->getPathname() . '/style.cfg'))
 				{
-					// 3.1 style
-					$available_styles[] = $fileinfo->getFilename();
+					$style_cfg = parse_cfg_file($fileinfo->getPathname() . '/style.cfg');
+					if (isset($style_cfg['phpbb_version']) && version_compare($style_cfg['phpbb_version'], '3.1.0-dev', '>='))
+					{
+						// 3.1 - 3.3 style
+						$available_styles[] = $fileinfo->getFilename();
+					}
+				}
+				else if (file_exists($fileinfo->getPathname() . '/composer.json'))
+				{
+					$json = file_get_contents($fileinfo->getPathname() . '/composer.json');
+					$style_data = json_sanitizer::decode($json);
+					if (isset($style_data['extra']['phpbb-version']) && version_compare($style_data['extra']['phpbb-version'], '4.0.0-dev', '>='))
+					{
+						// 4.x style
+						$available_styles[] = $fileinfo->getFilename();
+					}
 				}
 			}
 		}

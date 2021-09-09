@@ -85,7 +85,7 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 		$this->assertEquals($expected, $first_result);
 
 		$sql = 'DELETE FROM phpbb_config';
-		$result = $db->sql_query($sql);
+		$db->sql_query($sql);
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";

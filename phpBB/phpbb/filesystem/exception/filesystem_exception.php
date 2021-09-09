@@ -13,18 +13,20 @@
 
 namespace phpbb\filesystem\exception;
 
-class filesystem_exception extends \phpbb\exception\runtime_exception
+use phpbb\exception\runtime_exception;
+
+class filesystem_exception extends runtime_exception
 {
 	/**
 	 * Constructor
 	 *
-	 * @param string		$message	The Exception message to throw (must be a language variable).
-	 * @param string		$filename	The file that caused the error.
-	 * @param array			$parameters	The parameters to use with the language var.
-	 * @param \Exception	$previous	The previous runtime_exception used for the runtime_exception chaining.
-	 * @param integer		$code		The Exception code.
+	 * @param string			$message	The Exception message to throw (must be a language variable).
+	 * @param string			$filename	The file that caused the error.
+	 * @param array				$parameters	The parameters to use with the language var.
+	 * @param \Exception|null	$previous	The previous runtime_exception used for the runtime_exception chaining.
+	 * @param integer			$code		The Exception code.
 	 */
-	public function __construct($message = "", $filename = '', $parameters = array(), \Exception $previous = null, $code = 0)
+	public function __construct($message = '', $filename = '', $parameters = array(), \Exception $previous = null, $code = 0)
 	{
 		parent::__construct($message, array_merge(array('filename' => $filename), $parameters), $previous, $code);
 	}
@@ -36,7 +38,7 @@ class filesystem_exception extends \phpbb\exception\runtime_exception
 	 */
 	public function get_filename()
 	{
-		$parameters = parent::get_parameters();
+		$parameters = $this->get_parameters();
 		return $parameters['filename'];
 	}
 }

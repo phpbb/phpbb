@@ -13,7 +13,7 @@
 
 namespace phpbb\files\types;
 
-class foo extends \phpbb\files\types\remote
+class foo extends \phpbb\files\types\upload
 {
 	static public $tempnam_path;
 }

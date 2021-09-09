@@ -22,9 +22,9 @@ use phpbb\db\extractor\exception\extractor_not_initialized_exception;
 abstract class base_extractor implements extractor_interface
 {
 	/**
-	 * @var    string    phpBB root path
+	 * @var    \phpbb\filesystem\temp
 	 */
-	protected $phpbb_root_path;
+	protected $temp;
 
 	/**
 	 * @var    \phpbb\request\request_interface
@@ -84,13 +84,13 @@ abstract class base_extractor implements extractor_interface
 	/**
 	 * Constructor
 	 *
-	 * @param string $phpbb_root_path
+	 * @param \phpbb\filesystem\temp $temp
 	 * @param \phpbb\request\request_interface $request
 	 * @param \phpbb\db\driver\driver_interface $db
 	 */
-	public function __construct($phpbb_root_path, \phpbb\request\request_interface $request, \phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\filesystem\temp $temp, \phpbb\request\request_interface $request, \phpbb\db\driver\driver_interface $db)
 	{
-		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->temp 			= $temp;
 		$this->request			= $request;
 		$this->db				= $db;
 		$this->fp				= null;
@@ -164,13 +164,13 @@ abstract class base_extractor implements extractor_interface
 
 		if ($store === true)
 		{
-			$file = $this->phpbb_root_path . 'store/' . $filename . $ext;
+			$file = $this->temp->get_dir() . '/' . $filename . $ext;
 
 			$this->fp = $open($file, 'w');
 
 			if (!$this->fp)
 			{
-				trigger_error('FILE_WRITE_FAIL', E_USER_ERROR);
+				throw new \phpbb\exception\runtime_exception('FILE_WRITE_FAIL');
 			}
 		}
 

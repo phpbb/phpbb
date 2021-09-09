@@ -29,28 +29,24 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$this->user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$this->user = $this->createMock('\phpbb\user');
 		$this->user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '1'));
 
-		$filesystem = new \phpbb\filesystem\filesystem();
 		$manager = new phpbb_mock_extension_manager(__DIR__ . '/', array());
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator($filesystem, __DIR__ . '/')
+			new \phpbb\routing\file_locator(__DIR__ . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $manager);
 
 		$mock_container = new phpbb_mock_container_builder();
 		$mock_container->set('cron.task_collection', []);
 
-		$router = new phpbb_mock_router($mock_container, $resources_locator, $loader, __DIR__ . '/', 'php', false);
+		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 
 		$request = new phpbb_mock_request();
 		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
@@ -65,7 +61,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, $filesystem, '', 'php');
+		$this->routing_helper = new \phpbb\routing\helper($this->config, $router, $symfony_request, $request, '', 'php');
 		$this->helper = new phpbb_mock_controller_helper(
 			new \phpbb\auth\auth(),
 			new \phpbb\cache\driver\dummy(),

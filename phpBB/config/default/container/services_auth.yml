@@ -19,10 +19,7 @@ services:
             - '@config'
             - '@dbal.conn'
             - '@passwords.manager'
-            - '@request'
             - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
             - { name: auth.provider }
 

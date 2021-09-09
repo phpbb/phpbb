@@ -83,10 +83,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
-		$user = $this->createMock('\phpbb\user', array(), array(
-			$this->language,
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->method('lang')->will($this->returnArgument(0));
 
 		$cache = $this->getMockBuilder('\phpbb\cache\service')

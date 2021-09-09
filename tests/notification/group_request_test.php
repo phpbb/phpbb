@@ -40,16 +40,15 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		include_once($phpbb_root_path . 'includes/functions_content.' . $phpEx);
 
 		$this->container->set('groupposition.legend', new \phpbb\groupposition\legend(
-			$this->db,
-			$this->user
+			$this->db
 		));
 		$this->container->set('groupposition.teampage', new \phpbb\groupposition\teampage(
 			$this->db,
-			$this->user,
 			$this->cache->get_driver()
 		));
 		$this->container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
+			$this->getMockBuilder('\phpbb\avatar\helper')->disableOriginalConstructor()->getMock(),
 			$this->cache,
 			$this->config,
 			new \phpbb\language\language(
@@ -60,7 +59,6 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
-				new \phpbb\filesystem\filesystem(),
 				$this->getMockBuilder('\phpbb\request\request')->disableOriginalConstructor()->getMock(),
 				$phpbb_root_path,
 				$phpEx

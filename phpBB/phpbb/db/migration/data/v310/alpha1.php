@@ -20,7 +20,7 @@ class alpha1 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.1.0-a1', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v30x\local_url_bbcode',

@@ -34,6 +34,9 @@ abstract class migration implements migration_interface
 	/** @var string */
 	protected $table_prefix;
 
+	/** @var array Tables array */
+	protected $tables;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -55,13 +58,15 @@ abstract class migration implements migration_interface
 	* @param string $phpbb_root_path
 	* @param string $php_ext
 	* @param string $table_prefix
+	* @param array $tables
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $phpbb_root_path, $php_ext, $table_prefix)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools\tools_interface $db_tools, $phpbb_root_path, $php_ext, $table_prefix, $tables)
 	{
 		$this->config = $config;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
 		$this->table_prefix = $table_prefix;
+		$this->tables = $tables;
 
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -72,7 +77,7 @@ abstract class migration implements migration_interface
 	/**
 	* {@inheritdoc}
 	*/
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array();
 	}

@@ -95,6 +95,15 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.type.mention:
+        class: phpbb\notification\type\mention
+        shared: false
+        parent: notification.type.post
+        calls:
+            - [set_helper, ['@text_formatter.s9e.mention_helper']]
+        tags:
+            - { name: notification.type }
+
     notification.type.pm:
         class: phpbb\notification\type\pm
         shared: false

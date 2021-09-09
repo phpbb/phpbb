@@ -395,7 +395,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 
 		$this->db->sql_transaction('begin');
 
-		$this->remove_subset($move_items, $current_parent, false, true);
+		$this->remove_subset($move_items, $current_parent, false);
 
 		if ($new_parent_id)
 		{
@@ -414,7 +414,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 				throw new \OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
-			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
+			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent);
 
 			if ($new_right_id > $current_parent[$this->column_right_id])
 			{
@@ -493,7 +493,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 
 		$this->db->sql_transaction('begin');
 
-		$this->remove_subset($move_items, $item, false, true);
+		$this->remove_subset($move_items, $item, false);
 
 		if ($new_parent_id)
 		{
@@ -512,7 +512,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 				throw new \OutOfBoundsException($this->message_prefix . 'INVALID_PARENT');
 			}
 
-			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent, true);
+			$new_right_id = $this->prepare_adding_subset($move_items, $new_parent);
 
 			if ($new_right_id > (int) $item[$this->column_right_id])
 			{

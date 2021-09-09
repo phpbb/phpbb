@@ -557,7 +557,6 @@ function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_va
 
 	$sort_key_val = $request->variable('sk', $default_key);
 	$sort_dir_val = $request->variable('sd', $default_dir);
-	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
 	switch ($type)
 	{
@@ -702,11 +701,11 @@ function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_va
 /**
 * Validate ids
 *
-* @param	array	&$ids			The relevant ids to check
-* @param	string	$table			The table to find the ids in
-* @param	string	$sql_id			The ids relevant column name
-* @param	array	$acl_list		A list of permissions the user need to have
-* @param	mixed	$single_forum	Limit to one forum id (int) or the first forum found (true)
+* @param	array		&$ids			The relevant ids to check
+* @param	string		$table			The table to find the ids in
+* @param	string		$sql_id			The ids relevant column name
+* @param	array|false	$acl_list		A list of permissions the user need to have
+* @param	mixed		$single_forum	Limit to one forum id (int) or the first forum found (true)
 *
 * @return	mixed	False if no ids were able to be retrieved, true if at least one id left.
 *					Additionally, this value can be the forum_id assigned if $single_forum was set.

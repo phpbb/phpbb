@@ -29,7 +29,7 @@ $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
 unset($dbpasswd);
 
-$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
+$dbms = \phpbb\config_php_file::convert_30_dbms_to_31($dbms);
 
 /**
 * $convertor_data provides some basic information about this convertor which is
@@ -38,7 +38,7 @@ $dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.3.4',
+	'phpbb_version'	=> '4.0.0-a1-dev',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -115,7 +115,6 @@ $config_schema = array(
 		'allow_sig'				=> 'allow_sig',
 		'allow_namechange'		=> 'allow_namechange',
 		'allow_avatar_local'	=> 'allow_avatar_local',
-		'allow_avatar_remote'	=> 'allow_avatar_remote',
 		'allow_avatar_upload'	=> 'allow_avatar_upload',
 		'board_disable'			=> 'board_disable',
 		'sitename'				=> 'phpbb_set_encoding(sitename)',
@@ -439,7 +438,6 @@ if (!$get_info)
 				array('group_name',				'extension_groups.group_name',			array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('cat_id',					'extension_groups.cat_id',				'phpbb_attachment_category'),
 				array('allow_group',			'extension_groups.allow_group',			''),
-				array('download_mode',			1,										''),
 				array('upload_icon',			'',										''),
 				array('max_filesize',			'extension_groups.max_filesize',		''),
 				array('allowed_forums',			'extension_groups.forum_permissions',	'phpbb_attachment_forum_perms'),
