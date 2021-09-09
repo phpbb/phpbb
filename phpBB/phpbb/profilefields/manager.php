@@ -343,7 +343,7 @@ class manager
 		 * @var array	profile_cache	A copy of the profile cache to make additional checks
 		 * @since 3.1.6-RC1
 		 */
-		$vars = ['restrict_option', 'tpl_fields', 'profile_cache'];
+		$vars = array('restrict_option', 'tpl_fields', 'profile_cache');
 		extract($this->dispatcher->trigger_event('core.generate_profile_fields_template_headlines', compact($vars)));
 		unset($profile_cache);
 
