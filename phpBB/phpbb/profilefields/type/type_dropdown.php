@@ -70,7 +70,7 @@ class type_dropdown extends type_base
 	{
 		$profile_row = [];
 
-		$profile_row[0] = array(
+		$profile_row[0] = [
 			'var_name'				=> 'field_default_value',
 			'field_id'				=> 1,
 			'lang_name'				=> $field_data['lang_name'],
