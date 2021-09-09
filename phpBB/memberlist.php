@@ -1675,7 +1675,7 @@ switch ($mode)
 		{
 			$sql_array['FROM'] = array_merge($sql_array['FROM'], $sql_from);
 		}
-		if (count($sql_join) > 0)
+		if (!empty($sql_join))
 		{
 			$sql_array['LEFT_JOIN'] = $sql_join;
 		}
