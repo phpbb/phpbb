@@ -39,9 +39,6 @@ class manager
 	/** @var \phpbb\log\log */
 	protected $log;
 
-	/** @var \phpbb\request\request */
-	protected $request;
-
 	/** @var \phpbb\template\template */
 	protected $template;
 
@@ -76,7 +73,6 @@ class manager
 	 * @param \phpbb\event\dispatcher_interface	$dispatcher				Event dispatcher object
 	 * @param \phpbb\language\language			$language				Language object
 	 * @param \phpbb\log\log					$log					Log object
-	 * @param \phpbb\request\request			$request				Request object
 	 * @param \phpbb\template\template			$template				Template object
 	 * @param \phpbb\di\service_collection		$type_collection		CPF Type collection
 	 * @param \phpbb\user						$user					User object
@@ -93,7 +89,6 @@ class manager
 		\phpbb\event\dispatcher_interface $dispatcher,
 		\phpbb\language\language $language,
 		\phpbb\log\log $log,
-		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\di\service_collection $type_collection,
 		\phpbb\user $user,
@@ -110,7 +105,6 @@ class manager
 		$this->dispatcher		= $dispatcher;
 		$this->language			= $language;
 		$this->log				= $log;
-		$this->request			= $request;
 		$this->template			= $template;
 		$this->type_collection	= $type_collection;
 		$this->user				= $user;
@@ -155,7 +149,7 @@ class manager
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
@@ -192,7 +186,7 @@ class manager
 		$sql_where = !$this->auth->acl_gets('a_', 'm_') && !$this->auth->acl_getf_global('m_') ? ' AND f.field_hide = 0' : '';
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
@@ -241,7 +235,7 @@ class manager
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
@@ -538,7 +532,7 @@ class manager
 		$length = strlen($prefix);
 		$not_in = [];
 
-		foreach ($cp_data as $key => $null)
+		foreach (array_keys($cp_data) as $key)
 		{
 			$not_in[] = strncmp($key, $prefix, $length) === 0 ? substr($key, $length) : $key;
 		}
@@ -720,5 +714,112 @@ class manager
 		$this->db->sql_freeresult($result);
 
 		return array_column($rowset, 'field_ident', 'field_id');
+	}
+	/**
+	* Check for data in CUSTOM_PROFILE_FIELDS_DATA
+	* @return bool
+	*/
+	public function profile_fields_data_exists()
+	{
+		$sql = 'SELECT 1 as data_exists
+				FROM ' . $this->fields_data_table;
+		$result = $this->db->sql_query_limit($sql, 1);
+		$data_exists = (bool) $this->db->sql_fetchfield('data_exists');
+
+		return $data_exists;
+	}
+
+	/**
+	* Build Array for user search filter extension
+	* @return array
+	*/
+	public function build_custom_fields_search_array()
+	{
+		$custom_search_array = [];
+
+		// Expand filter to include custom profile fields
+		$sql_array = [
+			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
+			'FROM'	=> [
+				$this->fields_table	=> 'pf',
+				$this->fields_lang_table	=> 'pl',
+			],
+			'WHERE'	=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
+		];
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$profile_field = $this->type_collection[$row['field_type']];
+			$custom_search_array[] = $profile_field->get_search_array($row);
+		}
+
+		$this->db->sql_freeresult($result);
+		return $custom_search_array;
+	}
+
+	/**
+	* Build and define templates for search form
+	*/
+	public function generate_search_fields()
+	{
+		// Lets get fields
+		$sql_array = array(
+			'SELECT'	=> 'l.*, f.*',
+			'FROM'	=> array(
+				$this->fields_lang_table	=> 'l',
+				$this->fields_table	=> 'f'
+			),
+			'WHERE'	=> 'f.field_active = 1 AND f.field_show_on_ml = 1 AND l.lang_id = ' . $this->user->get_iso_lang_id() . ' AND l.field_id = f.field_id',
+			'ORDER_BY'	=> 'f.field_order'
+		);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			// Return templated field
+			$profile_field = $this->type_collection[$row['field_type']];
+			$tpl_snippet = $profile_field->process_search_field_row($row);
+
+			$this->template->assign_block_vars('search_fields', array(
+				'LANG_NAME'		=> $this->user->lang($row['lang_name']),
+				'LANG_EXPLAIN'	=> $this->user->lang($row['lang_explain']),
+				'FIELD'			=> $tpl_snippet,
+				'FIELD_ID'		=> $profile_field->get_field_ident($row),
+				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
+			));
+		}
+		$this->db->sql_freeresult($result);
+	}
+
+	/**
+	* Build and add $sql_where query
+	* @return string
+	*/
+	public function generate_sql_where()
+	{
+		$sql_where_addition = '';
+		// Get us the fields again.
+		$sql_array = array (
+			'SELECT'	=> 'pf.field_id, pf.field_ident, pf.field_type, pf.field_length, pf.field_novalue, pl.lang_name',
+			'FROM'		=> array(
+				$this->fields_table	=> 'pf',
+				$this->fields_lang_table	=> 'pl',
+			),
+			'WHERE'		=> 'pf.field_id = pl.field_id AND pf.field_show_on_ml = 1 AND pl.lang_id = ' . $this->user->get_iso_lang_id(),
+		);
+		$sql = $this->db->sql_build_query('SELECT', $sql_array);
+		$result = $this->db->sql_query($sql, 300);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$profile_field = $this->type_collection[$row['field_type']];
+			// I know how wrong is sending the whole object, but didn't find a way to define it only for profile field type class
+			// If somene can tell me I will redo it.
+			$sql_where_addition .= $profile_field->make_sql_where($row, $this->db);
+		}
+		$this->db->sql_freeresult($result);
+
+		return $sql_where_addition;
 	}
 }

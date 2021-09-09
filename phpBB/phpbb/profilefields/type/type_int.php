@@ -60,12 +60,12 @@ class type_int extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'),
-			1 => array('TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'),
-			2 => array('TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="number" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'),
-		);
+		$options = [
+			0 => ['TITLE' => $this->user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="number" min="0" max="99999" name="field_length" value="' . $field_data['field_length'] . '" />'],
+			1 => ['TITLE' => $this->user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_minlen" value="' . $field_data['field_minlen'] . '" />'],
+			2 => ['TITLE' => $this->user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="number" min="0" max="99999" name="field_maxlen" value="' . $field_data['field_maxlen'] . '" />'],
+			3 => ['TITLE' => $this->user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="number" name="field_default_value" value="' . $field_data['field_default_value'] . '" />'],
+		];
 
 		return $options;
 	}
@@ -75,14 +75,14 @@ class type_int extends type_base
 	*/
 	public function get_default_option_values()
 	{
-		return array(
+		return [
 			'field_length'		=> 5,
 			'field_minlen'		=> 0,
 			'field_maxlen'		=> 100,
 			'field_validation'	=> '',
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
-		);
+		];
 	}
 
 	/**
@@ -200,6 +200,60 @@ class type_int extends type_base
 	/**
 	* {@inheritDoc}
 	*/
+	public function generate_search_field($profile_row, $preview_options = false)
+	{
+		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
+		$field_ident = $profile_row['field_ident'];
+		$default_value = $profile_row['field_default_value'];
+
+		if ($this->request->is_set($field_ident))
+		{
+			$value = ($this->request->variable($field_ident, '') === '') ? null : $this->request->variable($field_ident, $default_value);
+		}
+		else
+		{
+			$value = $default_value;
+		}
+		$profile_row['field_value'] = (is_null($value) || $value === '') ? '' : (int) $value;
+
+		$this->template->assign_block_vars('int', array_change_key_case($profile_row, CASE_UPPER));
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_search_array($profile_row)
+	{
+		$output = [
+			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
+			'field_novalue'	=> $profile_row['field_novalue'],
+			'field_multibyte'	=> true,
+		];
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function make_sql_where($profile_row, $db, $table_prefix = 'pd')
+	{
+		// Let's check if the value is set ... and is it diferent from novalue
+		$field_ident = 'pf_' . $profile_row['field_ident'];
+		$default_value = $profile_row['field_novalue'];
+		$field_value = $this->request->variable($field_ident, $default_value);
+		$output = '';
+
+		if ($this->request->is_set($field_ident) && $field_value != '')
+		{
+			$output = ' AND ' . $table_prefix . '.' . $field_ident . ' = '. (int) $field_value;
+		}
+
+		return $output;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	public function get_field_ident($field_data)
 	{
 		return 'pf_' . $field_data['field_ident'];
@@ -218,9 +272,9 @@ class type_int extends type_base
 	*/
 	public function get_language_options($field_data)
 	{
-		$options = array(
+		$options = [
 			'lang_name' => 'string',
-		);
+		];
 
 		if ($field_data['lang_explain'])
 		{

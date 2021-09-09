@@ -100,10 +100,10 @@ abstract class type_base implements type_interface
 	*/
 	public function get_language_options_input($field_data)
 	{
-		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);
-		$field_data['l_lang_explain']			= $this->request->variable('l_lang_explain', array(0 => ''), true);
-		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => ''), true);
-		$field_data['l_lang_options']			= $this->request->variable('l_lang_options', array(0 => ''), true);
+		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', [0 => ''], true);
+		$field_data['l_lang_explain']			= $this->request->variable('l_lang_explain', [0 => ''], true);
+		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', [0 => ''], true);
+		$field_data['l_lang_options']			= $this->request->variable('l_lang_options', [0 => ''], true);
 
 		return $field_data;
 	}
@@ -159,16 +159,16 @@ abstract class type_base implements type_interface
 		else
 		{
 			$default_value = '';
-			$lang_fields = array(
+			$lang_fields = [
 				'l_lang_name',
 				'l_lang_explain',
 				'l_lang_default_value',
 				'l_lang_options',
-			);
+			];
 
 			if (in_array($key, $lang_fields))
 			{
-				$default_value = array(0 => '');
+				$default_value = [0 => ''];
 			}
 			return $this->request->variable($key, $default_value, true);
 		}
@@ -191,15 +191,33 @@ abstract class type_base implements type_interface
 		$preview_options = ($mode == 'preview') ? $profile_row['lang_options'] : false;
 
 		// set template filename
-		$this->template->set_filenames(array(
+		$this->template->set_filenames([
 			'cp_body'		=> $this->get_template_filename(),
-		));
+		]);
 
 		// empty previously filled blockvars
 		$this->template->destroy_block_vars($this->get_name_short());
 
 		// Assign template variables
 		$this->generate_field($profile_row, $preview_options);
+
+		return $this->template->assign_display('cp_body');
+	}
+
+	/**
+	* Return templated value/field for search
+	*/
+	public function process_search_field_row($profile_row)
+	{
+		// set template filename
+		$this->template->set_filenames([
+			'cp_body'		=> $this->get_template_filename(),
+		]);
+		// empty previously filled blockvars
+		$this->template->destroy_block_vars($this->get_name_short());
+
+		// Assign template variables
+		$this->generate_search_field($profile_row);
 
 		return $this->template->assign_display('cp_body');
 	}
