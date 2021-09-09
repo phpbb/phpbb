@@ -1107,14 +1107,14 @@ switch ($mode)
 			$count			= ($request->variable('count', '') !== '') ? $request->variable('count', 0) : '';
 			$ipdomain		= $request->variable('ip', '');
 
-			$find_key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
+			$find_key_match = ['lt' => '<', 'gt' => '>', 'eq' => '='];
 
 			// Time to add aditional search parameters
 			foreach ($search_profilefields_params as $search_parameter)
 			{
 				$search_container[$search_parameter['field_ident']] = request_var($search_parameter['field_ident'], $search_parameter['field_novalue'], $search_parameter['field_multibyte']);
 			}
-			$find_count = array('lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']);
+			$find_count = ['lt' => $user->lang['LESS_THAN'], 'eq' => $user->lang['EQUAL_TO'], 'gt' => $user->lang['MORE_THAN']];
 			$s_find_count = '';
 			foreach ($find_count as $key => $value)
 			{
@@ -1490,7 +1490,7 @@ switch ($mode)
 			$check_params[$additional_search_params['field_ident']] = array($additional_search_params['field_ident'], (isset($search_container[$additional_search_params['field_ident']])) ? $search_container[$additional_search_params['field_ident']] : '');
 		}
 
-		$u_first_char_params = array();
+		$u_first_char_params = [];
 		foreach ($check_params as $key => $call)
 		{
 			if (!isset($_REQUEST[$key]))

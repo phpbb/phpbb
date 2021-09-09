@@ -764,7 +764,7 @@ class manager
 	public function generate_search_fields()
 	{
 		// Lets get fields
-		$sql_array = array(
+		$sql_array = [
 			'SELECT'	=> 'l.*, f.*',
 			'FROM'	=> array(
 				$this->fields_lang_table	=> 'l',
@@ -772,7 +772,7 @@ class manager
 			),
 			'WHERE'	=> 'f.field_active = 1 AND f.field_show_on_ml = 1 AND l.lang_id = ' . $this->user->get_iso_lang_id() . ' AND l.field_id = f.field_id',
 			'ORDER_BY'	=> 'f.field_order'
-		);
+		];
 		$sql = $this->db->sql_build_query('SELECT', $sql_array);
 		$result = $this->db->sql_query($sql);
 

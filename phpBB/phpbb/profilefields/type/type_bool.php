@@ -68,7 +68,7 @@ class type_bool extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
-		$profile_row = array(
+		$profile_row = [
 			'var_name'				=> 'field_default_value',
 			'field_id'				=> 1,
 			'lang_name'				=> $field_data['lang_name'],
@@ -79,12 +79,12 @@ class type_bool extends type_base
 			'field_type'			=> $this->get_service_name(),
 			'field_length'			=> $field_data['field_length'],
 			'lang_options'			=> $field_data['lang_options'],
-		);
+		];
 
-		$options = array(
-			0 => array('TITLE' => $this->user->lang['FIELD_TYPE'], 'EXPLAIN' => $this->user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($field_data['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($field_data['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['CHECKBOX'] . '</label>'),
-			1 => array('TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row)),
-		);
+		$options = [
+			0 => ['TITLE' => $this->user->lang['FIELD_TYPE'], 'EXPLAIN' => $this->user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($field_data['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($field_data['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $this->user->lang['CHECKBOX'] . '</label>'],
+			1 => ['TITLE' => $this->user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row)],
+		];
 
 		return $options;
 	}
@@ -94,14 +94,14 @@ class type_bool extends type_base
 	*/
 	public function get_default_option_values()
 	{
-		return array(
+		return [
 			'field_length'		=> 1,
 			'field_minlen'		=> 0,
 			'field_maxlen'		=> 0,
 			'field_validation'	=> '',
 			'field_novalue'		=> 0,
 			'field_default_value'	=> 0,
-		);
+		];
 	}
 
 	/**
@@ -234,11 +234,11 @@ class type_bool extends type_base
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
 			foreach ($options as $option_id => $option_value)
 			{
-				$this->template->assign_block_vars('bool.options', array(
+				$this->template->assign_block_vars('bool.options', [
 					'OPTION_ID'	=> $option_id,
 					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
 					'VALUE'		=> $option_value,
-				));
+				]);
 			}
 		}
 	}
@@ -274,19 +274,19 @@ class type_bool extends type_base
 			}
 
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
-			$this->template->assign_block_vars('bool.options', array(
+			$this->template->assign_block_vars('bool.options', [
 				'OPTION_ID'	=> 0,
 				'CHECKED'	=> (!$value) ? ' checked="checked"' : '',
 				'VALUE'		=> $this->user->lang['CANCEL'],
-			));
+			]);
 
 			foreach ($options as $option_id => $option_value)
 			{
-				$this->template->assign_block_vars('bool.options', array(
+				$this->template->assign_block_vars('bool.options', [
 					'OPTION_ID'	=> $option_id,
 					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
 					'VALUE'		=> $option_value,
-				));
+				]);
 			}
 		}
 	}
@@ -296,11 +296,11 @@ class type_bool extends type_base
 	*/
 	public function get_search_array($profile_row)
 	{
-		$output = array(
+		$output = [
 			'field_ident'	=> 'pf_' . $profile_row['field_ident'],
 			'field_novalue'	=> $profile_row['field_novalue'],
 			'field_multibyte'	=> false,
-		);
+		];
 		return $output;
 	}
 
@@ -347,10 +347,10 @@ class type_bool extends type_base
 	*/
 	public function get_language_options($field_data)
 	{
-		$options = array(
+		$options = [
 			'lang_name'		=> 'string',
 			'lang_options'	=> 'two_options',
-		);
+		];
 
 		if ($field_data['lang_explain'])
 		{
@@ -365,15 +365,15 @@ class type_bool extends type_base
 	*/
 	public function get_language_options_input($field_data)
 	{
-		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', array(0 => ''), true);
-		$field_data['l_lang_explain']		= $this->request->variable('l_lang_explain', array(0 => ''), true);
-		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => ''), true);
+		$field_data['l_lang_name']			= $this->request->variable('l_lang_name', [0 => ''], true);
+		$field_data['l_lang_explain']		= $this->request->variable('l_lang_explain', [0 => ''], true);
+		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', [0 => ''], true);
 
 		/**
 		* @todo check if this line is correct...
 		$field_data['l_lang_default_value']	= $this->request->variable('l_lang_default_value', array(0 => array('')), true);
 		*/
-		$field_data['l_lang_options']	= $this->request->variable('l_lang_options', array(0 => array('')), true);
+		$field_data['l_lang_options']	= $this->request->variable('l_lang_options', [0 => ['']], true);
 
 		return $field_data;
 	}
@@ -385,7 +385,7 @@ class type_bool extends type_base
 	{
 		$exclude_options[1][] = 'lang_options';
 
-		return $this->request->variable('lang_options', array(''), true);
+		return $this->request->variable('lang_options', [''], true);
 	}
 
 	/**
@@ -437,7 +437,7 @@ class type_bool extends type_base
 
 		if ($key == 'l_lang_options' && $this->request->is_set($key))
 		{
-			$field_data[$key] = $this->request->variable($key, array(0 => array('')), true);
+			$field_data[$key] = $this->request->variable($key, [0 => ['']], true);
 
 			return $current_value;
 		}
@@ -462,10 +462,10 @@ class type_bool extends type_base
 			return $this->request->variable($key, $field_data[$key], true);
 		}
 
-		$default_lang_options = array(
-			'l_lang_options'	=> array(0 => array('')),
-			'lang_options'		=> array(0 => ''),
-		);
+		$default_lang_options = [
+			'l_lang_options'	=> [0 => ['']],
+			'lang_options'		=> [0 => ''],
+		];
 
 		if (isset($default_lang_options[$key]) && $this->request->is_set($key))
 		{
@@ -488,11 +488,11 @@ class type_bool extends type_base
 			$field_data['lang_options'][1] = '';
 		}
 
-		$template_vars = array_merge($template_vars, array(
+		$template_vars = array_merge($template_vars, [
 			'S_BOOL'					=> true,
 			'L_LANG_OPTIONS_EXPLAIN'	=> $this->user->lang['BOOL_ENTRIES_EXPLAIN'],
 			'FIRST_LANG_OPTION'			=> $field_data['lang_options'][0],
 			'SECOND_LANG_OPTION'		=> $field_data['lang_options'][1],
-		));
+		]);
 	}
 }
