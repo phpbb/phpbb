@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v334">Changes since 3.3.4</a></li>
 		<li><a href="#v334rc1">Changes since 3.3.4-RC1</a></li>
 		<li><a href="#v333">Changes since 3.3.3</a></li>
 		<li><a href="#v332">Changes since 3.3.2</a></li>
@@ -156,6 +157,72 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v334"></a><h3>Changes since 3.3.4</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-12075">PHPBB3-12075</a>] - Language file Modules needs to be added to acp_extensions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13700">PHPBB3-13700</a>] - Column 'field_show_on_pm' not created before migration profilefield_interests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16292">PHPBB3-16292</a>] - Database errors during conversion not propagated</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16570">PHPBB3-16570</a>] - Automatic updater no longer handles merge conflicts</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16657">PHPBB3-16657</a>] - Encoded characters inserted from live search for usernames</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16729">PHPBB3-16729</a>] - Unknown named parameter $log_data in phpbb/log/log.php</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16730">PHPBB3-16730</a>] - Build changelog throwing PHP warnings on no changes in version</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16749">PHPBB3-16749</a>] - SQL error on installation</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16757">PHPBB3-16757</a>] - RTL problem in random question text in ACP</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16765">PHPBB3-16765</a>] - contact_admin_acp_module migration lacks effectively_installed check</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16766">PHPBB3-16766</a>] - Updater only shows truncated error messages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16767">PHPBB3-16767</a>] - Migrator shows wrong migration as missing if unfulfillable</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16770">PHPBB3-16770</a>] - Invalid position of static qualifier in 3.3.4 migration</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16772">PHPBB3-16772</a>] - Emoji not supported in email signature</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16773">PHPBB3-16773</a>] - PostgreSQL backups are missing constraint declarations</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16784">PHPBB3-16784</a>] - Ignore .vscode files in git</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16785">PHPBB3-16785</a>] - Latest release missing from previous versions in build.xml</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16787">PHPBB3-16787</a>] - Error message when &quot;fsockopen&quot; is deactivated</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16789">PHPBB3-16789</a>] - user_delete documentation incorrect</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16793">PHPBB3-16793</a>] - PHP Warning when checking topic/post attachment visibility in PHP 8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16799">PHPBB3-16799</a>] - OAuth external account linking triggers fatal error on PHP 8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16808">PHPBB3-16808</a>] - Container used before initialization causes error in PHP8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16810">PHPBB3-16810</a>] - The no closing tag in Custom BBCodes is still shown onclick</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16812">PHPBB3-16812</a>] - login_body.html missing dt tag for autologin</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16823">PHPBB3-16823</a>] - Datetime class incorrectly handles edge yesterday/today/tomorrow cases</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16832">PHPBB3-16832</a>] - Wrong singular language shown in UCP attachments</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16865">PHPBB3-16865</a>] - Update IRC + discord links in composer and documentation and update docs</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16870">PHPBB3-16870</a>] - Setting float config value can fail with CLI db:migrate</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15729">PHPBB3-15729</a>] - Don't unnecessarily encode email headers in Base64</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15925">PHPBB3-15925</a>] - Add core events for sync and mcp functions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16138">PHPBB3-16138</a>] - Eliminate redundant f= and t= parameters from board urls</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16736">PHPBB3-16736</a>] - Enforce placement of visibility qualifiers after static</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16748">PHPBB3-16748</a>] - Update coding guidelines to place static after visibility qualifiers</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16752">PHPBB3-16752</a>] - Create event exporter to restructured text</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16754">PHPBB3-16754</a>] - Update doctum</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16771">PHPBB3-16771</a>] - Add core events to MCP</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16783">PHPBB3-16783</a>] - Remove structure only backup</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16788">PHPBB3-16788</a>] - Update s9e/text-formatter to latest</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16795">PHPBB3-16795</a>] - Add template events around signature in viewtopic</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16798">PHPBB3-16798</a>] - Scale down phpBB logo in readme</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16804">PHPBB3-16804</a>] - Extend bbcode help line tooltip</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16809">PHPBB3-16809</a>] - Reset UCP preferences at end of test</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16816">PHPBB3-16816</a>] - acp style html validation fixes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16822">PHPBB3-16822</a>] - Replace patchwork/utf8 with symfony/polyfill</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16829">PHPBB3-16829</a>] - Add forumtitle and lastsubject text decoration hover</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16831">PHPBB3-16831</a>] - fix tabs missing delimiters and remove old commented classes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16850">PHPBB3-16850</a>] - Update webfont.js to latest</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16851">PHPBB3-16851</a>] - Add Amazonbot, AhrefsBot and SemrushBot</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16858">PHPBB3-16858</a>] - Update to the latest version of jQuery 3.6.0</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16867">PHPBB3-16867</a>] - Update symfony and text-formatter to latest versions</li>
+			</ul>
+			<h4>New Feature</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16856">PHPBB3-16856</a>] - Add lang_js() function to twig as replacement for LA_</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16769">PHPBB3-16769</a>] - Update composer to latest version</li>
+			</ul>
+
 			<a name="v334rc1"></a><h3>Changes since 3.3.4-RC1</h3>
 			<h4>Bug</h4>
 			<ul>
