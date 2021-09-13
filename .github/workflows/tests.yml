@@ -440,6 +440,90 @@ jobs:
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
 
+    # Oracle tests
+    oracle-test:
+        runs-on: ubuntu-18.04
+        strategy:
+            matrix:
+                include:
+                      - php: '7.1'
+                        db: "oracle"
+                      - php: '8.0'
+                        db: "oracle"
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.db }}
+
+        services:
+            postgres:
+                image: "wnameless/oracle-xe-11g-r2"
+                ports:
+                    - 1521:1521
+
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 6379:6379
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - id: database-type
+              env:
+                  MATRIX_DB: ${{ matrix.db }}
+              run: |
+                  db=$(echo "${MATRIX_DB%%:*}")
+                  echo "::set-output name=db::$db"
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, oci8, intl, gd, exif, iconv, ldap
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v2
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Run unit tests
+              env:
+                  DB: ${{steps.database-type.outputs.db}}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
+
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
         runs-on: windows-2016
