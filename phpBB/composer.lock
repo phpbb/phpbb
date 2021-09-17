@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cce68be4bf35f93b109b45f1a6d9a9ea",
+    "content-hash": "600ae8e99c7497647515f4af36c269bc",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1722,26 +1722,32 @@
         },
         {
             "name": "lusitanian/oauth",
-            "version": "v0.8.11",
+            "version": "v2.0.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Lusitanian/PHPoAuthLib.git",
-                "reference": "fc11a53db4b66da555a6a11fce294f574a8374f9"
+                "reference": "9edfb1d113964c3ad23f32a9eb781c42189d7136"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/fc11a53db4b66da555a6a11fce294f574a8374f9",
-                "reference": "fc11a53db4b66da555a6a11fce294f574a8374f9",
+                "url": "https://api.github.com/repos/Lusitanian/PHPoAuthLib/zipball/9edfb1d113964c3ad23f32a9eb781c42189d7136",
+                "reference": "9edfb1d113964c3ad23f32a9eb781c42189d7136",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.0"
+                "php": "^7.2 || 8.0.*"
             },
             "require-dev": {
-                "phpunit/phpunit": "3.7.*",
+                "ext-curl": "*",
+                "ext-dom": "*",
+                "ext-json": "*",
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "phpunit/phpunit": "9.5.8",
                 "predis/predis": "0.8.*@dev",
-                "squizlabs/php_codesniffer": "2.*",
-                "symfony/http-foundation": "~2.1"
+                "squizlabs/php_codesniffer": "^3.5",
+                "symfony/finder": "^5.1",
+                "symfony/http-foundation": "~2.1",
+                "symfony/var-dumper": "^5.1"
             },
             "suggest": {
                 "ext-openssl": "Allows for usage of secure connections with the stream-based HTTP client.",
@@ -1755,9 +1761,8 @@
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "OAuth": "src",
-                    "OAuth\\Unit": "tests"
+                "psr-4": {
+                    "OAuth\\": "src/OAuth"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1770,15 +1775,15 @@
                     "email": "david@daviddesberg.com"
                 },
                 {
-                    "name": "Elliot Chance",
-                    "email": "elliotchance@gmail.com"
-                },
-                {
                     "name": "Pieter Hordijk",
                     "email": "info@pieterhordijk.com"
+                },
+                {
+                    "name": "Elliot Chance",
+                    "email": "elliotchance@gmail.com"
                 }
             ],
-            "description": "PHP 5.3+ oAuth 1/2 Library",
+            "description": "PHP 7.2 oAuth 1/2 Library",
             "keywords": [
                 "Authentication",
                 "authorization",
@@ -1787,9 +1792,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Lusitanian/PHPoAuthLib/issues",
-                "source": "https://github.com/Lusitanian/PHPoAuthLib/tree/master"
+                "source": "https://github.com/Lusitanian/PHPoAuthLib/tree/v2.0"
             },
-            "time": "2018-02-14T22:37:14+00:00"
+            "time": "2021-08-25T21:09:29+00:00"
         },
         {
             "name": "marc1706/fast-image-size",
@@ -7633,7 +7638,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "lusitanian/oauth": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -7646,5 +7653,5 @@
     "platform-overrides": {
         "php": "7.3.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

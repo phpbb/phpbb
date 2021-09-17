@@ -38,7 +38,7 @@
 		"doctrine/dbal": "^3.0",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~6.3",
-		"lusitanian/oauth": "^0.8.1",
+		"lusitanian/oauth": "^2.0.0-dev",
 		"marc1706/fast-image-size": "^1.1",
 		"s9e/text-formatter": "^2.0",
 		"symfony/config": "^5.0",
