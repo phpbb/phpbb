@@ -1935,10 +1935,32 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 */
 	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
 
+	/**
+	 * Modify data before sending out emails with the PHP's mail function
+	 *
+	 * @event core.phpbb_mail_before
+	 * @var	string	to						The message recipient
+	 * @var	string	subject					The message subject
+	 * @var	string	msg						The message text
+	 * @var string	headers					The email headers
+	 * @var string	eol						The endline character
+	 * @var string	additional_parameters	The additional parameters
+	 * @since 3.3.5-RC1
+	 */
+	$vars = [
+		'to',
+		'subject',
+		'msg',
+		'headers',
+		'eol',
+		'additional_parameters',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_before', compact($vars)));
+
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	/**
-	 * Implement some code after sending out emails with the PHP's mail function
+	 * Execute code after sending out emails with the PHP's mail function
 	 *
 	 * @event core.phpbb_mail_after
 	 * @var	string	to						The message recipient
