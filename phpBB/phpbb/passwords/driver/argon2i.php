@@ -45,7 +45,7 @@ class argon2i extends base_native
 		$this->memory_cost = max($memory_cost, defined('PASSWORD_ARGON2_DEFAULT_MEMORY_COST') ? PASSWORD_ARGON2_DEFAULT_MEMORY_COST : 65536);
 		$this->time_cost   = max($time_cost, defined('PASSWORD_ARGON2_DEFAULT_TIME_COST') ? PASSWORD_ARGON2_DEFAULT_TIME_COST : 4);
 		$this->threads     = (defined('PASSWORD_ARGON2_PROVIDER') && PASSWORD_ARGON2_PROVIDER == 'sodium') ?
-									PASSWORD_ARGON2_DEFAULT_THREADS : max($threads, defined('PASSWORD_ARGON2_DEFAULT_THREADS') ? PASSWORD_ARGON2_DEFAULT_THREADS : 1);
+									1 : max($threads, defined('PASSWORD_ARGON2_DEFAULT_THREADS') ? PASSWORD_ARGON2_DEFAULT_THREADS : 1);
 	}
 
 	/**
