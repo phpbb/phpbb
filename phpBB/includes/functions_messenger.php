@@ -1945,7 +1945,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 * @var string	headers					The email headers
 	 * @var string	eol						The endline character
 	 * @var string	additional_parameters	The additional parameters
-	 * @since 3.3.5-RC1
+	 * @since 3.3.6-RC1
 	 */
 	$vars = [
 		'to',
@@ -1970,7 +1970,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 * @var string	eol						The endline character
 	 * @var string	additional_parameters	The additional parameters
 	 * @var bool	result					True if the email was sent, false otherwise
-	 * @since 3.3.5-RC1
+	 * @since 3.3.6-RC1
 	 */
 	$vars = [
 		'to',
