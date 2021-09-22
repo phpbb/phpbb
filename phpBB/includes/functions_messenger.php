@@ -1936,7 +1936,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
 
 	/**
-	 * Modify data before sending out emails with the PHP's mail function
+	 * Modify data before sending out emails with PHP's mail function
 	 *
 	 * @event core.phpbb_mail_before
 	 * @var	string	to						The message recipient
@@ -1960,7 +1960,7 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
 
 	/**
-	 * Execute code after sending out emails with the PHP's mail function
+	 * Execute code after sending out emails with PHP's mail function
 	 *
 	 * @event core.phpbb_mail_after
 	 * @var	string	to						The message recipient
