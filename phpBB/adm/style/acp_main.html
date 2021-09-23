@@ -140,7 +140,6 @@
 						<td class="tabled"><strong>{{ PHP_VERSION_INFO }}</strong></td>
 					</tr>
 					<tr>
-					{% if S_TOTAL_ORPHAN %}
 						<td class="tabled">{{ lang('NUMBER_ORPHAN') ~ lang('COLON') }}</td>
 						<td class="tabled">
 						{% if TOTAL_ORPHAN > 0 %}
@@ -149,8 +148,6 @@
 							<strong>{{ TOTAL_ORPHAN }}</strong>
 						{% endif %}
 						</td>
-						{% else %}
-					{% endif %}
 					</tr>
 					{% if S_VERSIONCHECK %}
 					<tr>
@@ -204,10 +201,12 @@
 						<td class="tabled">{{ lang('FILES_PER_DAY') ~ lang('COLON') }}</td>
 						<td class="tabled"><strong>{{ FILES_PER_DAY }}</strong></td>
 					</tr>
+					{% if S_VERSIONCHECK %}
 					<tr>
 						<td class="tabled">&nbsp;</td>
 						<td class="tabled">&nbsp;</td>
 					</tr>
+					{% endif %}
 				</tbody>
 			</table>
 		</div>
