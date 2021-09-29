@@ -1904,7 +1904,7 @@ function mail_encode($str, $eol = "\r\n")
  */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	// Convert Numeric Character References to UTF-8 chars (ie. Emojis)
 	$subject = utf8_decode_ncr($subject);
@@ -1933,7 +1933,53 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 */
 	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
 
+	/**
+	 * Modify data before sending out emails with PHP's mail function
+	 *
+	 * @event core.phpbb_mail_before
+	 * @var	string	to						The message recipient
+	 * @var	string	subject					The message subject
+	 * @var	string	msg						The message text
+	 * @var string	headers					The email headers
+	 * @var string	eol						The endline character
+	 * @var string	additional_parameters	The additional parameters
+	 * @since 3.3.6-RC1
+	 */
+	$vars = [
+		'to',
+		'subject',
+		'msg',
+		'headers',
+		'eol',
+		'additional_parameters',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_before', compact($vars)));
+
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
+
+	/**
+	 * Execute code after sending out emails with PHP's mail function
+	 *
+	 * @event core.phpbb_mail_after
+	 * @var	string	to						The message recipient
+	 * @var	string	subject					The message subject
+	 * @var	string	msg						The message text
+	 * @var string	headers					The email headers
+	 * @var string	eol						The endline character
+	 * @var string	additional_parameters	The additional parameters
+	 * @var bool	result					True if the email was sent, false otherwise
+	 * @since 3.3.6-RC1
+	 */
+	$vars = [
+		'to',
+		'subject',
+		'msg',
+		'headers',
+		'eol',
+		'additional_parameters',
+		'result',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_after', compact($vars)));
 
 	$collector->uninstall();
 	$err_msg = $collector->format_errors();
