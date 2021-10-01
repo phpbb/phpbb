@@ -1752,7 +1752,8 @@ function validate_username($username, $allowed_username = false, $allow_all_name
 	}
 
 	// ... fast checks first.
-	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false || empty($clean_username))
+	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false || empty($clean_username)
+		|| preg_match('/[\x{180E}\x{2005}-\x{200D}\x{202F}\x{205F}\x{2060}\x{FEFF}]/u', $username))
 	{
 		return 'INVALID_CHARS';
 	}
