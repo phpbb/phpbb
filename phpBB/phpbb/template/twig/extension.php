@@ -93,6 +93,7 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \Twig\TwigFunction('lang', array($this, 'lang')),
 			new \Twig\TwigFunction('lang_defined', array($this, 'lang_defined')),
 			new \Twig\TwigFunction('lang_js', [$this, 'lang_js']),
+			new \Twig\TwigFunction('file_exists', [$this, 'on_disk']),
 			new \Twig\TwigFunction('get_class', 'get_class'),
 		);
 	}
@@ -200,6 +201,19 @@ class extension extends \Twig\Extension\AbstractExtension
 	public function lang_defined($key)
 	{
 		return call_user_func_array([$this->language, 'is_set'], [$key]);
+	}
+
+	/**
+	 * Check if a file exists
+	 * 
+	 * Example: <samp>{% if file_exists('./ext/vendor/name/styles/all/theme/images/blah.png') %}</samp>
+	 * 
+	 * @param string	$path	The path to be checked
+	 * @return bool				True if exists, false otherwise
+	 */
+	public function on_disk($path)
+	{
+		return call_user_func_array('file_exists', [$path]);
 	}
 
 	/**
