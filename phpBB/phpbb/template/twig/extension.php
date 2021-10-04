@@ -205,9 +205,9 @@ class extension extends \Twig\Extension\AbstractExtension
 
 	/**
 	 * Check if a file exists
-	 * 
+	 *
 	 * Example: <samp>{% if file_exists('./ext/vendor/name/styles/all/theme/images/blah.png') %}</samp>
-	 * 
+	 *
 	 * @param string	$path	The path to be checked
 	 * @return bool				True if exists, false otherwise
 	 */
