@@ -79,6 +79,8 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \Twig\TwigFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig\TwigFilter('addslashes', 'addslashes'),
+			new \Twig\TwigFilter('int', [$this, 'type_int']),
+			new \Twig\TwigFilter('float', [$this, 'type_float']),
 		);
 	}
 
@@ -163,6 +165,28 @@ class extension extends \Twig\Extension\AbstractExtension
 		$end = ($end == -1 || $end === null) ? null : $end + 1;
 
 		return twig_slice($env, $item, $start, $end, $preserveKeys);
+	}
+
+	/**
+	 * Cast to INT a variable
+	 *
+	 * Example: config('my_awesome_config')|int
+	 * @return int
+	 */
+	public function type_int($value)
+	{
+		return (int) $value;
+	}
+
+	/**
+	 * Cast to FLOAT a variable
+	 *
+	 * Example: config('my_awesome_config')|float
+	 * @return float
+	 */
+	public function type_float($value)
+	{
+		return (float) $value;
 	}
 
 	/**
