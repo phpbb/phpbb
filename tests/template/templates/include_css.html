@@ -1,10 +1,10 @@
-<!-- IF TEST === 1 -->
-	<!-- INCLUDECSS child_only.css -->
-<!-- ELSEIF TEST === 2 -->
-	<!-- INCLUDECSS parent_only.css -->
-<!-- ELSEIF TEST === 3 -->
-	<!-- INCLUDECSS @include_css/test.css -->
-<!-- ELSEIF TEST === 4 -->
-	<!-- INCLUDECSS @include_css/child_only.css -->
-<!-- ENDIF -->
+{% if TEST === 1 %}
+	{% include_css('child_only.css') %}
+{% elseif TEST === 2 %}
+	{% include_css('parent_only.css') %}
+{% elseif TEST === 3 %}
+	{% include_css('@include_css/test.css') %}
+{% elseif TEST === 4 %}
+	{% include_css('@include_css/child_only.css') %}
+{% endif %}
 {$STYLESHEETS}
