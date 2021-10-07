@@ -1,0 +1,36 @@
+<!-- IF TEST === 1 -->
+	<!-- INCLUDEJS parent_and_child.js -->
+<!-- ELSEIF TEST === 2 -->
+	<!-- INCLUDEJS parent_and_child.js?assets_version=0 -->
+<!-- ELSEIF TEST === 3 -->
+	<!-- INCLUDEJS parent_and_child.js?test=1&assets_version=0 -->
+<!-- ELSEIF TEST === 4 -->
+	<!-- INCLUDEJS parent_and_child.js?test=1&amp;assets_version=0 -->
+<!-- ELSEIF TEST === 6 -->
+	<!-- INCLUDEJS {PARENT} -->
+<!-- ELSEIF TEST === 7 -->
+	<!-- DEFINE $TEST = 'child_only.js' -->
+	<!-- INCLUDEJS {$TEST} -->
+<!-- ELSEIF TEST === 8 -->
+	<!-- INCLUDEJS subdir/{PARENT} -->
+<!-- ELSEIF TEST === 9 -->
+	<!-- INCLUDEJS {SUBDIR}/subsubdir/{PARENT} -->
+<!-- ELSEIF TEST === 10 -->
+	<!-- INCLUDEJS {SUBDIR}/parent_only.{EXT} -->
+<!-- ELSEIF TEST === 11 -->
+	<!-- DEFINE $TEST = 'child_only.js?test1=1&amp;test2=2#test3' -->
+	<!-- INCLUDEJS {$TEST} -->
+<!-- ELSEIF TEST === 12 -->
+	<!-- INCLUDEJS parent_only.js?test1=1&amp;test2=2#test3 -->
+<!-- ELSEIF TEST === 14 -->
+	<!-- INCLUDEJS parent_only.js?test1=&quot;#test3 -->
+<!-- ELSEIF TEST === 15 -->
+	<!-- INCLUDEJS http://phpbb.com/b.js?c=d#f -->
+<!-- ELSEIF TEST === 16 -->
+	<!-- INCLUDEJS http://phpbb.com/b.js?c=d&assets_version=2#f -->
+<!-- ELSEIF TEST === 17 -->
+	<!-- INCLUDEJS //phpbb.com/b.js -->
+<!-- ELSEIF TEST === 18 -->
+	<!-- INCLUDEJS parent_and_child.js?test=1&test2=0 -->
+<!-- ENDIF -->
+{$SCRIPTS}

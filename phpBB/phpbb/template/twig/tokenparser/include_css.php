@@ -13,7 +13,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class include_js extends includejs
+class include_css extends includecss
 {
 	/**
 	* Gets the tag name associated with this token parser.
@@ -22,6 +22,6 @@ class include_js extends includejs
 	*/
 	public function getTag(): string
 	{
-		return 'include_js';
+		return 'include_css';
 	}
 }
