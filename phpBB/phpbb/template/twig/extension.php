@@ -60,6 +60,7 @@ class extension extends \Twig\Extension\AbstractExtension
 		return array(
 			new \phpbb\template\twig\tokenparser\defineparser,
 			new \phpbb\template\twig\tokenparser\includeparser,
+			new \phpbb\template\twig\tokenparser\include_js,
 			new \phpbb\template\twig\tokenparser\includejs,
 			new \phpbb\template\twig\tokenparser\includecss,
 			new \phpbb\template\twig\tokenparser\event($this->environment),
