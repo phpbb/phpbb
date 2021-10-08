@@ -15,6 +15,7 @@ namespace phpbb\textformatter\s9e;
 
 use phpbb\textformatter\acp_utils_interface;
 use s9e\TextFormatter\Configurator\Exceptions\UnsafeTemplateException;
+use s9e\TextFormatter\Configurator\Helpers\TemplateInspector;
 
 class acp_utils implements acp_utils_interface
 {
@@ -49,6 +50,11 @@ class acp_utils implements acp_utils_interface
 		try
 		{
 			$configurator->BBCodes->addCustom($definition, $template);
+
+			if (!$this->template_can_be_used_in_element($template, 'div'))
+			{
+				$return['status'] = self::BBCODE_STATUS_INVALID_TEMPLATE;
+			}
 		}
 		catch (UnsafeTemplateException $e)
 		{
@@ -63,5 +69,13 @@ class acp_utils implements acp_utils_interface
 		}
 
 		return $return;
+	}
+
+	protected function template_can_be_used_in_element(string $template, string $element): bool
+	{
+		$parent = new TemplateInspector('<' . $element . '><xsl:apply-templates/></' . $element . '>');
+		$child  = new TemplateInspector($template);
+
+		return $parent->allowsChild($child);
 	}
 }
