@@ -162,6 +162,7 @@ define('ATTACHMENT_CATEGORY_NONE', 0);
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
 define('ATTACHMENT_CATEGORY_AUDIO', 7); // Browser-playable audio files
+define('ATTACHMENT_CATEGORY_VIDEO', 8); // Browser-playable video files
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);

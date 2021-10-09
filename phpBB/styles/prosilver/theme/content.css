@@ -688,6 +688,10 @@ dl.thumbnail dt a:hover img {
 	max-width: 100%;
 }
 
+.c-file-video-controls {
+	max-width: 100%;
+}
+
 /* Post poll styles
 ---------------------------------------- */
 fieldset.polls {
