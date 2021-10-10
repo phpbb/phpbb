@@ -820,7 +820,8 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 	global $cache, $request;
 
-	$forum_id = $request->variable('f', 0);
+	// $forum_id when FALSE check for PMs if INT then check for forum id (topics|posts)
+	$forum_id = $request->variable('f', 0) ? $request->variable('f', 0) : false;
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
 	// Some default template variables
@@ -830,7 +831,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		'FILESIZE'						=> $config['max_filesize'],
 		'FILE_COMMENT'					=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 		'MAX_ATTACHMENT_FILESIZE'		=> $config['max_filesize'] > 0 ? $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])) : '',
-		'ALLOWED_ATTACHMENTS'			=> implode(', ', $allowed_attachments),
+		'ALLOWED_ATTACHMENTS'			=> !empty($allowed_attachments) ? implode(', ', $allowed_attachments) : '',
 	));
 
 	if (count($attachment_data))
