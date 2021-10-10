@@ -46,7 +46,7 @@ class create_schema_file extends \phpbb\install\task_base
 	protected $php_ext;
 
 	/**
-	 * @var string
+	 * @var bool
 	 */
 	protected $finder_cache;
 
@@ -58,6 +58,7 @@ class create_schema_file extends \phpbb\install\task_base
 	 * @param \phpbb\filesystem\filesystem_interface				$filesystem			Filesystem service
 	 * @param string												$phpbb_root_path	Path phpBB's root
 	 * @param string												$php_ext			Extension of PHP files
+	 * @param bool													$finder_cache		Flag whether to cache finder
 	 */
 	public function __construct(\phpbb\install\helper\config $config,
 								\phpbb\install\helper\database $db_helper,
@@ -124,7 +125,8 @@ class create_schema_file extends \phpbb\install\task_base
 				include ($this->phpbb_root_path . 'includes/constants.' . $this->php_ext);
 			}
 
-			$finder = new \phpbb\finder\finder(null, $this->finder_cache, $this->phpbb_root_path, $this->php_ext);
+			$finder_factory = new \phpbb\finder\factory(null, $this->finder_cache, $this->phpbb_root_path, $this->php_ext);
+			$finder = $finder_factory->get();
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db, true);

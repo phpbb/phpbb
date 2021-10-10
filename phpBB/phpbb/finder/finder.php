@@ -13,6 +13,7 @@
 
 namespace phpbb\finder;
 
+use phpbb\cache\service;
 use phpbb\filesystem\helper as filesystem_helper;
 
 /**
@@ -51,12 +52,13 @@ class finder
 	* Creates a new finder instance with its dependencies
 	*
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param \phpbb\cache\service|null $cache A cache instance or null
+	* @param service|null $cache A cache instance or null
+	* @param bool $use_cache Flag whether cache should be used
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
-	*                           _ext_finder
+	*							_ext_finder
 	*/
-	public function __construct(/*\phpbb\cache\service */ $cache, $use_cache, $phpbb_root_path, $php_ext, $cache_name = '_ext_finder')
+	public function __construct(?service $cache, bool $use_cache, string $phpbb_root_path, string $php_ext, string $cache_name = '_ext_finder')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
