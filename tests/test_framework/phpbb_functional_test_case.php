@@ -239,6 +239,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
 		$factory = new \phpbb\db\tools\factory();
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
 		$db_tools = $factory->get($db);
 
 		$container = new phpbb_mock_container_builder();
@@ -262,9 +263,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
+			$finder_factory,
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
-			$phpEx,
 			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);
 

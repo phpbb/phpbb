@@ -118,6 +118,12 @@ class core extends Extension
 		{
 			$container->setParameter('session.' . $name, $value);
 		}
+
+		// Set the finder options
+		foreach ($config['finder'] as $name => $value)
+		{
+			$container->setParameter('finder.' . $name, $value);
+		}
 	}
 
 	/**

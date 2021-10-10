@@ -42,6 +42,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->db);
+		$finder_factory = $this->createMock('\phpbb\finder\factory');
 		$this->phpbb_root_path = __DIR__ . '/';
 		$this->phpEx = 'php';
 
@@ -97,9 +98,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
+			$finder_factory,
 			'phpbb_ext',
 			$this->phpbb_root_path,
-			$this->phpEx,
 			$this->cache
 		);
 

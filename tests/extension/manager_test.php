@@ -147,13 +147,14 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	protected function create_extension_manager($with_cache = true)
 	{
+		$phpbb_root_path = __DIR__ . './../../phpBB/';
+		$php_ext = 'php';
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
 		$factory = new \phpbb\db\tools\factory();
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $php_ext);
 		$db_tools = $factory->get($db);
-		$phpbb_root_path = __DIR__ . './../../phpBB/';
-		$php_ext = 'php';
 		$table_prefix = 'phpbb_';
 
 		$container = new phpbb_mock_container_builder();
@@ -177,9 +178,9 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$container,
 			$db,
 			$config,
+			$finder_factory,
 			'phpbb_ext',
 			__DIR__ . '/',
-			$php_ext,
 			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
 		);
 	}
