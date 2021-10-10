@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v400;
 
+use phpbb\attachment\attachment_category;
+
 class add_video_files_attachment_group extends \phpbb\db\migration\migration
 {
 	public static function depends_on()
@@ -40,7 +42,7 @@ class add_video_files_attachment_group extends \phpbb\db\migration\migration
 		{
 			$sql = 'INSERT INTO ' . $this->table_prefix . 'extension_groups ' . $this->db->sql_build_array('INSERT', [
 				'group_name'		=> 'VIDEO_FILES',
-				'cat_id'			=> ATTACHMENT_CATEGORY_VIDEO,
+				'cat_id'			=> attachment_category::VIDEO,
 				'allow_group'		=> 0,
 				'upload_icon'		=> '',
 				'max_filesize'		=> 0,
@@ -51,7 +53,7 @@ class add_video_files_attachment_group extends \phpbb\db\migration\migration
 		}
 		else
 		{
-			$sql = 'UPDATE ' . $this->table_prefix . 'extension_groups SET cat_id = ' . ATTACHMENT_CATEGORY_VIDEO . '
+			$sql = 'UPDATE ' . $this->table_prefix . 'extension_groups SET cat_id = ' . attachment_category::VIDEO . '
 				WHERE ' . $this->db->sql_build_array('SELECT', ['group_id' => $video_group_id]);
 			$this->db->sql_query($sql);
 		}

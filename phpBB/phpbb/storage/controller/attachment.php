@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\controller;
 
+use phpbb\attachment\attachment_category;
 use phpbb\auth\auth;
 use phpbb\cache\service;
 use phpbb\config\config;
@@ -183,9 +184,9 @@ class attachment extends controller
 		{
 			$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 		}
-		else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'])
+		else if ($display_cat == attachment_category::NONE && !$attachment['is_orphan'])
 		{
-			if (!(($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg')))
+			if (!(($display_cat == attachment_category::IMAGE || $display_cat == attachment_category::THUMB) && !$this->user->optionget('viewimg')))
 			{
 				// Update download count
 				$this->phpbb_increment_downloads($attachment['attach_id']);

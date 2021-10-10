@@ -131,7 +131,7 @@ class upload
 		}
 
 		// Whether the uploaded file is in the image category
-		$is_image = (isset($this->extensions[$this->file->get('extension')]['display_cat'])) ? $this->extensions[$this->file->get('extension')]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE : false;
+		$is_image = (isset($this->extensions[$this->file->get('extension')]['display_cat'])) ? $this->extensions[$this->file->get('extension')]['display_cat'] == \phpbb\attachment\attachment_category::IMAGE : false;
 
 		if (!$this->auth->acl_get('a_') && !$this->auth->acl_get('m_', $forum_id))
 		{

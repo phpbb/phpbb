@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v400;
 
+use phpbb\attachment\attachment_category;
+
 class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 {
 	public static function depends_on()
@@ -40,7 +42,7 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 		{
 			$sql = 'INSERT INTO ' . $this->table_prefix . 'extension_groups ' . $this->db->sql_build_array('INSERT', [
 				'group_name'		=> 'AUDIO_FILES',
-				'cat_id'			=> ATTACHMENT_CATEGORY_AUDIO,
+				'cat_id'			=> attachment_category::AUDIO,
 				'allow_group'		=> 0,
 				'upload_icon'		=> '',
 				'max_filesize'		=> 0,
@@ -51,7 +53,7 @@ class add_audio_files_attachment_group extends \phpbb\db\migration\migration
 		}
 		else
 		{
-			$sql = 'UPDATE ' . $this->table_prefix . 'extension_groups SET cat_id = ' . ATTACHMENT_CATEGORY_AUDIO . '
+			$sql = 'UPDATE ' . $this->table_prefix . 'extension_groups SET cat_id = ' . attachment_category::AUDIO . '
 				WHERE ' . $this->db->sql_build_array('SELECT', ['group_id' => $audio_group_id]);
 			$this->db->sql_query($sql);
 		}

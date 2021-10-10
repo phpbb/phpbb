@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\attachment\attachment_category;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -1393,7 +1395,7 @@ function phpbb_attachment_category($cat_id)
 	switch ($cat_id)
 	{
 		case 1:
-			return ATTACHMENT_CATEGORY_IMAGE;
+			return attachment_category::IMAGE;
 		break;
 
 		case 2:
@@ -1401,7 +1403,7 @@ function phpbb_attachment_category($cat_id)
 		break;
 	}
 
-	return ATTACHMENT_CATEGORY_NONE;
+	return attachment_category::NONE;
 }
 
 /**
