@@ -3,13 +3,12 @@
 
 	<p>{L_ADD_ATTACHMENT_EXPLAIN} <span class="hidden" id="drag-n-drop-message">{L_PLUPLOAD_DRAG_TEXTAREA}</span></p>
 	{% if MAX_ATTACHMENT_FILESIZE is not empty %}<p>{{ MAX_ATTACHMENT_FILESIZE }}</p>{% endif %}
-	{% if ALLOWED_ATTACHMENTS is not empty %}<p>{{ lang('ALLOWED_ATTACHMENTS') ~ lang('COLON') }} <em>{{ ALLOWED_ATTACHMENTS }}</em></p>{% endif %}
 
 	<fieldset class="fields2" id="attach-panel-basic">
 	<dl>
 		<dt><label for="fileupload">{L_FILENAME}{L_COLON}</label></dt>
 		<dd>
-			<input type="file" name="fileupload" id="fileupload" class="inputbox autowidth" />
+			<input type="file" accept="{{ ALLOWED_ATTACHMENTS }}" name="fileupload" id="fileupload" class="inputbox autowidth" />
 			<input type="submit" name="add_file" value="{L_ADD_FILE}" class="button2" onclick="upload = true;" />
 		</dd>
 	</dl>
