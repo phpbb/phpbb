@@ -1390,7 +1390,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 	}
 
 	// Attachment entry
-	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed, false);
+	posting_gen_attachment_entry($attachment_data, $filename_data, false, $allowed);
 
 	// Message History
 	if ($action == 'reply' || $action == 'quote' || $action == 'forward')
