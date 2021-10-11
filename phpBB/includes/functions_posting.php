@@ -825,7 +825,6 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 {
 	global $template, $cache, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
-	$forum_id != false ?: (int) $forum_id;
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
 	// Some default template variables
