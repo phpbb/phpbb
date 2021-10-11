@@ -815,13 +815,12 @@ function posting_gen_inline_attachments(&$attachment_data)
 /**
 * Generate inline attachment entry
 */
-function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
+function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true, $forum_id = false)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
-	global $cache, $request;
+	global $template, $cache, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
 	// $forum_id when FALSE check for PMs if INT then check for forum id (topics|posts)
-	$forum_id = $request->variable('f', 0) ?: false;
+	$forum_id != false ?: (int) $forum_id;
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
 	// Some default template variables
