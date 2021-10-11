@@ -828,14 +828,27 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
 	// Some default template variables
-	$template->assign_vars(array(
+	$default_vars = [
 		'S_SHOW_ATTACH_BOX'				=> $show_attach_box,
 		'S_HAS_ATTACHMENTS'				=> count($attachment_data),
 		'FILESIZE'						=> $config['max_filesize'],
 		'FILE_COMMENT'					=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 		'MAX_ATTACHMENT_FILESIZE'		=> $config['max_filesize'] > 0 ? $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])) : '',
 		'ALLOWED_ATTACHMENTS'			=> !empty($allowed_attachments) ? implode(',', $allowed_attachments) : '',
-	));
+	];
+
+	/**
+	 * Modify default attachments template vars
+	 *
+	 * @event core.modify_default_attachments_template_vars
+	 * @var	array	allowed_attachments		Array containing allowed attachments data
+	 * @var	array	default_vars			Array containing default attachments template vars
+	 * @since 3.3.6-RC1
+	 */
+	$vars = ['allowed_attachments', 'default_vars'];
+	extract($phpbb_dispatcher->trigger_event('core.modify_default_attachments_template_vars', compact($vars)));
+
+	$template->assign_vars($default_vars);
 
 	if (count($attachment_data))
 	{
