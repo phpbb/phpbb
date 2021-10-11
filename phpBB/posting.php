@@ -2078,7 +2078,7 @@ if ($allowed)
 }
 
 // Attachment entry
-posting_gen_attachment_entry($attachment_data, $filename_data, $forum_id, $allowed);
+posting_gen_attachment_entry($attachment_data, $filename_data, $allowed, $forum_id);
 
 // Output page ...
 page_header($page_title);
