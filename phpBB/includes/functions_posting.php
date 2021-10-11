@@ -813,13 +813,18 @@ function posting_gen_inline_attachments(&$attachment_data)
 }
 
 /**
-* Generate inline attachment entry
-*/
-function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true, $forum_id = false)
+ * Generate inline attachment entry
+ *
+ * @param array		$attachment_data	The attachment data
+ * @param string	$filename_data		The filename data (filecomment)
+ * @param bool		$show_attach_box	Whether to show the attach box
+ * @param mixed		$forum_id			The forum id to check or false if private message
+ * @return int
+ */
+function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true, $forum_id)
 {
 	global $template, $cache, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
 
-	// $forum_id when FALSE check for PMs if INT then check for forum id (topics|posts)
 	$forum_id != false ?: (int) $forum_id;
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
