@@ -15,6 +15,7 @@
 * @ignore
 */
 
+use phpbb\attachment\attachment_category;
 use phpbb\attachment\manager;
 use phpbb\config\config;
 use phpbb\controller\helper;
@@ -163,7 +164,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[attachment_category::IMAGE])) ? implode($user->lang['COMMA_SEPARATOR'], $s_assigned_groups[attachment_category::IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -584,7 +585,7 @@ class acp_attachments
 
 						$group_ary = array(
 							'group_name'	=> $group_name,
-							'cat_id'		=> $request->variable('special_category', ATTACHMENT_CATEGORY_NONE),
+							'cat_id'		=> $request->variable('special_category', attachment_category::NONE),
 							'allow_group'	=> ($allow_group) ? 1 : 0,
 							'upload_icon'	=> ($upload_icon == 'no_image') ? '' : $upload_icon,
 							'max_filesize'	=> $max_filesize,
@@ -634,10 +635,10 @@ class acp_attachments
 				}
 
 				$cat_lang = array(
-					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
-					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-					ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
-					ATTACHMENT_CATEGORY_VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
+					attachment_category::NONE		=> $user->lang['NO_FILE_CAT'],
+					attachment_category::IMAGE		=> $user->lang['CAT_IMAGES'],
+					attachment_category::AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
+					attachment_category::VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
 				);
 
 				$group_id = $request->variable('g', 0);
@@ -1268,8 +1269,8 @@ class acp_attachments
 
 					$row['extension'] = strtolower(trim((string) $row['extension']));
 					$comment = ($row['attach_comment'] && !$row['in_message']) ? str_replace(array("\n", "\r"), array('<br />', "\n"), $row['attach_comment']) : '';
-					$display_cat = isset($extensions[$row['extension']]['display_cat']) ? $extensions[$row['extension']]['display_cat'] : ATTACHMENT_CATEGORY_NONE;
-					$l_downloaded_viewed = ($display_cat == ATTACHMENT_CATEGORY_NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
+					$display_cat = isset($extensions[$row['extension']]['display_cat']) ? $extensions[$row['extension']]['display_cat'] : attachment_category::NONE;
+					$l_downloaded_viewed = ($display_cat == attachment_category::NONE) ? 'DOWNLOAD_COUNTS' : 'VIEWED_COUNTS';
 
 					$template->assign_block_vars('attachments', array(
 						'ATTACHMENT_POSTER'	=> get_username_string('full', (int) $row['poster_id'], (string) $row['username'], (string) $row['user_colour'], (string) $row['username']),
@@ -1410,10 +1411,10 @@ class acp_attachments
 		global $db, $user;
 
 		$types = array(
-			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
-			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-			ATTACHMENT_CATEGORY_AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
-			ATTACHMENT_CATEGORY_VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
+			attachment_category::NONE		=> $user->lang['NO_FILE_CAT'],
+			attachment_category::IMAGE		=> $user->lang['CAT_IMAGES'],
+			attachment_category::AUDIO		=> $user->lang('CAT_AUDIO_FILES'),
+			attachment_category::VIDEO		=> $user->lang('CAT_VIDEO_FILES'),
 		);
 
 		if ($group_id)
@@ -1423,13 +1424,13 @@ class acp_attachments
 				WHERE group_id = ' . (int) $group_id;
 			$result = $db->sql_query($sql);
 
-			$cat_type = (!($row = $db->sql_fetchrow($result))) ? ATTACHMENT_CATEGORY_NONE : $row['cat_id'];
+			$cat_type = (!($row = $db->sql_fetchrow($result))) ? attachment_category::NONE : $row['cat_id'];
 
 			$db->sql_freeresult($result);
 		}
 		else
 		{
-			$cat_type = ATTACHMENT_CATEGORY_NONE;
+			$cat_type = attachment_category::NONE;
 		}
 
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';

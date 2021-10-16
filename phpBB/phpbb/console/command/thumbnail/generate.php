@@ -132,7 +132,7 @@ class generate extends \phpbb\console\command\command
 		$thumbnail_created = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE)
+			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == \phpbb\attachment\attachment_category::IMAGE)
 			{
 				$source = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $row['physical_filename'];
 				$destination = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];

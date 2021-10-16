@@ -11,6 +11,7 @@
 *
 */
 
+use phpbb\attachment\attachment_category;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use phpbb\console\command\thumbnail\generate;
@@ -57,8 +58,8 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 		$this->cache = $this->createMock('\phpbb\cache\service');
 		$this->cache->expects(self::any())->method('obtain_attach_extensions')->will(self::returnValue(array(
-			'png' => array('display_cat' => ATTACHMENT_CATEGORY_IMAGE),
-			'txt' => array('display_cat' => ATTACHMENT_CATEGORY_NONE),
+			'png' => array('display_cat' => attachment_category::IMAGE),
+			'txt' => array('display_cat' => attachment_category::NONE),
 		)));
 
 		$this->application = new Application();
