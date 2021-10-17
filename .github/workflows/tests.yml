@@ -448,12 +448,24 @@ jobs:
                 include:
                     - php: '7.4'
                       db: "postgres"
+                      type: 'unit'
                     - php: '8.0'
                       db: "postgres"
+                      type: 'unit'
                     - php: '8.1'
                       db: "postgres"
+                      type: 'unit'
+                    - php: '7.4'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.0'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.1'
+                      db: "postgres"
+                      type: 'functional'
 
-        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
 
         steps:
             - name: Prepare git for Windows
@@ -530,9 +542,8 @@ jobs:
               run: |
                   $postgreSqlSvc = Get-Service "postgresql*"
                   Set-Service $postgreSqlSvc.Name -StartupType manual
-                  $postgreSqlSvc.Start()
                   try {
-                    (Get-Service "postgresql*").Start()
+                    $postgreSqlSvc.Start()
                   } catch  {
                     $_ | select *
                   }
@@ -543,5 +554,10 @@ jobs:
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
                   Set-MpPreference -DisableRealtimeMonitoring $true
             - name: Run unit tests
+              if: ${{ matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+            - name: Run unit tests
+              if: ${{ matrix.type == 'functional' }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
