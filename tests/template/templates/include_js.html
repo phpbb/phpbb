@@ -1,36 +1,36 @@
 {% if TEST === 1 %}
-	{% include_js('parent_and_child.js') %}
+	{% INCLUDEJS('parent_and_child.js') %}
 {% elseif TEST === 2 %}
-	{% include_js('parent_and_child.js?assets_version=0') %}
+	{% INCLUDEJS('parent_and_child.js?assets_version=0') %}
 {% elseif TEST === 3 %}
-	{% include_js('parent_and_child.js?test=1&assets_version=0') %}
+	{% INCLUDEJS('parent_and_child.js?test=1&assets_version=0') %}
 {% elseif TEST === 4 %}
-	{% include_js('parent_and_child.js?test=1&amp;assets_version=0') %}
+	{% INCLUDEJS('parent_and_child.js?test=1&amp;assets_version=0') %}
 {% elseif TEST === 6 %}
-	{% include_js(PARENT) %}
+	{% INCLUDEJS(PARENT) %}
 {% elseif TEST === 7 %}
 	{% set test_var = 'child_only.js' %}
-	{% include_js(test_var) %}
+	{% INCLUDEJS(test_var) %}
 {% elseif TEST === 8 %}
-	{% include_js('subdir/' ~ PARENT) %}
+	{% INCLUDEJS('subdir/' ~ PARENT) %}
 {% elseif TEST === 9 %}
-	{% include_js(SUBDIR ~ '/subsubdir/' ~ PARENT) %}
+	{% INCLUDEJS(SUBDIR ~ '/subsubdir/' ~ PARENT) %}
 {% elseif TEST === 10 %}
-	{% include_js(SUBDIR ~ '/parent_only.' ~ EXT) %}
+	{% INCLUDEJS(SUBDIR ~ '/parent_only.' ~ EXT) %}
 {% elseif TEST === 11 %}
 	{% set test_var = 'child_only.js?test1=1&amp;test2=2#test3' %}
-	{% include_js(test_var) %}
+	{% INCLUDEJS(test_var) %}
 {% elseif TEST === 12 %}
-	{% include_js('parent_only.js?test1=1&amp;test2=2#test3') %}
+	{% INCLUDEJS('parent_only.js?test1=1&amp;test2=2#test3') %}
 {% elseif TEST === 14 %}
-	{% include_js('parent_only.js?test1=&quot;#test3') %}
+	{% INCLUDEJS('parent_only.js?test1=&quot;#test3') %}
 {% elseif TEST === 15 %}
-	{% include_js('http://phpbb.com/b.js?c=d#f') %}
+	{% INCLUDEJS('http://phpbb.com/b.js?c=d#f') %}
 {% elseif TEST === 16 %}
-	{% include_js('http://phpbb.com/b.js?c=d&assets_version=2#f') %}
+	{% INCLUDEJS('http://phpbb.com/b.js?c=d&assets_version=2#f') %}
 {% elseif TEST === 17 %}
-	{% include_js('//phpbb.com/b.js') %}
+	{% INCLUDEJS('//phpbb.com/b.js') %}
 {% elseif TEST === 18 %}
-	{% include_js('parent_and_child.js?test=1&test2=0') %}
+	{% INCLUDEJS('parent_and_child.js?test=1&test2=0') %}
 {% endif %}
 {$SCRIPTS}

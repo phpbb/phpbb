@@ -1,10 +1,10 @@
 {% if TEST === 1 %}
-	{% include_css('child_only.css') %}
+	{% INCLUDECSS('child_only.css') %}
 {% elseif TEST === 2 %}
-	{% include_css('parent_only.css') %}
+	{% INCLUDECSS('parent_only.css') %}
 {% elseif TEST === 3 %}
-	{% include_css('@include_css/test.css') %}
+	{% INCLUDECSS('@include_css/test.css') %}
 {% elseif TEST === 4 %}
-	{% include_css('@include_css/child_only.css') %}
+	{% INCLUDECSS('@include_css/child_only.css') %}
 {% endif %}
 {$STYLESHEETS}
