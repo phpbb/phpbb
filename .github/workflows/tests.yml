@@ -6,6 +6,7 @@ on:
             - 3.3.x
             - master
             - 'prep-release-*'
+            - 'ticket/*'
         tags:
             - 'release-*'
     pull_request:
@@ -530,9 +531,8 @@ jobs:
               run: |
                   $postgreSqlSvc = Get-Service "postgresql*"
                   Set-Service $postgreSqlSvc.Name -StartupType manual
-                  $postgreSqlSvc.Start()
                   try {
-                    (Get-Service "postgresql*").Start()
+                    $postgreSqlSvc.Start()
                   } catch  {
                     $_ | select *
                   }
@@ -545,4 +545,5 @@ jobs:
                   New-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows Defender" -Name DisableAntiSpyware -Value 1 -PropertyType DWORD -Force
             - name: Run unit tests
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
