@@ -6,7 +6,6 @@ on:
             - 3.3.x
             - master
             - 'prep-release-*'
-            - 'ticket/*'
         tags:
             - 'release-*'
     pull_request:
