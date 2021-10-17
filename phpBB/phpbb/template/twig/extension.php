@@ -79,6 +79,8 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \Twig\TwigFilter('subset', array($this, 'loop_subset'), array('needs_environment' => true)),
 			// @deprecated 3.2.0 Uses twig's JS escape method instead of addslashes
 			new \Twig\TwigFilter('addslashes', 'addslashes'),
+			new \Twig\TwigFilter('int', 'intval'),
+			new \Twig\TwigFilter('float', 'floatval'),
 		);
 	}
 
