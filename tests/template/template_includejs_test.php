@@ -118,6 +118,6 @@ class phpbb_template_template_includejs_test extends phpbb_template_template_tes
 		$this->template->assign_vars($vars);
 
 		// Run test
-		$this->run_template('include_js.html', array_merge(array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), $vars), array(), array(), $expected);
+		$this->run_template('includejs_twig.html', array_merge(array('PARENT' => 'parent_only.js', 'SUBDIR' => 'subdir', 'EXT' => 'js'), $vars), array(), array(), $expected);
 	}
 }

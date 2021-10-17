@@ -137,6 +137,6 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$this->template->assign_vars($vars);
 
 		// Run test
-		$this->run_template('include_css.html', array(), array(), array(), $expected);
+		$this->run_template('includecss_twig.html', array(), array(), array(), $expected);
 	}
 }
