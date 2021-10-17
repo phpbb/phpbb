@@ -123,4 +123,18 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		// Run test
 		$this->run_template('includecss.html', array(), array(), array(), $expected);
 	}
+
+	/**
+	 * @dataProvider template_data
+	 */
+	public function test_include_css_compilation($vars, $expected)
+	{
+		// Reset the engine state
+		$this->setup_engine(array('assets_version' => 1));
+
+		$this->template->assign_vars($vars);
+
+		// Run test
+		$this->run_template('includecss_twig.html', array(), array(), array(), $expected);
+	}
 }

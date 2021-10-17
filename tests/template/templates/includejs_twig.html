@@ -1,0 +1,36 @@
+{% if TEST === 1 %}
+	{% INCLUDEJS('parent_and_child.js') %}
+{% elseif TEST === 2 %}
+	{% INCLUDEJS('parent_and_child.js?assets_version=0') %}
+{% elseif TEST === 3 %}
+	{% INCLUDEJS('parent_and_child.js?test=1&assets_version=0') %}
+{% elseif TEST === 4 %}
+	{% INCLUDEJS('parent_and_child.js?test=1&amp;assets_version=0') %}
+{% elseif TEST === 6 %}
+	{% INCLUDEJS(PARENT) %}
+{% elseif TEST === 7 %}
+	{% set test_var = 'child_only.js' %}
+	{% INCLUDEJS(test_var) %}
+{% elseif TEST === 8 %}
+	{% INCLUDEJS('subdir/' ~ PARENT) %}
+{% elseif TEST === 9 %}
+	{% INCLUDEJS(SUBDIR ~ '/subsubdir/' ~ PARENT) %}
+{% elseif TEST === 10 %}
+	{% INCLUDEJS(SUBDIR ~ '/parent_only.' ~ EXT) %}
+{% elseif TEST === 11 %}
+	{% set test_var = 'child_only.js?test1=1&amp;test2=2#test3' %}
+	{% INCLUDEJS(test_var) %}
+{% elseif TEST === 12 %}
+	{% INCLUDEJS('parent_only.js?test1=1&amp;test2=2#test3') %}
+{% elseif TEST === 14 %}
+	{% INCLUDEJS('parent_only.js?test1=&quot;#test3') %}
+{% elseif TEST === 15 %}
+	{% INCLUDEJS('http://phpbb.com/b.js?c=d#f') %}
+{% elseif TEST === 16 %}
+	{% INCLUDEJS('http://phpbb.com/b.js?c=d&assets_version=2#f') %}
+{% elseif TEST === 17 %}
+	{% INCLUDEJS('//phpbb.com/b.js') %}
+{% elseif TEST === 18 %}
+	{% INCLUDEJS('parent_and_child.js?test=1&test2=0') %}
+{% endif %}
+{$SCRIPTS}
