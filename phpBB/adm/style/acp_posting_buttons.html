@@ -11,11 +11,9 @@
 {% include 'mentions_templates.html' %}
 
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/tribute.min.js -->
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/mentions.js -->
 
 <!-- EVENT acp_posting_buttons_before -->
-<div id="format-buttons"<!-- IF S_ALLOW_MENTIONS --> data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-topic-id="{S_TOPIC_ID}" data-user-id="{S_USER_ID}"<!-- ENDIF -->>
+<div id="format-buttons">
 	<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}" />
 	<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}" />
 	<input type="button" class="button2" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}" />
