@@ -78,4 +78,5 @@ $lang = array_merge($lang, array(
 	'PERMISSION_NOT_EXIST'				=> 'The permission setting "%s" unexpectedly does not exist.',
 
 	'ROLE_NOT_EXIST'					=> 'The permission role "%s" unexpectedly does not exist.',
+	'ROLE_NOT_EXIST_ASSIGNED'			=> 'The permission role assigned to group "%1$s" unexpectedly does not exist. Role id: "%2$s"',
 ));
