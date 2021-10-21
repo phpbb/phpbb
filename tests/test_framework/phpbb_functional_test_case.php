@@ -261,6 +261,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db,
 			$config,
 			new phpbb\filesystem\filesystem(),
+			new phpbb_mock_dummy_router(),
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
 			$phpEx,
