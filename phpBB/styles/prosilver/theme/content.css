@@ -735,6 +735,10 @@ fieldset.polls dd div {
 	margin-bottom: 10px;
 }
 
+.profile-rank img {
+	max-width: 160px;
+}
+
 /* Post-profile avatars */
 .postprofile .has-avatar .avatar-container {
 	margin-bottom: 3px;
