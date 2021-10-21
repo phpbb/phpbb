@@ -116,8 +116,8 @@ class acp_icons
 
 					$_images[$path . $img]['file'] = $path . $img;
 
-					$_images[$path . $img]['width'] = $img_size ? $img_size[0] : '';
-					$_images[$path . $img]['height'] = $img_size ? $img_size[1] : '';
+					$_images[$path . $img]['width'] = $img_size ? $img_size[0] : 127;
+					$_images[$path . $img]['height'] = $img_size ? $img_size[1] : 127;
 				}
 			}
 			unset($imglist);
