@@ -91,29 +91,33 @@ class acp_icons
 				{
 					$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $path . $img);
 
-					if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
+					if ($img_size)
 					{
-						continue;
-					}
-
-					// adjust the width and height to be lower than 128px while perserving the aspect ratio (for icons)
-					if ($mode == 'icons')
-					{
-						if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+						if (!$img_size[0] || !$img_size[1] || strlen($img) > 255)
 						{
-							$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
-							$img_size[0] = 127;
+							continue;
 						}
-						else if ($img_size[1] > 127)
+
+						// adjust the width and height to be lower than 128px while perserving the aspect ratio (for icons)
+						if ($mode == 'icons')
 						{
-							$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
-							$img_size[1] = 127;
+							if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+							{
+								$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
+								$img_size[0] = 127;
+							}
+							else if ($img_size[1] > 127)
+							{
+								$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
+								$img_size[1] = 127;
+							}
 						}
 					}
 
 					$_images[$path . $img]['file'] = $path . $img;
-					$_images[$path . $img]['width'] = $img_size[0];
-					$_images[$path . $img]['height'] = $img_size[1];
+
+					$_images[$path . $img]['width'] = $img_size ? $img_size[0] : '';
+					$_images[$path . $img]['height'] = $img_size ? $img_size[1] : '';
 				}
 			}
 			unset($imglist);
