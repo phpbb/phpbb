@@ -390,7 +390,7 @@ class sqlite3 extends \phpbb\db\driver\driver
 				{
 					$html_table = false;
 
-					if ($result = $this->dbo->query("EXPLAIN QUERY PLAN $explain_query"))
+					if ($result = @$this->dbo->query("EXPLAIN QUERY PLAN $explain_query"))
 					{
 						while ($row = $result->fetchArray(SQLITE3_ASSOC))
 						{
