@@ -737,6 +737,7 @@ fieldset.polls dd div {
 
 .profile-rank img {
 	max-width: 160px;
+	image-rendering: crisp-edges;
 }
 
 /* Post-profile avatars */
