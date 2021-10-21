@@ -40,6 +40,7 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('sql_explain')->defaultValue(false)->end()
 						->booleanNode('memory')->defaultValue(false)->end()
 						->booleanNode('show_errors')->defaultValue(false)->end()
+						->booleanNode('error_handler')->defaultValue(false)->end()
 					->end()
 				->end()
 				->arrayNode('twig')
