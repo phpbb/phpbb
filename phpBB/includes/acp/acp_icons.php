@@ -114,12 +114,12 @@ class acp_icons
 						}
 					}
 					else
-					// getimagesize can't read the dimensions of the SVG files
-					// https://bugs.php.net/bug.php?id=71517
 					{
+						// getimagesize can't read the dimensions of the SVG files
+						// https://bugs.php.net/bug.php?id=71517
 						$xml_get = simplexml_load_file($phpbb_root_path . $img_path . '/' . $path . $img);
 
-						$svg_width = intval($xml_get['width']); 
+						$svg_width = intval($xml_get['width']);
 						$svg_height = intval($xml_get['height']);
 					}
 
