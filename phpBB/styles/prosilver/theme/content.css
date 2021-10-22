@@ -737,8 +737,6 @@ fieldset.polls dd div {
 
 .profile-rank img {
 	max-width: 160px;
-	image-rendering: crisp-edges;
-	-ms-interpolation-mode: nearest-neighbor;
 }
 
 /* Post-profile avatars */
