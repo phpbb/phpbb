@@ -443,7 +443,7 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	if ($auth->acl_get('a_'))
 	{
-		$location .= '<br>' . substr($row['session_page'], 0, 99);
+		$location .= nl2br("\n" . substr($row['session_page'], 0, 99));
 	}
 
 	/**
