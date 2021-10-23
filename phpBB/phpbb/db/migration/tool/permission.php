@@ -21,6 +21,9 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \includes\acp\acp_auth */
+	protected $auth_admin;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -291,6 +294,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 
 		$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
+
+		return $this->db->sql_nextid();
 	}
 
 	/**
@@ -327,11 +332,32 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			return;
 		}
 
+		// Get the role type
+		$sql = 'SELECT role_type
+			FROM ' . ACL_ROLES_TABLE . '
+			WHERE role_id = ' . (int) $role_id;
+		$result = $this->db->sql_query($sql);
+		$role_type = $this->db->sql_fetchfield('role_type');
+		$this->db->sql_freeresult($result);
+
+		// Get complete auth array
+		$sql = 'SELECT auth_option, auth_option_id
+			FROM ' . ACL_OPTIONS_TABLE . "
+			WHERE auth_option " . $this->db->sql_like_expression($role_type . $this->db->get_any_char());
+		$result = $this->db->sql_query($sql);
+
+		$auth_settings = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$auth_settings[$row['auth_option']] = ACL_NO;
+		}
+		$this->db->sql_freeresult($result);
+
 		// Get the role auth settings we need to re-set...
 		$sql = 'SELECT o.auth_option, r.auth_setting
 			FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 			WHERE o.auth_option_id = r.auth_option_id
-				AND r.role_id = ' . $role_id;
+				AND r.role_id = ' . (int) $role_id;
 		$result = $this->db->sql_query($sql);
 
 		while ($row = $this->db->sql_fetchrow($result))
