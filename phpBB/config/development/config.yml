@@ -13,6 +13,7 @@ core:
         show_errors: true
         url_generator: true
         url_matcher: true
+        error_handler: true
 
     twig:
         debug: true
