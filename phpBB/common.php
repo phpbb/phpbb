@@ -96,6 +96,8 @@ include($phpbb_root_path . 'includes/functions_compatibility.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
+// Registered before building the container so the development environment stay capable of intercepting
+// the container builder exceptions.
 if (PHPBB_ENVIRONMENT === 'development')
 {
 	\phpbb\debug\debug::enable();
@@ -127,6 +129,11 @@ catch (InvalidArgumentException $e)
 	{
 		throw $e;
 	}
+}
+
+if ($phpbb_container->getParameter('debug.error_handler'))
+{
+	\phpbb\debug\debug::enable();
 }
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
