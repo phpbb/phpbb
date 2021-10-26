@@ -21,7 +21,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \includes\acp\acp_auth */
+	/** @var \includes\acp\auth\auth_admin */
 	protected $auth_admin;
 
 	/** @var \phpbb\cache\service */

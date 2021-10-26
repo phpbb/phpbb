@@ -16,7 +16,7 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \acp\auth\auth_admin */
+	/** @var \includes\acp\auth\auth_admin */
 	protected $auth_admin;
 
 	/** @var \phpbb\db\migration\tool\permission */
@@ -171,19 +171,26 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		$group_id = (int) $this->group_ids[$group_name];
 		$role_id = (int) $this->new_role_ids[$role_name];
 
+		$sql = 'SELECT agt.auth_role_id
+			FROM ' . ACL_GROUPS_TABLE . ' agt, ' . ACL_ROLES_TABLE . ' art
+			WHERE agt.auth_role_id = art.role_id
+				AND art.role_id = ' . $role_id;
+
 		// Set auth options for each role
 		$this->tool->permission_set($role_name, $auth_option, 'role', true);
 
 		// Assign roles to groups
 		$this->auth_admin->acl_set($ug_type, $forum_id, $group_id, $auth, $role_id);
 
+		// Check if the role is assigned to the group
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals($role_id, $this->db->sql_fetchfield('auth_role_id'));
+		$this->db->sql_freeresult($result);
+
 		$this->tool->role_remove($role_name);
 		$this->assertFalse((bool) $this->tool->role_exists($role_name));
 
-		$sql = 'SELECT agt.auth_role_id
-			FROM ' . ACL_GROUPS_TABLE . ' agt, ' . ACL_ROLES_TABLE . ' art
-			WHERE agt.auth_role_id = art.role_id
-				AND art.role_id = ' . $role_id;
+		// Check if the role is unassigned
 		$result = $this->db->sql_query($sql);
 		$this->assertFalse($this->db->sql_fetchfield('auth_role_id'));
 		$this->db->sql_freeresult($result);
