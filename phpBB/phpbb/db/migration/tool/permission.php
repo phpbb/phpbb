@@ -492,7 +492,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 					$role_data = $this->db->sql_fetchrow();
 					if (!$role_data)
 					{
-						throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST_ASSIGNED', $name, $role_id);
+						throw new \phpbb\db\migration\exception('ROLE_ASSIGNED_NOT_EXIST', $name, $role_id);
 					}
 
 					$role_name = $role_data['role_name'];
@@ -643,7 +643,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 					$role_name = $this->db->sql_fetchfield('role_name');
 					if (!$role_name)
 					{
-						throw new \phpbb\db\migration\exception('ROLE_NOT_EXIST_ASSIGNED', $name, $role_id);
+						throw new \phpbb\db\migration\exception('ROLE_ASSIGNED_NOT_EXIST', $name, $role_id);
 					}
 
 					return $this->permission_unset($role_name, $auth_option, 'role');
