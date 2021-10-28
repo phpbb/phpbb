@@ -1853,8 +1853,18 @@ class smtp_class
 */
 function mail_encode($str, $eol = "\r\n")
 {
+	global $config;
+
 	// Check if string contains ASCII only characters
 	$is_ascii = strlen($str) === utf8_strlen($str);
+
+	if (!$config['smtp_encoding'])
+	{
+		$is_ascii = false;
+	}
+
+	// Correctly decode html entities
+	$str = html_entity_decode($str);
 
 	// Define start delimimter, end delimiter and spacer
 	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64

@@ -291,6 +291,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CON
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_allow_self_signed', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_encoding', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_auth_method', 'PLAIN');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_delivery', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_host', '');

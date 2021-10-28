@@ -604,6 +604,9 @@ $lang = array_merge($lang, array(
 
 	'USE_SMTP'						=> 'Use SMTP server for email',
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
+
+	'SMTP_ENCODING'					=> 'Email encoding',
+	'SMTP_ENCODING_EXPLAIN'			=> 'Select “Yes” if you want or have to send email using Ascii instead of base64 encoded data.',
 ));
 
 // Jabber settings

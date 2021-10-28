@@ -465,6 +465,7 @@ class acp_board
 						'smtp_verify_peer'		=> array('lang' => 'SMTP_VERIFY_PEER',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'smtp_verify_peer_name'	=> array('lang' => 'SMTP_VERIFY_PEER_NAME',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'smtp_allow_self_signed'=> array('lang' => 'SMTP_ALLOW_SELF_SIGNED','validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'smtp_encoding'=> array('lang' => 'SMTP_ENCODING','validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)
