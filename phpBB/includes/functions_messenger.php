@@ -1868,7 +1868,8 @@ function mail_encode($str, $eol = "\r\n")
 	$split_length = $split_length - $split_length % 4;
 
 	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
-	$encoded_str = $is_ascii ? quoted_printable_encode($str) : base64_encode($str);
+	// quoted_printable_encode() splits lines at length of 75 characters with =\r\n delimiter, amend this feature
+	$encoded_str = $is_ascii ? str_replace("=\r\n", '', quoted_printable_encode($str)) : base64_encode($str);
 
 	// If encoded string meets the limits, we just return with the correct data.
 	if (strlen($encoded_str) <= $split_length)
