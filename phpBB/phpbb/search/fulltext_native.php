@@ -908,9 +908,6 @@ class fulltext_native extends \phpbb\search\base
 			switch ($this->db->get_sql_layer())
 			{
 				case 'mysqli':
-
-					// 3.x does not support SQL_CALC_FOUND_ROWS
-					// $sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
 					$is_mysql = true;
 
 				break;
@@ -968,13 +965,6 @@ class fulltext_native extends \phpbb\search\base
 			);
 		}
 
-		// if using mysql and the total result count is not calculated yet, get it from the db
-		if (!$total_results && $is_mysql)
-		{
-			// Also count rows for the query as if there was not LIMIT. Add SQL_CALC_FOUND_ROWS to SQL
-			$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
-		}
-
 		$sql_array['WHERE'] = implode(' AND ', $sql_where);
 		$sql_array['GROUP_BY'] = ($group_by) ? (($type == 'posts') ? 'p.post_id' : 'p.topic_id') . ', ' . $sort_by_sql[$sort_key] : '';
 		$sql_array['ORDER_BY'] = $sql_sort;
@@ -990,10 +980,10 @@ class fulltext_native extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
+		// If using mysql and the total result count is not calculated yet, get it from the db
 		if (!$total_results && $is_mysql)
 		{
-			// Get the number of results as calculated by MySQL
-			$sql_count = 'SELECT FOUND_ROWS() as total_results';
+			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT({$sql_array['SELECT']}) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
 			$total_results = (int) $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
@@ -1202,7 +1192,6 @@ class fulltext_native extends \phpbb\search\base
 			switch ($this->db->get_sql_layer())
 			{
 				case 'mysqli':
-//					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;
 				break;
 
@@ -1295,13 +1284,7 @@ class fulltext_native extends \phpbb\search\base
 
 		if (!$total_results && $is_mysql)
 		{
-			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
-			$sql_calc = str_replace('SELECT ' . $select, 'SELECT SQL_CALC_FOUND_ROWS ' . $select, $sql);
-
-			$result = $this->db->sql_query($sql_calc);
-			$this->db->sql_freeresult($result);
-
-			$sql_count = 'SELECT FOUND_ROWS() as total_results';
+			$sql_count = str_replace("SELECT $select", "SELECT COUNT($select) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
 			$total_results = (int) $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
