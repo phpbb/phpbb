@@ -1,33 +1,54 @@
-*~
-/phpunit.xml
+# Excludes cache
 /phpBB/cache/*
 !/phpBB/cache/.htaccess
 !/phpBB/cache/index.html
-/phpBB/composer.phar
+
+# Excludes user data
 /phpBB/config*.php*
 /phpBB/ext/*
 /phpBB/files/*
 /phpBB/images/avatars/gallery/*
 /phpBB/images/avatars/upload/*
 /phpBB/images/ranks/*
-/phpBB/install/schemas/schema.json
+/phpBB/store/*
+
+# Excludes all custom langages
 /phpBB/language/*
 !/phpBB/language/en
-/phpBB/store/*
+
+# Excludes all custom styles
 /phpBB/styles/*
 !/phpBB/styles/prosilver
 /phpBB/styles/prosilver/theme/*/
 !/phpBB/styles/prosilver/theme/en
 !/phpBB/styles/prosilver/theme/images
 !/phpBB/styles/all
-node_modules
+
+# Excludes all custom env
+/phpBB/config/*
+!/phpBB/config/default
+!/phpBB/config/development
+!/phpBB/config/installer
+!/phpBB/config/production
+!/phpBB/config/test
+!/phpBB/config/.htaccess
+
+# Excludes vendors
 /phpBB/vendor
+
+# Excludes test / dev files
+/phpunit.xml
+/phpBB/composer.phar
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
 /tests/tmp/*
 /tests/vendor
 /vagrant/phpbb-install-config.yml
 .vagrant
+node_modules
+
+# Excludes IDE / editors files
+*~
 .idea
 *.DS_Store*
 /.vscode
