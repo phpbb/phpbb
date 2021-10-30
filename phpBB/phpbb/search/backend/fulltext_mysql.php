@@ -509,6 +509,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_keywords_main_query_before', compact($vars)));
 
 		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
+		$sql_select			.= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 		if (count($author_ary) && $author_name)
@@ -549,11 +550,10 @@ class fulltext_mysql extends base implements search_backend_interface
 		$this->db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
-
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count && count($id_ary))
 		{
-			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT($sql_select) as result_count", $sql);
+			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT(*) as result_count", $sql);
 			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
@@ -752,6 +752,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		// If the cache was completely empty count the results
 		$sql_select	= ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$sql_select	.= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
@@ -780,7 +781,7 @@ class fulltext_mysql extends base implements search_backend_interface
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id
+				GROUP BY $sql_select
 				ORDER BY $sql_sort";
 			$field = 'topic_id';
 		}
@@ -797,9 +798,10 @@ class fulltext_mysql extends base implements search_backend_interface
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT($sql_select) as result_count", $sql);
+			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT(*) as result_count", $sql);
 			$result = $this->db->sql_query($sql_found_rows);
-			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$result_count = ($type == 'posts') ? (int) $this->db->sql_fetchfield('result_count') : count($this->db->sql_fetchrowset($result));
+
 			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
