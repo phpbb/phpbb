@@ -18,17 +18,31 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 {
 	protected function assert_search_found($keywords, $posts_found, $words_highlighted)
 	{
+		$this->purge_cache();
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
-		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count());
-		$this->assertEquals($words_highlighted, $crawler->filter('.posthilit')->count());
+		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count(), $this->search_backend);
+		$this->assertEquals($words_highlighted, $crawler->filter('.posthilit')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
+	protected function assert_search_found_topics($keywords, $topics_found)
+	{
+		$this->purge_cache();
+		$crawler = self::request('GET', 'search.php?sr=topics&keywords=' . $keywords);
+		$html = '';
+		foreach ($crawler as $domElement) {
+			$html .= $domElement->ownerDocument->saveHTML($domElement);
+		}
+		$this->assertEquals($topics_found, $crawler->filter('.row')->count(), $html);
+		$this->assertStringContainsString("Search found $topics_found match", $crawler->filter('.searchresults-title')->text(), $html);
 	}
 
 	protected function assert_search_not_found($keywords)
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
-		$this->assertEquals(0, $crawler->filter('.postbody')->count());
+		$this->assertEquals(0, $crawler->filter('.postbody')->count(),$this->search_backend);
 		$split_keywords_string = str_replace('+', ' ', $keywords);
-		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
+		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'), $this->search_backend);
 	}
 
 	public function test_search_backend()
@@ -67,6 +81,9 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->logout();
 		$this->assert_search_found('phpbb3+installation', 1, 3);
 		$this->assert_search_found('foosubject+barsearch', 1, 2);
+		$this->assert_search_found_topics('phpbb3+installation', 1);
+		$this->assert_search_found_topics('foosubject+barsearch', 1);
+
 		$this->assert_search_not_found('loremipsumdedo');
 		$this->assert_search_found('barsearch-testing', 1, 2); // test hyphen ignored
 		$this->assert_search_found('barsearch+-+testing', 1, 2); // test hyphen wrapped with space ignored

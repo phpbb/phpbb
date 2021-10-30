@@ -968,6 +968,7 @@ class fulltext_native extends \phpbb\search\base
 		$sql_array['WHERE'] = implode(' AND ', $sql_where);
 		$sql_array['GROUP_BY'] = ($group_by) ? (($type == 'posts') ? 'p.post_id' : 'p.topic_id') . ', ' . $sort_by_sql[$sort_key] : '';
 		$sql_array['ORDER_BY'] = $sql_sort;
+		$sql_array['SELECT'] .= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 
 		unset($sql_where, $sql_sort, $group_by);
 
@@ -983,7 +984,7 @@ class fulltext_native extends \phpbb\search\base
 		// If using mysql and the total result count is not calculated yet, get it from the db
 		if (!$total_results && $is_mysql)
 		{
-			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT({$sql_array['SELECT']}) as total_results", $sql);
+			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT(DISTINCT {$sql_array['SELECT']}) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
 			$total_results = (int) $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
@@ -1005,7 +1006,6 @@ class fulltext_native extends \phpbb\search\base
 				$id_ary[] = (int) $row[(($type == 'posts') ? 'post_id' : 'topic_id')];
 			}
 			$this->db->sql_freeresult($result);
-
 		}
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
@@ -1137,6 +1137,7 @@ class fulltext_native extends \phpbb\search\base
 		}
 
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$select .= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 		$is_mysql = false;
 
 		/**
@@ -1284,9 +1285,9 @@ class fulltext_native extends \phpbb\search\base
 
 		if (!$total_results && $is_mysql)
 		{
-			$sql_count = str_replace("SELECT $select", "SELECT COUNT($select) as total_results", $sql);
+			$sql_count = str_replace("SELECT $select", "SELECT COUNT(*) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
-			$total_results = (int) $this->db->sql_fetchfield('total_results');
+			$total_results = ($type == 'posts') ? (int) $this->db->sql_fetchfield('total_results') : count($this->db->sql_fetchrowset($result));
 			$this->db->sql_freeresult($result);
 
 			if (!$total_results)
