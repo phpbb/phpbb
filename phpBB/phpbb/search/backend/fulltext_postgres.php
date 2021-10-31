@@ -752,8 +752,9 @@ class fulltext_postgres extends base implements search_backend_interface
 					GROUP BY t.topic_id, $sort_by_sql[$sort_key]";
 			}
 
-			$this->db->sql_query($sql_count);
-			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$result = $this->db->sql_query($sql_count);
+			$result_count = ($type == 'posts') ? (int) $this->db->sql_fetchfield('result_count') : count($this->db->sql_fetchrowset($result));
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
