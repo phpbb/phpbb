@@ -11,6 +11,7 @@
 *
 */
 
+
 class phpbb_mock_extension_manager extends \phpbb\extension\manager
 {
 	public function __construct($phpbb_root_path, $extensions = array(), $container = null)
@@ -20,10 +21,9 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->extensions = $extensions;
-		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->container = $container;
 		$this->config = new \phpbb\config\config(array());
-		$this->user = new \phpbb\user($lang,'\phpbb\datetime');
 		$this->finder_factory = new \phpbb\finder\factory(null, false, $this->phpbb_root_path, $phpEx);
+		$this->router = new phpbb_mock_dummy_router();
 	}
 }

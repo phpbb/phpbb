@@ -93,6 +93,11 @@ class router implements RouterInterface
 	protected $debug_url_matcher;
 
 	/**
+	 * @var bool
+	 */
+	protected $use_cache;
+
+	/**
 	 * Construct method
 	 *
 	 * @param ContainerInterface $container DI container
@@ -113,6 +118,7 @@ class router implements RouterInterface
 		$this->cache_dir			= $cache_dir;
 		$this->debug_url_generator	= $debug_url_generator;
 		$this->debug_url_matcher    = $debug_url_matcher;
+		$this->use_cache			= true;
 	}
 
 	/**
@@ -193,6 +199,22 @@ class router implements RouterInterface
 	}
 
 	/**
+	 * Enables the use of a cached URL generator and matcher
+	 */
+	public function with_cache()
+	{
+		$this->use_cache = true;
+	}
+
+	/**
+	 * Disables the use of a cached URL generator and matcher
+	 */
+	public function without_cache()
+	{
+		$this->use_cache = false;
+	}
+
+	/**
 	 * Gets the UrlMatcher instance associated with this Router.
 	 *
 	 * @return \Symfony\Component\Routing\Matcher\UrlMatcherInterface A UrlMatcherInterface instance
@@ -214,6 +236,12 @@ class router implements RouterInterface
 	 */
 	protected function create_dumped_url_matcher()
 	{
+		if (!$this->use_cache)
+		{
+			$this->create_new_url_matcher();
+			return;
+		}
+
 		try
 		{
 			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->debug_url_matcher);
@@ -262,6 +290,12 @@ class router implements RouterInterface
 	 */
 	protected function create_dumped_url_generator()
 	{
+		if (!$this->use_cache)
+		{
+			$this->create_new_url_generator();
+			return;
+		}
+
 		try
 		{
 			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->debug_url_generator);
