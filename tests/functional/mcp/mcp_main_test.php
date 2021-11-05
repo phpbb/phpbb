@@ -166,4 +166,141 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('TOPICS_DELETED_SUCCESS'), $crawler->filter('#message p')->text());
 	}
+
+	public function mcp_view_topic_actions_data()
+	{
+		// action, success message, require_confirmation
+		return [
+			['lock_post', 'POSTS_LOCKED_SUCCESS', true],
+			['unlock_post', 'POSTS_UNLOCKED_SUCCESS', true],
+			['resync', 'TOPIC_RESYNC_SUCCESS', false],
+			['split_all', 'TOPIC_SPLIT_SUCCESS', true],
+			['split_beyond', 'TOPIC_SPLIT_SUCCESS', true],
+			['merge_posts', 'POSTS_MERGED_SUCCESS', true],
+			['delete_post', 'POSTS_DELETED_SUCCESS', true],
+		];
+	}
+
+	public function test_create_topic_with_replies()
+	{
+		$this->login();
+
+		// Create topic and replies to test with
+		$post = [];
+		$post[] = $this->create_topic(2, 'Test Topic 4', 'Testing topic moderation actions from MCP/View topic page.');
+		$crawler = self::request('GET', "viewtopic.php?t={$post[0]['topic_id']}&sid={$this->sid}");
+		$this->assertStringContainsString('Testing topic moderation actions from MCP/View topic page.', $crawler->filter('html')->text());
+
+		// Create replies. Flood control was disabled above
+		for ($i = 1; $i <= 15; $i++)
+		{
+			sleep(1);
+			$post_text = "This is reply number $i to the Test Topic 4 to test moderation actions from MCP/View topic page.";
+			$post[$i] = $this->create_post(2, $post[0]['topic_id'], 'Re: Test Topic 4', $post_text);
+			$crawler = self::request('GET', "viewtopic.php?p={$post[$i]['post_id']}&sid={$this->sid}#p{$post[$i]['post_id']}");
+			$this->assertStringContainsString($post_text, $crawler->filter('html')->text());
+		}
+
+		return $post;
+	}
+
+	/**
+	 * @depends test_create_topic_with_replies
+	 * @dataProvider mcp_view_topic_actions_data
+	 */
+	public function test_mcp_view_topic_actions($action, $message, $require_confirmation, $post)
+	{
+		$this->add_lang(['common', 'mcp']);
+		$this->login();
+
+		$crawler = self::request('GET', "viewtopic.php?t={$post[0]['topic_id']}&sid={$this->sid}");
+		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
+		$crawler = self::request('GET', $mcp_link);
+		$this->assertLessThanOrEqual(count($post), $crawler->filter('input[type=checkbox]')->count());
+
+		// Test actions
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+
+		// Set posts to select for actions
+		$post_id_list = [];
+		switch ($action)
+		{
+			case 'lock_post':
+			case 'unlock_post':
+				$post_id_list = [$post[1]['post_id'], $post[2]['post_id']];
+			break;
+
+			case 'split_all':
+				$post_id_list = [$post[13]['post_id'], $post[14]['post_id'], $post[15]['post_id']]; // Split last 3 replies
+				$subject = '[Split] Topic 1';
+			break;
+
+			case 'split_beyond':
+				$post_id_list = [$post[10]['post_id']]; // Split from 10th reply
+				$subject = '[Split] Topic 2';
+			break;
+
+			case 'merge_posts':
+				$post_id_list = [$post[7]['post_id'], $post[8]['post_id'], $post[9]['post_id']]; // Split replies 7, 8, 9
+			break;
+
+			case 'delete_post':
+				$post_id_list = [$post[4]['post_id'], $post[5]['post_id'], $post[6]['post_id']]; // Delete posts 4, 5, 6
+			break;
+
+			default:
+			break;
+		}
+
+		$form->disableValidation()->setValues([
+			'action' => $action,
+			'post_id_list' => $post_id_list, // tick post ids
+		]);
+		$crawler = self::submit($form);
+
+		if ($require_confirmation)
+		{
+			if ($action == 'merge_posts')
+			{
+				// Merge posts into '[Split] Topic 1'
+				// Get topics list to select from
+				$select_topic = substr_replace($crawler->selectLink($this->lang('SELECT_TOPIC'))->attr('href'), '', 0, 2); // Remove leading ./
+				$crawler = self::request('GET', $select_topic);
+
+				// Get '[Split] Topic 1' topic_id
+				$to_topic_link = $crawler->selectLink('[Split] Topic 1')->attr('href');
+				$to_topic_id = (int) $this->get_parameter_from_link($to_topic_link, 't');
+				
+				// Select '[Split] Topic 1'
+				$select_for_merge_link = substr_replace($crawler->filter('.row a')->reduce(
+					function ($node, $i) use ($to_topic_id)
+					{
+						return (bool) strpos($node->attr('href'), "to_topic_id=$to_topic_id");
+					}
+				)->attr('href'), '', 0, 2); // Remove leading ./
+
+				$crawler = self::request('GET', $select_for_merge_link);
+				$this->assertEquals($to_topic_id, (int) $crawler->filter('#to_topic_id')->attr('value'));
+
+				// Reselect post ids to move
+				$form = $crawler->selectButton($this->lang('SUBMIT'))->form()->disableValidation()->setValues(['post_id_list' => $post_id_list]);
+				$crawler = self::submit($form);
+			}
+
+			if (in_array($action, ['split_all', 'split_beyond']))
+			{
+				$form = $crawler->selectButton($this->lang('SUBMIT'))->form()->disableValidation()->setValues([
+					'subject' => $subject,
+					'post_id_list' => $post_id_list, // tick post ids
+					'to_forum_id' => 2,
+				]);
+				$crawler = self::submit($form);	
+			}
+
+			$form = $crawler->selectButton($this->lang('YES'))->form();
+			$crawler = self::submit($form);
+		}
+
+		$this->assertStringContainsString($this->lang($message), $crawler->filter('#message p')->text());
+	}
 }
