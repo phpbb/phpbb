@@ -1181,9 +1181,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return null;
 		}
 
-		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
+		$post_link = $crawler->filter('.postbody a[title="Post"]')->last()->attr('href');
+		$topic_link = $crawler->filter('h2[class="topic-title"] > a')->attr('href');
 
-		$topic_id = $this->get_parameter_from_link($url, 't');
+		$post_id = $this->get_parameter_from_link($post_link, 'p');
+		$topic_id = $this->get_parameter_from_link($topic_link, 't');
+
 		if (!$topic_id)
 		{
 			$topic_id = $form_data['topic_id'];
@@ -1191,7 +1194,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		return array(
 			'topic_id'	=> $topic_id,
-			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
+			'post_id'	=> $post_id,
 		);
 	}
 
