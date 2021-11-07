@@ -23,14 +23,13 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 
 		// Browse MCP main page
 		$crawler = self::request('GET', 'index.php');
-		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
-		$crawler = self::request('GET', $mcp_link);
+		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
 
 		// Get all MCP module URLs array
 		$mcp_modules = $crawler->filter('.tabs a')->each(
 			function ($node, $i)
 			{
-				return substr_replace($node->attr('href'), '', 0, 2); // Remove leading ./
+				return $node->link();
 			}
 		);
 
@@ -38,20 +37,19 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 		$mcp_submodules = [];
 		foreach ($mcp_modules as $module)
 		{
-			$crawler = self::request('GET', $module);
+			$crawler = self::$client->click($module);
 			$mcp_submodules = array_merge($mcp_submodules, $crawler->filter('.cp-menu a')->each(
 				function ($node, $i)
 				{
-					return substr_replace($node->attr('href'), '', 0, 2); // Remove leading ./
+					return $node->link();
 				}
 			));
 		}
 
 		// Browse all MCP submodules' modes
-		$mcp_submodule_modes = [];
 		foreach ($mcp_submodules as $mcp_submodule)
 		{
-			$crawler = self::request('GET', $mcp_submodule);
+			self::$client->click($mcp_submodule);
 		}
 	}
 }
