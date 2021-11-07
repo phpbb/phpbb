@@ -18,17 +18,31 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 {
 	public function test_create_topics()
 	{
-		$this->add_lang(['acp/common', 'common']);
+		$this->add_lang(['acp/common', 'acp/forums', 'common']);
 		$this->login();
 		$this->admin_login();
 
-		// Disable flood intervar to post >1 of topics
+		// Disable flood interval to post >1 of topics
 		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=post&sid={$this->sid}");
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
 			'config[flood_interval]'	=> 0,
 		]);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
+
+		// Create a forum to move topics around
+		$forum_name = 'MCP Test #1';
+		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
+		$form = $crawler->selectButton($this->lang('CREATE_FORUM'))->form([
+			'forum_name'	=> $forum_name,
+		]);
+		$crawler = self::submit($form);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
+			'forum_parent_id'	=> 1,
+			'forum_perm_from'	=> 2,
+		]);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('FORUM_CREATED', $crawler->text());
 
 		// Create topics to test with
 		$post = [];
@@ -54,8 +68,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 
 		// Browse MCP main page from forum view (gives &f=2)
 		$crawler = self::request('GET', "viewforum.php?f=2&sid={$this->sid}");
-		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
-		$crawler = self::request('GET', $mcp_link);
+		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
 
 		// Test forum moderation page has a list of topics to select
 		$this->assertGreaterThanOrEqual(3, $crawler->filter('input[type=checkbox]')->count());
@@ -95,8 +108,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$this->login();
 
 		$crawler = self::request('GET', "viewforum.php?f=2&sid={$this->sid}");
-		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
-		$crawler = self::request('GET', $mcp_link);
+		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
 
 		// Test actions
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form()->disableValidation()->setValues([
@@ -110,22 +122,28 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 			if ($action == 'merge_topics')
 			{
 				// Merge topic_id_1 into topic_id_2
-				$select_for_merge_link = substr_replace($crawler->filter('.row a')->reduce(
+				$select_for_merge_link = $crawler->selectLink($this->lang('SELECT_MERGE'))->reduce(
 					function ($node, $i) use ($topic_id_2)
 					{
 						return (bool) strpos($node->attr('href'), "to_topic_id=$topic_id_2");
 					}
-				)->attr('href'), '', 0, 2); // Remove leading ./
+				)->link();
 
-				$crawler = self::request('GET', $select_for_merge_link);
+				$crawler = self::$client->click($select_for_merge_link);
 			}
 
 			$form = $crawler->selectButton($this->lang('YES'))->form();
 
 			if (in_array($action, ['fork', 'move']))
 			{
-				// Fork or move the topic to the forum id=3 'Download #1'
-				$form->setValues(['to_forum_id' => 3]);
+				// Fork or move the topic to the 'MCP Test #1'
+				$forum_id = $crawler->filter('select > option')->reduce(
+					function ($node, $i)
+					{
+						return (bool) strpos($node->text(), 'MCP Test #1');
+					}
+				)->attr('value');
+				$form['to_forum_id']->select($forum_id);
 			}
 
 			$crawler = self::submit($form);
@@ -142,10 +160,10 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$this->add_lang(['common', 'mcp']);
 		$this->login();
 
-		// Get to the forum id=3 'Download #1' where the topic has been moved to in previous test
-		$crawler = self::request('GET', "viewforum.php?f=3&sid={$this->sid}");
-		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
-		$crawler = self::request('GET', $mcp_link);
+		// Get to the forum 'MCP Test #1' where the topic has been moved to in previous test
+		$crawler = self::request('GET', "index.php?sid={$this->sid}");
+		$crawler = self::$client->click($crawler->selectLink('MCP Test #1')->link());
+		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
 
 		// Get topic ids to delete (forked and moved topics in the previous test)
 		$topic_link_1 = $crawler->selectLink('Test Topic 3')->attr('href');
@@ -214,8 +232,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$this->login();
 
 		$crawler = self::request('GET', "viewtopic.php?t={$post[0]['topic_id']}&sid={$this->sid}");
-		$mcp_link = substr_replace($crawler->selectLink($this->lang('MCP_SHORT'))->attr('href'), '', 0, 2); // Remove leading ./
-		$crawler = self::request('GET', $mcp_link);
+		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
 		$this->assertLessThanOrEqual(count($post), $crawler->filter('input[type=checkbox]')->count());
 
 		// Test actions
@@ -264,22 +281,22 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 			{
 				// Merge posts into '[Split] Topic 1'
 				// Get topics list to select from
-				$select_topic = substr_replace($crawler->selectLink($this->lang('SELECT_TOPIC'))->attr('href'), '', 0, 2); // Remove leading ./
-				$crawler = self::request('GET', $select_topic);
+				$crawler = self::$client->click($crawler->selectLink($this->lang('SELECT_TOPIC'))->link());
 
 				// Get '[Split] Topic 1' topic_id
 				$to_topic_link = $crawler->selectLink('[Split] Topic 1')->attr('href');
 				$to_topic_id = (int) $this->get_parameter_from_link($to_topic_link, 't');
 				
 				// Select '[Split] Topic 1'
-				$select_for_merge_link = substr_replace($crawler->filter('.row a')->reduce(
+				$select_for_merge_link = $crawler->selectLink($this->lang('SELECT_MERGE'))->reduce(
 					function ($node, $i) use ($to_topic_id)
 					{
 						return (bool) strpos($node->attr('href'), "to_topic_id=$to_topic_id");
 					}
-				)->attr('href'), '', 0, 2); // Remove leading ./
+				)->link();
 
-				$crawler = self::request('GET', $select_for_merge_link);
+				$crawler = self::$client->click($select_for_merge_link);
+
 				$this->assertEquals($to_topic_id, (int) $crawler->filter('#to_topic_id')->attr('value'));
 
 				// Reselect post ids to move
