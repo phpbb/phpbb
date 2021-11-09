@@ -24,6 +24,7 @@ class type_converter
 	 * @var array
 	 */
 	private const TYPE_MAP = [
+		'INT'		=> ['integer', []],
 		'BINT'		=> ['bigint', []],
 		'ULINT'		=> ['integer', ['unsigned' => true]],
 		'UINT'		=> ['integer', ['unsigned' => true]],
@@ -41,8 +42,8 @@ class type_converter
 		'MTEXT'		=> ['text', ['length' => ((1 << 24) - 1)]],
 		'MTEXT_UNI'	=> ['text', ['length' => ((1 << 24) - 1)]],
 		'TIMESTAMP'	=> ['integer', ['unsigned' => true]],
-		'DECIMAL'	=> ['integer', ['precision' => 5, 'scale' => 2]],
-		'PDECIMAL'	=> ['integer', ['precision' => 6, 'scale' => 3]],
+		'DECIMAL'	=> ['decimal', ['precision' => 5, 'scale' => 2]],
+		'PDECIMAL'	=> ['decimal', ['precision' => 6, 'scale' => 3]],
 		'VCHAR_UNI'	=> ['string', ['length' => 255]],
 		'VCHAR_CI'	=> ['string_ci', ['length' => 255]],
 		'VARBINARY'	=> ['binary', ['length' => 255]],
@@ -55,7 +56,7 @@ class type_converter
 	 *
 	 * @return array<string, array> Pair of type name and options.
 	 */
-	public static function convert(string $type): array
+	public static function convert(string $type, string $dbms): array
 	{
 		if (strpos($type, ':') !== false)
 		{
@@ -63,7 +64,7 @@ class type_converter
 			return self::mapWithLength($typename, (int) $length);
 		}
 
-		return self::mapType($type);
+		return self::mapType($type, $dbms);
 	}
 
 	/**
@@ -108,11 +109,38 @@ class type_converter
 	 *
 	 * @return array<string, array> Pair of type name and an array of options.
 	 */
-	private static function mapType(string $type): array
+	private static function mapType(string $type, string $dbms): array
 	{
-		if (!in_array($type, self::TYPE_MAP, true))
+		if (!array_key_exists($type, self::TYPE_MAP))
 		{
 			throw new \InvalidArgumentException("Database type is undefined.");
+		}
+
+		// Historically, on mssql varbinary fields were stored as varchar.
+		// For compatibility reasons we have to keep it (because when
+		// querying the database, mssql does not convert strings to their
+		// binary representation automatically like the other dbms.
+		if ($type === 'VARBINARY' && $dbms === 'mssql')
+		{
+			return self::TYPE_MAP['VCHAR'];
+		}
+
+		// Historically, on mssql bool fields were stored as integer.
+		// For compatibility reasons we have to keep it because is
+		// some queries we are using MIN() to these columns which
+		// is forbidden by MSSQL for bool (bit) columns.
+		if ($type === 'BOOL' && $dbms === 'mssql')
+		{
+			return self::TYPE_MAP['TINT'];
+		}
+
+		// Historically, on postgres bool fields were stored as integer.
+		// For compatibility reasons we have to keep it because when
+		// querying the database, postgres does not convert automatically
+		// 0 and 1 to their boolean representation like the other dbms.
+		if ($type === 'BOOL' && $dbms === 'postgresql')
+		{
+			return self::TYPE_MAP['TINT'];
 		}
 
 		return self::TYPE_MAP[$type];

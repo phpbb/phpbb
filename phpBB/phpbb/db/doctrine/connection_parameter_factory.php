@@ -14,6 +14,7 @@
 namespace phpbb\db\doctrine;
 
 use InvalidArgumentException;
+use phpbb\db\doctrine\oci8\driver as oci8_driver;
 
 /**
  * Helper class to generate Doctrine DBAL configuration.
@@ -152,9 +153,14 @@ class connection_parameter_factory
 			'oci8' => [
 				'charset' => 'UTF8',
 				'platform' => new oracle_platform(),
+				'driverClass' => oci8_driver::class,
 			],
 			'pdo_pgsql' => [
 				'charset' => 'UTF8',
+				'platform' => new postgresql_platform(),
+			],
+			'pdo_sqlsrv' => [
+				'platform' => new sqlsrv_platform(),
 			],
 		];
 

@@ -7,7 +7,10 @@ services:
     dbal.conn.driver:
         synthetic: true
 
-# ----- DB Tools -----
+    dbal.conn.doctrine:
+        synthetic: true
+
+    # ----- DB Tools -----
     dbal.tools.factory:
         class: phpbb\db\tools\factory
 
@@ -15,7 +18,7 @@ services:
         class: phpbb\db\tools\tools_interface
         factory: ['@dbal.tools.factory', get]
         arguments:
-            - '@dbal.conn.driver'
+            - '@dbal.conn.doctrine'
 
 # ----- DB Extractor -----
     dbal.extractor.factory:

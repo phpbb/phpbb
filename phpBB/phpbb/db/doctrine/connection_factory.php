@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
+ * @license       GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -33,8 +33,8 @@ class connection_factory
 	 *
 	 * @return Connection Doctrine DBAL connection.
 	 *
-	 * @throws runtime_exception		If the database connection could not be established.
-	 * @throws InvalidArgumentException	If the provided driver name is not a valid phpBB database driver.
+	 * @throws runtime_exception        If the database connection could not be established.
+	 * @throws InvalidArgumentException    If the provided driver name is not a valid phpBB database driver.
 	 */
 	public static function get_connection(config_php_file $config): Connection
 	{
@@ -58,17 +58,17 @@ class connection_factory
 	/**
 	 * Creates a database connection from the specified parameters.
 	 *
-	 * @param string		$driver		Driver name.
-	 * @param string		$host		Hostname.
-	 * @param string|null	$user		Username.
-	 * @param string|null	$password	Password.
-	 * @param string|null	$name		Database name.
-	 * @param string|null	$port		Database port.
+	 * @param string      $driver   Driver name.
+	 * @param string      $host     Hostname.
+	 * @param string|null $user     Username.
+	 * @param string|null $password Password.
+	 * @param string|null $name     Database name.
+	 * @param string|null $port     Database port.
 	 *
 	 * @return Connection Doctrine DBAL connection.
 	 *
-	 * @throws runtime_exception		If the database connection could not be established.
-	 * @throws InvalidArgumentException	If $driver is not a valid phpBB database driver.
+	 * @throws runtime_exception        If the database connection could not be established.
+	 * @throws InvalidArgumentException    If $driver is not a valid phpBB database driver.
 	 */
 	public static function get_connection_from_params(
 		string $driver,
@@ -97,13 +97,16 @@ class connection_factory
 		try
 		{
 			$connection = DriverManager::getConnection($params);
-			Type::addType(case_insensitive_string::CASE_INSENSITIVE_STRING, case_insensitive_string::class);
+			if (!Type::hasType(case_insensitive_string::CASE_INSENSITIVE_STRING))
+			{
+				Type::addType(case_insensitive_string::CASE_INSENSITIVE_STRING, case_insensitive_string::class);
+			}
 			$connection->getDatabasePlatform()->registerDoctrineTypeMapping('varchar_ci', case_insensitive_string::CASE_INSENSITIVE_STRING);
 			return $connection;
 		}
 		catch (Exception $e)
 		{
-			throw new runtime_exception('DB_CONNECTION_FAILED');
+			throw new runtime_exception('DB_CONNECTION_FAILED', [], $e);
 		}
 	}
 

@@ -13,6 +13,7 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\db\doctrine\connection_factory;
 use phpbb\install\exception\resource_limit_reached_exception;
 
 /**
@@ -29,6 +30,11 @@ class create_schema_file extends \phpbb\install\task_base
 	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $db;
+
+	/**
+	 * @var \Doctrine\DBAL\Connection
+	 */
+	protected $db_doctrine;
 
 	/**
 	 * @var \phpbb\filesystem\filesystem_interface
@@ -81,6 +87,15 @@ class create_schema_file extends \phpbb\install\task_base
 			false
 		);
 
+		$this->db_doctrine = connection_factory::get_connection_from_params(
+			$config->get('dbms'),
+			$config->get('dbhost'),
+			$config->get('dbuser'),
+			$config->get('dbpasswd'),
+			$config->get('dbname'),
+			$config->get('dbport')
+		);
+
 		$this->config			= $config;
 		$this->filesystem		= $filesystem;
 		$this->phpbb_root_path	= $phpbb_root_path;
@@ -129,7 +144,7 @@ class create_schema_file extends \phpbb\install\task_base
 			$finder = $finder_factory->get();
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
-			$db_tools = $factory->get($this->db, true);
+			$db_tools = $factory->get($this->db_doctrine, true);
 			$tables_data = \Symfony\Component\Yaml\Yaml::parseFile($this->phpbb_root_path . '/config/default/container/tables.yml');
 			$tables = [];
 			foreach ($tables_data['parameters'] as $parameter => $table)

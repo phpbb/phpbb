@@ -13,6 +13,7 @@
 
 namespace phpbb\di;
 
+use phpbb\db\doctrine\connection_factory;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -54,6 +55,11 @@ class container_builder
 	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $dbal_connection = null;
+
+	/**
+	 * @var \Doctrine\DBAL\Connection
+	 */
+	private $dbal_connection_doctrine;
 
 	/**
 	 * Indicates whether extensions should be used (default to true).
@@ -587,8 +593,10 @@ class container_builder
 					false,
 					defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
 				);
+				$this->dbal_connection_doctrine = connection_factory::get_connection($this->config_php_file);
 			}
 			$this->container->set('dbal.conn.driver', $this->dbal_connection);
+			$this->container->set('dbal.conn.doctrine', $this->dbal_connection_doctrine);
 		}
 	}
 

@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
+ * @license       GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -27,7 +27,7 @@ class table_helper
 	public static function convert_column_data(array $column_data, string $dbms_layer): array
 	{
 		$options = self::resolve_dbms_specific_options($column_data, $dbms_layer);
-		list($type, $opts) = type_converter::convert($column_data[0]);
+		list($type, $opts) = type_converter::convert($column_data[0], $dbms_layer);
 		$options = array_merge($options, $opts);
 		return [$type, $options];
 	}
@@ -35,8 +35,8 @@ class table_helper
 	/**
 	 * Resolve DBMS specific options in column data.
 	 *
-	 * @param array		$column_data	Original column data.
-	 * @param string	$dbms_layer		DBMS layer name.
+	 * @param array  $column_data Original column data.
+	 * @param string $dbms_layer  DBMS layer name.
 	 *
 	 * @return array Doctrine column options.
 	 */
@@ -54,12 +54,19 @@ class table_helper
 			$doctrine_options['default'] = $column_data[1];
 			$doctrine_options['notnull'] = true;
 		}
+		else
+		{
+			$doctrine_options['notnull'] = false;
+		}
 
 		$non_string_pattern = '/^[a-z]*(?:int|decimal|bool|timestamp)(?::[0-9]+)?$/';
-		if ($dbms_layer === 'oracle' && !preg_match($non_string_pattern, strtolower($column_data[0]))
-			&& array_key_exists('default', $doctrine_options[0]) && $doctrine_options[0]['default'] === '')
+		if ($dbms_layer === 'oracle'
+			&& !preg_match($non_string_pattern, strtolower($column_data[0]))
+			&& array_key_exists('default', $doctrine_options)
+			&& $doctrine_options['default'] === '')
 		{
-			unset($doctrine_options['notnull']);
+			// Not null is true by default and Oracle does not allow empty strings in not null columns
+			$doctrine_options['notnull'] = false;
 		}
 
 		if (isset($column_data[2]))
@@ -80,8 +87,8 @@ class table_helper
 	/**
 	 * Returns the DBMS specific default value for a column definition.
 	 *
-	 * @param array		$default_options	Database specific default value options.
-	 * @param string	$dbms_layer			Name of the DBMS layer.
+	 * @param array  $default_options Database specific default value options.
+	 * @param string $dbms_layer      Name of the DBMS layer.
 	 *
 	 * @return mixed Default value for the current DBMS.
 	 *

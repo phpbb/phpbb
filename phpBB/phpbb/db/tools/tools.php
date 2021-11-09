@@ -19,6 +19,6 @@ namespace phpbb\db\tools;
 *
 * @deprecated 4.0.0-a1
 */
-class tools extends doctrine
+interface tools extends tools_interface
 {
 }
