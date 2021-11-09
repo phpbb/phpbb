@@ -24,6 +24,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected $cache = null;
 	protected $db = null;
+	protected $db_doctrine = null;
 	protected $extension_manager = null;
 
 	/**
@@ -207,6 +208,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->db;
 	}
 
+	protected function get_db_doctrine()
+	{
+		// so we don't reopen an open connection
+		if (!($this->db_doctrine instanceof \Doctrine\DBAL\Connection))
+		{
+			$this->db_doctrine = \phpbb\db\doctrine\connection_factory::get_connection_from_params(self::$config['dbms'], self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+		}
+		return $this->db_doctrine;
+	}
+
 	protected function get_cache_driver()
 	{
 		if (!$this->cache)
@@ -238,9 +249,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
+		$db_doctrine = $this->get_db_doctrine();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
-		$db_tools = $factory->get($db);
+		$db_tools = $factory->get($db_doctrine);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(

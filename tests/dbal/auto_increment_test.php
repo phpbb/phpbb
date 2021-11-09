@@ -14,6 +14,7 @@
 class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 {
 	protected $db;
+	protected $db_doctrine;
 	protected $tools;
 	protected $table_exists;
 	protected $table_data;
@@ -28,8 +29,9 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
-		$this->tools = $factory->get($this->db);
+		$this->tools = $factory->get($this->db_doctrine);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(

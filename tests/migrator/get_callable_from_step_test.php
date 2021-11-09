@@ -21,6 +21,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 
 		$phpbb_log = $this->getMockBuilder('\phpbb\log\log')->disableOriginalConstructor()->getMock();
 		$db = $this->new_dbal();
+		$db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$user = $this->getMockBuilder('\phpbb\user')->disableOriginalConstructor()->getMock();
 		$user->ip = '127.0.0.1';
@@ -37,7 +38,7 @@ class get_callable_from_step_test extends phpbb_database_test_case
 			new phpbb_mock_container_builder(),
 			new \phpbb\config\config(array()),
 			$db,
-			$factory->get($db),
+			$factory->get($db_doctrine),
 			'phpbb_migrations',
 			$phpbb_root_path,
 			$php_ext,
