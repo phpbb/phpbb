@@ -13,6 +13,7 @@
 
 namespace phpbb\convert\controller;
 
+use Doctrine\DBAL\Connection;
 use phpbb\cache\driver\driver_interface;
 use phpbb\db\doctrine\connection_factory;
 use phpbb\exception\http_exception;
@@ -26,7 +27,6 @@ use phpbb\install\helper\navigation\navigation_provider;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\template\template;
-use PHPUnit\DbUnit\Database\Connection;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**

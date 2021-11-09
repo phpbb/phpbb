@@ -10,7 +10,7 @@ services:
     dbal.conn.doctrine:
         synthetic: true
 
-    # ----- DB Tools -----
+# ----- DB Tools -----
     dbal.tools.factory:
         class: phpbb\db\tools\factory
 

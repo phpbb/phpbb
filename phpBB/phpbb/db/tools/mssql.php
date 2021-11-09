@@ -19,6 +19,6 @@ namespace phpbb\db\tools;
  *
  * @deprecated 4.0.0-a1
  */
-class mssql extends tools
+class mssql extends doctrine
 {
 }
