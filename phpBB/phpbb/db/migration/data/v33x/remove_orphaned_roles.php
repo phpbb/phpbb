@@ -23,11 +23,11 @@ class remove_orphaned_roles extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
-			['custom', [[$this, 'remove_orphaned_roles']]],
+			['custom', [[$this, 'acl_remove_orphaned_roles']]],
 		];
 	}
 
-	public function remove_orphaned_roles()
+	public function acl_remove_orphaned_roles()
 	{
 		$auth_role_ids = $role_ids = $auth_settings = [];
 
