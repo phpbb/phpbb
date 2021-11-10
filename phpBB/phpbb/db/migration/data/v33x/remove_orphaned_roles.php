@@ -13,21 +13,21 @@
 
 namespace phpbb\db\migration\data\v33x;
 
-class remove_non_existant_assigned_roles extends \phpbb\db\migration\migration
+class remove_orphaned_roles extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
-		return ['\phpbb\db\migration\data\v33x\v335',];
+		return ['\phpbb\db\migration\data\v33x\v335'];
 	}
 
 	public function update_data()
 	{
 		return [
-			['custom', [[$this, 'remove_non_existant_roles_assignment']]],
+			['custom', [[$this, 'remove_orphaned_roles']]],
 		];
 	}
 
-	public function remove_non_existant_roles_assignment()
+	public function remove_orphaned_roles()
 	{
 		$auth_role_ids = $role_ids = $auth_settings = [];
 
@@ -49,21 +49,21 @@ class remove_non_existant_assigned_roles extends \phpbb\db\migration\migration
 			$this->db->sql_freeresult($result);
 		}
 
-		$non_existant_role_ids = array_diff($auth_role_ids, $role_ids);
+		$non_existent_role_ids = array_diff($auth_role_ids, $role_ids);
 
-		// Nothing to do, there are no non-existant roles assigned to groups
-		if (empty($non_existant_role_ids))
+		// Nothing to do, there are no non-existent roles assigned to groups
+		if (empty($non_existent_role_ids))
 		{
 			return true;
 		}
 
-		// Remove assigned non-existant roles from users and groups
+		// Remove assigned non-existent roles from users and groups
 		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('auth_role_id', $non_existant_role_ids);
+			WHERE ' . $this->db->sql_in_set('auth_role_id', $non_existent_role_ids);
 		$this->db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('auth_role_id', $non_existant_role_ids);
+			WHERE ' . $this->db->sql_in_set('auth_role_id', $non_existent_role_ids);
 		$this->db->sql_query($sql);
 
 		$auth = new \phpbb\auth\auth();
