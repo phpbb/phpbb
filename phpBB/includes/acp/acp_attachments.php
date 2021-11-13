@@ -1000,29 +1000,45 @@ class acp_attachments
 						$result = $db->sql_query($sql);
 
 						$files_added = $space_taken = 0;
+						$error_msg = '';
+						$upload_row = [];
 						while ($row = $db->sql_fetchrow($result))
 						{
-							$post_row = $post_info[$upload_list[$row['attach_id']]];
+							$upload_row = [
+								'FILE_INFO'	=> $user->lang('UPLOADING_FILE_TO', $row['real_filename'], $upload_list[$row['attach_id']]),
+							];
 
-							$template->assign_block_vars('upload', array(
-								'FILE_INFO'		=> sprintf($user->lang['UPLOADING_FILE_TO'], $row['real_filename'], $post_row['post_id']),
-								'S_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? true : false,
-								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? sprintf($user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '')
-							);
+							if (isset($post_info[$upload_list[$row['attach_id']]]))
+							{
+								$post_row = $post_info[$upload_list[$row['attach_id']]];
+								$upload_row = array_merge($upload_row, [
+									'S_DENIED'	=> !$auth->acl_get('f_attach', $post_row['forum_id']),
+									'L_DENIED'	=> !$auth->acl_get('f_attach', $post_row['forum_id']) ? $user->lang('UPLOAD_DENIED_FORUM', $forum_names[$row['forum_id']]) : '',
+								]);
+							}
+							else
+							{
+								$error_msg = $user->lang('UPLOAD_POST_NOT_EXIST', $row['real_filename'], $upload_list[$row['attach_id']]);
+								$upload_row = array_merge($upload_row, [
+									'ERROR_MSG'	=> $error_msg,
+								]);
+							};
 
-							if (!$auth->acl_get('f_attach', $post_row['forum_id']))
+							$template->assign_block_vars('upload', $upload_row);
+
+							if ($error_msg || !$auth->acl_get('f_attach', $post_row['forum_id']))
 							{
 								continue;
 							}
 
 							// Adjust attachment entry
-							$sql_ary = array(
+							$sql_ary = [
 								'in_message'	=> 0,
 								'is_orphan'		=> 0,
 								'poster_id'		=> $post_row['poster_id'],
 								'post_msg_id'	=> $post_row['post_id'],
 								'topic_id'		=> $post_row['topic_id'],
-							);
+							];
 
 							$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -1042,7 +1058,7 @@ class acp_attachments
 							$space_taken += $row['filesize'];
 							$files_added++;
 
-							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_FILEUPLOAD', false, array($post_row['post_id'], $row['real_filename']));
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_FILEUPLOAD', false, [$post_row['post_id'], $row['real_filename']]);
 						}
 						$db->sql_freeresult($result);
 
@@ -1054,9 +1070,9 @@ class acp_attachments
 					}
 				}
 
-				$template->assign_vars(array(
-					'S_ORPHAN'		=> true)
-				);
+				$template->assign_vars([
+					'S_ORPHAN'		=> true,
+				]);
 
 				$attachments_per_page = (int) $config['topics_per_page'];
 
@@ -1084,15 +1100,15 @@ class acp_attachments
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('orphan', array(
+					$template->assign_block_vars('orphan', [
 						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
 						'FILETIME'			=> $user->format_date($row['filetime']),
 						'REAL_FILENAME'		=> utf8_basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> utf8_basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
-						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'POST_ID'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
+						'U_FILE'			=> append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']),
+					]);
 				}
 				$db->sql_freeresult($result);
 
@@ -1105,10 +1121,10 @@ class acp_attachments
 					$start
 				);
 
-				$template->assign_vars(array(
+				$template->assign_vars([
 					'TOTAL_FILES'		=> $num_files,
 					'TOTAL_SIZE'		=> get_formatted_filesize($total_size),
-				));
+				]);
 
 			break;
 
