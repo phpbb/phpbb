@@ -130,6 +130,8 @@ jobs:
                       db: "mysql:5.7"
                     - php: '8.1'
                       db: "mysql:5.7"
+                    - php: '8.2'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -253,6 +255,10 @@ jobs:
                       db: "postgres:12"
                     - php: '8.0'
                       db: "postgres:13"
+                    - php: '8.1'
+                      db: "postgres:14"
+                    - php: '8.2'
+                      db: "postgres:14"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -442,7 +448,7 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
-        runs-on: windows-2016
+        runs-on: windows-latest
         strategy:
             matrix:
                 include:
@@ -455,6 +461,9 @@ jobs:
                     - php: '8.1'
                       db: "postgres"
                       type: 'unit'
+                    - php: '8.2'
+                      db: "postgres"
+                      type: 'unit'
                     - php: '7.4'
                       db: "postgres"
                       type: 'functional'
@@ -462,6 +471,9 @@ jobs:
                       db: "postgres"
                       type: 'functional'
                     - php: '8.1'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.2'
                       db: "postgres"
                       type: 'functional'
 
@@ -553,6 +565,7 @@ jobs:
                   }
                   [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";${env:PGBIN}")
                   $env:PGPASSWORD = 'root'
+                  psql -c hot_standby=on
                   psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
                   psql -c 'create database phpbb_tests;' -U postgres
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
