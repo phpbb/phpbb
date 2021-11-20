@@ -610,7 +610,7 @@ class messenger
 
 			foreach ($address_ary as $which_ary)
 			{
-				${$type} .= ((${$type} != '') ? ', ' : '') . (($which_ary['name'] != '') ? mail_encode($which_ary['name'], $encode_eol) . ' <' . $which_ary['email'] . '>' : $which_ary['email']);
+				${$type} .= ((${$type} != '') ? ', ' : '') . (($which_ary['name'] != '') ? '"' . mail_encode($which_ary['name'], $encode_eol) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -1136,7 +1136,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	{
 		foreach ($addresses['to'] as $which_ary)
 		{
-			$mail_to[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_to[] = ($which_ary['name'] != '') ? '"' . mail_encode(trim($which_ary['name'])) . '" <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 			$mail_rcpt['to'][] = '<' . trim($which_ary['email']) . '>';
 		}
 	}
@@ -1153,7 +1153,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	{
 		foreach ($addresses['cc'] as $which_ary)
 		{
-			$mail_cc[] = ($which_ary['name'] != '') ? mail_encode(trim($which_ary['name'])) . ' <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
+			$mail_cc[] = ($which_ary['name'] != '') ? '"' . mail_encode(trim($which_ary['name'])) . '" <' . trim($which_ary['email']) . '>' : '<' . trim($which_ary['email']) . '>';
 			$mail_rcpt['cc'][] = '<' . trim($which_ary['email']) . '>';
 		}
 	}
@@ -1853,53 +1853,16 @@ class smtp_class
 */
 function mail_encode($str, $eol = "\r\n")
 {
-	// Check if string contains ASCII only characters
-	$is_ascii = strlen($str) === utf8_strlen($str);
+	// Correctly decode html entities
+	$str = html_entity_decode($str);
 
-	// Define start delimimter, end delimiter and spacer
-	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
-	$start = $is_ascii ? "=?US-ASCII?Q?" : "=?UTF-8?B?";
-	$end = "?=";
-	$delimiter = "$eol ";
+	// Check string encoding
+	$encoding = mb_detect_encoding($str, 'ASCII, UTF-8, ISO-8859-1');
 
-	// Maximum encoded-word length is 75 as per RFC 2047 section 2.
-	// $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
-	$split_length = 75 - strlen($start . $delimiter . $end);
-	$split_length = $split_length - $split_length % 4;
+	// Is it more efficient to use quoted or base64 encoding?
+	$transfer = strlen($str) / utf8_strlen($str) < 1.4 ? 'Q' : 'B';
 
-	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
-	// quoted_printable_encode() splits lines at length of 75 characters with =\r\n delimiter, amend this feature
-	$encoded_str = $is_ascii ? str_replace("=\r\n", '', quoted_printable_encode($str)) : base64_encode($str);
-
-	// If encoded string meets the limits, we just return with the correct data.
-	if (strlen($encoded_str) <= $split_length)
-	{
-		return $start . $encoded_str . $end;
-	}
-
-	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
-	if ($is_ascii)
-	{
-		return $start . implode($end . $delimiter . $start, str_split($encoded_str, $split_length)) . $end;
-	}
-
-	// UTF-8 data, compose encoded lines
-	$array = utf8_str_split($str);
-	$str = '';
-
-	while (count($array))
-	{
-		$text = '';
-
-		while (count($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
-		{
-			$text .= array_shift($array);
-		}
-
-		$str .= $start . base64_encode($text) . $end . $delimiter;
-	}
-
-	return substr($str, 0, -strlen($delimiter));
+	return mb_encode_mimeheader($str, $encoding, $transfer, $eol);
 }
 
 /**
