@@ -1840,6 +1840,8 @@ class smtp_class
 }
 
 /**
+ * Encodes the given string for proper display in UTF-8.
+ *
  * Please note that this version fully supports RFC 2045 section 6.7 and 6.8.
  *
  * @param string $str
