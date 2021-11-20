@@ -33,8 +33,6 @@ class add_email_encoding_config extends migration
 
 	public function update_data(): array
 	{
-		return [
-			['config.add', ['smtp_encoding', 0]],
-		];
+		return [['config.add', ['smtp_encoding', 0]]];
 	}
 }
