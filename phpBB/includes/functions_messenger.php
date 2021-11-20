@@ -1840,17 +1840,11 @@ class smtp_class
 }
 
 /**
-* Encodes the given string for proper display in UTF-8.
-*
-* This version is using base64 encoded data. The downside of this
-* is if the mail client does not understand this encoding the user
-* is basically doomed with an unreadable subject.
-*
-* Please note that this version fully supports RFC 2045 section 6.8.
-*
-* @param string $str
-* @param string $eol End of line we are using (optional to be backwards compatible)
-*/
+ * Please note that this version fully supports RFC 2045 section 6.7 and 6.8.
+ *
+ * @param string $str
+ * @param string $eol End of line we are using (optional to be backwards compatible)
+ */
 function mail_encode($str, $eol = "\r\n")
 {
 	global $config;
