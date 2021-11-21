@@ -26,9 +26,7 @@ class add_email_encoding_config extends migration
 
 	static public function depends_on(): array
 	{
-		return [
-			'\phpbb\db\migration\data\v33x\v335'
-		];
+		return ['\phpbb\db\migration\data\v33x\v335'];
 	}
 
 	public function update_data(): array
