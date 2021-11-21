@@ -350,7 +350,7 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
+							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second) . $this->get_post_index_progress($post_counter));
 						}
 					}
 
@@ -437,7 +437,7 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second) . $this->get_post_index_progress($post_counter));
 						}
 					}
 
@@ -584,6 +584,36 @@ class acp_search
 		$db->sql_freeresult($result);
 
 		return $max_post_id;
+	}
+
+	/**
+	 * Get progress stats of search index with HTML progress bar.
+	 *
+	 * @param int $post_counter Post ID of last post indexed.
+	 * @return string Returns string with HTML progress bar.
+	 */
+	function get_post_index_progress($post_counter)
+	{
+		global $db, $language;
+
+		$sql = 'SELECT COUNT(post_id) as done_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id <= ' . (int) $post_counter;
+		$result = $db->sql_query($sql);
+		$done_count = (int) $db->sql_fetchfield('done_count');
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(post_id) as remain_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id > ' . (int) $post_counter;
+		$result = $db->sql_query($sql);
+		$remain_count = (int) $db->sql_fetchfield('remain_count');
+		$db->sql_freeresult($result);
+
+		$total_count = $done_count + $remain_count;
+		$percent = ($done_count / $total_count) * 100;
+
+		return $language->lang('SEARCH_INDEX_PROGRESS', $done_count, $remain_count, $total_count, $percent);
 	}
 
 	function save_state($state = false)
