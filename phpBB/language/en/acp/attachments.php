@@ -170,4 +170,5 @@ $lang = array_merge($lang, array(
 	'UPLOAD_DIR_EXPLAIN'			=> 'Storage path for attachments. Please note that if you change this directory while already having uploaded attachments you need to manually copy the files to their new location.',
 	'UPLOAD_ICON'					=> 'Upload icon',
 	'UPLOAD_NOT_DIR'				=> 'The upload location you specified does not appear to be a directory.',
+	'UPLOAD_POST_NOT_EXIST'			=> 'File “%1$s” can not be uploaded to post number %2$d as the post does not exist.',
 ));
