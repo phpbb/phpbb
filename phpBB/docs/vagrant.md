@@ -14,7 +14,7 @@ phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.1/homestead) Vagra
 $ vagrant up
 ```
 
-* Access phpBB at `http://192.168.10.10/`
+* Access phpBB at `http://192.168.56.56/`
 * Username: **admin**
 * Password: **adminadmin**
 
@@ -52,7 +52,7 @@ By default, phpBB is pre-configured to install with a MySQL database. You can, h
 If you prefer to access phpBB from the more friendly URL `http://phpbb.app` then you must update your computer's hosts file. This file is typically located at `/etc/hosts` for Mac/Linux or `C:\Windows\System32\drivers\etc\hosts` for Windows. Open this file and add the following line to it, at the very bottom, and save.
 
 ```
-192.168.10.10  phpbb.app
+192.168.56.56  phpbb.app
 ```
 
 ## How it all works
