@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\post;
+namespace phpbb\posting;
 
 use phpbb\db\driver\driver_interface;
 

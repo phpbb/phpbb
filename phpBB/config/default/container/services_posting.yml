@@ -1,5 +1,5 @@
 services:
   post.helper:
-    class: phpbb\post\post_helper
+    class: phpbb\posting\post_helper
     arguments:
       - '@dbal.conn'

@@ -17,7 +17,7 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
-use phpbb\post\post_helper;
+use phpbb\posting\post_helper;
 use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\search\state_helper;
