@@ -82,9 +82,9 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 
 		// Also the file name should be in the first row of the files table
 		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name > a')->text());
-		
+
 		$attach_link = $crawler->filter('span.file-name > a')->attr('href');
-		$attach_id = $this->get_parameter_from_link($attach_link, 'id');
+		$attach_id = (int) substr($attach_link, strrpos($attach_link, '/') + 1);
 
 		// Set file time older than 3 hours to consider it orphan
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
