@@ -589,10 +589,10 @@ class acp_search
 	/**
 	 * Get progress stats of search index with HTML progress bar.
 	 *
-	 * @param int $post_counter Post ID of last post indexed.
-	 * @return string Returns string with HTML progress bar.
+	 * @param int		$post_counter	Post ID of last post indexed.
+	 * @return string	Returns string with HTML progress bar and stats.
 	 */
-	function get_post_index_progress($post_counter)
+	function get_post_index_progress(int $post_counter)
 	{
 		global $db, $language;
 
@@ -613,7 +613,10 @@ class acp_search
 		$total_count = $done_count + $remain_count;
 		$percent = ($done_count / $total_count) * 100;
 
-		return $language->lang('SEARCH_INDEX_PROGRESS', $done_count, $remain_count, $total_count, $percent);
+		$progress = sprintf('<br><progress value="%1$d" max="%2$d" style="height: 2em; width: 20em;"></progress><br> %3$.2f %% <br>', $done_count, $total_count, $percent);
+		$progress .= $language->lang('SEARCH_INDEX_PROGRESS', $done_count, $remain_count, $total_count);
+
+		return $progress;
 	}
 
 	function save_state($state = false)

@@ -125,7 +125,7 @@ $lang = array_merge($lang, array(
 	),
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
-	'SEARCH_INDEX_PROGRESS'					=> '<br><progress value="%1$d" max="%3$d"></progress><br> %4$.2f %% <br>Done: %1$d | Pending: %2$d | Total: %3$d',
+	'SEARCH_INDEX_PROGRESS'					=> 'Done: %1$d | Pending: %2$d | Total: %3$d',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',
 	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independently for each user.',
 	'SEARCH_STORE_RESULTS'					=> 'Search result cache length',
