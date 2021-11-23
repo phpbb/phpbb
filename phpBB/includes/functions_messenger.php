@@ -1847,7 +1847,7 @@ class smtp_class
  * https://github.com/symfony/polyfill-iconv/blob/fd324208ec59a39ebe776e6e9ec5540ad4f40aaa/Iconv.php#L355
  *
  * @param string $str
- * @param string $eol End of line we are using (optional to be backwards compatible)
+ * @param string $eol Lines delimiter (optional to be backwards compatible)
  *
  * @return string
  */
@@ -1856,20 +1856,20 @@ function mail_encode($str, $eol = "\r\n")
 	// Check if string contains ASCII only characters
 	$is_ascii = strlen($str) === utf8_strlen($str);
 
-	$scheme = $is_ascii ? "Q" : "B";
+	$scheme = $is_ascii ? 'Q' : 'B';
 
 	// Define start delimimter, end delimiter
 	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
-	$start = $is_ascii ? "=?US-ASCII?$scheme?" : "=?UTF-8?$scheme?";
-	$end = "?=";
+	$start = $is_ascii ? '=?US-ASCII?' . $scheme . '?' : '=?UTF-8?' . $scheme . '?';
+	$end = '?=';
 
 	// Maximum encoded-word length is 75 as per RFC 2047 section 2.
-	// $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	// $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $eol . $end)!!!
 	$split_length = 75 - strlen($start . $eol . $end);
 	$split_length = $split_length - $split_length % 4;
 
-	$line_length = \strlen($start) + \strlen($end);
-	$line_offset = \strlen($start) + 1;
+	$line_length = strlen($start) + strlen($end);
+	$line_offset = strlen($start) + 1;
 	$line_data = '';
 
 	$is_quoted_printable = 'Q' === $scheme;
@@ -1885,7 +1885,7 @@ function mail_encode($str, $eol = "\r\n")
 				'/[=_\?\x20\x00-\x1F\x80-\xFF]/',
 				function ($matches)
 				{
-					$hex = dechex(\ord($matches[0]));
+					$hex = dechex(ord($matches[0]));
 					$hex = strlen($hex) == 1 ? "0$hex" : $hex;
 					return '=' . strtoupper($hex);
 				},
@@ -1905,7 +1905,7 @@ function mail_encode($str, $eol = "\r\n")
 		}
 
 		$line_data .= $char;
-		$is_quoted_printable && $line_length += \strlen($char);
+		$is_quoted_printable && $line_length += strlen($char);
 	}
 
 	if ('' !== $line_data)
