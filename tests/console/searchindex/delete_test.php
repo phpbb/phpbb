@@ -14,7 +14,6 @@ class delete_test extends base
 	{
 		$application = new Application();
 		$application->add(new delete(
-			$this->config,
 			$this->language,
 			$this->log,
 			$this->post_helper,

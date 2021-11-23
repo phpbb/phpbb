@@ -14,7 +14,6 @@ class create_test extends base
 	{
 		$application = new Application();
 		$application->add(new create(
-			$this->config,
 			$this->language,
 			$this->log,
 			$this->post_helper,

@@ -13,7 +13,6 @@
 
 namespace phpbb\console\command\searchindex;
 
-use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log;
@@ -29,9 +28,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class create extends command
 {
-	/** @var config */
-	protected $config;
-
 	/** @var language */
 	protected $language;
 
@@ -50,7 +46,6 @@ class create extends command
 	/**
 	 * Construct method
 	 *
-	 * @param config					$config
 	 * @param language					$language
 	 * @param log						$log
 	 * @param post_helper				$post_helper
@@ -58,9 +53,8 @@ class create extends command
 	 * @param state_helper				$state_helper
 	 * @param user						$user
 	 */
-	public function __construct(config $config, language $language, log $log, post_helper $post_helper, search_backend_factory $search_backend_factory, state_helper $state_helper, user $user)
+	public function __construct(language $language, log $log, post_helper $post_helper, search_backend_factory $search_backend_factory, state_helper $state_helper, user $user)
 	{
-		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
 		$this->post_helper = $post_helper;
