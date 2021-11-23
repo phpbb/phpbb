@@ -56,10 +56,28 @@ if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'cont
 	trigger_error('NO_MODE');
 }
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 switch ($mode)
 {
 	case 'email':
 	case 'contactadmin':
+		if ($user_id)
+		{
+			$route = $controller_helper->route('phpbb_contact_user', ['user_id' => $user_id], false);
+		}
+		else if ($topic_id)
+		{
+			$route = $controller_helper->route('phpbb_contact_topic', ['topic_id' => $topic_id], false);
+		}
+		else if ($mode === 'contactadmin')
+		{
+			$route = $controller_helper->route('phpbb_contact_admin', [], false);
+		}
+
+		send_status_line(301, 'Moved Permanently');
+		redirect($route);
 	break;
 
 	case 'livesearch':
@@ -882,90 +900,6 @@ switch ($mode)
 		$template->assign_block_vars('navlinks', array(
 			'BREADCRUMB_NAME'	=> $member['username'],
 			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&u=$user_id"),
-		));
-
-	break;
-
-	case 'contactadmin':
-	case 'email':
-		if (!class_exists('messenger'))
-		{
-			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-		}
-
-		$user_id	= $request->variable('u', 0);
-		$topic_id	= $request->variable('t', 0);
-
-		if ($user_id)
-		{
-			$form_name = 'user';
-		}
-		else if ($topic_id)
-		{
-			$form_name = 'topic';
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$form_name = 'admin';
-		}
-		else
-		{
-			trigger_error('NO_EMAIL');
-		}
-
-		/** @var $form \phpbb\message\form */
-		$form = $phpbb_container->get('message.form.' . $form_name);
-
-		$form->bind($request);
-		$error = $form->check_allow();
-		if ($error)
-		{
-			trigger_error($error);
-		}
-
-		if ($request->is_set_post('submit'))
-		{
-			$messenger = new messenger(false);
-			$form->submit($messenger);
-		}
-
-		$page_title = $form->get_page_title();
-		$template_html = $form->get_template_file();
-		$form->render($template);
-
-		if ($user_id)
-		{
-			$navlink_name = $user->lang('SEND_EMAIL');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&u=$user_id");
-		}
-		else if ($topic_id)
-		{
-			$sql = 'SELECT f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, f.forum_options, t.topic_title
-					FROM ' . FORUMS_TABLE . ' as f,
-						' . TOPICS_TABLE . ' as t
-					WHERE t.forum_id = f.forum_id';
-			$result = $db->sql_query($sql);
-			$topic_data = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			generate_forum_nav($topic_data);
-			$template->assign_block_vars('navlinks', array(
-				'BREADCRUMB_NAME'	=> $topic_data['topic_title'],
-				'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id"),
-			));
-
-			$navlink_name = $user->lang('EMAIL_TOPIC');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&t=$topic_id");
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$navlink_name = $user->lang('CONTACT_ADMIN');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
-		}
-
-		$template->assign_block_vars('navlinks', array(
-			'BREADCRUMB_NAME'	=> $navlink_name,
-			'U_BREADCRUMB'		=> $navlink_url,
 		));
 
 	break;

@@ -25,38 +25,6 @@ services:
             - '@dbal.conn'
             - '@cache.driver'
 
-    message.form.admin:
-        class: phpbb\message\admin_form
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@config_text'
-            - '@dbal.conn'
-            - '@user'
-            - '@dispatcher'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-
-    message.form.topic:
-        class: phpbb\message\topic_form
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-
-    message.form.user:
-        class: phpbb\message\user_form
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-
     pagination:
         class: phpbb\pagination
         arguments:

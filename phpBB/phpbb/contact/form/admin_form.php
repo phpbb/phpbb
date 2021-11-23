@@ -1,59 +1,72 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-namespace phpbb\message;
+namespace phpbb\contact\form;
+
+use messenger;
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\config\db_text;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
+use phpbb\request\request;
+use phpbb\user;
 
 /**
-* Class admin_form
-* Displays a message to the user and allows him to send an email
-*/
+ * Class admin_form
+ * Displays a message to the user and allows him to send an email
+ */
 class admin_form extends form
 {
-	/** @var \phpbb\config\db_text */
+	/** @var db_text */
 	protected $config_text;
 
-	/** @var \phpbb\event\dispatcher_interface */
+	/** @var dispatcher_interface */
 	protected $dispatcher;
 
 	/** @var string */
 	protected $subject;
+
 	/** @var string */
 	protected $sender_name;
+
 	/** @var string */
 	protected $sender_address;
 
 	/**
-	* Construct
-	*
-	* @param \phpbb\auth\auth $auth
-	* @param \phpbb\config\config $config
-	* @param \phpbb\config\db_text $config_text
-	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\user $user
-	* @param \phpbb\event\dispatcher_interface $dispatcher
-	* @param string $phpbb_root_path
-	* @param string $phpEx
-	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $dispatcher, $phpbb_root_path, $phpEx)
+	 * Construct
+	 *
+	 * @param auth $auth
+	 * @param config $config
+	 * @param db_text $config_text
+	 * @param driver_interface $db
+	 * @param user $user
+	 * @param dispatcher_interface $dispatcher
+	 * @param string $phpbb_root_path
+	 * @param string $phpEx
+	 * @param template $template
+	 * @param request $request
+	 */
+	public function __construct(auth $auth, config $config, db_text $config_text, driver_interface $db, user $user, dispatcher_interface $dispatcher, $phpbb_root_path, $phpEx, $template, request $request, $phpbb_container, $language)
 	{
-		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx);
+		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx, $template, $request, $phpbb_container, $language);
 		$this->config_text = $config_text;
 		$this->dispatcher = $dispatcher;
 	}
 
 	/**
-	* {inheritDoc}
-	*/
+	 * {inheritDoc}
+	 */
 	public function check_allow()
 	{
 		$error = parent::check_allow();
@@ -71,21 +84,21 @@ class admin_form extends form
 	}
 
 	/**
-	* {inheritDoc}
-	*/
-	public function bind(\phpbb\request\request_interface $request)
+	 * {inheritDoc}
+	 */
+	public function bind(): void
 	{
-		parent::bind($request);
+		parent::bind();
 
-		$this->subject = $request->variable('subject', '', true);
-		$this->sender_address = $request->variable('email', '');
-		$this->sender_name = $request->variable('name', '', true);
+		$this->subject = $this->request->variable('subject', '', true);
+		$this->sender_address = $this->request->variable('email', '');
+		$this->sender_name = $this->request->variable('name', '', true);
 	}
 
 	/**
-	* {inheritDoc}
-	*/
-	public function submit(\messenger $messenger)
+	 * {inheritDoc}
+	 */
+	public function submit(messenger $messenger): void
 	{
 		if (!$this->subject)
 		{
@@ -101,14 +114,14 @@ class admin_form extends form
 		$errors = $this->errors;
 
 		/**
-		* You can use this event to modify subject and/or body and add new errors.
-		*
-		* @event core.message_admin_form_submit_before
-		* @var	string	subject	Message subject
-		* @var	string	body	Message body
-		* @var	array	errors	Form errors
-		* @since 3.2.6-RC1
-		*/
+		 * You can use this event to modify subject and/or body and add new errors.
+		 *
+		 * @event core.message_admin_form_submit_before
+		 * @var	string	subject	Message subject
+		 * @var	string	body	Message body
+		 * @var	array	errors	Form errors
+		 * @since 3.2.6-RC1
+		 */
 		$vars = [
 			'subject',
 			'body',
@@ -180,10 +193,12 @@ class admin_form extends form
 	}
 
 	/**
-	* {inheritDoc}
-	*/
-	public function render(\phpbb\template\template $template)
+	 * {inheritDoc}
+	 */
+	public function render(): void
 	{
+		$controller_helper = $this->phpbb_container->get('controller.helper');
+
 		$l_admin_info = $this->config_text->get('contact_admin_info');
 		if ($l_admin_info)
 		{
@@ -202,11 +217,11 @@ class admin_form extends form
 			);
 		}
 
-		$template->assign_vars(array(
+		$this->template->assign_vars(array(
 			'S_CONTACT_ADMIN'	=> true,
 			'S_CONTACT_FORM'	=> $this->config['contact_admin_form_enable'],
 			'S_IS_REGISTERED'	=> $this->user->data['is_registered'],
-			'S_POST_ACTION'		=> append_sid($this->phpbb_root_path . 'memberlist.' . $this->phpEx, 'mode=contactadmin'),
+			'S_POST_ACTION'		=> $controller_helper->route('phpbb_contact_admin'),
 
 			'CONTACT_INFO'		=> $l_admin_info,
 			'MESSAGE'			=> $this->body,
@@ -215,6 +230,6 @@ class admin_form extends form
 			'EMAIL'				=> $this->sender_address,
 		));
 
-		parent::render($template);
+		parent::render();
 	}
 }

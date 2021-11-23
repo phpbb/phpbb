@@ -53,7 +53,9 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			'BAN_TRIGGERED_BY_USER'		=> 'BAN_TRIGGERED_BY_USER',
 		];
 
-		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
+		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem, $phpbb_container;
+
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 

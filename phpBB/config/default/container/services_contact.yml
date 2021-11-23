@@ -1,0 +1,84 @@
+services:
+
+    # Form services
+    contact.form.admin:
+        shared: false
+        class: phpbb\contact\form\admin_form
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@config_text'
+            - '@dbal.conn'
+            - '@user'
+            - '@dispatcher'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@template'
+            - '@request'
+            - '@service_container'
+            - '@language'
+
+    contact.form.topic:
+        shared: false
+        class: phpbb\contact\form\topic_form
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@template'
+            - '@request'
+            - '@service_container'
+            - '@language'
+
+    contact.form.user:
+        shared: false
+        class: phpbb\contact\form\user_form
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@template'
+            - '@request'
+            - '@service_container'
+            - '@language'
+
+    # Controllers
+    contact.controller.admin:
+        class: phpbb\contact\controller\admin
+        arguments:
+            - '@contact.form.admin'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    contact.controller.topic:
+        class: phpbb\contact\controller\topic
+        arguments:
+            - '@dbal.conn'
+            - '@contact.form.topic'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    contact.controller.user:
+        class: phpbb\contact\controller\user
+        arguments:
+            - '@contact.form.user'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'

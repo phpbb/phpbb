@@ -1,0 +1,18 @@
+phpbb_contact_admin:
+    path:             /admin
+    defaults:
+        _controller:  contact.controller.admin:handle
+
+phpbb_contact_topic:
+    path:             /topic/{topic_id}
+    defaults:
+        _controller:  contact.controller.topic:handle
+    requirements:
+        topic_id:           \d+
+
+phpbb_contact_user:
+    path:             /user/{user_id}
+    defaults:
+        _controller:  contact.controller.user:handle
+    requirements:
+        user_id:           \d+

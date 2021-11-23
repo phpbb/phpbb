@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\message;
+namespace phpbb\contact;
 
 /**
 * Class message

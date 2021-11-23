@@ -8,6 +8,10 @@
 # instantiate the 'foo_service' service and call the 'method' method.
 #
 
+phpbb_contact_routing:
+    resource: contact.yml
+    prefix: /contact
+
 phpbb_cron_routing:
     resource: cron.yml
     prefix: /cron

@@ -4,6 +4,7 @@ imports:
     - { resource: services_avatar.yml }
     - { resource: services_captcha.yml }
     - { resource: services_console.yml }
+    - { resource: services_contact.yml }
     - { resource: services_content.yml }
     - { resource: services_cron.yml }
     - { resource: services_db.yml }

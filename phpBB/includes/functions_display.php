@@ -1577,6 +1577,8 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 {
 	global $config, $auth, $user, $phpEx, $phpbb_root_path, $phpbb_dispatcher, $phpbb_container;
 
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	$username = $data['username'];
 	$user_id = $data['user_id'];
 
@@ -1584,7 +1586,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 
 	if ((!empty($data['user_allow_viewemail']) && $auth->acl_get('u_sendemail')) || $auth->acl_get('a_user'))
 	{
-		$email = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id) : (($config['board_hide_emails'] && !$auth->acl_get('a_user')) ? '' : 'mailto:' . $data['user_email']);
+		$email = ($config['board_email_form'] && $config['email_enable']) ? $controller_helper->route('phpbb_contact_user', ['user_id' => $user_id]) : (($config['board_hide_emails'] && !$auth->acl_get('a_user')) ? '' : 'mailto:' . $data['user_email']);
 	}
 	else
 	{
