@@ -141,18 +141,24 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function create_search_index($backend = null)
 	{
 		$this->add_lang('acp/search');
+		$search_type = $backend ?? $this->search_backend;
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('CREATE_INDEX'))->form();
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,
 			[
-				'search_type'	=> ( ($backend === null) ? $this->search_backend : $backend ),
+				'search_type'	=> $search_type,
 				'action'		=> 'create',
 			]
 		);
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('SEARCH_INDEX_CREATED', $crawler->text());
+
+		// Ensure search index has been actually created
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $search_type . ' td')->eq(1)->text();
+		$this->assertTrue($posts_indexed > 0);
 	}
 
 	protected function delete_search_index()
