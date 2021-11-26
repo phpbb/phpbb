@@ -22,6 +22,8 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 if (version_compare(PHP_VERSION, '7.1.3', '<'))
 {
+	echo 'Current PHP version is: <strong>' . PHP_VERSION . '</strong><br><br>';
+
 	die('You are running an unsupported PHP version. Please upgrade to PHP 7.1.3 or higher before trying to install or update to phpBB 3.3');
 }
 
