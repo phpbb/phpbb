@@ -54,7 +54,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	protected function assert_search_not_found($keywords)
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
-		$this->assertEquals(0, $crawler->filter('.postbody')->count(),$this->search_backend);
+		$this->assertEquals(0, $crawler->filter('.postbody')->count(), $this->search_backend);
 		$split_keywords_string = str_replace('+', ' ', $keywords);
 		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'), $this->search_backend);
 	}
@@ -68,6 +68,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 	public function test_search_backend()
 	{
+		$this->add_lang('common');
+
 		// Create a new standard user if needed, topic and post to test searh for author
 		if (!$this->user_exists('searchforauthoruser'))
 		{
@@ -87,9 +89,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 
-
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
-		$form = $crawler->selectButton('Submit')->form();
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
 		$values = $form->getValues();
 
 		if ($values["config[search_type]"] != $this->search_backend)
@@ -110,7 +111,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 			$crawler = self::submit($form);
 
-			$form = $crawler->selectButton('Yes')->form();
+			$form = $crawler->selectButton($this->lang('YES'))->form();
 			$values = $form->getValues();
 			$crawler = self::submit($form);
 
@@ -153,13 +154,13 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$form = $crawler->selectButton('Create index')->form();
+		$form = $crawler->selectButton($this->lang('CREATE_INDEX'))->form();
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,
-			array(
+			[
 				'search_type'	=> ( ($backend === null) ? $this->search_backend : $backend ),
 				'action'		=> 'create',
-			)
+			]
 		);
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
@@ -170,16 +171,21 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$this->add_lang('acp/search');
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$form = $crawler->selectButton('Delete index')->form();
+		$form = $crawler->selectButton($this->lang('DELETE_INDEX'))->form();
 		$form_values = $form->getValues();
 		$form_values = array_merge($form_values,
-			array(
+			[
 				'search_type'	=> $this->search_backend,
 				'action'		=> 'delete',
-			)
+			]
 		);
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('SEARCH_INDEX_REMOVED', $crawler->text());
+
+		// Ensure search index has been actually removed
+		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $this->search_backend . ' td')->eq(1)->text();
+		$this->assertEquals(0, $posts_indexed);
 	}
 }
