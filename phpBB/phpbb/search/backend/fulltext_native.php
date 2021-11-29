@@ -93,19 +93,13 @@ class fulltext_native extends base implements search_backend_interface
 	 */
 	protected $phpbb_dispatcher;
 
-	/**
-	 * @var language
-	 */
+	/** @var language */
 	protected $language;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $search_wordlist_table;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	protected $search_wordmatch_table;
 
 	/**

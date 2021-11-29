@@ -5,10 +5,10 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
-require_once __DIR__ . '/base.php';
-require_once __DIR__ . '/mock/search_backend_mock.php';
+require_once __DIR__ . '/phpbb_console_searchindex_base.php';
+require_once __DIR__ . '/../../mock/search_backend_mock.php';
 
-class create_test extends base
+class phpbb_console_searchindex_create_test extends phpbb_console_searchindex_base
 {
 	public function get_command_tester()
 	{

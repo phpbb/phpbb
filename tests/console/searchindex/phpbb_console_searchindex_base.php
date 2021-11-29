@@ -1,4 +1,15 @@
 <?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
@@ -9,9 +20,9 @@ use phpbb\search\search_backend_factory;
 use phpbb\search\state_helper;
 use phpbb\user;
 
-require_once __DIR__ . '/mock/search_backend_mock.php';
+require_once __DIR__ . '/../../mock/search_backend_mock.php';
 
-class base extends phpbb_test_case
+class phpbb_console_searchindex_base extends phpbb_test_case
 {
 	/** @var config */
 	protected $config;

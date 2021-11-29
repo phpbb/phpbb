@@ -21,6 +21,7 @@ use phpbb\search\exception\no_search_backend_found_exception;
 use phpbb\search\search_backend_factory;
 use phpbb\search\state_helper;
 use phpbb\user;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -108,13 +109,13 @@ class create extends command
 		catch (no_search_backend_found_exception $e)
 		{
 			$io->error($this->language->lang('CLI_SEARCHINDEX_BACKEND_NOT_FOUND', $search_backend));
-			return command::FAILURE;
+			return symfony_command::FAILURE;
 		}
 
 		if ($this->state_helper->is_action_in_progress())
 		{
 			$io->error($this->language->lang('CLI_SEARCHINDEX_ACTION_IN_PROGRESS', $search_backend));
-			return command::FAILURE;
+			return symfony_command::FAILURE;
 		}
 
 		try
@@ -130,7 +131,6 @@ class create extends command
 			{
 				$this->state_helper->update_counter($status['post_counter']);
 
-				$progress->setMaxSteps($status['max_post_id']);
 				$progress->setProgress($status['post_counter']);
 				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
 			}
@@ -142,7 +142,7 @@ class create extends command
 		catch (\Exception $e)
 		{
 			$io->error($this->language->lang('CLI_SEARCHINDEX_CREATE_FAILURE', $name));
-			return command::FAILURE;
+			return symfony_command::FAILURE;
 		}
 
 		$search->tidy();
@@ -152,6 +152,6 @@ class create extends command
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_SEARCH_INDEX_CREATED', false, array($name));
 		$io->success($this->language->lang('CLI_SEARCHINDEX_CREATE_SUCCESS', $name));
 
-		return command::SUCCESS;
+		return symfony_command::SUCCESS;
 	}
 }

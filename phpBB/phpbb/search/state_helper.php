@@ -44,7 +44,7 @@ class state_helper
 	}
 
 	/**
-	 * Returns if there is an action in progress
+	 * Returns whether there is an action in progress
 	 *
 	 * @return bool
 	 */
@@ -101,7 +101,7 @@ class state_helper
 	 */
 	public function init(string $search_type, string $action): void
 	{
-		// Is not possible to start a new process when there is one already running
+		// It's not possible to start a new process when there is one already running
 		if ($this->is_action_in_progress())
 		{
 			throw new action_in_progress_exception();
@@ -158,7 +158,7 @@ class state_helper
 	 */
 	private function load_state(): array
 	{
-		// Is not possible to execute an action over state if is empty
+		// Is not possible to execute an action over state if it's empty
 		if (!$this->is_action_in_progress())
 		{
 			throw new no_action_in_progress_exception();

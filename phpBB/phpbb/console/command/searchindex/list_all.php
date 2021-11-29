@@ -18,6 +18,7 @@ use phpbb\console\command\command;
 use phpbb\di\service_collection;
 use phpbb\language\language;
 use phpbb\user;
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -92,6 +93,6 @@ class list_all extends command
 
 		$io->listing($search_backends);
 
-		return command::SUCCESS;
+		return symfony_command::SUCCESS;
 	}
 }
