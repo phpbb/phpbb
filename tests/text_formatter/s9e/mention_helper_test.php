@@ -118,6 +118,6 @@ class mention_helper_test extends phpbb_database_test_case
 	 */
 	public function test_get_mentioned_user_ids($incoming_xml, $expected_result)
 	{
-		$this->assertSame($expected_result, $this->mention_helper->get_mentioned_user_ids($incoming_xml));
+		$this->assertEqualsCanonicalizing($expected_result, $this->mention_helper->get_mentioned_user_ids($incoming_xml));
 	}
 }
