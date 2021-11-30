@@ -35,7 +35,7 @@ function phpbb_module_notes_url($mode, $module_row)
 	}
 
 	global $user_id;
-	return ($user_id) ? "&amp;u=$user_id" : '';
+	return phpbb_extra_url();
 }
 
 function phpbb_module_warn_url($mode, $module_row)
@@ -43,34 +43,18 @@ function phpbb_module_warn_url($mode, $module_row)
 	if ($mode == 'front' || $mode == 'list')
 	{
 		global $forum_id;
-
-		return ($forum_id) ? "&amp;f=$forum_id" : '';
+		return phpbb_extra_url();
 	}
 
 	if ($mode == 'warn_post')
 	{
 		global $forum_id, $post_id;
-
-		if ($post_id)
-		{
-			$url_extra = "&amp;p=$post_id";
-		}
-		else if ($forum_id)
-		{
-			$url_extra = "&amp;f=$forum_id";
-		}
-		else
-		{
-			$url_extra = '';
-		}
-
-		return $url_extra;
+		return phpbb_extra_url();
 	}
 	else
 	{
 		global $user_id;
-
-		return ($user_id) ? "&amp;u=$user_id" : '';
+		return phpbb_extra_url();
 	}
 }
 
@@ -99,30 +83,34 @@ function phpbb_module_reports_url($mode, $module_row)
 	return phpbb_extra_url();
 }
 
-function phpbb_extra_url()
+/**
+ * Generate URL parameters for MCP modules
+ *
+ * @param array $additional_parameters	Array with additional parameters in format of ['key' => 'parameter_name']
+ *
+ * @return string						String with URL parameters (empty string if not any)
+ */
+function phpbb_extra_url($additional_parameters = [])
 {
-	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
+	$url_extra = [];
+	$url_parameters = array_merge([
+		'f' => 'forum_id',
+		't' => 'topic_id',
+		'p' => 'post_id',
+		'r' => 'report_id',
+		'u' => 'user_id',
+	], $additional_parameters);
 
-	if ($post_id)
+	foreach ($url_parameters as $key => $value)
 	{
-		$url_extra = "&amp;p=$post_id";
+		global $$value;
+		if (isset($$value) && $parameter = $$value)
+		{
+			$url_extra[] = "$key=$parameter";
+		}
 	}
-	else if ($topic_id)
-	{
-		$url_extra = "&amp;t=$topic_id";
-	}
-	else if ($forum_id)
-	{
-		$url_extra = "&amp;f=$forum_id";
-	}
-	else
-	{
-		$url_extra = '';
-	}
-	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
-	$url_extra .= ($report_id) ? "&amp;r=$report_id" : '';
 
-	return $url_extra;
+	return implode('&amp;', $url_extra);
 }
 
 /**
