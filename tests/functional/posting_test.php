@@ -300,4 +300,26 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 			$crawler->filter('#preview .content')->html()
 		);
 	}
+
+	public function nonexistent_post_id_data()
+	{
+		$nonexistent_post_id = 999999; // Random value
+		return [
+			['edit', $nonexistent_post_id],
+			['delete', $nonexistent_post_id],
+			['quote', $nonexistent_post_id],
+			['soft_delete', $nonexistent_post_id],
+		];
+	}
+
+	/**
+	 * @dataProvider nonexistent_post_id_data
+	 */
+	public function test_nonexistent_post_id($mode, $nonexistent_post_id)
+	{
+		$this->add_lang('posting');
+		$this->login();
+		$crawler = self::request('GET', "posting.php?mode={$mode}&p={$nonexistent_post_id}&sid={$this->sid}");
+		$this->assertContainsLang('NO_POST', $crawler->text());
+	}
 }

@@ -87,24 +87,25 @@ switch ($mode)
 		$post_id = $request->variable('p', 0);
 		if ($post_id)
 		{
-			$topic_forum = array();
+			$topic_forum = [];
 
 			$sql = 'SELECT t.topic_id, t.forum_id
 				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 				WHERE p.post_id = ' . $post_id . '
 				AND t.topic_id = p.topic_id';
 			$result = $db->sql_query($sql);
-			$topic_forum = $db->sql_fetchrow();
-			$topic_id = (int) $topic_forum['topic_id'];
-			$forum_id = (int) $topic_forum['forum_id'];
+			$topic_forum = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 		}
 
-		if (!$post_id || !$topic_id || !$forum_id)
+		if (!$post_id || !$topic_forum)
 		{
 			$user->setup('posting');
 			trigger_error('NO_POST');
 		}
+
+		$topic_id = (int) $topic_forum['topic_id'];
+		$forum_id = (int) $topic_forum['forum_id'];
 	break;
 }
 
