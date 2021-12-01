@@ -19,7 +19,6 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 	protected $language;
 	protected $log;
 	protected $passwords_manager;
-	protected $command_name;
 	/** @var Symfony\Component\Console\Helper\QuestionHelper */
 	protected $question;
 	protected $user_loader;
