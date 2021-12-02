@@ -94,7 +94,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 
 		// re-read config and populate cache
 		$config2 = new \phpbb\config\db($this->db, $this->cache, 'phpbb_config');
-		$this->cache->checkVar($this, 'config', array('foo' => '23', 'foobar' => '5', 'foobar_json' => $json_value));
+		$this->cache->checkVar($this, 'config', ['foo' => '23', 'foobar_json' => $json_value]);
 	}
 
 	public function test_set_new_uncached()
