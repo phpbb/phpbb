@@ -562,6 +562,7 @@ jobs:
                   [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";${env:PGBIN}")
                   $env:PGPASSWORD = 'root'
                   psql -c hot_standby=on
+                  psql -c wal_level=minimal
                   psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
                   psql -c 'create database phpbb_tests;' -U postgres
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
