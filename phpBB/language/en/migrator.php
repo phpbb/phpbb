@@ -77,5 +77,6 @@ $lang = array_merge($lang, array(
 	'PARENT_MODULE_FIND_ERROR'			=> 'Unable to determine the parent module identifier: %s',
 	'PERMISSION_NOT_EXIST'				=> 'The permission setting "%s" unexpectedly does not exist.',
 
+	'ROLE_ASSIGNED_NOT_EXIST'			=> 'The permission role assigned to group "%1$s" unexpectedly does not exist. Role id: "%2$s"',
 	'ROLE_NOT_EXIST'					=> 'The permission role "%s" unexpectedly does not exist.',
 ));
