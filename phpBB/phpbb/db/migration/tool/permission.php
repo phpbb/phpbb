@@ -21,6 +21,9 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \includes\acp\auth\auth_admin */
+	protected $auth_admin;
+
 	/** @var \phpbb\cache\service */
 	protected $cache;
 
@@ -49,6 +52,12 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		$this->auth = $auth;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+
+		if (!class_exists('auth_admin'))
+		{
+			include($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);
+		}
+		$this->auth_admin = new \auth_admin();
 	}
 
 	/**
@@ -118,12 +127,6 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		// We've added permissions, so set to true to notify the user.
 		$this->permissions_added = true;
 
-		if (!class_exists('auth_admin'))
-		{
-			include($this->phpbb_root_path . 'includes/acp/auth.' . $this->php_ext);
-		}
-		$auth_admin = new \auth_admin();
-
 		// We have to add a check to see if the !$global (if global, local, and if local, global) permission already exists.  If it does, acl_add_option currently has a bug which would break the ACL system, so we are having a work-around here.
 		if ($this->exists($auth_option, !$global))
 		{
@@ -140,19 +143,19 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		{
 			if ($global)
 			{
-				$auth_admin->acl_add_option(array('global' => array($auth_option)));
+				$this->auth_admin->acl_add_option(array('global' => array($auth_option)));
 			}
 			else
 			{
-				$auth_admin->acl_add_option(array('local' => array($auth_option)));
+				$this->auth_admin->acl_add_option(array('local' => array($auth_option)));
 			}
 		}
 
 		// The permission has been added, now we can copy it if needed
-		if ($copy_from && isset($auth_admin->acl_options['id'][$copy_from]))
+		if ($copy_from && isset($this->auth_admin->acl_options['id'][$copy_from]))
 		{
-			$old_id = $auth_admin->acl_options['id'][$copy_from];
-			$new_id = $auth_admin->acl_options['id'][$auth_option];
+			$old_id = $this->auth_admin->acl_options['id'][$copy_from];
+			$new_id = $this->auth_admin->acl_options['id'][$auth_option];
 
 			$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
 
@@ -177,7 +180,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 				}
 			}
 
-			$auth_admin->acl_clear_prefetch();
+			$this->auth_admin->acl_clear_prefetch();
 		}
 	}
 
@@ -291,6 +294,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 
 		$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
+
+		return $this->db->sql_nextid();
 	}
 
 	/**
@@ -326,6 +331,66 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		{
 			return;
 		}
+
+		// Get the role type
+		$sql = 'SELECT role_type
+			FROM ' . ACL_ROLES_TABLE . '
+			WHERE role_id = ' . (int) $role_id;
+		$result = $this->db->sql_query($sql);
+		$role_type = $this->db->sql_fetchfield('role_type');
+		$this->db->sql_freeresult($result);
+
+		// Get complete auth array
+		$sql = 'SELECT auth_option, auth_option_id
+			FROM ' . ACL_OPTIONS_TABLE . "
+			WHERE auth_option " . $this->db->sql_like_expression($role_type . $this->db->get_any_char());
+		$result = $this->db->sql_query($sql);
+
+		$auth_settings = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$auth_settings[$row['auth_option']] = ACL_NO;
+		}
+		$this->db->sql_freeresult($result);
+
+		// Get the role auth settings we need to re-set...
+		$sql = 'SELECT o.auth_option, r.auth_setting
+			FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
+			WHERE o.auth_option_id = r.auth_option_id
+				AND r.role_id = ' . (int) $role_id;
+		$result = $this->db->sql_query($sql);
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$auth_settings[$row['auth_option']] = $row['auth_setting'];
+		}
+		$this->db->sql_freeresult($result);
+
+		// Get role assignments
+		$hold_ary = $this->auth_admin->get_role_mask($role_id);
+
+		// Re-assign permissions
+		foreach ($hold_ary as $forum_id => $forum_ary)
+		{
+			if (isset($forum_ary['users']))
+			{
+				$this->auth_admin->acl_set('user', $forum_id, $forum_ary['users'], $auth_settings, 0, false);
+			}
+
+			if (isset($forum_ary['groups']))
+			{
+				$this->auth_admin->acl_set('group', $forum_id, $forum_ary['groups'], $auth_settings, 0, false);
+			}
+		}
+
+		// Remove role from users and groups just to be sure (happens through acl_set)
+		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+			WHERE auth_role_id = ' . $role_id;
+		$this->db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+			WHERE auth_role_id = ' . $role_id;
+		$this->db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
 			WHERE role_id = ' . $role_id;
@@ -425,6 +490,11 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 						WHERE role_id = ' . $role_id;
 					$this->db->sql_query($sql);
 					$role_data = $this->db->sql_fetchrow();
+					if (!$role_data)
+					{
+						throw new \phpbb\db\migration\exception('ROLE_ASSIGNED_NOT_EXIST', $name, $role_id);
+					}
+
 					$role_name = $role_data['role_name'];
 					$role_type = $role_data['role_type'];
 
@@ -571,6 +641,10 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 						WHERE role_id = ' . $role_id;
 					$this->db->sql_query($sql);
 					$role_name = $this->db->sql_fetchfield('role_name');
+					if (!$role_name)
+					{
+						throw new \phpbb\db\migration\exception('ROLE_ASSIGNED_NOT_EXIST', $name, $role_id);
+					}
 
 					return $this->permission_unset($role_name, $auth_option, 'role');
 				}
