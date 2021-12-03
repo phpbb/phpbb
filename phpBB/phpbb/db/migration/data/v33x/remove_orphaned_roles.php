@@ -29,7 +29,7 @@ class remove_orphaned_roles extends \phpbb\db\migration\migration
 
 	public function acl_remove_orphaned_roles()
 	{
-		$auth_role_ids = $role_ids = $auth_settings = [];
+		$role_ids = [];
 
 		$sql = 'SELECT auth_role_id
 			FROM ' . ACL_GROUPS_TABLE . '
@@ -68,5 +68,7 @@ class remove_orphaned_roles extends \phpbb\db\migration\migration
 
 		$auth = new \phpbb\auth\auth();
 		$auth->acl_clear_prefetch();
+
+		return true;
 	}
 }
