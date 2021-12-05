@@ -360,7 +360,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	public function test_perform_schema_changes_drop_tables()
 	{
 		$db_tools = $this->getMockBuilder('\phpbb\db\tools\doctrine')
-			->onlyMethods(array('sql_table_exists', '_schema_drop_table'))
+			->onlyMethods(array('sql_table_exists', 'schema_drop_table'))
 			->setConstructorArgs(array($this->doctrine_db))
 			->getMock();
 
@@ -369,7 +369,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 
 		// drop tables
-		$db_tools->expects($this->exactly(2))->method('_schema_drop_table')
+		$db_tools->expects($this->exactly(2))->method('schema_drop_table')
 			->withConsecutive(
 				[$this->isInstanceOf(Schema::class), 'dropped_table_1', true],
 				[$this->isInstanceOf(Schema::class), 'dropped_table_2', true]
