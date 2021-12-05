@@ -483,7 +483,7 @@ class doctrine implements tools_interface
 		}
 		catch (Exception $e)
 		{
-			return false;
+			return $e->getMessage();
 		}
 	}
 
