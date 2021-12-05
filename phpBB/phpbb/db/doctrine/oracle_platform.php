@@ -154,7 +154,7 @@ class oracle_platform extends OraclePlatform
 	 */
 	private function get_doctrine_autoincrement_identifier_name(Identifier $table): string
 	{
-		$identifierName = $this->add_doctrine_Suffix($table->getName(), '_AI_PK');
+		$identifierName = $this->add_doctrine_suffix($table->getName(), '_AI_PK');
 
 		return $table->isQuoted()
 			? $this->quoteSingleIdentifier($identifierName)
@@ -164,7 +164,7 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * @see OraclePlatform::addSuffix()
 	 */
-	private function add_doctrine_Suffix(string $identifier, string $suffix): string
+	private function add_doctrine_suffix(string $identifier, string $suffix): string
 	{
 		$maxPossibleLengthWithoutSuffix = $this->getMaxIdentifierLength() - strlen($suffix);
 		if (strlen($identifier) > $maxPossibleLengthWithoutSuffix)

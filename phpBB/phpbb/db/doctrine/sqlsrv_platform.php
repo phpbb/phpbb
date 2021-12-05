@@ -18,7 +18,7 @@ use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\TableDiff;
 
 /**
- * Oracle specific schema restrictions for BC.
+ * SQLServer specific schema restrictions for BC.
  */
 class sqlsrv_platform extends SQLServer2012Platform
 {
