@@ -70,7 +70,7 @@ class sqlsrv_platform extends SQLServer2012Platform
 		$phpbb_names[] = $diff->name;
 
 		// NEW Table name if relevant
-		if ($diff->getNewName())
+		if ($diff->getNewName() !== false)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($diff->getNewName()->getName());
 			$phpbb_names[] = $diff->getNewName()->getName();
