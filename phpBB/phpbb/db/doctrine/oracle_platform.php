@@ -47,7 +47,7 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getCreateIndexSQL(Index $index, $table)
+	public function getCreateIndexSQL(Index $index, $table): string
 	{
 		if ($table instanceof Table)
 		{
@@ -79,12 +79,12 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * Check whether the index name is too long
 	 *
-	 * @param string $table_name
-	 * @param string $index_name
-	 * @param bool $throw_error
+	 * @param string	$table_name
+	 * @param string	$index_name
+	 * @param bool		$throw_error
 	 * @return string	The index name, shortened if too long
 	 */
-	protected function check_index_name_length($table_name, $index_name, $throw_error = true)
+	protected function check_index_name_length(string $table_name, string $index_name, bool $throw_error = true): string
 	{
 		$max_index_name_length = $this->getMaxIdentifierLength();
 		if (strlen($index_name) > $max_index_name_length)
@@ -108,7 +108,9 @@ class oracle_platform extends OraclePlatform
 
 			if ($throw_error)
 			{
-				trigger_error("Index name '$index_name' on table '$table_name' is too long. The maximum is $max_index_name_length characters.", E_USER_ERROR);
+				throw new \InvalidArgumentException(
+					"Index name '$index_name' on table '$table_name' is too long. The maximum is $max_index_name_length characters."
+				);
 			}
 		}
 
@@ -118,9 +120,9 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIdentitySequenceName($tableName, $columnName)
+	public function getIdentitySequenceName($tableName, $columnName): string
 	{
-		return $tableName.'_SEQ';
+		return $tableName . '_SEQ';
 	}
 
 	/**
@@ -140,7 +142,7 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * @see OraclePlatform::normalizeIdentifier()
 	 */
-	private function doctrine_normalize_identifier($name)
+	private function doctrine_normalize_identifier($name): Identifier
 	{
 		$identifier = new Identifier($name);
 
@@ -150,7 +152,7 @@ class oracle_platform extends OraclePlatform
 	/**
 	 * @see OraclePlatform::getAutoincrementIdentifierName()
 	 */
-	private function get_doctrine_autoincrement_identifier_name(Identifier $table)
+	private function get_doctrine_autoincrement_identifier_name(Identifier $table): string
 	{
 		$identifierName = $this->add_doctrine_Suffix($table->getName(), '_AI_PK');
 

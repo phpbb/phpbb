@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license       GNU General Public License, version 2 (GPL-2.0)
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -18,7 +18,7 @@ use Doctrine\DBAL\Driver\Result as DriverResult;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
 use Doctrine\DBAL\ParameterType;
 
-class Connection implements DriverConnection
+class connection implements DriverConnection
 {
 	/**
 	 * @var DriverConnection
@@ -68,7 +68,7 @@ class Connection implements DriverConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function lastInsertId($name = null)
+	public function lastInsertId($name = null): ?string
 	{
 		return $this->wrapped->lastInsertId($name);
 	}
@@ -76,7 +76,7 @@ class Connection implements DriverConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function beginTransaction()
+	public function beginTransaction(): bool
 	{
 		return $this->wrapped->beginTransaction();
 	}
@@ -84,7 +84,7 @@ class Connection implements DriverConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function commit()
+	public function commit(): bool
 	{
 		return $this->wrapped->commit();
 	}
@@ -92,7 +92,7 @@ class Connection implements DriverConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function rollBack()
+	public function rollBack(): bool
 	{
 		return $this->wrapped->rollBack();
 	}

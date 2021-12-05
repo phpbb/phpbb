@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license       GNU General Public License, version 2 (GPL-2.0)
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -37,7 +37,7 @@ class sqlsrv_platform extends SQLServer2012Platform
 				$this->generate_doctrine_identifier_name($column['name']),
 			], [
 				$table,
-				$column['name'].'_1',
+				$column['name'] . '_1',
 			],
 			$sql);
 	}
@@ -70,7 +70,7 @@ class sqlsrv_platform extends SQLServer2012Platform
 		$phpbb_names[] = $diff->name;
 
 		// NEW Table name if relevant
-		if ($diff->getNewName() != null)
+		if ($diff->getNewName())
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($diff->getNewName()->getName());
 			$phpbb_names[] = $diff->getNewName()->getName();
@@ -79,30 +79,30 @@ class sqlsrv_platform extends SQLServer2012Platform
 		foreach ($diff->addedColumns as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
-			$phpbb_names[] = $column->getQuotedName($this).'_1';
+			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
 		foreach ($diff->removedColumns as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
-			$phpbb_names[] = $column->getQuotedName($this).'_1';
+			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
 		foreach ($diff->renamedColumns as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
-			$phpbb_names[] = $column->getQuotedName($this).'_1';
+			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
 		foreach ($diff->changedColumns as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->column->getQuotedName($this));
-			$phpbb_names[] = $column->column->getQuotedName($this).'_1';
+			$phpbb_names[] = $column->column->getQuotedName($this) . '_1';
 
 			if ($column->oldColumnName != $column->column->getQuotedName($this))
 			{
 				$doctrine_names[] = $this->generate_doctrine_identifier_name($column->oldColumnName);
-				$phpbb_names[] = $column->oldColumnName.'_1';
+				$phpbb_names[] = $column->oldColumnName . '_1';
 			}
 		}
 
@@ -116,7 +116,7 @@ class sqlsrv_platform extends SQLServer2012Platform
 	 *
 	 * @return string
 	 */
-	private function generate_doctrine_identifier_name($identifier)
+	private function generate_doctrine_identifier_name(string $identifier): string
 	{
 		// Always generate name for unquoted identifiers to ensure consistency.
 		$identifier = new Identifier($identifier);
@@ -132,7 +132,7 @@ class sqlsrv_platform extends SQLServer2012Platform
 	 *
 	 * @return string
 	 */
-	private function generate_doctrine_default_constraint_name($table, $column)
+	private function generate_doctrine_default_constraint_name(string $table, string $column): string
 	{
 		return 'DF_' . $this->generate_doctrine_identifier_name($table) . '_' . $this->generate_doctrine_identifier_name($column);
 	}

@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license       GNU General Public License, version 2 (GPL-2.0)
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -32,7 +32,7 @@ use phpbb\db\doctrine\table_helper;
  * In general, it is recommended to use Doctrine directly instead of this class as this
  * implementation is only a BC layer.
  */
-class doctrine implements tools_interface, tools
+class doctrine implements tools_interface
 {
 	/**
 	 * @var AbstractSchemaManager
@@ -181,49 +181,49 @@ class doctrine implements tools_interface, tools
 			return;
 		}
 
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use($schema_changes): void
 			{
 				$mapping = [
 					'drop_tables' => [
-						'method' => '_schema_drop_table',
+						'method' => 'schema_drop_table',
 						'use_key' => false,
 					],
 					'add_tables' => [
-						'method' => '_schema_create_table',
+						'method' => 'schema_create_table',
 						'use_key' => true,
 					],
 					'change_columns' => [
-						'method' => '_schema_column_change_add',
+						'method' => 'schema_column_change_add',
 						'use_key' => true,
 						'per_table' => true,
 					],
 					'add_columns' => [
-						'method' => '_schema_column_add',
+						'method' => 'schema_column_add',
 						'use_key' => true,
 						'per_table' => true,
 					],
 					'drop_columns' => [
-						'method' => '_schema_column_remove',
+						'method' => 'schema_column_remove',
 						'use_key' => false,
 						'per_table' => true,
 					],
 					'drop_keys' => [
-						'method' => '_schema_index_drop',
+						'method' => 'schema_index_drop',
 						'use_key' => false,
 						'per_table' => true,
 					],
 					'add_primary_keys' => [
-						'method' => '_schema_create_primary_key',
+						'method' => 'schema_create_primary_key',
 						'use_key' => true,
 					],
 					'add_unique_index' => [
-						'method' => '_schema_create_unique_index',
+						'method' => 'schema_create_unique_index',
 						'use_key' => true,
 						'per_table' => true,
 					],
 					'add_index' => [
-						'method' => '_schema_create_index',
+						'method' => 'schema_create_index',
 						'use_key' => true,
 						'per_table' => true,
 					],
@@ -233,12 +233,10 @@ class doctrine implements tools_interface, tools
 				{
 					if (array_key_exists($action, $schema_changes))
 					{
-						foreach ($schema_changes[$action] as $key => $data)
+						foreach ($schema_changes[$action] as $table_name => $table_data)
 						{
 							if (array_key_exists('per_table', $params) && $params['per_table'])
 							{
-								$table_name = $key;
-								$table_data = $data;
 								foreach ($table_data as $key => $data)
 								{
 									if ($params['use_key'] == false)
@@ -255,11 +253,11 @@ class doctrine implements tools_interface, tools
 							{
 								if ($params['use_key'] == false)
 								{
-									$this->{$params['method']}($schema, $data, true);
+									$this->{$params['method']}($schema, $table_data, true);
 								}
 								else
 								{
-									$this->{$params['method']}($schema, $key, $data, true);
+									$this->{$params['method']}($schema, $table_name, $table_data, true);
 								}
 							}
 						}
@@ -274,10 +272,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_create_table(string $table_name, array $table_data)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $table_data): void
 			{
-				$this->_schema_create_table($schema, $table_name, $table_data, true);
+				$this->schema_create_table($schema, $table_name, $table_data, true);
 			}
 		);
 	}
@@ -287,10 +285,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_table_drop(string $table_name)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name): void
 			{
-				$this->_schema_drop_table($schema, $table_name, true);
+				$this->schema_drop_table($schema, $table_name, true);
 			}
 		);
 	}
@@ -300,10 +298,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_column_add(string $table_name, string $column_name, array $column_data)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column_name, $column_data): void
 			{
-				$this->_schema_column_add($schema, $table_name, $column_name, $column_data);
+				$this->schema_column_add($schema, $table_name, $column_name, $column_data);
 			}
 		);
 	}
@@ -313,10 +311,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_column_change(string $table_name, string $column_name, array $column_data)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column_name, $column_data): void
 			{
-				$this->_schema_column_change($schema, $table_name, $column_name, $column_data);
+				$this->schema_column_change($schema, $table_name, $column_name, $column_data);
 			}
 		);
 	}
@@ -326,10 +324,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_column_remove(string $table_name, string $column_name)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column_name): void
 			{
-				$this->_schema_column_remove($schema, $table_name, $column_name);
+				$this->schema_column_remove($schema, $table_name, $column_name);
 			}
 		);
 	}
@@ -339,10 +337,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_create_index(string $table_name, string $index_name, $column)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
-				$this->_schema_create_index($column, $schema, $table_name, $index_name);
+				$this->schema_create_index($column, $schema, $table_name, $index_name);
 			}
 		);
 	}
@@ -352,10 +350,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_index_drop(string $table_name, string $index_name)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name): void
 			{
-				$this->_schema_index_drop($schema, $table_name, $index_name);
+				$this->schema_index_drop($schema, $table_name, $index_name);
 			}
 		);
 	}
@@ -365,10 +363,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_create_unique_index(string $table_name, string $index_name, $column)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
-				$this->_schema_create_unique_index($column, $schema, $table_name, $index_name);
+				$this->schema_create_unique_index($column, $schema, $table_name, $index_name);
 			}
 		);
 	}
@@ -378,10 +376,10 @@ class doctrine implements tools_interface, tools
 	 */
 	public function sql_create_primary_key(string $table_name, $column)
 	{
-		return $this->_alter_schema(
+		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column): void
 			{
-				$this->_schema_create_primary_key($schema, $column, $table_name);
+				$this->schema_create_primary_key($schema, $column, $table_name);
 			}
 		);
 	}
@@ -458,7 +456,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @return bool|string[]
 	 */
-	protected function _alter_schema(callable $callback)
+	protected function alter_schema(callable $callback)
 	{
 		try
 		{
@@ -514,7 +512,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_create_table(Schema $schema, string $table_name, array $table_data, bool $safe_check = false): void
+	protected function schema_create_table(Schema $schema, string $table_name, array $table_data, bool $safe_check = false): void
 	{
 		if ($safe_check && $this->sql_table_exists($table_name))
 		{
@@ -585,7 +583,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_drop_table(Schema $schema, string $table_name, bool $safe_check = false): void
+	protected function schema_drop_table(Schema $schema, string $table_name, bool $safe_check = false): void
 	{
 		if ($safe_check && !$schema->hasTable($table_name))
 		{
@@ -604,7 +602,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_column_add(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
+	protected function schema_column_add(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
 	{
 		$this->alter_table(
 			$schema,
@@ -634,7 +632,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_column_change(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
+	protected function schema_column_change(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
 	{
 		$this->alter_table(
 			$schema,
@@ -659,7 +657,7 @@ class doctrine implements tools_interface, tools
 					$index_columns = array_map('strtolower', $index->getUnquotedColumns());
 					if (array_search($column_name, $index_columns, true) !== false)
 					{
-						$this->_recreate_index($table, $index, $index_columns);
+						$this->recreate_index($table, $index, $index_columns);
 					}
 				}
 			}
@@ -675,16 +673,16 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_column_change_add(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
+	protected function schema_column_change_add(Schema $schema, string $table_name, string $column_name, array $column_data, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
 		if ($table->hasColumn($column_name))
 		{
-			$this->_schema_column_change($schema, $table_name, $column_name, $column_data, $safe_check);
+			$this->schema_column_change($schema, $table_name, $column_name, $column_data, $safe_check);
 		}
 		else
 		{
-			$this->_schema_column_add($schema, $table_name, $column_name, $column_data, $safe_check);
+			$this->schema_column_add($schema, $table_name, $column_name, $column_data, $safe_check);
 		}
 	}
 
@@ -696,7 +694,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_column_remove(Schema $schema, string $table_name, string $column_name, bool $safe_check = false): void
+	protected function schema_column_remove(Schema $schema, string $table_name, string $column_name, bool $safe_check = false): void
 	{
 		$this->alter_table(
 			$schema,
@@ -731,7 +729,7 @@ class doctrine implements tools_interface, tools
 					if ($key !== false)
 					{
 						unset($index_columns[$key]);
-						$this->_recreate_index($table, $index, $index_columns);
+						$this->recreate_index($table, $index, $index_columns);
 					}
 				}
 				$table->dropColumn($column_name);
@@ -748,7 +746,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_create_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
+	protected function schema_create_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
@@ -770,7 +768,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_create_unique_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
+	protected function schema_create_unique_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
@@ -791,7 +789,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_index_drop(Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
+	protected function schema_index_drop(Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
 
@@ -811,7 +809,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _schema_create_primary_key(Schema $schema, $column, string $table_name, bool $safe_check = false): void
+	protected function schema_create_primary_key(Schema $schema, $column, string $table_name, bool $safe_check = false): void
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
@@ -828,7 +826,7 @@ class doctrine implements tools_interface, tools
 	 *
 	 * @throws SchemaException
 	 */
-	protected function _recreate_index(Table $table, Index $index, array $new_columns): void
+	protected function recreate_index(Table $table, Index $index, array $new_columns): void
 	{
 		if ($index->isPrimary())
 		{

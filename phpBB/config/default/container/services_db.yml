@@ -8,7 +8,9 @@ services:
         synthetic: true
 
     dbal.conn.doctrine:
-        synthetic: true
+        class: Doctrine\DBAL\Connection
+        factory: ['phpbb\db\doctrine\connection_factory', 'get_connection']
+        arguments: ['@config.php']
 
 # ----- DB Tools -----
     dbal.tools.factory:

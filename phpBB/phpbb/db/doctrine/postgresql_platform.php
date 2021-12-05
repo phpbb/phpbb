@@ -95,7 +95,7 @@ class postgresql_platform extends PostgreSQL94Platform
 		$post_sql = [];
 		foreach ($columns as $column_name => $column)
 		{
-			if (! empty($column['autoincrement']))
+			if (!empty($column['autoincrement']))
 			{
 				$sequence = new Sequence($this->getIdentitySequenceName($name, $column_name));
 				$sql[] = $this->getCreateSequenceSQL($sequence);
@@ -113,7 +113,8 @@ class postgresql_platform extends PostgreSQL94Platform
 	}
 
 	/**
-	 * @param mixed[] $column
+	 * @param array $column
+	 * @return bool
 	 */
 	private function isSerialColumn(array $column): bool
 	{
@@ -138,7 +139,7 @@ class postgresql_platform extends PostgreSQL94Platform
                        1 AS increment_by
                 FROM   information_schema.sequences
                 WHERE  sequence_schema NOT LIKE 'pg\_%'
-                AND    sequence_schema != 'information_schema'";
+                AND    sequence_schema <> 'information_schema'";
 	}
 
 	/**

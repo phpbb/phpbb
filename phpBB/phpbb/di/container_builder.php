@@ -13,7 +13,6 @@
 
 namespace phpbb\di;
 
-use phpbb\db\doctrine\connection_factory;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -50,16 +49,6 @@ class container_builder
 	 * @var ContainerBuilder
 	 */
 	protected $container;
-
-	/**
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $dbal_connection = null;
-
-	/**
-	 * @var \Doctrine\DBAL\Connection
-	 */
-	private $dbal_connection_doctrine;
 
 	/**
 	 * Indicates whether extensions should be used (default to true).
@@ -579,24 +568,20 @@ class container_builder
 		$config_data = $this->config_php_file->get_all();
 		if (!empty($config_data))
 		{
-			if ($this->dbal_connection === null)
-			{
-				$dbal_driver_class = \phpbb\config_php_file::convert_30_dbms_to_31($this->config_php_file->get('dbms'));
-				/** @var \phpbb\db\driver\driver_interface $dbal_connection */
-				$this->dbal_connection = new $dbal_driver_class();
-				$this->dbal_connection->sql_connect(
-					$this->config_php_file->get('dbhost'),
-					$this->config_php_file->get('dbuser'),
-					$this->config_php_file->get('dbpasswd'),
-					$this->config_php_file->get('dbname'),
-					$this->config_php_file->get('dbport'),
-					false,
-					defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
-				);
-				$this->dbal_connection_doctrine = connection_factory::get_connection($this->config_php_file);
-			}
-			$this->container->set('dbal.conn.driver', $this->dbal_connection);
-			$this->container->set('dbal.conn.doctrine', $this->dbal_connection_doctrine);
+			$dbal_driver_class = \phpbb\config_php_file::convert_30_dbms_to_31($this->config_php_file->get('dbms'));
+			/** @var \phpbb\db\driver\driver_interface $dbal_connection */
+			$dbal_connection = new $dbal_driver_class();
+			$dbal_connection->sql_connect(
+				$this->config_php_file->get('dbhost'),
+				$this->config_php_file->get('dbuser'),
+				$this->config_php_file->get('dbpasswd'),
+				$this->config_php_file->get('dbname'),
+				$this->config_php_file->get('dbport'),
+				false,
+				defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
+			);
+			//$this->dbal_connection_doctrine = connection_factory::get_connection($this->config_php_file);
+			$this->container->set('dbal.conn.driver', $dbal_connection);
 		}
 	}
 

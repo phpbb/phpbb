@@ -386,7 +386,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	public function test_perform_schema_changes_drop_columns()
 	{
 		$db_tools = $this->getMockBuilder('\phpbb\db\tools\doctrine')
-			->onlyMethods(array('sql_column_exists', '_schema_column_remove'))
+			->onlyMethods(array('sql_column_exists', 'schema_column_remove'))
 			->setConstructorArgs(array($this->doctrine_db))
 			->getMock();
 
@@ -397,7 +397,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 
 		// drop columns
-		$db_tools->expects($this->exactly(2))->method('_schema_column_remove')
+		$db_tools->expects($this->exactly(2))->method('schema_column_remove')
 			->withConsecutive(
 				[$this->isInstanceOf(Schema::class), 'existing_table', 'dropped_column_1', true],
 				[$this->isInstanceOf(Schema::class), 'existing_table', 'dropped_column_2', true]

@@ -4,7 +4,7 @@
  * This file is part of the phpBB Forum Software package.
  *
  * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license       GNU General Public License, version 2 (GPL-2.0)
+ * @license GNU General Public License, version 2 (GPL-2.0)
  *
  * For full copyright and license information, please see
  * the docs/CREDITS.txt file.
@@ -35,7 +35,7 @@ class statement implements DriverStatement
 	/**
 	 * {@inheritDoc}
 	 */
-	public function bindValue($param, $value, $type = ParameterType::STRING)
+	public function bindValue($param, $value, $type = ParameterType::STRING): bool
 	{
 		return $this->wrapped->bindValue($param, $value, $type);
 	}
@@ -43,7 +43,7 @@ class statement implements DriverStatement
 	/**
 	 * {@inheritDoc}
 	 */
-	public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null)
+	public function bindParam($param, &$variable, $type = ParameterType::STRING, $length = null): bool
 	{
 		return $this->wrapped->bindParam($param, $variable, $type, $length);
 	}
