@@ -170,9 +170,9 @@ class db extends config
 		if (!isset($this->config[$key]))
 		{
 			$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
-				'config_name'	=> $this->db->sql_escape($key),
-				'config_value'	=> $this->db->sql_escape($new_value),
-				'is_dynamic'	=> ($use_cache) ? 0 : 1));
+				'config_name'	=> $key,
+				'config_value'	=> $new_value,
+				'is_dynamic'	=> $use_cache ? 0 : 1));
 			$this->db->sql_query($sql);
 		}
 
