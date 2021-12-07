@@ -86,6 +86,17 @@ class phpbb_config_db_test extends phpbb_database_test_case
 		$this->cache->checkVar($this, 'config', array('foo' => '23', 'foobar' => '5'));
 	}
 
+	public function test_set_new_json()
+	{
+		$json_value = '{"menu":{"id":"file","value":"File"}}';
+		$this->config->set('foobar_json', $json_value);
+		$this->assertEquals($json_value, $this->config['foobar_json']);
+
+		// re-read config and populate cache
+		$config2 = new \phpbb\config\db($this->db, $this->cache, 'phpbb_config');
+		$this->cache->checkVar($this, 'config', ['foo' => '23', 'foobar_json' => $json_value]);
+	}
+
 	public function test_set_new_uncached()
 	{
 		$this->config->set('foobar', '5', false);

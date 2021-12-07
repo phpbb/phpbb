@@ -48,6 +48,13 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 		$this->assertSame('phpbb', $this->config_text->get('barz'));
 	}
 
+	public function test_set_new_get_json()
+	{
+		$json_value = '{"menu":{"id":"file","value":"File"}}';
+		$this->config_text->set('foobar_json', $json_value);
+		$this->assertEquals($json_value, $this->config_text->get('foobar_json'));
+	}
+
 	public function test_set_replace_get()
 	{
 		$this->config_text->set('foo', '24');
