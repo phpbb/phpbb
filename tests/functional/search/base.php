@@ -68,6 +68,9 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->assert_search_found('phpbb3+installation', 1, 3);
 		$this->assert_search_found('foosubject+barsearch', 1, 2);
 		$this->assert_search_not_found('loremipsumdedo');
+		$this->assert_search_found('barsearch-testing', 1, 2); // test hyphen ignored
+		$this->assert_search_found('barsearch+-+testing', 1, 2); // test hyphen wrapped with space ignored
+		$this->assert_search_not_found('barsearch+-testing'); // test excluding keyword
 
 		$this->login();
 		$this->admin_login();
