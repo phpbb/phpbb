@@ -57,8 +57,8 @@ class fulltext_sphinx implements search_backend_interface
 	protected $indexes;
 
 	/**
-	 * Sphinx searchd client object
-	 * @var SphinxClient
+	 * Sphinx search client object
+	 * @var \SphinxClient
 	 */
 	protected $sphinx;
 
@@ -857,7 +857,7 @@ class fulltext_sphinx implements search_backend_interface
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
 		fulltext_sphinx_id for this, as it should be unique. */
-		$config_object = new \phpbb\search\sphinx\config($this->config_file_data);
+		$config_object = new \phpbb\search\backend\sphinx\config();
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype . ' # mysql or pgsql'),
