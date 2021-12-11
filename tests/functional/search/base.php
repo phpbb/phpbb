@@ -27,7 +27,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(0, $crawler->filter('.postbody')->count());
-		$split_keywords_string = str_replace(array('+', '-'), ' ', $keywords);
+		$split_keywords_string = str_replace('+', ' ', $keywords);
 		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
 	}
 
