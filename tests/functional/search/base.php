@@ -47,8 +47,19 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		if ($values["config[search_type]"] != $this->search_backend)
 		{
 			$values["config[search_type]"] = $this->search_backend;
+
+			if (strpos($this->search_backend, 'fulltext_sphinx'))
+			{
+				// Set board Sphinx id in according to respective setup-sphinx.sh $ID value
+				$sql = 'UPDATE ' . CONFIG_TABLE . "
+					SET config_value = '" . $this->db->sql_escape('gokw5rvjvvxp8kgj') . "'
+					WHERE config_name = '" . $this->db->sql_escape('fulltext_sphinx_id') . "'";
+				$this->db->sql_query($sql);
+			}
+
 			$form->setValues($values);
 			$crawler = self::submit($form);
+			$this->purge_cache();
 
 			$form = $crawler->selectButton('Yes')->form();
 			$values = $form->getValues();
