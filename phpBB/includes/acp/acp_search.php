@@ -340,7 +340,7 @@ class acp_search
 								$this->search->index_remove($ids, $posters, $forum_ids);
 							}
 
-							$post_counter = end($ids);
+							$post_counter = $ids[count($ids) - 1];
 						}
 						// save the current state
 						$this->save_state();
