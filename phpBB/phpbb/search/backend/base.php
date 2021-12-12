@@ -331,7 +331,7 @@ abstract class base implements search_backend_interface
 
 		while (still_on_time() && $post_counter <= $max_post_id)
 		{
-			$rows = $this->get_posts_between($post_counter + 1, $post_counter + self::BATCH_SIZE);
+			$rows = $this->get_posts_batch_after($post_counter);
 
 			if ($this->db->sql_buffer_nested_transactions())
 			{
@@ -346,9 +346,8 @@ abstract class base implements search_backend_interface
 					$this->index('post', (int) $row['post_id'], $row['post_text'], $row['post_subject'], (int) $row['poster_id'], (int) $row['forum_id']);
 				}
 				$row_count++;
+				$post_counter = $row['post_id'];
 			}
-
-			$post_counter += self::BATCH_SIZE;
 		}
 
 		// pretend the number of posts was as big as the number of ids we indexed so far
@@ -385,7 +384,7 @@ abstract class base implements search_backend_interface
 		$row_count = 0;
 		while (still_on_time() && $post_counter <= $max_post_id)
 		{
-			$rows = $this->get_posts_between($post_counter + 1, $post_counter + self::BATCH_SIZE);
+			$rows = $this->get_posts_batch_after($post_counter);
 			$ids = $posters = $forum_ids = array();
 			foreach ($rows as $row)
 			{
@@ -400,7 +399,7 @@ abstract class base implements search_backend_interface
 				$this->index_remove($ids, $posters, $forum_ids);
 			}
 
-			$post_counter += self::BATCH_SIZE;
+			$post_counter = end($ids);
 		}
 
 		if ($post_counter <= $max_post_id)
@@ -445,19 +444,17 @@ abstract class base implements search_backend_interface
 	}
 
 	/**
-	 * Get posts between 2 ids
+	 * Get batch of posts after id
 	 *
-	 * @param int $initial_id
-	 * @param int $final_id
+	 * @param int $post_id
 	 * @return \Generator
 	 */
-	protected function get_posts_between(int $initial_id, int $final_id): \Generator
+	protected function get_posts_batch_after(int $post_id): \Generator
 	{
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 			FROM ' . POSTS_TABLE . '
-			WHERE post_id >= ' . $initial_id . '
-				AND post_id <= ' . $final_id;
-		$result = $this->db->sql_query($sql);
+			WHERE post_id > ' . $post_id;
+		$result = $this->db->sql_query_limit($sql, self::BATCH_SIZE);
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
