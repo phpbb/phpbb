@@ -558,15 +558,18 @@ jobs:
               run: |
                   $postgreSqlSvc = Get-Service "postgresql*"
                   Set-Service $postgreSqlSvc.Name -StartupType manual
+                  $runningStatus = [System.ServiceProcess.ServiceControllerStatus]::Running
+                  $maxStartTimeout = New-TimeSpan -Seconds 30
                   try {
                     $postgreSqlSvc.Start()
+                    $postgreSqlSvc.WaitForStatus($runningStatus, $maxStartTimeout)
                   } catch  {
                     $_ | select *
                   }
                   [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";${env:PGBIN}")
                   $env:PGPASSWORD = 'root'
-                  psql -c hot_standby=on
-                  psql -c wal_level=minimal
+                  psql -c 'ALTER SYSTEM SET hot_standby = on;' -U postgres
+                  psql -c 'ALTER SYSTEM SET wal_level = minimal;' -U postgres
                   psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
                   psql -c 'create database phpbb_tests;' -U postgres
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
