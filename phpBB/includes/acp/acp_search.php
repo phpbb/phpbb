@@ -322,9 +322,8 @@ class acp_search
 						{
 							$sql = 'SELECT post_id, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
-								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
+								WHERE post_id > ' . (int) $post_counter;
+							$result = $db->sql_query_limit($sql, $this->batch_size);
 
 							$ids = $posters = $forum_ids = array();
 							while ($row = $db->sql_fetchrow($result))
@@ -341,7 +340,7 @@ class acp_search
 								$this->search->index_remove($ids, $posters, $forum_ids);
 							}
 
-							$post_counter += $this->batch_size;
+							$post_counter = end($ids);
 						}
 						// save the current state
 						$this->save_state();
@@ -393,9 +392,8 @@ class acp_search
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
-								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
+								WHERE post_id > ' . (int) $post_counter;
+							$result = $db->sql_query_limit($sql, $this->batch_size);
 
 							$buffer = $db->sql_buffer_nested_transactions();
 
@@ -416,13 +414,12 @@ class acp_search
 									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 								}
 								$row_count++;
+								$post_counter = $row['post_id'];
 							}
 							if (!$buffer)
 							{
 								$db->sql_freeresult($result);
 							}
-
-							$post_counter += $this->batch_size;
 						}
 						// save the current state
 						$this->save_state();
