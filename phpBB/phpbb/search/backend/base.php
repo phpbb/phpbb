@@ -357,7 +357,7 @@ abstract class base implements search_backend_interface
 		$this->tidy();
 		$this->config['num_posts'] = $num_posts;
 
-		if ($post_counter <= $max_post_id)
+		if ($post_counter < $max_post_id)
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
@@ -402,7 +402,7 @@ abstract class base implements search_backend_interface
 			$post_counter = $ids[count($ids) - 1];
 		}
 
-		if ($post_counter <= $max_post_id)
+		if ($post_counter < $max_post_id)
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
