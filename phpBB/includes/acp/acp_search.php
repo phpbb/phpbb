@@ -345,7 +345,7 @@ class acp_search
 						// save the current state
 						$this->save_state();
 
-						if ($post_counter <= $this->max_post_id)
+						if ($post_counter < $this->max_post_id)
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
@@ -431,7 +431,7 @@ class acp_search
 						$this->search->tidy();
 						$config['num_posts'] = $num_posts;
 
-						if ($post_counter <= $this->max_post_id)
+						if ($post_counter < $this->max_post_id)
 						{
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
