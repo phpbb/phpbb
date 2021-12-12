@@ -554,8 +554,11 @@ jobs:
               run: |
                   $postgreSqlSvc = Get-Service "postgresql*"
                   Set-Service $postgreSqlSvc.Name -StartupType manual
+                  $runningStatus = [System.ServiceProcess.ServiceControllerStatus]::Running
+                  $maxStartTimeout = New-TimeSpan -Seconds 30
                   try {
                     $postgreSqlSvc.Start()
+                    $postgreSqlSvc.WaitForStatus($runningStatus, $maxStartTimeout)
                   } catch  {
                     $_ | select *
                   }
