@@ -150,8 +150,19 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		if ($values["config[search_type]"] != $this->search_backend)
 		{
 			$values["config[search_type]"] = $this->search_backend;
+
+			if (strpos($this->search_backend, 'fulltext_sphinx'))
+			{
+				// Set board Sphinx id in according to respective setup-sphinx.sh $ID value
+				$sql = 'UPDATE ' . CONFIG_TABLE . "
+					SET config_value = '" . $this->db->sql_escape('gokw5rvjvvxp8kgj') . "'
+					WHERE config_name = '" . $this->db->sql_escape('fulltext_sphinx_id') . "'";
+				$this->db->sql_query($sql);
+			}
+
 			$form->setValues($values);
 			$crawler = self::submit($form);
+			$this->purge_cache();
 
 			$form = $crawler->selectButton($this->lang('YES'))->form();
 			$values = $form->getValues();
@@ -244,7 +255,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually created
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $search_type . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $search_type . ' td')->reduce(
+			function ($node, $i) {
+				// Find the value of total posts indexed
+				return (strpos($node->text(), $this->lang('FULLTEXT_MYSQL_TOTAL_POSTS')) !== false  || strpos($node->text(), $this->lang('TOTAL_WORDS')) !== false);
+			})
+		->nextAll()->eq(0)->text();
 		$this->assertTrue($posts_indexed > 0);
 	}
 
@@ -281,7 +297,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually removed
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $this->search_backend . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $this->search_backend . ' td')->reduce(
+			function ($node, $i) {
+				// Find the value of total posts indexed
+				return (strpos($node->text(), $this->lang('FULLTEXT_MYSQL_TOTAL_POSTS')) !== false  || strpos($node->text(), $this->lang('TOTAL_WORDS')) !== false);
+			})
+		->nextAll()->eq(0)->text();
 		$this->assertEquals(0, $posts_indexed);
 	}
 }

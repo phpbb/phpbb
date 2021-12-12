@@ -211,6 +211,10 @@ jobs:
               run: |
                   .github/setup-ldap.sh
 
+            - name: Setup SPHINX
+              run: |
+                  .github/setup-sphinx.sh
+
             - name: Lint tests
               if: ${{ matrix.SLOWTESTS != 1 && steps.database-type.outputs.db == 'mysql' }}
               run: phpBB/vendor/bin/phpunit tests/lint_test.php
