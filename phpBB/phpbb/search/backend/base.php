@@ -399,7 +399,7 @@ abstract class base implements search_backend_interface
 				$this->index_remove($ids, $posters, $forum_ids);
 			}
 
-			$post_counter = end($ids);
+			$post_counter = $ids[count($ids) - 1];
 		}
 
 		if ($post_counter <= $max_post_id)
