@@ -598,14 +598,16 @@ class acp_search
 
 		$sql = 'SELECT COUNT(post_id) as done_count
 			FROM ' . POSTS_TABLE . '
-			WHERE post_id <= ' . (int) $post_counter;
+			WHERE post_id <= ' . (int) $post_counter . '
+			ORDER BY post_id ASC';
 		$result = $db->sql_query($sql);
 		$done_count = (int) $db->sql_fetchfield('done_count');
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(post_id) as remain_count
 			FROM ' . POSTS_TABLE . '
-			WHERE post_id > ' . (int) $post_counter;
+			WHERE post_id > ' . (int) $post_counter . '
+			ORDER BY post_id ASC';
 		$result = $db->sql_query($sql);
 		$remain_count = (int) $db->sql_fetchfield('remain_count');
 		$db->sql_freeresult($result);
