@@ -322,7 +322,8 @@ class acp_search
 						{
 							$sql = 'SELECT post_id, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
-								WHERE post_id > ' . (int) $post_counter;
+								WHERE post_id > ' . (int) $post_counter . '
+								ORDER BY post_id ASC';
 							$result = $db->sql_query_limit($sql, $this->batch_size);
 
 							$ids = $posters = $forum_ids = array();
@@ -392,7 +393,8 @@ class acp_search
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
-								WHERE post_id > ' . (int) $post_counter;
+								WHERE post_id > ' . (int) $post_counter . '
+								ORDER BY post_id ASC';
 							$result = $db->sql_query_limit($sql, $this->batch_size);
 
 							$buffer = $db->sql_buffer_nested_transactions();
