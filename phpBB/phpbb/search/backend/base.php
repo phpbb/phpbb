@@ -452,8 +452,9 @@ abstract class base implements search_backend_interface
 	protected function get_posts_batch_after(int $post_id): \Generator
 	{
 		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-			FROM ' . POSTS_TABLE . '
-			WHERE post_id > ' . $post_id;
+				FROM ' . POSTS_TABLE . '
+				WHERE post_id > ' . (int) $post_id . '
+				ORDER BY post_id ASC';
 		$result = $this->db->sql_query_limit($sql, self::BATCH_SIZE);
 
 		while ($row = $this->db->sql_fetchrow($result))
