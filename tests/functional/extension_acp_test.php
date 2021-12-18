@@ -76,7 +76,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->add_lang('acp/extensions');
+		$this->add_lang(['acp/common', 'acp/extensions']);
 	}
 
 	public function test_list()
@@ -263,5 +263,21 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Ensure catalog has any records in extensions list
 		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
+	}
+
+	public function test_extensions_catalog_installing_extension()
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		// Ensure catalog has any records in extensions list
+		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
+
+		// Attempt to install any extension which is 1st in the list
+		$extension_install_link = $crawler->filter('tbody')->selectLink($this->lang('INSTALL'))->link();
+		$crawler = self::$client->click($extension_install_link);
+
+		// Assert any action result is presented regardless of success
+		$this->assertTrue(strlen($crawler->filter('.console-output > pre')->text()) > 0, $this->get_content());
 	}
 }
