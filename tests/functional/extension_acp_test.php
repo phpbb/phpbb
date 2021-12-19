@@ -267,17 +267,29 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_extensions_catalog_installing_extension()
 	{
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		// Lets check page 6 where 'Scroll Page' should be listed
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&start=100&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 
 		// Ensure catalog has any records in extensions list
 		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
 
-		// Attempt to install any extension which is 1st in the list
-		$extension_install_link = $crawler->filter('tbody')->selectLink($this->lang('INSTALL'))->link();
-		$crawler = self::$client->click($extension_install_link);
+		// Attempt to install vse/scrollpage extension
+		$extension_install_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('INSTALL'))->link();
 
-		// Assert any action result is presented regardless of success
-		$this->assertTrue(strlen($crawler->filter('.console-output > pre')->text()) > 0, $this->get_content());
+		$crawler = self::$client->click($extension_install_link);
+		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+
+		// Assert there's console log output
+		$this->assertStringContainsString('Installing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure installed extension appears in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
 	}
 }

@@ -89,7 +89,7 @@ class manager implements manager_interface
 		$managed_packages = array_merge($this->get_all_managed_packages(), $packages);
 		ksort($managed_packages);
 
-		$this->installer->install($managed_packages, array_keys($packages), $io);
+		$this->installer->install($managed_packages, [], $io);
 
 		$this->post_install($packages, $io);
 
