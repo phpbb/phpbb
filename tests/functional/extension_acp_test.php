@@ -267,29 +267,111 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_extensions_catalog_installing_extension()
 	{
-		// Lets check page 6 where 'Scroll Page' should be listed
+		// Lets check page 6 where 'Scroll Page' and 'Scroll To Top' should be listed
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&start=100&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 
-		// Ensure catalog has any records in extensions list
-		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
-
-		// Attempt to install vse/scrollpage extension
-		$extension_install_link = $crawler->filter('tr')->reduce(
+		// Get Install links for both extensions
+		$scrollpage_install_link = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
 				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
 			}
 		)->selectLink($this->lang('INSTALL'))->link();
 
-		$crawler = self::$client->click($extension_install_link);
-		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+		$scrolltotop_install_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll To Top') !== false);
+			}
+		)->selectLink($this->lang('INSTALL'))->link();
 
+		// Attempt to install vse/scrollpage extension
+		$crawler = self::$client->click($scrollpage_install_link);
+		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
 		$this->assertStringContainsString('Installing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
 
+		// Attempt to install vse/scrolltotop extension
+		$crawler = self::$client->click($scrolltotop_install_link);
+		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Installing vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+
 		// Ensure installed extension appears in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringContainsString('Scroll To Top', $crawler->filter('strong[title="vse/scrolltotop"]')->text());
 		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+	}
+
+	public function test_extensions_catalog_updating_extension()
+	{
+		// Enable 'Scroll Page' extension installed earlier
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$extension_enable_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_ENABLE'))->link();
+		$crawler = self::$client->click($extension_enable_link);
+		$form = $crawler->selectButton($this->lang('EXTENSION_ENABLE'))->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
+
+		// Update 'Scroll Page' enabled extension
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$scrollpage_update_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_UPDATE'))->link();
+		$crawler = self::$client->click($scrollpage_update_link);
+		$this->assertContainsLang('EXTENSIONS_UPDATED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Updating packages', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure installed extension still appears in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+	}
+
+	public function test_extensions_catalog_removing_extension()
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+
+		// Check if both enabled and disabled extensions have 'Remove' action available
+		$scrollpage_remove_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
+
+		$scrolltotop_remove_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll To Top') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
+
+		// Test extensions removal
+		// Remove 'Scroll Page' enabled extension
+		$crawler = self::$client->click($scrollpage_remove_link);
+		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Deleting ext/vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+
+		// Remove 'Scroll To Top' disabled extension
+		$crawler = self::$client->click($scrolltotop_remove_link);
+		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Deleting ext/vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure removed extensions do not appear in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringNotContainsString('Scroll Page', $this->get_content());
+		$this->assertStringNotContainsString('Scroll To Top', $this->get_content());
 	}
 }

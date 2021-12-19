@@ -838,10 +838,7 @@ class acp_extensions
 			{
 				$this->output_actions('enabled', [
 					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
-					'REMOVE' => [
-						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
-						'color' => '#BC2A4D;',
-					]
+					'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 				]);
 			}
 		}
@@ -922,10 +919,7 @@ class acp_extensions
 			{
 				$this->output_actions('disabled', [
 					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
-					'REMOVE' => [
-						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
-						'color' => '#BC2A4D;',
-					]
+					'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 				]);
 			}
 		}
@@ -997,6 +991,7 @@ class acp_extensions
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+				'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 			));
 		}
 	}
@@ -1009,11 +1004,12 @@ class acp_extensions
 	*/
 	private function output_actions($block, $actions)
 	{
-		foreach ($actions as $lang => $url)
+		foreach ($actions as $action => $url)
 		{
 			$this->template->assign_block_vars($block . '.actions', [
-				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
-				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
+				'ACTION'			=> $action,
+				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $action),
+				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $action . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $action . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
 			]);
 		}
