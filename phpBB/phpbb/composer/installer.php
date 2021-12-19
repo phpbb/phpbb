@@ -185,16 +185,16 @@ class installer
 		}
 		catch (\Exception $e)
 		{
-			$this->restore_cwd();
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
 
 		if ($result !== 0)
 		{
-			$this->restore_cwd();
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
