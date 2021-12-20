@@ -591,6 +591,7 @@ class installer
 				$repositories[] = [
 					'type' => 'composer',
 					'url' => $repository,
+					'canonical' => $this->packagist ? false : true,
 				];
 			}
 		}
