@@ -1858,9 +1858,9 @@ function mail_encode($str, $eol = "\r\n")
 
 	$scheme = $is_ascii ? 'Q' : 'B';
 
-	// Define start delimimter, end delimiter
+	// Define start delimiter, end delimiter
 	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
-	$start = $is_ascii ? '=?US-ASCII?' . $scheme . '?' : '=?UTF-8?' . $scheme . '?';
+	$start = '=?' . ($is_ascii ? 'US-ASCII' : 'UTF-8') . '?' . $scheme . '?';
 	$end = '?=';
 
 	// Maximum encoded-word length is 75 as per RFC 2047 section 2.
@@ -1908,7 +1908,7 @@ function mail_encode($str, $eol = "\r\n")
 		$is_quoted_printable && $line_length += strlen($char);
 	}
 
-	if ('' !== $line_data)
+	if ($line_data !== '')
 	{
 		if (!$is_quoted_printable)
 		{
