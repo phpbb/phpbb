@@ -26,6 +26,7 @@ To run an installation from the repo (and not from a pre-built package) on a loc
   cd phpBB
   php ../composer.phar install
   ```
+- Run without installation [![TeamCode try-it-now](https://static01.teamcode.com/badge/demo.svg)](https://www.teamcode.com/tin/clone?applicationId=273460556549484544)
 
 Alternatively, you can read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use Vagrant to develop and contribute to phpBB.
 
