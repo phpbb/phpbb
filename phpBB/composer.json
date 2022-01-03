@@ -63,6 +63,8 @@
 	},
 	"require-dev": {
 		"fabpot/goutte": "~3.2",
+		"iconify/json-tools": "^1.0",
+		"iconify/json": "^2.0",
 		"laravel/homestead": "~10.17",
 		"misantron/dbunit": "~5.0",
 		"phing/phing": "~2.4",

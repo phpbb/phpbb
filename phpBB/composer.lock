@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "916c46d7b578b93b8e444b88fbad585e",
+    "content-hash": "e37d0f88ca6502e2e7c8e8497642ae45",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -5252,6 +5252,77 @@
                 "source": "https://github.com/FriendsOfPHP/Goutte/tree/v3.3.1"
             },
             "time": "2020-11-01T09:30:18+00:00"
+        },
+        {
+            "name": "iconify/json",
+            "version": "2.0.19",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iconify/collections-json.git",
+                "reference": "3078c2bdd079bc3820c1a656cd71c6814e0c088d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iconify/collections-json/zipball/3078c2bdd079bc3820c1a656cd71c6814e0c088d",
+                "reference": "3078c2bdd079bc3820c1a656cd71c6814e0c088d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Iconify\\IconsJSON\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Iconify icons collection in JSON format",
+            "homepage": "https://iconify.design/icon-sets/",
+            "support": {
+                "issues": "https://github.com/iconify/collections-json/issues",
+                "source": "https://github.com/iconify/collections-json/tree/2.0.19"
+            },
+            "time": "2022-01-02T07:34:15+00:00"
+        },
+        {
+            "name": "iconify/json-tools",
+            "version": "1.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iconify/json-tools.php.git",
+                "reference": "3d24f282b309cb17e3cb80192ae071dd47bce9e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iconify/json-tools.php/zipball/3d24f282b309cb17e3cb80192ae071dd47bce9e0",
+                "reference": "3d24f282b309cb17e3cb80192ae071dd47bce9e0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "iconify/json": "1.*",
+                "phpunit/phpunit": "9.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Iconify\\JSONTools\\": "lib"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Functions for manipulating Iconify JSON SVG collections.",
+            "homepage": "https://iconify.design/",
+            "support": {
+                "issues": "https://github.com/iconify/json-tools.php/issues",
+                "source": "https://github.com/iconify/json-tools.php/tree/1.0.10"
+            },
+            "time": "2020-12-16T13:04:11+00:00"
         },
         {
             "name": "laravel/homestead",
