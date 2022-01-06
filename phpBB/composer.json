@@ -70,7 +70,9 @@
 		"squizlabs/php_codesniffer": "~3.4",
 		"symfony/browser-kit": "^5.4",
 		"symfony/css-selector": "^5.4",
-		"symfony/dom-crawler": "^5.4"
+		"symfony/dom-crawler": "^5.4",
+		"vimeo/psalm": "^4.14",
+		"psalm/plugin-symfony": "^3.1"
 	},
 	"extra": {
 		"branch-alias": {
