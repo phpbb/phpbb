@@ -154,7 +154,7 @@ interface provider_interface
 	* @return	string|null	Returns a string with a language constant if there
 	*						is data missing or null if there is no error.
 	*/
-	public function login_link_has_necessary_data($login_link_data);
+	public function login_link_has_necessary_data(array $login_link_data);
 
 	/**
 	* Links an external account to a phpBB account.

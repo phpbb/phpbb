@@ -450,7 +450,18 @@ class phpbb_test_case_helpers
 
 		// Cache the parser and renderer with a key based on this method's arguments
 		$cache = new \phpbb\cache\driver\file($cache_dir);
-		$prefix = '_s9e_' . md5(serialize(func_get_args()));
+
+		// Don't serialize unserializable resource/object arguments
+		// See https://www.php.net/manual/en/function.serialize.php#refsect1-function.serialize-notes
+		$args = func_get_args();
+		foreach ($args as $key => $arg)
+		{
+			if (is_resource($arg) || (is_object($arg) && (!is_a($arg, 'Serializable') && !method_exists($arg, '__serialize'))))
+			{
+				unset($args[$key]);
+			}
+		}
+		$prefix = '_s9e_' . md5(serialize($args));
 		$cache_key_parser = $prefix . '_parser';
 		$cache_key_renderer = $prefix . '_renderer';
 		$container->set('cache.driver', $cache);
@@ -571,7 +582,6 @@ class phpbb_test_case_helpers
 
 			$user->date_format = 'Y-m-d H:i:s';
 			$user->optionset('viewcensors', true);
-			$user->optionset('viewflash', true);
 			$user->optionset('viewimg', true);
 			$user->optionset('viewsmilies', true);
 			$user->timezone = new \DateTimeZone('UTC');

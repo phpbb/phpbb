@@ -368,6 +368,21 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
 			),
 			array(
+				'lang_twig.html',
+				array(),
+				array(),
+				array(),
+				"VARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE",
+			),
+			array(
+				'lang_twig.html',
+				array(),
+				array(),
+				array(),
+				"Value'\n1 O'Clock\nValue\\u0027\n1\\u0020O\\u0027Clock",
+				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
+			),
+			array(
 				'loop_nested_multilevel_ref.html',
 				array(),
 				array(),

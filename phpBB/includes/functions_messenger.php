@@ -1851,14 +1851,23 @@ class smtp_class
 */
 function mail_encode($str, $eol = "\r\n")
 {
-	// define start delimimter, end delimiter and spacer
-	$start = "=?UTF-8?B?";
+	// Check if string contains ASCII only characters
+	$is_ascii = strlen($str) === utf8_strlen($str);
+
+	// Define start delimimter, end delimiter and spacer
+	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
+	$start = $is_ascii ? "=?US-ASCII?Q?" : "=?UTF-8?B?";
 	$end = "?=";
 	$delimiter = "$eol ";
 
-	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
-	$split_length = 60;
-	$encoded_str = base64_encode($str);
+	// Maximum encoded-word length is 75 as per RFC 2047 section 2.
+	// $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	$split_length = 75 - strlen($start . $delimiter . $end);
+	$split_length = $split_length - $split_length % 4;
+
+	// Use the Quoted-Printable encoding for ASCII strings to avoid unnecessary encoding in Base64
+	// quoted_printable_encode() splits lines at length of 75 characters with =\r\n delimiter, amend this feature
+	$encoded_str = $is_ascii ? str_replace("=\r\n", '', quoted_printable_encode($str)) : base64_encode($str);
 
 	// If encoded string meets the limits, we just return with the correct data.
 	if (strlen($encoded_str) <= $split_length)
@@ -1867,7 +1876,7 @@ function mail_encode($str, $eol = "\r\n")
 	}
 
 	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
-	if (strlen($str) === utf8_strlen($str))
+	if ($is_ascii)
 	{
 		return $start . implode($end . $delimiter . $start, str_split($encoded_str, $split_length)) . $end;
 	}
@@ -1896,7 +1905,7 @@ function mail_encode($str, $eol = "\r\n")
  */
 function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 {
-	global $config, $phpbb_root_path, $phpEx;
+	global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 	// Convert Numeric Character References to UTF-8 chars (ie. Emojis)
 	$subject = utf8_decode_ncr($subject);
@@ -1925,7 +1934,53 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 */
 	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
 
+	/**
+	 * Modify data before sending out emails with PHP's mail function
+	 *
+	 * @event core.phpbb_mail_before
+	 * @var	string	to						The message recipient
+	 * @var	string	subject					The message subject
+	 * @var	string	msg						The message text
+	 * @var string	headers					The email headers
+	 * @var string	eol						The endline character
+	 * @var string	additional_parameters	The additional parameters
+	 * @since 3.3.6-RC1
+	 */
+	$vars = [
+		'to',
+		'subject',
+		'msg',
+		'headers',
+		'eol',
+		'additional_parameters',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_before', compact($vars)));
+
 	$result = mail($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers, $additional_parameters);
+
+	/**
+	 * Execute code after sending out emails with PHP's mail function
+	 *
+	 * @event core.phpbb_mail_after
+	 * @var	string	to						The message recipient
+	 * @var	string	subject					The message subject
+	 * @var	string	msg						The message text
+	 * @var string	headers					The email headers
+	 * @var string	eol						The endline character
+	 * @var string	additional_parameters	The additional parameters
+	 * @var bool	result					True if the email was sent, false otherwise
+	 * @since 3.3.6-RC1
+	 */
+	$vars = [
+		'to',
+		'subject',
+		'msg',
+		'headers',
+		'eol',
+		'additional_parameters',
+		'result',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.phpbb_mail_after', compact($vars)));
 
 	$collector->uninstall();
 	$err_msg = $collector->format_errors();

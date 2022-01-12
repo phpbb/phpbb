@@ -29,9 +29,6 @@ $auth->acl($user->data);
 
 
 // Grab only parameters needed here
-$post_id	= $request->variable('p', 0);
-$topic_id	= $request->variable('t', 0);
-$forum_id	= $request->variable('f', 0);
 $draft_id	= $request->variable('d', 0);
 
 $preview	= (isset($_POST['preview'])) ? true : false;
@@ -43,6 +40,74 @@ $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load || $preview);
 $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
+
+// Only assign required URL parameters
+$forum_id = 0;
+$topic_id = 0;
+$post_id = 0;
+
+switch ($mode)
+{
+	case 'popup':
+	case 'smilies':
+		$forum_id = $request->variable('f', 0);
+	break;
+
+	case 'post':
+		$forum_id = $request->variable('f', 0);
+		if (!$forum_id)
+		{
+			trigger_error('NO_FORUM');
+		}
+	break;
+
+	case 'bump':
+	case 'reply':
+		$topic_id = $request->variable('t', 0);
+		if ($topic_id)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . TOPICS_TABLE . "
+				WHERE topic_id = $topic_id";
+			$result = $db->sql_query($sql);
+			$forum_id = (int) $db->sql_fetchfield('forum_id');
+			$db->sql_freeresult($result);
+		}
+
+		if (!$topic_id || !$forum_id)
+		{
+			trigger_error('NO_TOPIC');
+		}
+	break;
+
+	case 'edit':
+	case 'delete':
+	case 'quote':
+	case 'soft_delete':
+		$post_id = $request->variable('p', 0);
+		if ($post_id)
+		{
+			$topic_forum = [];
+
+			$sql = 'SELECT t.topic_id, t.forum_id
+				FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+				WHERE p.post_id = ' . $post_id . '
+				AND t.topic_id = p.topic_id';
+			$result = $db->sql_query($sql);
+			$topic_forum = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		if (!$post_id || !$topic_forum)
+		{
+			$user->setup('posting');
+			trigger_error('NO_POST');
+		}
+
+		$topic_id = (int) $topic_forum['topic_id'];
+		$forum_id = (int) $topic_forum['forum_id'];
+	break;
+}
 
 // If the user is not allowed to delete the post, we try to soft delete it, so we overwrite the mode here.
 if ($mode == 'delete' && (($confirm && !$request->is_set_post('delete_permanent')) || !$auth->acl_gets('f_delete', 'm_delete', $forum_id)))
@@ -104,14 +169,8 @@ extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compa
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel)
 {
-	$f = ($forum_id) ? 'f=' . $forum_id . '&amp;' : '';
-	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $f . 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
+	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
 	redirect($redirect);
-}
-
-if (in_array($mode, array('post', 'reply', 'quote', 'edit', 'delete')) && !$forum_id)
-{
-	trigger_error('NO_FORUM');
 }
 
 /* @var $phpbb_content_visibility \phpbb\content_visibility */
@@ -128,21 +187,6 @@ switch ($mode)
 
 	case 'bump':
 	case 'reply':
-		if (!$topic_id)
-		{
-			trigger_error('NO_TOPIC');
-		}
-
-		// Force forum id
-		$sql = 'SELECT forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $topic_id;
-		$result = $db->sql_query($sql);
-		$f_id = (int) $db->sql_fetchfield('forum_id');
-		$db->sql_freeresult($result);
-
-		$forum_id = (!$f_id) ? $forum_id : $f_id;
-
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
@@ -154,22 +198,6 @@ switch ($mode)
 	case 'edit':
 	case 'delete':
 	case 'soft_delete':
-		if (!$post_id)
-		{
-			$user->setup('posting');
-			trigger_error('NO_POST');
-		}
-
-		// Force forum id
-		$sql = 'SELECT forum_id
-			FROM ' . POSTS_TABLE . '
-			WHERE post_id = ' . $post_id;
-		$result = $db->sql_query($sql);
-		$f_id = (int) $db->sql_fetchfield('forum_id');
-		$db->sql_freeresult($result);
-
-		$forum_id = (!$f_id) ? $forum_id : $f_id;
-
 		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
 			WHERE p.post_id = $post_id
@@ -255,11 +283,6 @@ if ($mode == 'popup')
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
-
-// Use post_row values in favor of submitted ones...
-$forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
-$topic_id	= (!empty($post_data['topic_id'])) ? (int) $post_data['topic_id'] : (int) $topic_id;
-$post_id	= (!empty($post_data['post_id'])) ? (int) $post_data['post_id'] : (int) $post_id;
 
 // Need to login to passworded forum first?
 if ($post_data['forum_password'])
@@ -721,12 +744,11 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 	$message_parser->bbcode_uid = $post_data['bbcode_uid'];
 }
 
-// HTML, BBCode, Smilies, Images and Flash status
+// HTML, BBCode, Smilies and Images status
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
 $smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
 $img_status		= ($bbcode_status && $auth->acl_get('f_img', $forum_id)) ? true : false;
 $url_status		= ($config['allow_post_links']) ? true : false;
-$flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && $config['allow_post_flash']) ? true : false;
 $quote_status	= true;
 
 /**
@@ -738,16 +760,15 @@ $quote_status	= true;
  * @var bool	smilies_status	Smilies status
  * @var bool	img_status		Image BBCode status
  * @var bool	url_status		URL BBCode status
- * @var bool	flash_status	Flash BBCode status
  * @var bool	quote_status	Quote BBCode status
  * @since 3.3.3-RC1
+ * @changed 4.0.0-a1 Removed flash_status
  */
 $vars = [
 	'bbcode_status',
 	'smilies_status',
 	'img_status',
 	'url_status',
-	'flash_status',
 	'quote_status',
 ];
 extract($phpbb_dispatcher->trigger_event('core.posting_modify_bbcode_status', compact($vars)));
@@ -770,7 +791,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 		if (confirm_box(true))
 		{
 			$message_parser->message = $message;
-			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $quote_status, $config['allow_post_links']);
 
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'user_id'		=> (int) $user->data['user_id'],
@@ -786,7 +807,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 			$attachment_manager = $phpbb_container->get('attachment.manager');
 			$attachment_manager->delete('attach', array_column($message_parser->attachment_data, 'attach_id'));
 
-			$meta_info = ($mode == 'post') ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id");
+			$meta_info = ($mode == 'post') ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id");
 
 			meta_refresh(3, $meta_info);
 
@@ -1109,7 +1130,7 @@ if ($submit || $preview || $refresh)
 
 		if (!$preview || !empty($message_parser->message))
 		{
-			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $flash_status, $quote_status, $config['allow_post_links']);
+			$message_parser->parse($post_data['enable_bbcode'], ($config['allow_post_links']) ? $post_data['enable_urls'] : false, $post_data['enable_smilies'], $img_status, $quote_status, $config['allow_post_links']);
 		}
 
 		// On a refresh we do not care about message parsing errors
@@ -1815,23 +1836,28 @@ $notify_set			= ($mode != 'edit' && $config['allow_topic_notify'] && $user->data
 $notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $notify_set);
 
 // Page title & action URL
-$s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id");
-$s_action .= ($topic_id) ? "&amp;t=$topic_id" : '';
-$s_action .= ($post_id) ? "&amp;p=$post_id" : '';
+$s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode");
 
 switch ($mode)
 {
 	case 'post':
+		$s_action .= $forum_id ? "&amp;f=$forum_id" : '';
 		$page_title = $user->lang['POST_TOPIC'];
 	break;
 
-	case 'quote':
 	case 'reply':
+		$s_action .= $topic_id ? "&amp;t=$topic_id" : '';
+		$page_title = $user->lang['POST_REPLY'];
+	break;
+
+	case 'quote':
+		$s_action .= $post_id ? "&amp;p=$post_id" : '';
 		$page_title = $user->lang['POST_REPLY'];
 	break;
 
 	case 'delete':
 	case 'edit':
+		$s_action .= $post_id ? "&amp;p=$post_id" : '';
 		$page_title = $user->lang['EDIT_POST'];
 	break;
 }
@@ -1891,7 +1917,6 @@ $page_data = array(
 	'MESSAGE'				=> $post_data['post_text'],
 	'BBCODE_STATUS'			=> $user->lang(($bbcode_status ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 	'MAX_FONT_SIZE'			=> (int) $config['max_post_font_size'],
@@ -1902,7 +1927,7 @@ $page_data = array(
 	'EDIT_REASON'			=> $request->variable('edit_reason', '', true),
 	'SHOW_PANEL'			=> $request->variable('show_panel', ''),
 	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id"),
-	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") : '',
+	'U_VIEW_TOPIC'			=> ($mode != 'post') ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id") : '',
 	'U_PROGRESS_BAR'		=> append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup"),
 	'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_root_path}posting.$phpEx", "f=$forum_id&amp;mode=popup")),
 
@@ -1938,7 +1963,6 @@ $page_data = array(
 
 	'S_BBCODE_IMG'			=> $img_status,
 	'S_BBCODE_URL'			=> $url_status,
-	'S_BBCODE_FLASH'		=> $flash_status,
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,
@@ -2051,7 +2075,7 @@ if ($allowed)
 }
 
 // Attachment entry
-posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
+posting_gen_attachment_entry($attachment_data, $filename_data, $allowed, $forum_id);
 
 // Output page ...
 page_header($page_title);

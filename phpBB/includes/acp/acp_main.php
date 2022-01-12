@@ -60,8 +60,15 @@ class acp_main
 		{
 			if ($action === 'admlogout')
 			{
-				$user->unset_admin();
-				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				if (check_link_hash($request->variable('hash', ''), 'acp_logout'))
+				{
+					$user->unset_admin();
+					redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				}
+				else
+				{
+					redirect(append_sid("{$phpbb_admin_path}index.$phpEx"));
+				}
 			}
 
 			if (!confirm_box(true))
@@ -526,20 +533,13 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
-		if ($config['allow_attachments'] || $config['allow_pm_attach'])
-		{
-			$sql = 'SELECT COUNT(attach_id) AS total_orphan
-				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE is_orphan = 1
-					AND filetime < ' . (time() - 3*60*60);
-			$result = $db->sql_query($sql);
-			$total_orphan = (int) $db->sql_fetchfield('total_orphan');
-			$db->sql_freeresult($result);
-		}
-		else
-		{
-			$total_orphan = false;
-		}
+		$sql = 'SELECT COUNT(attach_id) AS total_orphan
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE is_orphan = 1
+				AND filetime < ' . (time() - 3*60*60);
+		$result = $db->sql_query($sql);
+		$total_orphan = (int) $db->sql_fetchfield('total_orphan');
+		$db->sql_freeresult($result);
 
 		$dbsize = get_database_size();
 
@@ -557,7 +557,6 @@ class acp_main
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'TOTAL_ORPHAN'		=> $total_orphan,
-			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress'] && @extension_loaded('zlib')) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
 			'PHP_VERSION_INFO'	=> PHP_VERSION,

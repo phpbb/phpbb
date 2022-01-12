@@ -586,7 +586,6 @@ $lang = array_merge($lang, array(
 
 	'VIEW_AVATARS'				=> 'Display avatars',
 	'VIEW_EDIT'					=> 'View/Edit',
-	'VIEW_FLASH'				=> 'Display Flash animations',
 	'VIEW_IMAGES'				=> 'Display images within posts',
 	'VIEW_NEXT_HISTORY'			=> 'Next PM in history',
 	'VIEW_NEXT_PM'				=> 'Next PM',

@@ -77,7 +77,7 @@ abstract class base implements reparser_interface
 
 		// Those BBCodes are disabled based on context and user permissions and that value is never
 		// stored in the database. Here we test whether they were used in the original text.
-		$bbcodes = array('flash', 'img', 'quote', 'url');
+		$bbcodes = array('img', 'quote', 'url');
 		foreach ($bbcodes as $bbcode)
 		{
 			$field_name = 'enable_' . $bbcode . '_bbcode';
@@ -253,7 +253,6 @@ abstract class base implements reparser_interface
 			$unparsed['enable_magic_url'],
 			$unparsed['enable_smilies'],
 			$unparsed['enable_img_bbcode'],
-			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
 			$unparsed['enable_url_bbcode'],
 			'text_reparser.' . $this->get_name()

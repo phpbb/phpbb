@@ -13,6 +13,7 @@
 
 namespace phpbb\storage\controller;
 
+use phpbb\attachment\attachment_category;
 use phpbb\auth\auth;
 use phpbb\cache\service;
 use phpbb\config\config;
@@ -183,9 +184,9 @@ class attachment extends controller
 		{
 			$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 		}
-		else if ($display_cat == ATTACHMENT_CATEGORY_NONE && !$attachment['is_orphan'])
+		else if ($display_cat == attachment_category::NONE && !$attachment['is_orphan'])
 		{
-			if (!(($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$this->user->optionget('viewimg')))
+			if (!(($display_cat == attachment_category::IMAGE || $display_cat == attachment_category::THUMB) && !$this->user->optionget('viewimg')))
 			{
 				// Update download count
 				$this->phpbb_increment_downloads($attachment['attach_id']);
@@ -253,8 +254,11 @@ class attachment extends controller
 		// Content-type header
 		$response->headers->set('Content-Type', $attachment['mimetype']);
 
-		// Display images in browser and force download for other file types
-		if (strpos($attachment['mimetype'], 'image') !== false)
+		// Display file types in browser and force download for others
+		if (strpos($attachment['mimetype'], 'image') !== false
+			|| strpos($attachment['mimetype'], 'audio') !== false
+			|| strpos($attachment['mimetype'], 'video') !== false
+		)
 		{
 			$disposition = $response->headers->makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,

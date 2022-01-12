@@ -3,19 +3,15 @@
 
 	// Define the bbCode tags
 	var bbcode = new Array();
-	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[flash=]', '[/flash]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
+	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
 
 // ]]>
 </script>
 
-{% include 'mentions_templates.html' %}
-
 <!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/tribute.min.js -->
-<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/mentions.js -->
 
 <!-- EVENT acp_posting_buttons_before -->
-<div id="format-buttons"<!-- IF S_ALLOW_MENTIONS --> data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-topic-id="{S_TOPIC_ID}" data-user-id="{S_USER_ID}"<!-- ENDIF -->>
+<div id="format-buttons">
 	<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}" />
 	<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}" />
 	<input type="button" class="button2" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px" onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}" />
@@ -31,9 +27,6 @@
 	<!-- ENDIF -->
 	<!-- IF S_LINKS_ALLOWED -->
 		<input type="button" class="button2" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" title="{L_BBCODE_W_HELP}" />
-	<!-- ENDIF -->
-	<!-- IF S_BBCODE_FLASH -->
-		<input type="button" class="button2" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" title="{L_BBCODE_D_HELP}" />
 	<!-- ENDIF -->
 	<select name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_BBCODE_F_HELP}">
 		<option value="50">{L_FONT_TINY}</option>

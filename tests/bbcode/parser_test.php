@@ -212,11 +212,6 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 				'[quote=&quot;[img:]https&#58;//area51&#46;phpbb&#46;com/images/area51&#46;png[/img:]&quot;:]test[/quote:]',
 			),
 			array(
-				'Disallow flash bbcodes in usernames - Username displayed as [flash]http://www.phpbb.com/[/flash]',
-				'[quote=&quot;[flash]http://www.phpbb.com/[/flash]&quot;]test[/quote]',
-				'[quote=&quot;&#91;flash]http://www.phpbb.com/&#91;/flash]&quot;:]test[/quote:]',
-			),
-			array(
 				'Disallow quote bbcodes in usernames - Username displayed as [quote]test[/quote]',
 				'[quote=&quot;[quote]test[/quote]&quot;]test[/quote]',
 				'[quote=&quot;&#91;quote]test&#91;/quote]&quot;:]test[/quote:]',

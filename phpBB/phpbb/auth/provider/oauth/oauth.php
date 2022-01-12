@@ -163,7 +163,7 @@ class oauth extends base
 		$provider = $this->request->variable('oauth_service', '', false);
 		$service_name = $this->get_service_name($provider);
 
-		if ($provider === '' || !array_key_exists($service_name, $this->service_providers))
+		if ($provider === '' || !$this->service_providers->offsetExists($service_name))
 		{
 			return [
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -411,7 +411,7 @@ class oauth extends base
 	/**
 	 * {@inheritdoc}
 	 */
-	public function login_link_has_necessary_data($login_link_data)
+	public function login_link_has_necessary_data(array $login_link_data)
 	{
 		if (empty($login_link_data))
 		{
@@ -452,7 +452,7 @@ class oauth extends base
 
 		$service_name = $this->get_service_name($link_data['oauth_service']);
 
-		if (!array_key_exists($service_name, $this->service_providers))
+		if (!$this->service_providers->offsetExists($service_name))
 		{
 			return 'LOGIN_ERROR_OAUTH_SERVICE_DOES_NOT_EXIST';
 		}

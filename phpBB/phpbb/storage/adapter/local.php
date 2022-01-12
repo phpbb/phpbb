@@ -53,11 +53,22 @@ class local implements adapter_interface, stream_interface
 	protected $phpbb_root_path;
 
 	/**
+	 * Absolute path to the storage folder
+	 * Always finish with DIRECTORY_SEPARATOR
+	 * Example:
+	 * - /var/www/phpBB/images/avatar/upload/
+	 * - C:\phpBB\images\avatars\upload\
+	 *
 	 * @var string path
 	 */
 	protected $root_path;
 
 	/**
+	 * Relative path from $phpbb_root_path to the storage folder
+	 * Always finish with slash (/) character
+	 * Example:
+	 * - images/avatars/upload/
+	 *
 	 * @var string path
 	 */
 	protected $path;
@@ -106,13 +117,14 @@ class local implements adapter_interface, stream_interface
 	 */
 	public function configure(array $options): void
 	{
-		if (substr($options['path'], -1, 1) !== DIRECTORY_SEPARATOR)
+		$this->path = $options['path'];
+
+		if (substr($this->path, -1, 1) !== '/')
 		{
-			$options['path'] = $options['path'] . DIRECTORY_SEPARATOR;
+			$this->path = $this->path . '/';
 		}
 
-		$this->path = $options['path'];
-		$this->root_path = $this->phpbb_root_path . $options['path'];
+		$this->root_path = filesystem_helper::realpath($this->phpbb_root_path . $options['path']) . DIRECTORY_SEPARATOR;
 		$this->subfolders = (bool) $options['subfolders'];
 	}
 
@@ -216,7 +228,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @throws exception	On any directory creation failure
 	 */
-	protected function create_dir($path)
+	protected function create_dir(string $path): void
 	{
 		try
 		{
@@ -232,12 +244,13 @@ class local implements adapter_interface, stream_interface
 	 * Ensures that the directory of a file exists.
 	 *
 	 * @param string	$path	The file path
+	 *
+	 * @throws exception	On any directory creation failure
 	 */
-	protected function ensure_directory_exists($path)
+	protected function ensure_directory_exists(string $path): void
 	{
-		$absolute_root_path = filesystem_helper::realpath($this->root_path) . DIRECTORY_SEPARATOR;
-		$path = dirname($absolute_root_path . $this->get_path($path) . $this->get_filename($path));
-		$path = filesystem_helper::make_path_relative($path, $absolute_root_path);
+		$path = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
+		$path = filesystem_helper::make_path_relative($path, $this->root_path);
 
 		if (!$this->exists($path))
 		{
@@ -250,7 +263,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The file path
 	 */
-	protected function remove_empty_dirs($path)
+	protected function remove_empty_dirs(string $path): void
 	{
 		if ($this->subfolders)
 		{
@@ -275,7 +288,7 @@ class local implements adapter_interface, stream_interface
 	 * @param string $path The file path
 	 * @return string
 	 */
-	protected function get_path($path)
+	protected function get_path(string $path): string
 	{
 		$dirname = dirname($path);
 		$dirname = ($dirname != '.') ? $dirname . DIRECTORY_SEPARATOR : '';
@@ -302,7 +315,7 @@ class local implements adapter_interface, stream_interface
 	 * @param string $path The file path
 	 * @return string
 	 */
-	protected function get_filename($path)
+	protected function get_filename(string $path): string
 	{
 		return basename($path);
 	}
@@ -356,7 +369,7 @@ class local implements adapter_interface, stream_interface
 	 * @throws exception		When cannot get size
 	 *
 	 */
-	public function file_size($path)
+	public function file_size(string $path): array
 	{
 		$size = @filesize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
@@ -375,7 +388,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @return array	Properties
 	 */
-	public function file_mimetype($path)
+	public function file_mimetype(string $path): array
 	{
 		return ['mimetype' => $this->mimetype_guesser->guess($this->root_path . $this->get_path($path) . $this->get_filename($path))];
 	}
@@ -387,7 +400,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @return array	Properties
 	 */
-	protected function image_dimensions($path)
+	protected function image_dimensions(string $path): array
 	{
 		$size = $this->imagesize->getImageSize($this->root_path . $this->get_path($path) . $this->get_filename($path));
 
@@ -408,7 +421,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @return array	Properties
 	 */
-	public function file_image_width($path)
+	public function file_image_width(string $path): array
 	{
 		return $this->image_dimensions($path);
 	}
@@ -420,7 +433,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @return array	Properties
 	 */
-	public function file_image_height($path): array
+	public function file_image_height(string $path): array
 	{
 		return $this->image_dimensions($path);
 	}

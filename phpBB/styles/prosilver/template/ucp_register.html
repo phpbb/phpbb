@@ -57,10 +57,12 @@
 	<hr />
 
 	<!-- EVENT ucp_register_options_before -->
+	{% if S_LANG_OPTIONS %}
 	<dl>
-		<dt><label for="lang">{L_LANGUAGE}{L_COLON}</label></dt>
-		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
+		<dt><label for="lang">{{ lang('LANGUAGE') ~ lang('COLON') }}</label></dt>
+		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{{ lang('LANGUAGE') }}">{{ S_LANG_OPTIONS }}</select></dd>
 	</dl>
+	{% endif %}
 
 	<!-- INCLUDE timezone_option.html -->
 

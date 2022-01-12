@@ -11,8 +11,9 @@
 *
 */
 
-namespace phpbb;
+namespace phpbb\finder;
 
+use phpbb\cache\service;
 use phpbb\filesystem\helper as filesystem_helper;
 
 /**
@@ -23,6 +24,7 @@ class finder
 	protected $extensions;
 	protected $phpbb_root_path;
 	protected $cache;
+	protected $use_cache;
 	protected $php_ext;
 
 	/**
@@ -50,15 +52,17 @@ class finder
 	* Creates a new finder instance with its dependencies
 	*
 	* @param string $phpbb_root_path Path to the phpbb root directory
-	* @param \phpbb\cache\service|null $cache A cache instance or null
+	* @param service|null $cache A cache instance or null
+	* @param bool $use_cache Flag whether cache should be used
 	* @param string $php_ext php file extension
 	* @param string $cache_name The name of the cache variable, defaults to
-	*                           _ext_finder
+	*							_ext_finder
 	*/
-	public function __construct($phpbb_root_path = '', \phpbb\cache\service $cache = null, $php_ext = 'php', $cache_name = '_ext_finder')
+	public function __construct(?service $cache, bool $use_cache, string $phpbb_root_path, string $php_ext, string $cache_name = '_ext_finder')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;
+		$this->use_cache = $use_cache;
 		$this->php_ext = $php_ext;
 		$this->cache_name = $cache_name;
 
@@ -81,7 +85,7 @@ class finder
 	*
 	* @param array $extensions		A list of extensions that should be searched as well
 	* @param bool $replace_list		Should the list be emptied before adding the extensions
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function set_extensions(array $extensions, $replace_list = true)
 	{
@@ -101,7 +105,7 @@ class finder
 	* Sets a core path to be searched in addition to extensions
 	*
 	* @param string $core_path The path relative to phpbb_root_path
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function core_path($core_path)
 	{
@@ -117,7 +121,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $suffix A filename suffix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function suffix($suffix)
 	{
@@ -134,7 +138,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $extension_suffix A filename suffix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function extension_suffix($extension_suffix)
 	{
@@ -150,7 +154,7 @@ class finder
 	* file extension is automatically added to suffixes.
 	*
 	* @param string $core_suffix A filename suffix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function core_suffix($core_suffix)
 	{
@@ -162,7 +166,7 @@ class finder
 	* Sets the prefix all files found in extensions and core must match
 	*
 	* @param string $prefix A filename prefix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function prefix($prefix)
 	{
@@ -175,7 +179,7 @@ class finder
 	* Sets a prefix all files found in extensions must match
 	*
 	* @param string $extension_prefix A filename prefix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function extension_prefix($extension_prefix)
 	{
@@ -187,7 +191,7 @@ class finder
 	* Sets a prefix all files found in the core path must match
 	*
 	* @param string $core_prefix A filename prefix
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function core_prefix($core_prefix)
 	{
@@ -202,7 +206,7 @@ class finder
 	* the current directory.
 	*
 	* @param string $directory
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function directory($directory)
 	{
@@ -215,7 +219,7 @@ class finder
 	* Sets a directory all files found in extensions must be contained in
 	*
 	* @param string $extension_directory
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function extension_directory($extension_directory)
 	{
@@ -227,7 +231,7 @@ class finder
 	* Sets a directory all files found in the core path must be contained in
 	*
 	* @param string $core_directory
-	* @return \phpbb\finder This object for chaining calls
+	* @return \phpbb\finder\finder This object for chaining calls
 	*/
 	public function core_directory($core_directory)
 	{
@@ -424,7 +428,7 @@ class finder
 		$this->query['is_dir'] = $is_dir;
 		$query = md5(serialize($this->query) . serialize($extensions));
 
-		if (!defined('DEBUG') && $cache && isset($this->cached_queries[$query]))
+		if ($this->use_cache && $cache && isset($this->cached_queries[$query]))
 		{
 			return $this->cached_queries[$query];
 		}

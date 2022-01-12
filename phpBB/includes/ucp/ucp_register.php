@@ -150,15 +150,11 @@ class ucp_register
 			}
 
 			// Checking amount of available languages
-			$sql = 'SELECT lang_id
-				FROM ' . LANG_TABLE;
+			$sql = 'SELECT lang_iso, lang_local_name
+				FROM ' . LANG_TABLE . '
+				ORDER BY lang_english_name';
 			$result = $db->sql_query($sql);
-
-			$lang_row = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$lang_row[] = $row;
-			}
+			$lang_row = (array) $db->sql_fetchrowset($result);
 			$db->sql_freeresult($result);
 
 			if ($coppa === false && $config['coppa_enable'])
@@ -171,7 +167,7 @@ class ucp_register
 				unset($now);
 
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang, $lang_row) : '',
 					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
 					'L_COPPA_YES'		=> $user->lang('UCP_COPPA_ON_AFTER', $coppa_birthday),
 
@@ -186,7 +182,7 @@ class ucp_register
 			else
 			{
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang) : '',
+					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang, $lang_row) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -622,6 +618,14 @@ class ucp_register
 		// Assign template vars for timezone select
 		phpbb_timezone_select($template, $user, $data['tz'], true);
 
+		// Checking amount of available languages
+		$sql = 'SELECT lang_iso, lang_local_name
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
+		$result = $db->sql_query($sql);
+		$lang_row = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
 		$template_vars = array(
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -632,7 +636,7 @@ class ucp_register
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars'])),
 
-			'S_LANG_OPTIONS'	=> language_select($data['lang']),
+			'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($data['lang'], $lang_row) : '',
 			'S_TZ_PRESELECT'	=> !$submit,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,

@@ -172,7 +172,7 @@ class db extends config
 			$sql = 'INSERT INTO ' . $this->table . ' ' . $this->db->sql_build_array('INSERT', array(
 				'config_name'	=> $key,
 				'config_value'	=> $new_value,
-				'is_dynamic'	=> ($use_cache) ? 0 : 1));
+				'is_dynamic'	=> $use_cache ? 0 : 1));
 			$this->db->sql_query($sql);
 		}
 

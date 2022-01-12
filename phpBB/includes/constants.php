@@ -158,9 +158,16 @@ define('CONFIRM_POST', 3);
 define('CONFIRM_REPORT', 4);
 
 // Categories - Attachments
+/* @deprecated Replaced by \phpbb\attachment\attachment_category constants in 4.0.0-a1, to be removed in 4.1.0-a1 */
 define('ATTACHMENT_CATEGORY_NONE', 0);
+/* @deprecated Replaced by \phpbb\attachment\attachment_category constants in 4.0.0-a1, to be removed in 4.1.0-a1 */
 define('ATTACHMENT_CATEGORY_IMAGE', 1); // Inline Images
+/* @deprecated Replaced by \phpbb\attachment\attachment_category constants in 4.0.0-a1, to be removed in 4.1.0-a1 */
 define('ATTACHMENT_CATEGORY_THUMB', 4); // Not used within the database, only while displaying posts
+/* @deprecated Replaced by \phpbb\attachment\attachment_category constants in 4.0.0-a1, to be removed in 4.1.0-a1 */
+define('ATTACHMENT_CATEGORY_AUDIO', 7); // Browser-playable audio files
+/* @deprecated Replaced by \phpbb\attachment\attachment_category constants in 4.0.0-a1, to be removed in 4.1.0-a1 */
+define('ATTACHMENT_CATEGORY_VIDEO', 8); // Browser-playable video files
 
 // BBCode UID length
 define('BBCODE_UID_LEN', 8);
@@ -181,7 +188,6 @@ define('BBCODE_ID_U', 7);
 define('BBCODE_ID_CODE', 8);
 define('BBCODE_ID_LIST', 9);
 define('BBCODE_ID_EMAIL', 10);
-define('BBCODE_ID_FLASH', 11);
 define('BBCODE_ID_ATTACH', 12);
 
 // BBCode hard limit

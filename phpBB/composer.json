@@ -15,8 +15,9 @@
 	"support": {
 		"issues": "https://tracker.phpbb.com",
 		"forum": "https://www.phpbb.com/community/",
-		"wiki": "https://wiki.phpbb.com",
-		"irc": "irc://irc.freenode.org/phpbb"
+		"docs": "https://www.phpbb.com/support/docs/",
+		"irc": "irc://irc.libera.chat/phpbb",
+		"chat": "https://www.phpbb.com/support/chat/"
 	},
 	"scripts": {
 		"post-update-cmd": "echo 'You MUST manually modify the clean-vendor-dir target in build/build.xml when adding or upgrading dependencies.'"
@@ -39,23 +40,25 @@
 		"guzzlehttp/guzzle": "~6.3",
 		"lusitanian/oauth": "^0.8.1",
 		"marc1706/fast-image-size": "^1.1",
-		"patchwork/utf8": "^1.1",
 		"s9e/text-formatter": "^2.0",
-		"symfony/config": "~5.2",
-		"symfony/console": "~5.2",
+		"symfony/config": "^5.4",
+		"symfony/console": "^5.4",
 		"symfony/debug": "~4.4",
-		"symfony/dependency-injection": "~5.2",
-		"symfony/event-dispatcher": "~5.2",
-		"symfony/filesystem": "~5.2",
-		"symfony/finder": "~5.2",
-		"symfony/http-foundation": "~5.2",
-		"symfony/http-kernel": "~5.2",
-		"symfony/mime": "~5.2",
-		"symfony/process": "^5.2",
-		"symfony/proxy-manager-bridge": "~5.2",
-		"symfony/routing": "~5.2",
-		"symfony/twig-bridge": "~5.2",
-		"symfony/yaml": "~5.2",
+		"symfony/dependency-injection": "^5.4",
+		"symfony/event-dispatcher": "^5.4",
+		"symfony/filesystem": "^5.4",
+		"symfony/finder": "^5.4",
+		"symfony/http-foundation": "^5.4",
+		"symfony/http-kernel": "^5.4",
+		"symfony/polyfill-intl-normalizer": "^1.23",
+		"symfony/polyfill-mbstring": "^1.23",
+		"symfony/polyfill-php72": "^1.23",
+		"symfony/mime": "^5.4",
+		"symfony/process": "^5.4",
+		"symfony/proxy-manager-bridge": "^5.4",
+		"symfony/routing": "^5.4",
+		"symfony/twig-bridge": "^5.4",
+		"symfony/yaml": "^5.4",
 		"twig/twig": "^3.0"
 	},
 	"require-dev": {
@@ -65,9 +68,11 @@
 		"phing/phing": "~2.4",
 		"phpunit/phpunit": "^9.0",
 		"squizlabs/php_codesniffer": "~3.4",
-		"symfony/browser-kit": "~5.2",
-		"symfony/css-selector": "~5.2",
-		"symfony/dom-crawler": "~5.2"
+		"symfony/browser-kit": "^5.4",
+		"symfony/css-selector": "^5.4",
+		"symfony/dom-crawler": "^5.4",
+		"vimeo/psalm": "^4.14",
+		"psalm/plugin-symfony": "^3.1"
 	},
 	"extra": {
 		"branch-alias": {

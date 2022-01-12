@@ -168,8 +168,14 @@ class diff
 				$final = $edit->final;
 
 				// We can simplify one case where the array is usually supposed to be empty...
-				if (count($orig) == 1 && trim($orig[0]) === '') $orig = array();
-				if (count($final) == 1 && trim($final[0]) === '') $final = array();
+				if (is_array($orig) && count($orig) == 1 && trim($orig[0]) === '')
+				{
+					$orig = array();
+				}
+				if (is_array($final) && count($final) == 1 && trim($final[0]) === '')
+				{
+					$final = array();
+				}
 
 				if (!$orig && !$final)
 				{

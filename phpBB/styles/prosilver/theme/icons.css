@@ -128,10 +128,10 @@ blockquote cite:before,
 	margin-top: 0;
 }
 
-.c-subscribe-icon {
+.c-watch-icon {
 	display: none !important;
 }
 
-.c-subscribe-icon.is-active {
+.c-watch-icon.is-active {
 	display: inline !important;
 }

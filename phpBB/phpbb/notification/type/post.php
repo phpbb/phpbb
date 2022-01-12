@@ -267,11 +267,11 @@ class post extends \phpbb\notification\type\base
 			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 
 			'U_VIEW_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&e=1&view=unread#unread",
-			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}&e=1&view=unread#unread",
+			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
+			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
-			'U_STOP_WATCHING_TOPIC'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&t={$this->item_parent_id}&unwatch=topic",
+			'U_STOP_WATCHING_TOPIC'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?uid={$this->user_id}&t={$this->item_parent_id}&unwatch=topic",
 		);
 	}
 

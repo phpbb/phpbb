@@ -794,8 +794,8 @@ switch ($mode)
 			'S_CUSTOM_FIELDS'			=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
 
 			'U_USER_ADMIN'				=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id) : '',
+			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx") : '',
 
 			'U_SWITCH_PERMISSIONS'		=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
 			'U_EDIT_SELF'				=> ($user_id == $user->data['user_id'] && $auth->acl_get('u_chgprofileinfo')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=ucp_profile&amp;mode=profile_info') : '',
@@ -979,23 +979,26 @@ switch ($mode)
 			WHERE ' . $db->sql_in_set('user_type', $user_types) . '
 				AND username_clean ' . $db->sql_like_expression(utf8_clean_string($username_chars) . $db->get_any_char());
 		$result = $db->sql_query_limit($sql, 10);
-		$user_list = array();
+
+		$user_list = [];
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$user_list[] = array(
+			$user_list[] = [
 				'user_id'		=> (int) $row['user_id'],
-				'result'		=> $row['username'],
+				'result'		=> htmlspecialchars_decode($row['username']),
 				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
-			);
+			];
 		}
 		$db->sql_freeresult($result);
+
 		$json_response = new \phpbb\json_response();
-		$json_response->send(array(
+
+		$json_response->send([
 			'keyword' => $username_chars,
 			'results' => $user_list,
-		));
+		]);
 
 	break;
 

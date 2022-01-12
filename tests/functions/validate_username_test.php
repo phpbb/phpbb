@@ -51,6 +51,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('USERNAME_TAKEN'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 			array('USERNAME_ALPHA_ONLY', array(
 				'foobar_allow'		=> array(),
@@ -65,6 +66,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('INVALID_CHARS'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 			array('USERNAME_ALPHA_SPACERS', array(
 				'foobar_allow'		=> array(),
@@ -79,6 +81,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('USERNAME_TAKEN'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 			array('USERNAME_LETTER_NUM', array(
 				'foobar_allow'		=> array(),
@@ -93,6 +96,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('INVALID_CHARS'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 			array('USERNAME_LETTER_NUM_SPACERS', array(
 				'foobar_allow'		=> array(),
@@ -107,6 +111,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('USERNAME_TAKEN'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 			array('USERNAME_ASCII', array(
 				'foobar_allow'		=> array(),
@@ -121,6 +126,7 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 				'barfoo_disallow'	=> array('USERNAME_DISALLOWED'),
 				'admin_taken'		=> array('USERNAME_TAKEN'),
 				'group_taken'		=> array('USERNAME_TAKEN'),
+				'a d m i n i ᠎strator' => array('INVALID_CHARS'),
 			)),
 		);
 	}
@@ -199,6 +205,11 @@ class phpbb_functions_validate_data_test extends phpbb_database_test_case
 			'group_taken' => array(
 				$expected['group_taken'],
 				'foobar_group',
+				array('username'),
+			),
+			'a d m i n i ᠎strator' => array(
+				$expected['a d m i n i ᠎strator'],
+				'a d m i n i ᠎strator',
 				array('username'),
 			),
 		));

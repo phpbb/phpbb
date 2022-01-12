@@ -24,7 +24,7 @@ if (!defined('IN_PHPBB'))
 */
 function adm_page_header($page_title)
 {
-	global $config, $user, $template, $auth;
+	global $config, $user, $template;
 	global $phpbb_root_path, $phpbb_admin_path, $phpEx, $SID, $_SID;
 	global $phpbb_dispatcher, $phpbb_container;
 
@@ -66,9 +66,6 @@ function adm_page_header($page_title)
 		}
 	}
 
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
-
 	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
 	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
@@ -85,13 +82,9 @@ function adm_page_header($page_title)
 		'PHPBB_MAJOR'			=> $phpbb_major,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
-		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
+		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout&amp;hash=' . generate_link_hash('acp_logout')),
 		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
-
-		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention')) ? true : false,
-		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
-		'U_MENTION_URL'			=> $controller_helper->route('phpbb_mention_controller'),
 
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
@@ -193,7 +186,7 @@ function adm_page_footer($copyright_html = true)
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'CREDIT_LINE'		=> $user->lang('POWERED_BY', '<a href="https://www.phpbb.com/">phpBB</a>&reg; Forum Software &copy; phpBB Limited'),
-		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery-3.5.1.min.js",
+		'T_JQUERY_LINK'		=> !empty($config['allow_cdn']) && !empty($config['load_jquery_url']) ? $config['load_jquery_url'] : "{$phpbb_root_path}assets/javascript/jquery-3.6.0.min.js",
 		'S_ALLOW_CDN'		=> !empty($config['allow_cdn']),
 		'VERSION'			=> $config['version'])
 	);

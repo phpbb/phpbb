@@ -28,13 +28,11 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_password_reset', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_report', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_flash', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_quick_reply', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_img', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_pm', '1');
@@ -45,7 +43,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allowed_schemes_li
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('assets_version', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('attachment_quota', '52428800');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_flash_pm', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method', 'db');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
@@ -199,7 +196,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_cpf_viewtopic
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_font_awesome_url', 'https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
@@ -223,8 +220,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_num_search_key
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_font_size', '200');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_img_height', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_img_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_urls', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_quote_depth', '3');
@@ -377,7 +372,6 @@ INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_delete', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_download', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_edit', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_email', 1);
-INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_flash', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_icons', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_ignoreflood', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_local) VALUES ('f_img', 1);
@@ -489,7 +483,6 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_delete', 1)
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_download', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_edit', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_emailpm', 1);
-INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_flash', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_forward', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_img', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('u_pm_printpm', 1);
@@ -589,17 +582,17 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 5, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%';
 
 # Standard Features (u_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 6, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_flash', 'u_pm_forward');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 6, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_forward');
 
 # Limited Features (u_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 7, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_pm_flash', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim', 'u_masspm', 'u_masspm_group');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 7, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim', 'u_masspm', 'u_masspm_group');
 
 # No Private Messages (u_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_', 'u_chgavatar', 'u_chgcensors', 'u_chgemail', 'u_chgpasswd', 'u_download', 'u_hideonline', 'u_mention', 'u_sig', 'u_viewprofile');
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 8, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_readpm', 'u_sendpm', 'u_masspm', 'u_masspm_group');
 
 # No Avatar (u_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 9, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_chgavatar', 'u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_pm_flash', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim', 'u_masspm', 'u_masspm_group');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 9, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option NOT IN ('u_attach', 'u_chgavatar', 'u_viewonline', 'u_chggrp', 'u_chgname', 'u_ignoreflood', 'u_pm_attach', 'u_pm_emailpm', 'u_savedrafts', 'u_search', 'u_sendemail', 'u_sendim', 'u_masspm', 'u_masspm_group');
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 9, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_chgavatar');
 
 # Full Moderator (m_)
@@ -618,7 +611,7 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 14, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%';
 
 # Standard Access (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 15, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_flash', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 15, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock');
 
 # No Access (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 16, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option = 'f_';
@@ -627,20 +620,20 @@ INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 17, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_list_topics', 'f_read', 'f_search', 'f_subscribe', 'f_print');
 
 # Limited Access (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 18, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 18, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_attach', 'f_bump', 'f_delete', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg');
 
 # Bot Access (f_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 19, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_', 'f_download', 'f_list', 'f_list_topics', 'f_read', 'f_print');
 
 # On Moderation Queue (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 20, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg', 'f_noapprove');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 20, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_bump', 'f_delete', 'f_icons', 'f_ignoreflood', 'f_poll', 'f_sticky', 'f_user_lock', 'f_votechg', 'f_noapprove');
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 20, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove');
 
 # Standard Access + Polls (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 21, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_flash', 'f_ignoreflood', 'f_sticky', 'f_user_lock');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 21, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_ignoreflood', 'f_sticky', 'f_user_lock');
 
 # Limited Access + Polls (f_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 22, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_attach', 'f_bump', 'f_delete', 'f_flash', 'f_icons', 'f_ignoreflood', 'f_sticky', 'f_user_lock', 'f_votechg');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 22, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'f_%' AND auth_option NOT IN ('f_announce', 'f_announce_global', 'f_attach', 'f_bump', 'f_delete', 'f_icons', 'f_ignoreflood', 'f_sticky', 'f_user_lock', 'f_votechg');
 
 # New Member (u_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 23, auth_option_id, 0 FROM phpbb_acl_options WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group', 'u_chgprofileinfo');
@@ -783,6 +776,8 @@ INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('PLAIN_TEXT', 0, 0, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('DOCUMENTS', 0, 0, '', 0, '');
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('DOWNLOADABLE_FILES', 0, 0, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('AUDIO_FILES', 7, 0, '', 0, '');
+INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, upload_icon, max_filesize, allowed_forums) VALUES ('VIDEO_FILES', 8, 0, '', 0, '');
 
 # -- extensions
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (1, 'gif');
@@ -838,11 +833,20 @@ INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'ods');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'odt');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (4, 'rtf');
 
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mp3');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpeg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'mpg');
-INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogg');
 INSERT INTO phpbb_extensions (group_id, extension) VALUES (5, 'ogm');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'mp3');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'wav');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'm4a');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (6, 'webm');
+
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'mp4');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'ogg');
+INSERT INTO phpbb_extensions (group_id, extension) VALUES (7, 'webm');
+
 
 # Add default profile fields
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_location', 'profilefields.type.string', 'phpbb_location', '20', '2', '100', '', '', '.*', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, '', '');

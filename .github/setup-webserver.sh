@@ -28,18 +28,12 @@ NGINX_PHP_CONF="$DIR/nginx-php.conf"
 PHP_FPM_BIN="/usr/sbin/php-fpm$PHP_VERSION"
 PHP_FPM_CONF="$DIR/php-fpm.conf"
 
-if [ "$PHP_VERSION" == '8.1' ]
+if [ ! -f $PHP_FPM_BIN ] && [ -f "/usr/bin/php-fpm" ]
 then
-	if [ -f "/usr/sbin/php-fpm8.0" ]
-	then
-		PHP_FPM_BIN="/usr/sbin/php-fpm8.0"
-	elif [ ! -f $PHP_FPM_BIN ] && [ -f "/usr/bin/php-fpm" ]
-	then
-		PHP_FPM_BIN="/usr/bin/php-fpm"
-	fi
+	PHP_FPM_BIN="/usr/bin/php-fpm"
 fi
 
-if [ ! -f $PHP_FPM_BIN ] && [ "$PHP_VERSION" != '8.1' ]
+if [ ! -f $PHP_FPM_BIN ]
 then
 	sudo apt-get install php$PHP_VERSION-fpm php$PHP_VERSION-cli \
 						php$PHP_VERSION-curl php$PHP_VERSION-xml php$PHP_VERSION-mbstring \

@@ -239,6 +239,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
 		$factory = new \phpbb\db\tools\factory();
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
 		$db_tools = $factory->get($db);
 
 		$container = new phpbb_mock_container_builder();
@@ -262,9 +263,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
+			$finder_factory,
+			new phpbb_mock_dummy_router(),
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
-			$phpEx,
 			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
 		);
 
@@ -829,10 +831,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$crawler = self::request('GET', 'index.php');
+		$logout_link = $crawler->filter('a[title="' . $this->lang('LOGOUT') . '"]')->attr('href');
+		self::request('GET', $logout_link);
+
+		$crawler = self::request('GET', $logout_link);
 		$this->assertStringContainsString($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
-
 	}
 
 	/**
@@ -978,7 +983,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', trim($content), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
 
 		if ($status_code !== false)
 		{
@@ -1145,12 +1150,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	public function create_post($forum_id, $topic_id, $subject, $message, $additional_form_data = array(), $expected = '')
 	{
-		$posting_url = "posting.php?mode=reply&f={$forum_id}&t={$topic_id}&sid={$this->sid}";
+		$posting_url = "posting.php?mode=reply&t={$topic_id}&sid={$this->sid}";
 
 		$form_data = array_merge(array(
 			'subject'		=> $subject,
 			'message'		=> $message,
 			'post'			=> true,
+			'topic_id'		=> $topic_id,
 		), $additional_form_data);
 
 		return self::submit_post($posting_url, 'POST_REPLY', $form_data, $expected);
@@ -1184,11 +1190,20 @@ class phpbb_functional_test_case extends phpbb_test_case
 			return null;
 		}
 
-		$url = $crawler->selectLink($form_data['subject'])->link()->getUri();
+		$post_link = $crawler->filter('.postbody a[title="Post"]')->last()->attr('href');
+		$topic_link = $crawler->filter('h2[class="topic-title"] > a')->attr('href');
+
+		$post_id = $this->get_parameter_from_link($post_link, 'p');
+		$topic_id = $this->get_parameter_from_link($topic_link, 't');
+
+		if (!$topic_id)
+		{
+			$topic_id = $form_data['topic_id'];
+		}
 
 		return array(
-			'topic_id'	=> $this->get_parameter_from_link($url, 't'),
-			'post_id'	=> $this->get_parameter_from_link($url, 'p'),
+			'topic_id'	=> $topic_id,
+			'post_id'	=> $post_id,
 		);
 	}
 
@@ -1308,7 +1323,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	public function delete_post($forum_id, $post_id)
 	{
 		$this->add_lang('posting');
-		$crawler = self::request('GET', "posting.php?mode=delete&f={$forum_id}&p={$post_id}&sid={$this->sid}");
+		$crawler = self::request('GET', "posting.php?mode=delete&p={$post_id}&sid={$this->sid}");
 		$this->assertContainsLang('DELETE_PERMANENTLY', $crawler->text());
 
 		$form = $crawler->selectButton('Yes')->form();
@@ -1396,7 +1411,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
-		return self::request('GET', substr($link, strpos($link, 'mcp.')));
+		return self::request('GET', substr($link, strpos($link, 'mcp.')) . "&sid={$this->sid}");
 	}
 
 	/**

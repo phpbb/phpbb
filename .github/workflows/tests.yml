@@ -128,8 +128,10 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.0'
                       db: "mysql:5.7"
-                    #- php: '8.1'
-                    #  db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:5.7"
+                    - php: '8.2'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -253,6 +255,10 @@ jobs:
                       db: "postgres:12"
                     - php: '8.0'
                       db: "postgres:13"
+                    - php: '8.1'
+                      db: "postgres:14"
+                    - php: '8.2'
+                      db: "postgres:14"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -442,14 +448,36 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
-        runs-on: windows-2016
+        runs-on: windows-latest
         strategy:
             matrix:
                 include:
                     - php: '7.4'
                       db: "postgres"
+                      type: 'unit'
+                    - php: '8.0'
+                      db: "postgres"
+                      type: 'unit'
+                    - php: '8.1'
+                      db: "postgres"
+                      type: 'unit'
+                    - php: '8.2'
+                      db: "postgres"
+                      type: 'unit'
+                    - php: '7.4'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.0'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.1'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.2'
+                      db: "postgres"
+                      type: 'functional'
 
-        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
 
         steps:
             - name: Prepare git for Windows
@@ -523,22 +551,34 @@ jobs:
                   Set-ACL -Path "${env:TEMP_DIR}" -ACLObject $acl
                   cd ${env:GITHUB_WORKSPACE}\phpBB
                   php ..\composer.phar install
+                  php ..\composer.phar remove phpunit/dbunit --dev --update-with-dependencies
+                  php ..\composer.phar require symfony/yaml:~4.4 misantron/dbunit:~5.0 phpunit/phpunit:^9.3 --dev --update-with-all-dependencies --ignore-platform-reqs
                   cd ..
             - name: Setup database
               run: |
                   $postgreSqlSvc = Get-Service "postgresql*"
                   Set-Service $postgreSqlSvc.Name -StartupType manual
-                  $postgreSqlSvc.Start()
+                  $runningStatus = [System.ServiceProcess.ServiceControllerStatus]::Running
+                  $maxStartTimeout = New-TimeSpan -Seconds 30
                   try {
-                    (Get-Service "postgresql*").Start()
+                    $postgreSqlSvc.Start()
+                    $postgreSqlSvc.WaitForStatus($runningStatus, $maxStartTimeout)
                   } catch  {
                     $_ | select *
                   }
                   [System.Environment]::SetEnvironmentVariable('PATH',$Env:PATH+";${env:PGBIN}")
                   $env:PGPASSWORD = 'root'
+                  psql -c 'ALTER SYSTEM SET hot_standby = on;' -U postgres
+                  psql -c 'ALTER SYSTEM SET wal_level = minimal;' -U postgres
                   psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
                   psql -c 'create database phpbb_tests;' -U postgres
-                  Add-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
+                  Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
+                  Set-MpPreference -DisableRealtimeMonitoring $true
             - name: Run unit tests
+              if: ${{ matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+            - name: Run unit tests
+              if: ${{ matrix.type == 'functional' }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional

@@ -813,20 +813,42 @@ function posting_gen_inline_attachments(&$attachment_data)
 }
 
 /**
-* Generate inline attachment entry
-*/
-function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
+ * Generate inline attachment entry
+ *
+ * @param array		$attachment_data	The attachment data
+ * @param string	$filename_data		The filename data (filecomment)
+ * @param bool		$show_attach_box	Whether to show the attach box
+ * @param mixed		$forum_id			The forum id to check or false if private message
+ * @return int
+ */
+function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true, $forum_id = false)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher, $phpbb_container;
+	global $template, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container;
+
+	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
 	// Some default template variables
-	$template->assign_vars(array(
+	$default_vars = [
 		'S_SHOW_ATTACH_BOX'				=> $show_attach_box,
 		'S_HAS_ATTACHMENTS'				=> count($attachment_data),
 		'FILESIZE'						=> $config['max_filesize'],
 		'FILE_COMMENT'					=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 		'MAX_ATTACHMENT_FILESIZE'		=> $config['max_filesize'] > 0 ? $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])) : '',
-	));
+		'ALLOWED_ATTACHMENTS'			=> !empty($allowed_attachments) ? implode(',', $allowed_attachments) : '',
+	];
+
+	/**
+	 * Modify default attachments template vars
+	 *
+	 * @event core.modify_default_attachments_template_vars
+	 * @var	array	allowed_attachments		Array containing allowed attachments data
+	 * @var	array	default_vars			Array containing default attachments template vars
+	 * @since 3.3.6-RC1
+	 */
+	$vars = ['allowed_attachments', 'default_vars'];
+	extract($phpbb_dispatcher->trigger_event('core.modify_default_attachments_template_vars', compact($vars)));
+
+	$template->assign_vars($default_vars);
 
 	if (count($attachment_data))
 	{
@@ -975,10 +997,10 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 			$topic_forum_id = ($topic_rows[$draft['topic_id']]['forum_id']) ? $topic_rows[$draft['topic_id']]['forum_id'] : $forum_id;
 
 			$link_topic = true;
-			$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id']);
+			$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $draft['topic_id']);
 			$title = $topic_rows[$draft['topic_id']]['topic_title'];
 
-			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
+			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 't=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
 		}
 		else if ($draft['forum_id'] && $auth->acl_get('f_read', $draft['forum_id']))
 		{
@@ -1198,7 +1220,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$post_subject = censor_text($post_subject);
 
 		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
-		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "f=$forum_id&amp;t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
+		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
 
 		$l_deleted_message = '';
 		if ($row['post_visibility'] == ITEM_DELETED)
@@ -1247,7 +1269,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_TIME'			=> $row['post_time'],
 			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;p=' . $row['post_id']) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		);
 
@@ -2547,27 +2569,35 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		}
 	}
 
-	$params = $add_anchor = '';
+	$params = [];
+	$add_anchor = '';
+	$url = "{$phpbb_root_path}viewtopic.$phpEx";
 
 	if ($post_visibility == ITEM_APPROVED ||
 		($auth->acl_get('m_softdelete', $data_ary['forum_id']) && $post_visibility == ITEM_DELETED) ||
 		($auth->acl_get('m_approve', $data_ary['forum_id']) && in_array($post_visibility, array(ITEM_UNAPPROVED, ITEM_REAPPROVE))))
 	{
-		$params .= '&amp;t=' . $data_ary['topic_id'];
-
 		if ($mode != 'post')
 		{
-			$params .= '&amp;p=' . $data_ary['post_id'];
+			$params['p'] = $data_ary['post_id'];
 			$add_anchor = '#p' . $data_ary['post_id'];
+		}
+		else
+		{
+			$params['t'] = $data_ary['topic_id'];
 		}
 	}
 	else if ($mode != 'post' && $post_mode != 'edit_first_post' && $post_mode != 'edit_topic')
 	{
-		$params .= '&amp;t=' . $data_ary['topic_id'];
+		$params['t'] = $data_ary['topic_id'];
+	}
+	else
+	{
+		$url = "{$phpbb_root_path}viewforum.$phpEx";
+		$params['f'] = $data_ary['forum_id'];
 	}
 
-	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
-	$url = append_sid($url, 'f=' . $data_ary['forum_id'] . $params) . $add_anchor;
+	$url = append_sid($url, $params) . $add_anchor;
 
 	$poll = $poll_ary;
 	$data = $data_ary;
@@ -2628,7 +2658,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 *				- 'topic_last_poster_name'
 *				- 'topic_last_poster_colour'
 * @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time().
-* @return string An URL to the bumped topic, example: ./viewtopic.php?forum_id=1&amptopic_id=2&ampp=3#p3
+* @return string An URL to the bumped topic, example: ./viewtopic.php?p=3#p3
 */
 function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 {
@@ -2717,7 +2747,7 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 		$post_data['topic_title']
 	));
 
-	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
+	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p={$post_data['topic_last_post_id']}") . "#p{$post_data['topic_last_post_id']}";
 
 	return $url;
 }
@@ -2848,7 +2878,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 					$delete_reason
 				));
 
-				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;p=$next_post_id") . "#p$next_post_id";
+				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$next_post_id") . "#p$next_post_id";
 				$message = $user->lang['POST_DELETED'];
 
 				if (!$request->is_ajax())

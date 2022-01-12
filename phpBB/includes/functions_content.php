@@ -14,6 +14,9 @@
 /**
 * @ignore
 */
+
+use phpbb\attachment\attachment_category;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -666,14 +669,13 @@ function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text 
 * @param bool $allow_urls If urls is allowed
 * @param bool $allow_smilies If smilies are allowed
 * @param bool $allow_img_bbcode
-* @param bool $allow_flash_bbcode
 * @param bool $allow_quote_bbcode
 * @param bool $allow_url_bbcode
 * @param string $mode Mode to parse text as, e.g. post or sig
 *
 * @return array	An array of string with the errors that occurred while parsing
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false, $allow_img_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $mode = 'post')
 {
 	global $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
@@ -689,12 +691,12 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	* @var bool		allow_urls		Whether or not to parse URLs
 	* @var bool		allow_smilies	Whether or not to parse Smilies
 	* @var bool		allow_img_bbcode	Whether or not to parse the [img] BBCode
-	* @var bool		allow_flash_bbcode	Whether or not to parse the [flash] BBCode
 	* @var bool		allow_quote_bbcode	Whether or not to parse the [quote] BBCode
 	* @var bool		allow_url_bbcode	Whether or not to parse the [url] BBCode
 	* @var string	mode				Mode to parse text as, e.g. post or sig
 	* @since 3.1.0-a1
 	* @changed 3.2.0-a1 Added mode
+	* @changed 4.0.0-a1 Removed allow_flash_bbcode
 	*/
 	$vars = array(
 		'text',
@@ -705,7 +707,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		'allow_urls',
 		'allow_smilies',
 		'allow_img_bbcode',
-		'allow_flash_bbcode',
 		'allow_quote_bbcode',
 		'allow_url_bbcode',
 		'mode',
@@ -721,7 +722,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	}
 
 	$message_parser = new parse_message($text);
-	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
+	$message_parser->parse($allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_quote_bbcode, $allow_url_bbcode, true, $mode);
 
 	$text = $message_parser->message;
 	$uid = $message_parser->bbcode_uid;
@@ -1228,6 +1229,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
 			'FILESIZE'			=> $filesize['value'],
+			'MIMETYPE'			=> $attachment['mimetype'],
 			'SIZE_LANG'			=> $filesize['unit'],
 			'DOWNLOAD_NAME'		=> utf8_basename($attachment['real_filename']),
 			'COMMENT'			=> $comment,
@@ -1249,11 +1251,11 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 		{
 			$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-			if ($display_cat == ATTACHMENT_CATEGORY_IMAGE)
+			if ($display_cat == attachment_category::IMAGE)
 			{
 				if ($attachment['thumbnail'])
 				{
-					$display_cat = ATTACHMENT_CATEGORY_THUMB;
+					$display_cat = attachment_category::THUMB;
 				}
 				else
 				{
@@ -1265,25 +1267,25 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 							{
 								$file_info = $storage_attachment->file_info($filename);
 
-								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
+								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? attachment_category::IMAGE : attachment_category::NONE;
 							}
 							catch (\Exception $e)
 							{
-								$display_cat = ATTACHMENT_CATEGORY_NONE;
+								$display_cat = attachment_category::NONE;
 							}
 						}
 					}
 					else
 					{
-						$display_cat = ATTACHMENT_CATEGORY_NONE;
+						$display_cat = attachment_category::NONE;
 					}
 				}
 			}
 
 			// Make some descisions based on user options being set.
-			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+			if (($display_cat == attachment_category::IMAGE || $display_cat == attachment_category::THUMB) && !$user->optionget('viewimg'))
 			{
-				$display_cat = ATTACHMENT_CATEGORY_NONE;
+				$display_cat = attachment_category::NONE;
 			}
 
 			$download_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
@@ -1292,7 +1294,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 			switch ($display_cat)
 			{
 				// Images
-				case ATTACHMENT_CATEGORY_IMAGE:
+				case attachment_category::IMAGE:
 					$inline_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id']]);
 
 					$block_array += array(
@@ -1304,13 +1306,31 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				break;
 
 				// Images, but display Thumbnail
-				case ATTACHMENT_CATEGORY_THUMB:
+				case attachment_category::THUMB:
 					$thumbnail_link = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $attachment['attach_id'], 't' => 1]);
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
+
+					$update_count_ary[] = $attachment['attach_id'];
+				break;
+
+				// Audio files
+				case attachment_category::AUDIO:
+					$block_array += [
+						'S_AUDIO_FILE'			=> true,
+					];
+
+					$update_count_ary[] = $attachment['attach_id'];
+				break;
+
+				// Video files
+				case attachment_category::VIDEO:
+					$block_array += [
+						'S_VIDEO_FILE'			=> true,
+					];
 
 					$update_count_ary[] = $attachment['attach_id'];
 				break;

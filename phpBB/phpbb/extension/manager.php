@@ -15,6 +15,7 @@ namespace phpbb\extension;
 
 use phpbb\exception\runtime_exception;
 use phpbb\file_downloader;
+use phpbb\finder\factory as finder_factory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,12 +28,14 @@ class manager
 
 	protected $db;
 	protected $config;
+	protected $finder_factory;
 	protected $cache;
-	protected $php_ext;
 	protected $extensions;
+	protected $recently_changed_ext_status;
 	protected $extension_table;
 	protected $phpbb_root_path;
 	protected $cache_name;
+	protected $router;
 
 	/**
 	* Creates a manager and loads information from database
@@ -40,22 +43,24 @@ class manager
 	* @param ContainerInterface $container A container
 	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param \phpbb\config\config $config Config object
+	* @param finder_factory $finder_factory Finder factory
+	* @param \phpbb\routing\router $router Router
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
-	* @param string $php_ext php file extension, defaults to php
 	* @param \phpbb\cache\service|null $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, finder_factory $finder_factory, \phpbb\routing\router $router, $extension_table, $phpbb_root_path, \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
 		$this->config = $config;
+		$this->finder_factory = $finder_factory;
 		$this->container = $container;
 		$this->db = $db;
+		$this->router = $router;
 		$this->extension_table = $extension_table;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
@@ -236,6 +241,12 @@ class manager
 			'ext_state'		=> serialize($state),
 		);
 
+		if ($active)
+		{
+			$this->recently_changed_ext_status[$name] = false;
+			$this->router->without_cache();
+		}
+
 		$this->update_state($name, $extension_data, $this->is_configured($name) ? 'update' : 'insert');
 
 		if ($active)
@@ -284,6 +295,12 @@ class manager
 		$extension = $this->get_extension($name);
 		$state = $extension->disable_step($old_state);
 		$active = ($state !== false);
+
+		if (!$active)
+		{
+			$this->recently_changed_ext_status[$name] = true;
+			$this->router->without_cache();
+		}
 
 		$extension_data = array(
 			'ext_active'	=> $active,
@@ -497,6 +514,13 @@ class manager
 	*/
 	public function is_enabled($name)
 	{
+		// The extension has just been enabled and so is not loaded. When asking if it is enabled or
+		// not we should answer no to stay consistent with the status at the beginning of the request.
+		if (isset($this->recently_changed_ext_status[$name]))
+		{
+			return $this->recently_changed_ext_status[$name];
+		}
+
 		return isset($this->extensions[$name]['ext_active']) && $this->extensions[$name]['ext_active'];
 	}
 
@@ -508,6 +532,13 @@ class manager
 	*/
 	public function is_disabled($name)
 	{
+		// The extension has just been disabled and so is still loaded. When asking if it is disabled or
+		// not we should answer yes to stay consistent with the status at the beginning of the request.
+		if (isset($this->recently_changed_ext_status[$name]))
+		{
+			return $this->recently_changed_ext_status[$name];
+		}
+
 		return isset($this->extensions[$name]['ext_active']) && !$this->extensions[$name]['ext_active'];
 	}
 
@@ -568,14 +599,15 @@ class manager
 	}
 
 	/**
-	* Instantiates a \phpbb\finder.
+	* Instantiates a \phpbb\finder\finder.
 	*
 	* @param bool $use_all_available Should we load all extensions, or just enabled ones
-	* @return \phpbb\finder An extension finder instance
+	* @return \phpbb\finder\finder An extension finder instance
 	*/
 	public function get_finder($use_all_available = false)
 	{
-		$finder = new \phpbb\finder($this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
+		$finder = $this->finder_factory->get($this->cache_name . '_finder');
+
 		if ($use_all_available)
 		{
 			$finder->set_extensions(array_keys($this->all_available()));
@@ -584,6 +616,7 @@ class manager
 		{
 			$finder->set_extensions(array_keys($this->all_enabled()));
 		}
+
 		return $finder;
 	}
 }

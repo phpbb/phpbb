@@ -32,7 +32,7 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 	/**
 	* @dataProvider get_text_formatter_tests
 	*/
-	public function test_text_formatter($original, $expected, $allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode, $setup = null)
+	public function test_text_formatter($original, $expected, $allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_quote_bbcode, $allow_url_bbcode, $setup = null)
 	{
 		$actual   = $original;
 		$uid      = '';
@@ -44,7 +44,7 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 			$setup();
 		}
 
-		generate_text_for_storage($actual, $uid, $bitfield, $flags, $allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_flash_bbcode, $allow_quote_bbcode, $allow_url_bbcode);
+		generate_text_for_storage($actual, $uid, $bitfield, $flags, $allow_bbcode, $allow_urls, $allow_smilies, $allow_img_bbcode, $allow_quote_bbcode, $allow_url_bbcode);
 
 		$this->assertSame($expected, $actual);
 	}
@@ -61,12 +61,10 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				true,
 				true,
 				true,
-				true,
 			),
 			array(
 				'Hello [url=http://example.org]world[/url] :)',
 				'<r>Hello <URL url="http://example.org"><s>[url=http://example.org]</s>world<e>[/url]</e></URL> <E>:)</E></r>',
-				true,
 				true,
 				true,
 				true,
@@ -83,12 +81,10 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				true,
 				true,
 				true,
-				true,
 			),
 			array(
 				'[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]',
 				'<t>[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]</t>',
-				false,
 				false,
 				false,
 				false,
@@ -105,14 +101,12 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				false,
 				false,
 				false,
-				false,
 			),
 			array(
 				'[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]',
 				'<r>[b]..[/b] <URL url="http://example.org">http://example.org</URL> :) [img]<URL url="http://example.org/img.png">http://example.org/img.png</URL>[/img] [flash=123,123]<URL url="http://example.org/flash.swf">http://example.org/flash.swf</URL>[/flash] [quote]...[/quote] [url]<URL url="http://example.org">http://example.org</URL>[/url]</r>',
 				false,
 				true,
-				false,
 				false,
 				false,
 				false,
@@ -127,7 +121,6 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				false,
 				false,
 				false,
-				false,
 			),
 			array(
 				'[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]',
@@ -138,16 +131,14 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				true,
 				false,
 				false,
-				false,
 			),
 			array(
 				'[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]',
-				'<r><B><s>[b]</s>..<e>[/b]</e></B> http://example.org :) [img]http://example.org/img.png[/img] <FLASH height="123" url="http://example.org/flash.swf" width="123"><s>[flash=123,123]</s>http://example.org/flash.swf<e>[/flash]</e></FLASH> [quote]...[/quote] [url]http://example.org[/url]</r>',
+				'<r><B><s>[b]</s>..<e>[/b]</e></B> http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]</r>',
 				true,
 				false,
 				false,
 				false,
-				true,
 				false,
 				false,
 			),
@@ -158,7 +149,6 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				false,
 				false,
 				false,
-				false,
 				true,
 				false,
 			),
@@ -166,7 +156,6 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 				'[b]..[/b] http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] [url]http://example.org[/url]',
 				'<r><B><s>[b]</s>..<e>[/b]</e></B> http://example.org :) [img]http://example.org/img.png[/img] [flash=123,123]http://example.org/flash.swf[/flash] [quote]...[/quote] <URL url="http://example.org"><s>[url]</s>http://example.org<e>[/url]</e></URL></r>',
 				true,
-				false,
 				false,
 				false,
 				false,

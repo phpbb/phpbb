@@ -887,7 +887,6 @@ function set_user_options()
 	// Key need to be set in row, else default value is chosen
 	$keyoptions = array(
 		'viewimg'		=> array('bit' => 0, 'default' => 1),
-		'viewflash'		=> array('bit' => 1, 'default' => 1),
 		'viewsmilies'	=> array('bit' => 2, 'default' => 1),
 		'viewsigs'		=> array('bit' => 3, 'default' => 1),
 		'viewavatars'	=> array('bit' => 4, 'default' => 1),
@@ -1684,10 +1683,12 @@ function add_bots()
 
 	$bots = array(
 		'AdsBot [Google]'			=> array('AdsBot-Google', ''),
+		'Ahrefs [Bot]'				=> array('AhrefsBot/', ''),
 		'Alexa [Bot]'				=> array('ia_archiver', ''),
 		'Alta Vista [Bot]'			=> array('Scooter/', ''),
+		'Amazon [Bot]'				=> array('Amazonbot/', ''),
 		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
-		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
+		'Baidu [Spider]'			=> array('Baiduspider', ''),
 		'Bing [Bot]'				=> array('bingbot/', ''),
 		'DuckDuckGo [Bot]'			=> array('DuckDuckBot/', ''),
 		'Exabot [Bot]'				=> array('Exabot/', ''),
@@ -1703,7 +1704,7 @@ function add_bots()
 		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
 		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
 		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-		'ichiro [Crawler]'			=> array('ichiro/2', ''),
+		'ichiro [Crawler]'			=> array('ichiro/', ''),
 		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
 		'Metager [Bot]'				=> array('MetagerBot/', ''),
 		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
@@ -1716,6 +1717,7 @@ function add_bots()
 		'Online link [Validator]'	=> array('online link validator', ''),
 		'psbot [Picsearch]'			=> array('psbot/0', ''),
 		'Seekport [Bot]'			=> array('Seekbot/', ''),
+		'Semrush [Bot]'				=> array('SemrushBot/', ''),
 		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
 		'SEO Crawler'				=> array('SEO search Crawler/', ''),
 		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
@@ -1725,7 +1727,7 @@ function add_bots()
 		'Synoo [Bot]'				=> array('SynooBot/', ''),
 		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
 		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
-		'Voyager [Bot]'				=> array('voyager/1.0', ''),
+		'Voyager [Bot]'				=> array('voyager/', ''),
 		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
 		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
 		'W3C [Validator]'			=> array('W3C_*Validator', ''),

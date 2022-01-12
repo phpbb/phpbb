@@ -195,7 +195,7 @@ class acp_bbcodes
 					$data = $this->build_regexp($bbcode_match, $bbcode_tpl);
 
 					// Make sure the user didn't pick a "bad" name for the BBCode tag.
-					$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'flash', 'flash=', 'mention');
+					$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'mention');
 
 					if (($action == 'modify' && strtolower($data['bbcode_tag']) !== strtolower($row['bbcode_tag'])) || ($action == 'create'))
 					{
@@ -235,7 +235,7 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (strlen($bbcode_helpline) > 255)
+					if (strlen($bbcode_helpline) > 3000)
 					{
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}

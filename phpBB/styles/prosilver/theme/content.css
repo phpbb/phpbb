@@ -189,7 +189,7 @@ dl.row-item dt {
 }
 
 dl.row-item dt .list-inner {
-	padding-left: 52px;					/* Space for folder icon */
+	padding-left: 52px;			/* Space for folder icon */
 }
 
 dl.row-item dt,
@@ -628,8 +628,6 @@ blockquote .codebox {
 
 .attach-image img {
 	border: 1px solid transparent;
-
-	/*	cursor: move; */
 	cursor: default;
 }
 
@@ -680,6 +678,18 @@ dl.thumbnail dd {
 
 dl.thumbnail dt a:hover img {
 	border: 1px solid transparent;
+}
+
+.c-file-comment {
+	font-style: italic;
+}
+
+.c-file-audio-controls {
+	max-width: 100%;
+}
+
+.c-file-video-controls {
+	max-width: 100%;
 }
 
 /* Post poll styles
@@ -783,6 +793,10 @@ fieldset.polls dd div {
 .postprofile dd.profile-rank,
 .postprofile .search-result-date {
 	margin-bottom: 10px;
+}
+
+.profile-rank img {
+	max-width: 160px;
 }
 
 /* Post-profile avatars */
