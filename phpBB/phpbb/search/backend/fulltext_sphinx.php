@@ -642,9 +642,6 @@ class fulltext_sphinx implements search_backend_interface
 			);
 			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
 
-			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
-			$this->db->sql_query($sql);
-
 			$data = array(
 				'counter_id'	=> '1',
 				'max_doc_id'	=> '0',
