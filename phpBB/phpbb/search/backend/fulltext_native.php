@@ -241,6 +241,16 @@ class fulltext_native extends base implements search_backend_interface
 						$keywords[$i] = ' ';
 					break;
 					case '-':
+						// Ignore hyphen if followed by a space
+						if (isset($keywords[$i + 1]) && $keywords[$i + 1] == ' ')
+						{
+							$keywords[$i] = ' ';
+						}
+						else
+						{
+							$space = $keywords[$i];
+						}
+					break;
 					case '+':
 						$space = $keywords[$i];
 					break;

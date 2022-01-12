@@ -29,7 +29,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
 		$this->assertEquals(0, $crawler->filter('.postbody')->count());
-		$split_keywords_string = str_replace(array('+', '-'), ' ', $keywords);
+		$split_keywords_string = str_replace('+', ' ', $keywords);
 		$this->assertEquals($split_keywords_string, $crawler->filter('#keywords')->attr('value'));
 	}
 
@@ -80,6 +80,9 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->assert_search_found('phpbb3+installation', 1, 3);
 		$this->assert_search_found('foosubject+barsearch', 1, 2);
 		$this->assert_search_not_found('loremipsumdedo');
+		$this->assert_search_found('barsearch-testing', 1, 2); // test hyphen ignored
+		$this->assert_search_found('barsearch+-+testing', 1, 2); // test hyphen wrapped with space ignored
+		$this->assert_search_not_found('barsearch+-testing'); // test excluding keyword
 
 		$this->login();
 		$this->admin_login();
