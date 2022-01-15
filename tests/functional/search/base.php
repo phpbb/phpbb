@@ -74,7 +74,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 			$searchforauthoruser_id = $this->create_user('searchforauthoruser');
 		}
 		$this->remove_user_group('NEWLY_REGISTERED', ['searchforauthoruser']);
-		$this->disable_flood_interval();
+		$this->set_flood_interval(0);
 		$this->login('searchforauthoruser');
 		$topic_by_author = $this->create_topic(2, 'Test Topic from searchforauthoruser', 'This is a test topic posted by searchforauthoruser to test searching by author.');
 		$this->create_post(2, $topic_by_author['topic_id'], 'Re: Test Topic from searchforauthoruser', 'This is a test post posted by searchforauthoruser');
@@ -86,6 +86,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->create_search_index('\phpbb\search\fulltext_native');
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
+		$this->set_flood_interval(15);
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=settings&sid=' . $this->sid);
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
