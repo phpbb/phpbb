@@ -983,7 +983,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), $content);
 
 		if ($status_code !== false)
 		{
@@ -1448,31 +1448,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
-	 * Get HTML of the crawler
-	 * See https://symfony.com/doc/current/components/dom_crawler.html#component-dom-crawler-dumping
-	 *
-	 * @param Symfony\Component\DomCrawler\Crawler $crawler Crawler instance
-	 * @param string $url Request URL
-	 *
-	 * @return array Hidden form fields array
-	 */
-	protected function dump_crawler($crawler)
-	{
-		if (!$crawler)
-		{
-			return;
-		}
-
-		$html = '';
-		foreach ($crawler as $domElement)
-		{
-			$html .= $domElement->ownerDocument->saveHTML($domElement);
-		}
-
-		return $html;
-	}
-
-	/**
 	 * Get username of currently logged in user
 	 *
 	 * @return string|bool username if logged in, false otherwise
@@ -1490,9 +1465,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
-	 * Disable posting flood control
+	 * Posting flood control
 	 */
-	protected function disable_flood_interval()
+	protected function set_flood_interval($flood_interval)
 	{
 		$relogin_back = false;
 		$logged_in_username = $this->get_logged_in_user();
@@ -1511,7 +1486,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->add_lang('acp/common');
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=post&sid=' . $this->sid);
 		$form = $crawler->selectButton('submit')->form([
-			'config[flood_interval]'	=> 0,
+			'config[flood_interval]'	=> $flood_interval,
 		]);
 		$crawler = self::submit($form);
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());

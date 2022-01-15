@@ -868,24 +868,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->set_flood_interval(15);
 	}
 
-	protected function set_flood_interval($flood_interval)
-	{
-		$this->login();
-		$this->admin_login();
-
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
-
-		$form = $crawler->selectButton('Submit')->form();
-		$values = $form->getValues();
-
-		$values['config[flood_interval]'] = $flood_interval;
-		$form->setValues($values);
-		$crawler = self::submit($form);
-		self::assertGreaterThan(0, $crawler->filter('.successbox')->count());
-
-		$this->logout();
-	}
-
 	public function test_feeds_unapproved_topic_admin()
 	{
 		$this->load_ids(array(
