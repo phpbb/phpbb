@@ -311,10 +311,43 @@ class doctrine implements tools_interface
 	 */
 	public function sql_column_change(string $table_name, string $column_name, array $column_data)
 	{
+		$column_indexes = $this->get_filtered_index_list($table_name, true);
+
+		$column_indexes = array_filter($column_indexes, function($index) use ($column_name) {
+			$index_columns = array_map('strtolower', $index->getUnquotedColumns());
+			return in_array($column_name, $index_columns, true);
+		});
+
+		if (count($column_indexes))
+		{
+			$ret = $this->alter_schema(
+				function (Schema $schema) use ($table_name, $column_name, $column_data, $column_indexes): void
+				{
+					foreach ($column_indexes as $index)
+					{
+						$this->schema_index_drop($schema, $table_name, $index->getName());
+					}
+				}
+			);
+
+			if ($ret !== true)
+			{
+				return $ret;
+			}
+		}
+
 		return $this->alter_schema(
-			function (Schema $schema) use ($table_name, $column_name, $column_data): void
+			function (Schema $schema) use ($table_name, $column_name, $column_data, $column_indexes): void
 			{
 				$this->schema_column_change($schema, $table_name, $column_name, $column_data);
+
+				if (count($column_indexes))
+				{
+					foreach ($column_indexes as $index)
+					{
+						$this->schema_create_index($index->getColumns(), $schema, $table_name, $index->getName());
+					}
+				}
 			}
 		);
 	}
@@ -324,6 +357,30 @@ class doctrine implements tools_interface
 	 */
 	public function sql_column_remove(string $table_name, string $column_name)
 	{
+		// Check if this column is part of a primary key. If yes, remove the primary key.
+		$primary_key_indexes = $this->get_filtered_index_list($table_name, false);
+
+		$primary_key_indexes = array_filter($primary_key_indexes, function($index) use ($column_name) {
+			$index_columns = array_map('strtolower', $index->getUnquotedColumns());
+			return in_array($column_name, $index_columns, true) && $index->isPrimary();
+		});
+
+		if (count($primary_key_indexes))
+		{
+			$ret = $this->alter_schema(
+				function (Schema $schema) use ($table_name, $column_name): void
+				{
+					$table = $schema->getTable($table_name);
+					$table->dropPrimaryKey();
+				}
+			);
+
+			if ($ret !== true)
+			{
+				return $ret;
+			}
+		}
+
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column_name): void
 			{
@@ -390,7 +447,7 @@ class doctrine implements tools_interface
 	 * @param string $table_name    The name of the table.
 	 * @param bool   $is_non_unique Whether to return simple indices or primary and unique ones.
 	 *
-	 * @return array The filtered index array.
+	 * @return Index[] The filtered index array.
 	 */
 	protected function get_filtered_index_list(string $table_name, bool $is_non_unique): array
 	{
@@ -465,7 +522,7 @@ class doctrine implements tools_interface
 			call_user_func($callback, $new_schema);
 
 			$comparator = new comparator();
-			$schemaDiff = $comparator->compare($current_schema, $new_schema);
+			$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
 			$queries = $schemaDiff->toSql($this->get_schema_manager()->getDatabasePlatform());
 
 			if ($this->return_statements)
@@ -649,17 +706,6 @@ class doctrine implements tools_interface
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$options['type'] = Type::getType($type);
 				$table->changeColumn($column_name, $options);
-
-				// Re-create the indices using this column
-				// TODO: not sure it will works the way we want. It is possible that doctrine does not detect any changes on the indices level
-				foreach ($table->getIndexes() as $index)
-				{
-					$index_columns = array_map('strtolower', $index->getUnquotedColumns());
-					if (array_search($column_name, $index_columns, true) !== false)
-					{
-						$this->recreate_index($table, $index, $index_columns);
-					}
-				}
 			}
 		);
 	}
@@ -732,6 +778,7 @@ class doctrine implements tools_interface
 						$this->recreate_index($table, $index, $index_columns);
 					}
 				}
+
 				$table->dropColumn($column_name);
 			}
 		);

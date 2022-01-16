@@ -60,6 +60,16 @@ class sqlsrv_platform extends SQLServer2012Platform
 			}
 		}
 
+		// When dropping a primary key, the constraint needs to be dropped
+		foreach ($diff->removedIndexes as $key => $index)
+		{
+			if ($index->isPrimary())
+			{
+				unset($diff->removedIndexes[$key]);
+				$sql[] = $this->getDropConstraintSQL($index->getQuotedName($this), $diff->name);
+			}
+		}
+
 		$sql = array_merge($sql, parent::getAlterTableSQL($diff));
 
 		$doctrine_names = [];
