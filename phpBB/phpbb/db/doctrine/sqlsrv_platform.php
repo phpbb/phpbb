@@ -13,14 +13,14 @@
 
 namespace phpbb\db\doctrine;
 
-use Doctrine\DBAL\Platforms\SQLServer2012Platform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\TableDiff;
 
 /**
  * SQLServer specific schema restrictions for BC.
  */
-class sqlsrv_platform extends SQLServer2012Platform
+class sqlsrv_platform extends SQLServerPlatform
 {
 	/**
 	 * {@inheritDoc}
