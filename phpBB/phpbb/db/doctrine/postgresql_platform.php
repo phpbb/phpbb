@@ -36,7 +36,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIdentitySequenceName($tableName, $columnName)
+	public function getIdentitySequenceName($tableName, $columnName): string
 	{
 		return $tableName . '_seq';
 	}
@@ -44,7 +44,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getIntegerTypeDeclarationSQL(array $column)
+	public function getIntegerTypeDeclarationSQL(array $column): string
 	{
 		return 'INT';
 	}
@@ -52,7 +52,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getBigIntTypeDeclarationSQL(array $column)
+	public function getBigIntTypeDeclarationSQL(array $column): string
 	{
 		return 'BIGINT';
 	}
@@ -60,7 +60,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSmallIntTypeDeclarationSQL(array $column)
+	public function getSmallIntTypeDeclarationSQL(array $column): string
 	{
 		return 'SMALLINT';
 	}
@@ -68,7 +68,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDefaultValueDeclarationSQL($column)
+	public function getDefaultValueDeclarationSQL($column): string
 	{
 		if ($this->isSerialColumn($column))
 		{
@@ -81,7 +81,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function supportsIdentityColumns()
+	public function supportsIdentityColumns(): bool
 	{
 		return false;
 	}
@@ -89,7 +89,7 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function _getCreateTableSQL($name, array $columns, array $options = [])
+	protected function _getCreateTableSQL($name, array $columns, array $options = []): array
 	{
 		$sql = [];
 		$post_sql = [];
@@ -113,7 +113,9 @@ class postgresql_platform extends PostgreSQLPlatform
 	}
 
 	/**
-	 * @param array $column
+	 * Return if column is a "serial" column, i.e. type supporting auto-increment
+	 *
+	 * @param array $column Column data
 	 * @return bool
 	 */
 	private function isSerialColumn(array $column): bool
@@ -123,6 +125,12 @@ class postgresql_platform extends PostgreSQLPlatform
 			&& $this->isNumericType($column['type']);
 	}
 
+	/**
+	 * Return if supplied type is of numeric type
+	 *
+	 * @param Type $type
+	 * @return bool
+	 */
 	private function isNumericType(Type $type): bool
 	{
 		return $type instanceof IntegerType || $type instanceof BigIntType || $type instanceof SmallIntType;
@@ -131,21 +139,21 @@ class postgresql_platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getListSequencesSQL($database)
+	public function getListSequencesSQL($database): string
 	{
 		return "SELECT sequence_name AS relname,
-                       sequence_schema AS schemaname,
-                       1 AS min_value,
-                       1 AS increment_by
-                FROM   information_schema.sequences
-                WHERE  sequence_schema NOT LIKE 'pg\_%'
-                AND    sequence_schema <> 'information_schema'";
+				sequence_schema AS schemaname,
+				1 AS min_value,
+				1 AS increment_by
+			FROM information_schema.sequences
+			WHERE sequence_schema NOT LIKE 'pg\_%'
+				AND sequence_schema <> 'information_schema'";
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDropIndexSQL($index, $table = null)
+	public function getDropIndexSQL($index, $table = null): string
 	{
 		// If we have a primary or a unique index, we need to drop the constraint
 		// instead of the index itself or postgreSQL will reject the query.

@@ -178,7 +178,7 @@ class doctrine implements tools_interface
 	{
 		if (empty($schema_changes))
 		{
-			return;
+			return true;
 		}
 
 		return $this->alter_schema(
@@ -668,7 +668,7 @@ class doctrine implements tools_interface
 			{
 				if ($safe_check && $table->hasColumn($column_name))
 				{
-					return;
+					return false;
 				}
 
 				$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();

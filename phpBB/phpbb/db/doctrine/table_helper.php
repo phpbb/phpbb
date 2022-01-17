@@ -122,6 +122,9 @@ class table_helper
 		}
 	}
 
+	/**
+	 * Private constructor. Call methods of table_helper statically.
+	 */
 	private function __construct()
 	{
 	}

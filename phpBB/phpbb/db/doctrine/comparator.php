@@ -26,7 +26,7 @@ class comparator extends \Doctrine\DBAL\Schema\Comparator
 
 		if ($diff === false)
 		{
-			return $diff;
+			return false;
 		}
 
 		if (!is_array($diff->changedColumns))
