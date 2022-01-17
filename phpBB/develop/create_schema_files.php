@@ -49,8 +49,15 @@ $classes = $finder->core_path('phpbb/')
 	->get_classes();
 
 $db = new \phpbb\db\driver\sqlite3();
+
+// The database is not used by db\tools when we generate the schema but it requires a doctrine DBAL object
+// which always tries to connect to the database in the constructor. Which means if we want a valid doctrine
+// Connection object that is not connected to any database we have to do that.
+$ref = new ReflectionClass(\Doctrine\DBAL\Connection::class);
+$db_doctrine = $ref->newInstanceWithoutConstructor();
+
 $factory = new \phpbb\db\tools\factory();
-$db_tools = $factory->get($db, true);
+$db_tools = $factory->get($db_doctrine, true);
 
 $tables_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
 $tables = [];

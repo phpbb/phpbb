@@ -19,6 +19,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	protected $cache;
 	protected $config;
 	protected $db;
+	protected $db_doctrine;
 	protected $db_tools;
 	protected $table_prefix;
 	protected $phpbb_root_path;
@@ -40,8 +41,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->db_doctrine);
 		$finder_factory = $this->createMock('\phpbb\finder\factory');
 		$this->phpbb_root_path = __DIR__ . '/';
 		$this->phpEx = 'php';

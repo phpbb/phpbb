@@ -51,11 +51,6 @@ class container_builder
 	protected $container;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $dbal_connection = null;
-
-	/**
 	 * Indicates whether extensions should be used (default to true).
 	 *
 	 * @var bool
@@ -120,6 +115,11 @@ class container_builder
 	 * @var array
 	 */
 	private $env_parameters = [];
+
+	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $dbal_connection = null;
 
 	/**
 	 * Constructor

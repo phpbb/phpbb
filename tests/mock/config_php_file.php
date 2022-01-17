@@ -11,14 +11,17 @@
  *
  */
 
-namespace phpbb\db\tools;
+class phpbb_mock_config_php_file extends \phpbb\config_php_file {
+	public function __construct()
+	{
+	}
 
-/**
- * Database Tools for handling cross-db actions such as altering columns, etc.
- * Currently not supported is returning SQL for creating tables.
- *
- * @deprecated 4.0.0-a1
- */
-class mssql extends doctrine
-{
+	protected function load_config_file()
+	{
+		if (!$this->config_loaded)
+		{
+			$this->config_data = phpbb_test_case_helpers::get_test_config();
+			$this->config_loaded = true;
+		}
+	}
 }

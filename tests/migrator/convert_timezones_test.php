@@ -14,12 +14,14 @@
 class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 {
 	protected $db;
+	protected $db_doctrine;
 
 	public function getDataSet()
 	{
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
-		$db_tools = $factory->get($this->db);
+		$db_tools = $factory->get($this->db_doctrine);
 
 		// user_dst doesn't exist anymore, must re-add it to test this
 		$db_tools->sql_column_add('phpbb_users', 'user_dst', array('BOOL', 1));
@@ -56,12 +58,13 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 
 		$this->migration = new \phpbb\db\migration\data\v310\timezone(
 			new \phpbb\config\config(array()),
 			$this->db,
-			$factory->get($this->db),
+			$factory->get($this->db_doctrine),
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_',
@@ -94,7 +97,7 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 		$this->db->sql_freeresult($result);
 
 		$factory = new \phpbb\db\tools\factory();
-		$db_tools = $factory->get($this->db);
+		$db_tools = $factory->get($this->db_doctrine);
 
 		// Remove the user_dst field again
 		$db_tools->sql_column_remove('phpbb_users', 'user_dst');

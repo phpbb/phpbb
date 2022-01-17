@@ -163,9 +163,10 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
+		$db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $php_ext);
-		$db_tools = $factory->get($db);
+		$db_tools = $factory->get($db_doctrine);
 		$table_prefix = 'phpbb_';
 
 		$container = new phpbb_mock_container_builder();
