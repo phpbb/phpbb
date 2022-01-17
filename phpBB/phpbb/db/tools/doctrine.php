@@ -182,87 +182,9 @@ class doctrine implements tools_interface
 		}
 
 		return $this->alter_schema(
-			function (Schema $schema) use($schema_changes): void
+			function (Schema $schema) use ($schema_changes): void
 			{
-				$mapping = [
-					'drop_tables' => [
-						'method' => 'schema_drop_table',
-						'use_key' => false,
-					],
-					'add_tables' => [
-						'method' => 'schema_create_table',
-						'use_key' => true,
-					],
-					'change_columns' => [
-						'method' => 'schema_column_change_add',
-						'use_key' => true,
-						'per_table' => true,
-					],
-					'add_columns' => [
-						'method' => 'schema_column_add',
-						'use_key' => true,
-						'per_table' => true,
-					],
-					'drop_columns' => [
-						'method' => 'schema_column_remove',
-						'use_key' => false,
-						'per_table' => true,
-					],
-					'drop_keys' => [
-						'method' => 'schema_index_drop',
-						'use_key' => false,
-						'per_table' => true,
-					],
-					'add_primary_keys' => [
-						'method' => 'schema_create_primary_key',
-						'use_key' => true,
-					],
-					'add_unique_index' => [
-						'method' => 'schema_create_unique_index',
-						'use_key' => true,
-						'per_table' => true,
-					],
-					'add_index' => [
-						'method' => 'schema_create_index',
-						'use_key' => true,
-						'per_table' => true,
-					],
-				];
-
-				foreach ($mapping as $action => $params)
-				{
-					if (array_key_exists($action, $schema_changes))
-					{
-						foreach ($schema_changes[$action] as $table_name => $table_data)
-						{
-							if (array_key_exists('per_table', $params) && $params['per_table'])
-							{
-								foreach ($table_data as $key => $data)
-								{
-									if ($params['use_key'] == false)
-									{
-										$this->{$params['method']}($schema, $table_name, $data, true);
-									}
-									else
-									{
-										$this->{$params['method']}($schema, $table_name, $key, $data, true);
-									}
-								}
-							}
-							else
-							{
-								if ($params['use_key'] == false)
-								{
-									$this->{$params['method']}($schema, $table_data, true);
-								}
-								else
-								{
-									$this->{$params['method']}($schema, $table_name, $table_data, true);
-								}
-							}
-						}
-					}
-				}
+				$this->schema_perform_changes($schema, $schema_changes);
 			}
 		);
 	}
@@ -556,6 +478,95 @@ class doctrine implements tools_interface
 	{
 		$table = $schema->getTable($table_name);
 		call_user_func($callback, $table);
+	}
+
+	/**
+	 * Perform schema changes
+	 *
+	 * @param Schema $schema
+	 * @param array $schema_changes
+	 */
+	protected function schema_perform_changes(Schema $schema, array $schema_changes): void
+	{
+		$mapping = [
+			'drop_tables' => [
+				'method' => 'schema_drop_table',
+				'use_key' => false,
+			],
+			'add_tables' => [
+				'method' => 'schema_create_table',
+				'use_key' => true,
+			],
+			'change_columns' => [
+				'method' => 'schema_column_change_add',
+				'use_key' => true,
+				'per_table' => true,
+			],
+			'add_columns' => [
+				'method' => 'schema_column_add',
+				'use_key' => true,
+				'per_table' => true,
+			],
+			'drop_columns' => [
+				'method' => 'schema_column_remove',
+				'use_key' => false,
+				'per_table' => true,
+			],
+			'drop_keys' => [
+				'method' => 'schema_index_drop',
+				'use_key' => false,
+				'per_table' => true,
+			],
+			'add_primary_keys' => [
+				'method' => 'schema_create_primary_key',
+				'use_key' => true,
+			],
+			'add_unique_index' => [
+				'method' => 'schema_create_unique_index',
+				'use_key' => true,
+				'per_table' => true,
+			],
+			'add_index' => [
+				'method' => 'schema_create_index',
+				'use_key' => true,
+				'per_table' => true,
+			],
+		];
+
+		foreach ($mapping as $action => $params)
+		{
+			if (array_key_exists($action, $schema_changes))
+			{
+				foreach ($schema_changes[$action] as $table_name => $table_data)
+				{
+					if (array_key_exists('per_table', $params) && $params['per_table'])
+					{
+						foreach ($table_data as $key => $data)
+						{
+							if ($params['use_key'] == false)
+							{
+								$this->{$params['method']}($schema, $table_name, $data, true);
+							}
+							else
+							{
+								$this->{$params['method']}($schema, $table_name, $key, $data, true);
+							}
+						}
+					}
+					else
+					{
+						if ($params['use_key'] == false)
+						{
+							$this->{$params['method']}($schema, $table_data, true);
+						}
+						else
+						{
+							$this->{$params['method']}($schema, $table_name, $table_data, true);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	/**
