@@ -1496,10 +1496,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	}
 
 	/**
-	* Check if a user exists by username(s) or user_id(s)
+	* Check if a user exists by username or user_id
 	*
-	* @param array &$user_id_ary The user ids to check or empty if usernames used
-	* @param array &$username_ary The usernames to check or empty if user ids used
+	* @param string $username The username to check or empty if user_id is used
+	* @param int $user_id The user id to check or empty if username is used
 	*
 	* @return bool Returns true if a user exists, false otherwise
 	*/
