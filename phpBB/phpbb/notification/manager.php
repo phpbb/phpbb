@@ -255,9 +255,36 @@ class manager
 			'ignore_users'		=> array(),
 		), $options);
 
+		$notified_users = [];
+		$add_notifications_override = false;
+
+		/**
+		* Get notification data before find_users_for_notification() execute
+		*
+		* @event core.notification_manager_add_notifications_before
+		* @var	bool			add_notifications_override	Flag indicating whether function should return after event
+		* @var	array|string	notification_type_name		Type identifier or array of item types
+		* @var	string			data						Data specific for this notification type that will be inserted
+		* @var	array 			notified_users				Array of notified users
+		* @var	string			options						Optional options to control what notifications are loaded
+		* @since 3.3.6-RC1
+		*/
+		$vars = [
+			'add_notifications_override',
+			'notification_type_name',
+			'data',
+			'notified_users',
+			'options',
+		];
+		extract($this->phpbb_dispatcher->trigger_event('core.notification_manager_add_notifications_before', compact($vars)));
+
+		if ($add_notifications_override)
+		{
+			return $notified_users;
+		}
+
 		if (is_array($notification_type_name))
 		{
-			$notified_users = array();
 			$temp_options = $options;
 
 			foreach ($notification_type_name as $type)
