@@ -1437,4 +1437,87 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		return $file_form_data;
 	}
+
+	/**
+	 * Get username of currently logged in user
+	 *
+	 * @return string|bool username if logged in, false otherwise
+	 */
+	protected function get_logged_in_user()
+	{
+		$username_logged_in = false;
+		$crawler = self::request('GET', 'index.php');
+		$is_logged_in = strpos($crawler->filter('div[class="navbar"]')->text(), 'Login') === false;
+		if ($is_logged_in)
+		{
+			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span')->text();
+		}
+		return $username_logged_in;
+	}
+
+	/**
+	 * Posting flood control
+	 */
+	protected function set_flood_interval($flood_interval)
+	{
+		$relogin_back = false;
+		$logged_in_username = $this->get_logged_in_user();
+		if ($logged_in_username && $logged_in_username !== 'admin')
+		{
+			$this->logout();
+			$relogin_back = true;
+		}
+
+		if (!$logged_in_username || $relogin_back)
+		{
+			$this->login();
+			$this->admin_login();
+		}
+
+		$this->add_lang('acp/common');
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=post&sid=' . $this->sid);
+		$form = $crawler->selectButton('submit')->form([
+			'config[flood_interval]'	=> $flood_interval,
+		]);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
+
+		// Get logged out back or get logged in in user back if needed
+		if (!$logged_in_username)
+		{
+			$this->logout();
+		}
+
+		if ($relogin_back)
+		{
+			$this->logout();
+			$this->login($logged_in_username);
+		}
+	}
+
+	/**
+	* Check if a user exists by username or user_id
+	*
+	* @param string $username The username to check or empty if user_id is used
+	* @param int $user_id The user id to check or empty if username is used
+	*
+	* @return bool Returns true if a user exists, false otherwise
+	*/
+	protected function user_exists($username, $user_id = null)
+	{
+		global $db;
+
+		$db = $this->get_db();
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('user_get_id_name'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		return user_get_id_name($user_id, $username) ? false : true;
+	}
 }

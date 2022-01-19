@@ -22,13 +22,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		// Disable flood interval to post >1 of topics
-		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=post&sid={$this->sid}");
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
-			'config[flood_interval]'	=> 0,
-		]);
-		$crawler = self::submit($form);
-		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
+		$this->set_flood_interval(0);
 
 		// Create a forum to move topics around
 		$forum_name = 'MCP Test #1';
@@ -53,6 +47,8 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$post[] = $this->create_topic(2, 'Topic to merge with', 'Testing merge topics moderation actions from MCP/View forum page.');
 		$crawler = self::request('GET', "viewtopic.php?t={$post[1]['topic_id']}&sid={$this->sid}");
 		$this->assertStringContainsString('Testing merge topics moderation actions from MCP/View forum page.', $crawler->filter('html')->text());
+
+		$this->set_flood_interval(15);
 
 		return $post;
 }

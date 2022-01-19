@@ -568,8 +568,8 @@ class fulltext_mysql extends \phpbb\search\base
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_keywords_main_query_before', compact($vars)));
 
-		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
-		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
+		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
+		$sql_select			.= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 		if (count($author_ary) && $author_name)
@@ -610,11 +610,10 @@ class fulltext_mysql extends \phpbb\search\base
 		$this->db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
-
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count && count($id_ary))
 		{
-			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT(*) as result_count", $sql);
 			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
@@ -828,12 +827,13 @@ class fulltext_mysql extends \phpbb\search\base
 		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_author_query_before', compact($vars)));
 
 		// If the cache was completely empty count the results
-		$calc_results = ($result_count) ? '' : 'SQL_CALC_FOUND_ROWS ';
+		$sql_select	= ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$sql_select	.= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
-			$sql = "SELECT {$calc_results}p.post_id
+			$sql = "SELECT $sql_select
 				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
 				WHERE $sql_author
 					$sql_topic_id
@@ -847,7 +847,7 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 		else
 		{
-			$sql = "SELECT {$calc_results}t.topic_id
+			$sql = "SELECT $sql_select
 				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
 					$sql_topic_id
@@ -857,7 +857,7 @@ class fulltext_mysql extends \phpbb\search\base
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id
+				GROUP BY $sql_select
 				ORDER BY $sql_sort";
 			$field = 'topic_id';
 		}
@@ -874,9 +874,10 @@ class fulltext_mysql extends \phpbb\search\base
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
-			$sql_found_rows = 'SELECT FOUND_ROWS() as result_count';
+			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT(*) as result_count", $sql);
 			$result = $this->db->sql_query($sql_found_rows);
-			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$result_count = ($type == 'posts') ? (int) $this->db->sql_fetchfield('result_count') : count($this->db->sql_fetchrowset($result));
+
 			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
