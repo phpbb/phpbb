@@ -57,8 +57,8 @@ class fulltext_sphinx implements search_backend_interface
 	protected $indexes;
 
 	/**
-	 * Sphinx searchd client object
-	 * @var SphinxClient
+	 * Sphinx search client object
+	 * @var \SphinxClient
 	 */
 	protected $sphinx;
 
@@ -631,7 +631,7 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): ?array
 	{
-		if ($this->index_created())
+		if (!$this->index_created())
 		{
 			$table_data = array(
 				'COLUMNS'	=> array(
@@ -641,9 +641,6 @@ class fulltext_sphinx implements search_backend_interface
 				'PRIMARY_KEY'	=> 'counter_id',
 			);
 			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
-
-			$sql = 'TRUNCATE TABLE ' . SPHINX_TABLE;
-			$this->db->sql_query($sql);
 
 			$data = array(
 				'counter_id'	=> '1',
@@ -857,7 +854,7 @@ class fulltext_sphinx implements search_backend_interface
 		/* Now that we're sure everything was entered correctly,
 		generate a config for the index. We use a config value
 		fulltext_sphinx_id for this, as it should be unique. */
-		$config_object = new \phpbb\search\sphinx\config($this->config_file_data);
+		$config_object = new \phpbb\search\backend\sphinx\config();
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype . ' # mysql or pgsql'),
