@@ -115,7 +115,7 @@ class phpbb_functional_download_test extends phpbb_functional_test_case
 		$this->assertContainsLang('POST_DELETED', $crawler->text());
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Download Topic #1']}&sid={$this->sid}");
-		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY'), $crawler->text());
 	}
 
 	public function test_download_softdeleted_post()
