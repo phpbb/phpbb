@@ -152,7 +152,9 @@ class installer
 	{
 		if (!$io)
 		{
+			$this->restore_cwd();
 			$io = new null_io();
+			$this->move_to_root();
 		}
 
 		$this->generate_ext_json_file($packages);
@@ -184,6 +186,7 @@ class installer
 		catch (\Exception $e)
 		{
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
@@ -191,6 +194,7 @@ class installer
 		if ($result !== 0)
 		{
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
@@ -587,6 +591,7 @@ class installer
 				$repositories[] = [
 					'type' => 'composer',
 					'url' => $repository,
+					'canonical' => $this->packagist ? false : true,
 				];
 			}
 		}
