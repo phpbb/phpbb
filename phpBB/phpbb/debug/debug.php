@@ -25,6 +25,10 @@ use Symfony\Component\Debug\ExceptionHandler;
 class debug
 {
 	private static $enabled = false;
+	private static $exceptionHandlerEnabled = false;
+
+	/** @var exception_handler */
+	private static $exceptionHandler;
 
 	/**
 	 * Enables the debug tools.
@@ -76,5 +80,36 @@ class debug
 		}
 
 		DebugClassLoader::enable();
+	}
+
+	static public function enableExceptionHandler($root_path, $php_ext)
+	{
+		if (self::$exceptionHandlerEnabled)
+		{
+			return;
+		}
+
+		self::$exceptionHandlerEnabled = true;
+
+		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($root_path, $php_ext));
+
+		self::$exceptionHandler = exception_handler::register(PHPBB_ENVIRONMENT === 'development');
+		self::$exceptionHandler->setLanguage($language)
+			->setRootPath($root_path);
+	}
+
+	static public function setExceptionHandlerConfig(\phpbb\config\config $config)
+	{
+		if (!self::$exceptionHandlerEnabled || !self::$exceptionHandler)
+		{
+			return;
+		}
+
+		self::$exceptionHandler->setConfig($config);
+	}
+
+	static public function enableExceptionHandlerDebug(): void
+	{
+		self::$exceptionHandler->setDebugEnabled();
 	}
 }
