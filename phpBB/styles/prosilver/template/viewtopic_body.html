@@ -211,13 +211,13 @@
 			<!-- IF postrow.S_POST_HIDDEN -->
 				<!-- IF postrow.S_POST_DELETED -->
 					<div class="ignore" id="post_hidden{postrow.POST_ID}">
-						{postrow.L_POST_DELETED_MESSAGE}<br />
-						{postrow.L_POST_DISPLAY}
+						{postrow.L_POST_DELETED_MESSAGE}<br>
+						<a class="display_post" data-post-id="{{ postrow.POST_ID }}" href="{{ postrow.U_MINI_POST_VIEW }}">{{ lang('POST_DISPLAY') }}</a>
 					</div>
 				<!-- ELSEIF postrow.S_IGNORE_POST -->
 					<div class="ignore" id="post_hidden{postrow.POST_ID}">
-						{postrow.L_IGNORE_POST}<br />
-						{postrow.L_POST_DISPLAY}
+						{postrow.L_IGNORE_POST}<br>
+						<a class="display_post" data-post-id="{{ postrow.POST_ID }}" href="{{ postrow.U_MINI_POST_VIEW }}">{{ lang('POST_DISPLAY') }}</a>
 					</div>
 				<!-- ENDIF -->
 			<!-- ENDIF -->

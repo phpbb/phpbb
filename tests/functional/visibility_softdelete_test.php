@@ -177,7 +177,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		), 'after softdelete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY'), $crawler->text());
 	}
 
 	public function test_softdelete_post_no_m_delete()
@@ -227,7 +227,7 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		), 'after softdelete without m_delete');
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Soft Delete Topic #1']}&sid={$this->sid}");
-		$this->assertStringContainsString($this->lang('POST_DISPLAY', '', ''), $crawler->text());
+		$this->assertStringContainsString($this->lang('POST_DISPLAY'), $crawler->text());
 	}
 
 	public function test_move_softdeleted_post()
