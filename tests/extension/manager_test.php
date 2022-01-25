@@ -97,9 +97,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->enable('vendor2/bar');
 
-		// We should not display the extension as being enabled in the same request
-		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
-		// With a different request we should see the extension as being disabled
+		// We should see the extension as being disabled
 		$this->assertEquals(array('vendor2/bar', 'vendor2/foo'), array_keys($this->create_extension_manager()->all_enabled()));
 
 		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
@@ -126,10 +124,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->disable('vendor2/foo');
 
-		// We should still display the extension as being enabled in the current request
-		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
-		// With a different request we should see the extension as being disabled
-		$this->assertEquals(array(), array_keys($this->create_extension_manager()->all_enabled()));
+		$this->assertEquals([], array_keys($this->extension_manager->all_enabled()));
 
 		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
