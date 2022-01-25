@@ -30,7 +30,6 @@ class manager
 	protected $cache;
 	protected $php_ext;
 	protected $extensions;
-	protected $recently_changed_ext_status;
 	protected $extension_table;
 	protected $phpbb_root_path;
 	protected $cache_name;
@@ -243,7 +242,6 @@ class manager
 
 		if ($active)
 		{
-			$this->recently_changed_ext_status[$name] = false;
 			$this->router->without_cache();
 		}
 
@@ -298,7 +296,6 @@ class manager
 
 		if (!$active)
 		{
-			$this->recently_changed_ext_status[$name] = true;
 			$this->router->without_cache();
 		}
 
@@ -514,13 +511,6 @@ class manager
 	*/
 	public function is_enabled($name)
 	{
-		// The extension has just been enabled and so is not loaded. When asking if it is enabled or
-		// not we should answer no to stay consistent with the status at the beginning of the request.
-		if (isset($this->recently_changed_ext_status[$name]))
-		{
-			return $this->recently_changed_ext_status[$name];
-		}
-
 		return isset($this->extensions[$name]['ext_active']) && $this->extensions[$name]['ext_active'];
 	}
 
@@ -532,13 +522,6 @@ class manager
 	*/
 	public function is_disabled($name)
 	{
-		// The extension has just been disabled and so is still loaded. When asking if it is disabled or
-		// not we should answer yes to stay consistent with the status at the beginning of the request.
-		if (isset($this->recently_changed_ext_status[$name]))
-		{
-			return $this->recently_changed_ext_status[$name];
-		}
-
 		return isset($this->extensions[$name]['ext_active']) && !$this->extensions[$name]['ext_active'];
 	}
 
