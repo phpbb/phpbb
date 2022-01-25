@@ -6,7 +6,8 @@
 <!-- IF post_review_row.S_IGNORE_POST -->
 <div class="post bg3 post-ignore">
 	<div class="inner">
-		{post_review_row.L_IGNORE_POST}
+		{post_review_row.L_IGNORE_POST}<br>
+		<a class="display_post_review" href="{{ post_review_row.U_MINI_POST }}">{{ lang('POST_DISPLAY') }}</a>
 <!-- ELSE -->
 <div class="post <!-- IF post_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 	<div class="inner">
