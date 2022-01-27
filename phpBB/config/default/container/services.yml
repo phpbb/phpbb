@@ -40,6 +40,7 @@ services:
              - '@cache.driver'
              - '@config'
              - '@dbal.conn'
+             - '@dispatcher'
              - '%core.root_path%'
              - '%core.php_ext%'
 
