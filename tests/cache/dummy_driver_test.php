@@ -50,7 +50,8 @@ class phpbb_cache_dummy_driver_test extends phpbb_database_test_case
 		global $db, $cache, $phpbb_root_path, $phpEx;
 		$config = new phpbb\config\config(array());
 		$db = $this->new_dbal();
-		$cache = new \phpbb\cache\service($this->driver, $config, $db, $phpbb_root_path, $phpEx);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$cache = new \phpbb\cache\service($this->driver, $config, $db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
 
 		$sql = "SELECT * FROM phpbb_config
 			WHERE config_name = 'foo'";

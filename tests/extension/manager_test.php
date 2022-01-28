@@ -155,6 +155,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
 		$db_tools = $factory->get($db);
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
@@ -185,7 +186,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			'phpbb_ext',
 			__DIR__ . '/',
 			$php_ext,
-			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
+			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_dispatcher, $phpbb_root_path, $php_ext) : null
 		);
 	}
 }

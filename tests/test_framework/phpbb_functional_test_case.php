@@ -253,8 +253,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 			array(),
 			new \phpbb\db\migration\helper()
 		);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$container->set('migrator', $migrator);
-		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
+		$container->set('dispatcher', $phpbb_dispatcher);
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
@@ -264,7 +265,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
 			$phpEx,
-			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
+			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx)
 		);
 
 		return $extension_manager;

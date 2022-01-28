@@ -81,7 +81,8 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$config = $this->config;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->db = $this->new_dbal();
-		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $phpbb_root_path, $phpEx);
+		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), $this->config, $this->db, $this->phpbb_dispatcher, $phpbb_root_path, $phpEx);
 		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
@@ -136,7 +137,6 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		));
 		$this->factory = new \phpbb\files\factory($this->container);
 		$this->files_upload = new \phpbb\files\upload($this->filesystem, $this->factory, $this->language, $this->php_ini, $this->request, $this->phpbb_root_path);
-		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 		$this->user->data['user_id'] = ANONYMOUS;
 

@@ -58,6 +58,10 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
 		$this->backup_cache = $cache;
+
+		// Event dispatcher
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
 		// Change the global cache object for this test because
 		// the mock cache object does not hit the database as is needed
 		// for this test.
@@ -65,6 +69,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			new \phpbb\cache\driver\file(),
 			$config,
 			$this->db,
+			$phpbb_dispatcher,
 			$phpbb_root_path,
 			$phpEx
 		);
