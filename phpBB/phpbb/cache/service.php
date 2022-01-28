@@ -13,9 +13,6 @@
 
 namespace phpbb\cache;
 
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpKernel\KernelEvents;
-
 /**
 * Class for grabbing/handling cached entries
 */
