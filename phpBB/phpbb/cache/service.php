@@ -19,7 +19,7 @@ namespace phpbb\cache;
 class service
 {
 	/** @var string Name of event used for cache purging */
-	private const CACHE_PURGE_EVENT = 'core.garbage_collection';
+	private const PURGE_DEFERRED_ON_EVENT = 'core.garbage_collection';
 
 	/** @var bool Flag whether cache purge has been deferred */
 	private $cache_purge_deferred = false;
@@ -106,7 +106,7 @@ class service
 	{
 		if (!$this->cache_purge_deferred)
 		{
-			$this->dispatcher->addListener(self::CACHE_PURGE_EVENT, [$this, 'purge']);
+			$this->dispatcher->addListener(self::PURGE_DEFERRED_ON_EVENT, [$this, 'purge']);
 			$this->cache_purge_deferred = true;
 		}
 	}
