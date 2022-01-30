@@ -100,13 +100,13 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 if (PHPBB_ENVIRONMENT === 'development')
 {
 	\phpbb\debug\debug::enable();
-	\phpbb\debug\debug::enableExceptionHandler($phpbb_root_path, $phpEx);
-	\phpbb\debug\debug::enableExceptionHandlerDebug();
+	\phpbb\debug\debug::enable_exception_handler($phpbb_root_path, $phpEx);
+	\phpbb\debug\debug::enable_exception_handler_debug();
 }
 else
 {
 	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
-	\phpbb\debug\debug::enableExceptionHandler($phpbb_root_path, $phpEx);
+	\phpbb\debug\debug::enable_exception_handler($phpbb_root_path, $phpEx);
 }
 
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
@@ -136,7 +136,7 @@ catch (InvalidArgumentException $e)
 if ($phpbb_container->getParameter('debug.error_handler'))
 {
 	\phpbb\debug\debug::enable();
-	\phpbb\debug\debug::enableExceptionHandlerDebug();
+	\phpbb\debug\debug::enable_exception_handler_debug();
 }
 
 $phpbb_class_loader->set_cache($phpbb_container->get('cache.driver'));
@@ -150,7 +150,7 @@ require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 register_compatibility_globals();
 
 // Set exception handler config after setting up global $config
-\phpbb\debug\debug::setExceptionHandlerConfig($config);
+\phpbb\debug\debug::set_exception_handler_config($config);
 
 if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
 {
