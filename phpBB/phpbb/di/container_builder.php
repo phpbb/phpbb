@@ -229,7 +229,7 @@ class container_builder
 				}
 			}
 
-			if ($this->compile_container && $this->config_php_file)
+			if ($this->config_php_file)
 			{
 				$this->container->set('config.php', $this->config_php_file);
 			}
