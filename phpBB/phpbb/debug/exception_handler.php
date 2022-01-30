@@ -18,7 +18,6 @@ use phpbb\language\language;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\Debug\ExceptionHandler;
 
-
 /**
  * Exception handler based on Symfony ExceptionHandler code.
  * Symfony code is released under the MIT license:
@@ -430,18 +429,30 @@ EOF;
 	private function format_args(array $args): string
 	{
 		$result = [];
-		foreach ($args as $key => $item) {
-			if ('object' === $item[0]) {
+		foreach ($args as $key => $item)
+		{
+			if ('object' === $item[0])
+			{
 				$formattedValue = sprintf('<em>object</em>(%s)', $this->format_class($item[1]));
-			} elseif ('array' === $item[0]) {
+			}
+			else if ('array' === $item[0])
+			{
 				$formattedValue = sprintf('<em>array</em>(%s)', \is_array($item[1]) ? $this->format_args($item[1]) : $item[1]);
-			} elseif ('null' === $item[0]) {
+			}
+			else if ('null' === $item[0])
+			{
 				$formattedValue = '<em>null</em>';
-			} elseif ('boolean' === $item[0]) {
+			}
+			else if ('boolean' === $item[0])
+			{
 				$formattedValue = '<em>'.strtolower(var_export($item[1], true)).'</em>';
-			} elseif ('resource' === $item[0]) {
+			}
+			else if ('resource' === $item[0])
+			{
 				$formattedValue = '<em>resource</em>';
-			} else {
+			}
+			else
+			{
 				$formattedValue = str_replace("\n", '', $this->escape_html(var_export($item[1], true)));
 			}
 
