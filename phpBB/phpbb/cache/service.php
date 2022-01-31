@@ -15,6 +15,7 @@ namespace phpbb\cache;
 
 use phpbb\cache\driver\driver_interface;
 use phpbb\config\config;
+use phpbb\event\dispatcher;
 use phpbb\json\sanitizer as json_sanitizer;
 
 /**
@@ -22,6 +23,12 @@ use phpbb\json\sanitizer as json_sanitizer;
 */
 class service
 {
+	/** @var string Name of event used for cache purging */
+	private const PURGE_DEFERRED_ON_EVENT = 'core.garbage_collection';
+
+	/** @var bool Flag whether cache purge has been deferred */
+	private $cache_purge_deferred = false;
+
 	/**
 	* Cache driver.
 	*
@@ -43,6 +50,9 @@ class service
 	*/
 	protected $db;
 
+	/** @var dispatcher phpBB Event dispatcher */
+	protected $dispatcher;
+
 	/**
 	* Root path.
 	*
@@ -63,14 +73,16 @@ class service
 	* @param driver_interface $driver The cache driver
 	* @param config $config The config
 	* @param \phpbb\db\driver\driver_interface $db Database connection
+	* @param dispatcher $dispatcher Event dispatcher
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP file extension
 	*/
-	public function __construct(driver_interface $driver, config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext)
+	public function __construct(driver_interface $driver, config $config, \phpbb\db\driver\driver_interface $db, dispatcher $dispatcher, $phpbb_root_path, $php_ext)
 	{
 		$this->set_driver($driver);
 		$this->config = $config;
 		$this->db = $db;
+		$this->dispatcher = $dispatcher;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -83,6 +95,25 @@ class service
 	public function get_driver()
 	{
 		return $this->driver;
+	}
+
+	/**
+	 * Deferred purge of the cache.
+	 *
+	 * A deferred purge will be executed after rendering a page.
+	 * It is recommended to be used in cases where an instant purge of the cache
+	 * is not required, i.e. when the goal of a cache purge is to start from a
+	 * clear cache at the next page load.
+	 *
+	 * @return void
+	 */
+	public function deferred_purge(): void
+	{
+		if (!$this->cache_purge_deferred)
+		{
+			$this->dispatcher->addListener(self::PURGE_DEFERRED_ON_EVENT, [$this, 'purge']);
+			$this->cache_purge_deferred = true;
+		}
 	}
 
 	/**

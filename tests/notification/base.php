@@ -84,16 +84,16 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$this->user = $user;
 		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
+		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
 			$cache_driver,
 			$this->config,
 			$this->db,
+			$this->phpbb_dispatcher,
 			$phpbb_root_path,
 			$phpEx
 		);
-
-		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$phpbb_container = $this->container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));

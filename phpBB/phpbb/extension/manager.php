@@ -196,7 +196,7 @@ class manager
 
 		if ($this->cache)
 		{
-			$this->cache->purge();
+			$this->cache->deferred_purge();
 		}
 	}
 
