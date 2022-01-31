@@ -80,7 +80,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			new phpbb\filesystem\filesystem(),
-			new phpbb_mock_dummy_router(),
 			'phpbb_ext',
 			__DIR__ . '/../../phpBB/',
 			'php',
