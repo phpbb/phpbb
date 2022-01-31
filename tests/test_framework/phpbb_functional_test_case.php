@@ -276,7 +276,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$db,
 			$config,
 			$finder_factory,
-			new phpbb_mock_dummy_router(),
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
 			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)

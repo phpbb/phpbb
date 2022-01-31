@@ -186,7 +186,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$db,
 			$config,
 			$finder_factory,
-			new phpbb_mock_dummy_router(),
 			'phpbb_ext',
 			__DIR__ . '/',
 			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
