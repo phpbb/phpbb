@@ -182,7 +182,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$db,
 			$config,
 			new \phpbb\filesystem\filesystem(),
-			new phpbb_mock_dummy_router(),
 			'phpbb_ext',
 			__DIR__ . '/',
 			$php_ext,

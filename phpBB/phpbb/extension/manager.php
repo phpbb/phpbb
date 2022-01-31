@@ -33,7 +33,6 @@ class manager
 	protected $extension_table;
 	protected $phpbb_root_path;
 	protected $cache_name;
-	protected $router;
 
 	/**
 	* Creates a manager and loads information from database
@@ -48,7 +47,7 @@ class manager
 	* @param \phpbb\cache\service $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, \phpbb\routing\router $router, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
@@ -57,7 +56,6 @@ class manager
 		$this->db = $db;
 		$this->extension_table = $extension_table;
 		$this->filesystem = $filesystem;
-		$this->router = $router;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -240,11 +238,6 @@ class manager
 			'ext_state'		=> serialize($state),
 		);
 
-		if ($active)
-		{
-			$this->router->without_cache();
-		}
-
 		$this->update_state($name, $extension_data, $this->is_configured($name) ? 'update' : 'insert');
 
 		if ($active)
@@ -293,11 +286,6 @@ class manager
 		$extension = $this->get_extension($name);
 		$state = $extension->disable_step($old_state);
 		$active = ($state !== false);
-
-		if (!$active)
-		{
-			$this->router->without_cache();
-		}
 
 		$extension_data = array(
 			'ext_active'	=> $active,
