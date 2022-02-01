@@ -30,10 +30,11 @@ class version_helper_remote_test extends \phpbb_test_case
 			'version'	=> '3.1.0',
 		));
 		$container = new \phpbb_mock_container_builder();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$db = new \phpbb\db\driver\factory($container);
 		$this->cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setMethods(array('get'))
-			->setConstructorArgs(array(new \phpbb\cache\driver\dummy(), $config, $db, '../../', 'php'))
+			->setConstructorArgs(array(new \phpbb\cache\driver\dummy(), $config, $db, $phpbb_dispatcher, '../../', 'php'))
 			->getMock();
 
 		$this->cache->expects($this->any())

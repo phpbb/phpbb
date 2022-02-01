@@ -159,6 +159,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
 		$db_doctrine = $this->new_doctrine_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $php_ext);
 		$db_tools = $factory->get($db_doctrine);
@@ -188,7 +189,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			$finder_factory,
 			'phpbb_ext',
 			__DIR__ . '/',
-			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
+			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_dispatcher, $phpbb_root_path, $php_ext) : null
 		);
 	}
 }
