@@ -336,8 +336,7 @@ abstract class base implements search_backend_interface
 		$starttime = microtime(true);
 		$row_count = 0;
 
-		$still_on_time = PHP_SAPI === 'cli' ? true : still_on_time();
-		while ($still_on_time && $post_counter <= $max_post_id)
+		while (still_on_time() && $post_counter < $max_post_id)
 		{
 			$rows = $this->get_posts_batch_after($post_counter);
 
@@ -354,7 +353,7 @@ abstract class base implements search_backend_interface
 					$this->index('post', (int) $row['post_id'], $row['post_text'], $row['post_subject'], (int) $row['poster_id'], (int) $row['forum_id']);
 				}
 				$row_count++;
-				$post_counter = $row['post_id'];
+				$post_counter = (int) $row['post_id'];
 			}
 
 			// With cli process only one batch each time to be able to track progress
@@ -371,7 +370,7 @@ abstract class base implements search_backend_interface
 		$this->tidy();
 		$this->config['num_posts'] = $num_posts;
 
-		if ($post_counter < $max_post_id)
+		if ($post_counter < $max_post_id) // If there are still post to index
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;
@@ -397,8 +396,7 @@ abstract class base implements search_backend_interface
 		$starttime = microtime(true);
 		$row_count = 0;
 
-		$still_on_time = PHP_SAPI === 'cli' ? true : still_on_time();
-		while ($still_on_time && $post_counter <= $max_post_id)
+		while (still_on_time() && $post_counter < $max_post_id)
 		{
 			$rows = $this->get_posts_batch_after($post_counter);
 			$ids = $posters = $forum_ids = array();
@@ -423,7 +421,7 @@ abstract class base implements search_backend_interface
 			}
 		}
 
-		if ($post_counter < $max_post_id)
+		if ($post_counter < $max_post_id) // If there are still post delete from index
 		{
 			$totaltime = microtime(true) - $starttime;
 			$rows_per_second = $row_count / $totaltime;

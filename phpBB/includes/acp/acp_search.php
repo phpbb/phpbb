@@ -345,12 +345,13 @@ class acp_search
 	 *
 	 * @param string $id
 	 * @param string $mode
-	 * @param string $action Action in progress: 'create' or 'delete'
 	 */
-	private function index_inprogress(string $id, string $mode, string $action): void
+	private function index_inprogress(string $id, string $mode): void
 	{
 		$this->tpl_name = 'acp_search_index_inprogress';
 		$this->page_title = 'ACP_SEARCH_INDEX';
+
+		$action = $this->search_state_helper->action();
 
 		$this->template->assign_vars([
 			'U_ACTION'				=> $this->u_action . '&amp;action=' . $action . '&amp;hash=' . generate_link_hash('acp_search'),
