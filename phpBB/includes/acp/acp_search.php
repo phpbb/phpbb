@@ -323,7 +323,7 @@ class acp_search
 					{
 						$starttime = microtime(true);
 						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
+						while (still_on_time() && $post_counter < $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
@@ -410,7 +410,7 @@ class acp_search
 
 						$starttime = microtime(true);
 						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
+						while (still_on_time() && $post_counter < $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
