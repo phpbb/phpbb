@@ -16,6 +16,7 @@ namespace phpbb\composer;
 use Composer\Composer;
 use Composer\DependencyResolver\Request as composer_request;
 use Composer\Factory;
+use Composer\Filter\PlatformRequirementFilter\PlatformRequirementFilterFactory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
@@ -172,7 +173,7 @@ class installer
 			->setUpdate(true)
 			->setUpdateAllowList($whitelist)
 			->setUpdateAllowTransitiveDependencies(composer_request::UPDATE_ONLY_LISTED)
-			->setIgnorePlatformRequirements(false)
+			->setPlatformRequirementFilter(PlatformRequirementFilterFactory::fromBoolOrList(false))
 			->setOptimizeAutoloader(true)
 			->setDumpAutoloader(true)
 			->setPreferStable(true)
