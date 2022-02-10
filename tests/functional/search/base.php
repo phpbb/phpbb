@@ -192,15 +192,18 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 
-		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
-
-		// Wait for posts to be fully indexed
-		while (count($meta_refresh))
+		if (!method_exists($this->search_backend, 'create_index'))
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
-			$url = $match[1];
-			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+			// Wait for posts to be fully indexed
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+				$url = $match[1];
+				$crawler = self::request('POST', $url);
+				$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+			}
 		}
 
 		$this->assertContainsLang('SEARCH_INDEX_CREATED', $crawler->text());
@@ -226,15 +229,18 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 
-		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
-
-		// Wait for index to be fully deleted
-		while (count($meta_refresh))
+		if (!method_exists($this->search_backend, 'delete_index'))
 		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
-			$url = $match[1];
-			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+			// Wait for index to be fully deleted
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+				$url = $match[1];
+				$crawler = self::request('POST', $url);
+				$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+			}
 		}
 
 		$this->assertContainsLang('SEARCH_INDEX_REMOVED', $crawler->text());
