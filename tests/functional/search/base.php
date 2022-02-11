@@ -192,12 +192,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 
-		if (!method_exists($this->search_backend, 'create_index'))
-		{
-			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
+		if ($meta_refresh->count() > 0)
+		{
 			// Wait for posts to be fully indexed
-			while (count($meta_refresh))
+			while ($meta_refresh->count() > 0)
 			{
 				preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 				$url = $match[1];
@@ -229,12 +229,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form->setValues($form_values);
 		$crawler = self::submit($form);
 
-		if (!method_exists($this->search_backend, 'delete_index'))
-		{
-			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
+		if ($meta_refresh->count() > 0)
+		{
 			// Wait for index to be fully deleted
-			while (count($meta_refresh))
+			while ($meta_refresh->count() > 0)
 			{
 				preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
 				$url = $match[1];
