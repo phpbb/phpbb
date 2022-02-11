@@ -52,7 +52,7 @@ $lang = array_merge($lang, array(
 	'DEFAULT_SEARCH_RETURN_CHARS'			=> 'Default number of returned characters',
 	'DEFAULT_SEARCH_RETURN_CHARS_EXPLAIN'	=> 'The default number of characters that will be returned while searching. A value of 0 will return the entire post.',
 	'DELETE_INDEX'							=> 'Delete index',
-	'DELETING_INDEX_IN_PROGRESS'			=> 'Deleting the index in progress',
+	'DELETING_INDEX_IN_PROGRESS'			=> 'Deletion of index is in progress…',
 	'DELETING_INDEX_IN_PROGRESS_EXPLAIN'	=> 'The search backend is currently cleaning its index. This can take a few minutes.',
 
 	'FULLTEXT_MYSQL_INCOMPATIBLE_DATABASE'	=> 'The MySQL fulltext backend can only be used with MySQL4 and above.',
@@ -92,7 +92,7 @@ $lang = array_merge($lang, array(
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',
 
 	'INDEX_STATS'							=> 'Index statistics',
-	'INDEXING_IN_PROGRESS'					=> 'Indexing in progress',
+	'INDEXING_IN_PROGRESS'					=> 'Indexing in progress…',
 	'INDEXING_IN_PROGRESS_EXPLAIN'			=> 'The search backend is currently indexing all posts on the board. This can take from a few minutes to a few hours depending on your board’s size.',
 
 	'LIMIT_SEARCH_LOAD'						=> 'Search page system load limit',
@@ -112,18 +112,19 @@ $lang = array_merge($lang, array(
 	'SEARCH_GUEST_INTERVAL'					=> 'Guest search flood interval',
 	'SEARCH_GUEST_INTERVAL_EXPLAIN'			=> 'Number of seconds guests must wait between searches. If one guest searches all others have to wait until the time interval passed.',
 	'SEARCH_INDEX_CREATE_REDIRECT'			=> array(
-		2	=> 'All posts up to post id %2$d have now been indexed, of which %1$d posts were within this step.<br />',
+		2	=> 'All posts up to post id %2$d have now been indexed, of which %1$d posts were within this step.',
 	),
 	'SEARCH_INDEX_CREATE_REDIRECT_RATE'		=> array(
-		2	=> 'The current rate of indexing is approximately %1$.1f posts per second.<br />Indexing in progress…',
+		2	=> 'The current rate of indexing is approximately %1$.1f posts per second.',
 	),
 	'SEARCH_INDEX_DELETE_REDIRECT'			=> array(
-		2	=> 'All posts up to post id %2$d have been removed from the search index, of which %1$d posts were within this step.<br />',
+		2	=> 'All posts up to post id %2$d have been removed from the search index, of which %1$d posts were within this step.',
 	),
 	'SEARCH_INDEX_DELETE_REDIRECT_RATE'		=> array(
-		2	=> 'The current rate of deleting is approximately %1$.1f posts per second.<br />Deleting in progress…',
+		2	=> 'The current rate of deleting is approximately %1$.1f posts per second.',
 	),
 	'SEARCH_INDEX_CREATED'					=> 'Successfully indexed all posts in the board database.',
+	'SEARCH_INDEX_PROGRESS'					=> 'Done: %1$d | Pending: %2$d | Total: %3$d',
 	'SEARCH_INDEX_REMOVED'					=> 'Successfully deleted the search index for this backend.',
 	'SEARCH_INTERVAL'						=> 'User search flood interval',
 	'SEARCH_INTERVAL_EXPLAIN'				=> 'Number of seconds users must wait between searches. This interval is checked independently for each user.',

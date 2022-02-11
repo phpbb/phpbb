@@ -78,24 +78,11 @@
 
 <!-- ELSEIF S_INDEX -->
 
-	<script>
-	// <![CDATA[
-		/**
-		* Popup search progress bar
-		*/
-		function popup_progress_bar(progress_type)
-		{
-			close_waitscreen = 0;
-			// no scrollbars
-			popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
-		}
-	// ]]>
-	</script>
-
 	<h1>{L_ACP_SEARCH_INDEX}</h1>
 
 	<!-- IF S_CONTINUE_INDEXING -->
 		<p>{L_CONTINUE_EXPLAIN}</p>
+		{% if L_CONTINUE_PROGRESS %}<div class="centered-text" style="display: inline-block;">{{ L_CONTINUE_PROGRESS }}</div>{% endif %}
 
 		<form id="acp_search_continue" method="post" action="{U_CONTINUE_INDEXING}">
 			<fieldset>
@@ -151,10 +138,10 @@
 			<p class="quick">
 			<!-- IF backend.S_INDEXED -->
 				<input type="hidden" name="action" value="delete" />
-				<input class="button2" type="submit" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
+				<input class="button2" type="submit" name="submit" value="{L_DELETE_INDEX}" />
 			<!-- ELSE -->
 				<input type="hidden" name="action" value="create" />
-				<input class="button2" type="submit" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
+				<input class="button2" type="submit" name="submit" value="{L_CREATE_INDEX}" />
 			<!-- ENDIF -->
 			</p>
 			{S_FORM_TOKEN}
