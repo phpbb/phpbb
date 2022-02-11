@@ -595,7 +595,7 @@ class acp_search
 	{
 		global $db, $language;
 
-		$sql = 'SELECT COUNT(post_id) as done_count
+		$sql = 'SELECT COUNT(*) as done_count
 			FROM ' . POSTS_TABLE . '
 			WHERE post_id <= ' . (int) $post_counter . '
 			ORDER BY post_id ASC';
@@ -603,7 +603,7 @@ class acp_search
 		$done_count = (int) $db->sql_fetchfield('done_count');
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT COUNT(post_id) as remain_count
+		$sql = 'SELECT COUNT(*) as remain_count
 			FROM ' . POSTS_TABLE . '
 			WHERE post_id > ' . (int) $post_counter . '
 			ORDER BY post_id ASC';
