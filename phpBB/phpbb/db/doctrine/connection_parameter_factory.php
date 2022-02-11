@@ -37,7 +37,7 @@ class connection_parameter_factory
 	 */
 	public static function get_configuration(
 		string $driver,
-		string $host,
+		?string $host = null,
 		?string $user = null,
 		?string $password = null,
 		?string $name = null,
@@ -73,7 +73,7 @@ class connection_parameter_factory
 	 */
 	private static function build_connection_parameters(
 		array $params,
-		string $host,
+		?string $host = null,
 		?string $user = null,
 		?string $password = null,
 		?string $name = null,
@@ -86,7 +86,7 @@ class connection_parameter_factory
 			);
 		}
 
-		if (empty($host) || empty($user) || empty($name))
+		if (empty($user) || empty($name))
 		{
 			throw new InvalidArgumentException('Required database parameter is not set.');
 		}
