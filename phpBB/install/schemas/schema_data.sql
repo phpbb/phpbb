@@ -305,7 +305,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.post
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_cron_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_lock', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');

@@ -538,8 +538,6 @@ $lang = array_merge($lang, array(
 	'REF_PATH'						=> 'Also validate path',
 	'REFERRER_VALID'				=> 'Validate Referrer',
 	'REFERRER_VALID_EXPLAIN'		=> 'If enabled, the referrer of POST requests will be checked against the host/script path settings. This may cause issues with boards using several domains and or external logins.',
-	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
-	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
 ));
 
 // Email Settings
