@@ -17,9 +17,11 @@ use phpbb\auth\auth;
 use phpbb\avatar\helper as avatar_helper;
 use phpbb\cache\service as cache;
 use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\event\dispatcher_interface;
 use phpbb\path_helper;
+use phpbb\template\template;
 use phpbb\user;
 
 class helper
@@ -294,8 +296,56 @@ class helper
 	 *
 	 * @return array 					Avatar data
 	 */
-	function get_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
+	public function get_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
 	{
 		return $this->avatar_helper->get_group_avatar($group_row, $alt, $ignore_config, $lazy);
+	}
+
+	/**
+	 * Display groups legend
+	 *
+	 * @param driver_interface $db
+	 * @param template $template
+	 * @return void
+	 */
+	public function display_legend(driver_interface $db, template $template): void
+	{
+		$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
+
+		// Grab group details for legend display
+		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+		{
+			$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_legend > 0
+				ORDER BY ' . $order_legend . ' ASC';
+		}
+		else
+		{
+			$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $this->user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+				WHERE g.group_legend > 0
+					AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $this->user->data['user_id'] . ')
+				ORDER BY g.' . $order_legend . ' ASC';
+		}
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$show_group_url = $row['group_name'] != 'BOTS' && $this->auth->acl_get('u_viewprofile');
+
+			$template->assign_block_vars('LEGEND', [
+				'GROUP_COLOR'		=> $row['group_colour'] ?: '',
+				'GROUP_NAME'		=> $this->get_name($row['group_name']),
+				'GROUP_URL'			=> $show_group_url ? append_sid("{$this->path_helper->get_phpbb_root_path()}memberlist.{$this->path_helper->get_php_ext()}", 'mode=group&amp;g=' . $row['group_id']) : '',
+			]);
+		}
+		$db->sql_freeresult($result);
 	}
 }

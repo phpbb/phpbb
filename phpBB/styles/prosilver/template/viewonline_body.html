@@ -47,7 +47,22 @@
 	</div>
 </div>
 
-<!-- IF LEGEND --><p><em>{L_LEGEND}{L_COLON} {LEGEND}</em></p><!-- ENDIF -->
+{% if LEGEND|length > 0 %}
+	{% apply spaceless %}
+		<p>
+			<em>
+				{{ lang('LEGEND') ~ lang('COLON') }}
+				{% for group in LEGEND %}
+					{% if group.GROUP_URL %}
+						<a style="color:#{{ group.GROUP_COLOR }}" href="{{ group.GROUP_URL }}" alt="{{ group.GROUP_NAME }}">{{ group.GROUP_NAME }}</a>{% if not loop.last %}, {% endif %}
+					{% else %}
+						<span style="color:#{{ group.GROUP_COLOR }}">{{ group.GROUP_NAME }}</span>{% if not loop.last %}, {% endif %}
+					{% endif %}
+				{% endfor %}
+			</em>
+		</p>
+	{% endapply %}
+{% endif %}
 
 <div class="action-bar bar-bottom">
 	<div class="pagination">
