@@ -142,6 +142,23 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		);
 
 		$timestamp = $user->get_timestamp_from_format('Y-m-d H:i', $timestamp, new DateTimeZone('UTC'));
+
+		/* This code is equal to the one from \phpbb\datetime function format()
+		 * If the delta is less than or equal to 1 hour
+		 * and the delta not more than a minute in the past
+		 * and the delta is either greater than -5 seconds
+		 * or timestamp and current time are of the same minute
+		 * format_date() will return relative date format using "... ago" options
+		 */
+		$now_ts = strtotime('now');
+		$delta = $now_ts - $timestamp;
+		if ($delta <= 3600 && $delta > -60 &&
+			($delta >= -5 || (($now_ts/ 60) % 60) == (($timestamp / 60) % 60))
+		)
+		{
+			$expected = $user->lang(['datetime', 'AGO'], max(0, (int) floor($delta / 60)));
+		}
+
 		$this->assertEquals($expected, $user->format_date($timestamp, '|Y-m-d| H:i', $forcedate));
 	}
 }
