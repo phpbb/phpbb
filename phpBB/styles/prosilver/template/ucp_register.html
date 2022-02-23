@@ -57,10 +57,16 @@
 	<hr />
 
 	<!-- EVENT ucp_register_options_before -->
-	{% if S_LANG_OPTIONS %}
+	{% if lang_options|length > 0 %}
 	<dl>
 		<dt><label for="lang">{{ lang('LANGUAGE') ~ lang('COLON') }}</label></dt>
-		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{{ lang('LANGUAGE') }}">{{ S_LANG_OPTIONS }}</select></dd>
+		<dd>
+			<select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{{ lang('LANGUAGE') }}">
+				{% for option in lang_options %}
+					<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
+				{% endfor %}
+			</select>
+		</dd>
 	</dl>
 	{% endif %}
 

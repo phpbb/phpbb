@@ -53,7 +53,13 @@
 	<!-- IF S_MORE_LANGUAGES -->
 		<dl>
 			<dt><label for="lang">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
-			<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
+			<dd>
+				<select name="lang" id="lang">
+					{% for option in lang_options %}
+						<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
+					{% endfor %}
+				</select>
+			</dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->

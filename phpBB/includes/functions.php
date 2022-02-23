@@ -265,15 +265,13 @@ function phpbb_version_compare(string $version1, string $version2, string $opera
 /**
  * Pick a language, any language ...
  *
+ * @param \phpbb\db\driver\driver_interface $db DBAL driver
+ * @param \phpbb\template\template $template Template engine
  * @param string $default	Language ISO code to be selected by default in the dropdown list
  * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
- *
- * @return string			HTML options for language selection dropdown list.
  */
-function language_select($default = '', array $langdata = [])
+function phpbb_language_select(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, string $default = '', array $langdata = []): void
 {
-	global $db;
-
 	if (empty($langdata))
 	{
 		$sql = 'SELECT lang_iso, lang_local_name
@@ -284,14 +282,14 @@ function language_select($default = '', array $langdata = [])
 		$db->sql_freeresult($result);
 	}
 
-	$lang_options = '';
 	foreach ($langdata as $row)
 	{
-		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
-		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
+		$template->assign_block_vars('lang_options', [
+			'SELECTED'			=> $row['lang_iso'] == $default,
+			'LANG_ISO'			=> $row['lang_iso'],
+			'LANG_LOCAL_NAME'	=> $row['lang_local_name']
+		]);
 	}
-
-	return $lang_options;
 }
 
 /**

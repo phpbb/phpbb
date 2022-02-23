@@ -1796,6 +1796,8 @@ class acp_users
 				}
 
 				phpbb_timezone_select($template, $user, $data['tz'], true);
+				phpbb_language_select($db, $template, $data['lang']);
+
 				$user_prefs_data = array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
@@ -1831,7 +1833,6 @@ class acp_users
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
 				);
 

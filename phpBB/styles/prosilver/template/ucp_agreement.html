@@ -2,7 +2,7 @@
 
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
 
-<!-- IF S_LANG_OPTIONS -->
+{% if lang_options|length > 0 %}
 <script>
 	/**
 	* Change language
@@ -17,14 +17,19 @@
 
 	<form method="post" action="{S_UCP_ACTION}" id="register">
 		<p class="rightside">
-			<label for="lang">{L_LANGUAGE}{L_COLON}</label><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select>
+			<label for="lang">{L_LANGUAGE}{L_COLON}</label>
+			<select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">
+				{% for option in lang_options %}
+					<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
+				{% endfor %}
+			</select>
 			{S_HIDDEN_FIELDS}
 		</p>
 	</form>
 
 	<div class="clear"></div>
 
-<!-- ENDIF -->
+{% endif %}
 
 	<form method="post" action="{S_UCP_ACTION}" id="agreement">
 

@@ -20,12 +20,68 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 
 	public static function language_select_data()
 	{
-		return array(
-			array('', '<option value="cs">Čeština</option><option value="en">English</option>'),
-			array('en', '<option value="cs">Čeština</option><option value="en" selected="selected">English</option>'),
-			array('cs', '<option value="cs" selected="selected">Čeština</option><option value="en">English</option>'),
-			array('de', '<option value="cs">Čeština</option><option value="en">English</option>'),
-		);
+		return [
+			[
+				'',
+				[
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'cs',
+						'LANG_LOCAL_NAME'	=> 'Čeština',
+					],
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'en',
+						'LANG_LOCAL_NAME'	=> 'English',
+					],
+				]
+			],
+			[
+				'en',
+				[
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'cs',
+						'LANG_LOCAL_NAME'	=> 'Čeština',
+					],
+					[
+						'SELECTED'			=> true,
+						'LANG_ISO'			=> 'en',
+						'LANG_LOCAL_NAME'	=> 'English',
+					],
+				]
+			],
+			[
+				'cs',
+				[
+					[
+						'SELECTED'			=> true,
+						'LANG_ISO'			=> 'cs',
+						'LANG_LOCAL_NAME'	=> 'Čeština',
+					],
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'en',
+						'LANG_LOCAL_NAME'	=> 'English',
+					],
+				]
+			],
+			[
+				'de',
+				[
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'cs',
+						'LANG_LOCAL_NAME'	=> 'Čeština',
+					],
+					[
+						'SELECTED'			=> false,
+						'LANG_ISO'			=> 'en',
+						'LANG_LOCAL_NAME'	=> 'English',
+					],
+				]
+			],
+		];
 	}
 
 	/**
@@ -35,7 +91,19 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 	{
 		global $db;
 		$db = $this->new_dbal();
+		$template	= $this->getMockBuilder('\phpbb\template\base')
+			->disableOriginalConstructor()
+			->getMock();
+		$template_data = [];
+		$template->expects($this->any())
+			->method('assign_block_vars')
+			->willReturnCallback(function ($blockname, array $vararray) use (&$template_data) {
+				$template_data[$blockname][] = $vararray;
+				return null;
+			});
 
-		$this->assertEquals($expected, language_select($default));
+		phpbb_language_select($db, $template, $default);
+
+		$this->assertEquals($expected, $template_data['lang_options']);
 	}
 }
