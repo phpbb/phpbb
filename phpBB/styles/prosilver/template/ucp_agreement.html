@@ -3,22 +3,10 @@
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
 
 {% if lang_options|length > 0 %}
-<script>
-	/**
-	* Change language
-	*/
-	function change_language(lang_iso)
-	{
-		document.cookie = '{COOKIE_NAME}_lang=' + lang_iso + '; path={COOKIE_PATH}';
-		document.forms['register'].change_lang.value = lang_iso;
-		document.forms['register'].submit();
-	}
-</script>
-
 	<form method="post" action="{S_UCP_ACTION}" id="register">
 		<p class="rightside">
-			<label for="lang">{L_LANGUAGE}{L_COLON}</label>
-			<select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">
+			<label for="lang">{{ lang('LANGUAGE') ~ lang('COLON') }}</label>
+			<select name="lang" id="lang" title="{{ lang('LANGUAGE') }}">
 				{% for option in lang_options %}
 					<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
 				{% endfor %}
@@ -29,6 +17,17 @@
 
 	<div class="clear"></div>
 
+	<script>
+		/**
+		 * Change language on change
+		 */
+		document.querySelector('#lang').addEventListener('change', (event) => {
+			const langIso = event.target.value;
+			document.cookie = '{{ COOKIE_NAME }}_lang=' + langIso + '; path={{ COOKIE_PATH }}';
+			document.forms['register'].change_lang.value = langIso;
+			document.forms['register'].submit();
+		});
+	</script>
 {% endif %}
 
 	<form method="post" action="{S_UCP_ACTION}" id="agreement">
