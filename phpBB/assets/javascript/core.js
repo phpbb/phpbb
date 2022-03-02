@@ -271,15 +271,14 @@ phpbb.ajaxify = function(options) {
 		 * Handler for AJAX errors
 		 */
 		function errorHandler(jqXHR, textStatus, errorThrown) {
-			if (typeof console !== 'undefined' && console.log) {
-				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorThrown);
-			}
 			phpbb.clearLoadingTimeout();
-			var responseText, errorText = false;
+			var responseText, errorText, errorTitle;
 			try {
 				responseText = JSON.parse(jqXHR.responseText);
+				errorTitle = responseText.title;
 				responseText = responseText.message;
 			} catch (e) {}
+
 			if (typeof responseText === 'string' && responseText.length > 0) {
 				errorText = responseText;
 			} else if (typeof errorThrown === 'string' && errorThrown.length > 0) {
@@ -290,7 +289,16 @@ phpbb.ajaxify = function(options) {
 					errorText = $dark.attr('data-ajax-error-text');
 				}
 			}
-			phpbb.alert($dark.attr('data-ajax-error-title'), errorText);
+
+			if (typeof errorTitle !== 'string') {
+				errorTitle = $dark.attr('data-ajax-error-title');
+			}
+
+			if (typeof console !== 'undefined' && console.log) {
+				console.log('AJAX error. status: ' + textStatus + ', message: ' + errorText);
+			}
+
+			phpbb.alert(errorTitle, errorText);
 		}
 
 		/**

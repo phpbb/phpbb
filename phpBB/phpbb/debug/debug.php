@@ -65,7 +65,10 @@ class debug
 		if ('cli' !== php_sapi_name())
 		{
 			ini_set('display_errors', 0);
-			ExceptionHandler::register();
+			if (!self::$exception_handler_enabled)
+			{
+				ExceptionHandler::register();
+			}
 		}
 		else if ($displayErrors && (!ini_get('log_errors') || ini_get('error_log')))
 		{
