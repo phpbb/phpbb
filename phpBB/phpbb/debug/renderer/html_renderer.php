@@ -51,7 +51,11 @@ class html_renderer extends renderer_base
 
 		$this->twig = new Environment($loader);
 		$this->twig->addFunction(new TwigFunction('lang', [$this, 'lang']));
-		$this->twig->addTest(new TwigTest('numeric', function ($value) { return is_numeric($value); }));
+		$this->twig->addTest(new TwigTest('numeric', function ($value)
+			{
+				return is_numeric($value);
+			}
+		));
 	}
 
 	/**
