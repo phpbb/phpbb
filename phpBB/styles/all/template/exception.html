@@ -93,8 +93,16 @@
 							{% endif %}
 							<em>{{ cur_arg.type }}</em>
 						{% endif %}
+						{% if cur_arg.value is iterable %}
+							{% set cur_value = _self.format_args(cur_arg.value) %}
+						{% else %}
+							{% set cur_value = cur_arg.value %}
+						{% endif %}
 						{% if cur_arg.key is numeric %}
-							{{ cur_arg_before ~ cur_arg.value ~ cur_arg_after }}
+							{{ cur_arg_before ~ cur_value ~ cur_arg_after }}
+						{% else %}
+							{% set cur_value = "'" ~ cur_arg.key ~ "' => " ~ cur_value %}
+							{{ cur_value|raw }}
 						{% endif %}
 						{% if loop.index < loop.length %},{% endif %}
 					{% endapply %}
