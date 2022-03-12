@@ -381,7 +381,7 @@ $lang = array_merge($lang, array(
 
 		<h1>How to update your installation with the Advanced Update Package</h1>
 
-		<p>The advanced update package is only recommended for expert users in case core phpBB files have been modified in your installation. You are also able to update your installation using the methods listed within the INSTALL.html document. The steps for updating phpBB3 using the automatic update package are:</p>
+		<p>The advanced update package is only recommended for expert users in case core phpBB files have been modified in your installation. You are also able to update your installation using the methods listed within the INSTALL.html document. The steps for updating phpBB3 using the advanced update package are:</p>
 
 		<ol style="margin-left: 20px; font-size: 1.1em;">
 			<li>Go to the <a href="https://www.phpbb.com/downloads/" title="https://www.phpbb.com/downloads/">phpBB.com downloads page</a> and download the "Advanced Update Package" archive.</li>
