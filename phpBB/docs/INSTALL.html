@@ -64,7 +64,7 @@
 		<li><a href="#update_full">Full package</a></li>
 		<li><a href="#update_files">Changed files</a></li>
 		<li><a href="#update_patch">Patch file</a></li>
-		<li><a href="#update_auto">Automatic update package</a></li>
+		<li><a href="#update_advanced">Advanced update package</a></li>
 		<li><a href="#update_all">All package types</a></li>
 	</ol>
 	</li>
@@ -291,7 +291,7 @@
 
 	<p>The patch file package is for those wanting to update through the patch application, and should only be used by those who are comfortable with it.</p>
 
-	<p>The patch file is one solution for those with changes in to the phpBB core files and do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application, but still want to use this update approach, we strongly recommend the <a href="#update_auto">Automatic update package</a> explained below. It is also the recommended update method.</p>
+	<p>The patch file is one solution for those with changes in to the phpBB core files and do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application, but still want to use this update approach, we strongly recommend the <a href="#update_full">Full package update</a> explained above. It is also the recommended update method.</p>
 
 	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is <strong>3.3.0</strong>, you need the <code>phpBB-3.3.1-patch.zip/tar.bz2</code> file. Place the correct patch in the parent directory containing the phpBB core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <code>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</code> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
@@ -299,11 +299,13 @@
 
 	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should navigate to <code>/install/app.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
-<a name="update_auto"></a><h3>4.iv. Automatic update package</h3>
+<a name="update_advanced"></a><h3>4.iv. Advanced update package (Expert users)</h3>
 
-	<p>This update method is only recommended for installations with modifications to core phpBB files. This package detects changed files automatically and merges in changes if needed.</p>
+	<p>This update method should only be used for installations with modifications to core phpBB files. If you simply use Extensions or custom Styles and have not modified core files, please use the Full Package update.</p>
 
-	<p>The automatic update package will update the board from a given version to the latest version. A number of automatic update files are available, and you should choose the one that corresponds to the version of the board that you are currently running. For example, if your current version is <strong>3.3.0</strong>, you need the <code>phpBB-3.3.0_to_3.3.1.zip/tar.bz2</code> file.</p>
+	<p>This package detects changed files and merges in changes if needed. Since this type of update has a potential to cause issues while upgrading, it should only be used by expert users.</p>
+
+	<p>The advanced update package will update the board from a given version to the latest version. A number of advanced update files are available, and you should choose the one that corresponds to the version of the board that you are currently running. For example, if your current version is <strong>3.3.0</strong>, you need the <code>phpBB-3.3.0_to_3.3.1.zip/tar.bz2</code> file.</p>
 
 	<p>To perform the update, either follow the instructions from the <strong>Administration Control Panel-&gt;System</strong> Tab - this should point out that you are running an outdated version and will guide you through the update - or follow the instructions listed below.</p>
 
