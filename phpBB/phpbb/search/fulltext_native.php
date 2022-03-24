@@ -634,7 +634,7 @@ class fulltext_native extends \phpbb\search\base
 		$w_num = 0;
 
 		$sql_array = array(
-			'SELECT'	=> ($type == 'posts') ? 'p.post_id' : 'p.topic_id',
+			'SELECT'	=> ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id',
 			'FROM'		=> array(
 				SEARCH_WORDMATCH_TABLE	=> array(),
 				SEARCH_WORDLIST_TABLE	=> array(),
@@ -984,9 +984,9 @@ class fulltext_native extends \phpbb\search\base
 		// If using mysql and the total result count is not calculated yet, get it from the db
 		if (!$total_results && $is_mysql)
 		{
-			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT(DISTINCT {$sql_array['SELECT']}) as total_results", $sql);
+			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT({$sql_array['SELECT']})", $sql);
 			$result = $this->db->sql_query($sql_count);
-			$total_results = (int) $this->db->sql_fetchfield('total_results');
+			$total_results = count($this->db->sql_fetchrowset($result));
 			$this->db->sql_freeresult($result);
 
 			if (!$total_results)
