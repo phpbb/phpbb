@@ -508,7 +508,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_mysql_keywords_main_query_before', compact($vars)));
 
-		$sql_select			= ($type == 'posts') ? 'p.post_id' : 'DISTINCT t.topic_id';
+		$sql_select			= ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT t.topic_id';
 		$sql_select			.= $sort_by_sql[$sort_key] ? ", {$sort_by_sql[$sort_key]}" : '';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
@@ -553,7 +553,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count && count($id_ary))
 		{
-			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT(*) as result_count", $sql);
+			$sql_found_rows = str_replace("SELECT $sql_select", "SELECT COUNT($sql_select) as result_count", $sql);
 			$result = $this->db->sql_query($sql_found_rows);
 			$result_count = (int) $this->db->sql_fetchfield('result_count');
 			$this->db->sql_freeresult($result);
