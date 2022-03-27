@@ -49,6 +49,30 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->assertStringContainsString("Search found $topics_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
 	}
 
+	protected function assert_search_in_topic($topic_id, $keywords, $posts_found, $sort_key = '')
+	{
+		$this->purge_cache();
+		$crawler = self::request('GET', "search.php?t=$topic_id&sf=msgonly&keywords=$keywords" . ($sort_key ? "&sk=$sort_key" : ''));
+		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
+	protected function assert_search_in_forum($forum_id, $keywords, $posts_found, $sort_key = '')
+	{
+		$this->purge_cache();
+		$crawler = self::request('GET', "search.php?fid[]=$forum_id&keywords=$keywords" . ($sort_key ? "&sk=$sort_key" : ''));
+		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
+	protected function assert_search_topics_in_forum($forum_id, $keywords, $topics_found, $sort_key = '')
+	{
+		$this->purge_cache();
+		$crawler = self::request('GET', "search.php?fid[]=$forum_id&sr=topics&keywords=$keywords" . ($sort_key ? "&sk=$sort_key" : ''));
+		$this->assertEquals($topics_found, $crawler->filter('.row')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $topics_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
 	protected function assert_search_not_found($keywords)
 	{
 		$crawler = self::request('GET', 'search.php?keywords=' . $keywords);
@@ -130,6 +154,10 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 			$this->assert_search_found_topics('multiple+results+count', 2, $sort_key); // test multiple results count - topics
 			$this->assert_search_found_topics('phpbb3+installation', 1, $sort_key);
 			$this->assert_search_found_topics('foosubject+barsearch', 1, $sort_key);
+
+			$this->assert_search_in_forum(2, 'multiple+search+results', 3, $sort_key); // test multiple results count - forum search - posts
+			$this->assert_search_topics_in_forum(2, 'multiple+search+results', 2, $sort_key); // test multiple results count - forum search - topics
+			$this->assert_search_in_topic((int) $topic_multiple_results_count1['topic_id'], 'multiple+results', 2, $sort_key); // test multiple results count - topic search
 
 			$this->assert_search_posts_by_author('searchforauthoruser', 2, $sort_key);
 			$this->assert_search_topics_by_author('searchforauthoruser', 1, $sort_key);

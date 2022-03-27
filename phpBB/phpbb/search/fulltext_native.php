@@ -984,9 +984,9 @@ class fulltext_native extends \phpbb\search\base
 		// If using mysql and the total result count is not calculated yet, get it from the db
 		if (!$total_results && $is_mysql)
 		{
-			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT({$sql_array['SELECT']})", $sql);
+			$sql_count = str_replace("SELECT {$sql_array['SELECT']}", "SELECT COUNT({$sql_array['SELECT']}) as total_results", $sql);
 			$result = $this->db->sql_query($sql_count);
-			$total_results = count($this->db->sql_fetchrowset($result));
+			$total_results = $sql_array['GROUP_BY'] ? count($this->db->sql_fetchrowset($result)) : $this->db->sql_fetchfield('total_results');
 			$this->db->sql_freeresult($result);
 
 			if (!$total_results)
