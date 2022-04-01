@@ -364,7 +364,7 @@ class helper
 			if ($task)
 			{
 				$url = $task->get_url();
-				$this->template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+				$this->template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="" style="position: fixed; top: -10000px" />');
 			}
 			else
 			{
