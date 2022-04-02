@@ -60,19 +60,26 @@ class manager
 	protected $php_ext;
 
 	/**
+	 * @var \phpbb\template\template
+	 */
+	protected $template;
+
+	/**
 	* Constructor. Loads all available tasks.
 	*
 	* @param ContainerInterface $phpbb_container Container
 	* @param helper $routing_helper Routing helper
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param string $php_ext PHP file extension
+	* @param \phpbb\template\template $template
 	*/
-	public function __construct(ContainerInterface $phpbb_container, helper $routing_helper, $phpbb_root_path, $php_ext)
+	public function __construct(ContainerInterface $phpbb_container, helper $routing_helper, $phpbb_root_path, $php_ext, $template)
 	{
 		$this->phpbb_container = $phpbb_container;
 		$this->routing_helper = $routing_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->template = $template;
 	}
 
 	/**
@@ -193,6 +200,6 @@ class manager
 	*/
 	public function wrap_task(\phpbb\cron\task\task $task)
 	{
-		return new wrapper($task, $this->routing_helper, $this->phpbb_root_path, $this->php_ext);
+		return new wrapper($task, $this->routing_helper, $this->phpbb_root_path, $this->php_ext, $this->template);
 	}
 }
