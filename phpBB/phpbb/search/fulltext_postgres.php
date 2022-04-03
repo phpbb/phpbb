@@ -550,7 +550,7 @@ class fulltext_postgres extends \phpbb\search\base
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql_count = "SELECT COUNT(*) as result_count
+			$sql_count = "SELECT COUNT(DISTINCT " . (($type == 'posts') ? 'p.post_id' : 't.topic_id') . ") as result_count
 				$sql_from
 				$sql_where";
 			$result = $this->db->sql_query($sql_count);
