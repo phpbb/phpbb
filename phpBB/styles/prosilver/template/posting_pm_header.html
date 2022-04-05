@@ -13,11 +13,11 @@
 				<dl class="pmlist">
 					<dt><label><strong>{{ lang('TO_ADD_MASS') }}{{ lang('COLON') }}</strong><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
 					<dd class="recipients">
-					<input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold" tabindex="1" />
-					<input type="submit" name="add_bcc" value="{{ lang('ADD_BCC') }}" class="button1 button button-form-bold" tabindex="1" />
-					{% EVENT posting_pm_header_find_username_before %}
-					<span><a href="{{ U_FIND_USERNAME }}" onclick="find_username(this.href); return false;">{{ lang('FIND_USERNAME') }}</a></span>
-					{% EVENT posting_pm_header_find_username_after %}
+						<input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold" tabindex="1" />
+						<input type="submit" name="add_bcc" value="{{ lang('ADD_BCC') }}" class="button1 button button-form-bold" tabindex="1" />
+						{% EVENT posting_pm_header_find_username_before %}
+						<span><a href="{{ U_FIND_USERNAME }}" onclick="find_username(this.href); return false;">{{ lang('FIND_USERNAME') }}</a></span>
+						{% EVENT posting_pm_header_find_username_after %}
 					</dd>
 				</dl>
 				{% endif %}
