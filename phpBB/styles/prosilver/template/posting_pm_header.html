@@ -66,13 +66,14 @@
 				<!-- ENDIF -->
 				<!-- IF .to_recipient -->
 					<dd class="recipients">
-					<ul class="recipients">
-						<!-- BEGIN to_recipient -->
-						<li>
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
-						</li>
-						<!-- END to_recipient -->
+						<ul class="recipients">
+							<!-- BEGIN to_recipient -->
+							<li>
+								<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
+								<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" /><!-- ENDIF -->
+							</li>
+							<!-- END to_recipient -->
+						</ul>
 					</dd>
 				<!-- ENDIF -->
 			</dl>
