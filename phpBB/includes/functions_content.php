@@ -803,8 +803,8 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 	$orig_url		= $url;
 	$orig_relative	= $relative_url;
 	$append			= '';
-	$url			= htmlspecialchars_decode($url, ENT_COMPAT);
-	$relative_url	= htmlspecialchars_decode($relative_url, ENT_COMPAT);
+	$url			= html_entity_decode($url, ENT_COMPAT);
+	$relative_url	= html_entity_decode($relative_url, ENT_COMPAT);
 
 	// make sure no HTML entities were matched
 	$chars = array('<', '>', '"');
@@ -1456,7 +1456,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 		$string = substr($string, 4);
 	}
 
-	$_chars = utf8_str_split(htmlspecialchars_decode($string, ENT_COMPAT));
+	$_chars = utf8_str_split(html_entity_decode($string, ENT_COMPAT));
 	$chars = array_map('utf8_htmlspecialchars', $_chars);
 
 	// Now check the length ;)
@@ -1471,7 +1471,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 	if (utf8_strlen($string) > $max_store_length)
 	{
 		// let's split again, we do not want half-baked strings where entities are split
-		$_chars = utf8_str_split(htmlspecialchars_decode($string, ENT_COMPAT));
+		$_chars = utf8_str_split(html_entity_decode($string, ENT_COMPAT));
 		$chars = array_map('utf8_htmlspecialchars', $_chars);
 
 		do

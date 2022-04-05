@@ -206,7 +206,7 @@ class mcp_notes
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
 		$keywords = $request->variable('keywords', '', true);
-		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords, ENT_COMPAT)) : '';
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(html_entity_decode($keywords, ENT_COMPAT)) : '';
 
 		$log_data = array();
 		$log_count = 0;

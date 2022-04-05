@@ -227,7 +227,7 @@ class data_access
 		{
 			foreach ($columns as $column)
 			{
-				$row[$column] = htmlspecialchars_decode($row[$column], ENT_COMPAT);
+				$row[$column] = html_entity_decode($row[$column], ENT_COMPAT);
 			}
 		}
 

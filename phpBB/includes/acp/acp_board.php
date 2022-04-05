@@ -720,8 +720,8 @@ class acp_board
 				$messenger->set_addresses($user->data);
 				$messenger->anti_abuse_headers($config, $user);
 				$messenger->assign_vars(array(
-					'USERNAME'	=> htmlspecialchars_decode($user->data['username'], ENT_COMPAT),
-					'MESSAGE'	=> htmlspecialchars_decode($request->variable('send_test_email_text', '', true), ENT_COMPAT),
+					'USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
+					'MESSAGE'	=> html_entity_decode($request->variable('send_test_email_text', '', true), ENT_COMPAT),
 				));
 				$messenger->send(NOTIFY_EMAIL);
 

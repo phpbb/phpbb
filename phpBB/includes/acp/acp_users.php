@@ -402,8 +402,8 @@ class acp_users
 								$messenger->anti_abuse_headers($config, $user);
 
 								$messenger->assign_vars(array(
-									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
-									'USERNAME'		=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT),
+									'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
+									'USERNAME'		=> html_entity_decode($user_row['username'], ENT_COMPAT),
 									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);
 
@@ -466,7 +466,7 @@ class acp_users
 									$messenger->anti_abuse_headers($config, $user);
 
 									$messenger->assign_vars(array(
-										'USERNAME'	=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT))
+										'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT))
 									);
 
 									$messenger->send(NOTIFY_EMAIL);
