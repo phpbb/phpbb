@@ -9,8 +9,8 @@
 		<dd>
 			{% EVENT posting_editor_topic_icons_prepend %}
 
-			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" tabindex="1" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
-			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} tabindex="1" /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="{topic_icon.ICON_ALT}" title="{topic_icon.ICON_ALT}" /></label> <!-- END topic_icon -->
+			<label for="icon"><input type="radio" name="icon" id="icon" value="0" checked="checked" /> <!-- IF S_SHOW_TOPIC_ICONS -->{L_NO_TOPIC_ICON}<!-- ELSE -->{L_NO_PM_ICON}<!-- ENDIF --></label>
+			<!-- BEGIN topic_icon --><label for="icon-{topic_icon.ICON_ID}"><input type="radio" name="icon" id="icon-{topic_icon.ICON_ID}" value="{topic_icon.ICON_ID}" {topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="{topic_icon.ICON_ALT}" title="{topic_icon.ICON_ALT}" /></label> <!-- END topic_icon -->
 
 			{% EVENT posting_editor_topic_icons_append %}
 		</dd>
@@ -22,7 +22,7 @@
 	<!-- IF not S_PRIVMSGS and S_DISPLAY_USERNAME -->
 	<dl style="clear: left;">
 		<dt><label for="username">{L_USERNAME}{L_COLON}</label></dt>
-		<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
+		<dd><input type="text" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
 	</dl>
 	<!-- ENDIF -->
 
@@ -33,7 +33,7 @@
 		<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
 		<dd>
 			<!-- EVENT posting_editor_subject_prepend -->
-			<input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" tabindex="2" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" />
+			<input type="text" name="subject" id="subject" size="45" maxlength="<!-- IF S_NEW_MESSAGE -->120<!-- ELSE -->124<!-- ENDIF -->" value="{SUBJECT}{DRAFT_SUBJECT}" class="inputbox autowidth" />
 			<!-- EVENT posting_editor_subject_append -->
 		</dd>
 	</dl>
@@ -82,7 +82,7 @@
 	<!-- EVENT posting_editor_message_before -->
 
 	<div id="message-box" class="message-box">
-		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" tabindex="4" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
+		<textarea <!-- IF S_UCP_ACTION and not S_PRIVMSGS and not S_EDIT_DRAFT -->name="signature" id="signature" style="height: 9em;"<!-- ELSE -->name="message" id="message"<!-- ENDIF --> rows="15" cols="76" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" class="inputbox">{MESSAGE}{DRAFT_MESSAGE}{SIGNATURE}</textarea>
 	</div>
 
 	<!-- EVENT posting_editor_message_after -->
@@ -102,10 +102,10 @@
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
 			<!-- EVENT posting_editor_submit_buttons -->
-			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="8" name="load" value="{L_LOAD_DRAFT}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
-			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="7" name="save" value="{L_SAVE_DRAFT}" class="button2" />&nbsp; <!-- ENDIF -->
-			<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
-			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1 default-submit-action" />&nbsp;
+			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" name="load" value="{L_LOAD_DRAFT}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
+			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" name="save" value="{L_SAVE_DRAFT}" class="button2" />&nbsp; <!-- ENDIF -->
+			<input type="submit" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
+			<input type="submit" accesskey="s" name="post" value="{L_SUBMIT}" class="button1 default-submit-action" />&nbsp;
 
 		</fieldset>
 

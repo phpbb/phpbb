@@ -38,7 +38,7 @@
 			</dl>
 			<dl>
 				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="1" value="{SUBJECT}" /></dd>
+				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" value="{SUBJECT}" /></dd>
 			</dl>
 		<!-- ELSEIF S_CONTACT_ADMIN-->
 			<dl>
@@ -48,25 +48,25 @@
 			<!-- IF not S_IS_REGISTERED -->
 			<dl>
 				<dt><label for="email">{L_SENDER_EMAIL_ADDRESS}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" tabindex="1" value="{EMAIL}" /></dd>
+				<dd><input class="inputbox autowidth" type="text" name="email" id="email" size="50" maxlength="100" value="{EMAIL}" /></dd>
 			</dl>
 			<dl>
 				<dt><label for="name">{L_SENDER_NAME}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="2" value="{NAME}" /></dd>
+				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" value="{NAME}" /></dd>
 			</dl>
 			<!-- ENDIF -->
 			<dl>
 				<dt><label for="subject">{L_SUBJECT}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" tabindex="3" value="{SUBJECT}" /></dd>
+				<dd><input class="inputbox autowidth" type="text" name="subject" id="subject" size="50" value="{SUBJECT}" /></dd>
 			</dl>
 		<!-- ELSE -->
 			<dl>
 				<dt><label for="email">{L_EMAIL_ADDRESS}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="email" name="email" id="email" size="50" maxlength="100" tabindex="2" value="{EMAIL}" /></dd>
+				<dd><input class="inputbox autowidth" type="email" name="email" id="email" size="50" maxlength="100" value="{EMAIL}" /></dd>
 			</dl>
 			<dl>
 				<dt><label for="name">{L_REAL_NAME}{L_COLON}</label></dt>
-				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" tabindex="3" value="{NAME}" /></dd>
+				<dd><input class="inputbox autowidth" type="text" name="name" id="name" size="50" value="{NAME}" /></dd>
 			</dl>
 			<dl>
 				<dt><label for="lang">{L_DEST_LANG}{L_COLON}</label><br />
@@ -77,12 +77,12 @@
 		<dl>
 			<dt><label for="message">{L_MESSAGE_BODY}{L_COLON}</label><br />
 			<span>{L_EMAIL_BODY_EXPLAIN}</span></dt>
-			<dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76" tabindex="4">{MESSAGE}</textarea></dd>
+			<dd><textarea class="inputbox" name="message" id="message" rows="15" cols="76">{MESSAGE}</textarea></dd>
 		</dl>
 		<!-- IF S_REGISTERED_USER -->
 		<dl>
 			<dt>&nbsp;</dt>
-			<dd><label for="cc_sender"><input type="checkbox" name="cc_sender" id="cc_sender" value="1" checked="checked" tabindex="5" /> {L_CC_SENDER}</label></dd>
+			<dd><label for="cc_sender"><input type="checkbox" name="cc_sender" id="cc_sender" value="1" checked="checked" /> {L_CC_SENDER}</label></dd>
 		</dl>
 		<!-- ENDIF -->
 		</fieldset>
@@ -95,7 +95,7 @@
 	<div class="inner">
 	<div class="content">
 		<fieldset class="submit-buttons">
-			<input type="submit" tabindex="6" name="submit" class="button1" value="{L_SEND_EMAIL}" />
+			<input type="submit" name="submit" class="button1" value="{L_SEND_EMAIL}" />
 		</fieldset>
 	</div>
 	</div>
