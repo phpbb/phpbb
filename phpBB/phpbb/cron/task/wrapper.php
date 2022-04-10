@@ -42,6 +42,11 @@ class wrapper
 	protected $php_ext;
 
 	/**
+	 * @var \phpbb\template\template
+	 */
+	protected $template;
+
+	/**
 	* Constructor.
 	*
 	* Wraps a task $task, which must implement cron_task interface.
@@ -50,13 +55,15 @@ class wrapper
 	* @param helper	$routing_helper		Routing helper for route generation
 	* @param string	$phpbb_root_path	Relative path to phpBB root
 	* @param string	$php_ext			PHP file extension
+	* @param \phpbb\template\template	$template
 	*/
-	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext)
+	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext, $template)
 	{
 		$this->task = $task;
 		$this->routing_helper = $routing_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->template = $template;
 	}
 
 	/**
@@ -103,6 +110,23 @@ class wrapper
 		}
 
 		return $this->routing_helper->route('phpbb_cron_run', $params);
+	}
+
+	/**
+	 * Returns HTML for an invisible `img` tag that can be displayed on page
+	 * load to trigger a request to the relevant cron task endpoint.
+	 *
+	 * @return string       HTML to render to trigger cron task
+	 */
+	public function get_html_tag()
+	{
+		$this->template->set_filenames([
+			'cron_html_tag' => 'cron.html',
+		]);
+
+		$this->template->assign_var('CRON_TASK_URL', $this->get_url());
+
+		return $this->template->assign_display('cron_html_tag');
 	}
 
 	/**
