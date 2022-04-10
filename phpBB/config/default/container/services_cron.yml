@@ -6,6 +6,7 @@ services:
             - '@routing.helper'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@template'
 
     cron.lock_db:
         class: phpbb\lock\db

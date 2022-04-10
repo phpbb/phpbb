@@ -1,0 +1,7 @@
+{#
+	Runs the cron task by triggering server request to the URL on load. `img` is
+	preferred over JS to ensure maximum compatibility. We use `class="sr-only"`
+	to hide visually and `aria-hidden="true"` to hide from screen-readers; using
+	`hidden` or `display: none` would prevent the task from running.
+#}
+<img class="sr-only" aria-hidden="true" src="{{ CRON_TASK_URL|e('html_attr') }}" width="1" height="1" alt="">
