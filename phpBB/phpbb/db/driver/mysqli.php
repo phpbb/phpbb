@@ -331,7 +331,10 @@ class mysqli extends \phpbb\db\driver\mysql_base
 	*/
 	function sql_escape($msg)
 	{
-		return @mysqli_real_escape_string($this->db_connect_id, $msg);
+		return @mysqli_real_escape_string(
+			$this->db_connect_id,
+			utf8_encode_ucr($msg)
+		);
 	}
 
 	/**
