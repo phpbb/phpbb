@@ -3874,8 +3874,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$forum_id = $request->variable('f', 0);
-	$topic_id = $request->variable('t', 0);
+	// Negative forum and topic IDs are not allowed
+	$forum_id = max(0, $request->variable('f', 0));
+	$topic_id = max(0, $request->variable('t', 0));
 
 	$s_feed_news = false;
 
