@@ -432,6 +432,7 @@ $lang = array_merge($lang, array(
 	'MESSAGE'				=> 'Message',
 	'MESSAGES'				=> 'Messages',
 	'MESSAGES_COUNT'		=> array(
+		0	=> 'unlimited messages',
 		1	=> '%d message',
 		2	=> '%d messages',
 	),
