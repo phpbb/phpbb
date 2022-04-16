@@ -46,7 +46,7 @@ class html_output_formatter extends \Composer\Console\HtmlOutputFormatter
 	/**
 	 * {@inheritdoc}
 	 */
-	public function format($message)
+	public function format(?string $message): ?string
 	{
 		$formatted = parent::format($message);
 

@@ -319,7 +319,7 @@ class installer
 						if ($repo_url->getValue($repository) === 'https://repo.packagist.org')
 						{
 							$url = 'https://packagist.org/packages/list.json?type=' . $type;
-							$composer_config = new \Composer\Config([]);
+							$composer_config = new \Composer\Config();
 							$downloader = new HttpDownloader($io, $composer_config);
 							$json = $downloader->get($url)->getBody();
 
