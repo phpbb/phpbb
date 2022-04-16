@@ -61,10 +61,10 @@
 
 		"declaration-empty-line-before": "never",
 
-		"declaration-property-unit-blacklist": {
+		"declaration-property-unit-disallowed-list": {
 			"line-height": ["rem", "em", "%"]
 		},
-		"declaration-property-unit-whitelist": {
+		"declaration-property-unit-allowed-list": {
 			"height": ["px", "%", "vh"],
 			"width": ["px", "%", "vw"],
 			"font-size": ["px", "rem", "%"],

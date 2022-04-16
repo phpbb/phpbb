@@ -194,9 +194,7 @@
 			});
 
 			// Sort names by priorities - higher values come first
-			_results = _results.sort((a, b) => {
-				return b.priority - a.priority;
-			});
+			_results = _results.sort((a, b) => b.priority - a.priority);
 
 			// Exact match is the most important - should come above anything else
 			$.each(_exactMatch, (name, value) => {
@@ -233,9 +231,9 @@
 			* 2) We have enough names to display OR
 			*    all relevant names have been fetched from the server
 			*/
-			if (cachedNamesForQuery &&
-				(getMatchedNames(query, cachedNamesForQuery, cachedSearchKey).length >= mentionNamesLimit ||
-					cachedAll[cachedKeyword])) {
+			if (cachedNamesForQuery
+				&& (getMatchedNames(query, cachedNamesForQuery, cachedSearchKey).length >= mentionNamesLimit
+					|| cachedAll[cachedKeyword])) {
 				callback(cachedNamesForQuery);
 				return;
 			}
