@@ -220,13 +220,13 @@ code { display: block; }
 	display: none;
 }
 
-/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-allowed-list */
 .emoji {
 	width: 1em;
 	min-width: 18px;
 	height: 1em;
 	min-height: 18px;
 }
-/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-allowed-list */
 
 /* stylelint-enable selector-max-compound-selectors */
