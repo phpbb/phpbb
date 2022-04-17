@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # A hook to add [$branch] to the beginning of a commit message
 # if certain conditions are met.
@@ -31,12 +31,19 @@ branch="$(echo "$branch" | sed "s/refs\/heads\///g")"
 if [ "$2" = "" ]
 then
 	tail="";
+	ticket_id=$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\3/gm;t;d' <<< $branch);
+	branch_title=$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\1\2\3/gm;t;d' <<< $branch);
 
-	# Branch is prefixed with 'ticket/', append ticket ID to message
-	if [ "$branch" != "${branch##ticket/}" ];
+	if [ "security/" = "$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\2/gm;t;d' <<< $branch)" ];
 	then
-		tail="$(printf "\n\nPHPBB3-${branch##ticket/}")";
+		tail="$(printf "\n\nSECURITY-$ticket_id")";
+	else
+		# Branch is prefixed with 'ticket/', append ticket ID to message
+		if [ "$branch" != "${branch##ticket/}" ];
+		then
+			tail="$(printf "\n\nPHPBB3-$ticket_id")";
+		fi
 	fi
 
-	echo "[$branch] $tail$(cat "$1")" > "$1"
+	echo "[$branch_title] $tail$(cat "$1")" > "$1"
 fi
