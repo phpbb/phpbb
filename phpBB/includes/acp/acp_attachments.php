@@ -1445,15 +1445,20 @@ class acp_attachments
 			$cat_type = attachment_category::NONE;
 		}
 
-		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
+		$group_select = [
+			'name'		=> $select_name,
+			'id'		=> $key,
+			'options'	=> [],
+		];
 
 		foreach ($types as $type => $mode)
 		{
-			$selected = ($type == $cat_type) ? ' selected="selected"' : '';
-			$group_select .= '<option value="' . $type . '"' . $selected . '>' . $mode . '</option>';
+			$group_select['options'][] = [
+				'value'		=> $type,
+				'selected'	=> $type == $cat_type,
+				'label'		=> $mode,
+			];
 		}
-
-		$group_select .= '</select>';
 
 		return $group_select;
 	}

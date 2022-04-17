@@ -175,8 +175,14 @@
 			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="category">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
-			<dd>{S_CATEGORY_SELECT}</dd>
+			<dt><label for="{{ S_CATEGORY_SELECT.id }}">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+			<dd>
+				<select name="{{ S_CATEGORY_SELECT.name }}" id="{{ S_CATEGORY_SELECT.id }}">
+				{% for option in S_CATEGORY_SELECT.options %}
+					<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+				{% endfor %}
+				</select>
+			</dd>
 		</dl>
 		<dl>
 			<dt><label for="allowed">{L_ALLOWED}{L_COLON}</label></dt>
