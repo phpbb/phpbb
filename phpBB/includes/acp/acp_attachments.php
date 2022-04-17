@@ -452,11 +452,11 @@ class acp_attachments
 					$cache->destroy('_extensions');
 				}
 
-				$template->assign_vars(array(
+				$template->assign_vars([
 					'S_EXTENSIONS'			=> true,
 					'ADD_EXTENSION'			=> (isset($add_extension)) ? $add_extension : '',
-					'GROUP_SELECT_OPTIONS'	=> (isset($_POST['add_extension_check'])) ? $this->group_select('add_group_select', $add_extension_group, 'extension_group') : $this->group_select('add_group_select', false, 'extension_group'))
-				);
+					'GROUP_SELECT_OPTIONS'	=> $this->group_select('add_group_select', $request->is_set_post('add_extension_check') ? $add_extension_group : false, 'extension_group'),
+				]);
 
 				$sql = 'SELECT *
 					FROM ' . EXTENSIONS_TABLE . '
@@ -1470,8 +1470,6 @@ class acp_attachments
 	{
 		global $db, $user;
 
-		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
-
 		$sql = 'SELECT group_id, group_name
 			FROM ' . EXTENSION_GROUPS_TABLE . '
 			ORDER BY group_name';
@@ -1489,21 +1487,29 @@ class acp_attachments
 		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
 
+		$group_select = [
+			'name'		=> $select_name,
+			'id'		=> $key,
+			'options'	=> [],
+		];
+
 		for ($i = 0, $groups_size = count($group_name); $i < $groups_size; $i++)
 		{
 			if ($default_group === false)
 			{
-				$selected = ($i == 0) ? ' selected="selected"' : '';
+				$selected = $i == 0;
 			}
 			else
 			{
-				$selected = ($group_name[$i]['group_id'] == $default_group) ? ' selected="selected"' : '';
+				$selected = $group_name[$i]['group_id'] == $default_group;
 			}
 
-			$group_select .= '<option value="' . $group_name[$i]['group_id'] . '"' . $selected . '>' . $group_name[$i]['group_name'] . '</option>';
+			$group_select['options'][] = [
+				'value'		=> $group_name[$i]['group_id'],
+				'selected'	=> $selected,
+				'label'		=> $group_name[$i]['group_name'],
+			];
 		}
-
-		$group_select .= '</select>';
 
 		return $group_select;
 	}

@@ -281,8 +281,14 @@
 		<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
-		<dd>{GROUP_SELECT_OPTIONS}</dd>
+		<dt><label for="{{ GROUP_SELECT_OPTIONS.id }}">{L_EXTENSION_GROUP}</label></dt>
+		<dd>
+			<select name="{{ GROUP_SELECT_OPTIONS.name }}" id="{{ GROUP_SELECT_OPTIONS.id }}">
+				{% for option in GROUP_SELECT_OPTIONS.options %}
+				<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+				{% endfor %}
+			</select>
+		</dd>
 	</dl>
 
 	<p class="quick">
@@ -315,7 +321,13 @@
 		<!-- ENDIF -->
 		<tr>
 			<td><strong>{extensions.EXTENSION}</strong></td>
-			<td>{extensions.GROUP_OPTIONS}</td>
+			<td>
+				<select name="{{ extensions.GROUP_OPTIONS.name }}" id="{{ extensions.GROUP_OPTIONS.id }}">
+					{% for option in extensions.GROUP_OPTIONS.options %}
+					<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+					{% endfor %}
+				</select>
+			</td>
 			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /><input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" /></td>
 		</tr>
 	<!-- END extensions -->
