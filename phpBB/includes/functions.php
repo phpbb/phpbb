@@ -270,7 +270,7 @@ function phpbb_version_compare(string $version1, string $version2, string $opera
  * @param string $default	Language ISO code to be selected by default in the dropdown list
  * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
  */
-function phpbb_language_select(\phpbb\db\driver\driver_interface $db, \phpbb\template\template $template, string $default = '', array $langdata = []): void
+function phpbb_language_select(\phpbb\db\driver\driver_interface $db, string $default = '', array $langdata = []): array
 {
 	if (empty($langdata))
 	{
@@ -282,14 +282,17 @@ function phpbb_language_select(\phpbb\db\driver\driver_interface $db, \phpbb\tem
 		$db->sql_freeresult($result);
 	}
 
+	$lang_options = [];
 	foreach ($langdata as $row)
 	{
-		$template->assign_block_vars('lang_options', [
-			'SELECTED'			=> $row['lang_iso'] == $default,
-			'LANG_ISO'			=> $row['lang_iso'],
-			'LANG_LOCAL_NAME'	=> $row['lang_local_name']
-		]);
+		$lang_options[] = [
+			'value'		=> $row['lang_iso'],
+			'label'		=> $row['lang_local_name'],
+			'selected'	=> $row['lang_iso'] === $default,
+		];
 	}
+
+	return $lang_options;
 }
 
 /**

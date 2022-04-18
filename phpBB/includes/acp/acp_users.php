@@ -1796,7 +1796,7 @@ class acp_users
 				}
 
 				phpbb_timezone_select($template, $user, $data['tz'], true);
-				phpbb_language_select($db, $template, $data['lang']);
+				$lang_options = phpbb_language_select($db, $data['lang']);
 
 				$user_prefs_data = array(
 					'S_PREFS'			=> true,
@@ -1833,6 +1833,11 @@ class acp_users
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
 				);
 

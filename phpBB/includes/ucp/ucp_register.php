@@ -157,7 +157,7 @@ class ucp_register
 			$lang_row = (array) $db->sql_fetchrowset($result);
 			$db->sql_freeresult($result);
 
-			phpbb_language_select($db, $template, $user_lang, $lang_row);
+			$lang_options = phpbb_language_select($db, $user_lang, $lang_row);
 
 			if ($coppa === false && $config['coppa_enable'])
 			{
@@ -169,6 +169,11 @@ class ucp_register
 				unset($now);
 
 				$template_vars = array(
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
 					'L_COPPA_YES'		=> $user->lang('UCP_COPPA_ON_AFTER', $coppa_birthday),
 
@@ -183,6 +188,11 @@ class ucp_register
 			else
 			{
 				$template_vars = array(
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -626,7 +636,7 @@ class ucp_register
 		$lang_row = (array) $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
 
-		phpbb_language_select($db, $template, $data['lang'], $lang_row);
+		$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
 
 		$template_vars = array(
 			'USERNAME'			=> $data['username'],
@@ -638,6 +648,11 @@ class ucp_register
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars'])),
 
+			'LANG_OPTIONS'		=> [
+				'id'		=> 'lang',
+				'name'		=> 'lang',
+				'options'	=> $lang_options,
+			],
 			'S_TZ_PRESELECT'	=> !$submit,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,

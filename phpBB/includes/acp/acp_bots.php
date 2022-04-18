@@ -330,7 +330,7 @@ class acp_bots
 				}
 
 				$style_select = style_select($bot_row['bot_style'], true);
-				phpbb_language_select($db, $template, $bot_row['bot_lang']);
+				$lang_options = phpbb_language_select($db, $bot_row['bot_lang']);
 
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
@@ -347,9 +347,13 @@ class acp_bots
 					'S_EDIT_BOT'		=> true,
 					'S_ACTIVE_OPTIONS'	=> $s_active_options,
 					'S_STYLE_OPTIONS'	=> $style_select,
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'bot_lang',
+						'name'		=> 'bot_lang',
+						'options'	=> $lang_options,
+					],
 					'S_ERROR'			=> (count($error)) ? true : false,
-					)
-				);
+				));
 
 				return;
 

@@ -41,13 +41,10 @@
 			<label><input type="radio" class="radio" name="notifypm" value="0"<!-- IF not NOTIFY_PM --> id="notifypm" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<dl>
-		<dt><label for="lang">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
+		<dt><label for="{{ LANG_OPTIONS.id }}">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
 		<dd>
-			<select id="lang" name="lang">
-				{% for option in lang_options %}
-					<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
-				{% endfor %}
-			</select>
+			{% import "form_macros.twig" as form_macros %}
+			{{ form_macros.select(LANG_OPTIONS) }}
 		</dd>
 	</dl>
 	<dl>

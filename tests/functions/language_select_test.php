@@ -25,14 +25,14 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 				'',
 				[
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'cs',
-						'LANG_LOCAL_NAME'	=> 'Čeština',
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
 					],
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'en',
-						'LANG_LOCAL_NAME'	=> 'English',
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
 					],
 				]
 			],
@@ -40,14 +40,14 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 				'en',
 				[
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'cs',
-						'LANG_LOCAL_NAME'	=> 'Čeština',
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
 					],
 					[
-						'SELECTED'			=> true,
-						'LANG_ISO'			=> 'en',
-						'LANG_LOCAL_NAME'	=> 'English',
+						'selected'			=> true,
+						'value'			=> 'en',
+						'label'	=> 'English',
 					],
 				]
 			],
@@ -55,14 +55,14 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 				'cs',
 				[
 					[
-						'SELECTED'			=> true,
-						'LANG_ISO'			=> 'cs',
-						'LANG_LOCAL_NAME'	=> 'Čeština',
+						'selected'			=> true,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
 					],
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'en',
-						'LANG_LOCAL_NAME'	=> 'English',
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
 					],
 				]
 			],
@@ -70,14 +70,14 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 				'de',
 				[
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'cs',
-						'LANG_LOCAL_NAME'	=> 'Čeština',
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
 					],
 					[
-						'SELECTED'			=> false,
-						'LANG_ISO'			=> 'en',
-						'LANG_LOCAL_NAME'	=> 'English',
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
 					],
 				]
 			],
@@ -91,19 +91,9 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 	{
 		global $db;
 		$db = $this->new_dbal();
-		$template	= $this->getMockBuilder('\phpbb\template\base')
-			->disableOriginalConstructor()
-			->getMock();
-		$template_data = [];
-		$template->expects($this->any())
-			->method('assign_block_vars')
-			->willReturnCallback(function ($blockname, array $vararray) use (&$template_data) {
-				$template_data[$blockname][] = $vararray;
-				return null;
-			});
 
-		phpbb_language_select($db, $template, $default);
+		$lang_options = phpbb_language_select($db, $default);
 
-		$this->assertEquals($expected, $template_data['lang_options']);
+		$this->assertEquals($expected, $lang_options);
 	}
 }
