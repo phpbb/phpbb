@@ -380,7 +380,7 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $conf
 				'type'		=> 'radio',
 				'name'		=> $name,
 				'value'		=> 1,
-				'checked'	=> $new_ary[$config_key],
+				'checked'	=> (bool) $new_ary[$config_key],
 				'label'		=> $type_no ? $language->lang('YES') : $language->lang('ENABLED'),
 			];
 
