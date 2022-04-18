@@ -37,6 +37,7 @@
 
 <!-- IF S_ATTACHMENT_SETTINGS -->
 
+	{% import "form_macros.twig" as form_macros %}
 	<form id="attachsettings" method="post" action="{U_ACTION}">
 	<!-- BEGIN options -->
 		<!-- IF options.S_LEGEND -->
@@ -49,7 +50,20 @@
 
 			<dl>
 				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
-				<dd>{options.CONTENT}</dd>
+				<dd>
+					{% if options.CONTENT.tag %}
+						{% if options.CONTENT.tag == 'input' %}
+							{{ form_macros.input(options.CONTENT) }}
+						{% elseif options.CONTENT.tag == 'dimension' %}
+							{{ form_macros.dimension(options.CONTENT) }}
+						{% elseif options.CONTENT.tag == 'radio' %}
+							{{ form_macros.radio_buttons(options.CONTENT) }}
+						{% endif %}
+						{% if options.CONTENT.append %}{{ options.CONTENT.append }}{% endif %}
+					{% else %}
+						{options.CONTENT}
+					{% endif %}
+				</dd>
 				{% if (options.KEY == 'allow_attachments' and S_EMPTY_POST_GROUPS) or (options.KEY == 'allow_pm_attach' and S_EMPTY_PM_GROUPS) %}
 					<dd><span class="error">{{ lang(options.KEY == 'allow_attachments' ? 'NO_EXT_GROUP_ALLOWED_POST' : 'NO_EXT_GROUP_ALLOWED_PM', U_EXTENSION_GROUPS) }}</span></dd>
 				{% endif %}

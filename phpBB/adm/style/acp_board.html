@@ -13,6 +13,7 @@
 	</div>
 <!-- ENDIF -->
 
+{% import "form_macros.twig" as form_macros %}
 <form id="acp_board" method="post" action="{U_ACTION}">
 
 <!-- BEGIN options -->
@@ -27,7 +28,20 @@
 
 		<dl>
 			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
-			<dd>{options.CONTENT}</dd>
+			<dd>
+				{% if options.CONTENT.tag %}
+					{% if options.CONTENT.tag == 'input' %}
+						{{ form_macros.input(options.CONTENT) }}
+					{% elseif options.CONTENT.tag == 'dimension' %}
+						{{ form_macros.dimension(options.CONTENT) }}
+					{% elseif options.CONTENT.tag == 'radio' %}
+						{{ form_macros.radio_buttons(options.CONTENT) }}
+					{% endif %}
+					{% if options.CONTENT.append %}{{ options.CONTENT.append }}{% endif %}
+				{% else %}
+					{{ options.CONTENT }}
+				{% endif %}
+			</dd>
 		</dl>
 
 	<!-- ENDIF -->
