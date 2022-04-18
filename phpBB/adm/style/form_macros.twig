@@ -1,17 +1,18 @@
 {% macro input(form_data) %}
-	<input
-		{% if form_data.id %}id="{{ form_data.id }}"{% endif %}
-		type="{{ form_data.type }}"
-		name="{{ form_data.name }}"
-		{% if form_data.size %}size="{{ form_data.size }}"{% endif %}
-		{% if form_data.maxlength %}maxlength="{{ form_data.maxlength }}"{% endif %}
-		{% if form_data.min %}min="{{ form_data.min }}"{% endif %}
-		{% if form_data.max %}max="{{ form_data.max }}"{% endif %}
-		{% if form_data.type == 'password' %}autocomplete="off"{% endif %}
-		{% if form_data.checked %}checked="checked"{% endif %}
-		{% if form_data.class %}class="{{ form_data.class }}"{% endif %}
-		value="{{ form_data.value }}"
-	>
+	{% apply  replace({"\n": ' ', '\t': ''}) %}
+		<input
+			{% if form_data.id %}id="{{ form_data.id }}"{% endif %}
+			type="{{ form_data.type }}"
+			name="{{ form_data.name }}"
+			{% if form_data.size %}size="{{ form_data.size }}"{% endif %}
+			{% if form_data.maxlength %}maxlength="{{ form_data.maxlength }}"{% endif %}
+			{% if form_data.min %}min="{{ form_data.min }}"{% endif %}
+			{% if form_data.max %}max="{{ form_data.max }}"{% endif %}
+			{% if form_data.type == 'password' %}autocomplete="off"{% endif %}
+			{% if form_data.checked %}checked="checked"{% endif %}
+			{% if form_data.class %}class="{{ form_data.class }}"{% endif %}
+			value="{{ form_data.value }}">
+	{% endapply %}
 {% endmacro %}
 
 {% macro dimension(form_data) %}
@@ -19,14 +20,15 @@
 {% endmacro %}
 
 {% macro textarea(form_data) %}
-	<textarea
-		id="{{ form_data.id }}"
-		name="{{ form_data.name }}"
-		rows="{{ form_data.rows }}"
-		cols="{{ form_data.cols }}"
-	>
-		{{ form_data.content }}
-	</textarea>
+	{% apply  replace({"\n": ' ', '\t': ''}) %}
+		<textarea
+			id="{{ form_data.id }}"
+			name="{{ form_data.name }}"
+			rows="{{ form_data.rows }}"
+			cols="{{ form_data.cols }}">
+			{{ form_data.content }}
+		</textarea>
+	{% endapply %}
 {% endmacro %}
 
 {% macro radio_buttons(form_data) %}
@@ -35,7 +37,7 @@
 {% endmacro %}
 
 {% macro select(form_data) %}
-	<select id="{{ form_data.id }}" name="{{ form_data.name }}">
+	<select {% if form_data.id %}id="{{ form_data.id }}"{% endif %} name="{{ form_data.name }}">
 		{% for option in form_data.options %}
 			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
 		{% endfor %}
