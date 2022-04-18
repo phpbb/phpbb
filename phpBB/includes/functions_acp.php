@@ -209,18 +209,21 @@ function adm_back_link($u_action)
 /**
 * Build select field options in acp pages
 */
-function build_select($option_ary, $option_default = false)
+function build_select($option_ary, $option_default = false): array
 {
-	global $user;
+	global $language;
 
-	$html = '';
+	$options = [];
 	foreach ($option_ary as $value => $title)
 	{
-		$selected = ($option_default !== false && $value == $option_default) ? ' selected="selected"' : '';
-		$html .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$title] . '</option>';
+		$options[] = [
+			'value'	=> $value,
+			'selected'	=> $option_default !== false && $value == $option_default,
+			'label'	=> $language->lang($title),
+		];
 	}
 
-	return $html;
+	return $options;
 }
 
 /**
