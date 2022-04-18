@@ -37,7 +37,7 @@
 {% endmacro %}
 
 {% macro select(form_data) %}
-	<select {% if form_data.id %}id="{{ form_data.id }}"{% endif %} name="{{ form_data.name }}">
+	<select {% if form_data.id %}id="{{ form_data.id }}"{% endif %} name="{{ form_data.name }}"{% if form_data.toggleable %} data-togglable-settings="true"{% endif %}>
 		{% for option in form_data.options %}
 			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
 		{% endfor %}
@@ -51,6 +51,10 @@
 		{{ _self.dimension(form_data) }}
 	{% elseif form_data.tag == 'radio' %}
 		{{ _self.radio_buttons(form_data) }}
+	{% elseif form_data.tag == 'select' %}
+		{{ _self.select(form_data) }}
+	{% elseif form_data.tag == 'textarea' %}
+		{{ _self.textarea(form_data) }}
 	{% elseif form_data[0] %}
 		{% for element in form_data %}
 			{{ _self.build_template(element) }}

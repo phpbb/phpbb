@@ -64,7 +64,7 @@ class acp_board
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
-						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
+						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'method' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
 
@@ -976,19 +976,52 @@ class acp_board
 	/**
 	* Select bump interval
 	*/
-	function bump_interval($value, $key)
+	public function bump_interval($value, $key): array
 	{
-		global $user;
+		global $language;
 
-		$s_bump_type = '';
+		$bump_type_options = [];
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
 		{
-			$selected = ($this->new_config['bump_type'] == $type) ? ' selected="selected"' : '';
-			$s_bump_type .= '<option value="' . $type . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$bump_type_options[] = [
+				'value'		=> $type,
+				'selected'	=> $this->new_config['bump_type'] == $type,
+				'label'		=> $language->lang($lang),
+			];
 		}
 
-		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'text',
+				'size'		=> 3,
+				'maxlength'	=> 4,
+				'name'		=> 'config[bump_interval]',
+				'value'		=> $value,
+			],
+			[
+				'tag'		=> 'select',
+				'name'		=> 'config[bump_type]',
+				'options'	=> $bump_type_options,
+			],
+		];
+	}
+
+	/**
+	 * Wrapper function for phpbb_language_select()
+	 *
+	 * @param string $default
+	 * @param array $langdata
+	 *
+	 * @return array
+	 */
+	public function language_select(string $default = '', array $langdata = []): array
+	{
+		global $db;
+
+		return phpbb_language_select($db, $default, $langdata);
 	}
 
 	/**
