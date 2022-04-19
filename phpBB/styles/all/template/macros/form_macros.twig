@@ -8,6 +8,7 @@
 			{% if form_data.maxlength %}maxlength="{{ form_data.maxlength }}"{% endif %}
 			{% if form_data.min %}min="{{ form_data.min }}"{% endif %}
 			{% if form_data.max %}max="{{ form_data.max }}"{% endif %}
+			{% if form_data.step %}step="{{ form_data.step }}"{% endif %}
 			{% if form_data.type == 'password' %}autocomplete="off"{% endif %}
 			{% if form_data.checked %}checked="checked"{% endif %}
 			{% if form_data.class %}class="{{ form_data.class }}"{% endif %}

@@ -160,20 +160,23 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 */
 function size_select_options($size_compare)
 {
-	global $user;
+	global $language;
 
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KIB'], $user->lang['MIB']);
+	$size_types_text = array($language->lang('BYTES'), $language->lang('KIB'), $language->lang('MIB'));
 	$size_types = array('b', 'kb', 'mb');
 
-	$s_size_options = '';
+	$size_options = [];
 
 	for ($i = 0, $size = count($size_types_text); $i < $size; $i++)
 	{
-		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
-		$s_size_options .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
+		$size_options[] = [
+			'value'		=> $size_types[$i],
+			'selected'	=> $size_compare == $size_types[$i],
+			'label'		=> $size_types_text[$i],
+		];
 	}
 
-	return $s_size_options;
+	return $size_options;
 }
 
 /**

@@ -794,7 +794,10 @@ class acp_attachments
 							'ASSIGNED_EXTENSIONS'	=> $assigned_extensions,
 
 							'S_CATEGORY_SELECT'			=> $this->category_select('special_category', $group_id, 'category'),
-							'S_EXT_GROUP_SIZE_OPTIONS'	=> size_select_options($size_format),
+							'EXT_GROUP_SIZE_OPTIONS'	=> [
+								'name'		=> 'size_select',
+								'options'	=> size_select_options($size_format),
+							],
 							'S_EXTENSION_OPTIONS'		=> $s_extension_options,
 							'S_FILENAME_LIST'			=> $filename_list,
 							'S_EDIT_GROUP'				=> true,
@@ -1723,8 +1726,23 @@ class acp_attachments
 		$size_var = $filesize['si_identifier'];
 		$value = $filesize['value'];
 
-		// size and maxlength must not be specified for input of type number
-		return '<input type="number" id="' . $key . '" min="0" max="999999999999999" step="any" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'number',
+				'name'		=> 'config[' . $key . ']',
+				'min'		=> 0,
+				'max'		=> 999999999999999,
+				'step'		=> 'any',
+				'value'		=> $value,
+			],
+			[
+				'tag'		=> 'select',
+				'name'		=> $key,
+				'options'	=> size_select_options($size_var),
+			]
+		];
 	}
 
 	/**
