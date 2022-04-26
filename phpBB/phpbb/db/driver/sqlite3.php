@@ -242,11 +242,19 @@ class sqlite3 extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
-	public function sql_nextid()
+	 * {@inheritDoc}
+	 */
+	function sql_nextid()
 	{
 		return ($this->db_connect_id) ? $this->dbo->lastInsertRowID() : false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
+	{
+		return $this->sql_nextid();
 	}
 
 	/**

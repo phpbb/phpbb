@@ -289,11 +289,19 @@ class mysqli extends \phpbb\db\driver\mysql_base
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_nextid()
 	{
 		return ($this->db_connect_id) ? @mysqli_insert_id($this->db_connect_id) : false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
+	{
+		return $this->sql_nextid();
 	}
 
 	/**

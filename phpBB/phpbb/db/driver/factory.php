@@ -314,9 +314,17 @@ class factory implements driver_interface
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * {@inheritdoc}
+	 */
 	public function sql_nextid()
+	{
+		return $this->get_driver()->sql_nextid();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
 	{
 		return $this->get_driver()->sql_nextid();
 	}

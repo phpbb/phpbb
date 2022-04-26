@@ -289,11 +289,36 @@ interface driver_interface
 	public function cast_expr_to_bigint($expression);
 
 	/**
-	* Get last inserted id after insert statement
-	*
-	* @return	string		Autoincrement value of the last inserted row
-	*/
+	 * Gets the ID of the **last** inserted row immediately after an INSERT
+	 * statement.
+	 *
+	 * **Note**: Despite the name, the returned ID refers to the row that has
+	 * just been inserted, rather than the hypothetical ID of the next row if a
+	 * new one was to be inserted.
+	 *
+	 * The returned value can be used for selecting the item that has just been
+	 * inserted or for updating another table with an ID pointing to that item.
+	 *
+	 * Will be deprecated in a future version of phpBB in favor of
+	 * `sql_last_inserted_id`.
+	 *
+	 * @return	string|false	Auto-incremented value of the last inserted row
+	 */
 	public function sql_nextid();
+
+	/**
+	 * Gets the ID of the last inserted row immediately after an INSERT
+	 * statement. The returned value can be used for selecting the item that has
+	 * just been inserted or for updating another table with an ID pointing to
+	 * that item.
+	 *
+	 * Alias of `sql_nextid`.
+	 *
+	 * @return	string|false	Auto-incremented value of the last inserted row
+	 *
+	 * @since 3.3.8-RC1
+	 */
+	public function sql_last_inserted_id();
 
 	/**
 	* Add to query count

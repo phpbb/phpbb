@@ -342,8 +342,8 @@ class postgres extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
+	 * {@inheritDoc}
+	 */
 	function sql_nextid()
 	{
 		$query_id = $this->query_result;
@@ -368,6 +368,14 @@ class postgres extends \phpbb\db\driver\driver
 		}
 
 		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
+	{
+		return $this->sql_nextid();
 	}
 
 	/**
