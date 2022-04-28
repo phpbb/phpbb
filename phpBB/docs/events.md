@@ -2537,13 +2537,6 @@ ucp_main_bookmarks_topic_title_after
 * Since: 3.3.8-RC1
 * Purpose: Add content right after the topic title viewing UCP bookmarks
 
-ucp_main_subscribed_topic_title_after
-===
-* Locations:
-    + styles/prosilver/template/ucp_main_subscribed.html
-* Since: 3.3.8-RC1
-* Purpose: Add content right after the topic title viewing UCP subscribed topics
-
 ucp_main_front_user_activity_after
 ===
 * Locations:
@@ -2571,6 +2564,13 @@ ucp_main_front_user_activity_prepend
     + styles/prosilver/template/ucp_main_front.html
 * Since: 3.1.11-RC1
 * Purpose: Add content before first user activity info viewing UCP front page
+
+ucp_main_subscribed_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_subscribed.html
+* Since: 3.3.8-RC1
+* Purpose: Add content right after the topic title viewing UCP subscribed topics
 
 ucp_pm_history_post_buttons_after
 ===
