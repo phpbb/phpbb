@@ -2530,6 +2530,20 @@ ucp_header_friends_online_username_full_prepend
 * Since: 3.2.10-RC1
 * Purpose: Prepend information to online friends username in UCP
 
+ucp_main_bookmarks_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_bookmarks.html
+* Since: 3.3.8-RC1
+* Purpose: Add content right after the topic title viewing UCP bookmarks
+
+ucp_main_subscribed_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_subscribed.html
+* Since: 3.3.8-RC1
+* Purpose: Add content right after the topic title viewing UCP subscribed topics
+
 ucp_main_front_user_activity_after
 ===
 * Locations:
