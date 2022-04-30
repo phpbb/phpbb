@@ -320,8 +320,8 @@ class messenger
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars(array(
 			'U_BOARD'	=> generate_board_url(),
-			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'], ENT_COMPAT)),
-			'SITENAME'	=> htmlspecialchars_decode($config['sitename'], ENT_COMPAT),
+			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)),
+			'SITENAME'	=> html_entity_decode($config['sitename'], ENT_COMPAT),
 		));
 
 		$subject = $this->subject;
@@ -427,7 +427,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = htmlspecialchars_decode($request->server('PHP_SELF'), ENT_COMPAT);
+		$calling_page = html_entity_decode($request->server('PHP_SELF'), ENT_COMPAT);
 
 		switch ($type)
 		{
@@ -557,7 +557,7 @@ class messenger
 			$use_queue = true;
 		}
 
-		$contact_name = htmlspecialchars_decode($config['board_contact_name'], ENT_COMPAT);
+		$contact_name = html_entity_decode($config['board_contact_name'], ENT_COMPAT);
 		$board_contact = (($contact_name !== '') ? '"' . mail_encode($contact_name) . '" ' : '') . '<' . $config['board_contact'] . '>';
 
 		$break = false;
@@ -691,7 +691,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], htmlspecialchars_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
+			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], html_entity_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
 
 			if (!$this->jabber->connect())
 			{
@@ -891,7 +891,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], htmlspecialchars_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], html_entity_decode($config['jab_password'], ENT_COMPAT), $config['jab_use_ssl'], $config['jab_verify_peer'], $config['jab_verify_peer_name'], $config['jab_allow_self_signed']);
 
 					if (!$this->jabber->connect())
 					{
@@ -1208,7 +1208,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	}
 
 	// Let me in. This function handles the complete authentication process
-	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], htmlspecialchars_decode($config['smtp_password'], ENT_COMPAT), $config['smtp_auth_method']))
+	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], html_entity_decode($config['smtp_password'], ENT_COMPAT), $config['smtp_auth_method']))
 	{
 		$smtp->close_session($err_msg);
 		return false;

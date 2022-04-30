@@ -262,13 +262,13 @@ class message
 				$messenger->headers('X-AntiAbuse: Username - ' . $this->sender_username);
 			}
 
-			$messenger->subject(htmlspecialchars_decode($this->subject, ENT_COMPAT));
+			$messenger->subject(html_entity_decode($this->subject, ENT_COMPAT));
 
 			$messenger->assign_vars(array(
 				'BOARD_CONTACT'	=> $contact,
-				'TO_USERNAME'	=> htmlspecialchars_decode($recipient['to_name'], ENT_COMPAT),
-				'FROM_USERNAME'	=> htmlspecialchars_decode($this->sender_name, ENT_COMPAT),
-				'MESSAGE'		=> htmlspecialchars_decode($this->body, ENT_COMPAT))
+				'TO_USERNAME'	=> html_entity_decode($recipient['to_name'], ENT_COMPAT),
+				'FROM_USERNAME'	=> html_entity_decode($this->sender_name, ENT_COMPAT),
+				'MESSAGE'		=> html_entity_decode($this->body, ENT_COMPAT))
 			);
 
 			if (count($this->template_vars))

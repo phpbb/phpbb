@@ -208,7 +208,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	if (empty($user->browser) || ((strpos(strtolower($user->browser), 'msie') !== false) && !phpbb_is_greater_ie_version($user->browser, 7)))
 	{
-		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'], ENT_COMPAT)));
+		header('Content-Disposition: attachment; ' . header_filename(html_entity_decode($attachment['real_filename'], ENT_COMPAT)));
 		if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
 		{
 			header('Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT');
@@ -216,7 +216,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 	else
 	{
-		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'], ENT_COMPAT)));
+		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(html_entity_decode($attachment['real_filename'], ENT_COMPAT)));
 		if (phpbb_is_greater_ie_version($user->browser, 7) && (strpos($attachment['mimetype'], 'image') !== 0))
 		{
 			header('X-Download-Options: noopen');
@@ -327,7 +327,7 @@ function download_allowed()
 		return true;
 	}
 
-	$url = htmlspecialchars_decode($request->header('Referer'), ENT_COMPAT);
+	$url = html_entity_decode($request->header('Referer'), ENT_COMPAT);
 
 	if (!$url)
 	{
