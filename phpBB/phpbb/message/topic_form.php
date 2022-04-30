@@ -122,7 +122,7 @@ class topic_form extends form
 
 		$this->message->set_template('email_notify');
 		$this->message->set_template_vars(array(
-			'TOPIC_NAME'	=> htmlspecialchars_decode($this->topic_row['topic_title'], ENT_COMPAT),
+			'TOPIC_NAME'	=> html_entity_decode($this->topic_row['topic_title'], ENT_COMPAT),
 			'U_TOPIC'		=> generate_board_url() . '/viewtopic.' . $this->phpEx . '?t=' . $this->topic_id,
 		));
 		$this->message->set_body($this->body);

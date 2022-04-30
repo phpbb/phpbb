@@ -83,7 +83,7 @@ class ldap extends base
 
 		if ($this->config['ldap_user'] || $this->config['ldap_password'])
 		{
-			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user'], ENT_COMPAT), htmlspecialchars_decode($this->config['ldap_password'], ENT_COMPAT)))
+			if (!@ldap_bind($ldap, html_entity_decode($this->config['ldap_user'], ENT_COMPAT), html_entity_decode($this->config['ldap_password'], ENT_COMPAT)))
 			{
 				return $this->language->lang('LDAP_INCORRECT_USER_PASSWORD');
 			}
@@ -92,11 +92,11 @@ class ldap extends base
 		// ldap_connect only checks whether the specified server is valid, so the connection might still fail
 		$search = @ldap_search(
 			$ldap,
-			htmlspecialchars_decode($this->config['ldap_base_dn'], ENT_COMPAT),
+			html_entity_decode($this->config['ldap_base_dn'], ENT_COMPAT),
 			$this->ldap_user_filter($this->user->data['username']),
 			(empty($this->config['ldap_email'])) ?
-				array(htmlspecialchars_decode($this->config['ldap_uid'], ENT_COMPAT)) :
-				array(htmlspecialchars_decode($this->config['ldap_uid'], ENT_COMPAT), htmlspecialchars_decode($this->config['ldap_email'], ENT_COMPAT)),
+				array(html_entity_decode($this->config['ldap_uid'], ENT_COMPAT)) :
+				array(html_entity_decode($this->config['ldap_uid'], ENT_COMPAT), html_entity_decode($this->config['ldap_email'], ENT_COMPAT)),
 			0,
 			1
 		);
@@ -115,7 +115,7 @@ class ldap extends base
 			return $this->language->lang('LDAP_NO_IDENTITY', $this->user->data['username']);
 		}
 
-		if (!empty($this->config['ldap_email']) && !isset($result[0][htmlspecialchars_decode($this->config['ldap_email'])]))
+		if (!empty($this->config['ldap_email']) && !isset($result[0][html_entity_decode($this->config['ldap_email'])]))
 		{
 			return $this->language->lang('LDAP_NO_EMAIL');
 		}
@@ -180,7 +180,7 @@ class ldap extends base
 
 		if ($this->config['ldap_user'] || $this->config['ldap_password'])
 		{
-			if (!@ldap_bind($ldap, htmlspecialchars_decode($this->config['ldap_user'], ENT_COMPAT), htmlspecialchars_decode($this->config['ldap_password'], ENT_COMPAT)))
+			if (!@ldap_bind($ldap, html_entity_decode($this->config['ldap_user'], ENT_COMPAT), html_entity_decode($this->config['ldap_password'], ENT_COMPAT)))
 			{
 				return array(
 					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -192,11 +192,11 @@ class ldap extends base
 
 		$search = @ldap_search(
 			$ldap,
-			htmlspecialchars_decode($this->config['ldap_base_dn'], ENT_COMPAT),
+			html_entity_decode($this->config['ldap_base_dn'], ENT_COMPAT),
 			$this->ldap_user_filter($username),
 			(empty($this->config['ldap_email'])) ?
-				array(htmlspecialchars_decode($this->config['ldap_uid'], ENT_COMPAT)) :
-				array(htmlspecialchars_decode($this->config['ldap_uid'], ENT_COMPAT), htmlspecialchars_decode($this->config['ldap_email'], ENT_COMPAT)),
+				array(html_entity_decode($this->config['ldap_uid'], ENT_COMPAT)) :
+				array(html_entity_decode($this->config['ldap_uid'], ENT_COMPAT), html_entity_decode($this->config['ldap_email'], ENT_COMPAT)),
 			0,
 			1
 		);
@@ -205,7 +205,7 @@ class ldap extends base
 
 		if (is_array($ldap_result) && count($ldap_result) > 1)
 		{
-			if (@ldap_bind($ldap, $ldap_result[0]['dn'], htmlspecialchars_decode($password, ENT_COMPAT)))
+			if (@ldap_bind($ldap, $ldap_result[0]['dn'], html_entity_decode($password, ENT_COMPAT)))
 			{
 				@ldap_close($ldap);
 
@@ -257,7 +257,7 @@ class ldap extends base
 					$ldap_user_row = array(
 						'username'		=> $username,
 						'user_password'	=> '',
-						'user_email'	=> (!empty($this->config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][htmlspecialchars_decode($this->config['ldap_email'], ENT_COMPAT)][0]) : '',
+						'user_email'	=> (!empty($this->config['ldap_email'])) ? utf8_htmlspecialchars($ldap_result[0][html_entity_decode($this->config['ldap_email'], ENT_COMPAT)][0]) : '',
 						'group_id'		=> (int) $row['group_id'],
 						'user_type'		=> USER_NORMAL,
 						'user_ip'		=> $this->user->ip,
@@ -337,7 +337,7 @@ class ldap extends base
 	 */
 	private function ldap_user_filter($username)
 	{
-		$filter = '(' . $this->config['ldap_uid'] . '=' . $this->ldap_escape(htmlspecialchars_decode($username, ENT_COMPAT)) . ')';
+		$filter = '(' . $this->config['ldap_uid'] . '=' . $this->ldap_escape(html_entity_decode($username, ENT_COMPAT)) . ')';
 		if ($this->config['ldap_user_filter'])
 		{
 			$_filter = ($this->config['ldap_user_filter'][0] == '(' && substr($this->config['ldap_user_filter'], -1) == ')') ? $this->config['ldap_user_filter'] : "({$this->config['ldap_user_filter']})";

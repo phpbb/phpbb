@@ -122,8 +122,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->messenger->set_addresses($user->data);
 
 		$this->messenger->assign_vars(array(
-			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'], ENT_COMPAT)),
-			'SITENAME'	=> htmlspecialchars_decode($config['sitename'], ENT_COMPAT),
+			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)),
+			'SITENAME'	=> html_entity_decode($config['sitename'], ENT_COMPAT),
 
 			'AUTHOR_NAME'				=> $author_name,
 			'FORUM_NAME'				=> $forum_name,
@@ -142,8 +142,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->assertStringContainsString($forum_name, $msg);
 		$this->assertStringContainsString($topic_title, $msg);
 		$this->assertStringContainsString($username, $msg);
-		$this->assertStringContainsString(htmlspecialchars_decode($config['sitename'], ENT_COMPAT), $msg);
-		$this->assertStringContainsString(str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'], ENT_COMPAT)), $msg);
+		$this->assertStringContainsString(html_entity_decode($config['sitename'], ENT_COMPAT), $msg);
+		$this->assertStringContainsString(str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)), $msg);
 		$this->assertStringNotContainsString('EMAIL_SIG', $msg);
 		$this->assertStringNotContainsString('U_STOP_WATCHING_FORUM', $msg);
 	}

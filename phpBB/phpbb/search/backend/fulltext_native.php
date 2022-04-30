@@ -1786,7 +1786,7 @@ class fulltext_native extends base implements search_backend_interface
 		/**
 		* Replace HTML entities and NCRs
 		*/
-		$text = htmlspecialchars_decode(utf8_decode_ncr($text), ENT_QUOTES);
+		$text = html_entity_decode(utf8_decode_ncr($text), ENT_QUOTES);
 
 		/**
 		* Normalize to NFC
