@@ -442,7 +442,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'smtp_auth_method' => true,
 			'smtp_delivery' => true,
 			'topics_per_page' => true,
-			'tpl_allow_php' => true,
 			'version' => true,
 			'warnings_expire_days' => true,
 			'warnings_gc' => true,

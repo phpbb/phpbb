@@ -34,11 +34,8 @@ class lexer extends \Twig\Lexer
 			'UNDEFINE',*/
 			'ENDDEFINE',
 			'INCLUDE',
-			'INCLUDEPHP',
 			'INCLUDEJS',
 			'INCLUDECSS',
-			'PHP',
-			'ENDPHP',
 			'EVENT',
 		);
 
@@ -79,20 +76,17 @@ class lexer extends \Twig\Lexer
 		// Fix tokens that may have inline variables (e.g. <!-- DEFINE $TEST = '{FOO}')
 		$code = $this->strip_surrounding_quotes(array(
 			'INCLUDE',
-			'INCLUDEPHP',
 			'INCLUDEJS',
 			'INCLUDECSS',
 		), $code);
 		$code = $this->fix_inline_variable_tokens(array(
 			'DEFINE \$[a-zA-Z0-9_]+ =',
 			'INCLUDE',
-			'INCLUDEPHP',
 			'INCLUDEJS',
 			'INCLUDECSS',
 		), $code);
 		$code = $this->add_surrounding_quotes(array(
 			'INCLUDE',
-			'INCLUDEPHP',
 			'INCLUDEJS',
 			'INCLUDECSS',
 		), $code);
