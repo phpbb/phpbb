@@ -396,23 +396,25 @@ class ucp_main
 						if ($row['forum_last_post_id'])
 						{
 							$last_post_time = $user->format_date($row['forum_last_post_time']);
+							$last_post_time_rfc3339 = gmdate(DATE_RFC3339, $row['forum_last_post_time']);
 							$last_post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=" . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 						}
 						else
 						{
-							$last_post_time = $last_post_url = '';
+							$last_post_time = $last_post_time_rfc3339 = $last_post_url = '';
 						}
 
 						$template_vars = array(
-							'FORUM_ID'				=> $forum_id,
-							'FORUM_IMG_STYLE'		=> $folder_image,
-							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
-							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
-							'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
-							'FORUM_NAME'			=> $row['forum_name'],
-							'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
-							'LAST_POST_SUBJECT'		=> $row['forum_last_post_subject'],
-							'LAST_POST_TIME'		=> $last_post_time,
+							'FORUM_ID'					=> $forum_id,
+							'FORUM_IMG_STYLE'			=> $folder_image,
+							'FORUM_FOLDER_IMG'			=> $user->img($folder_image, $folder_alt),
+							'FORUM_IMAGE'				=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+							'FORUM_IMAGE_SRC'			=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
+							'FORUM_NAME'				=> $row['forum_name'],
+							'FORUM_DESC'				=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
+							'LAST_POST_SUBJECT'			=> $row['forum_last_post_subject'],
+							'LAST_POST_TIME'			=> $last_post_time,
+							'LAST_POST_TIME_RFC3339'	=> $last_post_time_rfc3339,
 
 							'LAST_POST_AUTHOR'			=> get_username_string('username', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 							'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
