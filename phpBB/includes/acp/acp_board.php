@@ -1052,11 +1052,15 @@ class acp_board
 	*/
 	function timezone_select($value, $key)
 	{
-		global $template, $user;
+		global $user;
 
-		$timezone_select = phpbb_timezone_select($template, $user, $value, true);
+		$timezone_select = phpbb_timezone_select($user, $value, true);
 
-		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select . '</select>';
+		return [
+			'tag'			=> 'select',
+			'name'			=> 'config[' . $key . ']',
+			'options'		=> $timezone_select,
+		];
 	}
 
 	/**

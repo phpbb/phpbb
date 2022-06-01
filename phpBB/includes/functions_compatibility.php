@@ -111,9 +111,9 @@ function phpbb_clean_path($path)
 */
 function tz_select($default = '', $truncate = false)
 {
-	global $template, $user;
+	global $user;
 
-	return phpbb_timezone_select($template, $user, $default, $truncate);
+	return phpbb_timezone_select($user, $default, $truncate);
 }
 
 /**

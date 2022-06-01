@@ -626,7 +626,7 @@ class ucp_register
 		}
 
 		// Assign template vars for timezone select
-		phpbb_timezone_select($template, $user, $data['tz'], true);
+		$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 
 		// Checking amount of available languages
 		$sql = 'SELECT lang_iso, lang_local_name
@@ -652,6 +652,11 @@ class ucp_register
 				'id'		=> 'lang',
 				'name'		=> 'lang',
 				'options'	=> $lang_options,
+			],
+			'TIMEZONE_OPTIONS'	=> [
+				'tag'		=> 'select',
+				'name'		=> 'tz',
+				'options'	=> $timezone_select,
 			],
 			'S_TZ_PRESELECT'	=> !$submit,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,

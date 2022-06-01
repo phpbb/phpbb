@@ -37,10 +37,30 @@
 	<label>{{ _self.input(form_data.buttons[1]) ~ form_data.buttons[1].label }}</label>
 {% endmacro %}
 
-{% macro select(form_data) %}
-	<select {% if form_data.id %}id="{{ form_data.id }}"{% endif %} name="{{ form_data.name }}"{% if form_data.toggleable %} data-togglable-settings="true"{% endif %}>
-		{% for option in form_data.options %}
-			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+{% macro select(form_data, class, id, name, group_only) %}
+	{% apply  replace({"\n": ' ', '\t': ''}) %}
+		<select
+			{% if id %}id="{{ id }}"{% endif %}
+			{% if class %}class="{{ class }}"{% endif %}
+			name="{% if name %}{{ name }}{% else %}{{ form_data.name }}{% endif %}"
+			{% if form_data.toggleable %}data-togglable-settings="true"{% endif %}>
+	{% endapply %}
+		{% for element in form_data.options %}
+			{% if not group_only and element.options %}
+				{% apply  replace({"\n": ' ', '\t': ''}) %}
+					<optgroup
+						label="{{ element.label }}"
+					{% for key, value in element.data %}
+						data-{{ key }}="{{ value }}"
+					{% endfor %}>
+				{% endapply %}
+					{% for option in element.options %}
+						<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+					{% endfor %}
+				</optgroup>
+			{% else %}
+				<option value="{{ element.value }}"{% if element.selected %} selected="selected"{% endif %}>{{ element.label }}</option>
+			{% endif %}
 		{% endfor %}
 	</select>
 {% endmacro %}

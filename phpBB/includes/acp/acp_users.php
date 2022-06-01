@@ -1795,7 +1795,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 				$lang_options = phpbb_language_select($db, $data['lang']);
 
 				$user_prefs_data = array(
@@ -1839,6 +1839,11 @@ class acp_users
 						'options'	=> $lang_options,
 					],
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
 				);
 
 				/**

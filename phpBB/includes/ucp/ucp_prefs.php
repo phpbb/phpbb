@@ -156,7 +156,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT lang_iso, lang_local_name
@@ -206,6 +206,11 @@ class ucp_prefs
 						'options'	=> $lang_options,
 					],
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style'], false, $styles_row),
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
