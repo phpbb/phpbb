@@ -22,24 +22,24 @@
 				</dl>
 				{% endif %}
 			</div>
-			{% if .to_recipient or .bcc_recipient %}
+			{% if to_recipient or bcc_recipient %}
 				<hr>
 			{% endif %}
 			<div class="column1">
-				{% if .to_recipient %}
+				{% if to_recipient %}
 					<dl>
 						<dt><label>{{ lang('TO_MASS') ~ lang('COLON') }}</label></dt>
 						<dd class="recipients">
 							<ul class="recipients">
-								{% for to_recipient in .to_recipient %}
+								{% for recipient in to_recipient %}
 									<li>
 										{% if not S_EDIT_POST %}
-											<input type="submit" name="remove_{{ to_recipient.TYPE }}[{{ to_recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
 										{% endif %}
-										{% if to_recipient.IS_GROUP %}
-											<a href="{{ to_recipient.U_VIEW }}" style="color: {{ to_recipient.COLOUR }}"><strong>{{ to_recipient.NAME }}</strong></a>
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
 										{% else %}
-											{{ to_recipient.NAME_FULL }}
+											{{ recipient.NAME_FULL }}
 										{% endif %}
 									</li>
 								{% endfor %}
@@ -48,21 +48,21 @@
 					</dl>
 				{% endif %}
 			</div>
-			{% if .bcc_recipient %}
+			{% if bcc_recipient %}
 				<div class="column2">
 					<dl>
 						<dt><label>{{ lang('BCC') ~ lang('COLON') }}</label></dt>
 						<dd class="recipients">
 							<ul class="recipients">
-								{% for bcc_recipient in .bcc_recipient %}
+								{% for recipient in bcc_recipient %}
 									<li>
 										{% if not S_EDIT_POST %}
-											<input type="submit" name="remove_{{ bcc_recipient.TYPE }}[{{ bcc_recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
 										{% endif %}
-										{% if bcc_recipient.IS_GROUP %}
-											<a href="{{ bcc_recipient.U_VIEW }}" style="color: {{ bcc_recipient.COLOUR }}"><strong>{{ bcc_recipient.NAME }}</strong></a>
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
 										{% else %}
-											{{ bcc_recipient.NAME_FULL }}
+											{{ recipient.NAME_FULL }}
 										{% endif %}
 									</li>
 								{% endfor %}
@@ -85,18 +85,18 @@
 							<input class="inputbox" type="text" name="username_list" id="username_list" size="20" value=""> <input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold">
 						</dd>
 					{% endif %}
-					{% if .to_recipient %}
+					{% if to_recipient %}
 						<dd class="recipients">
 							<ul class="recipients">
-								{% for to_recipient in .to_recipient %}
+								{% for recipient in to_recipient %}
 									<li>
-										{% if to_recipient.IS_GROUP %}
-											<a href="{{ to_recipient.U_VIEW }}"><strong>{{ to_recipient.NAME }}</strong></a>
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}"><strong>{{ recipient.NAME }}</strong></a>
 										{% else %}
-											{{ to_recipient.NAME_FULL }}
+											{{ recipient.NAME_FULL }}
 										{% endif %}
 										{% if not S_EDIT_POST %}
-											&nbsp;<input type="submit" name="remove_{{ to_recipient.TYPE }}[{{ to_recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											&nbsp;<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
 										{% endif %}
 									</li>
 								{% endfor %}
