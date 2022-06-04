@@ -94,9 +94,9 @@
 											<a href="{{ to_recipient.U_VIEW }}"><strong>{{ to_recipient.NAME }}</strong></a>
 										{% else %}
 											{{ to_recipient.NAME_FULL }}
-										{% endif %}&nbsp;
+										{% endif %}
 										{% if not S_EDIT_POST %}
-											<input type="submit" name="remove_{{ to_recipient.TYPE }}[{{ to_recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											&nbsp;<input type="submit" name="remove_{{ to_recipient.TYPE }}[{{ to_recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
 										{% endif %}
 									</li>
 								{% endfor %}
