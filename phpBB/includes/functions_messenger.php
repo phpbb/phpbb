@@ -1882,7 +1882,7 @@ function mail_encode($str, $eol = "\r\n")
 	{
 		$encoded_char = $is_quoted_printable
 			? $char = preg_replace_callback(
-				'/[=_\?\x20\x00-\x1F\x80-\xFF]/',
+				'/[()<>@,;:\\\\".\[\]=_?\x20\x00-\x1F\x80-\xFF]/',
 				function ($matches)
 				{
 					$hex = dechex(ord($matches[0]));
