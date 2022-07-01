@@ -147,7 +147,7 @@
 						processData: false,
 						contentType: false,
 						success: $this.uploadDone,
-						error: () => {
+						error() {
 							console.log('Upload error');
 						},
 					}).done($this.uploadDone);
