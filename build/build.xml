@@ -362,6 +362,8 @@
 		<chmod mode="0777" file="${dir}/store" />
 		<chmod mode="0777" file="${dir}/files" />
 		<chmod mode="0777" file="${dir}/images/avatars/upload" />
+		<!-- set permissions of executable scripts to 755 -->
+		<chmod mode="0755" file="${dir}/bin/phpbbcli.php" />
 	</target>
 
 	<target name="clean-vendor-dir">
