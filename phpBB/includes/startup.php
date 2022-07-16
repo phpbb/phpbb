@@ -27,7 +27,7 @@ error_reporting($level);
 */
 if (version_compare(PHP_VERSION, '7.3.0', '<'))
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 7.3.0 or higher before trying to install or update to phpBB 4.0');
+	die('You are running an unsupported PHP version (' . PHP_VERSION . '). Please upgrade to PHP 7.3.0 or higher before trying to install or update to phpBB 4.0');
 }
 
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
