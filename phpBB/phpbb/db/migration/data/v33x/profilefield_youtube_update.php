@@ -30,7 +30,7 @@ class profilefield_youtube_update extends \phpbb\db\migration\migration
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return $row['field_validation'] === $this->youtube_url_matcher;
+		return !$row || $row['field_validation'] === $this->youtube_url_matcher;
 	}
 
 	public static function depends_on()
