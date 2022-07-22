@@ -495,7 +495,10 @@ class installer
 			'replace' => $core_replace,
 			'repositories' => $this->get_composer_repositories(),
 			'config' => [
-				'vendor-dir'=> $this->packages_vendor_dir,
+				'vendor-dir'	=> $this->packages_vendor_dir,
+				'allow-plugins'	=> [
+					'composer/installers' => true,
+				]
 			],
 			'minimum-stability' => $this->minimum_stability,
 		];
