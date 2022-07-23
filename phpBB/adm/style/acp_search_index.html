@@ -2,19 +2,6 @@
 
 <a id="maincontent"></a>
 
-<script>
-// <![CDATA[
-	/**
-	* Popup search progress bar
-	*/
-	function popup_progress_bar(progress_type)
-	{
-		close_waitscreen = 0;
-		// no scrollbars
-		popup('{{ UA_PROGRESS_BAR }}&amp;type=' + progress_type, 400, 240, '_index');
-	}
-// ]]>
-</script>
 
 <h1>{{ lang('ACP_SEARCH_INDEX') }}</h1>
 
@@ -65,10 +52,10 @@
 	<p class="quick">
 	{% if backend.S_INDEXED %}
 		<input type="hidden" name="action" value="delete" />
-		<input class="button2" type="submit" value="{{ lang('DELETE_INDEX') }}" onclick="popup_progress_bar('delete');" />
+		<input class="button2" type="submit" name="submit" value="{{ lang('DELETE_INDEX') }}" />
 	{% else %}
 		<input type="hidden" name="action" value="create" />
-		<input class="button2" type="submit" value="{{ lang('CREATE_INDEX') }}" onclick="popup_progress_bar('create');" />
+		<input class="button2" type="submit" name="submit" value="{{ lang('CREATE_INDEX') }}" />
 	{% endif %}
 	</p>
 	{{ S_FORM_TOKEN }}

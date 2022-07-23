@@ -2,23 +2,11 @@
 
 <a id="maincontent"></a>
 
-<script>
-    // <![CDATA[
-    /**
-     * Popup search progress bar
-     */
-    function popup_progress_bar(progress_type)
-    {
-        close_waitscreen = 0;
-        // no scrollbars
-        popup('{{ UA_PROGRESS_BAR }}&amp;type=' + progress_type, 400, 240, '_index');
-    }
-    // ]]>
-</script>
 
 <h1>{{ lang('CONTINUE') }}</h1>
 
 <p>{{ lang('CONTINUE_EXPLAIN') }}</p>
+{% if CONTINUE_PROGRESS %}<div class="centered-text" style="display: inline-block;">{{ CONTINUE_PROGRESS }}</div>{% endif %}
 
 <form id="acp_search_continue" method="post" action="{{ U_ACTION }}">
 	<fieldset>
