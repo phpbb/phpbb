@@ -45,7 +45,7 @@ class ucp_main
 				$user->add_lang('memberlist');
 
 				$sql_from = TOPICS_TABLE . ' t LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = t.forum_id) ';
-				$sql_select = ',f.enable_icons ';
+				$sql_select = ', f.enable_icons';
 
 				if ($config['load_db_track'])
 				{
@@ -179,9 +179,9 @@ class ucp_main
 						'TOPIC_TITLE'				=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'				=> $topic_type,
 
-						'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
-						'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
-						'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
+						'TOPIC_ICON_IMG'		=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['img'] : '',
+						'TOPIC_ICON_IMG_WIDTH'	=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['width'] : '',
+						'TOPIC_ICON_IMG_HEIGHT'	=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['height'] : '',
 						'TOPIC_IMG_STYLE'		=> $folder_img,
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
