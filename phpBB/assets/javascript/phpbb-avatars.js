@@ -128,17 +128,21 @@
 			$this.$form.on('submit', () => {
 				const data = phpbb.avatars.$data.data();
 
-				phpbb.avatars.cropper.getCroppedCanvas({
-					width: data.maxWidth,
-					height: data.maxHeight,
+				const avatarCanvas = phpbb.avatars.cropper.getCroppedCanvas({
 					maxWidth: 4096, // High values for max quality cropping
 					maxHeight: 4096, // High values for max quality cropping
-					imageSmoothingEnabled: false,
-					imageSmoothingQuality: 'high',
-				}).toBlob(blob => {
+				});
+
+				// eslint-disable-next-line no-undef
+				const hermiteResize = new Hermite_class();
+				hermiteResize.resample_single(avatarCanvas, data.maxWidth, data.maxHeight, true);
+
+				avatarCanvas.toBlob(blob => {
 					const formData = new FormData($this.$form[0]);
 					formData.set('avatar_upload_file', blob, $this.getUploadFileName());
 					formData.set('submit', '1');
+
+					const canvasDataUrl = avatarCanvas.toDataURL('image/png');
 
 					$.ajax({
 						url: $this.$form.attr('action'),
@@ -146,12 +150,14 @@
 						data: formData,
 						processData: false,
 						contentType: false,
-						success: $this.uploadDone,
+						success(response) {
+							$this.uploadDone(response, canvasDataUrl);
+						},
 						error() {
 							console.log('Upload error');
 						},
-					}).done($this.uploadDone);
-				}, 'image/png', 1);
+					});
+				}, 'image/png');
 
 				return false;
 			});
@@ -174,8 +180,9 @@
 		/**
 		 * Handle response from avatar submission
 		 * @param {Object} response AJAX response object
+		 * @param {string} canvasDataUrl Uploaded canvas element as data URL
 		 */
-		uploadDone(response) {
+		uploadDone(response, canvasDataUrl) {
 			if (typeof response !== 'object') {
 				return;
 			}
@@ -188,6 +195,8 @@
 					window.location = response.REFRESH_DATA.url.replace('&amp;', '&');
 					alert.hide();
 				}, response.REFRESH_DATA.time * 1000);
+
+				phpbb.avatars.image.attr('src', canvasDataUrl);
 				phpbb.avatars.destroy();
 			} else {
 				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
