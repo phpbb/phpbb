@@ -35,7 +35,7 @@ class ucp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $cache;
 		global $request;
 
 		switch ($mode)
@@ -44,8 +44,8 @@ class ucp_main
 
 				$user->add_lang('memberlist');
 
-				$sql_from = TOPICS_TABLE . ' t ';
-				$sql_select = '';
+				$sql_from = TOPICS_TABLE . ' t LEFT JOIN ' . FORUMS_TABLE . ' f ON (f.forum_id = t.forum_id) ';
+				$sql_select = ', f.enable_icons';
 
 				if ($config['load_db_track'])
 				{
@@ -137,6 +137,9 @@ class ucp_main
 				}
 				unset($topic_forum_list);
 
+				// Grab icons
+				$icons = $cache->obtain_icons();
+
 				foreach ($topic_list as $topic_id)
 				{
 					$row = &$rowset[$topic_id];
@@ -176,10 +179,14 @@ class ucp_main
 						'TOPIC_TITLE'				=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'				=> $topic_type,
 
+						'TOPIC_ICON_IMG'		=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['img'] : '',
+						'TOPIC_ICON_IMG_WIDTH'	=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['width'] : '',
+						'TOPIC_ICON_IMG_HEIGHT'	=> !empty($icons[$row['icon_id']]) ? $icons[$row['icon_id']]['height'] : '',
 						'TOPIC_IMG_STYLE'		=> $folder_img,
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 
+						'S_TOPIC_ICONS'		=> $row['enable_icons'] ? true : false,
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
 

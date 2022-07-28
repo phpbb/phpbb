@@ -29,7 +29,7 @@
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}
 						<span class="row-item-link-mine"></span>
 					{% endif%}
-					{% if topicrow.TOPIC_ICON_IMG and S_TOPIC_ICONS %}
+					{% if topicrow.TOPIC_ICON_IMG and topicrow.S_TOPIC_ICONS %}
 						<img class="row-item-sub" src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" alt="">
 					{% endif %}
 					<div class="list-inner">
