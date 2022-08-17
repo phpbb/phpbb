@@ -124,6 +124,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
 		$phpbb_container->setParameter('tables.notification_emails', 'phpbb_notification_emails');
+		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
 
 		$this->notifications = new phpbb_notification_manager_helper(
 			array(),
