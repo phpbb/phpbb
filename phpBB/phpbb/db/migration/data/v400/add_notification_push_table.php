@@ -52,4 +52,31 @@ class add_notification_push_table extends migration
 			'drop_tables' => [$this->table_prefix . 'notification_push'],
 		];
 	}
+
+	public function update_data(): array
+	{
+		return [
+			['config.add', ['webpush_vapid_public', '']],
+			['config.add', ['webpush_vapid_private', '']],
+			['module.add', [
+				'acp',
+				'ACP_BOARD_CONFIGURATION',
+				[
+					'module_basename'	=> 'acp_board',
+					'module_langname'	=> 'ACP_WEBPUSH_SETTINGS',
+					'module_mode'		=> 'webpush',
+					'module_auth'		=> 'acl_a_board',
+					'after'				=> ['settings', 'ACP_JABBER_SETTINGS'],
+				],
+			]],
+		];
+	}
+
+	public function revert_data(): array
+	{
+		return [
+			['config.remove', ['webpush_vapid_public']],
+			['config.remove', ['webpush_vapid_private']],
+		];
+	}
 }

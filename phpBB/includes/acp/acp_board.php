@@ -485,6 +485,19 @@ class acp_board
 				);
 			break;
 
+			case 'webpush':
+				$display_vars = [
+					'title'		=> 'ACP_WEBPUSH_SETTINGS',
+					'vars' 		=> [
+						'legend1'					=> 'GENERAL_SETTINGS',
+						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
+						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
+
+						'legend3'				=> 'ACP_SUBMIT_CHANGES',
+					],
+				];
+			break;
+
 			default:
 				trigger_error('NO_MODE', E_USER_ERROR);
 			break;

@@ -115,8 +115,61 @@ class webpush extends \phpbb\notification\method\messenger_base
 		$insert_buffer->flush();
 
 		// @todo: add actual web push code
+		$this->notify_using_webpush();
 
 		return false;
+	}
+
+	protected function notify_using_webpush()
+	{
+		if (empty($this->queue))
+		{
+			return;
+		}
+
+		// Load all users we want to notify (we need their email address)
+		$user_ids = [];
+		foreach ($this->queue as $notification)
+		{
+			$user_ids[] = $notification->user_id;
+		}
+
+		// We do not send emails to banned users
+		if (!function_exists('phpbb_get_banned_user_ids'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+		}
+		$banned_users = phpbb_get_banned_user_ids($user_ids);
+
+		// Load all the users we need
+		$this->user_loader->load_users(array_diff($user_ids, $banned_users), array(USER_IGNORE));
+
+		// Time to go through the queue and send emails
+		/** @var type_interface $notification */
+		foreach ($this->queue as $notification)
+		{
+			$user = $this->user_loader->get_user($notification->user_id);
+
+			if ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL)
+			{
+				continue;
+			}
+
+			// add actual web push data
+			$data['data'] = [
+				'badge'		=> '', // @todo: to be filled?
+				'body'		=> $notification->get_title(),
+				'icon'		=> '', // @todo: to be filled?
+				'image'		=> '', // @todo: to be filled?
+				'title'		=> $this->config['sitename'],
+				'url'		=> $notification->get_url(),
+			];
+
+			// @todo: start implementing actual web push code
+		}
+
+		// We're done, empty the queue
+		$this->empty_queue();
 	}
 
 	/**
