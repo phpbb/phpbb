@@ -219,6 +219,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 
+	'ACP_WEBPUSH_SETTINGS'		=> 'Webpush settings',
 	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',

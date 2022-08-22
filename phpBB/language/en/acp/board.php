@@ -599,6 +599,14 @@ $lang = array_merge($lang, array(
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));
 
+$lang = array_merge($lang, [
+	'ACP_WEBPUSH_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Webpush for board notifications. Webpush is a simple protocol for the delivery of real-time events to user agents, more commonly known as push messages. It is supported by most modern browsers on desktop and mobile devices.',
+	'WEBPUSH_VAPID_PUBLIC'			=> 'VAPID public key',
+	'WEBPUSH_VAPID_PUBLIC_EXPLAIN'	=> 'The VAPID public key will be shared to authenticate push messages sent by your site.<br><em><strong>Warning:</strong> Changing the VAPID public key will automatically invalidate all webpush subscriptions.</em>',
+	'WEBPUSH_VAPID_PRIVATE'			=> 'VAPID private key',
+	'WEBPUSH_VAPID_PRIVATE_EXPLAIN'	=> 'The VAPID private key will be used to create authenticated push messages sent by your site. The VAPID private key <strong>must</strong> be a valid public-private key pair with the VAPID public key.<br><em><strong>Warning:</strong> Changing the VAPID private key will automatically invalidate all webpush subscriptions.</em>',
+]);
+
 // Jabber settings
 $lang = array_merge($lang, array(
 	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Please be sure to enter already registered account details - phpBB will use the details you enter here as is.',
