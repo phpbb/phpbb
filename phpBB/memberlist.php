@@ -1711,7 +1711,8 @@ switch ($mode)
 			$id_cache = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$row = array_merge($row, !empty($session_ary[$row['user_id']]) ? $session_ary[$row['user_id']] : ['session_time' => 0, 'session_viewonline' => 0]);
+				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
+				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
 				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 				$id_cache[$row['user_id']] = $row;
