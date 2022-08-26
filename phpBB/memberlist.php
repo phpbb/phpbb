@@ -1634,17 +1634,20 @@ switch ($mode)
 		if (count($user_list))
 		{
 			// Session time?! Session time...
-			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time >= ' . (time() - $config['session_length']) . '
 					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
 			$result = $db->sql_query($sql);
 
-			$session_times = array();
+			$session_ary = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$session_times[$row['session_user_id']] = $row['session_time'];
+				$session_ary[$row['session_user_id']] = [
+					'session_time' => $row['session_time'],
+					'session_viewonline' => $row['session_viewonline'],
+				];
 			}
 			$db->sql_freeresult($result);
 
@@ -1708,7 +1711,8 @@ switch ($mode)
 			$id_cache = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
+				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
+				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
 				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 				$id_cache[$row['user_id']] = $row;
