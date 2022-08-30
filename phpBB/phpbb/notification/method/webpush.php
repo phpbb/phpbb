@@ -15,6 +15,7 @@ namespace phpbb\notification\method;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\json\sanitizer;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
 use phpbb\user_loader;
@@ -72,7 +73,8 @@ class webpush extends \phpbb\notification\method\messenger_base
 	*/
 	public function is_available(type_interface $notification_type = null): bool
 	{
-		return parent::is_available($notification_type) && $this->config['webpush_enable'] && !empty($this->user->data['user_push_subscriptions']);
+		return parent::is_available($notification_type) && $this->config['webpush_enable']
+			&& !empty($this->config['webpush_vapid_public']) && !empty($this->config['webpush_vapid_private']);
 	}
 
 	/**
@@ -114,13 +116,17 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 		$insert_buffer->flush();
 
-		// @todo: add actual web push code
 		$this->notify_using_webpush();
 
 		return false;
 	}
 
-	protected function notify_using_webpush()
+	/**
+	 * Notify using web push
+	 *
+	 * @return void
+	 */
+	protected function notify_using_webpush(): void
 	{
 		if (empty($this->queue))
 		{
@@ -144,28 +150,58 @@ class webpush extends \phpbb\notification\method\messenger_base
 		// Load all the users we need
 		$this->user_loader->load_users(array_diff($user_ids, $banned_users), array(USER_IGNORE));
 
+		$web_push = new \Minishlink\WebPush\WebPush();
+
 		// Time to go through the queue and send emails
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
 			$user = $this->user_loader->get_user($notification->user_id);
 
-			if ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL)
+			$user_subscriptions = sanitizer::decode($this->user->data['user_push_subscriptions']);
+
+			if ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL
+				|| empty($user_subscriptions))
 			{
 				continue;
 			}
 
 			// add actual web push data
 			$data['data'] = [
-				'badge'		=> '', // @todo: to be filled?
 				'body'		=> $notification->get_title(),
 				'icon'		=> '', // @todo: to be filled?
 				'image'		=> '', // @todo: to be filled?
 				'title'		=> $this->config['sitename'],
 				'url'		=> $notification->get_url(),
+				'user_id'	=> $notification->user_id,
 			];
+			$json_data = json_encode($data);
 
 			// @todo: start implementing actual web push code
+
+			foreach ($user_subscriptions as $subscription)
+			{
+				try
+				{
+					$push_subscription = \Minishlink\WebPush\Subscription::create($subscription);
+					$web_push->queueNotification($push_subscription, $json_data);
+				}
+				catch (\ErrorException $exception)
+				{
+					// @todo: decide whether we want to remove invalid subscriptions directly?
+					// Might need too many resources ...
+				}
+			}
+		}
+
+		// @todo: Try offloading to after request
+		try
+		{
+			$web_push->flush();
+		}
+		catch (\ErrorException $exception)
+		{
+			// @todo: Add to error log if we can't flush ...
 		}
 
 		// We're done, empty the queue
