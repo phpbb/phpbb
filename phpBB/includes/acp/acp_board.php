@@ -19,6 +19,7 @@
 * @ignore
 */
 
+use Minishlink\WebPush\VAPID;
 use phpbb\config\config;
 use phpbb\language\language;
 use phpbb\user;
@@ -490,6 +491,7 @@ class acp_board
 					'title'		=> 'ACP_WEBPUSH_SETTINGS',
 					'vars' 		=> [
 						'legend1'					=> 'GENERAL_SETTINGS',
+						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
 						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
 
@@ -533,6 +535,27 @@ class acp_board
 				if (!preg_match('#^[a-z][a-z0-9+\\-.]*$#Di', $scheme))
 				{
 					$error[] = $this->language->lang('URL_SCHEME_INVALID', $this->language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
+				}
+			}
+		}
+
+		if ($mode == 'webpush')
+		{
+			// Create VAPID keys if keys are empty and web push is enabled
+			if ($submit && $cfg_array['webpush_enable'] && $cfg_array['webpush_enable'] != $config['webpush_enable']
+				&& empty($cfg_array['webpush_vapid_public']) && empty($cfg_array['webpush_vapid_private'])
+				&& empty($config['webpush_vapid_public']) && empty($config['webpush_vapid_private']))
+			{
+				try
+				{
+					$vapid_keys = VAPID::createVapidKeys();
+					$cfg_array['webpush_vapid_public'] = $vapid_keys['publicKey'];
+					$cfg_array['webpush_vapid_private'] = $vapid_keys['privateKey'];
+				}
+				catch (\ErrorException $exception)
+				{
+					// Nothing we can do about this, user will have to follow the
+					// documentation and manually create these.
 				}
 			}
 		}

@@ -13,9 +13,10 @@
 
 namespace phpbb\db\migration\data\v400;
 
+use Minishlink\WebPush\VAPID;
 use phpbb\db\migration\migration;
 
-class add_notification_push_table extends migration
+class add_webpush extends migration
 {
 	public static function depends_on(): array
 	{
@@ -56,6 +57,7 @@ class add_notification_push_table extends migration
 	public function update_data(): array
 	{
 		return [
+			['config.add', ['webpush_enable', false]],
 			['config.add', ['webpush_vapid_public', '']],
 			['config.add', ['webpush_vapid_private', '']],
 			['module.add', [
@@ -75,8 +77,10 @@ class add_notification_push_table extends migration
 	public function revert_data(): array
 	{
 		return [
+			['config.remove', ['webpush_enable']],
 			['config.remove', ['webpush_vapid_public']],
 			['config.remove', ['webpush_vapid_private']],
+			['module.remove', ['acp', 'ACP_BOARD_CONFIGURATION', 'ACP_WEBPUSH_SETTINGS']]
 		];
 	}
 }
