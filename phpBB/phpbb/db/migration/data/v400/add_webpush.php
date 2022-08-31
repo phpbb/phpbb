@@ -44,6 +44,13 @@ class add_webpush extends migration
 					'PRIMARY_KEY' => ['notification_type_id', 'item_id', 'item_parent_id', 'user_id'],
 				],
 			],
+			'add_columns'	=> [
+				$this->table_prefix . 'users' => [
+					'COLUMNS'	=> [
+						'user_push_subscriptions'	=> ['MTEXT_UNI', '']
+					],
+				],
+			],
 		];
 	}
 

@@ -168,16 +168,14 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 			// add actual web push data
 			$data['data'] = [
+				'title'		=> $this->config['sitename'],
 				'body'		=> $notification->get_title(),
 				'icon'		=> '', // @todo: to be filled?
 				'image'		=> '', // @todo: to be filled?
-				'title'		=> $this->config['sitename'],
 				'url'		=> $notification->get_url(),
 				'user_id'	=> $notification->user_id,
 			];
 			$json_data = json_encode($data);
-
-			// @todo: start implementing actual web push code
 
 			foreach ($user_subscriptions as $subscription)
 			{
