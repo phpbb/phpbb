@@ -141,7 +141,7 @@ class user_loader
 		{
 			$this->load_users(array($user_id));
 
-			return $this->get_user($user_id);
+			return $user_id != ANONYMOUS ? $this->get_user($user_id) : $this->users[$user_id] ?? false;
 		}
 
 		return $this->get_user(ANONYMOUS);
