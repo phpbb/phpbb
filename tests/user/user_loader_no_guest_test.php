@@ -11,14 +11,14 @@
 *
 */
 
-class phpbb_user_loader_test extends phpbb_database_test_case
+class phpbb_user_loader_no_guest_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $user_loader;
 
 	public function getDataSet()
 	{
-		return $this->createXMLDataSet(__DIR__ . '/fixtures/user_loader.xml');
+		return $this->createXMLDataSet(__DIR__ . '/fixtures/user_loader_no_guest.xml');
 	}
 
 	protected function setUp(): void
@@ -34,8 +34,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		$this->user_loader->load_users(array(2));
 
 		$user = $this->user_loader->get_user(1);
-		$this->assertEquals(1, $user['user_id']);
-		$this->assertEquals('Guest', $user['username']);
+		$this->assertFalse($user);
 
 		$user = $this->user_loader->get_user(2);
 		$this->assertEquals(2, $user['user_id']);
@@ -47,8 +46,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		$this->user_loader->load_users(array(2));
 
 		$user = $this->user_loader->get_user(3);
-		$this->assertEquals(1, $user['user_id']);
-		$this->assertEquals('Guest', $user['username']);
+		$this->assertFalse($user);
 
 		$user = $this->user_loader->get_user(3, true);
 		$this->assertEquals(3, $user['user_id']);
@@ -60,8 +58,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		$this->user_loader->load_users(array(2));
 
 		$user = $this->user_loader->get_user(9);
-		$this->assertEquals(1, $user['user_id']);
-		$this->assertEquals('Guest', $user['username']);
+		$this->assertFalse($user);
 
 		$user = $this->user_loader->get_user(3, true);
 		$this->assertEquals(3, $user['user_id']);
@@ -73,8 +70,7 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		$this->user_loader->load_users(array(2));
 
 		$user = $this->user_loader->get_user(9, true);
-		$this->assertEquals(1, $user['user_id']);
-		$this->assertEquals('Guest', $user['username']);
+		$this->assertFalse($user);
 
 		$user = $this->user_loader->get_user(3, true);
 		$this->assertEquals(3, $user['user_id']);
