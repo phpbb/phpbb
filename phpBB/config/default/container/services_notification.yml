@@ -255,3 +255,4 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables.notification_push%'
+            - '%tables.push_subscriptions%'

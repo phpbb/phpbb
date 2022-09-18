@@ -51,6 +51,7 @@ parameters:
     tables.profile_fields_data: '%core.table_prefix%profile_fields_data'
     tables.profile_fields_options_language: '%core.table_prefix%profile_fields_lang'
     tables.profile_fields_language: '%core.table_prefix%profile_lang'
+    tables.push_subscriptions: '%core.table_prefix%push_subscriptions'
     tables.ranks: '%core.table_prefix%ranks'
     tables.reports: '%core.table_prefix%reports'
     tables.reports_reasons: '%core.table_prefix%reports_reasons'

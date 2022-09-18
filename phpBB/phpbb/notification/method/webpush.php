@@ -39,6 +39,9 @@ class webpush extends \phpbb\notification\method\messenger_base
 	/** @var string Notification web push table */
 	protected $notification_webpush_table;
 
+	/** @var string Notification push subscriptions table */
+	protected $push_subscriptions_table;
+
 	/**
 	 * Notification Method web push constructor
 	 *
@@ -49,8 +52,10 @@ class webpush extends \phpbb\notification\method\messenger_base
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 * @param string $notification_webpush_table
+	 * @param string $push_subscriptions_table
 	 */
-	public function __construct(user_loader $user_loader, user $user, config $config, driver_interface $db, string $phpbb_root_path, string $php_ext, string $notification_webpush_table)
+	public function __construct(user_loader $user_loader, user $user, config $config, driver_interface $db,string $phpbb_root_path,
+								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table)
 	{
 		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
 
@@ -58,6 +63,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 		$this->config = $config;
 		$this->db = $db;
 		$this->notification_webpush_table = $notification_webpush_table;
+		$this->push_subscriptions_table = $push_subscriptions_table;
 	}
 
 	/**
@@ -148,9 +154,36 @@ class webpush extends \phpbb\notification\method\messenger_base
 		$banned_users = phpbb_get_banned_user_ids($user_ids);
 
 		// Load all the users we need
-		$this->user_loader->load_users(array_diff($user_ids, $banned_users), array(USER_IGNORE));
+		$notify_users = array_diff($user_ids, $banned_users);
+		$this->user_loader->load_users($notify_users, array(USER_IGNORE));
 
-		$web_push = new \Minishlink\WebPush\WebPush();
+		// Get subscriptions for users
+		$user_subscription_map = [];
+		$sql = 'SELECT * FROM ' . $this->push_subscriptions_table . '
+			WHERE ' . $this->db->sql_in_set('user_id', $notify_users) . '
+			GROUP BY user_id';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (isset($user_subscriptions[$row['user_id']]))
+			{
+				$user_subscription_map[$row['user_id']] += $row;
+			}
+			else
+			{
+				$user_subscription_map[$row['user_id']] = [$row];
+			}
+		}
+
+		$auth = [
+			'VAPID' => [
+				'subject' => generate_board_url(false),
+				'publicKey' => $this->config['webpush_vapid_public'],
+				'privateKey' => $this->config['webpush_vapid_private'],
+			],
+		];
+
+		$web_push = new \Minishlink\WebPush\WebPush($auth);
 
 		// Time to go through the queue and send emails
 		/** @var type_interface $notification */
@@ -158,7 +191,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 		{
 			$user = $this->user_loader->get_user($notification->user_id);
 
-			$user_subscriptions = sanitizer::decode($this->user->data['user_push_subscriptions']);
+			$user_subscriptions = $user_subscription_map[$notification->user_id] ?? [];
 
 			if ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL
 				|| empty($user_subscriptions))
@@ -181,8 +214,17 @@ class webpush extends \phpbb\notification\method\messenger_base
 			{
 				try
 				{
-					$push_subscription = \Minishlink\WebPush\Subscription::create($subscription);
-					$web_push->queueNotification($push_subscription, $json_data);
+					$push_subscription = \Minishlink\WebPush\Subscription::create([
+						'endpoint'			=> $subscription['endpoint'],
+						'keys'				=> [
+							'p256dh'	=> $subscription['p256dh'],
+							'auth'		=> $subscription['auth'],
+						],
+						'contentEncoding'	=> !empty($subscription['encoding']) ? $subscription['encoding'] : null,
+					]);
+					//$web_push->queueNotification($push_subscription, $json_data);
+					$foo = $web_push->sendOneNotification($push_subscription, $json_data);
+					$meh = 2;
 				}
 				catch (\ErrorException $exception)
 				{
@@ -193,14 +235,6 @@ class webpush extends \phpbb\notification\method\messenger_base
 		}
 
 		// @todo: Try offloading to after request
-		try
-		{
-			$web_push->flush();
-		}
-		catch (\ErrorException $exception)
-		{
-			// @todo: Add to error log if we can't flush ...
-		}
 
 		// We're done, empty the queue
 		$this->empty_queue();

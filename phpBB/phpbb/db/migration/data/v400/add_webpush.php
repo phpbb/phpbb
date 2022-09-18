@@ -43,13 +43,18 @@ class add_webpush extends migration
 					],
 					'PRIMARY_KEY' => ['notification_type_id', 'item_id', 'item_parent_id', 'user_id'],
 				],
-			],
-			'add_columns'	=> [
-				$this->table_prefix . 'users' => [
+				$this->table_prefix . 'push_subscriptions' => [
 					'COLUMNS'	=> [
-						'user_push_subscriptions'	=> ['MTEXT_UNI', '']
+						'subscription_id'	=> ['ULINT', null, 'auto_increment'],
+						'user_id'			=> ['ULINT', 0],
+						'device_name'		=> ['VCHAR:64', ''],
+						'endpoint'			=> ['TEXT', ''],
+						'p256dh'			=> ['VCHAR', ''],
+						'auth'				=> ['VCHAR', ''],
+						'encoding'			=> ['VCHAR:32', ''],
 					],
-				],
+					'PRIMARY_KEY' => ['subscription_id', 'user_id'],
+				]
 			],
 		];
 	}
@@ -57,7 +62,10 @@ class add_webpush extends migration
 	public function revert_schema(): array
 	{
 		return [
-			'drop_tables' => [$this->table_prefix . 'notification_push'],
+			'drop_tables' => [
+				$this->table_prefix . 'notification_push',
+				$this->table_prefix . 'push_subscriptions',
+			],
 		];
 	}
 
