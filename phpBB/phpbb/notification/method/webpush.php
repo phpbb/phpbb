@@ -185,6 +185,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 		$web_push = new \Minishlink\WebPush\WebPush($auth);
 
+		$number_of_notifications = 0;
 		// Time to go through the queue and send emails
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
@@ -222,9 +223,8 @@ class webpush extends \phpbb\notification\method\messenger_base
 						],
 						'contentEncoding'	=> !empty($subscription['encoding']) ? $subscription['encoding'] : null,
 					]);
-					//$web_push->queueNotification($push_subscription, $json_data);
-					$foo = $web_push->sendOneNotification($push_subscription, $json_data);
-					$meh = 2;
+					$web_push->queueNotification($push_subscription, $json_data);
+					$number_of_notifications++;
 				}
 				catch (\ErrorException $exception)
 				{
@@ -235,6 +235,21 @@ class webpush extends \phpbb\notification\method\messenger_base
 		}
 
 		// @todo: Try offloading to after request
+		try
+		{
+			foreach ($web_push->flush($number_of_notifications) as $report)
+			{
+				if (!$report->isSuccess())
+				{
+					// @todo: log errors / remove subscription
+				}
+			}
+		}
+		catch (\ErrorException $exception)
+		{
+			// @todo: write to log
+		}
+
 
 		// We're done, empty the queue
 		$this->empty_queue();
