@@ -13,7 +13,6 @@
 
 namespace phpbb\db\migration\data\v400;
 
-use Minishlink\WebPush\VAPID;
 use phpbb\db\migration\migration;
 
 class add_webpush extends migration

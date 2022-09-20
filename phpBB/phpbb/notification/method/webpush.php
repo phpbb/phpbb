@@ -15,7 +15,6 @@ namespace phpbb\notification\method;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use phpbb\json\sanitizer;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
 use phpbb\user_loader;
@@ -54,7 +53,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 	 * @param string $notification_webpush_table
 	 * @param string $push_subscriptions_table
 	 */
-	public function __construct(user_loader $user_loader, user $user, config $config, driver_interface $db,string $phpbb_root_path,
+	public function __construct(user_loader $user_loader, user $user, config $config, driver_interface $db, string $phpbb_root_path,
 								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table)
 	{
 		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
@@ -249,7 +248,6 @@ class webpush extends \phpbb\notification\method\messenger_base
 		{
 			// @todo: write to log
 		}
-
 
 		// We're done, empty the queue
 		$this->empty_queue();
