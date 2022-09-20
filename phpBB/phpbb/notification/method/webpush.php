@@ -158,9 +158,9 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 		// Get subscriptions for users
 		$user_subscription_map = [];
-		$sql = 'SELECT * FROM ' . $this->push_subscriptions_table . '
-			WHERE ' . $this->db->sql_in_set('user_id', $notify_users) . '
-			GROUP BY user_id';
+		$sql = 'SELECT user_id, endpoint, p256dh, auth, encoding
+			FROM ' . $this->push_subscriptions_table . '
+			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
