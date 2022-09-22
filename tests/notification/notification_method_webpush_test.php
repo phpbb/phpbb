@@ -61,6 +61,10 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 		$process = new \Symfony\Component\Process\Process(['node_modules/.bin/web-push-testing', '--port', '9012', 'start']);
 		$process->run();
+		if (!$process->isSuccessful())
+		{
+			self::fail('Starting web push testing service failed: ' . $process->getErrorOutput());
+		}
 	}
 
 	protected static function stop_webpush_testing(): void
@@ -384,7 +388,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		}
 		catch (\GuzzleHttp\Exception\GuzzleException $exception)
 		{
-			$this->fail('Failed getting subscription from web-push-testing client');
+			$this->fail('Failed getting subscription from web-push-testing client: ' . $exception->getMessage());
 		}
 
 		$subscription_return = \phpbb\json\sanitizer::decode((string) $response->getBody());
