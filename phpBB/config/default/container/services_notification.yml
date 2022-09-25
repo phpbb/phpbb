@@ -256,3 +256,5 @@ services:
             - '%core.php_ext%'
             - '%tables.notification_push%'
             - '%tables.push_subscriptions%'
+        tags:
+            - { name: notification.method }

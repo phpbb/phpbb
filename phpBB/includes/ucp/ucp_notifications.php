@@ -107,7 +107,12 @@ class ucp_notifications
 
 				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, $phpbb_dispatcher, 'notification_types');
 
-				$this->tpl_name = 'ucp_notifications';
+				/** @var \phpbb\controller\helper $controller_helper */
+				$controller_helper = $phpbb_container->get('controller.helper');
+
+				$template->assign_var('U_WEBPUSH_SUBSCRIBE', $controller_helper->route('phpbb_ucp_push_subscribe_controller'));
+
+				$this->tpl_name = 'ucp_notifications_options';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';
 			break;
 
@@ -266,6 +271,11 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
+		if (isset($notification_methods['notification.method.webpush']))
+		{
+			$this->output_webpush_data($template);
+		}
+
 		foreach ($notification_methods as $method => $method_data)
 		{
 			$template->assign_block_vars($block, array(
@@ -274,5 +284,22 @@ class ucp_notifications
 				'NAME'				=> $user->lang($method_data['lang']),
 			));
 		}
+	}
+
+	/**
+	 * Output data for webpush
+	 *
+	 * @param \phpbb\template\template $template
+	 *
+	 * @return void
+	 */
+	protected function output_webpush_data(\phpbb\template\template $template): void
+	{
+		global $config;
+
+		$template->assign_vars([
+			'NOTIFICATIONS_WEBPUSH_ENABLE'			=> true, // already checked, otherwise we wouldn't be here
+			'NOTIFICATIONS_WEBPUSH_VAPID_PUBLIC'	=> $config['webpush_vapid_public'],
+		]);
 	}
 }

@@ -5,3 +5,11 @@ phpbb_ucp_reset_password_controller:
 phpbb_ucp_forgot_password_controller:
     path: /forgot_password
     defaults: { _controller: phpbb.ucp.controller.reset_password:request }
+
+phpbb_ucp_push_worker_controller:
+    path: /push/worker
+    defaults: { _controller: phpbb.ucp.controller.webpush:request }
+
+phpbb_ucp_push_subscribe_controller:
+    path: /push/subscribe
+    defaults: { _controller: phpbb.ucp.controller.webpush:request }

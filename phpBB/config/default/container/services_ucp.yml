@@ -15,3 +15,8 @@ services:
             - '%tables.users%'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    phpbb.ucp.controller.push_worker:
+        class: phpbb\ucp\controller\webpush
+        arguments:
+            - '@config'
