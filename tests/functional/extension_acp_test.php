@@ -268,24 +268,45 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_extensions_catalog_installing_extension()
 	{
-		// Lets check page 6 where 'Scroll Page' and 'Scroll To Top' should be listed
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&start=100&sid=' . $this->sid);
+		// Let's check the overview, multiple packages should be listed
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+		$this->assertGreaterThan(1, $crawler->filter('tr')->count());
+		$this->assertGreaterThan(1, $crawler->selectLink($this->lang('INSTALL'))->count());
+
+		$pages = (int) $crawler->filter('div.pagination li:nth-last-child(2) a')->first()->text();
 
 		// Get Install links for both extensions
-		$scrollpage_install_link = $crawler->filter('tr')->reduce(
-			function ($node, $i)
-			{
-				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
-			}
-		)->selectLink($this->lang('INSTALL'))->link();
+		$extension_filter = function($crawler, $extension_name, &$install_link)
+		{
+			$extension_filter = $crawler->filter('tr')->reduce(
+				function ($node, $i) use ($extension_name)
+				{
+					return strpos($node->text(), $extension_name) !== false;
+				}
+			);
 
-		$scrolltotop_install_link = $crawler->filter('tr')->reduce(
-			function ($node, $i)
+			if ($extension_filter->count())
 			{
-				return (bool) (strpos($node->text(), 'Scroll To Top') !== false);
+				$install_link = $extension_filter->selectLink($this->lang('INSTALL'))->link();
 			}
-		)->selectLink($this->lang('INSTALL'))->link();
+		};
+
+		for ($i = 0; $i < $pages; $i++)
+		{
+			if ($i != 0)
+			{
+				$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&start=' . $i * 20 . '&mode=catalog&sid=' . $this->sid);
+			}
+
+			$extension_filter($crawler, 'Scroll Page', $scrollpage_install_link);
+			$extension_filter($crawler, 'Scroll To Top', $scrolltotop_install_link);
+		}
+
+		if (!isset($scrolltotop_install_link) || !isset($scrollpage_install_link))
+		{
+			$this->fail('Failed acquiring install links for test extensions');
+		}
 
 		// Attempt to install vse/scrollpage extension
 		$crawler = self::$client->click($scrollpage_install_link);

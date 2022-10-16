@@ -37,8 +37,19 @@ class phpbb_test_case_helpers
 			// First, move any extensions setup on the board to a temp directory
 			$this->copy_dir($phpbb_root_path . 'ext/', $phpbb_root_path . 'store/temp_ext/');
 
+			// Back up vendor-ext directory
+			$this->copy_dir($phpbb_root_path . 'vendor-ext/', $phpbb_root_path . 'store/temp_vendor-ext/');
+
+			// Back up composer-ext.* files
+			copy($phpbb_root_path . 'composer-ext.json', $phpbb_root_path . 'store/temp_composer-ext.json');
+			copy($phpbb_root_path . 'composer-ext.lock', $phpbb_root_path . 'store/temp_composer-ext.lock');
+
 			// Then empty the ext/ directory on the board (for accurate test cases)
 			$this->empty_dir($phpbb_root_path . 'ext/');
+
+			// Then empty the vendor-ext/ directory and add back .git-keep
+			$this->empty_dir($phpbb_root_path . 'vendor-ext/');
+			file_put_contents($phpbb_root_path . 'vendor-ext/.git-keep', '');
 		}
 
 		// Copy our ext/ files from the test case to the board
@@ -66,6 +77,25 @@ class phpbb_test_case_helpers
 
 			// Remove all of the files we copied from board ext -> temp_ext
 			$this->empty_dir($phpbb_root_path . 'store/temp_ext/');
+		}
+
+		if (file_exists($phpbb_root_path . 'store/temp_vendor-ext/'))
+		{
+			$this->empty_dir($phpbb_root_path . 'vendor-ext/');
+
+			$this->copy_dir($phpbb_root_path . 'store/temp_vendor-ext/', $phpbb_root_path . 'vendor-ext/');
+
+			$this->empty_dir($phpbb_root_path . 'store/temp_vendor-ext/');
+		}
+
+		if (file_exists($phpbb_root_path . 'store/temp_composer-ext.json'))
+		{
+			copy($phpbb_root_path . 'store/temp_composer-ext.json', $phpbb_root_path . 'composer-ext.json');
+		}
+
+		if (file_exists($phpbb_root_path . 'store/temp_composer-ext.lock'))
+		{
+			copy($phpbb_root_path . 'store/temp_composer-ext.lock', $phpbb_root_path . 'composer-ext.lock');
 		}
 
 		if (file_exists($phpbb_root_path . 'store/temp_ext/'))
