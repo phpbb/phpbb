@@ -268,15 +268,15 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 	public function test_extensions_catalog_installing_extension()
 	{
-		// Lets check page 6 where 'Scroll Page' and 'Scroll To Top' should be listed
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&start=100&sid=' . $this->sid);
+		// Lets check page 3 where 'Scroll Page' and 'Scroll To Top' should be listed
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&start=40&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 
 		// Get Install links for both extensions
 		$scrollpage_install_link = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
-				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+				return strpos($node->text(), 'Scroll Page') !== false;
 			}
 		)->selectLink($this->lang('INSTALL'))->link();
 
