@@ -232,8 +232,19 @@ class installer
 
 		try
 		{
+			static $composer_factory;
+			if (!$composer_factory)
+			{
+				$composer_factory = new Factory();
+			}
+
 			$io = new NullIO();
-			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
+			$composer = $composer_factory->createComposer(
+				$io,
+				$this->get_composer_ext_json_filename(),
+				false,
+				filesystem_helper::realpath('')
+			);
 
 			$installed = [];
 
