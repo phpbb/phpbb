@@ -312,13 +312,13 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::$client->click($scrollpage_install_link);
 		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Installing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Locking vse/scrollpage', $crawler->filter('.console-output > pre')->text());
 
 		// Attempt to install vse/scrolltotop extension
 		$crawler = self::$client->click($scrolltotop_install_link);
 		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Installing vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Locking vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
 
 		// Ensure installed extension appears in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
@@ -383,13 +383,13 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::$client->click($scrollpage_remove_link);
 		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Deleting ext/vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Removing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
 
 		// Remove 'Scroll To Top' disabled extension
 		$crawler = self::$client->click($scrolltotop_remove_link);
 		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Deleting ext/vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Removing vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
 
 		// Ensure removed extensions do not appear in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
