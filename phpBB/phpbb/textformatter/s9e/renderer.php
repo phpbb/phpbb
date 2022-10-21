@@ -152,7 +152,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	* @param  \phpbb\user          $user
 	* @param  \phpbb\config\config $config
 	* @param  \phpbb\auth\auth     $auth
-	* @return null
+	* @return void
 	*/
 	public function configure_user(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
 	{
@@ -175,10 +175,10 @@ class renderer implements \phpbb\textformatter\renderer_interface
 
 		// Set this user's style id and other parameters
 		$this->renderer->setParameters(array(
-			'S_IS_BOT'          => $user->data['is_bot'],
-			'S_REGISTERED_USER' => $user->data['is_registered'],
-			'S_USER_LOGGED_IN'  => ($user->data['user_id'] != ANONYMOUS),
-			'STYLE_ID'          => $user->style['style_id'],
+			'S_IS_BOT'			=> $user->data['is_bot'] ?? false,
+			'S_REGISTERED_USER'	=> $user->data['is_registered'] ?? false,
+			'S_USER_LOGGED_IN'	=> ($user->data['user_id'] != ANONYMOUS),
+			'STYLE_ID'			=> $user->style['style_id'],
 		));
 	}
 
