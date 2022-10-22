@@ -1,0 +1,243 @@
+/* global phpbb */
+
+'use strict';
+
+function PhpbbWebpush() {
+	/** @type {string} URL to service worker */
+	const serviceWorkerUrl = '{{ U_WEBPUSH_WORKER_URL }}';
+
+	/** @type {string} URL to subscribe to push */
+	const subscribeUrl = '{{ U_WEBPUSH_SUBSCRIBE }}';
+
+	/** @type {string} URL to unsubscribe from push */
+	const unsubscribeUrl = '{{ U_WEBPUSH_UNSUBSCRIBE }}';
+
+	/** @type {{creationTime: number, formToken: string}} Form tokens */
+	this.formTokens = {
+		creationTime: {{ FORM_TOKENS.creation_time }},
+		formToken: '{{ FORM_TOKENS.form_token }}'
+	};
+
+	/** @type {string} VAPID public key */
+	const VAPID_PUBLIC_KEY = '{{ VAPID_PUBLIC_KEY }}';
+
+	let subscribeButton,
+		unsubscribeButton;
+
+	/**
+	 * Init function for phpBB webpush
+	 */
+	this.init = function() {
+		subscribeButton = document.querySelector('#subscribe_webpush');
+		unsubscribeButton = document.querySelector('#unsubscribe_webpush');
+		let serviceWorkerRegistered = false;
+
+		// Service workers are only supported in secure context
+		if (window.isSecureContext !== true) {
+			subscribeButton.disabled = true;
+			return;
+		}
+
+		if ('serviceWorker' in navigator && 'PushManager' in window) {
+			navigator.serviceWorker.register(serviceWorkerUrl)
+				.then(() => {
+					serviceWorkerRegistered = true;
+				})
+				.catch(error => {
+					console.info(error);
+				});
+		}
+
+		if (serviceWorkerRegistered) {
+			subscribeButton.addEventListener('click', subscribeButtonHandler);
+			unsubscribeButton.addEventListener('click', unsubscribeButtonHandler);
+
+			updateButtonState();
+		} else {
+			// Service worker could not be registered
+			subscribeButton.disabled = true;
+		}
+	};
+
+	/**
+	 * Update button state depending on notifications state
+	 *
+	 * @return void
+	 */
+	function updateButtonState() {
+		if (Notification.permission === 'granted') {
+			navigator.serviceWorker.getRegistration(serviceWorkerUrl)
+				.then((registration) => {
+					if (typeof registration === 'undefined') {
+						return;
+					}
+
+					registration.pushManager.getSubscription()
+						.then((subscribed) => {
+							if (subscribed) {
+								setSubscriptionState(true);
+							}
+						})
+				});
+		}
+	}
+
+	/**
+	 * Set subscription state for buttons
+	 *
+	 * @param {boolean} subscribed True if subscribed, false if not
+	 */
+	function setSubscriptionState(subscribed) {
+		if (subscribed) {
+			subscribeButton.classList.add('hidden');
+			unsubscribeButton.classList.remove('hidden');
+		} else {
+			subscribeButton.classList.remove('hidden');
+			unsubscribeButton.classList.add('hidden');
+		}
+	}
+
+	/**
+	 * Handler for pushing subscribe button
+	 *
+	 * @param {Object} event Subscribe button push event
+	 * @returns {Promise<void>}
+	 */
+	async function subscribeButtonHandler(event) {
+		event.preventDefault();
+
+		subscribeButton.addEventListener('click', subscribeButtonHandler);
+
+		// Prevent the user from clicking the subscribe button multiple times.
+		const result = await Notification.requestPermission();
+		if (result === 'denied') {
+			return;
+		}
+
+		const registration = await navigator.serviceWorker.getRegistration(serviceWorkerUrl);
+		if (typeof registration !== 'undefined') {
+			const subscribed = await registration.pushManager.getSubscription();
+			if (subscribed) {
+				setSubscriptionState(true);
+				return;
+			}
+		}
+		const newSubscription = await registration.pushManager.subscribe({
+			userVisibleOnly: true,
+			applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
+		});
+
+		fetch(subscribeUrl, {
+				method: 'POST',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				},
+				body: getFormData(newSubscription)
+			})
+			.then((response) => response.json())
+			.then(handleSubscribe)
+			.catch((error) => {
+				phpbb.alert({{ lang('AJAX_ERROR_TITLE') }}, error);
+			});
+	}
+
+	/**
+	 * Handler for pushing unsubscribe button
+	 *
+	 * @param {Object} event Unsubscribe button push event
+	 * @returns {Promise<void>}
+	 */
+	async function unsubscribeButtonHandler(event) {
+		event.preventDefault();
+
+		const registration = await navigator.serviceWorker.getRegistration(serviceWorkerUrl);
+		if (typeof registration === 'undefined') {
+			return;
+		}
+
+		const subscription = await registration.pushManager.getSubscription();
+		fetch(unsubscribeUrl, {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			body: getFormData({endpoint: subscription.endpoint})
+		}).then(() => {
+			return subscription.unsubscribe();
+		}).then((unsubscribed) => {
+			if (unsubscribed) {
+				setSubscriptionState(false);
+			}
+		});
+	}
+
+	/**
+	 * Handle subscribe response
+	 *
+	 * @param {Object} response Response from subscription endpoint
+	 */
+	function handleSubscribe(response) {
+		if (response.success) {
+			setSubscriptionState(true);
+			if (response.hasOwnProperty('form_tokens')) {
+				updateFormTokens(response.form_tokens);
+			}
+		}
+	}
+
+	/**
+	 * Get form data object including form tokens
+	 *
+	 * @param {Object} data Data to create form data from
+	 * @returns {FormData} Form data
+	 */
+	function getFormData(data) {
+		let formData = new FormData();
+		formData.append('form_token', phpbb.webpush.formTokens.formToken);
+		formData.append('creation_time', phpbb.webpush.formTokens.creationTime);
+		formData.append('data', JSON.stringify(data));
+
+		return formData;
+	}
+
+	/**
+	 * Update form tokens with supplied ones
+	 *
+	 * @param {Object} formTokens
+	 */
+	function updateFormTokens(formTokens) {
+		phpbb.webpush.formTokens.creationTime = formTokens.creation_time;
+		phpbb.webpush.formTokens.formToken = formTokens.form_token;
+	}
+
+	/**
+	 * Convert a base64 string to Uint8Array
+	 *
+	 * @param base64String
+	 * @returns {Uint8Array}
+	 */
+	function urlB64ToUint8Array(base64String) {
+		const padding = '='.repeat((4 - base64String.length % 4) % 4);
+		const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+		const rawData = window.atob(base64);
+		const outputArray = new Uint8Array(rawData.length);
+		for (let i = 0; i < rawData.length; ++i) {
+			outputArray[i] = rawData.charCodeAt(i);
+		}
+		return outputArray;
+	}
+}
+
+function domReady(callBack) {
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', callBack);
+	} else {
+		callBack();
+	}
+}
+
+phpbb.webpush = new PhpbbWebpush();
+
+domReady(() => {
+	phpbb.webpush.init();
+});
