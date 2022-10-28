@@ -46,13 +46,13 @@ class form_helper
 	 * Get form tokens for form
 	 *
 	 * @param string $form_name Name of form
-	 * @param int $now Token generation time
-	 * @param string $token_sid SID used for form token
-	 * @param string $token Generated token
+	 * @param int|null $now Token generation time
+	 * @param string|null $token_sid SID used for form token
+	 * @param string|null $token Generated token
 	 *
 	 * @return array Array containing form_token and creation_time of form token
 	 */
-	public function get_form_tokens(string $form_name, int &$now = 0, string &$token_sid = '', string &$token = ''): array
+	public function get_form_tokens(string $form_name, ?int &$now = 0, ?string &$token_sid = '', ?string &$token = ''): array
 	{
 		$now = time();
 		$token_sid = ($this->user->data['user_id'] == ANONYMOUS && !empty($this->config['form_token_sid_guests'])) ? $this->user->session_id : '';
