@@ -32,6 +32,20 @@
 	outline: none;
 }
 
+.button[disabled],
+.button[disabled]:hover,
+.button.disabled,
+.button.disabled:hover {
+	background: #eee;
+	color: #aaa;
+	border-color: #aaa;
+	cursor: default;
+}
+
+.button.hidden {
+	display: none;
+}
+
 .caret {
 	border-left: 1px solid;
 	position: relative;
