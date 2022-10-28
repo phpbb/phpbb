@@ -115,7 +115,18 @@ class webpush extends \phpbb\notification\method\messenger_base
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
-			$data = self::clean_data($notification->get_insert_array());
+			$data = $notification->get_insert_array();
+			$data += [
+				'push_data'		=> json_encode([
+					'heading'	=> $this->config['sitename'],
+					'title'		=> strip_tags($notification->get_title()),
+					'text'		=> strip_tags($notification->get_reference()),
+					'url'		=> $notification->get_url(),
+					'avatar'	=> $notification->get_avatar(),
+				]),
+				'notification_time'		=> time(),
+			];
+			$data = self::clean_data($data);
 			$insert_buffer->insert($data);
 		}
 
@@ -158,7 +169,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 		// Get subscriptions for users
 		$user_subscription_map = [];
-		$sql = 'SELECT user_id, endpoint, p256dh, auth, encoding
+		$sql = 'SELECT user_id, endpoint, p256dh, auth
 			FROM ' . $this->push_subscriptions_table . '
 			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
 		$result = $this->db->sql_query($sql);
@@ -200,13 +211,9 @@ class webpush extends \phpbb\notification\method\messenger_base
 			}
 
 			// add actual web push data
-			$data['data'] = [
-				'title'		=> $this->config['sitename'],
-				'body'		=> $notification->get_title(),
-				'icon'		=> '', // @todo: to be filled?
-				'image'		=> '', // @todo: to be filled?
-				'url'		=> $notification->get_url(),
-				'user_id'	=> $notification->user_id,
+			$data = [
+				'item_id'	=> $notification->item_id,
+				'type_id'	=> $notification->notification_type_id,
 			];
 			$json_data = json_encode($data);
 
@@ -220,7 +227,6 @@ class webpush extends \phpbb\notification\method\messenger_base
 							'p256dh'	=> $subscription['p256dh'],
 							'auth'		=> $subscription['auth'],
 						],
-						'contentEncoding'	=> !empty($subscription['encoding']) ? $subscription['encoding'] : null,
 					]);
 					$web_push->queueNotification($push_subscription, $json_data);
 					$number_of_notifications++;
@@ -283,13 +289,15 @@ class webpush extends \phpbb\notification\method\messenger_base
 	 * @param array $data Notification data
 	 * @return array Cleaned notification data
 	 */
-	public static function clean_data(array $data)
+	public static function clean_data(array $data): array
 	{
 		$row = [
 			'notification_type_id'	=> null,
 			'item_id'				=> null,
 			'item_parent_id'		=> null,
 			'user_id'				=> null,
+			'push_data'				=> null,
+			'notification_time'		=> null,
 		];
 
 		return array_intersect_key($data, $row);

@@ -39,6 +39,8 @@ class add_webpush extends migration
 						'item_id'				=> ['ULINT', 0],
 						'item_parent_id'		=> ['ULINT', 0],
 						'user_id'				=> ['ULINT', 0],
+						'push_data'				=> ['MTEXT', ''],
+						'notification_time'		=> ['TIMESTAMP', 0]
 					],
 					'PRIMARY_KEY' => ['notification_type_id', 'item_id', 'item_parent_id', 'user_id'],
 				],
@@ -46,11 +48,11 @@ class add_webpush extends migration
 					'COLUMNS'	=> [
 						'subscription_id'	=> ['ULINT', null, 'auto_increment'],
 						'user_id'			=> ['ULINT', 0],
-						'device_name'		=> ['VCHAR:64', ''],
+//						'device_name'		=> ['VCHAR:64', ''],
 						'endpoint'			=> ['TEXT', ''],
+						'expiration_time'	=> ['TIMESTAMP', 0],
 						'p256dh'			=> ['VCHAR', ''],
 						'auth'				=> ['VCHAR', ''],
-						'encoding'			=> ['VCHAR:32', ''],
 					],
 					'PRIMARY_KEY' => ['subscription_id', 'user_id'],
 				]
