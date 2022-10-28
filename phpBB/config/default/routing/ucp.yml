@@ -6,10 +6,22 @@ phpbb_ucp_forgot_password_controller:
     path: /forgot_password
     defaults: { _controller: phpbb.ucp.controller.reset_password:request }
 
+phpbb_ucp_push_get_notification_controller:
+    path: /push/notification
+    defaults: { _controller: phpbb.ucp.controller.webpush:notification }
+
 phpbb_ucp_push_worker_controller:
     path: /push/worker
-    defaults: { _controller: phpbb.ucp.controller.webpush:request }
+    defaults: { _controller: phpbb.ucp.controller.webpush:worker }
 
 phpbb_ucp_push_subscribe_controller:
     path: /push/subscribe
-    defaults: { _controller: phpbb.ucp.controller.webpush:request }
+    defaults: { _controller: phpbb.ucp.controller.webpush:subscribe }
+
+phpbb_ucp_push_unsubscribe_controller:
+    path: /push/unsubscribe
+    defaults: { _controller: phpbb.ucp.controller.webpush:unsubscribe }
+
+phpbb_ucp_push_js_controller:
+    path: /push/js
+    defaults: { _controller: phpbb.ucp.controller.webpush:js }

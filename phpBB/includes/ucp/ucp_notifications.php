@@ -110,7 +110,9 @@ class ucp_notifications
 				/** @var \phpbb\controller\helper $controller_helper */
 				$controller_helper = $phpbb_container->get('controller.helper');
 
-				$template->assign_var('U_WEBPUSH_SUBSCRIBE', $controller_helper->route('phpbb_ucp_push_subscribe_controller'));
+				$template->assign_vars([
+					'T_WEBPUSH_JS_PATH'		=> $controller_helper->route('phpbb_ucp_push_js_controller'),
+				]);
 
 				$this->tpl_name = 'ucp_notifications_options';
 				$this->page_title = 'UCP_NOTIFICATION_OPTIONS';

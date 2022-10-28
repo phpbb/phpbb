@@ -1,5 +1,7 @@
 {% include('ucp_header.html') %}
 
+{% INCLUDEJS(T_WEBPUSH_JS_PATH) %}
+
 <form id="ucp" method="post" action="{{ S_UCP_ACTION }}"{{ S_FORM_ENCTYPE }}>
 
 	<h2 class="cp-title">{{ TITLE }}</h2>
@@ -8,9 +10,10 @@
 			<div class="inner">
 				<fieldset>
 					<dl>
-						<dt><label for="activate_webpush">{{ lang('NOTIFY_WEBPUSH_ENABLE') ~ lang('COLON') }}</label><br><span>{{ lang('NOTIFY_WEBPUSH_ENABLE_EXPLAIN') }}</span></dt>
+						<dt><label for="subscribe_webpush">{{ lang('NOTIFY_WEBPUSH_ENABLE') ~ lang('COLON') }}</label><br><span>{{ lang('NOTIFY_WEBPUSH_ENABLE_EXPLAIN') }}</span></dt>
 						<dd>
-							<a href="{{ U_WEBPUSH_SUBSCRIBE }}" data-ajax-action="activate_webpush" id="activate_webpush" title="{{ lang('NOTIFY_WEBPUSH_ACTIVATE') }}">{{ lang('NOTIFY_WEBPUSH_ACTIVATE') }}</a>
+							<input id="subscribe_webpush" type="submit" name="subscribe_webpush" value="{{ lang('NOTIFY_WEBPUSH_ACTIVATE') }}" class="button1 button button-form">
+							<input id="unsubscribe_webpush" type="submit" name="unsubscribe_webpush" value="{{ lang('NOTIFY_WEBPUSH_DEACTIVATE') }}" class="button1 button button-form hidden">
 						</dd>
 					</dl>
 				</fieldset>
