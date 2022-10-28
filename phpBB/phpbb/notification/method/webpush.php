@@ -149,14 +149,14 @@ class webpush extends \phpbb\notification\method\messenger_base
 			return;
 		}
 
-		// Load all users we want to notify (we need their email address)
+		// Load all users we want to notify
 		$user_ids = [];
 		foreach ($this->queue as $notification)
 		{
 			$user_ids[] = $notification->user_id;
 		}
 
-		// We do not send emails to banned users
+		// Do not send push notifications to banned users
 		if (!function_exists('phpbb_get_banned_user_ids'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
@@ -196,7 +196,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 		$web_push = new \Minishlink\WebPush\WebPush($auth);
 
 		$number_of_notifications = 0;
-		// Time to go through the queue and send emails
+		// Time to go through the queue and send notifications
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
