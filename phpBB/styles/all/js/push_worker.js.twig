@@ -1,0 +1,59 @@
+/**
+ * Event listener for push event
+ */
+self.addEventListener('push', event => {
+	if (typeof event.data === 'undefined') {
+		return;
+	}
+
+	let itemId = 0,
+		typeId = 0;
+	try {
+		const notificationData = event.data.json();
+		itemId = notificationData['item_id'];
+		typeId = notificationData['type_id'];
+	} catch (e) {
+		self.registration.showNotification(event.data.text());
+		return;
+	}
+
+	const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
+
+	let formData = new FormData();
+	formData.append('item_id', itemId.toString(10));
+	formData.append('type_id', typeId.toString(10));
+
+	fetch(getNotificationUrl, {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest'
+			},
+			body: formData
+		})
+		.then((response) => response.json())
+		.then((response) => {
+			const responseBody = response.title + "\n" + response.text;
+			const options = {
+				body: responseBody,
+				data: response,
+				icon: response.avatar.src
+				// foo: ''
+				//icon: image
+			}
+			self.registration.showNotification(
+				response.heading,
+				options
+			);
+		}
+	);
+});
+
+/**
+ * Event listener for notification click
+ */
+self.addEventListener('notificationclick', event => {
+	event.notification.close();
+	if (typeof event.notification.data !== 'undefined') {
+		event.waitUntil(self.clients.openWindow(event.notification.data.url));
+	}
+});
