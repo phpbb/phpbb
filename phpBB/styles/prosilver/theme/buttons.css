@@ -36,9 +36,9 @@
 .button[disabled]:hover,
 .button.disabled,
 .button.disabled:hover {
-	background: #eee;
-	color: #aaa;
-	border-color: #aaa;
+	background: #eeeeee;
+	border-color: #aaaaaa;
+	color: #aaaaaa;
 	cursor: default;
 }
 
