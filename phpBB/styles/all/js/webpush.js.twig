@@ -12,7 +12,7 @@ function PhpbbWebpush() {
 	/** @type {string} URL to unsubscribe from push */
 	const unsubscribeUrl = '{{ U_WEBPUSH_UNSUBSCRIBE }}';
 
-	/** @type {{creationTime: number, formToken: string}} Form tokens */
+	/** @type { {creationTime: number, formToken: string} } Form tokens */
 	this.formTokens = {
 		creationTime: {{ FORM_TOKENS.creation_time }},
 		formToken: '{{ FORM_TOKENS.form_token }}'
@@ -30,7 +30,6 @@ function PhpbbWebpush() {
 	this.init = function() {
 		subscribeButton = document.querySelector('#subscribe_webpush');
 		unsubscribeButton = document.querySelector('#unsubscribe_webpush');
-		let serviceWorkerRegistered = false;
 
 		// Service workers are only supported in secure context
 		if (window.isSecureContext !== true) {
@@ -41,20 +40,17 @@ function PhpbbWebpush() {
 		if ('serviceWorker' in navigator && 'PushManager' in window) {
 			navigator.serviceWorker.register(serviceWorkerUrl)
 				.then(() => {
-					serviceWorkerRegistered = true;
+					subscribeButton.addEventListener('click', subscribeButtonHandler);
+					unsubscribeButton.addEventListener('click', unsubscribeButtonHandler);
+
+					updateButtonState();
 				})
 				.catch(error => {
 					console.info(error);
+					// Service worker could not be registered
+					subscribeButton.disabled = true;
 				});
-		}
-
-		if (serviceWorkerRegistered) {
-			subscribeButton.addEventListener('click', subscribeButtonHandler);
-			unsubscribeButton.addEventListener('click', unsubscribeButtonHandler);
-
-			updateButtonState();
 		} else {
-			// Service worker could not be registered
 			subscribeButton.disabled = true;
 		}
 	};
@@ -127,6 +123,7 @@ function PhpbbWebpush() {
 			applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY)
 		});
 
+		const loadingIndicator = phpbb.loadingIndicator();
 		fetch(subscribeUrl, {
 				method: 'POST',
 				headers: {
@@ -134,10 +131,14 @@ function PhpbbWebpush() {
 				},
 				body: getFormData(newSubscription)
 			})
-			.then((response) => response.json())
+			.then((response) => {
+				loadingIndicator.fadeOut(phpbb.alertTime);
+				return response.json();
+			})
 			.then(handleSubscribe)
 			.catch((error) => {
-				phpbb.alert({{ lang('AJAX_ERROR_TITLE') }}, error);
+				loadingIndicator.fadeOut(phpbb.alertTime);
+				phpbb.alert('{{ lang('AJAX_ERROR_TITLE') }}', error);
 			});
 	}
 
@@ -156,19 +157,27 @@ function PhpbbWebpush() {
 		}
 
 		const subscription = await registration.pushManager.getSubscription();
+		const loadingIndicator = phpbb.loadingIndicator();
 		fetch(unsubscribeUrl, {
 			method: 'POST',
 			headers: {
 				'X-Requested-With': 'XMLHttpRequest'
 			},
 			body: getFormData({endpoint: subscription.endpoint})
-		}).then(() => {
-			return subscription.unsubscribe();
-		}).then((unsubscribed) => {
-			if (unsubscribed) {
-				setSubscriptionState(false);
-			}
-		});
+		})
+			.then(() => {
+				loadingIndicator.fadeOut(phpbb.alertTime);
+				return subscription.unsubscribe();
+			})
+			.then((unsubscribed) => {
+				if (unsubscribed) {
+					setSubscriptionState(false);
+				}
+			})
+			.catch((error) => {
+				loadingIndicator.fadeOut(phpbb.alertTime);
+				phpbb.alert('{{ lang('AJAX_ERROR_TITLE') }}', error);
+			});
 	}
 
 	/**
@@ -194,7 +203,7 @@ function PhpbbWebpush() {
 	function getFormData(data) {
 		let formData = new FormData();
 		formData.append('form_token', phpbb.webpush.formTokens.formToken);
-		formData.append('creation_time', phpbb.webpush.formTokens.creationTime);
+		formData.append('creation_time', phpbb.webpush.formTokens.creationTime.toString());
 		formData.append('data', JSON.stringify(data));
 
 		return formData;
