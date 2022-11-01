@@ -13,6 +13,7 @@
 
 namespace phpbb\notification\method;
 
+use Minishlink\WebPush\Subscription;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\notification\type\type_interface;
@@ -24,7 +25,7 @@ use phpbb\user_loader;
 * This class handles sending push messages for notifications
 */
 
-class webpush extends \phpbb\notification\method\messenger_base
+class webpush extends messenger_base
 {
 	/** @var config */
 	protected $config;
@@ -169,7 +170,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 
 		// Get subscriptions for users
 		$user_subscription_map = [];
-		$sql = 'SELECT user_id, endpoint, p256dh, auth
+		$sql = 'SELECT subscription_id, user_id, endpoint, p256dh, auth
 			FROM ' . $this->push_subscriptions_table . '
 			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
 		$result = $this->db->sql_query($sql);
@@ -196,6 +197,8 @@ class webpush extends \phpbb\notification\method\messenger_base
 		$web_push = new \Minishlink\WebPush\WebPush($auth);
 
 		$number_of_notifications = 0;
+		$remove_subscriptions = [];
+
 		// Time to go through the queue and send notifications
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
@@ -221,7 +224,7 @@ class webpush extends \phpbb\notification\method\messenger_base
 			{
 				try
 				{
-					$push_subscription = \Minishlink\WebPush\Subscription::create([
+					$push_subscription = Subscription::create([
 						'endpoint'			=> $subscription['endpoint'],
 						'keys'				=> [
 							'p256dh'	=> $subscription['p256dh'],
@@ -233,13 +236,19 @@ class webpush extends \phpbb\notification\method\messenger_base
 				}
 				catch (\ErrorException $exception)
 				{
-					// @todo: decide whether we want to remove invalid subscriptions directly?
-					// Might need too many resources ...
+					$remove_subscriptions[] = $subscription['subscription_id'];
 				}
 			}
 		}
 
-		// @todo: Try offloading to after request
+		// Remove any subscriptions that couldn't be queued, i.e. that have invalid data
+		if (count($remove_subscriptions))
+		{
+			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+				WHERE ' . $this->db->sql_in_set('subscription_id', $remove_subscriptions);
+			$this->db->sql_query($sql);
+		}
+
 		try
 		{
 			foreach ($web_push->flush($number_of_notifications) as $report)
