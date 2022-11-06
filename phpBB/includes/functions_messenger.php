@@ -952,6 +952,7 @@ class queue
 							}
 							else
 							{
+								$encode_eol = $config['smtp_delivery'] || PHP_VERSION_ID >= 80000 ? "\r\n" : PHP_EOL;
 								$result = phpbb_mail($to, $subject, $msg, $headers, $encode_eol, $err_msg);
 							}
 
