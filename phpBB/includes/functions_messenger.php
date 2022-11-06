@@ -597,7 +597,7 @@ class messenger
 			$this->from = $board_contact;
 		}
 
-		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : PHP_EOL;
+		$encode_eol = $config['smtp_delivery'] || PHP_VERSION_ID >= 80000 ? "\r\n" : PHP_EOL;
 
 		// Build to, cc and bcc strings
 		$to = $cc = $bcc = '';
