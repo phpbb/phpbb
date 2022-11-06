@@ -629,7 +629,7 @@ class messenger
 			}
 			else
 			{
-				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, PHP_EOL, $err_msg);
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $encode_eol, $err_msg);
 			}
 
 			if (!$result)
@@ -952,7 +952,7 @@ class queue
 							}
 							else
 							{
-								$result = phpbb_mail($to, $subject, $msg, $headers, PHP_EOL, $err_msg);
+								$result = phpbb_mail($to, $subject, $msg, $headers, $encode_eol, $err_msg);
 							}
 
 							if (!$result)
