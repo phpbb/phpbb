@@ -48,6 +48,7 @@ services:
             - '%text_formatter.cache.dir%'
             - '%text_formatter.cache.parser.key%'
             - '%text_formatter.cache.renderer.key%'
+            - '%core.root_path%'
 
     text_formatter.s9e.link_helper:
         class: phpbb\textformatter\s9e\link_helper

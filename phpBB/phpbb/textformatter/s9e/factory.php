@@ -51,6 +51,11 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @var \phpbb\config\config
 	*/
 	protected $config;
+	
+	/** 
+	* @var string phpBB root path 
+	*/
+	protected $phpbb_root_path;
 
 	/**
 	* @var array Custom tokens used in bbcode.html and their corresponding token from the definition
@@ -150,8 +155,9 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @param string $cache_dir          Path to the cache dir
 	* @param string $cache_key_parser   Cache key used for the parser
 	* @param string $cache_key_renderer Cache key used for the renderer
+	* @param string $phpbb_root_path
 	*/
-	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, \phpbb\textformatter\s9e\link_helper $link_helper, \phpbb\log\log_interface $log, $cache_dir, $cache_key_parser, $cache_key_renderer)
+	public function __construct(\phpbb\textformatter\data_access $data_access, \phpbb\cache\driver\driver_interface $cache, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\config\config $config, \phpbb\textformatter\s9e\link_helper $link_helper, \phpbb\log\log_interface $log, $cache_dir, $cache_key_parser, $cache_key_renderer, $phpbb_root_path)
 	{
 		$this->link_helper = $link_helper;
 		$this->cache = $cache;
@@ -162,6 +168,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		$this->data_access = $data_access;
 		$this->dispatcher = $dispatcher;
 		$this->log = $log;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -354,14 +361,21 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
 		$tag = $configurator->Emoji->getTag();
-		$tag->template = '<xsl:choose>
-			<xsl:when test="@tseq">
-				<img alt="{.}" class="emoji" draggable="false" src="//twemoji.maxcdn.com/2/svg/{@tseq}.svg"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<img alt="{.}" class="emoji" draggable="false" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets-twemoji@11.2/dist/svgz/{@seq}.svgz"/>
-			</xsl:otherwise>
-		</xsl:choose>';
+		if ($this->config['allow_cdn'])
+		{
+			$tag->template = '<xsl:choose>
+				<xsl:when test="@tseq">
+					<img alt="{.}" class="emoji" draggable="false" src="//twemoji.maxcdn.com/2/svg/{@tseq}.svg"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<img alt="{.}" class="emoji" draggable="false" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets-twemoji@11.2/dist/svgz/{@seq}.svgz"/>
+				</xsl:otherwise>
+			</xsl:choose>';
+		}
+		else
+		{
+			$tag->template = '<img alt="{.}" class="emoji" draggable="false" src="' . $this->phpbb_root_path . 'assets/twemoji/svg/{@tseq}.svg"/>';
+		}
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
 		/**
