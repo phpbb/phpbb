@@ -63,8 +63,6 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \phpbb\template\twig\tokenparser\includejs,
 			new \phpbb\template\twig\tokenparser\includecss,
 			new \phpbb\template\twig\tokenparser\event($this->environment),
-			new \phpbb\template\twig\tokenparser\includephp($this->environment),
-			new \phpbb\template\twig\tokenparser\php($this->environment),
 		);
 	}
 

@@ -70,7 +70,7 @@ class acp_ranks
 					'rank_title'		=> $rank_title,
 					'rank_special'		=> $special_rank,
 					'rank_min'			=> $min_posts,
-					'rank_image'		=> htmlspecialchars_decode($rank_image, ENT_COMPAT)
+					'rank_image'		=> html_entity_decode($rank_image, ENT_COMPAT)
 				);
 
 				/**

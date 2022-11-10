@@ -16,11 +16,14 @@ namespace phpbb\composer;
 use Composer\Composer;
 use Composer\DependencyResolver\Request as composer_request;
 use Composer\Factory;
+use Composer\Filter\PlatformRequirementFilter\PlatformRequirementFilterFactory;
 use Composer\IO\IOInterface;
 use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
+use Composer\Json\JsonValidationException;
 use Composer\Package\BasePackage;
 use Composer\Package\CompletePackage;
+use Composer\PartialComposer;
 use Composer\Repository\ComposerRepository;
 use Composer\Semver\Constraint\ConstraintInterface;
 use Composer\Util\HttpDownloader;
@@ -152,12 +155,15 @@ class installer
 	{
 		if (!$io)
 		{
+			$this->restore_cwd();
 			$io = new null_io();
+			$this->move_to_root();
 		}
 
 		$this->generate_ext_json_file($packages);
 
-		$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
+		$composer = $this->get_composer($this->get_composer_ext_json_filename());
+
 		$install = \Composer\Installer::create($io, $composer);
 
 		$composer->getInstallationManager()->setOutputProgress(false);
@@ -170,7 +176,7 @@ class installer
 			->setUpdate(true)
 			->setUpdateAllowList($whitelist)
 			->setUpdateAllowTransitiveDependencies(composer_request::UPDATE_ONLY_LISTED)
-			->setIgnorePlatformRequirements(false)
+			->setPlatformRequirementFilter(PlatformRequirementFilterFactory::fromBoolOrList(false))
 			->setOptimizeAutoloader(true)
 			->setDumpAutoloader(true)
 			->setPreferStable(true)
@@ -184,6 +190,7 @@ class installer
 		catch (\Exception $e)
 		{
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception('COMPOSER_CANNOT_INSTALL', [], $e);
 		}
@@ -191,6 +198,7 @@ class installer
 		if ($result !== 0)
 		{
 			$this->restore_ext_json_file();
+			$this->restore_cwd();
 
 			throw new runtime_exception($io->get_composer_error(), []);
 		}
@@ -213,6 +221,32 @@ class installer
 	}
 
 	/**
+	 * Create instance of composer for supplied config file
+	 *
+	 * @param string|null $config_file Path to config file relative to phpBB root dir or null
+	 *
+	 * @return Composer|PartialComposer
+	 * @throws JsonValidationException
+	 */
+	protected function get_composer(?string $config_file): PartialComposer
+	{
+		static $composer_factory;
+		if (!$composer_factory)
+		{
+			$composer_factory = new Factory();
+		}
+
+		$io = new NullIO();
+
+		return $composer_factory->createComposer(
+			$io,
+			$config_file,
+			false,
+			filesystem_helper::realpath('')
+		);
+	}
+
+	/**
 	 * Returns the list of currently installed packages
 	 *
 	 * /!\ Doesn't change the current working directory
@@ -227,8 +261,7 @@ class installer
 
 		try
 		{
-			$io = new NullIO();
-			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
+			$composer = $this->get_composer($this->get_composer_ext_json_filename());
 
 			$installed = [];
 
@@ -286,7 +319,7 @@ class installer
 			$this->generate_ext_json_file($this->do_get_installed_packages(explode(',', self::PHPBB_TYPES)));
 
 			$io = new NullIO();
-			$composer = Factory::create($io, $this->get_composer_ext_json_filename(), false);
+			$composer = $this->get_composer($this->get_composer_ext_json_filename());
 
 			/** @var ConstraintInterface $core_constraint */
 			$core_constraint = $composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
@@ -314,7 +347,7 @@ class installer
 						if ($repo_url->getValue($repository) === 'https://repo.packagist.org')
 						{
 							$url = 'https://packagist.org/packages/list.json?type=' . $type;
-							$composer_config = new \Composer\Config([]);
+							$composer_config = new \Composer\Config();
 							$downloader = new HttpDownloader($io, $composer_config);
 							$json = $downloader->get($url)->getBody();
 
@@ -473,7 +506,7 @@ class installer
 	{
 		$io = new NullIO();
 
-		$composer = Factory::create($io, null, false);
+		$composer = $this->get_composer(null);
 
 		$core_packages = $this->get_core_packages($composer);
 
@@ -490,7 +523,10 @@ class installer
 			'replace' => $core_replace,
 			'repositories' => $this->get_composer_repositories(),
 			'config' => [
-				'vendor-dir'=> $this->packages_vendor_dir,
+				'vendor-dir'	=> $this->packages_vendor_dir,
+				'allow-plugins'	=> [
+					'composer/installers' => true,
+				]
 			],
 			'minimum-stability' => $this->minimum_stability,
 		];
@@ -587,6 +623,7 @@ class installer
 				$repositories[] = [
 					'type' => 'composer',
 					'url' => $repository,
+					'canonical' => $this->packagist ? false : true,
 				];
 			}
 		}

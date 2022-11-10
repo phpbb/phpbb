@@ -24,6 +24,5 @@ class phpbb_mock_extension_manager extends \phpbb\extension\manager
 		$this->container = $container;
 		$this->config = new \phpbb\config\config(array());
 		$this->finder_factory = new \phpbb\finder\factory(null, false, $this->phpbb_root_path, $phpEx);
-		$this->router = new phpbb_mock_dummy_router();
 	}
 }

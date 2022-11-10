@@ -30,13 +30,17 @@ class remove_orphaned_roles extends \phpbb\db\migration\migration
 	public function acl_remove_orphaned_roles()
 	{
 		$role_ids = [];
+		$auth_role_ids = [];
 
 		$sql = 'SELECT auth_role_id
 			FROM ' . ACL_GROUPS_TABLE . '
 			WHERE auth_role_id <> 0
 				AND forum_id = 0';
 		$result = $this->db->sql_query($sql);
-		$auth_role_ids = array_keys($this->db->sql_fetchrowset($result));
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$auth_role_ids[] = $row['auth_role_id'];
+		}
 		$this->db->sql_freeresult($result);
 
 		if (count($auth_role_ids))
@@ -45,7 +49,10 @@ class remove_orphaned_roles extends \phpbb\db\migration\migration
 				FROM ' . ACL_ROLES_TABLE . '
 				WHERE ' . $this->db->sql_in_set('role_id', $auth_role_ids);
 			$result = $this->db->sql_query($sql);
-			$role_ids = array_keys($this->db->sql_fetchrowset($result));
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$role_ids[] = $row['role_id'];
+			}
 			$this->db->sql_freeresult($result);
 		}
 

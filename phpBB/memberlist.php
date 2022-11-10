@@ -441,16 +441,16 @@ switch ($mode)
 						$messenger = new messenger(false);
 
 						$messenger->template('profile_send_im', $row['user_lang']);
-						$messenger->subject(htmlspecialchars_decode($subject, ENT_COMPAT));
+						$messenger->subject(html_entity_decode($subject, ENT_COMPAT));
 
 						$messenger->replyto($user->data['user_email']);
 						$messenger->set_addresses($row);
 
 						$messenger->assign_vars(array(
 							'BOARD_CONTACT'	=> phpbb_get_board_contact($config, $phpEx),
-							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username'], ENT_COMPAT),
-							'TO_USERNAME'	=> htmlspecialchars_decode($row['username'], ENT_COMPAT),
-							'MESSAGE'		=> htmlspecialchars_decode($message, ENT_COMPAT))
+							'FROM_USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
+							'TO_USERNAME'	=> html_entity_decode($row['username'], ENT_COMPAT),
+							'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT))
 						);
 
 						$messenger->send(NOTIFY_IM);
@@ -803,8 +803,8 @@ switch ($mode)
 			'S_USER_NOTES'				=> ($user_notes_enabled) ? true : false,
 			'S_WARN_USER'				=> ($warn_user_enabled) ? true : false,
 			'S_ZEBRA'					=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'				=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username'], ENT_COMPAT))) : '',
-			'U_ADD_FOE'					=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username'], ENT_COMPAT))) : '',
+			'U_ADD_FRIEND'				=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(html_entity_decode($member['username'], ENT_COMPAT))) : '',
+			'U_ADD_FOE'					=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(html_entity_decode($member['username'], ENT_COMPAT))) : '',
 			'U_REMOVE_FRIEND'			=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
 			'U_REMOVE_FOE'				=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
 
@@ -986,7 +986,7 @@ switch ($mode)
 		{
 			$user_list[] = [
 				'user_id'		=> (int) $row['user_id'],
-				'result'		=> htmlspecialchars_decode($row['username']),
+				'result'		=> html_entity_decode($row['username']),
 				'username_full'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 				'display'		=> get_username_string('no_profile', $row['user_id'], $row['username'], $row['user_colour']),
 			];
@@ -1636,17 +1636,20 @@ switch ($mode)
 		if (count($user_list))
 		{
 			// Session time?! Session time...
-			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time >= ' . (time() - $config['session_length']) . '
 					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
 			$result = $db->sql_query($sql);
 
-			$session_times = array();
+			$session_ary = [];
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$session_times[$row['session_user_id']] = $row['session_time'];
+				$session_ary[$row['session_user_id']] = [
+					'session_time' => $row['session_time'],
+					'session_viewonline' => $row['session_viewonline'],
+				];
 			}
 			$db->sql_freeresult($result);
 
@@ -1710,7 +1713,8 @@ switch ($mode)
 			$id_cache = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
+				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
+				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
 				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 				$id_cache[$row['user_id']] = $row;

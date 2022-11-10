@@ -264,16 +264,6 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'',
 				[]
 			],
-			[
-				'extension_config_test.html',
-				[
-					'config_name' => 'tpl_allow_php',
-				],
-				[],
-				[],
-				'',
-				[]
-			],
 		];
 	}
 

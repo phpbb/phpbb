@@ -65,7 +65,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	 * Operators are prefixed in search query and common words excluded
 	 * @var string
 	 */
-	protected $search_query;
+	protected $search_query = '';
 
 	/**
 	 * Contains common words.
@@ -178,7 +178,7 @@ class fulltext_postgres extends base implements search_backend_interface
 		}
 
 		// Filter out as above
-		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords, ENT_COMPAT)));
+		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(html_entity_decode($keywords, ENT_COMPAT)));
 
 		// Split words
 		$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
@@ -482,7 +482,7 @@ class fulltext_postgres extends base implements search_backend_interface
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count)
 		{
-			$sql_count = "SELECT COUNT(*) as result_count
+			$sql_count = "SELECT COUNT(DISTINCT " . (($type == 'posts') ? 'p.post_id' : 't.topic_id') . ") as result_count
 				$sql_from
 				$sql_where";
 			$result = $this->db->sql_query($sql_count);
@@ -752,8 +752,9 @@ class fulltext_postgres extends base implements search_backend_interface
 					GROUP BY t.topic_id, $sort_by_sql[$sort_key]";
 			}
 
-			$this->db->sql_query($sql_count);
-			$result_count = (int) $this->db->sql_fetchfield('result_count');
+			$result = $this->db->sql_query($sql_count);
+			$result_count = ($type == 'posts') ? (int) $this->db->sql_fetchfield('result_count') : count($this->db->sql_fetchrowset($result));
+			$this->db->sql_freeresult($result);
 
 			if (!$result_count)
 			{

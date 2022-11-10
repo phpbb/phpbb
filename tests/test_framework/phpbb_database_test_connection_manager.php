@@ -173,12 +173,12 @@ class phpbb_database_test_connection_manager
 	/**
 	* Load the phpBB database schema into the database
 	*/
-	public function load_schema($db)
+	public function load_schema($db, \Doctrine\DBAL\Connection $doctrine_dbal)
 	{
 		$this->ensure_connected(__METHOD__);
 
 		$directory = __DIR__ . '/../../phpBB/install/schemas/';
-		$this->load_schema_from_file($directory, $db);
+		$this->load_schema_from_file($directory, $db, $doctrine_dbal);
 	}
 
 	/**
@@ -325,7 +325,7 @@ class phpbb_database_test_connection_manager
 	* Compile the correct schema filename (as per create_schema_files) and
 	* load it into the database.
 	*/
-	protected function load_schema_from_file($directory, \phpbb\db\driver\driver_interface $db)
+	protected function load_schema_from_file($directory, \phpbb\db\driver\driver_interface $db, \Doctrine\DBAL\Connection $doctrine)
 	{
 		$schema = $this->dbms['SCHEMA'];
 
@@ -370,8 +370,9 @@ class phpbb_database_test_connection_manager
 				->get_classes();
 
 			$db = new \phpbb\db\driver\sqlite3();
+			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
 			$factory = new \phpbb\db\tools\factory();
-			$db_tools = $factory->get($db, true);
+			$db_tools = $factory->get($doctrine, true);
 			$tables = phpbb_database_test_case::get_core_tables();
 
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, $tables);
@@ -379,33 +380,13 @@ class phpbb_database_test_connection_manager
 		}
 
 		$factory = new \phpbb\db\tools\factory();
-		$db_tools = $factory->get($db, true);
+		$db_tools = $factory->get($doctrine);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
-			$queries = $db_tools->sql_create_table(
+			$db_tools->sql_create_table(
 				$table_name,
 				$table_data
 			);
-
-			foreach ($queries as $query)
-			{
-				if ($query === 'begin')
-				{
-					$this->pdo->beginTransaction();
-				}
-				else if ($query === 'commit' && $this->pdo->inTransaction())
-				{
-					$this->pdo->commit();
-				}
-				else
-				{
-					if (!$this->pdo->inTransaction())
-					{
-						$this->pdo->beginTransaction();
-					}
-					$this->pdo->exec($query);
-				}
-			}
 		}
 	}
 

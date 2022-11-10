@@ -351,19 +351,6 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		$this->assertEquals($details, $data, "Forum {$forum_id} does not match expected {$additional_error_message}");
 	}
 
-	protected function set_flood_interval($flood_interval)
-	{
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
-
-		$form = $crawler->selectButton('Submit')->form();
-		$values = $form->getValues();
-
-		$values["config[flood_interval]"] = $flood_interval;
-		$form->setValues($values);
-		$crawler = self::submit($form);
-		$this->assertGreaterThan(0, $crawler->filter('.successbox')->count());
-	}
-
 	protected function load_ids($data)
 	{
 		$this->db = $this->get_db();

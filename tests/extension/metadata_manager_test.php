@@ -19,6 +19,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	protected $cache;
 	protected $config;
 	protected $db;
+	protected $db_doctrine;
 	protected $db_tools;
 	protected $table_prefix;
 	protected $phpbb_root_path;
@@ -40,13 +41,15 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->db_doctrine);
 		$finder_factory = $this->createMock('\phpbb\finder\factory');
 		$this->phpbb_root_path = __DIR__ . '/';
 		$this->phpEx = 'php';
 
-		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $this->phpbb_root_path, $this->phpEx);
+		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $phpbb_dispatcher, $this->phpbb_root_path, $this->phpEx);
 
 		$this->table_prefix = 'phpbb_';
 
@@ -70,7 +73,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$phpbb_dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -99,7 +102,6 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			$finder_factory,
-			new phpbb_mock_dummy_router(),
 			'phpbb_ext',
 			$this->phpbb_root_path,
 			$this->cache

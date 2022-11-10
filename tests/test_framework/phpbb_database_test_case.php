@@ -31,6 +31,11 @@ abstract class phpbb_database_test_case extends TestCase
 
 	protected static $phpunit_version;
 
+	/**
+	 * @var \Doctrine\DBAL\Connection[]
+	 */
+	private $db_connections_doctrine;
+
 	public function __construct($name = NULL, array $data = [], $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -58,6 +63,7 @@ abstract class phpbb_database_test_case extends TestCase
 		}
 
 		$this->db_connections = [];
+		$this->db_connections_doctrine = [];
 	}
 
 	/**
@@ -92,8 +98,9 @@ abstract class phpbb_database_test_case extends TestCase
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite3();
+			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
 			$factory = new \phpbb\db\tools\factory();
-			$db_tools = $factory->get($db, true);
+			$db_tools = $factory->get($doctrine, true);
 
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, self::get_core_tables());
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
@@ -124,6 +131,14 @@ abstract class phpbb_database_test_case extends TestCase
 			foreach ($this->db_connections as $db)
 			{
 				$db->sql_close();
+			}
+		}
+
+		if (!empty($this->db_connections_doctrine))
+		{
+			foreach ($this->db_connections_doctrine as $db)
+			{
+				$db->close();
 			}
 		}
 	}
@@ -277,7 +292,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 		if (!self::$already_connected)
 		{
-			$manager->load_schema($this->new_dbal());
+			$manager->load_schema($this->new_dbal(), $this->new_doctrine_dbal());
 			self::$already_connected = true;
 		}
 
@@ -292,6 +307,16 @@ abstract class phpbb_database_test_case extends TestCase
 		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
 		$this->db_connections[] = $db;
+
+		return $db;
+	}
+
+	public function new_doctrine_dbal(): \Doctrine\DBAL\Connection
+	{
+		$config = $this->get_database_config();
+
+		$db = \phpbb\db\doctrine\connection_factory::get_connection_from_params($config['dbms'], $config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+		$this->db_connections_doctrine[] = $db;
 
 		return $db;
 	}

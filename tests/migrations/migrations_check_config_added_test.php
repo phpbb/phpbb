@@ -30,8 +30,9 @@ class migrations_check_config_added_test extends phpbb_test_case
 		]);
 
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
+		$this->db_doctrine = $this->createMock(\Doctrine\DBAL\Connection::class);
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->db_doctrine);
 		$this->table_prefix = 'phpbb_';
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;

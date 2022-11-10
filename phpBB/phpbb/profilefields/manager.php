@@ -27,7 +27,7 @@ class manager
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools\tools */
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
 	/** @var \phpbb\event\dispatcher_interface */
@@ -69,7 +69,7 @@ class manager
 	 * @param \phpbb\auth\auth					$auth					Auth object
 	 * @param \phpbb\config\db_text				$config_text			Config_text object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
-	 * @param \phpbb\db\tools\tools				$db_tools				Database tools object
+	 * @param \phpbb\db\tools\tools_interface			$db_tools				Database tools object
 	 * @param \phpbb\event\dispatcher_interface	$dispatcher				Event dispatcher object
 	 * @param \phpbb\language\language			$language				Language object
 	 * @param \phpbb\log\log					$log					Log object
@@ -85,7 +85,7 @@ class manager
 		\phpbb\auth\auth $auth,
 		\phpbb\config\db_text $config_text,
 		\phpbb\db\driver\driver_interface $db,
-		\phpbb\db\tools\tools $db_tools,
+		\phpbb\db\tools\tools_interface $db_tools,
 		\phpbb\event\dispatcher_interface $dispatcher,
 		\phpbb\language\language $language,
 		\phpbb\log\log $log,

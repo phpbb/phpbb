@@ -64,7 +64,8 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		parent::setup();
 
 		$db = $this->db = $this->new_dbal();
-		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_root_path, $phpEx);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$cache = $this->cache = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
 		$this->auth = new \phpbb\auth\auth();
 
 		// Initialize this auth_admin instance later after adding new auth options via this->tool->add()

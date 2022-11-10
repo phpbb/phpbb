@@ -180,16 +180,18 @@
 			</dl>
 			<!-- ENDIF -->
 
-			<!-- IF S_SOFTDELETE_ALLOWED or S_DELETE_ALLOWED -->
-				<hr class="dashed" />
+			{% if S_SOFTDELETE_ALLOWED || S_DELETE_ALLOWED %}
+				<hr class="dashed">
 				<dl>
-					<dt><label for="delete">{L_DELETE_POST}{L_COLON}</label></dt>
-					<dd><label for="delete"><input type="checkbox" name="delete" id="delete" {S_SOFTDELETE_CHECKED} /> {L_DELETE_POST_WARN}</label></dd>
-					<!-- IF S_DELETE_ALLOWED and S_SOFTDELETE_ALLOWED -->
-						<dd><label for="delete_permanent"><input type="checkbox" name="delete_permanent" id="delete_permanent" /> {L_DELETE_POST_PERMANENTLY}</label></dd>
-					<!-- ENDIF -->
+					<dt><label for="delete">{{ lang('DELETE_POST') ~ lang('COLON') }}</label></dt>
+					{% if S_SOFTDELETE_ALLOWED %}
+						<dd><label for="delete"><input type="checkbox" name="delete" id="delete" {{ S_SOFTDELETE_CHECKED }}> {{ lang('DELETE_POST_WARN') }}</label></dd>
+					{% endif %}
+					{% if S_DELETE_ALLOWED %}
+						<dd><label for="delete_permanent"><input type="checkbox" name="delete_permanent" id="delete_permanent"> {{ lang('DELETE_POST_PERMANENTLY') }}</label></dd>
+					{% endif %}
 				</dl>
-			<!-- ENDIF -->
+			{% endif %}
 
 			<!-- IF S_EDIT_REASON -->
 			<dl>

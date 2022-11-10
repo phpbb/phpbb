@@ -1575,11 +1575,11 @@ function validate_string($string, $optional = false, $min = 0, $max = 0)
 		return false;
 	}
 
-	if ($min && utf8_strlen(htmlspecialchars_decode($string, ENT_COMPAT)) < $min)
+	if ($min && utf8_strlen(html_entity_decode($string, ENT_COMPAT)) < $min)
 	{
 		return 'TOO_SHORT';
 	}
-	else if ($max && utf8_strlen(htmlspecialchars_decode($string, ENT_COMPAT)) > $max)
+	else if ($max && utf8_strlen(html_entity_decode($string, ENT_COMPAT)) > $max)
 	{
 		return 'TOO_LONG';
 	}

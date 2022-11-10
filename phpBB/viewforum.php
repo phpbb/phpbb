@@ -244,8 +244,8 @@ if (!$config['use_system_cron'])
 
 	if ($task->is_ready())
 	{
-		$url = $task->get_url();
-		$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+		$cron_task_tag = $task->get_html_tag();
+		$template->assign_var('RUN_CRON_TASK', $cron_task_tag);
 	}
 	else
 	{
@@ -255,8 +255,8 @@ if (!$config['use_system_cron'])
 
 		if ($task->is_ready())
 		{
-			$url = $task->get_url();
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . $url . '" width="1" height="1" alt="cron" />');
+			$cron_task_tag = $task->get_html_tag();
+			$template->assign_var('RUN_CRON_TASK', $cron_task_tag);
 		}
 	}
 }
@@ -1000,7 +1000,7 @@ if (count($topic_list))
 			'S_TOPIC_HOT'			=> $config['hot_threshold'] && ($replies + 1) >= $config['hot_threshold'] && $row['topic_status'] != ITEM_LOCKED,
 
 			'U_NEWEST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread' : false,
-			'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id)  ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,
+			'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id)  ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,
 			'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'U_VIEW_TOPIC'			=> $view_topic_url,

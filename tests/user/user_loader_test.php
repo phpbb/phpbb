@@ -58,6 +58,32 @@ class phpbb_user_loader_test extends phpbb_database_test_case
 		$this->assertEquals('Test', $user['username']);
 	}
 
+	public function test_load_get_invalid()
+	{
+		$this->user_loader->load_users(array(2));
+
+		$user = $this->user_loader->get_user(9);
+		$this->assertEquals(1, $user['user_id']);
+		$this->assertEquals('Guest', $user['username']);
+
+		$user = $this->user_loader->get_user(3, true);
+		$this->assertEquals(3, $user['user_id']);
+		$this->assertEquals('Test', $user['username']);
+	}
+
+	public function test_load_get_invalid_query()
+	{
+		$this->user_loader->load_users(array(2));
+
+		$user = $this->user_loader->get_user(9, true);
+		$this->assertEquals(1, $user['user_id']);
+		$this->assertEquals('Guest', $user['username']);
+
+		$user = $this->user_loader->get_user(3, true);
+		$this->assertEquals(3, $user['user_id']);
+		$this->assertEquals('Test', $user['username']);
+	}
+
 	public function test_load_user_by_username()
 	{
 		$user_id = $this->user_loader->load_user_by_username('Test');

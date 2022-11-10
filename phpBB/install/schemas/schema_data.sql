@@ -305,7 +305,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.post
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_cron_interval', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('text_reparser.user_signature_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('topics_per_page', '25');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('tpl_allow_php', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_lock', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
@@ -319,6 +318,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_json
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_vendor_dir', 'vendor-ext/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_enable_on_install', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_purge_on_remove', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_minimum_stability', 'stable');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\provider', 'phpbb\storage\provider\local');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\attachment\config\subfolders', '0');

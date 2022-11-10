@@ -13,11 +13,13 @@
 	<!-- IF topic_review_row.S_IGNORE_POST -->
 	<div class="post bg3 post-ignore">
 		<div class="inner">
-			{topic_review_row.L_IGNORE_POST}
+			{topic_review_row.L_IGNORE_POST}<br>
+			<a class="display_post_review" href="{{ post_review_row.U_MINI_POST }}">{{ lang('POST_DISPLAY') }}</a>
 	<!-- ELSE IF topic_review_row.S_POST_DELETED -->
 	<div class="post bg3 post-ignore">
 		<div class="inner">
-			{topic_review_row.L_DELETE_POST}
+			{topic_review_row.L_DELETE_POST}<br>
+			<a class="display_post_review" href="{{ post_review_row.U_MINI_POST }}">{{ lang('POST_DISPLAY') }}</a>
 	<!-- ELSE -->
 	<div class="post <!-- IF topic_review_row.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF topic_review_row.POST_ID == REPORTED_POST_ID --> reported<!-- ENDIF -->">
 		<div class="inner">
@@ -33,7 +35,7 @@
 					<a href="{topic_review_row.U_MCP_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
 						{{ Icon('iconify', 'fa:info', lang('POST_DETAILS'), true, 'c-button-icon') }}
 					</a>
-				<li>
+				</li>
 			<!-- ENDIF -->
 			<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->
 				<li>

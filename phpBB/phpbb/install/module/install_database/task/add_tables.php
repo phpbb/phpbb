@@ -13,6 +13,7 @@
 
 namespace phpbb\install\module\install_database\task;
 
+use phpbb\db\doctrine\connection_factory;
 use phpbb\db\driver\driver_interface;
 use phpbb\db\tools\tools_interface;
 use phpbb\install\helper\config;
@@ -83,8 +84,17 @@ class add_tables extends task_base
 			false
 		);
 
+		$doctrine_db = connection_factory::get_connection_from_params(
+			$config->get('dbms'),
+			$config->get('dbhost'),
+			$config->get('dbuser'),
+			$config->get('dbpasswd'),
+			$config->get('dbname'),
+			$config->get('dbport')
+		);
+
 		$this->config			= $config;
-		$this->db_tools			= $factory->get($this->db);
+		$this->db_tools			= $factory->get($doctrine_db);
 		$this->schema_file_path	= $phpbb_root_path . 'store/schema.json';
 		$this->table_prefix		= $this->config->get('table_prefix');
 		$this->change_prefix	= $this->config->get('change_table_prefix', true);

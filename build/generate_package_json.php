@@ -84,7 +84,7 @@ foreach ($older_verions as $version)
 		'phpBB ' . $version . ' to ' . $current_version . ' Update Package',
 		'phpBB-' . $version . '_to_' . $current_version,
 		'update',
-		'update',
+		'advanced_update',
 		$version
 	);
 }

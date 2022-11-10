@@ -208,6 +208,37 @@ class php_exporter
 	}
 
 	/**
+	 * Format the PHP events as a BBCode list
+	 *
+	 * @param string $action
+	 * @return string
+	 */
+	public function export_events_for_bbcode(string $action = ''): string
+	{
+		if ($action === 'diff')
+		{
+			$bbcode_text = '[size=150]PHP Events[/size]' . "\n";
+		}
+		else
+		{
+			$bbcode_text = '[size=200]PHP Events[/size]' . "\n";
+		}
+
+		foreach ($this->events as $event)
+		{
+			$bbcode_text .= "[list]\n";
+			$bbcode_text .= "[*][b]{$event['event']}[/b]\n";
+			$bbcode_text .= "Placement: {$event['file']}\n";
+			$bbcode_text .= 'Arguments: ' . implode(', ', $event['arguments']) . "\n";
+			$bbcode_text .= "Added in Release: {$event['since']}\n";
+			$bbcode_text .= "Explanation: {$event['description']}\n";
+			$bbcode_text .= "[/list]\n";
+		}
+
+		return $bbcode_text;
+	}
+
+	/**
 	* @param string $file
 	* @return int Number of events found in this file
 	* @throws \LogicException

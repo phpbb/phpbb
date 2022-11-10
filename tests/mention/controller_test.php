@@ -59,17 +59,18 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			'mention_names_limit' => 3,
 		));
 
+		// Event dispatcher
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = new \phpbb\cache\service(
 			$cache_driver,
 			$config,
 			$db,
+			$phpbb_dispatcher,
 			$phpbb_root_path,
 			$phpEx
 		);
-
-		// Event dispatcher
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Language
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));

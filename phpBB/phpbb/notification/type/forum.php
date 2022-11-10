@@ -130,17 +130,17 @@ class forum extends \phpbb\notification\type\post
 		}
 
 		return [
-			'AUTHOR_NAME'				=> htmlspecialchars_decode($username, ENT_COMPAT),
-			'FORUM_NAME'				=> htmlspecialchars_decode(censor_text($this->get_data('forum_name')), ENT_COMPAT),
-			'POST_SUBJECT'				=> htmlspecialchars_decode(censor_text($this->get_data('post_subject')), ENT_COMPAT),
-			'TOPIC_TITLE'				=> htmlspecialchars_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
+			'AUTHOR_NAME'				=> html_entity_decode($username, ENT_COMPAT),
+			'FORUM_NAME'				=> html_entity_decode(censor_text($this->get_data('forum_name')), ENT_COMPAT),
+			'POST_SUBJECT'				=> html_entity_decode(censor_text($this->get_data('post_subject')), ENT_COMPAT),
+			'TOPIC_TITLE'				=> html_entity_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 
 			'U_VIEW_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
-			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}&e=1&view=unread#unread",
-			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
-			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?f={$this->get_data('forum_id')}&t={$this->item_parent_id}",
+			'U_NEWEST_POST'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}&e=1&view=unread#unread",
+			'U_TOPIC'					=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
+			'U_VIEW_TOPIC'				=> generate_board_url() . "/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$this->php_ext}?f={$this->get_data('forum_id')}",
-			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewtopic.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&t={$this->item_parent_id}&unwatch=forum",
+			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&unwatch=forum",
 		];
 	}
 }

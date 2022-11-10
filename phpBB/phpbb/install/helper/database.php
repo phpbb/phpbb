@@ -13,6 +13,7 @@
 
 namespace phpbb\install\helper;
 
+use phpbb\db\doctrine\connection_factory;
 use phpbb\install\exception\invalid_dbms_exception;
 use phpbb\filesystem\helper as filesystem_helper;
 
@@ -389,8 +390,9 @@ class database
 				$temp_prefix . 'users',
 			);
 
+			$doctrine_db = connection_factory::get_connection_from_params($dbms, $dbhost, $dbuser, $dbpass, $dbname, $dbport);
 			$db_tools_factory = new \phpbb\db\tools\factory();
-			$db_tools = $db_tools_factory->get($db);
+			$db_tools = $db_tools_factory->get($doctrine_db);
 			$tables = $db_tools->sql_list_tables();
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);

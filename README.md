@@ -35,9 +35,9 @@ phpBB's [Development Documentation](https://area51.phpbb.com/docs/dev/index.html
 
 ## 🔬 Automated Testing
 
-We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](https://bamboo.phpbb.com) or check our travis builds below:
+We have unit and functional tests in order to prevent regressions. You can view the bamboo continuous integration [here](https://bamboo.phpbb.com) or check our GitHub Actions below:
 
-Branch  | Description | Github Actions |
+Branch  | Description | GitHub Actions |
 ------- | ----------- | -------------- |
 **master** | Latest development version | ![Tests](https://github.com/phpbb/phpbb/workflows/Tests/badge.svg?branch=master) |
 **3.3.x** | Development of version 3.3.x | ![Tests](https://github.com/phpbb/phpbb/workflows/Tests/badge.svg?branch=3.3.x) |

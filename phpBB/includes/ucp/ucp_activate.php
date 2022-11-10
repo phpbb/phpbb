@@ -76,10 +76,12 @@ class ucp_activate
 		if ($update_password)
 		{
 			$sql_ary = array(
-				'user_actkey'		=> '',
-				'user_password'		=> $user_row['user_newpasswd'],
-				'user_newpasswd'	=> '',
-				'user_login_attempts'	=> 0,
+				'user_actkey'				=> '',
+				'user_password'				=> $user_row['user_newpasswd'],
+				'user_newpasswd'			=> '',
+				'user_login_attempts'		=> 0,
+				'reset_token'				=> '',
+				'reset_token_expiration'	=> 0,
 			);
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
@@ -101,8 +103,14 @@ class ucp_activate
 
 			user_active_flip('activate', $user_row['user_id']);
 
-			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_actkey = ''
+			$sql_ary = [
+				'user_actkey'				=> '',
+				'reset_token'				=> '',
+				'reset_token_expiration'	=> 0,
+			];
+
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 				WHERE user_id = {$user_row['user_id']}";
 			$db->sql_query($sql);
 
@@ -134,7 +142,7 @@ class ucp_activate
 			$messenger->anti_abuse_headers($config, $user);
 
 			$messenger->assign_vars(array(
-				'USERNAME'	=> htmlspecialchars_decode($user_row['username'], ENT_COMPAT))
+				'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT))
 			);
 
 			$messenger->send($user_row['user_notify_type']);

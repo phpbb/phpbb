@@ -475,7 +475,7 @@ $lang = array_merge($lang, array(
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
 	'SERVER_NAME'				=> 'Domain name',
-	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.example.com</samp>).',
+	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>example.com</samp>).',
 	'SERVER_PORT'				=> 'Server port',
 	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different.',
 	'SERVER_PROTOCOL'			=> 'Server protocol',
@@ -538,8 +538,6 @@ $lang = array_merge($lang, array(
 	'REF_PATH'						=> 'Also validate path',
 	'REFERRER_VALID'				=> 'Validate Referrer',
 	'REFERRER_VALID_EXPLAIN'		=> 'If enabled, the referrer of POST requests will be checked against the host/script path settings. This may cause issues with boards using several domains and or external logins.',
-	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
-	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
 ));
 
 // Email Settings

@@ -11,8 +11,8 @@
 /* stylelint-disable selector-max-id */
 /* stylelint-disable selector-max-compound-selectors */
 /* stylelint-disable selector-no-qualifying-type */
-/* stylelint-disable declaration-property-unit-blacklist */
-/* stylelint-disable declaration-property-unit-whitelist */
+/* stylelint-disable declaration-property-unit-disallowed-list */
+/* stylelint-disable declaration-property-unit-allowed-list */
 
 /* General markup styles
 ---------------------------------------- */
@@ -3021,8 +3021,8 @@ fieldset.permissions .permissions-switch {
 /* stylelint-enable selector-max-id */
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
-/* stylelint-enable declaration-property-unit-blacklist */
-/* stylelint-enable declaration-property-unit-whitelist */
+/* stylelint-enable declaration-property-unit-disallowed-list */
+/* stylelint-enable declaration-property-unit-allowed-list */
 
 .acp-icon-move-up,
 .acp-icon-move-down {

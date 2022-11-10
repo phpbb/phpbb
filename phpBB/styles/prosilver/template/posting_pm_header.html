@@ -1,83 +1,110 @@
 <fieldset class="fields1">
-	<!-- IF not S_SHOW_DRAFTS -->
+	{% if not S_SHOW_DRAFTS %}
 
-		<!-- IF S_GROUP_OPTIONS -->
+		{% if S_GROUP_OPTIONS %}
 			<div class="column2">
-				<label for="group_list"><strong>{L_TO_ADD_GROUPS}{L_COLON}</strong></label><br />
-				<select name="group_list[]" id="group_list" multiple="multiple" size="3" class="inputbox">{S_GROUP_OPTIONS}</select><br />
+				<label for="group_list"><strong>{{ lang('TO_ADD_GROUPS') ~ lang('COLON') }}</strong></label><br>
+				<select name="group_list[]" id="group_list" multiple="multiple" size="3" class="inputbox">{{ S_GROUP_OPTIONS }}</select><br>
 			</div>
-		<!-- ENDIF -->
-		<!-- IF S_ALLOW_MASS_PM -->
-		<div class="column1">
-			<!-- IF not S_EDIT_POST -->
-			<dl class="pmlist">
-				<dt><label><strong>{L_TO_ADD_MASS}{L_COLON}</strong><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
-				<dd class="recipients">
-				<input type="submit" name="add_to" value="{L_ADD}" class="button1 button button-form-bold" tabindex="1" />
-				<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button1 button button-form-bold" tabindex="1" />
-				<!-- EVENT posting_pm_header_find_username_before -->
-				<span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span>
-				<!-- EVENT posting_pm_header_find_username_after -->
-				</dd>
-			</dl>
-			<!-- ENDIF -->
-		</div>
-		<!-- IF .to_recipient or .bcc_recipient --><hr /><!-- ENDIF -->
-		<div class="column1">
-			<!-- IF .to_recipient -->
-				<dl>
-					<dt><label>{L_TO_MASS}{L_COLON}</label></dt>
+		{% endif %}
+		{% if S_ALLOW_MASS_PM %}
+			<div class="column1">
+				{% if not S_EDIT_POST %}
+				<dl class="pmlist">
+					<dt><label><strong>{{ lang('TO_ADD_MASS') ~ lang('COLON') }}</strong><textarea id="username_list" name="username_list" class="inputbox" cols="50" rows="2" tabindex="1"></textarea></label></dt>
 					<dd class="recipients">
-					<ul class="recipients">
-						<!-- BEGIN to_recipient -->
-						<li>
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button1 button button-form-bold" /><!-- ENDIF -->
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}" style="color: {{ to_recipient.COLOUR }}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->
-						</li>
-						<!-- END to_recipient -->
-					</ul>
+						<input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold" tabindex="1">
+						<input type="submit" name="add_bcc" value="{{ lang('ADD_BCC') }}" class="button1 button button-form-bold" tabindex="1">
+						{% EVENT posting_pm_header_find_username_before %}
+						<span><a href="{{ U_FIND_USERNAME }}" onclick="find_username(this.href); return false;">{{ lang('FIND_USERNAME') }}</a></span>
+						{% EVENT posting_pm_header_find_username_after %}
 					</dd>
 				</dl>
-			<!-- ENDIF -->
-		</div>
-			<!-- IF .bcc_recipient -->
-			<div class="column2">
+				{% endif %}
+			</div>
+			{% if to_recipient or bcc_recipient %}
+				<hr>
+			{% endif %}
+			<div class="column1">
+				{% if to_recipient %}
+					<dl>
+						<dt><label>{{ lang('TO_MASS') ~ lang('COLON') }}</label></dt>
+						<dd class="recipients">
+							<ul class="recipients">
+								{% for recipient in to_recipient %}
+									<li>
+										{% if not S_EDIT_POST %}
+											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+										{% endif %}
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
+										{% else %}
+											{{ recipient.NAME_FULL }}
+										{% endif %}
+									</li>
+								{% endfor %}
+							</ul>
+						</dd>
+					</dl>
+				{% endif %}
+			</div>
+			{% if bcc_recipient %}
+				<div class="column2">
+					<dl>
+						<dt><label>{{ lang('BCC') ~ lang('COLON') }}</label></dt>
+						<dd class="recipients">
+							<ul class="recipients">
+								{% for recipient in bcc_recipient %}
+									<li>
+										{% if not S_EDIT_POST %}
+											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+										{% endif %}
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
+										{% else %}
+											{{ recipient.NAME_FULL }}
+										{% endif %}
+									</li>
+								{% endfor %}
+							</ul>
+						</dd>
+					</dl>
+				</div>
+			{% endif %}
+		{% else %}
+			<div class="column1">
 				<dl>
-					<dt><label>{L_BCC}{L_COLON}</label></dt>
-					<dd class="recipients">
-					<ul class="recipients">
-						<!-- BEGIN bcc_recipient -->
-						<li>
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button1 button button-form-bold" /><!-- ENDIF -->
-							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}" style="color: {{ bcc_recipient.COLOUR }}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}<!-- ENDIF -->
-						</li>
-						<!-- END bcc_recipient -->
-					</ul>
-					</dd>
+					<dt>
+						<label for="username_list">{{ lang('TO_ADD') ~ lang('COLON') }}</label>
+						{% if not S_EDIT_POST %}
+							<br><span><a href="{{ U_FIND_USERNAME }}" onclick="find_username(this.href); return false">{{ lang('FIND_USERNAME') }}</a></span>
+						{% endif %}
+					</dt>
+					{% if not S_EDIT_POST %}
+						<dd>
+							<input class="inputbox" type="text" name="username_list" id="username_list" size="20" value=""> <input type="submit" name="add_to" value="{{ lang('ADD') }}" class="button1 button button-form-bold">
+						</dd>
+					{% endif %}
+					{% if to_recipient %}
+						<dd class="recipients">
+							<ul class="recipients">
+								{% for recipient in to_recipient %}
+									<li>
+										{% if recipient.IS_GROUP %}
+											<a href="{{ recipient.U_VIEW }}"><strong>{{ recipient.NAME }}</strong></a>
+										{% else %}
+											{{ recipient.NAME_FULL }}
+										{% endif %}
+										{% if not S_EDIT_POST %}
+											&nbsp;<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+										{% endif %}
+									</li>
+								{% endfor %}
+							</ul>
+						</dd>
+					{% endif %}
 				</dl>
 			</div>
-			<!-- ENDIF -->
-		<!-- ELSE -->
-		<div class="column1">
-			<dl>
-				<dt><label for="username_list">{L_TO_ADD}{L_COLON}</label><!-- IF not S_EDIT_POST --><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span><!-- ENDIF --></dt>
-				<!-- IF not S_EDIT_POST -->
-				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button1 button button-form-bold" /></dd>
-				<!-- ENDIF -->
-				<!-- IF .to_recipient -->
-					<dd class="recipients">
-					<ul class="recipients">
-						<!-- BEGIN to_recipient -->
-						<li>
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}<!-- ENDIF -->&nbsp;
-							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button1 button button-form-bold" /><!-- ENDIF -->
-						</li>
-						<!-- END to_recipient -->
-					</dd>
-				<!-- ENDIF -->
-			</dl>
-		</div>
-		<!-- ENDIF -->
-
-	<!-- ENDIF -->
-	</fieldset>
+		{% endif %}
+	{% endif %}
+</fieldset>

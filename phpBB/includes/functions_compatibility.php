@@ -365,10 +365,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
  */
 function get_tables($db)
 {
-	$db_tools_factory = new \phpbb\db\tools\factory();
-	$db_tools = $db_tools_factory->get($db);
-
-	return $db_tools->sql_list_tables();
+	throw new BadFunctionCallException('function removed from phpBB core, use db_tools service instead.');
 }
 
 /**
@@ -726,7 +723,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
-			$username = htmlspecialchars_decode($request->server($k), ENT_COMPAT);
+			$username = html_entity_decode($request->server($k), ENT_COMPAT);
 			break;
 		}
 	}
@@ -736,7 +733,7 @@ function phpbb_http_login($param)
 	{
 		if ($request->is_set($k, \phpbb\request\request_interface::SERVER))
 		{
-			$password = htmlspecialchars_decode($request->server($k), ENT_COMPAT);
+			$password = html_entity_decode($request->server($k), ENT_COMPAT);
 			break;
 		}
 	}

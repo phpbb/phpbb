@@ -64,7 +64,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	{
 		$defaults = array(
 			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
 		);
 		return $defaults;
 	}

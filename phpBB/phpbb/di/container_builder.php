@@ -51,11 +51,6 @@ class container_builder
 	protected $container;
 
 	/**
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $dbal_connection = null;
-
-	/**
 	 * Indicates whether extensions should be used (default to true).
 	 *
 	 * @var bool
@@ -120,6 +115,11 @@ class container_builder
 	 * @var array
 	 */
 	private $env_parameters = [];
+
+	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $dbal_connection = null;
 
 	/**
 	 * Constructor
@@ -231,7 +231,7 @@ class container_builder
 				}
 			}
 
-			if ($this->compile_container && $this->config_php_file)
+			if ($this->config_php_file)
 			{
 				$this->container->set('config.php', $this->config_php_file);
 			}

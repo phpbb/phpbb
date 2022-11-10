@@ -50,6 +50,11 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v338">Changes since 3.3.8</a></li>
+		<li><a href="#v337">Changes since 3.3.7</a></li>
+		<li><a href="#v336">Changes since 3.3.6</a></li>
+		<li><a href="#v336rc1">Changes since 3.3.6-RC1</a></li>
+		<li><a href="#v335">Changes since 3.3.5</a></li>
 		<li><a href="#v335rc1">Changes since 3.3.5-RC1</a></li>
 		<li><a href="#v334">Changes since 3.3.4</a></li>
 		<li><a href="#v334rc1">Changes since 3.3.4-RC1</a></li>
@@ -158,6 +163,131 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v338"></a><h3>Changes since 3.3.8</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16917">PHPBB3-16917</a>] - bin/phpbb.cli requires 755 permissions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16932">PHPBB3-16932</a>] - Invalid email To: header on notifications to users with @ in name</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17003">PHPBB3-17003</a>] - Icon of a topic do not show up in the UCP &gt; Front Page.</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17019">PHPBB3-17019</a>] - Missing &quot;youtube&quot; profilefield stops Database update</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17023">PHPBB3-17023</a>] - phpBB 3.3: PHP8 supported but not indicated by composer.json</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17026">PHPBB3-17026</a>] - Session viewonline not defined in Memberlist</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17030">PHPBB3-17030</a>] - Feed doesn't generate valid RFC-3339 dates</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17032">PHPBB3-17032</a>] - Missing or invalid user entry for anonymous user may result in stack overflow</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17036">PHPBB3-17036</a>] - Update guzzle to latest version</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17050">PHPBB3-17050</a>] - Unnecessary trailing slash in void HTML elements</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17051">PHPBB3-17051</a>] - Textformatter may generate PHP warnings if user is not fully initialized in PHP 8.1</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16916">PHPBB3-16916</a>] - Enhance the PHP version error message on startup and install</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17005">PHPBB3-17005</a>] - List item closing tag missing slash in posting_topic_review</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17006">PHPBB3-17006</a>] - &quot;www.&quot; not needed and may lead to confusion</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17048">PHPBB3-17048</a>] - Update composer and dependencies for 3.3.9</li>
+			</ul>
+
+			<a name="v337"></a><h3>Changes since 3.3.7</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13821">PHPBB3-13821</a>] - Always show &quot;Display this post&quot; for foes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16871">PHPBB3-16871</a>] - S_FORUM_ID and S_TOPIC_ID variables set by page_header may cause fatal errors in feeds</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16891">PHPBB3-16891</a>] - Controller Helper Routing in ACP can break Extension Installation</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16960">PHPBB3-16960</a>] - Migrations table not populated at the end of installation</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16962">PHPBB3-16962</a>] - Possible bug related with format date</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16966">PHPBB3-16966</a>] - &quot;Insecure redirect&quot; error while permanently deleting posts</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16976">PHPBB3-16976</a>] - phpBB Native Search returns 1 match and one page of results</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16977">PHPBB3-16977</a>] - Cron-job &quot;img&quot; tag at bottom breaks some styles and is inaccessible</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16978">PHPBB3-16978</a>] - &lt;/ul&gt; Tag Missing From posting_pm_header.html Template</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16981">PHPBB3-16981</a>] - HTML-encoded emojis `&amp;#128396;️ &amp;#128208;` in email subject line</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16990">PHPBB3-16990</a>] - Wrong style template code in the post editor prevents deleting a post with certain permission combination</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13859">PHPBB3-13859</a>] - Youtube profilefield needs an upgrade</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15947">PHPBB3-15947</a>] - &quot;X out of 0 messages stored&quot; in UCP</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16800">PHPBB3-16800</a>] - Language string NO_POSTS should be changed</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16959">PHPBB3-16959</a>] - Remove redundant URL parameters from notification mails</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16967">PHPBB3-16967</a>] - Deprecate use of PHP and INCLUDEPHP in templates</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16969">PHPBB3-16969</a>] - Flash status displays when posting when posts settings don't allow [FLASH] - BBCode</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16988">PHPBB3-16988</a>] - Ignore appended branch info when preparing commit message</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16991">PHPBB3-16991</a>] - Add events for bookmarks and subscribed topics in UCP</li>
+			</ul>
+
+			<a name="v336"></a><h3>Changes since 3.3.6</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16973">PHPBB3-16973</a>] - Remove orphaned roles migration may incorrectly remove role-based group permissions</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16972">PHPBB3-16972</a>] - Rename subtype to advanced_update in package.json generation</li>
+			</ul>
+
+			<a name="v336rc1"></a><h3>Changes since 3.3.6-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16872">PHPBB3-16872</a>] - Create event exporter to BBCode</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16956">PHPBB3-16956</a>] - White screen after disable extention</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15028">PHPBB3-15028</a>] - Change update instructions in ACP</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16964">PHPBB3-16964</a>] - Update composer and composer dependencies to latest versions</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-272">SECURITY-272</a>] - Use longer random string for activation key</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-273">SECURITY-273</a>] - Reset reset token info when re-activating account</li>
+			</ul>
+
+			<a name="v335"></a><h3>Changes since 3.3.5</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16881">PHPBB3-16881</a>] - Fix ACP Statistic Table</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16883">PHPBB3-16883</a>] - Check if var is array before using count in installer diff</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16887">PHPBB3-16887</a>] - Update required PHP version</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16889">PHPBB3-16889</a>] - Postgres on windows builds keep failing</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16892">PHPBB3-16892</a>] - Duplicate entry for jav files in extension guesser</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16895">PHPBB3-16895</a>] - 'Permission' migration tool incorrectly handles role removal</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16897">PHPBB3-16897</a>] - sqlite3 drivers generates warnings when executing an explain query plan that fails</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16900">PHPBB3-16900</a>] - Invalid email subject header on long topic titles</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16904">PHPBB3-16904</a>] - Regression for topic selection in MCP in 3.3.5</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16908">PHPBB3-16908</a>] - PHP warning on non-existent post id requests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16910">PHPBB3-16910</a>] - PHP warning if trying to attach orphaned files to non existent posts</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16914">PHPBB3-16914</a>] - Missing id in memberlist email template</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16924">PHPBB3-16924</a>] - Double escaping of config values inserted with db config</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13508">PHPBB3-13508</a>] - Support using INCLUDEJS and INCLUDECSS in twig template format</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16828">PHPBB3-16828</a>] - Add hook event before find_users_for_notification() execute</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16859">PHPBB3-16859</a>] - Language selection option is displayed on register if only 1 language is installed</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16885">PHPBB3-16885</a>] - Add filters to Twig - INT and FLOAT</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16888">PHPBB3-16888</a>] - Add the list of allowed attachment types using accept attribute </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16896">PHPBB3-16896</a>] - Improve .gitignore visibility</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16898">PHPBB3-16898</a>] - Do not restrict the debug error handler to the development environment</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16899">PHPBB3-16899</a>] - Add SVG and WEBP image type to ranks, smilies and topic icons</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16902">PHPBB3-16902</a>] - Improve search results count for MySQL</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16909">PHPBB3-16909</a>] - Add PHP 8.2 builds to test matrix</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16912">PHPBB3-16912</a>] - Improve mail encoding to better match RFC 2047</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16921">PHPBB3-16921</a>] - Increase PHP requirements in the DOCS</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16930">PHPBB3-16930</a>] - Remove redundant topic ID from last post URL</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16933">PHPBB3-16933</a>] - Inconsistent handling of hyphen by phpBB Native search backend</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16939">PHPBB3-16939</a>] - Wait for postgres service to start in GitHub Actions windows builds</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16940">PHPBB3-16940</a>] - Optimize phpBB Native Search</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16927">PHPBB3-16927</a>] - Update plupload to latest version</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16928">PHPBB3-16928</a>] - Update composer and composer dependencies to latest versions</li>
+			</ul>
+
 			<a name="v335rc1"></a><h3>Changes since 3.3.5-RC1</h3>
 			<h4>Bug</h4>
 			<ul>

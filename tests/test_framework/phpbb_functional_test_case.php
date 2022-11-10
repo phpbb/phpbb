@@ -24,6 +24,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected $cache = null;
 	protected $db = null;
+	protected $db_doctrine = null;
 	protected $extension_manager = null;
 
 	/**
@@ -207,6 +208,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $this->db;
 	}
 
+	protected function get_db_doctrine()
+	{
+		// so we don't reopen an open connection
+		if (!($this->db_doctrine instanceof \Doctrine\DBAL\Connection))
+		{
+			$this->db_doctrine = \phpbb\db\doctrine\connection_factory::get_connection_from_params(self::$config['dbms'], self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+		}
+		return $this->db_doctrine;
+	}
+
 	protected function get_cache_driver()
 	{
 		if (!$this->cache)
@@ -238,9 +249,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
+		$db_doctrine = $this->get_db_doctrine();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
-		$db_tools = $factory->get($db);
+		$db_tools = $factory->get($db_doctrine);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
@@ -256,18 +268,24 @@ class phpbb_functional_test_case extends phpbb_test_case
 			array(),
 			new \phpbb\db\migration\helper()
 		);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$container->set('migrator', $migrator);
-		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
+		$container->set('dispatcher', $phpbb_dispatcher);
+		$cache = $this->getMockBuilder('\phpbb\cache\service')
+			->setConstructorArgs([$this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx])
+			->setMethods(['deferred_purge'])
+			->getMock();
+		$cache->method('deferred_purge')
+			->willReturnCallback([$cache, 'purge']);
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
 			$db,
 			$config,
 			$finder_factory,
-			new phpbb_mock_dummy_router(),
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
-			new \phpbb\cache\service($this->get_cache_driver(), $config, $this->db, $phpbb_root_path, $phpEx)
+			$cache
 		);
 
 		return $extension_manager;
@@ -983,7 +1001,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), $content);
 
 		if ($status_code !== false)
 		{
@@ -1445,5 +1463,88 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		return $file_form_data;
+	}
+
+	/**
+	 * Get username of currently logged in user
+	 *
+	 * @return string|bool username if logged in, false otherwise
+	 */
+	protected function get_logged_in_user()
+	{
+		$username_logged_in = false;
+		$crawler = self::request('GET', 'index.php');
+		$is_logged_in = strpos($crawler->filter('div[class="navbar"]')->text(), 'Login') === false;
+		if ($is_logged_in)
+		{
+			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span')->text();
+		}
+		return $username_logged_in;
+	}
+
+	/**
+	 * Posting flood control
+	 */
+	protected function set_flood_interval($flood_interval)
+	{
+		$relogin_back = false;
+		$logged_in_username = $this->get_logged_in_user();
+		if ($logged_in_username && $logged_in_username !== 'admin')
+		{
+			$this->logout();
+			$relogin_back = true;
+		}
+
+		if (!$logged_in_username || $relogin_back)
+		{
+			$this->login();
+			$this->admin_login();
+		}
+
+		$this->add_lang('acp/common');
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=post&sid=' . $this->sid);
+		$form = $crawler->selectButton('submit')->form([
+			'config[flood_interval]'	=> $flood_interval,
+		]);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->text());
+
+		// Get logged out back or get logged in in user back if needed
+		if (!$logged_in_username)
+		{
+			$this->logout();
+		}
+
+		if ($relogin_back)
+		{
+			$this->logout();
+			$this->login($logged_in_username);
+		}
+	}
+
+	/**
+	* Check if a user exists by username or user_id
+	*
+	* @param string $username The username to check or empty if user_id is used
+	* @param int $user_id The user id to check or empty if username is used
+	*
+	* @return bool Returns true if a user exists, false otherwise
+	*/
+	protected function user_exists($username, $user_id = null)
+	{
+		global $db;
+
+		$db = $this->get_db();
+
+		if (!function_exists('utf_clean_string'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/utf/utf_tools.php');
+		}
+		if (!function_exists('user_get_id_name'))
+		{
+			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
+		}
+
+		return user_get_id_name($user_id, $username) ? false : true;
 	}
 }

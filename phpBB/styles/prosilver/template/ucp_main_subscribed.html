@@ -43,12 +43,12 @@
 					</div>
 				</dt>
 				<dd class="lastpost">
-					<!-- IF forumrow.LAST_POST_TIME -->
+					<!-- IF forumrow.LAST_POST_TIME_RFC3339 -->
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
 							<a href="{forumrow.U_LAST_POST}">
 								{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
 							</a>
-							<br />{forumrow.LAST_POST_TIME}</span>
+							<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time></span>
 					<!-- ELSE -->
 						{L_NO_POSTS}<br />&nbsp;
 					<!-- ENDIF -->
@@ -120,6 +120,7 @@
 							</a>
 						<!-- ENDIF -->
 						<br />
+						{% EVENT ucp_main_subscribed_topic_title_after %}
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
 							<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>

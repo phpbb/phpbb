@@ -362,6 +362,17 @@ $('.display_post').click(function(e) {
 });
 
 /**
+ * Display hidden post on post review page
+ */
+$('.display_post_review').on('click', function(e) {
+	e.preventDefault();
+
+	let $displayPostLink = $(this);
+	$displayPostLink.closest('.post-ignore').removeClass('post-ignore');
+	$displayPostLink.hide();
+});
+
+/**
 * Toggle the member search panel in memberlist.php.
 *
 * If user returns to search page after viewing results the search panel is automatically displayed.

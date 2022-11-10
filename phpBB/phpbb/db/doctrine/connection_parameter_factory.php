@@ -14,6 +14,7 @@
 namespace phpbb\db\doctrine;
 
 use InvalidArgumentException;
+use phpbb\db\doctrine\oci8\driver as oci8_driver;
 
 /**
  * Helper class to generate Doctrine DBAL configuration.
@@ -24,7 +25,7 @@ class connection_parameter_factory
 	 * Returns configuration options for Doctrine DBAL.
 	 *
 	 * @param string		$driver		Driver name.
-	 * @param string		$host		Hostname.
+	 * @param string|null	$host		Hostname.
 	 * @param string|null	$user		Username.
 	 * @param string|null	$password	Password.
 	 * @param string|null	$name		Database name.
@@ -36,7 +37,7 @@ class connection_parameter_factory
 	 */
 	public static function get_configuration(
 		string $driver,
-		string $host,
+		?string $host = null,
 		?string $user = null,
 		?string $password = null,
 		?string $name = null,
@@ -60,7 +61,7 @@ class connection_parameter_factory
 	 * Build Doctrine configuration array.
 	 *
 	 * @param array			$params		Parameter array.
-	 * @param string		$host		Database hostname.
+	 * @param string|null	$host		Database hostname.
 	 * @param string|null	$user		Username.
 	 * @param string|null	$password	Password.
 	 * @param string|null	$name		Database name.
@@ -72,7 +73,7 @@ class connection_parameter_factory
 	 */
 	private static function build_connection_parameters(
 		array $params,
-		string $host,
+		?string $host = null,
 		?string $user = null,
 		?string $password = null,
 		?string $name = null,
@@ -85,7 +86,7 @@ class connection_parameter_factory
 			);
 		}
 
-		if (empty($host) || empty($user) || empty($name))
+		if (empty($user) || empty($name))
 		{
 			throw new InvalidArgumentException('Required database parameter is not set.');
 		}
@@ -151,9 +152,15 @@ class connection_parameter_factory
 			],
 			'oci8' => [
 				'charset' => 'UTF8',
+				'platform' => new oracle_platform(),
+				'driverClass' => oci8_driver::class,
 			],
 			'pdo_pgsql' => [
 				'charset' => 'UTF8',
+				'platform' => new postgresql_platform(),
+			],
+			'pdo_sqlsrv' => [
+				'platform' => new sqlsrv_platform(),
 			],
 		];
 

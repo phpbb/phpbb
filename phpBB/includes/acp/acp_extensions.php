@@ -189,7 +189,7 @@ class acp_extensions
 
 				$this->list_enabled_exts($phpbb_extension_manager, $managed_packages);
 				$this->list_disabled_exts($phpbb_extension_manager, $managed_packages);
-				$this->list_available_exts($phpbb_extension_manager, $managed_packages);
+				$this->list_available_exts($managed_packages);
 
 				$this->tpl_name = 'acp_ext_list';
 
@@ -838,10 +838,7 @@ class acp_extensions
 			{
 				$this->output_actions('enabled', [
 					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
-					'REMOVE' => [
-						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
-						'color' => '#BC2A4D;',
-					]
+					'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 				]);
 			}
 		}
@@ -922,10 +919,7 @@ class acp_extensions
 			{
 				$this->output_actions('disabled', [
 					'UPDATE' => $this->u_catalog_action . '&amp;action=update&amp;extension=' . urlencode($block_vars['META_NAME']),
-					'REMOVE' => [
-						'url' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
-						'color' => '#BC2A4D;',
-					]
+					'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 				]);
 			}
 		}
@@ -934,12 +928,11 @@ class acp_extensions
 	/**
 	 * Lists all the available extensions and dumps to the template
 	 *
-	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
 	 * @param array                     $managed_packages            List of managed packages
 	 *
 	 * @return null
 	 */
-	public function list_available_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
+	public function list_available_exts(array $managed_packages)
 	{
 		$uninstalled = array_diff_key($this->ext_manager->all_available(), $this->ext_manager->all_configured());
 
@@ -997,6 +990,7 @@ class acp_extensions
 
 			$this->output_actions('disabled', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
+				'REMOVE' => $this->u_catalog_action . '&amp;action=remove&amp;extension=' . urlencode($block_vars['META_NAME']),
 			));
 		}
 	}
@@ -1009,11 +1003,12 @@ class acp_extensions
 	*/
 	private function output_actions($block, $actions)
 	{
-		foreach ($actions as $lang => $url)
+		foreach ($actions as $action => $url)
 		{
 			$this->template->assign_block_vars($block . '.actions', [
-				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $lang),
-				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $lang . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $lang . '_EXPLAIN') : '',
+				'ACTION'			=> $action,
+				'L_ACTION'			=> $this->user->lang('EXTENSION_' . $action),
+				'L_ACTION_EXPLAIN'	=> (isset($this->user->lang['EXTENSION_' . $action . '_EXPLAIN'])) ? $this->user->lang('EXTENSION_' . $action . '_EXPLAIN') : '',
 				'U_ACTION'			=> $url,
 			]);
 		}

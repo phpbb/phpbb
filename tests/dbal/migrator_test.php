@@ -30,6 +30,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \Doctrine\DBAL\Connection */
+	protected $doctrine_db;
+
 	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
@@ -49,8 +52,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
+		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->doctrine_db);
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 
@@ -83,7 +87,6 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->db,
 			$this->config,
 			$finder_factory,
-			new phpbb_mock_dummy_router(),
 			'phpbb_ext',
 			__DIR__ . '/../../phpBB/',
 			null
