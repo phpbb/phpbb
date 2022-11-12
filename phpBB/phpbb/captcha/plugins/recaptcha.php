@@ -15,8 +15,8 @@ namespace phpbb\captcha\plugins;
 
 class recaptcha extends captcha_abstract
 {
-	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
-	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
+	var $recaptcha_server = 'http://www.recaptcha.net/recaptcha/api';
+	var $recaptcha_server_secure = 'https://www.recaptcha.net/recaptcha/api'; // class constants :(
 
 	var $response;
 
