@@ -239,7 +239,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $template, $phpbb_log, $request;
+		global $db, $language, $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx;
 
 		$action = $request->variable('action', '');
@@ -312,12 +312,17 @@ class acp_search
 					else if ($submit)
 					{
 						meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-						$lang_str_ary = [
-							$user->lang('DELETING_INDEX_IN_PROGRESS'),
-							$user->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
-							$this->get_post_index_progress($post_counter)
-						];
-						trigger_error(implode('<br>', $lang_str_ary));
+						$template->assign_vars([
+							'S_INDEX_PROGRESS'		=> true,
+							'INDEXING_TITLE'		=> $language->lang('DELETING_INDEX_IN_PROGRESS'),
+							'INDEXING_EXPLAIN'		=> $language->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
+							'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+						]);
+
+						$this->tpl_name = 'acp_search';
+						$this->page_title = 'ACP_SEARCH_INDEX';
+
+						return;
 					}
 					else
 					{
@@ -355,14 +360,20 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							$lang_str_ary = [
-								$user->lang('DELETING_INDEX_IN_PROGRESS'),
-								$user->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
-								$user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter),
-								$user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second),
-								$this->get_post_index_progress($post_counter)
-							];
-							trigger_error(implode('<br>', $lang_str_ary));
+
+							$template->assign_vars([
+								'S_INDEX_PROGRESS'		=> true,
+								'INDEXING_TITLE'		=> $language->lang('DELETING_INDEX_IN_PROGRESS'),
+								'INDEXING_EXPLAIN'		=> $language->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
+								'INDEXING_PROGRESS'		=> $language->lang('SEARCH_INDEX_DELETE_REDIRECT', $row_count, $post_counter),
+								'INDEXING_RATE'			=> $language->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second),
+								'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+							]);
+
+							$this->tpl_name = 'acp_search';
+							$this->page_title = 'ACP_SEARCH_INDEX';
+
+							return;
 						}
 					}
 
@@ -389,12 +400,18 @@ class acp_search
 					else if ($submit)
 					{
 						meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-						$lang_str_ary = [
-							$user->lang('INDEXING_IN_PROGRESS'),
-							$user->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
-							$this->get_post_index_progress($post_counter)
-						];
-						trigger_error(implode('<br>', $lang_str_ary));
+
+						$template->assign_vars([
+							'S_INDEX_PROGRESS'		=> true,
+							'INDEXING_TITLE'		=> $language->lang('INDEXING_IN_PROGRESS'),
+							'INDEXING_EXPLAIN'		=> $language->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
+							'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+						]);
+
+						$this->tpl_name = 'acp_search';
+						$this->page_title = 'ACP_SEARCH_INDEX';
+
+						return;
 					}
 					else
 					{
@@ -459,14 +476,19 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							$lang_str_ary = [
-								$user->lang('INDEXING_IN_PROGRESS'),
-								$user->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
-								$user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter),
-								$user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second),
-								$this->get_post_index_progress($post_counter)
-							];
-							trigger_error(implode('<br>', $lang_str_ary));
+							$template->assign_vars([
+								'S_INDEX_PROGRESS'		=> true,
+								'INDEXING_TITLE'		=> $language->lang('INDEXING_IN_PROGRESS'),
+								'INDEXING_EXPLAIN'		=> $language->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
+								'INDEXING_PROGRESS'		=> $language->lang('SEARCH_INDEX_CREATE_REDIRECT', $row_count, $post_counter),
+								'INDEXING_RATE'			=> $language->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second),
+								'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+							]);
+
+							$this->tpl_name = 'acp_search';
+							$this->page_title = 'ACP_SEARCH_INDEX';
+
+							return;
 						}
 					}
 
@@ -552,9 +574,7 @@ class acp_search
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
-				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'],
-				'L_CONTINUE_PROGRESS'	=> (isset($this->state[2]) && $this->state[2] > 0) ? $this->get_post_index_progress($this->state[2]) : $this->get_post_index_progress(0)
+				'CONTINUE_PROGRESS'	=> (isset($this->state[2]) && $this->state[2] > 0) ? $this->get_post_index_progress($this->state[2]) : $this->get_post_index_progress(0)
 			));
 		}
 	}
@@ -589,7 +609,7 @@ class acp_search
 	 * Get progress stats of search index with HTML progress bar.
 	 *
 	 * @param int		$post_counter	Post ID of last post indexed.
-	 * @return string	Returns string with HTML progress bar and stats.
+	 * @return array	Returns array with progress bar data.
 	 */
 	function get_post_index_progress(int $post_counter)
 	{
@@ -612,10 +632,12 @@ class acp_search
 		$total_count = $done_count + $remain_count;
 		$percent = ($done_count / $total_count) * 100;
 
-		$progress = sprintf('<progress value="%1$d" max="%2$d" style="height: 2em; width: 20em;"></progress><br> %3$.2f %% <br>', $done_count, $total_count, $percent);
-		$progress .= $language->lang('SEARCH_INDEX_PROGRESS', $done_count, $remain_count, $total_count);
-
-		return $progress;
+		return [
+			'VALUE'			=> $done_count,
+			'TOTAL'			=> $total_count,
+			'PERCENTAGE'	=> $percent,
+			'REMAINING'		=> $remain_count,
+		];
 	}
 
 	function save_state($state = false)
