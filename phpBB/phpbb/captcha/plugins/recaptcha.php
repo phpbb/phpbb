@@ -15,18 +15,13 @@ namespace phpbb\captcha\plugins;
 
 class recaptcha extends captcha_abstract
 {
-	var $recaptcha_server = 'http://www.recaptcha.net/recaptcha/api';
-	var $recaptcha_server_secure = 'https://www.recaptcha.net/recaptcha/api'; // class constants :(
-
-	var $response;
+	private $response;
 
 	/**
 	* Constructor
 	*/
 	public function __construct()
 	{
-		global $request;
-		$this->recaptcha_server = $request->is_secure() ? $this->recaptcha_server_secure : $this->recaptcha_server;
 	}
 
 	function init($type)
@@ -148,9 +143,10 @@ class recaptcha extends captcha_abstract
 		{
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
+			$domain = $config['recaptcha_v2_domain'] ?? recaptcha_v3::GOOGLE;
 
 			$template->assign_vars(array(
-				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
+				'RECAPTCHA_SERVER'			=> sprintf('//%1$s/recaptcha/api', $domain),
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 				'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 				'S_CONFIRM_CODE'			=> true,
