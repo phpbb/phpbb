@@ -30,7 +30,7 @@ class recaptcha_v3 extends captcha_abstract
 	 */
 	const GOOGLE		= 'google.com';
 	const RECAPTCHA		= 'recaptcha.net';
-	CONST RECAPTCHA_CN	= 'recaptcha.google.cn';
+	const RECAPTCHA_CN	= 'recaptcha.google.cn';
 
 	/** @var string[] List of supported domains */
 	static public $supported_domains = [
