@@ -15,6 +15,7 @@ namespace phpbb\cron\task\core;
 
 use phpbb\config\config;
 use phpbb\cron\task\base;
+use phpbb\search\backend\search_backend_interface;
 use phpbb\search\search_backend_factory;
 
 /**
@@ -37,6 +38,12 @@ class tidy_search extends base
 	protected $search_backend_factory;
 
 	/**
+	 * Reference to active search backend to avoid calling the factory multiple times
+	 * @var search_backend_interface
+	 */
+	protected $active_search;
+
+	/**
 	 * Constructor.
 	 *
 	 * @param config $config The config object
@@ -55,8 +62,12 @@ class tidy_search extends base
 	*/
 	public function run()
 	{
-		$search = $this->search_backend_factory->get_active();
-		$search->tidy();
+		if ($this->active_search === null)
+		{
+			$this->active_search = $this->search_backend_factory->get_active();
+		}
+
+		$this->active_search->tidy();
 	}
 
 	/**
@@ -72,7 +83,10 @@ class tidy_search extends base
 	{
 		try
 		{
-			$this->search_backend_factory->get_active();
+			if ($this->active_search === null)
+			{
+				$this->active_search = $this->search_backend_factory->get_active();
+			}
 		}
 		catch (\RuntimeException $e)
 		{
