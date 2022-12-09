@@ -199,7 +199,7 @@ class ucp_login_link
 	*/
 	protected function process_login_result($result)
 	{
-		global $config, $template, $user, $phpbb_container;
+		global $config, $template, $user, $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$login_error = null;
 

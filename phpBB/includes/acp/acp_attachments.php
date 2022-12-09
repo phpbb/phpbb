@@ -273,15 +273,13 @@ class acp_attachments
 				$result = $db->sql_query($sql);
 
 				$defined_ips = '';
-				$ips = array();
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$value = ($row['site_ip']) ? $row['site_ip'] : $row['site_hostname'];
+					$value = $row['site_ip'] ?: $row['site_hostname'];
 					if ($value)
 					{
 						$defined_ips .= '<option' . (($row['ip_exclude']) ? ' class="sep"' : '') . ' value="' . $row['site_id'] . '">' . $value . '</option>';
-						$ips[$row['site_id']] = $value;
 					}
 				}
 				$db->sql_freeresult($result);
@@ -354,7 +352,6 @@ class acp_attachments
 			break;
 
 			case 'extensions':
-
 				if ($submit || isset($_POST['add_extension_check']))
 				{
 					if ($submit)
@@ -423,30 +420,27 @@ class acp_attachments
 
 					if ($add_extension && $add)
 					{
+						$sql = 'SELECT extension_id
+							FROM ' . EXTENSIONS_TABLE . "
+							WHERE extension = '" . $db->sql_escape($add_extension) . "'";
+						$result = $db->sql_query($sql);
+
+						if ($row = $db->sql_fetchrow($result))
+						{
+							$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
+						}
+						$db->sql_freeresult($result);
+
 						if (!count($error))
 						{
-							$sql = 'SELECT extension_id
-								FROM ' . EXTENSIONS_TABLE . "
-								WHERE extension = '" . $db->sql_escape($add_extension) . "'";
-							$result = $db->sql_query($sql);
+							$sql_ary = array(
+								'group_id'	=>	$add_extension_group,
+								'extension'	=>	$add_extension
+							);
 
-							if ($row = $db->sql_fetchrow($result))
-							{
-								$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
-							}
-							$db->sql_freeresult($result);
+							$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
-							if (!count($error))
-							{
-								$sql_ary = array(
-									'group_id'	=>	$add_extension_group,
-									'extension'	=>	$add_extension
-								);
-
-								$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-
-								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_ADD', false, array($add_extension));
-							}
+							$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_ATTACH_EXT_ADD', false, array($add_extension));
 						}
 					}
 
@@ -750,7 +744,7 @@ class acp_attachments
 							$imglist = array_values($imglist);
 							$imglist = $imglist[0];
 
-							foreach ($imglist as $key => $img)
+							foreach ($imglist as $img)
 							{
 								if (!$ext_group_row['upload_icon'])
 								{
@@ -773,7 +767,7 @@ class acp_attachments
 
 						$i = 0;
 						$assigned_extensions = '';
-						foreach ($extensions as $num => $row)
+						foreach ($extensions as $row)
 						{
 							if ($row['group_id'] == $group_id && $group_id)
 							{
@@ -822,8 +816,8 @@ class acp_attachments
 							ORDER BY left_id ASC';
 						$result = $db->sql_query($sql, 600);
 
-						$right = $cat_right = $padding_inc = 0;
-						$padding = $forum_list = $holding = '';
+						$right = $cat_right = 0;
+						$padding = $holding = '';
 						$padding_store = array('0' => '');
 
 						while ($row = $db->sql_fetchrow($result))
@@ -1150,6 +1144,8 @@ class acp_attachments
 							WHERE ' . $db->sql_in_set('attach_id', $delete_files) . '
 								AND is_orphan = 0';
 						$result = $db->sql_query($sql);
+
+						$deleted_filenames = [];
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$deleted_filenames[] = $row['real_filename'];

@@ -369,7 +369,6 @@ class mcp_queue
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
 				$topic_id = $request->variable('t', 0);
-				$forum_info = array();
 
 				// If 'sort' is set, "Go" was pressed which is located behind the forums <select> box
 				// Then, unset the topic id so it does not override the forum id
@@ -413,13 +412,6 @@ class mcp_queue
 					{
 						trigger_error('NOT_MODERATOR');
 					}
-
-					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . '
-						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
-					$result = $db->sql_query($sql);
-					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
-					$db->sql_freeresult($result);
 				}
 				else
 				{
@@ -486,12 +478,10 @@ class mcp_queue
 
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-					$i = 0;
 					$post_ids = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$post_ids[] = $row['post_id'];
-						$row_num[$row['post_id']] = $i++;
 					}
 					$db->sql_freeresult($result);
 

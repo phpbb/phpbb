@@ -89,7 +89,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	public function test_thumbnails()
 	{
 		$command_tester = $this->get_command_tester('thumbnail:generate');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:generate'));
+		$exit_status = $command_tester->execute([]);
 
 		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
 		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
@@ -97,7 +97,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		self::assertSame(0, $exit_status);
 
 		$command_tester = $this->get_command_tester('thumbnail:delete');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:delete'));
+		$exit_status = $command_tester->execute([]);
 
 		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
 		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
@@ -105,7 +105,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		self::assertSame(0, $exit_status);
 
 		$command_tester = $this->get_command_tester('thumbnail:recreate');
-		$exit_status = $command_tester->execute(array('command' => 'thumbnail:recreate'));
+		$exit_status = $command_tester->execute([]);
 
 		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
 		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));

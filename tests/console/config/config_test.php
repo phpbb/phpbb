@@ -22,8 +22,6 @@ class phpbb_console_command_config_test extends phpbb_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$this->config = new \phpbb\config\config(array());
 
 		$this->user = $this->createMock('\phpbb\user');
@@ -34,9 +32,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$this->assertEmpty($this->config);
 
-		$command_tester = $this->get_command_tester('set');
+		$command_tester = $this->get_command_tester('set', 'set');
 		$command_tester->execute(array(
-			'command'	=> $this->command_name,
 			'key'		=> 'test_key',
 			'value'		=> 'test_value',
 			'--dynamic'	=> true,
@@ -49,9 +46,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$this->assertEmpty($this->config);
 
-		$command_tester = $this->get_command_tester('set');
+		$command_tester = $this->get_command_tester('set', 'set');
 		$command_tester->execute(array(
-			'command'	=> $this->command_name,
 			'key'		=> 'test_key',
 			'value'		=> 'test_value',
 			'--dynamic'	=> false,
@@ -67,9 +63,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'old_value', true);
 		$this->assertSame($this->config['test_key'], 'old_value');
 
-		$command_tester = $this->get_command_tester('set_atomic');
+		$command_tester = $this->get_command_tester('set_atomic', 'set-atomic');
 		$command_tester->execute(array(
-			'command'	=> $this->command_name,
 			'key'		=> 'test_key',
 			'old'		=> 'old_value',
 			'new'		=> 'new_value',
@@ -86,9 +81,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'old_value', false);
 		$this->assertSame($this->config['test_key'], 'old_value');
 
-		$command_tester = $this->get_command_tester('set_atomic');
+		$command_tester = $this->get_command_tester('set_atomic', 'set-atomic');
 		$command_tester->execute(array(
-			'command'	=> $this->command_name,
 			'key'		=> 'test_key',
 			'old'		=> 'old_value',
 			'new'		=> 'new_value',
@@ -105,9 +99,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'wrong_value', true);
 		$this->assertSame($this->config['test_key'], 'wrong_value');
 
-		$command_tester = $this->get_command_tester('set_atomic');
+		$command_tester = $this->get_command_tester('set_atomic', 'set-atomic');
 		$command_tester->execute(array(
-			'command'	=> $this->command_name,
 			'key'		=> 'test_key',
 			'old'		=> 'old_value',
 			'new'		=> 'new_value',
@@ -122,9 +115,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'test_value', false);
 		$this->assertSame($this->config['test_key'], 'test_value');
 
-		$command_tester = $this->get_command_tester('get');
+		$command_tester = $this->get_command_tester('get', 'get');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 			'--no-newline'	=> true,
 		));
@@ -137,9 +129,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'test_value', false);
 		$this->assertSame($this->config['test_key'], 'test_value');
 
-		$command_tester = $this->get_command_tester('get');
+		$command_tester = $this->get_command_tester('get', 'get');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 			'--no-newline'	=> false,
 		));
@@ -152,9 +143,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'test_value', false);
 		$this->assertSame($this->config['test_key'], 'test_value');
 
-		$command_tester = $this->get_command_tester('get');
+		$command_tester = $this->get_command_tester('get', 'get');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'wrong_key',
 			'--no-newline'	=> false,
 		));
@@ -167,9 +157,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 0, false);
 		$this->assertSame($this->config['test_key'], 0);
 
-		$command_tester = $this->get_command_tester('increment');
+		$command_tester = $this->get_command_tester('increment', 'increment');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 			'increment'		=> 2,
 			'--dynamic'		=> true,
@@ -184,9 +173,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 0, false);
 		$this->assertSame($this->config['test_key'], 0);
 
-		$command_tester = $this->get_command_tester('increment');
+		$command_tester = $this->get_command_tester('increment', 'increment');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 			'increment'		=> 2,
 			'--dynamic'		=> false,
@@ -200,9 +188,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$this->assertEmpty($this->config);
 
-		$command_tester = $this->get_command_tester('increment');
+		$command_tester = $this->get_command_tester('increment', 'increment');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 			'increment'		=> 2,
 			'--dynamic'		=> true,
@@ -217,9 +204,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->config->set('test_key', 'test_value', false);
 		$this->assertSame($this->config['test_key'], 'test_value');
 
-		$command_tester = $this->get_command_tester('delete');
+		$command_tester = $this->get_command_tester('delete', 'delete');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'test_key',
 		));
 
@@ -231,9 +217,8 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$this->assertEmpty($this->config);
 
-		$command_tester = $this->get_command_tester('delete');
+		$command_tester = $this->get_command_tester('delete', 'delete');
 		$command_tester->execute(array(
-			'command'		=> $this->command_name,
 			'key'			=> 'wrong_key',
 		));
 
@@ -241,13 +226,12 @@ class phpbb_console_command_config_test extends phpbb_test_case
 		$this->assertEmpty($this->config);
 	}
 
-	public function get_command_tester($class_name)
+	public function get_command_tester($class_name, $command_name)
 	{
 		$command_complete_name = '\phpbb\console\command\config' . '\\' . $class_name;
 		$application = new Application();
 		$application->add(new $command_complete_name($this->user, $this->config));
-		$command = $application->find('config:' . $this->command_name);
-		$this->command_name = $command->getName();
+		$command = $application->find('config:' . $command_name);
 		return new CommandTester($command);
 	}
 }

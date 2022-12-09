@@ -1028,7 +1028,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			parse_attachments(false, $preview_message, $attachment_data, $update_count, true);
 
-			foreach ($attachment_data as $i => $attachment)
+			foreach ($attachment_data as $attachment)
 			{
 				$template->assign_block_vars('attachment', array(
 					'DISPLAY_ATTACHMENT'	=> $attachment)

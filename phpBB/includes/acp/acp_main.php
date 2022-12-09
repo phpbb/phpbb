@@ -204,7 +204,6 @@ class acp_main
 						}
 
 						// Resync post counts
-						$start = $max_post_id = 0;
 
 						// Find the maximum post ID, we can only stop the cycle when we've reached it
 						$sql = 'SELECT MAX(forum_last_post_id) as max_post_id
@@ -233,6 +232,7 @@ class acp_main
 						$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
 						$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
 
+						$start = 0;
 						while ($start < $max_post_id)
 						{
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
