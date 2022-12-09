@@ -82,7 +82,7 @@ class list_all extends command
 		foreach ($this->search_backend_collection as $search_backend)
 		{
 			$name = $search_backend->get_type();
-			$active = ($name === $this->config['search_type']) ? '(<comment>' . $this->language->lang('$') . '</comment>) ' : '';
+			$active = ($name === $this->config['search_type']) ? '(<comment>' . $this->language->lang('ACTIVE') . '</comment>) ' : '';
 			$search_backends[] = '<info>' . $name . '</info> ' . $active .  $search_backend->get_name();
 
 			if ($name === $this->config['search_type'] && !$search_backend->index_created())

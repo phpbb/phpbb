@@ -15,6 +15,7 @@ namespace phpbb\cron\task\core;
 
 use phpbb\config\config;
 use phpbb\cron\task\base;
+use phpbb\di\exception\di_exception;
 use phpbb\search\backend\search_backend_interface;
 use phpbb\search\search_backend_factory;
 
@@ -88,7 +89,7 @@ class tidy_search extends base
 				$this->active_search = $this->search_backend_factory->get_active();
 			}
 		}
-		catch (\RuntimeException $e)
+		catch (di_exception $e)
 		{
 			return false;
 		}

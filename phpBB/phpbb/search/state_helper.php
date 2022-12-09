@@ -113,7 +113,7 @@ class state_helper
 		// Make sure the action is correct (just in case)
 		if (!in_array($action, ['create', 'delete']))
 		{
-			throw new search_exception('Invalid action');
+			throw new search_exception('INVALID_ACTION');
 		}
 
 		$state = [

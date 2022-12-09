@@ -259,7 +259,6 @@ services:
     console.command.searchindex.create:
         class: phpbb\console\command\searchindex\create
         arguments:
-            - '@config'
             - '@language'
             - '@log'
             - '@post.helper'
@@ -272,7 +271,6 @@ services:
     console.command.searchindex.delete:
         class: phpbb\console\command\searchindex\delete
         arguments:
-            - '@config'
             - '@language'
             - '@log'
             - '@post.helper'
