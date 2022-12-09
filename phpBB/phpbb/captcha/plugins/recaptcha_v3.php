@@ -30,6 +30,14 @@ class recaptcha_v3 extends captcha_abstract
 	 */
 	const GOOGLE		= 'google.com';
 	const RECAPTCHA		= 'recaptcha.net';
+	const RECAPTCHA_CN	= 'recaptcha.google.cn';
+
+	/** @var string[] List of supported domains */
+	static public $supported_domains = [
+		self::GOOGLE,
+		self::RECAPTCHA,
+		self::RECAPTCHA_CN
+	];
 
 	/** @var array CAPTCHA types mapped to their action */
 	static protected $actions = [
@@ -180,9 +188,14 @@ class recaptcha_v3 extends captcha_abstract
 				trigger_error($language->lang('EMPTY_RECAPTCHA_V3_REQUEST_METHOD') . adm_back_link($module->u_action), E_USER_WARNING);
 			}
 
+			$recaptcha_domain = $request->variable('recaptcha_v3_domain', '', true);
+			if (in_array($recaptcha_domain, self::$supported_domains))
+			{
+				$config->set('recaptcha_v3_domain', $recaptcha_domain);
+			}
+
 			$config->set('recaptcha_v3_key', $request->variable('recaptcha_v3_key', '', true));
 			$config->set('recaptcha_v3_secret', $request->variable('recaptcha_v3_secret', '', true));
-			$config->set('recaptcha_v3_domain', $request->variable('recaptcha_v3_domain', '', true));
 			$config->set('recaptcha_v3_method', $recaptcha_v3_method);
 
 			foreach (self::$actions as $action)
@@ -211,7 +224,7 @@ class recaptcha_v3 extends captcha_abstract
 			'RECAPTCHA_V3_SECRET'		=> $config['recaptcha_v3_secret'] ?? '',
 
 			'RECAPTCHA_V3_DOMAIN'		=> $config['recaptcha_v3_domain'] ?? self::GOOGLE,
-			'RECAPTCHA_V3_DOMAINS'		=> [self::GOOGLE, self::RECAPTCHA],
+			'RECAPTCHA_V3_DOMAINS'		=> self::$supported_domains,
 
 			'RECAPTCHA_V3_METHOD'		=> $config['recaptcha_v3_method'] ?? '',
 			'RECAPTCHA_V3_METHODS'		=> [

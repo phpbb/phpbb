@@ -21,6 +21,20 @@
 	<dd><input id="recaptcha_privkey" name="recaptcha_privkey" value="{RECAPTCHA_PRIVKEY}" size="50" type="text" /></dd>
 </dl>
 
+<dl>
+	<dt>
+		<label>{{ lang('RECAPTCHA_V3_DOMAIN') ~ lang('COLON') }}</label>
+		<br><span>{{ lang('RECAPTCHA_V3_DOMAIN_EXPLAIN') }}</span>
+	</dt>
+	<dd>
+		{% for domain in RECAPTCHA_V2_DOMAINS %}
+		<label>
+			<input class="radio" name="recaptcha_v2_domain" type="radio" value="{{ domain }}"{{ domain == RECAPTCHA_V2_DOMAIN ? ' checked' }}>
+			<span>{{ domain }}</span>
+		</label>
+		{% endfor %}
+	</dd>
+</dl>
 
 </fieldset>
 <fieldset>
