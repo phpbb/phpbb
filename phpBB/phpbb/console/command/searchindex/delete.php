@@ -74,15 +74,13 @@ class delete extends command
 	 */
 	protected function configure()
 	{
-		$this
-			->setName('searchindex:delete')
+		$this->setName('searchindex:delete')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_DELETE'))
 			->addArgument(
 				'search-backend',
 				InputArgument::REQUIRED,
 				$this->language->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
-			)
-		;
+			);
 	}
 
 	/**

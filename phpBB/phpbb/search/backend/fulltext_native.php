@@ -116,7 +116,9 @@ class fulltext_native extends base implements search_backend_interface
 	 * @param string				$phpbb_root_path	phpBB root path
 	 * @param string				$phpEx				PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher, language $language, user $user, string $search_results_table, string $search_wordlist_table, string $search_wordmatch_table, string $phpbb_root_path, string $phpEx)
+	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher,
+								language $language, user $user, string $search_results_table, string $search_wordlist_table,
+								string $search_wordmatch_table, string $phpbb_root_path, string $phpEx)
 	{
 		global $cache;
 

@@ -74,15 +74,13 @@ class create extends command
 	 */
 	protected function configure()
 	{
-		$this
-			->setName('searchindex:create')
+		$this->setName('searchindex:create')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_CREATE'))
 			->addArgument(
 				'search-backend',
 				InputArgument::REQUIRED,
 				$this->language->lang('CLI_SEARCHINDEX_SEARCH_BACKEND_NAME')
-			)
-		;
+			);
 	}
 
 	/**

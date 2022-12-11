@@ -146,7 +146,7 @@ class state_helper
 	 */
 	public function clear_state(): void
 	{
-		$this->save_state([]);
+		$this->save_state();
 	}
 
 	/**
@@ -176,6 +176,6 @@ class state_helper
 	{
 		ksort($state);
 
-		$this->config->set('search_indexing_state', implode(',', $state), true);
+		$this->config->set('search_indexing_state', implode(',', $state));
 	}
 }
