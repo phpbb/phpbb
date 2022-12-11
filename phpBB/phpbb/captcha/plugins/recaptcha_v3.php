@@ -33,7 +33,7 @@ class recaptcha_v3 extends captcha_abstract
 	const RECAPTCHA_CN	= 'recaptcha.google.cn';
 
 	/** @var string[] List of supported domains */
-	static public $supported_domains = [
+	public static $supported_domains = [
 		self::GOOGLE,
 		self::RECAPTCHA,
 		self::RECAPTCHA_CN
