@@ -11,9 +11,15 @@
  *
  */
 
-namespace phpbb\di\exception;
-
-class service_not_found_exception extends di_exception
+class search_backend_mock_not_available extends search_backend_mock
 {
+	public function get_name(): string
+	{
+		return 'Mock unavailable search backend';
+	}
 
+	public function is_available(): bool
+	{
+		return false;
+	}
 }

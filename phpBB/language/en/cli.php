@@ -154,6 +154,7 @@ $lang = array_merge($lang, array(
 	'CLI_SEARCHINDEX_DELETE_FAILURE'		=> 'Error deleting search index',
 	'CLI_SEARCHINDEX_ACTION_IN_PROGRESS'	=> 'There is an action currently in progress. CLI doesn’t support incomplete index/delete actions, please solve it from the ACP.',
 	'CLI_SEARCHINDEX_ACTIVE_NOT_INDEXED'	=> 'Active search backend isn’t indexed',
+	'CLI_SEARCHINDEX_BACKEND_NOT_AVAILABLE' => 'Search backend isn’t available.',
 
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.

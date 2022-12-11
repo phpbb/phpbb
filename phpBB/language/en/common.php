@@ -215,8 +215,8 @@ $lang = array_merge($lang, array(
 		2	=> 'Downloaded %d times',
 	),
 
-	'DI_SERVICE_NOT_FOUND'				=> 'No service found for class "%s" in collection.',
-	'DI_MULTIPLE_SERVICE_DEFINITIONS'	=> 'More than one service definitions found for class "%s" in collection.',
+	'DI_SERVICE_NOT_FOUND'				=> 'Service for class "%1$s" not found in collection.',
+	'DI_MULTIPLE_SERVICE_DEFINITIONS'	=> 'More than one service definitions found for class "%1$s" in collection.',
 
 	'EDIT_POST'							=> 'Edit post',
 	'ELLIPSIS'							=>	'…',

@@ -62,6 +62,8 @@ class delete extends command
 		$this->search_backend_factory = $search_backend_factory;
 		$this->state_helper = $state_helper;
 
+		$this->language->add_lang(array('acp/common', 'acp/search'));
+
 		parent::__construct($user);
 	}
 
@@ -118,6 +120,12 @@ class delete extends command
 			return symfony_command::FAILURE;
 		}
 
+		if (!$search->is_available())
+		{
+			$io->error($this->language->lang('CLI_SEARCHINDEX_BACKEND_NOT_AVAILABLE', $search_backend));
+			return symfony_command::FAILURE;
+		}
+
 		try
 		{
 			$progress = $this->create_progress_bar($this->post_helper->get_max_post_id(), $io, $output, true);
@@ -141,6 +149,8 @@ class delete extends command
 		}
 		catch (\Exception $e)
 		{
+			$this->state_helper->clear_state(); // Unexpected error, cancel action
+			$io->error($e->getMessage()); // Show also exception message like in acp
 			$io->error($this->language->lang('CLI_SEARCHINDEX_DELETE_FAILURE', $name));
 			return symfony_command::FAILURE;
 		}

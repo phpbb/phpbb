@@ -66,4 +66,16 @@ class phpbb_console_searchindex_delete_test extends phpbb_console_searchindex_ba
 
 		$this->config['search_indexing_state'] = [];
 	}
+
+	public function test_delete_when_search_backend_not_available()
+	{
+		$command_tester = $this->get_command_tester();
+
+		$command_tester->execute([
+			'search-backend' => 'search_backend_mock_not_available',
+		]);
+
+		$this->assertEquals(Command::FAILURE, $command_tester->getStatusCode());
+		$this->assertStringContainsString('CLI_SEARCHINDEX_BACKEND_NOT_AVAILABLE', $command_tester->getDisplay());
+	}
 }

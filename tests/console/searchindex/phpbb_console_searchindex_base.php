@@ -21,6 +21,7 @@ use phpbb\search\state_helper;
 use phpbb\user;
 
 require_once __DIR__ . '/../../mock/search_backend_mock.php';
+require_once __DIR__ . '/../../mock/search_backend_mock_not_available.php';
 
 class phpbb_console_searchindex_base extends phpbb_test_case
 {
@@ -70,11 +71,17 @@ class phpbb_console_searchindex_base extends phpbb_test_case
 		$this->user = $this->createMock('\phpbb\user');
 
 		$phpbb_container = new phpbb_mock_container_builder();
-		$search_backend_mock = new search_backend_mock();
 		$this->search_backend_collection = new \phpbb\di\service_collection($phpbb_container);
+
+		$search_backend_mock = new search_backend_mock();
 		$this->search_backend_collection->add('search_backend_mock');
 		$this->search_backend_collection->add_service_class('search_backend_mock', 'search_backend_mock');
 		$phpbb_container->set('search_backend_mock', $search_backend_mock);
+
+		$search_backend_mock_not_available = new search_backend_mock_not_available();
+		$this->search_backend_collection->add('search_backend_mock_not_available');
+		$this->search_backend_collection->add_service_class('search_backend_mock_not_available', 'search_backend_mock_not_available');
+		$phpbb_container->set('search_backend_mock_not_available', $search_backend_mock_not_available);
 
 		$this->search_backend_factory = new search_backend_factory($this->config, $this->search_backend_collection);
 
@@ -83,3 +90,4 @@ class phpbb_console_searchindex_base extends phpbb_test_case
 		parent::setUp();
 	}
 }
+
