@@ -57,7 +57,7 @@ class phpbb_service_collection_test extends \phpbb_test_case
 	public function test_get_by_class_many_services_exception()
 	{
 		$this->expectException('RuntimeException');
-		$this->expectExceptionMessage('More than one service definitions found for class "bar_class" in collection.');
+		$this->expectExceptionMessage('DI_MULTIPLE_SERVICE_DEFINITIONS');
 
 		$this->service_collection->get_by_class('bar_class');
 	}
@@ -65,7 +65,7 @@ class phpbb_service_collection_test extends \phpbb_test_case
 	public function test_get_by_class_no_service_exception()
 	{
 		$this->expectException('RuntimeException');
-		$this->expectExceptionMessage('No service found for class "baz_class" in collection.');
+		$this->expectExceptionMessage('DI_SERVICE_NOT_FOUND');
 
 		$this->service_collection->get_by_class('baz_class');
 	}

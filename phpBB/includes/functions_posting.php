@@ -2356,16 +2356,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$search_backend_factory = $phpbb_container->get('search.backend_factory');
 			$search = $search_backend_factory->get_active();
 		}
-		catch (RuntimeException $e)
+		catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 		{
-			if (strpos($e->getMessage(), 'No service found') === 0)
-			{
-				trigger_error('NO_SUCH_SEARCH_MODULE');
-			}
-			else
-			{
-				throw $e;
-			}
+			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
 		$search->index($mode, (int) $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, (int) $data_ary['forum_id']);

@@ -133,6 +133,9 @@ class create_search_index extends database_task
 			$this->phpbb_dispatcher,
 			$container->get('language'),
 			$this->user,
+			SEARCH_RESULTS_TABLE,
+			SEARCH_WORDLIST_TABLE,
+			SEARCH_WORDMATCH_TABLE,
 			$this->phpbb_root_path,
 			$this->php_ext
 		);

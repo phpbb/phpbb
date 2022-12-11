@@ -83,6 +83,10 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_SET_ATOMIC_CONFIG'					=> 'Sets a configuration option’s value only if the old matches the current value',
 	'CLI_DESCRIPTION_SET_CONFIG'						=> 'Sets a configuration option’s value',
 
+	'CLI_DESCRIPTION_SEARCHINDEX_DELETE'				=> 'Delete search index.',
+	'CLI_DESCRIPTION_SEARCHINDEX_CREATE'				=> 'Create search index.',
+	'CLI_DESCRIPTION_SEARCHINDEX_LIST'					=> 'List all search backends.',
+
 	'CLI_DESCRIPTION_THUMBNAIL_DELETE'					=> 'Delete all existing thumbnails.',
 	'CLI_DESCRIPTION_THUMBNAIL_GENERATE'				=> 'Generate all missing thumbnails.',
 	'CLI_DESCRIPTION_THUMBNAIL_RECREATE'				=> 'Recreate all thumbnails.',
@@ -141,6 +145,16 @@ $lang = array_merge($lang, array(
 	'CLI_REPARSER_REPARSE_REPARSING'		=> 'Reparsing %1$s (range %2$d..%3$d)',
 	'CLI_REPARSER_REPARSE_REPARSING_START'	=> 'Reparsing %s...',
 	'CLI_REPARSER_REPARSE_SUCCESS'			=> 'Reparsing ended with success',
+
+	'CLI_SEARCHINDEX_SEARCH_BACKEND_NAME'	=> 'Backend class',
+	'CLI_SEARCHINDEX_BACKEND_NOT_FOUND'		=> 'Search module not found',
+	'CLI_SEARCHINDEX_CREATE_SUCCESS'		=> 'Search index created successfully',
+	'CLI_SEARCHINDEX_CREATE_FAILURE'		=> 'Error creating search index',
+	'CLI_SEARCHINDEX_DELETE_SUCCESS'		=> 'Search index deleted successfully',
+	'CLI_SEARCHINDEX_DELETE_FAILURE'		=> 'Error deleting search index',
+	'CLI_SEARCHINDEX_ACTION_IN_PROGRESS'	=> 'There is an action currently in progress. CLI doesn’t support incomplete index/delete actions, please solve it from the ACP.',
+	'CLI_SEARCHINDEX_ACTIVE_NOT_INDEXED'	=> 'Active search backend isn’t indexed',
+	'CLI_SEARCHINDEX_BACKEND_NOT_AVAILABLE' => 'Search backend isn’t available.',
 
 	// In all the case %1$s is the logical name of the file and %2$s the real name on the filesystem
 	// eg: big_image.png (2_a51529ae7932008cf8454a95af84cacd) generated.

@@ -14,8 +14,10 @@
 namespace phpbb\search;
 
 use phpbb\config\config;
+use phpbb\di\exception\service_not_found_exception;
 use phpbb\di\service_collection;
 use phpbb\search\backend\search_backend_interface;
+use phpbb\search\exception\no_search_backend_found_exception;
 
 class search_backend_factory
 {
@@ -46,15 +48,28 @@ class search_backend_factory
 	 *
 	 * @param string $class
 	 *
+	 * @throws no_search_backend_found_exception
+	 *
 	 * @return search_backend_interface
 	 */
 	public function get(string $class): search_backend_interface
 	{
-		return $this->search_backends->get_by_class($class);
+		try
+		{
+			$search = $this->search_backends->get_by_class($class);
+		}
+		catch (service_not_found_exception $e)
+		{
+			throw new no_search_backend_found_exception('SEARCH_BACKEND_NOT_FOUND', [], $e);
+		}
+
+		return $search;
 	}
 
 	/**
 	 * Obtains active search backend
+	 *
+	 * @throws no_search_backend_found_exception
 	 *
 	 * @return search_backend_interface
 	 */
