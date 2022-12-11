@@ -17,7 +17,7 @@ on:
 jobs:
     # Basic checks, e.g. parse errors, commit messages, etc.
     basic-checks:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-20.04
         strategy:
             matrix:
                 include:
@@ -29,7 +29,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
               with:
                   fetch-depth: 100
 
@@ -46,12 +46,12 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
               run: |
                   cd phpBB
-                  echo "::set-output name=dir::$(composer config cache-files-dir)"
-                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -88,7 +88,7 @@ jobs:
 
     # Tests for MySQL and MariaDB
     mysql-tests:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-20.04
         strategy:
             matrix:
                 include:
@@ -157,14 +157,14 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - id: database-type
               env:
                   MATRIX_DB: ${{ matrix.db }}
               run: |
                   db=$(echo "${MATRIX_DB%%:*}")
-                  echo "::set-output name=db::$db"
+                  echo "db=$db" >> $GITHUB_OUTPUT
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -179,12 +179,12 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
               run: |
                   cd phpBB
-                  echo "::set-output name=dir::$(composer config cache-files-dir)"
-                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -229,7 +229,7 @@ jobs:
 
     # Tests for PostgreSQL
     postgres-tests:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-20.04
         strategy:
             matrix:
                 include:
@@ -290,14 +290,14 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - id: database-type
               env:
                   MATRIX_DB: ${{ matrix.db }}
               run: |
                   db=$(echo "${MATRIX_DB%%:*}")
-                  echo "::set-output name=db::$db"
+                  echo "db=$db" >> $GITHUB_OUTPUT
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -312,12 +312,12 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
               run: |
                   cd phpBB
-                  echo "::set-output name=dir::$(composer config cache-files-dir)"
-                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -345,7 +345,7 @@ jobs:
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
-        runs-on: ubuntu-18.04
+        runs-on: ubuntu-20.04
         strategy:
             matrix:
                 include:
@@ -388,7 +388,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - id: database-type
               env:
@@ -400,7 +400,7 @@ jobs:
                   else
                       db=$(echo "${MATRIX_DB%%:*}")
                   fi
-                  echo "::set-output name=db::$db"
+                  echo "db=$db" >> $GITHUB_OUTPUT
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -415,12 +415,12 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
               run: |
                   cd phpBB
-                  echo "::set-output name=dir::$(composer config cache-files-dir)"
-                  echo "::set-output name=version::${PHP_VERSION%.*}"
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -485,7 +485,7 @@ jobs:
                   git config --system core.autocrlf false
                   git config --system core.eol lf
             - name: Checkout repository
-              uses: actions/checkout@v2
+              uses: actions/checkout@v3
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -499,13 +499,13 @@ jobs:
               id: composer-cache
               run: |
                   cd phpBB
-                  echo "::set-output name=dir::$(composer config cache-files-dir)"
+                  echo "dir=$(composer config cache-files-dir)" >> $env:GITHUB_OUTPUT
                   $major_version="${{ matrix.php }}".substring(0,1)
-                  echo "::set-output name=version::$major_version"
+                  echo "version=$major_version" >> $env:GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
