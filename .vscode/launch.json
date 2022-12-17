@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Listen for Xdebug",
+            "name": "Debug phpBB",
             "type": "php",
             "request": "launch",
             "port": 9003,
