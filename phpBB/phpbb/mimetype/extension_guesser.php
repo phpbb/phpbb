@@ -252,7 +252,7 @@ class extension_guesser extends guesser_base
 		'omc'		=> 'application/x-omc',
 		'oga'		=> 'audio/ogg',
 		'ogg'		=> 'audio/ogg',
-		'ogg'		=> 'video/ogg',
+		'ogv'		=> 'video/ogg',
 		'ogm'		=> 'video/ogg',
 		'omcd'		=> 'application/x-omcdatamaker',
 		'omcr'		=> 'application/x-omcregerator',
