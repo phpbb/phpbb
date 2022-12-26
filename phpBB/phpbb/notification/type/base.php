@@ -162,12 +162,12 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* Get special data (only important for the classes that extend this)
 	*
-	* @param string $name Name of the variable to get
+	* @param string|false $name Name of the variable to get, false if all data should be returned
 	* @return mixed
 	*/
 	protected function get_data($name)
 	{
-		return ($name === false) ? $this->data['notification_data'] : ((isset($this->data['notification_data'][$name])) ? $this->data['notification_data'][$name] : null);
+		return ($name === false) ? $this->data['notification_data'] : ($this->data['notification_data'][$name] ?? null);
 	}
 
 	/**

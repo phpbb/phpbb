@@ -63,7 +63,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	* @param int $notify_method				Notify method for messenger (e.g. NOTIFY_IM)
 	* @param string $template_dir_prefix	Base directory to prepend to the email template name
 	*
-	* @return null
+	* @return void
 	*/
 	protected function notify_using_messenger($notify_method, $template_dir_prefix = '')
 	{

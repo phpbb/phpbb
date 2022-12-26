@@ -75,14 +75,14 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from the post
+	* @param array $type_data Data from the post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
-		$notify_users = parent::find_users_for_notification($post, $options);
+		$notify_users = parent::find_users_for_notification($type_data, $options);
 
 		// never notify reporter
 		unset($notify_users[$this->user->data['user_id']]);
@@ -212,13 +212,13 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
 		$this->set_data('reporter_id', $this->user->data['user_id']);
-		$this->set_data('reason_title', strtoupper($post['reason_title']));
-		$this->set_data('reason_description', $post['reason_description']);
-		$this->set_data('report_text', $post['report_text']);
+		$this->set_data('reason_title', strtoupper($type_data['reason_title']));
+		$this->set_data('reason_description', $type_data['reason_description']);
+		$this->set_data('report_text', $type_data['report_text']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 	}
 }

@@ -64,18 +64,18 @@ class quote extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from submit_post
+	* @param array $type_data Data from submit_post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		$usernames = $this->utils->get_outermost_quote_authors($post['post_text']);
+		$usernames = $this->utils->get_outermost_quote_authors($type_data['post_text']);
 
 		if (empty($usernames))
 		{
@@ -91,7 +91,7 @@ class quote extends \phpbb\notification\type\post
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $this->db->sql_in_set('username_clean', $usernames) . '
-				AND user_id <> ' . (int) $post['poster_id'];
+				AND user_id <> ' . (int) $type_data['poster_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -99,7 +99,7 @@ class quote extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		return $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+		return $this->get_authorised_recipients($users, $type_data['forum_id'], $options, true);
 	}
 
 	/**

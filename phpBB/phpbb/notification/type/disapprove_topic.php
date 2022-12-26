@@ -127,11 +127,11 @@ class disapprove_topic extends \phpbb\notification\type\approve_topic
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('disapprove_reason', $post['disapprove_reason']);
+		$this->set_data('disapprove_reason', $type_data['disapprove_reason']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}

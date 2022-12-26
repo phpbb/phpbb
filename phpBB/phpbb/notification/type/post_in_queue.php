@@ -69,19 +69,19 @@ class post_in_queue extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from the post
+	* @param array $type_data Data from the post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
 		// 0 is for global moderator permissions
-		$auth_approve = $this->auth->acl_get_list(false, $this->permission, array($post['forum_id'], 0));
+		$auth_approve = $this->auth->acl_get_list(false, $this->permission, array($type_data['forum_id'], 0));
 
 		if (empty($auth_approve))
 		{
@@ -90,9 +90,9 @@ class post_in_queue extends \phpbb\notification\type\post
 
 		$has_permission = array();
 
-		if (isset($auth_approve[$post['forum_id']][$this->permission]))
+		if (isset($auth_approve[$type_data['forum_id']][$this->permission]))
 		{
-			$has_permission = $auth_approve[$post['forum_id']][$this->permission];
+			$has_permission = $auth_approve[$type_data['forum_id']][$this->permission];
 		}
 
 		if (isset($auth_approve[0][$this->permission]))
@@ -101,13 +101,13 @@ class post_in_queue extends \phpbb\notification\type\post
 		}
 		sort($has_permission);
 
-		$auth_read = $this->auth->acl_get_list($has_permission, 'f_read', $post['forum_id']);
+		$auth_read = $this->auth->acl_get_list($has_permission, 'f_read', $type_data['forum_id']);
 		if (empty($auth_read))
 		{
 			return array();
 		}
 
-		return $this->check_user_notification_options($auth_read[$post['forum_id']]['f_read'], array_merge($options, array(
+		return $this->check_user_notification_options($auth_read[$type_data['forum_id']]['f_read'], array_merge($options, array(
 			'item_type'		=> static::$notification_option['id'],
 		)));
 	}
@@ -133,9 +133,9 @@ class post_in_queue extends \phpbb\notification\type\post
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}

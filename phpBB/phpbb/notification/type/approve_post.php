@@ -67,18 +67,18 @@ class approve_post extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from submit_post
+	* @param array $type_data Data from submit_post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		return $this->get_authorised_recipients(array($post['poster_id']), $post['forum_id'], array_merge($options, array(
+		return $this->get_authorised_recipients(array($type_data['poster_id']), $type_data['forum_id'], array_merge($options, array(
 			'item_type'		=> static::$notification_option['id'],
 		)));
 	}
@@ -89,12 +89,13 @@ class approve_post extends \phpbb\notification\type\post
 	* and load data, before create_insert_array() is run. The data
 	* returned from this function will be sent to create_insert_array().
 	*
-	* @param array $post Post data from submit_post
+	* @param array $type_data Post data from submit_post
 	* @param array $notify_users Notify users list
 	* 		Formatted from find_users_for_notification()
+	*
 	* @return array Whatever you want to send to create_insert_array().
 	*/
-	public function pre_create_insert_array($post, $notify_users)
+	public function pre_create_insert_array($type_data, $notify_users)
 	{
 		// In the parent class, this is used to check if the post is already
 		// read by a user and marks the notification read if it was marked read.
@@ -106,11 +107,11 @@ class approve_post extends \phpbb\notification\type\post
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('post_subject', $post['post_subject']);
+		$this->set_data('post_subject', $type_data['post_subject']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}

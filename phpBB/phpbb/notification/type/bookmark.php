@@ -53,18 +53,18 @@ class bookmark extends \phpbb\notification\type\post
 	*/
 	public function is_available()
 	{
-		return $this->config['allow_bookmarks'];
+		return (bool) $this->config['allow_bookmarks'];
 	}
 
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from submit_post
+	* @param array $type_data Data from submit_post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
@@ -74,8 +74,8 @@ class bookmark extends \phpbb\notification\type\post
 
 		$sql = 'SELECT user_id
 			FROM ' . BOOKMARKS_TABLE . '
-			WHERE ' . $this->db->sql_in_set('topic_id', $post['topic_id']) . '
-				AND user_id <> ' . (int) $post['poster_id'];
+			WHERE ' . $this->db->sql_in_set('topic_id', $type_data['topic_id']) . '
+				AND user_id <> ' . (int) $type_data['poster_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -83,7 +83,7 @@ class bookmark extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+		$notify_users = $this->get_authorised_recipients($users, $type_data['forum_id'], $options, true);
 
 		if (empty($notify_users))
 		{
@@ -92,7 +92,7 @@ class bookmark extends \phpbb\notification\type\post
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
-			'item_parent_id'	=> static::get_item_parent_id($post),
+			'item_parent_id'	=> static::get_item_parent_id($type_data),
 			'read'				=> 0,
 		));
 
@@ -102,11 +102,11 @@ class bookmark extends \phpbb\notification\type\post
 
 			/** @var bookmark $notification */
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
-			$update_responders = $notification->add_responders($post);
+			$update_responders = $notification->add_responders($type_data);
 			if (!empty($update_responders))
 			{
 				$this->notification_manager->update_notification($notification, $update_responders, array(
-					'item_parent_id'	=> self::get_item_parent_id($post),
+					'item_parent_id'	=> self::get_item_parent_id($type_data),
 					'read'				=> 0,
 					'user_id'			=> $user,
 				));

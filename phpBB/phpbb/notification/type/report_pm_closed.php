@@ -64,23 +64,23 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $pm Data from submit_pm
+	* @param array $type_data Data from submit_pm
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($pm, $options = [])
+	public function find_users_for_notification($type_data, $options = [])
 	{
 		$options = array_merge([
 			'ignore_users'		=> [],
 		], $options);
 
-		if ($pm['reporter'] == $this->user->data['user_id'])
+		if ($type_data['reporter'] == $this->user->data['user_id'])
 		{
 			return [];
 		}
 
-		return $this->check_user_notification_options([$pm['reporter']], $options);
+		return $this->check_user_notification_options([$type_data['reporter']], $options);
 	}
 
 	/**
@@ -161,11 +161,11 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($pm, $pre_create_data = [])
+	public function create_insert_array($type_data, $pre_create_data = [])
 	{
-		$this->set_data('closer_id', $pm['closer_id']);
+		$this->set_data('closer_id', $type_data['closer_id']);
 
-		parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}
