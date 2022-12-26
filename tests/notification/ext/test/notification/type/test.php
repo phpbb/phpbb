@@ -28,26 +28,26 @@ class test extends \phpbb\notification\type\base
 		return 'test';
 	}
 
-	public static function get_item_id($post)
+	public static function get_item_id($type_data)
 	{
-		return (int) $post['post_id'];
+		return (int) $type_data['post_id'];
 	}
 
-	public static function get_item_parent_id($post)
+	public static function get_item_parent_id($type_data)
 	{
-		return (int) $post['topic_id'];
+		return (int) $type_data['topic_id'];
 	}
 
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		return $this->check_user_notification_options(array(0), $options);
 	}
 
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->notification_time = $post['post_time'];
+		$this->notification_time = $type_data['post_time'];
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 	}
 
 	public function create_update_array($type_data)

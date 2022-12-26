@@ -271,7 +271,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$log = $this->getMockBuilder('phpbb\\log\\log_interface')->getMock();
 		$log->expects($this->once())
 			->method('add')
-			->with('critical', null, null, 'LOG_BBCODE_CONFIGURATION_ERROR', false, ['[x !x]{TEXT}[/x]', 'Cannot interpret the BBCode definition']);
+			->with('critical', ANONYMOUS, '', 'LOG_BBCODE_CONFIGURATION_ERROR', false, ['[x !x]{TEXT}[/x]', 'Cannot interpret the BBCode definition']);
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('log', $log);

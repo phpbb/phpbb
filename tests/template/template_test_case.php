@@ -120,19 +120,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		$this->template->clear_cache();
-
 		global $phpbb_filesystem;
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
-	}
-
-	protected function tearDown(): void
-	{
-		if ($this->template)
-		{
-			$this->template->clear_cache();
-		}
 	}
 
 	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array())
