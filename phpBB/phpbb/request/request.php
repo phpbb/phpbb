@@ -19,18 +19,18 @@ namespace phpbb\request;
 * It provides a method to disable access to input data through super globals.
 * This should force MOD authors to read about data validation.
 */
-class request implements \phpbb\request\request_interface
+class request implements request_interface
 {
 	/**
 	* @var	array	The names of super global variables that this class should protect if super globals are disabled.
 	*/
 	protected $super_globals = array(
-		\phpbb\request\request_interface::POST => '_POST',
-		\phpbb\request\request_interface::GET => '_GET',
-		\phpbb\request\request_interface::REQUEST => '_REQUEST',
-		\phpbb\request\request_interface::COOKIE => '_COOKIE',
-		\phpbb\request\request_interface::SERVER => '_SERVER',
-		\phpbb\request\request_interface::FILES => '_FILES',
+		request_interface::POST => '_POST',
+		request_interface::GET => '_GET',
+		request_interface::REQUEST => '_REQUEST',
+		request_interface::COOKIE => '_COOKIE',
+		request_interface::SERVER => '_SERVER',
+		request_interface::FILES => '_FILES',
 	);
 
 	/**
@@ -74,8 +74,8 @@ class request implements \phpbb\request\request_interface
 		}
 
 		// simulate request_order = GP
-		$this->original_request = $this->input[\phpbb\request\request_interface::REQUEST];
-		$this->input[\phpbb\request\request_interface::REQUEST] = $this->input[\phpbb\request\request_interface::POST] + $this->input[\phpbb\request\request_interface::GET];
+		$this->original_request = $this->input[request_interface::REQUEST];
+		$this->input[request_interface::REQUEST] = $this->input[request_interface::POST] + $this->input[request_interface::GET];
 
 		if ($disable_super_globals)
 		{
@@ -140,10 +140,10 @@ class request implements \phpbb\request\request_interface
 	* @param	string	$var_name		The name of the variable that shall be overwritten
 	* @param	mixed	$value			The value which the variable shall contain.
 	* 									If this is null the variable will be unset.
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 									Specifies which super global shall be changed
 	*/
-	public function overwrite($var_name, $value, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function overwrite($var_name, $value, $super_global = request_interface::REQUEST)
 	{
 		if (!isset($this->super_globals[$super_global]))
 		{
@@ -181,13 +181,13 @@ class request implements \phpbb\request\request_interface
 	* 											This function will always return a value of the same type as the default.
 	* @param	bool			$multibyte		If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	*											Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	* @param	string			$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int				$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	*											Specifies which super global should be used
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function variable($var_name, $default, $multibyte = false, $super_global = request_interface::REQUEST)
 	{
 		return $this->_variable($var_name, $default, $multibyte, $super_global, true);
 	}
@@ -205,13 +205,13 @@ class request implements \phpbb\request\request_interface
 	* 											This function will always return a value of the same type as the default.
 	* @param	bool			$multibyte		If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	*											Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	* @param	string			$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int				$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 											Specifies which super global should be used
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function untrimmed_variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function untrimmed_variable($var_name, $default, $multibyte = false, $super_global = request_interface::REQUEST)
 	{
 		return $this->_variable($var_name, $default, $multibyte, $super_global, false);
 	}
@@ -219,7 +219,7 @@ class request implements \phpbb\request\request_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function raw_variable($var_name, $default, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function raw_variable($var_name, $default, $super_global = request_interface::REQUEST)
 	{
 		$path = false;
 
@@ -276,9 +276,9 @@ class request implements \phpbb\request\request_interface
 	{
 		$multibyte = true;
 
-		if ($this->is_set($var_name, \phpbb\request\request_interface::SERVER))
+		if ($this->is_set($var_name, request_interface::SERVER))
 		{
-			return $this->variable($var_name, $default, $multibyte, \phpbb\request\request_interface::SERVER);
+			return $this->variable($var_name, $default, $multibyte, request_interface::SERVER);
 		}
 		else
 		{
@@ -312,7 +312,7 @@ class request implements \phpbb\request\request_interface
 	*/
 	public function file($form_name)
 	{
-		return $this->variable($form_name, array('name' => 'none'), true, \phpbb\request\request_interface::FILES);
+		return $this->variable($form_name, array('name' => 'none'), true, request_interface::FILES);
 	}
 
 	/**
@@ -327,7 +327,7 @@ class request implements \phpbb\request\request_interface
 	*/
 	public function is_set_post($name)
 	{
-		return $this->is_set($name, \phpbb\request\request_interface::POST);
+		return $this->is_set($name, request_interface::POST);
 	}
 
 	/**
@@ -335,12 +335,12 @@ class request implements \phpbb\request\request_interface
 	* arrays.
 	*
 	* @param	string	$var			Name of the variable
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	*									Specifies the super global which shall be checked
 	*
 	* @return	bool					True if the variable was sent as input
 	*/
-	public function is_set($var, $super_global = \phpbb\request\request_interface::REQUEST)
+	public function is_set($var, $super_global = request_interface::REQUEST)
 	{
 		return isset($this->input[$super_global][$var]);
 	}
@@ -370,13 +370,13 @@ class request implements \phpbb\request\request_interface
 	/**
 	* Returns all variable names for a given super global
 	*
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	*									The super global from which names shall be taken
 	*
 	* @return	array	All variable names that are set for the super global.
 	*					Pay attention when using these, they are unsanitised!
 	*/
-	public function variable_names($super_global = \phpbb\request\request_interface::REQUEST)
+	public function variable_names($super_global = request_interface::REQUEST)
 	{
 		if (!isset($this->input[$super_global]))
 		{
@@ -397,14 +397,14 @@ class request implements \phpbb\request\request_interface
 	* 											This function will always return a value of the same type as the default.
 	* @param	bool			$multibyte		If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	*											Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	* @param	string			$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int				$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 											Specifies which super global should be used
 	* @param	bool			$trim			Indicates whether trim() should be applied to string values.
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	protected function _variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST, $trim = true)
+	protected function _variable($var_name, $default, $multibyte = false, $super_global = request_interface::REQUEST, $trim = true)
 	{
 		$var = $this->raw_variable($var_name, $default, $super_global);
 
@@ -424,7 +424,7 @@ class request implements \phpbb\request\request_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST)
+	public function get_super_global($super_global = request_interface::REQUEST)
 	{
 		return $this->input[$super_global];
 	}
@@ -432,23 +432,23 @@ class request implements \phpbb\request\request_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function escape($var, $multibyte)
+	public function escape($value, $multibyte)
 	{
-		if (is_array($var))
+		if (is_array($value))
 		{
 			$result = array();
-			foreach ($var as $key => $value)
+			foreach ($value as $key => $array_value)
 			{
 				$this->type_cast_helper->set_var($key, $key, gettype($key), $multibyte);
-				$result[$key] = $this->escape($value, $multibyte);
+				$result[$key] = $this->escape($array_value, $multibyte);
 			}
-			$var = $result;
+			$value = $result;
 		}
 		else
 		{
-			$this->type_cast_helper->set_var($var, $var, 'string', $multibyte);
+			$this->type_cast_helper->set_var($value, $value, 'string', $multibyte);
 		}
 
-		return $var;
+		return $value;
 	}
 }
