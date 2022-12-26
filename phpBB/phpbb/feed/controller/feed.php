@@ -298,7 +298,7 @@ class feed
 	 *
 	 * @return Response
 	 *
-	 * @throws exception\feed_exception
+	 * @throws \phpbb\feed\exception\feed_exception
 	 */
 	protected function send_feed_do(feed_interface $feed)
 	{
