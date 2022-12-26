@@ -29,7 +29,7 @@ class plupload
 	protected $config;
 
 	/**
-	* @var \phpbb\request\request_interface
+	* @var \phpbb\request\request
 	*/
 	protected $request;
 
@@ -65,12 +65,12 @@ class plupload
 	*
 	* @param string $phpbb_root_path
 	* @param \phpbb\config\config $config
-	* @param \phpbb\request\request_interface $request
+	* @param \phpbb\request\request $request
 	* @param \phpbb\user $user
 	* @param \bantu\IniGetWrapper\IniGetWrapper $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
@@ -308,7 +308,7 @@ class plupload
 			}
 		}
 
-		return floor($max / 2);
+		return (int) floor($max / 2);
 	}
 
 	protected function temporary_filepath($file_name)

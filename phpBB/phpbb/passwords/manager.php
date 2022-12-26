@@ -115,7 +115,7 @@ class manager
 	/**
 	* Fill algorithm type map
 	*
-	* @param \phpbb\di\service_collection $hashing_algorithms
+	* @param \phpbb\di\service_collection|array $hashing_algorithms
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{
@@ -154,7 +154,7 @@ class manager
 	*
 	* @param string $hash Password hash that should be checked
 	*
-	* @return object|bool The hash type object or false if the specified
+	* @return array|bool|object The hash type object or false if the specified
 	*			type is not supported
 	*/
 	public function detect_algorithm($hash)
@@ -276,7 +276,7 @@ class manager
 
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->detect_algorithm($hash);
-		if ($stored_hash_type == false)
+		if (!$stored_hash_type)
 		{
 			// Still check MD5 hashes as that is what the installer
 			// will default to for the admin user

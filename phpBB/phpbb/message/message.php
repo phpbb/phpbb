@@ -234,7 +234,7 @@ class message
 	*
 	* @param \messenger $messenger
 	* @param string $contact
-	* @return null
+	* @return void
 	*/
 	public function send(\messenger $messenger, $contact)
 	{

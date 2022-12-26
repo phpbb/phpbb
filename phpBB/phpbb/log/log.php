@@ -764,7 +764,14 @@ class log implements \phpbb\log\log_interface
 				}
 
 				$log[$key]['reportee_username'] = $reportee_data_list[$row['reportee_id']]['username'];
-				$log[$key]['reportee_username_full'] = get_username_string('full', $row['reportee_id'], $reportee_data_list[$row['reportee_id']]['username'], $reportee_data_list[$row['reportee_id']]['user_colour'], false, $profile_url);
+				$log[$key]['reportee_username_full'] = get_username_string(
+					'full',
+					$row['reportee_id'],
+					$reportee_data_list[$row['reportee_id']]['username'],
+					$reportee_data_list[$row['reportee_id']]['user_colour'],
+					false,
+					$profile_url
+				);
 			}
 		}
 

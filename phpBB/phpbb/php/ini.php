@@ -137,15 +137,18 @@ class ini
 			// Already in bytes.
 			return phpbb_to_numeric($value);
 		}
-		else if (strlen($value) < 2)
+		else if (is_string($value))
 		{
-			// Single character.
-			return false;
-		}
-		else if (strlen($value) < 3 && $value[0] === '-')
-		{
-			// Two characters but the first one is a minus.
-			return false;
+			if (strlen($value) < 2)
+			{
+				// Single character.
+				return false;
+			}
+			else if (strlen($value) < 3 && $value[0] === '-')
+			{
+				// Two characters but the first one is a minus.
+				return false;
+			}
 		}
 
 		$value_lower = strtolower($value);

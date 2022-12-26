@@ -14,6 +14,7 @@
 namespace phpbb\report\controller;
 
 use phpbb\exception\http_exception;
+use phpbb\report\report_handler_interface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class report
@@ -61,6 +62,9 @@ class report
 	/**
 	 * @var \phpbb\report\handler_factory
 	 */
+	protected $report_factory;
+
+	/** @var report_handler_interface */
 	protected $report_handler;
 
 	/**
@@ -78,7 +82,7 @@ class report
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 		$this->captcha_factory	= $captcha_factory;
-		$this->report_handler	= $report_factory;
+		$this->report_factory	= $report_factory;
 
 		// User interface factory
 		$this->report_reason_provider = $ui_provider;
@@ -97,7 +101,7 @@ class report
 	public function handle($id, $mode)
 	{
 		// Get report handler
-		$this->report_handler = $this->report_handler->get_instance($mode);
+		$this->report_handler = $this->report_factory->get_instance($mode);
 
 		$this->user->add_lang('mcp');
 

@@ -183,8 +183,7 @@ abstract class type_base implements type_interface
 	}
 
 	/**
-	* Return templated value/field. Possible values for $mode are:
-	* change == user is able to set/enter profile values; preview == just show the value
+	* {@inheritDoc}
 	*/
 	public function process_field_row($mode, $profile_row)
 	{
@@ -201,6 +200,7 @@ abstract class type_base implements type_interface
 		// Assign template variables
 		$this->generate_field($profile_row, $preview_options);
 
-		return $this->template->assign_display('cp_body');
+		$compiled_template = $this->template->assign_display('cp_body');
+		return is_string($compiled_template) ? $compiled_template : '';
 	}
 }

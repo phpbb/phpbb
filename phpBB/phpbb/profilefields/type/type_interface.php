@@ -220,7 +220,7 @@ interface type_interface
 	*
 	* @param string	$mode			Mode for displaying the field (preview|change)
 	* @param array	$profile_row	Array with data for this field
-	* @return null
+	* @return string
 	*/
 	public function process_field_row($mode, $profile_row);
 }
