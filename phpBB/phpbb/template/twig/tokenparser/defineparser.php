@@ -23,7 +23,7 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 	*
 	* @return \Twig\Node\Node A Twig\Node instance
 	* @throws \Twig\Error\SyntaxError
-	* @throws \phpbb\template\twig\node\definenode
+	* @returns \phpbb\template\twig\node\definenode
 	*/
 	public function parse(\Twig\Token $token)
 	{

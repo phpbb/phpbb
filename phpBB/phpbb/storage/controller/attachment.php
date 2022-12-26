@@ -278,7 +278,7 @@ class attachment extends controller
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Set expires header for browser cache
-		$time = new \Datetime();
+		$time = new \DateTime();
 		$response->setExpires($time->modify('+1 year'));
 
 		return parent::handle($attachment['physical_filename']);

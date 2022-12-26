@@ -21,7 +21,7 @@ class event extends \Twig\Node\Node
 	*/
 	protected $listener_directory = 'event/';
 
-	/** @var \Twig\Environment */
+	/** @var \phpbb\template\twig\environment */
 	protected $environment;
 
 	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)

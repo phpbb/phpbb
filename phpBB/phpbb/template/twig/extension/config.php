@@ -43,9 +43,9 @@ class config extends AbstractExtension
 	/**
 	 * Returns a list of global functions to add to the existing list.
 	 *
-	 * @return array An array of global functions
+	 * @return \Twig\TwigFunction[] An array of global functions
 	 */
-	public function getFunctions()
+	public function getFunctions(): array
 	{
 		return array(
 			new \Twig\TwigFunction('config', array($this, 'get_config')),
