@@ -69,7 +69,7 @@ class manager
 	/**
 	* Loads all extension information from the database
 	*
-	* @return null
+	* @return void
 	*/
 	public function load_extensions()
 	{

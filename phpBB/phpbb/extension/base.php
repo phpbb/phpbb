@@ -35,7 +35,7 @@ class base implements \phpbb\extension\extension_interface
 	/** @var string */
 	protected $extension_path;
 
-	/** @var string[]|bool */
+	/** @var string[]|false */
 	private $migrations = false;
 
 	/**
@@ -69,7 +69,7 @@ class base implements \phpbb\extension\extension_interface
 	* Single enable step that installs any included migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
-	* @return false Indicates no further steps are required
+	* @return bool True if further steps are necessary, otherwise false
 	*/
 	public function enable_step($old_state)
 	{
@@ -95,7 +95,7 @@ class base implements \phpbb\extension\extension_interface
 	* Single purge step that reverts any included and installed migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
-	* @return false Indicates no further steps are required
+	* @return bool True if further steps are necessary, otherwise false
 	*/
 	public function purge_step($old_state)
 	{
@@ -135,8 +135,6 @@ class base implements \phpbb\extension\extension_interface
 
 		$this->migrator->set_migrations($migrations);
 
-		$migrations = $this->migrator->get_migrations();
-
-		return $migrations;
+		return $this->migrator->get_migrations();
 	}
 }

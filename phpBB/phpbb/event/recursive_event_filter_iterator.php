@@ -41,7 +41,9 @@ class recursive_event_filter_iterator extends \RecursiveFilterIterator
 	*/
 	public function getChildren()
 	{
-		return new self($this->getInnerIterator()->getChildren(), $this->root_path);
+		$inner_iterator = $this->getInnerIterator();
+		assert($inner_iterator instanceof \RecursiveIterator);
+		return new self($inner_iterator->getChildren(), $this->root_path);
 	}
 
 	/**

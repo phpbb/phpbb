@@ -461,7 +461,7 @@ class md_exporter
 	* Validate "Changed" Information
 	*
 	* @param string $changed
-	* @return string
+	* @return array{string, string} Changed information containing version and description in respective order
 	* @throws \LogicException
 	*/
 	public function validate_changed($changed)
@@ -481,7 +481,7 @@ class md_exporter
 			throw new \LogicException("Invalid changed information found for event '{$this->current_event}'");
 		}
 
-		return array($version, $description);
+		return [$version, $description];
 	}
 
 	/**
@@ -492,7 +492,7 @@ class md_exporter
 	*/
 	public function validate_version($version)
 	{
-		return preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $version);
+		return (bool) preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $version);
 	}
 
 	/**

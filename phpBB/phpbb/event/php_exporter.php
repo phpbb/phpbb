@@ -148,8 +148,9 @@ class php_exporter
 		$files = array();
 		foreach ($iterator as $file_info)
 		{
-			/** @var \RecursiveDirectoryIterator $file_info */
-			$relative_path = $iterator->getInnerIterator()->getSubPathname();
+			/** @var \RecursiveDirectoryIterator $inner_iterator */
+			$inner_iterator = $iterator->getInnerIterator();
+			$relative_path = $inner_iterator->getSubPathname();
 			$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
 		}
 
