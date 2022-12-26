@@ -226,8 +226,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_before
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_before', compact($vars)));
 
 		// Reset the list of allowed schemes
@@ -375,8 +376,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_after
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_after', compact($vars)));
 
 		return $configurator;
@@ -444,7 +446,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		}
 		catch (\Exception $e)
 		{
-			$this->log->add('critical', null, null, 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
 		}
 	}
 
