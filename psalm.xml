@@ -14,5 +14,10 @@
 
     <issueHandlers>
         <InvalidGlobal errorLevel="suppress" />
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <referencedClass name="UnitEnum" />
+            </errorLevel>
+        </UndefinedDocblockClass>
     </issueHandlers>
 </psalm>

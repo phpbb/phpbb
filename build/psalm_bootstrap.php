@@ -38,6 +38,10 @@ require_once $phpbb_root_path . 'includes/functions_posting.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_transfer.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_user.' . $phpEx;
+require_once $phpbb_root_path . 'includes/sphinxapi.' . $phpEx;
+require_once $phpbb_root_path . 'includes/diff/diff.' . $phpEx;
+require_once $phpbb_root_path . 'includes/diff/engine.' . $phpEx;
+require_once $phpbb_root_path . 'includes/compatibility_globals.' . $phpEx;
 
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', $phpbb_root_path . 'phpbb/', "php");
 $phpbb_class_loader->register();
