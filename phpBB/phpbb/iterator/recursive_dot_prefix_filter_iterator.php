@@ -22,9 +22,38 @@ namespace phpbb\iterator;
 */
 class recursive_dot_prefix_filter_iterator extends \RecursiveFilterIterator
 {
-	public function accept()
+	/**
+	 * Check whether the current element of the iterator is acceptable
+	 *
+	 * @return bool
+	 */
+	public function accept(): bool
 	{
 		$filename = $this->current()->getFilename();
 		return $filename[0] !== '.' || !$this->current()->isDir();
+	}
+
+	/**
+	 * Get sub path
+	 *
+	 * @return string
+	 */
+	public function getSubPath(): string
+	{
+		$directory_iterator = $this->getInnerIterator();
+		assert($directory_iterator instanceof \RecursiveDirectoryIterator);
+		return $directory_iterator->getSubPath();
+	}
+
+	/**
+	 * Get sub path and name
+	 *
+	 * @return string
+	 */
+	public function getSubPathname(): string
+	{
+		$directory_iterator = $this->getInnerIterator();
+		assert($directory_iterator instanceof \RecursiveDirectoryIterator);
+		return $directory_iterator->getSubPathname();
 	}
 }
