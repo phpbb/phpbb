@@ -99,6 +99,7 @@ class install
 	 * @return Response|StreamedResponse
 	 *
 	 * @throws http_exception When phpBB is already installed
+	 * @psalm-suppress InvalidNullableReturnType
 	 */
 	public function handle()
 	{

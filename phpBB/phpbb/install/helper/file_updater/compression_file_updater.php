@@ -21,7 +21,7 @@ use phpbb\install\helper\update_helper;
 class compression_file_updater implements file_updater_interface
 {
 	/**
-	 * @var \compress|null
+	 * @var \compress_zip|\compress_tar|null
 	 */
 	protected $compress;
 
@@ -86,7 +86,10 @@ class compression_file_updater implements file_updater_interface
 	 */
 	public function close()
 	{
-		$this->compress->close();
+		if ($this->compress !== null)
+		{
+			$this->compress->close();
+		}
 	}
 
 	/**

@@ -93,9 +93,9 @@ abstract class database_task extends task_base
 	 *
 	 * @param string $sql The SQL.
 	 *
-	 * @return DriverStmt|Statement The prepared statement object.
+	 * @return Statement|null The prepared statement object or null if preparing failed
 	 */
-	protected function create_prepared_stmt(string $sql)
+	protected function create_prepared_stmt(string $sql): ?Statement
 	{
 		try
 		{
@@ -153,13 +153,13 @@ abstract class database_task extends task_base
 	/**
 	 * Returns the last insert ID.
 	 *
-	 * @return string|null The last insert ID.
+	 * @return int|null The last insert ID.
 	 */
-	protected function get_last_insert_id() : ?string
+	protected function get_last_insert_id() : ?int
 	{
 		try
 		{
-			return $this->conn->lastInsertId();
+			return (int) $this->conn->lastInsertId();
 		}
 		catch (Exception $e)
 		{

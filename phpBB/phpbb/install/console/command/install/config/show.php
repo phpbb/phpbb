@@ -73,7 +73,7 @@ class show extends \phpbb\console\command\command
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
-	 * @return null
+	 * @return int 0 if everything went fine, or a non-zero exit code
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -90,7 +90,7 @@ class show extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
-			return;
+			return 1;
 		}
 
 		try
@@ -101,7 +101,7 @@ class show extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_YAML_FILE');
 
-			return;
+			return 1;
 		}
 
 		$processor = new Processor();
@@ -115,9 +115,11 @@ class show extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return;
+			return 1;
 		}
 
 		$style->block(Yaml::dump(array('installer' => $config), 10, 4, true, false));
+
+		return 0;
 	}
 }

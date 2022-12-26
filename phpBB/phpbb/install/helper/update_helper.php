@@ -89,6 +89,7 @@ class update_helper
 	 * @param string		$version_number2
 	 * @param string|null	$operator
 	 * @return int|bool	The returned value is identical to the PHP build-in function version_compare()
+	 * @psalm-suppress InvalidNullableReturnType, NullableReturnStatement
 	 */
 	public function phpbb_version_compare($version_number1, $version_number2, $operator = null)
 	{

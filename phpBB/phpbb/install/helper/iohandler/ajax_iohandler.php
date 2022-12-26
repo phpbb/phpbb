@@ -82,7 +82,7 @@ class ajax_iohandler extends iohandler_base
 	protected $redirect_url;
 
 	/**
-	 * @var resource
+	 * @var resource|closed-resource
 	 */
 	protected $file_lock_pointer;
 
@@ -235,7 +235,9 @@ class ajax_iohandler extends iohandler_base
 			'form_install' => 'installer_form.html',
 		));
 
-		return $this->template->assign_display('form_install');
+		$compiled_template = $this->template->assign_display('form_install');
+
+		return is_string($compiled_template) ? $compiled_template : '';
 	}
 
 	/**

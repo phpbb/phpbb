@@ -92,7 +92,7 @@ class install extends \phpbb\console\command\command
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
-	 * @return null
+	 * @return int 0 if everything went fine, or a non-zero exit code
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
