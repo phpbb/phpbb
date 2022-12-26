@@ -291,7 +291,7 @@ interface driver_interface
 	/**
 	* Get last inserted id after insert statement
 	*
-	* @return	string		Autoincrement value of the last inserted row
+	* @return	int|false		Autoincrement value of the last inserted row
 	*/
 	public function sql_nextid();
 

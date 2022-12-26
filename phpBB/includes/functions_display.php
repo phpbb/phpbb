@@ -1490,7 +1490,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 * Get user rank title and image
 *
 * @param array $user_data the current stored users data
-* @param int $user_posts the users number of posts
+* @param int|false $user_posts the users number of posts or false if guest
 *
 * @return array An associative array containing the rank title (title), the rank image as full img tag (img) and the rank image source (img_src)
 *

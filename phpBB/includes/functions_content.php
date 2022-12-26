@@ -1527,8 +1527,8 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 * @param int $user_id The users id
 * @param string $username The users name
 * @param string $username_colour The users colour
-* @param string $guest_username optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
-* @param string $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
+* @param string|false $guest_username optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
+* @param string|false $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
 *
 * @return string A string consisting of what is wanted based on $mode.
 */
