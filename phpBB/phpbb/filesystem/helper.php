@@ -69,7 +69,7 @@ class helper
 	 * Try to resolve real path when PHP's realpath failes to do so
 	 *
 	 * @param string	$path
-	 * @return bool|string
+	 * @return string|false
 	 */
 	protected static function phpbb_own_realpath($path)
 	{
@@ -175,7 +175,7 @@ class helper
 	 *
 	 * @param string	$path	Path to resolve
 	 *
-	 * @return string	Resolved path
+	 * @return string|false	Resolved path or false if path could not be resolved
 	 */
 	public static function realpath($path)
 	{

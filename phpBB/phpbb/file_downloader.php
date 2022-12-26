@@ -77,7 +77,7 @@ class file_downloader
 
 				$stream_meta_data = stream_get_meta_data($socket);
 
-				if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
+				if ($stream_meta_data['timed_out'] || time() >= $timer_stop)
 				{
 					throw new \phpbb\exception\runtime_exception('FSOCK_TIMEOUT');
 				}

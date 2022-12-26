@@ -21,7 +21,7 @@ interface type_interface
 	 * Handle upload for upload types. Arguments passed to this method will be
 	 * handled by the upload type classes themselves.
 	 *
-	 * @return \phpbb\files\filespec|bool Filespec instance if upload is
+	 * @return \phpbb\files\filespec_storage|\phpbb\files\filespec|bool Filespec instance if upload is
 	 *                                    successful or false if not
 	 */
 	public function upload();

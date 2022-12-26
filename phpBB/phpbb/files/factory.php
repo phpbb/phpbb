@@ -46,7 +46,7 @@ class factory
 
 		try
 		{
-			$service = $this->container->get($name);
+			$service = $this->container->get($name) ?? false;
 		}
 		catch (\Exception $e)
 		{

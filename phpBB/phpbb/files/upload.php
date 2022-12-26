@@ -14,7 +14,7 @@
 namespace phpbb\files;
 
 use phpbb\language\language;
-use phpbb\request\request_interface;
+use phpbb\request\request;
 
 /**
  * File upload class
@@ -55,7 +55,7 @@ class upload
 	/** @var language Language class */
 	protected $language;
 
-	/** @var request_interface Request class */
+	/** @var request Request class */
 	protected $request;
 
 	/**
@@ -64,9 +64,9 @@ class upload
 	 * @param factory $factory Files factory
 	 * @param language $language Language class
 	 * @param \bantu\IniGetWrapper\IniGetWrapper $php_ini ini_get() wrapper
-	 * @param request_interface $request Request class
+	 * @param request $request Request class
 	 */
-	public function __construct(factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request_interface $request)
+	public function __construct(factory $factory, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, request $request)
 	{
 		$this->factory = $factory;
 		$this->language = $language;
@@ -194,7 +194,7 @@ class upload
 	 *
 	 * @param string $errorcode Error code to assign
 	 *
-	 * @return string Error string
+	 * @return string|false Error string or false if error code is not supported
 	 * @access public
 	 */
 	public function assign_internal_error($errorcode)
@@ -250,7 +250,7 @@ class upload
 	/**
 	 * Perform common file checks
 	 *
-	 * @param filespec_storage $file Instance of filespec class
+	 * @param filespec_storage|filespec $file Instance of filespec class
 	 */
 	public function common_checks($file)
 	{
@@ -296,7 +296,7 @@ class upload
 	/**
 	 * Check for allowed dimension
 	 *
-	 * @param filespec_storage $file Instance of filespec class
+	 * @param filespec_storage|filespec $file Instance of filespec class
 	 *
 	 * @return bool True if dimensions are valid or no constraints set, false
 	 *			if not

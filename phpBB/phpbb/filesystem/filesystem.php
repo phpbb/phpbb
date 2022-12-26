@@ -329,7 +329,7 @@ class filesystem implements filesystem_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function phpbb_chmod($files, $perms = null, $recursive = false, $force_chmod_link = false)
+	public function phpbb_chmod($file, $perms = null, $recursive = false, $force_chmod_link = false)
 	{
 		if (is_null($perms))
 		{
@@ -374,26 +374,26 @@ class filesystem implements filesystem_interface
 		{
 			try
 			{
-				foreach ($this->to_iterator($files) as $file)
+				foreach ($this->to_iterator($file) as $current_file)
 				{
-					$file_uid = @fileowner($file);
-					$file_gid = @filegroup($file);
+					$file_uid = @fileowner($current_file);
+					$file_gid = @filegroup($current_file);
 
 					// Change owner
 					if ($file_uid !== $this->chmod_info['common_owner'])
 					{
-						$this->chown($file, $this->chmod_info['common_owner'], $recursive);
+						$this->chown($current_file, $this->chmod_info['common_owner'], $recursive);
 					}
 
 					// Change group
 					if ($file_gid !== $this->chmod_info['common_group'])
 					{
-						$this->chgrp($file, $this->chmod_info['common_group'], $recursive);
+						$this->chgrp($current_file, $this->chmod_info['common_group'], $recursive);
 					}
 
 					clearstatcache();
-					$file_uid = @fileowner($file);
-					$file_gid = @filegroup($file);
+					$file_uid = @fileowner($current_file);
+					$file_gid = @filegroup($current_file);
 				}
 			}
 			catch (filesystem_exception $e)
@@ -431,9 +431,9 @@ class filesystem implements filesystem_interface
 			case 'owner':
 				try
 				{
-					$this->chmod($files, $perms, $recursive, $force_chmod_link);
+					$this->chmod($file, $perms, $recursive, $force_chmod_link);
 					clearstatcache();
-					if ($this->is_readable($files) && $this->is_writable($files))
+					if ($this->is_readable($file) && $this->is_writable($file))
 					{
 						break;
 					}
@@ -445,9 +445,9 @@ class filesystem implements filesystem_interface
 			case 'group':
 				try
 				{
-					$this->chmod($files, $perms, $recursive, $force_chmod_link);
+					$this->chmod($file, $perms, $recursive, $force_chmod_link);
 					clearstatcache();
-					if ((!($perms & self::CHMOD_READ) || $this->is_readable($files, $recursive)) && (!($perms & self::CHMOD_WRITE) || $this->is_writable($files, $recursive)))
+					if ((!($perms & self::CHMOD_READ) || $this->is_readable($file, $recursive)) && (!($perms & self::CHMOD_WRITE) || $this->is_writable($file, $recursive)))
 					{
 						break;
 					}
@@ -458,7 +458,7 @@ class filesystem implements filesystem_interface
 				}
 			case 'other':
 			default:
-				$this->chmod($files, $perms, $recursive, $force_chmod_link);
+				$this->chmod($file, $perms, $recursive, $force_chmod_link);
 			break;
 		}
 	}
