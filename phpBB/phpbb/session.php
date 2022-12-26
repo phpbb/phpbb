@@ -216,6 +216,21 @@ class session
 	}
 
 	/**
+	 * Setup basic user-specific items (style, language, ...)
+	 *
+	 * @param array|string|false $lang_set Lang set(s) to include, false if none shall be included
+	 * @param int|false $style_id Style ID to load, false to load default style
+	 *
+	 * @throws \RuntimeException When called on session and not user instance
+	 *
+	 * @return void
+	 */
+	public function setup($lang_set = false, $style_id = false)
+	{
+		throw new \RuntimeException('Calling setup on session class is not supported.');
+	}
+
+	/**
 	* Start session management
 	*
 	* This is where all session activity begins. We gather various pieces of
@@ -1124,7 +1139,7 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db, $phpbb_dispatcher;
+		global $db, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
@@ -1254,14 +1269,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $phpbb_root_path, $phpEx;
-
-			// If the session is empty we need to create a valid one...
-			if (empty($this->session_id))
-			{
-				// This seems to be no longer needed? - #14971
-//				$this->session_create(ANONYMOUS);
-			}
+			global $phpEx;
 
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
@@ -1295,13 +1303,7 @@ class session
 			}
 
 			// Determine which message to output
-			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
-			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
-			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
-			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
-			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+			$message = $this->get_ban_message($ban_row, $ban_triggered_by);
 
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
@@ -1346,6 +1348,19 @@ class session
 	}
 
 	/**
+	 * Get ban info message
+	 *
+	 * @param array $ban_row Ban data row from database
+	 * @param string $ban_triggered_by Ban triggered by; allowed 'user', 'ip', 'email'
+	 *
+	 * @return string
+	 */
+	protected function get_ban_message(array $ban_row, string $ban_triggered_by): string
+	{
+		return ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+	}
+
+	/**
 	* Check if ip is blacklisted
 	* This should be called only where absolutely necessary
 	*
@@ -1355,7 +1370,7 @@ class session
 	* @param string 		$mode	register/post - spamcop for example is omitted for posting
 	* @param string|false	$ip		the IPv4 address to check
 	*
-	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
+	* @return array|false false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
 	function check_dnsbl($mode, $ip = false)
 	{
@@ -1680,7 +1695,9 @@ class session
 
 			$this->data = array_merge($this->data, $sql_ary);
 
-			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit'])
+				&& $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts']
+				&& $this instanceof user)
 			{
 				$this->leave_newly_registered();
 			}
