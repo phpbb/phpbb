@@ -646,14 +646,10 @@ function phpbb_email_hash($email)
  */
 function phpbb_load_extensions_autoloaders($phpbb_root_path)
 {
-	$iterator = new \RecursiveIteratorIterator(
-		new \phpbb\recursive_dot_prefix_filter_iterator(
-			new \RecursiveDirectoryIterator(
-				$phpbb_root_path . 'ext/',
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
-			)
-		),
-		\RecursiveIteratorIterator::SELF_FIRST
+	$iterator = new \phpbb\iterator\recursive_path_iterator(
+		$phpbb_root_path . 'ext/',
+		\RecursiveIteratorIterator::SELF_FIRST,
+		\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
 	);
 	$iterator->setMaxDepth(2);
 

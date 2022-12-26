@@ -380,11 +380,10 @@ class manager
 			return $available;
 		}
 
-		$iterator = new \RecursiveIteratorIterator(
-			new \phpbb\recursive_dot_prefix_filter_iterator(
-				new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS)
-			),
-			\RecursiveIteratorIterator::SELF_FIRST
+		$iterator = new \phpbb\iterator\recursive_path_iterator(
+			$this->phpbb_root_path . 'ext/',
+			\RecursiveIteratorIterator::SELF_FIRST,
+			\FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS
 		);
 		$iterator->setMaxDepth(2);
 

@@ -658,13 +658,8 @@ class md_exporter
 	{
 		try
 		{
-			$iterator = new \RecursiveIteratorIterator(
-				new \phpbb\recursive_dot_prefix_filter_iterator(
-					new \RecursiveDirectoryIterator(
-						$dir,
-						\FilesystemIterator::SKIP_DOTS
-					)
-				),
+			$iterator = new \phpbb\iterator\recursive_path_iterator(
+				$dir,
 				\RecursiveIteratorIterator::SELF_FIRST
 			);
 		}
