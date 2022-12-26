@@ -45,3 +45,7 @@ require_once $phpbb_root_path . 'includes/compatibility_globals.' . $phpEx;
 
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', $phpbb_root_path . 'phpbb/', "php");
 $phpbb_class_loader->register();
+
+class phpbb_cache_container extends \Symfony\Component\DependencyInjection\Container
+{
+}
