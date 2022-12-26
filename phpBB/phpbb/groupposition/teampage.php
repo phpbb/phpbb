@@ -58,8 +58,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* Returns the teampage position for a given group, if the group exists.
 	*
 	* @param	int		$group_id	group_id of the group to be selected
+	*
 	* @return	int			position of the group
-	* @throws \phpbb\groupposition\exception
+	* @throws exception
 	*/
 	public function get_group_value($group_id)
 	{
@@ -76,7 +77,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 		if ($row === false)
 		{
 			// Group not found.
-			throw new \phpbb\groupposition\exception('NO_GROUP');
+			throw new exception('NO_GROUP');
 		}
 
 		return (int) $row['teampage_position'];
@@ -86,8 +87,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* Returns the row for a given group, if the group exists.
 	*
 	* @param	int		$group_id	group_id of the group to be selected
+	*
 	* @return	array			Data row of the group
-	* @throws \phpbb\groupposition\exception
+	* @throws exception
 	*/
 	public function get_group_values($group_id)
 	{
@@ -104,7 +106,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 		if ($row === false)
 		{
 			// Group not found.
-			throw new \phpbb\groupposition\exception('NO_GROUP');
+			throw new exception('NO_GROUP');
 		}
 
 		return $row;
@@ -114,8 +116,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* Returns the teampage position for a given teampage item, if the item exists.
 	*
 	* @param	int		$teampage_id	Teampage_id of the selected item
+	*
 	* @return	int			Teampage position of the item
-	* @throws \phpbb\groupposition\exception
+	* @throws exception
 	*/
 	public function get_teampage_value($teampage_id)
 	{
@@ -129,7 +132,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 		if ($current_value === false)
 		{
 			// Group not found.
-			throw new \phpbb\groupposition\exception('NO_GROUP');
+			throw new exception('NO_GROUP');
 		}
 
 		return (int) $current_value;
@@ -139,8 +142,9 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	* Returns the teampage row for a given teampage item, if the item exists.
 	*
 	* @param	int		$teampage_id	Teampage_id of the selected item
+	*
 	* @return	array			Teampage row of the item
-	* @throws \phpbb\groupposition\exception
+	 * @throws exception
 	*/
 	public function get_teampage_values($teampage_id)
 	{
@@ -154,7 +158,7 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 		if ($row === false)
 		{
 			// Group not found.
-			throw new \phpbb\groupposition\exception('NO_GROUP');
+			throw new exception('NO_GROUP');
 		}
 
 		return $row;
@@ -565,11 +569,13 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Get group type language var
-	*
-	* @param	int		$group_type	group_type from the groups-table
-	* @return	string		name of the language variable for the given group-type.
-	*/
+	 * Get group type language var
+	 *
+	 * @param int $group_type group_type from the groups-table
+	 *
+	 * @return    string        name of the language variable for the given group-type.
+	 * @throws exception        If invalid group type is supplied
+	 */
 	public static function group_type_language($group_type)
 	{
 		switch ($group_type)
@@ -584,6 +590,8 @@ class teampage implements \phpbb\groupposition\groupposition_interface
 				return 'GROUP_SPECIAL';
 			case GROUP_FREE:
 				return 'GROUP_OPEN';
+			default:
+				throw new exception('NO_GROUP');
 		}
 	}
 }
