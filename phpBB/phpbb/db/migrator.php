@@ -651,7 +651,8 @@ class migrator
 	* @param array $steps The steps to run
 	* @param bool|string $state Current state of the migration
 	* @param bool $revert true to revert a data step
-	* @return bool|array{result: mixed, step: int}  migration state. True if completed, serialized array if not finished
+	* @return bool|array migration state. True if completed, serialized array if not finished
+	* @psalm-return bool|array{result: mixed, step: int}
 	* @throws \phpbb\db\migration\exception
 	*/
 	protected function process_data_step($steps, $state, $revert = false)

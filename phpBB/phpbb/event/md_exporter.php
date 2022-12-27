@@ -461,7 +461,8 @@ class md_exporter
 	* Validate "Changed" Information
 	*
 	* @param string $changed
-	* @return array{string, string} Changed information containing version and description in respective order
+	* @return array<string, string> Changed information containing version and description in respective order
+	* @psalm-return array{string, string}
 	* @throws \LogicException
 	*/
 	public function validate_changed($changed)

@@ -82,7 +82,8 @@ class ajax_iohandler extends iohandler_base
 	protected $redirect_url;
 
 	/**
-	 * @var resource|closed-resource
+	 * @var resource
+	 * @psalm-var resource|closed-resource
 	 */
 	protected $file_lock_pointer;
 

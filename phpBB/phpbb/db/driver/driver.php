@@ -1102,7 +1102,8 @@ abstract class driver implements driver_interface
 	/**
 	 * Return sql error array
 	 *
-	 * @return array{message: string, code: int|string} SQL error array with message and error code
+	 * @return array SQL error array with message and error code
+	 * @psalm-return array{message: string, code: int|string}
 	 */
 	abstract protected function _sql_error(): array;
 

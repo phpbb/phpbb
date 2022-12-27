@@ -54,7 +54,8 @@ class type_converter
 	 *
 	 * @param string $type Legacy type name
 	 *
-	 * @return array{string, array} Pair of type name and options.
+	 * @return array<string, array> Pair of type name and options.
+	 * @psalm-return array{string, array}
 	 */
 	public static function convert(string $type, string $dbms): array
 	{
