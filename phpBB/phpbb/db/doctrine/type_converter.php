@@ -54,7 +54,7 @@ class type_converter
 	 *
 	 * @param string $type Legacy type name
 	 *
-	 * @return array<string, array> Pair of type name and options.
+	 * @return array{string, array} Pair of type name and options.
 	 */
 	public static function convert(string $type, string $dbms): array
 	{
@@ -73,7 +73,7 @@ class type_converter
 	 * @param string	$type	Legacy type name.
 	 * @param int		$length	Type length.
 	 *
-	 * @return array<string, array> Pair of type name and options.
+	 * @return array{string, array} Pair of type name and options.
 	 */
 	private static function mapWithLength(string $type, int $length): array
 	{
@@ -107,7 +107,7 @@ class type_converter
 	 *
 	 * @param string $type Type name.
 	 *
-	 * @return array<string, array> Pair of type name and an array of options.
+	 * @return array{string, array} Pair of type name and an array of options.
 	 */
 	private static function mapType(string $type, string $dbms): array
 	{

@@ -68,7 +68,7 @@ class connection implements DriverConnection
 	/**
 	 * {@inheritDoc}
 	 */
-	public function lastInsertId($name = null): ?string
+	public function lastInsertId($name = null)
 	{
 		return $this->wrapped->lastInsertId($name);
 	}

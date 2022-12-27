@@ -184,12 +184,12 @@ class oracle_extractor extends base_extractor
 			FROM $table_name";
 		$result = $this->db->sql_query($sql);
 
-		$i_num_fields = ocinumcols($result);
+		$i_num_fields = oci_num_fields($result);
 
 		for ($i = 0; $i < $i_num_fields; $i++)
 		{
-			$ary_type[$i] = ocicolumntype($result, $i + 1);
-			$ary_name[$i] = ocicolumnname($result, $i + 1);
+			$ary_type[$i] = oci_field_type($result, $i + 1);
+			$ary_name[$i] = oci_field_name($result, $i + 1);
 		}
 
 		while ($row = $this->db->sql_fetchrow($result))

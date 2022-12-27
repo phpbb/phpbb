@@ -51,25 +51,30 @@ class factory
 		// Return the appropriate DB extractor
 		if ($this->db instanceof \phpbb\db\driver\mssql_base)
 		{
-			return $this->container->get('dbal.extractor.extractors.mssql_extractor');
+			$extractor = $this->container->get('dbal.extractor.extractors.mssql_extractor');
 		}
 		else if ($this->db instanceof \phpbb\db\driver\mysql_base)
 		{
-			return $this->container->get('dbal.extractor.extractors.mysql_extractor');
+			$extractor = $this->container->get('dbal.extractor.extractors.mysql_extractor');
 		}
 		else if ($this->db instanceof \phpbb\db\driver\oracle)
 		{
-			return $this->container->get('dbal.extractor.extractors.oracle_extractor');
+			$extractor = $this->container->get('dbal.extractor.extractors.oracle_extractor');
 		}
 		else if ($this->db instanceof \phpbb\db\driver\postgres)
 		{
-			return $this->container->get('dbal.extractor.extractors.postgres_extractor');
+			$extractor = $this->container->get('dbal.extractor.extractors.postgres_extractor');
 		}
 		else if ($this->db instanceof \phpbb\db\driver\sqlite3)
 		{
-			return $this->container->get('dbal.extractor.extractors.sqlite3_extractor');
+			$extractor = $this->container->get('dbal.extractor.extractors.sqlite3_extractor');
+		}
+		else
+		{
+			throw new \InvalidArgumentException('Invalid database driver given');
 		}
 
-		throw new \InvalidArgumentException('Invalid database driver given');
+		/** @var \phpbb\db\extractor\extractor_interface $extractor */
+		return $extractor;
 	}
 }

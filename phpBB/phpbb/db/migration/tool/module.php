@@ -162,7 +162,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 		Optionally you may not send 'modes' and it will insert all of the
 	* 			modules in that info file.
 	* 	path, specify that here
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function add($class, $parent = 0, $data = array())

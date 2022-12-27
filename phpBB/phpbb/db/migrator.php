@@ -90,7 +90,7 @@ class migrator
 	*
 	* 'effectively_installed' set and set to true if the migration was effectively_installed
 	*
-	* @var array|bool
+	* @var array|false
 	*/
 	protected $last_run_migration = false;
 
@@ -192,7 +192,7 @@ class migrator
 	 * The array contains 'name', 'class' and 'state'. 'effectively_installed' is set
 	 * and set to true if the last migration was effectively_installed.
 	 *
-	 * @return array
+	 * @return array|false Last run migration information or false if no migration has been run yet
 	 */
 	public function get_last_run_migration()
 	{
@@ -296,7 +296,7 @@ class migrator
 	/**
 	 * Effectively runs a single update step from the next migration to be applied.
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function update_do()
 	{
@@ -517,7 +517,7 @@ class migrator
 	 * Effectively runs a single revert step from the last migration installed
 	 *
 	 * @param string $migration String migration name to revert (including any that depend on this migration)
-	 * @return null
+	 * @return void
 	 */
 	protected function revert_do($migration)
 	{
@@ -651,7 +651,7 @@ class migrator
 	* @param array $steps The steps to run
 	* @param bool|string $state Current state of the migration
 	* @param bool $revert true to revert a data step
-	* @return bool|string migration state. True if completed, serialized array if not finished
+	* @return bool|array{result: mixed, step: int}  migration state. True if completed, serialized array if not finished
 	* @throws \phpbb\db\migration\exception
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
@@ -744,7 +744,8 @@ class migrator
 	* @param array $step Data step from migration
 	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
-	* @return array Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters
+	* @return array|false Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters;
+	*					false if no callable can be created from data setp
 	* @throws \phpbb\db\migration\exception
 	*/
 	protected function get_callable_from_step(array $step, $last_result = 0, $reverse = false)

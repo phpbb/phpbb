@@ -45,7 +45,7 @@ class config_text implements \phpbb\db\migration\tool\tool_interface
 	* @param string $config_name The name of the config_text setting
 	* 	you would like to add
 	* @param mixed $config_value The value of the config_text setting
-	* @return null
+	* @return void
 	*/
 	public function add($config_name, $config_value)
 	{
@@ -81,7 +81,7 @@ class config_text implements \phpbb\db\migration\tool\tool_interface
 	*
 	* @param string $config_name The name of the config_text setting you would
 	* 	like to remove
-	* @return null
+	* @return void
 	*/
 	public function remove($config_name)
 	{

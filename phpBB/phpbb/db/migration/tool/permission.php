@@ -21,7 +21,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
-	/** @var \includes\acp\auth\auth_admin */
+	/** @var \auth_admin */
 	protected $auth_admin;
 
 	/** @var \phpbb\cache\service */
@@ -115,7 +115,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param bool $global True for checking a global permission setting,
 	* 	False for a local permission setting
 	* @param int|false $copy_from If set, contains the id of the permission from which to copy the new one.
-	* @return null
+	* @return void
 	*/
 	public function add($auth_option, $global = true, $copy_from = false)
 	{
@@ -189,7 +189,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $auth_option The name of the permission (auth) option
 	* @param bool $global True for checking a global permission setting,
 	* 	False for a local permission setting
-	* @return null
+	* @return void
 	*/
 	public function remove($auth_option, $global = true)
 	{
@@ -266,7 +266,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $role_type The type (u_, m_, a_)
 	* @param string $role_description Description of the new role
 	*
-	* @return null
+	* @return int|null Inserted SQL id or false if role already exists
 	*/
 	public function role_add($role_name, $role_type, $role_description = '')
 	{
@@ -292,7 +292,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
 
-		return $this->db->sql_nextid();
+		return (int) $this->db->sql_nextid();
 	}
 
 	/**
@@ -300,7 +300,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	*
 	* @param string $old_role_name The old role name
 	* @param string $new_role_name The new role name
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function role_update($old_role_name, $new_role_name)
@@ -320,7 +320,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* Remove a permission role
 	*
 	* @param string $role_name The role name to remove
-	* @return null
+	* @return void
 	*/
 	public function role_remove($role_name)
 	{
@@ -704,9 +704,6 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			break;
 		}
 
-		if ($call)
-		{
-			return call_user_func_array(array(&$this, $call), $arguments);
-		}
+		return $call ? call_user_func_array(array(&$this, $call), $arguments) : null;
 	}
 }
