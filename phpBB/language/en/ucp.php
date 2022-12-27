@@ -130,6 +130,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder cannot be removed.',
 	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
 	'CHANGE_PASSWORD'			=> 'Change password',
+	'CLEAR'						=> 'Clear',
 	'CLICK_GOTO_FOLDER'			=> '%1$sGo to your “%3$s” folder%2$s',
 	'CLICK_RETURN_FOLDER'		=> '%1$sReturn to your “%3$s” folder%2$s',
 	'CONFIRMATION'				=> 'Confirmation of registration',
@@ -222,6 +223,8 @@ $lang = array_merge($lang, array(
 	'FIELD_INVALID_URL'					=> 'The field “%s” has an invalid url.',
 	'FIELD_INVALID_VALUE'				=> 'The field “%s” has an invalid value.',
 
+	'FLIP_HORIZONTALLY'			=> 'Flip horizontally',
+	'FLIP_VERTICALLY'			=> 'Flip vertically',
 	'FOE_MESSAGE'				=> 'Message from foe',
 	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible. Private messages from foes are still permitted. Please note that you cannot ignore moderators or administrators.',
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully.',
@@ -304,11 +307,13 @@ $lang = array_merge($lang, array(
 	'MESSAGES_DELETED'				=> 'Messages successfully deleted',
 	'MOVE_DELETED_MESSAGES_TO'		=> 'Move messages from removed folder to',
 	'MOVE_DOWN'						=> 'Move down',
+	'MOVE_LEFT'						=> 'Move left',
 	'MOVE_MARKED_TO_FOLDER'			=> 'Move marked to %s',
 	'MOVE_PM_ERROR'					=> array(
 		1	=> 'An error occurred while moving the messages to the new folder, only %2$d out of %1$s was moved.',
 		2	=> 'An error occurred while moving the messages to the new folder, only %2$d out of %1$s were moved.',
 	),
+	'MOVE_RIGHT'					=> 'Move right',
 	'MOVE_TO_FOLDER'				=> 'Move to folder',
 	'MOVE_UP'						=> 'Move up',
 
@@ -468,6 +473,9 @@ $lang = array_merge($lang, array(
 	'RESIGN_SELECTED'					=> 'Resign selected',
 	'RETURN_FOLDER'						=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'						=> '%sReturn to the User Control Panel%s',
+	'RETURN_TO_UCP'						=> 'Return to the User Control Panel',
+	'ROTATE_LEFT'						=> 'Rotate left',
+	'ROTATE_RIGHT'						=> 'Rotate right',
 	'RULE_ADDED'						=> 'Rule successfully added.',
 	'RULE_ALREADY_DEFINED'				=> 'This rule was defined previously.',
 	'RULE_DELETED'						=> 'Rule successfully removed.',
@@ -648,6 +656,9 @@ $lang = array_merge($lang, array(
 		'TO_GROUP'		=> 'to my default usergroup',
 		'TO_ME'			=> 'to me',
 	),
+
+	'ZOOM_IN'			=> 'Zoom in',
+	'ZOOM_OUT'			=> 'Zoom out',
 
 	'GROUPS_EXPLAIN'	=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you additional permissions to view content or increase your capabilities in other areas.',
 	'GROUP_LEADER'		=> 'Leaderships',

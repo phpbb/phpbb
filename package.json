@@ -14,13 +14,18 @@
 			"phpBB/adm/style/permissions.js",
 			"phpBB/adm/style/tooltip.js",
 			"phpBB/assets/javascript/core.js",
+			"phpBB/assets/javascript/cropper.js",
 			"phpBB/assets/javascript/editor.js",
+			"phpBB/assets/javascript/hermite.js",
 			"phpBB/assets/javascript/installer.js",
+			"phpBB/assets/javascript/jquery-cropper.js",
 			"phpBB/assets/javascript/plupload.js",
+			"phpBB/ext/**/*.js",
 			"phpBB/styles/prosilver/template/ajax.js",
 			"phpBB/styles/prosilver/template/forum_fn.js",
 			"phpBB/**/*.min.js",
 			"phpBB/vendor/**/*.js",
+			"phpBB/vendor-ext/**/*.js",
 			"phpBB/phpbb/**/*.js",
 			"phpBB/tests/**/*.js"
 		],
@@ -40,6 +45,10 @@
 			],
 			"multiline-comment-style": "off",
 			"computed-property-spacing": "off",
+			"space-before-function-paren": [
+				"error",
+				"never"
+			],
 			"space-in-parens": "off",
 			"capitalized-comments": "off",
 			"object-curly-spacing": [

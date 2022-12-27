@@ -32,7 +32,7 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
+		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher, $language;
 
 		$user->add_lang('posting');
 
@@ -669,7 +669,7 @@ class ucp_profile
 									);
 
 									/**
-									* Trigger events on successfull avatar change
+									* Trigger events on successful avatar change
 									*
 									* @event core.ucp_profile_avatar_sql
 									* @var	array	result	Array with data to be stored in DB
@@ -683,9 +683,46 @@ class ucp_profile
 										WHERE user_id = ' . (int) $user->data['user_id'];
 									$db->sql_query($sql);
 
-									meta_refresh(3, $this->u_action);
-									$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-									trigger_error($message);
+									if ($request->is_ajax())
+									{
+										/** @var \phpbb\avatar\helper $avatar_helper */
+										$avatar_helper = $phpbb_container->get('avatar.helper');
+
+										$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+
+										$json_response = new \phpbb\json_response;
+										$json_response->send(array(
+											'success' => true,
+
+											'MESSAGE_TITLE'	=> $language->lang('INFORMATION'),
+											'MESSAGE_TEXT'	=> $language->lang('PROFILE_UPDATED'),
+											'AVATAR'		=> $avatar_helper->get_template_vars($avatar),
+											'REFRESH_DATA'	=> [
+												'time'	=> 3,
+												'url'		=> $this->u_action,
+												'text'		=> $language->lang('RETURN_TO_UCP'),
+											]
+										));
+									}
+									else
+									{
+										meta_refresh(3, $this->u_action);
+										$message = $language->lang('PROFILE_UPDATED') . '<br><br>' . $language->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+										trigger_error($message);
+									}
+								}
+								else if ($request->is_ajax())
+								{
+									$error = $phpbb_avatar_manager->localize_errors($user, $error);
+
+									$json_response = new \phpbb\json_response;
+									$json_response->send([
+										'success' => false,
+										'error' => [
+											'title'		=> $language->lang('INFORMATION'),
+											'messages'	=> $error,
+										],
+									]);
 								}
 							}
 						}
