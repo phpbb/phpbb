@@ -206,8 +206,8 @@ class manager
 	* Hash supplied password
 	*
 	* @param string $password Password that should be hashed
-	* @param string $type Hash type. Will default to standard hash type if
-	*			none is supplied
+	* @param string|array $type Hash type. Will default to standard hash type if
+	*			none is supplied, array for combined hashing
 	* @return string|bool Password hash of supplied password or false if
 	*			if something went wrong during hashing
 	*/

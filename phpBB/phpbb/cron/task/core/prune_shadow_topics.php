@@ -166,7 +166,8 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	* @param int $prune_flags Prune flags
 	* @param int $prune_days Prune date in days
 	* @param int $prune_freq Prune frequency
-	* @return null
+	*
+	* @return void
 	*/
 	protected function auto_prune_shadow_topics($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
 	{
@@ -194,7 +195,5 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 
 			$this->log->add('admin', $user_id, $user_ip, 'LOG_PRUNE_SHADOW', false, array($row['forum_name']));
 		}
-
-		return;
 	}
 }
