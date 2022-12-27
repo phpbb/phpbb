@@ -10,6 +10,7 @@
  * the docs/CREDITS.txt file.
  *
  */
+
 class SQLite3
 {
 	public function query(string $query) {}

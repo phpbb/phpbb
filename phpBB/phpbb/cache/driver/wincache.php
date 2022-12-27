@@ -31,13 +31,9 @@ class wincache extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Fetch an item from the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @return mixed Cached data
-	*/
-	function _read($var)
+	 * {@inheritDoc}
+	 */
+	protected function _read(string $var)
 	{
 		$success = false;
 		$result = wincache_ucache_get($this->key_prefix . $var, $success);
@@ -46,27 +42,17 @@ class wincache extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Store data in the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @param mixed $data Data to store
-	* @param int $ttl Time-to-live of cached data
-	* @return bool True if the operation succeeded
+	* {@inheritDoc}
 	*/
-	function _write($var, $data, $ttl = 2592000)
+	protected function _write(string $var, $data, int $ttl = 2592000): bool
 	{
 		return wincache_ucache_set($this->key_prefix . $var, $data, $ttl);
 	}
 
 	/**
-	* Remove an item from the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @return bool True if the operation succeeded
-	*/
-	function _delete($var)
+	 * {@inheritDoc}
+	 */
+	protected function _delete(string $var): bool
 	{
 		return wincache_ucache_delete($this->key_prefix . $var);
 	}
