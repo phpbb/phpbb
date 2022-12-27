@@ -284,6 +284,6 @@ class upload extends \phpbb\avatar\driver\driver
 	*/
 	protected function can_upload()
 	{
-		return $this->php_ini->getBool('file_uploads');
+		return (bool) $this->php_ini->getBool('file_uploads');
 	}
 }

@@ -95,7 +95,7 @@ interface driver_interface
 	*        an array that will be passed to vsprintf() with the language key in
 	*        the first array key.
 	*
-	* @return array Array containing the avatar data as follows:
+	* @return array|false Array containing the avatar data as follows or false if processing failed:
 	*        ['avatar'], ['avatar_width'], ['avatar_height']
 	*/
 	public function process_form($request, $template, $user, $row, &$error);
