@@ -55,7 +55,7 @@ class config extends AbstractExtension
 	/**
 	 * Retrieves a configuration value for use in templates.
 	 *
-	 * @return string	The configuration value
+	 * @return int|string	The configuration value
 	 */
 	public function get_config()
 	{

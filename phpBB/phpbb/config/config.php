@@ -20,7 +20,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 {
 	/**
 	* The configuration data
-	* @var array<string,string>
+	* @var array<string,int|string>
 	*/
 	protected $config;
 
@@ -59,7 +59,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* Retrieves a configuration value.
 	*
 	* @param  string $key The configuration option's name.
-	* @return string      The configuration value
+	* @return int|string      The configuration value
 	*/
 	public function offsetGet($key)
 	{
