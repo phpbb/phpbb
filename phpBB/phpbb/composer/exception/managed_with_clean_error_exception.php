@@ -29,7 +29,7 @@ class managed_with_clean_error_exception extends managed_with_error_exception
 	 */
 	public function __construct($prefix, $message = '', array $parameters = [], \Exception $previous = null, $code = 0)
 	{
-		parent::__construct($prefix . $message, $parameters, $previous, $code);
+		parent::__construct($prefix, $message, $parameters, $previous, $code);
 	}
 
 }
