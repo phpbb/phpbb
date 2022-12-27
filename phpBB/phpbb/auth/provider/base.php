@@ -23,7 +23,6 @@ abstract class base implements provider_interface
 	*/
 	public function init()
 	{
-		return;
 	}
 
 	/**
@@ -31,7 +30,6 @@ abstract class base implements provider_interface
 	*/
 	public function autologin()
 	{
-		return;
 	}
 
 	/**
@@ -39,7 +37,6 @@ abstract class base implements provider_interface
 	*/
 	public function acp()
 	{
-		return;
 	}
 
 	/**
@@ -47,7 +44,6 @@ abstract class base implements provider_interface
 	*/
 	public function get_acp_template($new_config)
 	{
-		return;
 	}
 
 	/**
@@ -55,7 +51,6 @@ abstract class base implements provider_interface
 	*/
 	public function get_login_data()
 	{
-		return;
 	}
 
 	/**
@@ -63,7 +58,6 @@ abstract class base implements provider_interface
 	*/
 	public function get_auth_link_data($user_id = 0)
 	{
-		return;
 	}
 
 	/**
@@ -71,7 +65,6 @@ abstract class base implements provider_interface
 	*/
 	public function logout($data, $new_session)
 	{
-		return;
 	}
 
 	/**
@@ -79,7 +72,6 @@ abstract class base implements provider_interface
 	*/
 	public function validate_session($user)
 	{
-		return;
 	}
 
 	/**
@@ -87,7 +79,6 @@ abstract class base implements provider_interface
 	*/
 	public function login_link_has_necessary_data(array $login_link_data)
 	{
-		return;
 	}
 
 	/**
@@ -95,7 +86,6 @@ abstract class base implements provider_interface
 	*/
 	public function link_account(array $link_data)
 	{
-		return;
 	}
 
 	/**
@@ -103,6 +93,5 @@ abstract class base implements provider_interface
 	*/
 	public function unlink_account(array $link_data)
 	{
-		return;
 	}
 }

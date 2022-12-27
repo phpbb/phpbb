@@ -263,7 +263,7 @@ class token_storage implements TokenStorageInterface
 			$data['session_id']	= $this->user->data['session_id'];
 		}
 
-		return $this->get_state_row($data);
+		return $this->get_state_row($data)['oauth_state'] ?? '';
 	}
 
 	/**
@@ -519,7 +519,7 @@ class token_storage implements TokenStorageInterface
 	 *
 	 * @param array		$data		The SQL WHERE data
 	 * @return array|false			array with the OAuth state row,
-	 *                       		false if the state does not exist
+	 *								false if the state does not exist
 	 */
 	protected function get_state_row($data)
 	{

@@ -25,8 +25,8 @@ interface provider_interface
 	 * Changing to an authentication provider will not be permitted in acp_board
 	 * if there is an error.
 	 *
-	 * @return 	boolean|string 	False if the user is identified, otherwise an
-	 *							error message, or null if not implemented.
+	 * @return 	bool|string|void	False if the user is identified, otherwise an
+	 *								error message, or void if not implemented.
 	 */
 	public function init();
 
@@ -52,8 +52,8 @@ interface provider_interface
 	/**
 	 * Autologin function
 	 *
-	 * @return 	array|null	containing the user row, empty if no auto login
-	 * 						should take place, or null if not implemented.
+	 * @return 	array|void	containing the user row, empty if no auto login
+	 * 						should take place, or void if not implemented.
 	 */
 	public function autologin();
 
@@ -61,7 +61,7 @@ interface provider_interface
 	 * This function is used to output any required fields in the authentication
 	 * admin panel. It also defines any required configuration table fields.
 	 *
-	 * @return	array|null	Returns null if not implemented or an array of the
+	 * @return	array|void	Returns void if not implemented or an array of the
 	 *						configuration fields of the provider.
 	 */
 	public function acp();
@@ -74,7 +74,7 @@ interface provider_interface
 	 *
 	 * @param \phpbb\config\config	$new_config	Contains the new configuration values
 	 * 											that have been set in acp_board.
-	 * @return array|null		Returns null if not implemented or an array with
+	 * @return array|void		Returns void if not implemented or an array with
 	 *							the template file name and an array of the vars
 	 *							that the template needs that must conform to the
 	 *							following example:
@@ -107,8 +107,8 @@ interface provider_interface
 	* Returns an array of data necessary to build custom elements on the login
 	* form.
 	*
-	* @return	array|null	If this function is not implemented on an auth
-	*						provider then it returns null. If it is implemented
+	* @return	array|void	If this function is not implemented on an auth
+	*						provider then it returns void. If it is implemented
 	*						it will return an array of up to four elements of
 	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
 	*						present then 'BLOCK_VARS' must also be present in
@@ -139,8 +139,8 @@ interface provider_interface
 	 * into phpBB.
 	 *
 	 * @param 	array 	$user
-	 * @return 	boolean	true if the given user is authenticated, false if the
-	 * 					session should be closed, or null if not implemented.
+	 * @return 	bool|void	true if the given user is authenticated, false if the
+	 * 					session should be closed, or void if not implemented.
 	 */
 	public function validate_session($user);
 
@@ -151,8 +151,8 @@ interface provider_interface
 	*
 	* @param	array	$login_link_data	Any data needed to link a phpBB account to
 	*								an external account.
-	* @return	string|null	Returns a string with a language constant if there
-	*						is data missing or null if there is no error.
+	* @return	string|void	Returns a string with a language constant if there
+	*						is data missing or void if there is no error.
 	*/
 	public function login_link_has_necessary_data(array $login_link_data);
 
@@ -171,8 +171,8 @@ interface provider_interface
 	*						defaults to 0, which is not a valid ID. The method
 	*						should fall back to the current user's ID in this
 	*						case.
-	* @return	array|null	If this function is not implemented on an auth
-	*						provider then it returns null. If it is implemented
+	* @return	array|void	If this function is not implemented on an auth
+	*						provider then it returns void. If it is implemented
 	*						it will return an array of up to four elements of
 	*						which only 'TEMPLATE_FILE'. If 'BLOCK_VAR_NAME' is
 	*						present then 'BLOCK_VARS' must also be present in

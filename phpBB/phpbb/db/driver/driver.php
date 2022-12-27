@@ -571,7 +571,7 @@ abstract class driver implements driver_interface
 	*/
 	function sql_build_array($query, $assoc_ary = [])
 	{
-		if (!count($assoc_ary))
+		if (!is_array($assoc_ary) || !count($assoc_ary))
 		{
 			return false;
 		}
