@@ -49,6 +49,7 @@ $phpbb_class_loader->register();
 
 // Include files that require class loader to be initialized
 require_once $phpbb_root_path . 'includes/acp/auth.' . $phpEx;
+require_once $phpbb_root_path . 'includes/acp/acp_captcha.' . $phpEx;
 
 class phpbb_cache_container extends \Symfony\Component\DependencyInjection\Container
 {

@@ -1653,6 +1653,8 @@ class gd
 						),
 					),
 				);
+
+		/** @var 1|2|3 $config['captcha_gd_fonts'] */
 		return array(
 			'width'		=> 9,
 			'height'	=> 15,

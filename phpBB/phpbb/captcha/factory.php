@@ -41,7 +41,7 @@ class factory
 	* Return a new instance of a given plugin
 	*
 	* @param $name
-	* @return object
+	* @return object|null
 	*/
 	public function get_instance($name)
 	{
