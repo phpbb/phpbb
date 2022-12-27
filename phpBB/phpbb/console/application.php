@@ -14,10 +14,7 @@
 namespace phpbb\console;
 
 use Symfony\Component\Console\Input\InputDefinition;
-use Symfony\Component\Console\Shell;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class application extends \Symfony\Component\Console\Application
 {

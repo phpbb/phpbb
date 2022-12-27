@@ -403,7 +403,7 @@ class storage
 	 *
 	 * @param string	$path	The file
 	 *
-	 * @throws \phpbb\storage\exception\exception	When the adapter doesnt implement the method
+	 * @throws exception    When the adapter doesn't implement the method
 	 *													When the file doesn't exist
 	 *
 	 * @return \phpbb\storage\file_info	Returns file_info object

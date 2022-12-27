@@ -18,18 +18,4 @@ namespace phpbb\composer\exception;
  */
 class managed_with_enable_error_exception extends managed_with_error_exception
 {
-	/**
-	 * Constructor
-	 *
-	 * @param string		$prefix		The language string prefix
-	 * @param string		$message	The Exception message to throw (must be a language variable).
-	 * @param array			$parameters	The parameters to use with the language var.
-	 * @param \Exception|null	$previous	The previous runtime_exception used for the runtime_exception chaining.
-	 * @param integer		$code		The Exception code.
-	 */
-	public function __construct($prefix, $message = '', array $parameters = [], \Exception $previous = null, $code = 0)
-	{
-		parent::__construct($prefix, $message, $parameters, $previous, $code);
-	}
-
 }
