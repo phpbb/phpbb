@@ -425,7 +425,7 @@ class extension_guesser extends guesser_base
 		'wb1'		=> 'application/x-qpro',
 		'wbmp'		=> 'image/vnd.wap.wbmp',
 		'web'		=> 'application/vnd.xara',
-		'webm'		=> 'audio/webm',
+		'weba'		=> 'audio/webm',
 		'webm'		=> 'video/webm',
 		'wiz'		=> 'application/msword',
 		'wk1'		=> 'application/x-123',
