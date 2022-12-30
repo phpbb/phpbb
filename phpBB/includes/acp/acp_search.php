@@ -371,6 +371,13 @@ class acp_search
 	 */
 	private function index_action(string $id, string $mode, string $action): void
 	{
+		// Start displaying progress on first submit
+		if ($this->request->is_set_post('submit'))
+		{
+			$this->display_progress_bar($id, $mode);
+			return;
+		}
+
 		// For some this may be of help...
 		@ini_set('memory_limit', '128M');
 
@@ -390,13 +397,6 @@ class acp_search
 			{
 				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-		}
-
-		// Start displaying progress on first submit
-		if ($this->request->is_set_post('submit'))
-		{
-			$this->display_progress_bar($id, $mode);
-			return;
 		}
 
 		// Execute create/delete
@@ -499,21 +499,19 @@ class acp_search
 	 */
 	protected function get_post_index_progress(int $post_counter): array
 	{
-		global $db;
-
 		$sql = 'SELECT COUNT(post_id) as done_count
 			FROM ' . POSTS_TABLE . '
 			WHERE post_id <= ' . $post_counter;
-		$result = $db->sql_query($sql);
-		$done_count = (int) $db->sql_fetchfield('done_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$done_count = (int) $this->db->sql_fetchfield('done_count');
+		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(post_id) as remain_count
 			FROM ' . POSTS_TABLE . '
 			WHERE post_id > ' . $post_counter;
-		$result = $db->sql_query($sql);
-		$remain_count = (int) $db->sql_fetchfield('remain_count');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$remain_count = (int) $this->db->sql_fetchfield('remain_count');
+		$this->db->sql_freeresult($result);
 
 		$total_count = $done_count + $remain_count;
 		$percent = ($done_count / $total_count) * 100;
