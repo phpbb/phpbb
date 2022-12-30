@@ -18,6 +18,7 @@ use phpbb\install\installer_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -90,7 +91,7 @@ class validate extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message(array('MISSING_FILE', array($config_file)));
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		try
@@ -101,7 +102,7 @@ class validate extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_YAML_FILE');
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		$processor = new Processor();
@@ -115,10 +116,10 @@ class validate extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		$iohandler->add_success_message('CONFIGURATION_VALID');
-		return 0;
+		return Command::SUCCESS;
 	}
 }
