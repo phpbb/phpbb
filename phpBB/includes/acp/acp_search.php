@@ -16,6 +16,7 @@
 */
 
 use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
 use phpbb\language\language;
 use phpbb\log\log;
@@ -38,6 +39,9 @@ class acp_search
 
 	/** @var config */
 	protected $config;
+
+	/** @var driver_interface */
+	protected $db;
 
 	/** @var language */
 	protected $language;
@@ -71,9 +75,10 @@ class acp_search
 
 	public function __construct($p_master)
 	{
-		global $config, $phpbb_container, $language, $phpbb_log, $request, $template, $user, $phpbb_admin_path, $phpEx;
+		global $config, $db, $phpbb_container, $language, $phpbb_log, $request, $template, $user, $phpbb_admin_path, $phpEx;
 
 		$this->config = $config;
+		$this->db = $db;
 		$this->language = $language;
 		$this->log = $phpbb_log;
 		$this->request = $request;
@@ -278,10 +283,6 @@ class acp_search
 		{
 			switch ($action)
 			{
-				case 'progress_bar':
-					$this->display_progress_bar();
-				break;
-
 				case 'create':
 				case 'delete':
 					$this->index_action($id, $mode, $action);
@@ -352,12 +353,11 @@ class acp_search
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
 		$action = $this->search_state_helper->action();
+		$post_counter = $this->search_state_helper->counter();
 
 		$this->template->assign_vars([
 			'U_ACTION'				=> $this->u_action . '&amp;action=' . $action . '&amp;hash=' . generate_link_hash('acp_search'),
-			'UA_PROGRESS_BAR'		=> addslashes($this->u_action . '&amp;action=progress_bar'),
-			'L_CONTINUE'			=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING') : $this->language->lang('CONTINUE_DELETING_INDEX'),
-			'L_CONTINUE_EXPLAIN'	=> ($action === 'create') ? $this->language->lang('CONTINUE_INDEXING_EXPLAIN') : $this->language->lang('CONTINUE_DELETING_INDEX_EXPLAIN'),
+			'CONTINUE_PROGRESS'		=> $this->get_post_index_progress($post_counter),
 			'S_ACTION'				=> $action,
 		]);
 	}
@@ -392,6 +392,13 @@ class acp_search
 			}
 		}
 
+		// Start displaying progress on first submit
+		if ($this->request->is_set_post('submit'))
+		{
+			$this->display_progress_bar($id, $mode);
+			return;
+		}
+
 		// Execute create/delete
 		$type = $this->search_state_helper->type();
 		$action = $this->search_state_helper->action();
@@ -409,15 +416,36 @@ class acp_search
 				$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=$action&hash=" . generate_link_hash('acp_search'), false);
 				meta_refresh(1, $u_action);
 
-				$message_redirect = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT' : 'SEARCH_INDEX_DELETE_REDIRECT', (int) $status['row_count'], $status['post_counter']);
-				$message_rate = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT_RATE' : 'SEARCH_INDEX_DELETE_REDIRECT_RATE', $status['rows_per_second']);
-				trigger_error($message_redirect . $message_rate);
+				$message_progress = $this->language->lang(($action === 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS');
+				$message_progress_explain = $this->language->lang(($action == 'create') ? 'INDEXING_IN_PROGRESS_EXPLAIN' : 'DELETING_INDEX_IN_PROGRESS_EXPLAIN');
+				$message_redirect = $this->language->lang(
+					($action === 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT' : 'SEARCH_INDEX_DELETE_REDIRECT',
+					(int) $status['row_count'],
+					$status['post_counter']
+				);
+				$message_redirect_rate = $this->language->lang(
+					($action === 'create') ? 'SEARCH_INDEX_CREATE_REDIRECT_RATE' : 'SEARCH_INDEX_DELETE_REDIRECT_RATE',
+					$status['rows_per_second']
+				);
+
+				$this->template->assign_vars([
+					'INDEXING_TITLE'		=> $this->language->lang($message_progress),
+					'INDEXING_EXPLAIN'		=> $this->language->lang($message_progress_explain),
+					'INDEXING_PROGRESS'		=> $message_redirect,
+					'INDEXING_RATE'			=> $message_redirect_rate,
+					'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+				]);
+
+				$this->tpl_name = 'acp_search_index_progress';
+				$this->page_title = 'ACP_SEARCH_INDEX';
+
+				return;
 			}
 		}
 		catch (Exception $e)
 		{
 			$this->search_state_helper->clear_state(); // Unexpected error, cancel action
-			trigger_error($e->getMessage() . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+			trigger_error($e->getMessage() . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$search->tidy();
@@ -428,42 +456,73 @@ class acp_search
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$search->get_name()]);
 
 		$message = $this->language->lang(($action == 'create') ? 'SEARCH_INDEX_CREATED' : 'SEARCH_INDEX_REMOVED');
-		trigger_error($message . adm_back_link($this->u_action) . $this->close_popup_js());
+		trigger_error($message . adm_back_link($this->u_action));
 	}
 
 	/**
-	 * Popup window
+	 * Display progress bar for search after first submit
+	 *
+	 * @param string $id ACP module id
+	 * @param string $mode ACP module mode
 	 */
-	private function display_progress_bar(): void
+	private function display_progress_bar(string $id, string $mode): void
 	{
-		$type = $this->request->variable('type', '');
-		$l_type = ($type === 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
+		$action = $this->search_state_helper->action();
+		$post_counter = $this->search_state_helper->counter();
 
-		adm_page_header($this->language->lang($l_type));
+		$message_progress = $this->language->lang(($action === 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS');
+		$message_progress_explain = $this->language->lang(($action == 'create') ? 'INDEXING_IN_PROGRESS_EXPLAIN' : 'DELETING_INDEX_IN_PROGRESS_EXPLAIN');
+
+		$u_action = append_sid($this->phpbb_admin_path . "index." . $this->php_ex, "i=$id&mode=$mode&action=$action&hash=" . generate_link_hash('acp_search'), false);
+		meta_refresh(1, $u_action);
+
+		adm_page_header($this->language->lang($message_progress));
 
 		$this->template->set_filenames([
-			'body'	=> 'progress_bar.html'
+			'body'	=> 'acp_search_index_progress.html'
 		]);
 
 		$this->template->assign_vars([
-			'L_PROGRESS'			=> $this->language->lang($l_type),
-			'L_PROGRESS_EXPLAIN'	=> $this->language->lang($l_type . '_EXPLAIN'),
+			'INDEXING_TITLE'		=> $this->language->lang($message_progress),
+			'INDEXING_EXPLAIN'		=> $this->language->lang($message_progress_explain),
+			'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
 		]);
 
 		adm_page_footer();
 	}
 
 	/**
-	 * Javascript code for closing the waiting screen (is attached to the trigger_errors)
+	 * Get progress stats of search index with HTML progress bar.
 	 *
-	 * @return string
+	 * @param int		$post_counter	Post ID of last post indexed.
+	 * @return array	Returns array with progress bar data.
 	 */
-	private function close_popup_js(): string
+	protected function get_post_index_progress(int $post_counter): array
 	{
-		return "<script type=\"text/javascript\">\n" .
-			"// <![CDATA[\n" .
-			"	close_waitscreen = 1;\n" .
-			"// ]]>\n" .
-			"</script>\n";
+		global $db;
+
+		$sql = 'SELECT COUNT(post_id) as done_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id <= ' . $post_counter;
+		$result = $db->sql_query($sql);
+		$done_count = (int) $db->sql_fetchfield('done_count');
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(post_id) as remain_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id > ' . $post_counter;
+		$result = $db->sql_query($sql);
+		$remain_count = (int) $db->sql_fetchfield('remain_count');
+		$db->sql_freeresult($result);
+
+		$total_count = $done_count + $remain_count;
+		$percent = ($done_count / $total_count) * 100;
+
+		return [
+			'VALUE'			=> $done_count,
+			'TOTAL'			=> $total_count,
+			'PERCENTAGE'	=> $percent,
+			'REMAINING'		=> $remain_count,
+		];
 	}
 }

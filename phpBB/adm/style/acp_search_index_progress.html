@@ -1,0 +1,23 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<div class="successbox">
+	<h3>{{ INDEXING_TITLE }}</h3>
+	<p>
+		{{ INDEXING_EXPLAIN }}
+		{% if INDEXING_PROGRESS %}<br>{{ INDEXING_PROGRESS }}{% endif %}
+		{% if INDEXING_RATE %}<br>{{ INDEXING_RATE }}{% endif %}
+		{% if INDEXING_PROGRESS_BAR %}
+		<br>
+		<progress
+			value="{{ INDEXING_PROGRESS_BAR.VALUE }}"
+			max="{{ INDEXING_PROGRESS_BAR.TOTAL }}"
+			style="height: 2em; width: 20em;"></progress><br>
+		{{ INDEXING_PROGRESS_BAR.PERCENTAGE|number_format(2) ~ ' %' }}<br>
+		{{ lang('SEARCH_INDEX_PROGRESS', INDEXING_PROGRESS_BAR.VALUE, INDEXING_PROGRESS_BAR.REMAINING, INDEXING_PROGRESS_BAR.TOTAL) }}
+		{% endif %}
+	</p>
+</div>
+
+{% include 'overall_footer.html' %}

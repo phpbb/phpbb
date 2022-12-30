@@ -2,29 +2,38 @@
 
 <a id="maincontent"></a>
 
-<script>
-    // <![CDATA[
-    /**
-     * Popup search progress bar
-     */
-    function popup_progress_bar(progress_type)
-    {
-        close_waitscreen = 0;
-        // no scrollbars
-        popup('{{ UA_PROGRESS_BAR }}&amp;type=' + progress_type, 400, 240, '_index');
-    }
-    // ]]>
-</script>
+<h1>
+	{% if S_ACTION == 'create' %}
+		{{ lang('CONTINUE_INDEXING') }}
+	{% else %}
+		{{ lang('CONTINUE_DELETING_INDEX') }}
+	{% endif %}
+</h1>
 
-<h1>{{ lang('CONTINUE') }}</h1>
-
-<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
+<p>
+	{% if S_ACTION == 'create' %}
+		{{ lang('CONTINUE_INDEXING_EXPLAIN') }}
+	{% else %}
+		{{ lang('CONTINUE_DELETING_INDEX_EXPLAIN') }}
+	{% endif %}
+</p>
 
 <form id="acp_search_continue" method="post" action="{{ U_ACTION }}">
 	<fieldset>
-		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<legend>{{ lang('CONTINUE_INDEXING') }}</legend>
+		{% if CONTINUE_PROGRESS %}
+		<div class="centered-text">
+			<br>
+			<progress
+				value="{{ CONTINUE_PROGRESS.VALUE }}"
+				max="{{ CONTINUE_PROGRESS.TOTAL }}"
+				style="height: 2em; width: 20em;"></progress><br>
+			{{ CONTINUE_PROGRESS.PERCENTAGE|number_format(2) ~ ' %' }}<br>
+			{{ lang('SEARCH_INDEX_PROGRESS', CONTINUE_PROGRESS.VALUE, CONTINUE_PROGRESS.REMAINING, CONTINUE_PROGRESS.TOTAL) }}
+		</div>
+		{% endif %}
 		<p class="submit-buttons">
-			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" onclick="popup_progress_bar('{{ S_ACTION }}');" />&nbsp;
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
 			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
 		</p>
 		{{ S_FORM_TOKEN }}
