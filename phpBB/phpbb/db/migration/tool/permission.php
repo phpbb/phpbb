@@ -266,13 +266,13 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $role_type The type (u_, m_, a_)
 	* @param string $role_description Description of the new role
 	*
-	* @return int|null Inserted SQL id or false if role already exists
+	* @return int|null Inserted SQL id or null if role already exists
 	*/
 	public function role_add($role_name, $role_type, $role_description = '')
 	{
 		if ($this->role_exists($role_name))
 		{
-			return;
+			return null;
 		}
 
 		$sql = 'SELECT MAX(role_order) AS max_role_order

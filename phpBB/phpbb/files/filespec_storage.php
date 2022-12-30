@@ -313,7 +313,7 @@ class filespec_storage
 	 * Get mime type
 	 *
 	 * @param string $filename Filename that needs to be checked
-	 * @return string|false Mime type of supplied filename or false if mimetype could not be guessed
+	 * @return string Mime type of supplied filename or empty string if mimetype could not be guessed
 	 */
 	public function get_mimetype($filename)
 	{
@@ -327,7 +327,7 @@ class filespec_storage
 			}
 		}
 
-		return $this->mimetype;
+		return $this->mimetype ?: '';
 	}
 
 	/**

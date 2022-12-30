@@ -827,8 +827,7 @@ class oauth extends base
 	 * Sets a redirect to the authorization uri.
 	 *
 	 * @param OAuth1Service|OAuth2Service $service		The external OAuth service
-	 * @return array									Array if an error occurred,
-	 *													won't return on success
+	 * @return array|never								Array if an error occurred, won't return on success
 	 */
 	protected function set_redirect($service)
 	{

@@ -15,7 +15,5 @@
 class Redis
 {
 	public const OPT_PREFIX = 2;
-
 	public const SERIALIZER_PHP = 1;
-
 }
