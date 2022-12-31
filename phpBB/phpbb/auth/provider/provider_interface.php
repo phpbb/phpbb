@@ -151,7 +151,7 @@ interface provider_interface
 	*
 	* @param	array	$login_link_data	Any data needed to link a phpBB account to
 	*								an external account.
-	* @return	string|void	Returns a string with a language constant if there
+	* @return	string|null	Returns a string with a language constant if there
 	*						is data missing or void if there is no error.
 	*/
 	public function login_link_has_necessary_data(array $login_link_data);

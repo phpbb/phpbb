@@ -72,7 +72,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	/**
 	* Runs this cron task.
 	*
-	* @return null
+	* @return void
 	*/
 	public function run()
 	{
@@ -135,7 +135,7 @@ class prune_shadow_topics extends \phpbb\cron\task\base implements \phpbb\cron\t
 	*
 	* @param \phpbb\request\request_interface $request Request object.
 	*
-	* @return null
+	* @return void
 	*/
 	public function parse_parameters(\phpbb\request\request_interface $request)
 	{

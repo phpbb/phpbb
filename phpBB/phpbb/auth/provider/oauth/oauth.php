@@ -424,6 +424,8 @@ class oauth extends base
 		{
 			return 'LOGIN_LINK_MISSING_DATA';
 		}
+
+		return null;
 	}
 
 	/**
@@ -475,8 +477,6 @@ class oauth extends base
 		// Clear all tokens belonging to the user
 		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
 		$storage->clearAllTokens();
-
-		return;
 	}
 
 	/**
@@ -617,7 +617,7 @@ class oauth extends base
 	 * @param array		$link_data		The same variable given to
 	 * 									{@see \phpbb\auth\provider\provider_interface::link_account}
 	 * @param string	$service_name	The name of the service being used in linking.
-	 * @return array|string|false		Returns a language constant (string) if an error is encountered,
+	 * @return string|false|never	Returns a language constant (string) if an error is encountered,
 	 * 									an array with error info or false on success.
 	 */
 	protected function link_account_auth_link(array $link_data, $service_name)
@@ -661,7 +661,9 @@ class oauth extends base
 		}
 		else
 		{
-			return $this->set_redirect($service);
+			$this->set_redirect($service);
+
+			return false; // Not reached
 		}
 	}
 
@@ -669,6 +671,7 @@ class oauth extends base
 	 * Performs the query that inserts an account link
 	 *
 	 * @param	array	$data	This array is passed to db->sql_build_array
+	 * @return	void
 	 */
 	protected function link_account_perform_link(array $data)
 	{
@@ -852,6 +855,6 @@ class oauth extends base
 
 		redirect($service->getAuthorizationUri($parameters), false, true);
 
-		return [];
+		return []; // Never reached
 	}
 }

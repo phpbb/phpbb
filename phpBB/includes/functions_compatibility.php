@@ -122,12 +122,12 @@ function tz_select($default = '', $truncate = false)
 * must be carried through for the moderators table.
 *
 * @deprecated 3.1.0 (To be removed: 4.0.0)
-* @return null
+* @return void
 */
 function cache_moderators()
 {
 	global $db, $cache, $auth;
-	return phpbb_cache_moderators($db, $cache, $auth);
+	phpbb_cache_moderators($db, $cache, $auth);
 }
 
 /**
@@ -249,7 +249,7 @@ function add_log()
  *                              if it changes too frequently (true) to be
  *                              efficiently cached.
  *
- * @return null
+ * @return void
  *
  * @deprecated 3.1.0 (To be removed: 4.0.0)
  */
@@ -279,7 +279,7 @@ function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\con
  *                              if it changes too frequently (true) to be
  *                              efficiently cached.
  *
- * @return null
+ * @return void
  *
  * @deprecated 3.1.0 (To be removed: 4.0.0)
  */
@@ -336,7 +336,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 		$static_request = $request;
 		if (empty($var_name))
 		{
-			return;
+			return null;
 		}
 	}
 	else if ($request === false)
@@ -344,7 +344,7 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false, $
 		$static_request = null;
 		if (empty($var_name))
 		{
-			return;
+			return null;
 		}
 	}
 	$tmp_request = $static_request;
@@ -575,7 +575,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 *						Supported types are: MX (default), A, AAAA, NS, TXT, CNAME
 *						Other types may work or may not work
 *
-* @return mixed		true if entry found,
+* @return bool|null	true if entry found,
 *					false if entry not found,
 *					null if this function is not supported by this environment
 *
@@ -615,7 +615,7 @@ function phpbb_inet_ntop($in_addr)
  *
  * @param string $address	A human readable IPv4 or IPv6 address.
  *
- * @return mixed		false if address is invalid,
+ * @return false|string	false if address is invalid,
  *					in_addr representation of the given address otherwise (string)
  *
  * @deprecated 3.3.0-b2 (To be removed: 4.0.0)
@@ -671,7 +671,7 @@ function phpbb_load_extensions_autoloaders($phpbb_root_path)
 *
 * @param array	$param		Parameter array, see $param_defaults array.
 *
-* @return null
+* @return void
 *
 * @deprecated 3.2.10 (To be removed 4.0.0)
 */

@@ -254,7 +254,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function enable($name)
 	{
@@ -302,7 +302,7 @@ class manager
 	* while so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function disable($name)
 	{
@@ -357,7 +357,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function purge($name)
 	{

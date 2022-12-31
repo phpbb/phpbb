@@ -104,9 +104,7 @@ class forum extends \phpbb\notification\type\post
 	}
 
 	/**
-	 * Get email template
-	 *
-	 * @return string|bool
+	 * {@inheritdoc}
 	 */
 	public function get_email_template()
 	{

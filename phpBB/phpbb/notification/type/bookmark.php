@@ -57,13 +57,14 @@ class bookmark extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Find the users who want to receive notifications
-	*
-	* @param array $type_data Data from submit_post
-	* @param array $options Options for finding users for notification
-	*
-	* @return array
-	*/
+	 * Find the users who want to receive notifications
+	 *
+	 * @param array $type_data Data from submit_post
+	 * @param array $options Options for finding users for notification
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
@@ -117,9 +118,7 @@ class bookmark extends \phpbb\notification\type\post
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

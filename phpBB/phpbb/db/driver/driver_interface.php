@@ -365,7 +365,7 @@ interface driver_interface
 	*
 	* @param	mixed	$query_id	Already executed query result,
 	*								if false, the last query will be used.
-	* @return	null
+	* @return	void
 	*/
 	public function sql_freeresult($query_id = false);
 

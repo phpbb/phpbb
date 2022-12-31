@@ -16,6 +16,7 @@ namespace phpbb\install\console\command\install;
 use phpbb\install\exception\installer_exception;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\iohandler\cli_iohandler;
+use phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception;
 use phpbb\install\helper\iohandler\factory;
 use phpbb\install\installer;
 use phpbb\install\installer_configuration;
@@ -90,10 +91,11 @@ class install extends \phpbb\console\command\command
 	 *
 	 * Install the board
 	 *
-	 * @param InputInterface  $input  An InputInterface instance
+	 * @param InputInterface $input An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
 	 * @return int 0 if everything went fine, or a non-zero exit code
+	 * @throws iohandler_not_implemented_exception
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -124,7 +126,7 @@ class install extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true, false);
+			$config = Yaml::parse(file_get_contents($config_file), true);
 		}
 		catch (ParseException $e)
 		{

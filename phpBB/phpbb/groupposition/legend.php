@@ -110,12 +110,13 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
-	*
-	* @param	int		$group_id		group_id of the group to be deleted
-	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
-	* @return	bool		True if the group was deleted successfully
-	*/
+	 * Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
+	 *
+	 * @param int $group_id group_id of the group to be deleted
+	 * @param bool $skip_group Skip setting the value for this group, to save the query, when you need to update it anyway.
+	 * @return    bool        True if the group was deleted successfully
+	 * @throws exception
+	 */
 	public function delete_group($group_id, $skip_group = false)
 	{
 		$current_value = $this->get_group_value($group_id);

@@ -84,7 +84,7 @@ class php_exporter
 	*
 	* @param string	$name	Name of the current event (used for error messages)
 	* @param int	$line	Line where the current event is placed in
-	* @return null
+	* @return void
 	*/
 	public function set_current_event($name, $line)
 	{
@@ -96,7 +96,7 @@ class php_exporter
 	* Set the content of this file
 	*
 	* @param array $content		Array with the lines of the file
-	* @return null
+	* @return void
 	*/
 	public function set_content($content)
 	{
@@ -790,7 +790,7 @@ class php_exporter
 	*
 	* @param array $vars_array		Variables found in the array line
 	* @param array $vars_docblock	Variables found in the doc block
-	* @return null
+	* @return void
 	* @throws \LogicException
 	*/
 	public function validate_vars_docblock_array($vars_array, $vars_docblock)

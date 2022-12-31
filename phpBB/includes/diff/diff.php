@@ -340,7 +340,7 @@ class mapped_diff extends diff
 	{
 		if (count($from_lines) != count($mapped_from_lines) || count($to_lines) != count($mapped_to_lines))
 		{
-			return false;
+			return;
 		}
 
 		parent::__construct($mapped_from_lines, $mapped_to_lines);
@@ -760,11 +760,31 @@ class diff3 extends diff
 */
 class diff3_op
 {
+	/**
+	 * @var array|mixed
+	 */
+	protected $orig;
+
+	/**
+	 * @var array|mixed
+	 */
+	protected $final1;
+
+	/**
+	 * @var array|mixed
+	 */
+	protected $final2;
+
+	/**
+	 * @var false
+	 */
+	protected $_merged;
+
 	function __construct($orig = false, $final1 = false, $final2 = false)
 	{
-		$this->orig = $orig ? $orig : array();
-		$this->final1 = $final1 ? $final1 : array();
-		$this->final2 = $final2 ? $final2 : array();
+		$this->orig = $orig ?: array();
+		$this->final1 = $final1 ?: array();
+		$this->final2 = $final2 ?: array();
 	}
 
 	function merged()
@@ -1059,8 +1079,6 @@ class diff3_op
 
 			return;
 		}
-
-		return;
 	}
 }
 
@@ -1074,7 +1092,7 @@ class diff3_op_copy extends diff3_op
 {
 	function __construct($lines = false)
 	{
-		$this->orig = $lines ? $lines : array();
+		$this->orig = $lines ?: array();
 		$this->final1 = &$this->orig;
 		$this->final2 = &$this->orig;
 	}
@@ -1098,6 +1116,21 @@ class diff3_op_copy extends diff3_op
 */
 class diff3_block_builder
 {
+	/**
+	 * @var array
+	 */
+	protected $orig;
+
+	/**
+	 * @var array
+	 */
+	protected $final1;
+
+	/**
+	 * @var array
+	 */
+	protected $final2;
+
 	function __construct()
 	{
 		$this->_init();

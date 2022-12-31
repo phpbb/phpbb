@@ -411,7 +411,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string $type The type (role|group)
 	* @param bool $has_permission True if you want to give them permission,
 	* 	false if you want to deny them permission
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function permission_set($name, $auth_option, $type = 'role', $has_permission = true)
@@ -506,7 +506,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 
 					if (count($auth_option))
 					{
-						return $this->permission_set($role_name, $auth_option, 'role', $has_permission);
+						$this->permission_set($role_name, $auth_option, 'role', $has_permission);
+						return;
 					}
 				}
 
@@ -570,7 +571,7 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 	* @param string|array $auth_option The auth_option or array of
 	* 	auth_options you would like to set
 	* @param string $type The type (role|group)
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function permission_unset($name, $auth_option, $type = 'role')
@@ -643,7 +644,8 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 						throw new \phpbb\db\migration\exception('ROLE_ASSIGNED_NOT_EXIST', $name, $role_id);
 					}
 
-					return $this->permission_unset($role_name, $auth_option, 'role');
+					$this->permission_unset($role_name, $auth_option, 'role');
+					return;
 				}
 
 				$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '

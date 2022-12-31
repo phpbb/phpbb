@@ -15,6 +15,7 @@ namespace phpbb\db;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\migration\exception;
 use phpbb\db\migration\helper;
 use phpbb\db\output_handler\migrator_output_handler_interface;
 use phpbb\db\output_handler\null_migrator_output_handler;
@@ -157,7 +158,7 @@ class migrator
 	/**
 	* Loads all migrations and their application state from the database.
 	*
-	* @return null
+	* @return void
 	*/
 	public function load_migration_state()
 	{
@@ -203,7 +204,7 @@ class migrator
 	* Sets the list of available migration class names to the given array.
 	*
 	* @param array $class_names An array of migration class names
-	* @return null
+	* @return void
 	*/
 	public function set_migrations($class_names)
 	{
@@ -256,7 +257,7 @@ class migrator
 	* The update step can either be a schema or a (partial) data update. To
 	* check if update() needs to be called again use the finished() method.
 	*
-	* @return null
+	* @return void
 	*/
 	public function update()
 	{
@@ -329,7 +330,7 @@ class migrator
 	*
 	* @param	string	$name The class name of the migration
 	* @return	bool	Whether any update step was successfully run
-	* @throws \phpbb\db\migration\exception
+	* @throws exception
 	*/
 	protected function try_apply($name)
 	{
@@ -365,7 +366,7 @@ class migrator
 			$missing = $this->unfulfillable($depend);
 			if ($missing !== false)
 			{
-				throw new \phpbb\db\migration\exception('MIGRATION_NOT_FULFILLABLE', $name, $missing);
+				throw new exception('MIGRATION_NOT_FULFILLABLE', $name, $missing);
 			}
 
 			if (!isset($this->migration_state[$depend]) ||
@@ -480,7 +481,7 @@ class migrator
 					$this->output_handler->write(array('MIGRATION_DATA_IN_PROGRESS', $name, $elapsed_time), migrator_output_handler_interface::VERBOSITY_VERY_VERBOSE);
 				}
 			}
-			catch (\phpbb\db\migration\exception $e)
+			catch (exception $e)
 			{
 				// Reset data state and revert the schema changes
 				$state['migration_data_state'] = '';
@@ -653,7 +654,7 @@ class migrator
 	* @param bool $revert true to revert a data step
 	* @return bool|array migration state. True if completed, serialized array if not finished
 	* @psalm-return bool|array{result: mixed, step: int}
-	* @throws \phpbb\db\migration\exception
+	* @throws exception
 	*/
 	protected function process_data_step($steps, $state, $revert = false)
 	{
@@ -693,7 +694,7 @@ class migrator
 				);
 			}
 		}
-		catch (\phpbb\db\migration\exception $e)
+		catch (exception $e)
 		{
 			// We should try rolling back here
 			foreach ($steps as $reverse_step_identifier => $reverse_step)
@@ -715,15 +716,16 @@ class migrator
 	}
 
 	/**
-	* Run a single step
-	*
-	* An exception should be thrown if an error occurs
-	*
-	* @param mixed $step Data step from migration
-	* @param mixed $last_result Result to pass to the callable (only for 'custom' method)
-	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
-	* @return null
-	*/
+	 * Run a single step
+	 *
+	 * An exception should be thrown if an error occurs
+	 *
+	 * @param mixed $step Data step from migration
+	 * @param mixed $last_result Result to pass to the callable (only for 'custom' method)
+	 * @param bool $reverse False to install, True to attempt uninstallation by reversing the call
+	 * @return mixed
+	 * @throws exception
+	 */
 	protected function run_step($step, $last_result = 0, $reverse = false)
 	{
 		$callable_and_parameters = $this->get_callable_from_step($step, $last_result, $reverse);
@@ -747,7 +749,7 @@ class migrator
 	* @param bool $reverse False to install, True to attempt uninstallation by reversing the call
 	* @return array|false Array with parameters for call_user_func_array(), 0 is the callable, 1 is parameters;
 	*					false if no callable can be created from data setp
-	* @throws \phpbb\db\migration\exception
+	* @throws exception
 	*/
 	protected function get_callable_from_step(array $step, $last_result = 0, $reverse = false)
 	{
@@ -769,12 +771,12 @@ class migrator
 			case 'if':
 				if (!isset($parameters[0]))
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_MISSING_CONDITION', $step);
+					throw new exception('MIGRATION_INVALID_DATA_MISSING_CONDITION', $step);
 				}
 
 				if (!isset($parameters[1]))
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
+					throw new exception('MIGRATION_INVALID_DATA_MISSING_STEP', $step);
 				}
 
 				if ($reverse)
@@ -799,7 +801,7 @@ class migrator
 			case 'custom':
 				if (!is_callable($parameters[0]))
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_CUSTOM_NOT_CALLABLE', $step);
+					throw new exception('MIGRATION_INVALID_DATA_CUSTOM_NOT_CALLABLE', $step);
 				}
 
 				if ($reverse)
@@ -818,17 +820,17 @@ class migrator
 			default:
 				if (!$method)
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_UNKNOWN_TYPE', $step);
+					throw new exception('MIGRATION_INVALID_DATA_UNKNOWN_TYPE', $step);
 				}
 
 				if (!isset($this->tools[$class]))
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_UNDEFINED_TOOL', $step);
+					throw new exception('MIGRATION_INVALID_DATA_UNDEFINED_TOOL', $step);
 				}
 
 				if (!method_exists(get_class($this->tools[$class]), $method))
 				{
-					throw new \phpbb\db\migration\exception('MIGRATION_INVALID_DATA_UNDEFINED_METHOD', $step);
+					throw new exception('MIGRATION_INVALID_DATA_UNDEFINED_METHOD', $step);
 				}
 
 				// Attempt to reverse operations
@@ -855,7 +857,7 @@ class migrator
 	*
 	* @param string $name Name of the migration
 	* @param array $state
-	* @return null
+	* @return void
 	*/
 	protected function set_migration_state($name, $state)
 	{
@@ -993,7 +995,7 @@ class migrator
 	* THIS WILL THROW ERRORS IF MIGRATIONS ALREADY EXIST IN THE TABLE, DO NOT CALL MORE THAN ONCE!
 	*
 	* @param array $migrations Array of migrations (names) to add to the migrations table
-	* @return null
+	* @return void
 	*/
 	public function populate_migrations($migrations)
 	{
@@ -1016,7 +1018,7 @@ class migrator
 
 	/**
 	* Creates the migrations table if it does not exist.
-	* @return null
+	* @return void
 	*/
 	public function create_migrations_table()
 	{

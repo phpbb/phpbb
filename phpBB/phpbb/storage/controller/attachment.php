@@ -289,7 +289,7 @@ class attachment extends controller
 	 */
 	protected function filenameFallback($filename)
 	{
-		$filename = preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\/'], '', $filename);
+		$filename = preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
 
 		return (!empty($filename)) ?: 'File';
 	}

@@ -143,6 +143,7 @@ class container_builder
 	 * Build and return a new Container respecting the current configuration
 	 *
 	 * @return \phpbb_cache_container|ContainerBuilder
+	 * @throws \Exception
 	 */
 	public function get_container()
 	{

@@ -780,8 +780,6 @@ class oracle extends \phpbb\db\driver\driver
 					$success = @oci_execute($result, OCI_DEFAULT);
 					if ($success)
 					{
-						array();
-
 						while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS))
 						{
 							// Take the time spent on parsing rows into account

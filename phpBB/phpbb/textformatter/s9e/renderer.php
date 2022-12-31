@@ -148,7 +148,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*
 	* @param  \phpbb\config\config $config
 	* @param  \phpbb\path_helper   $path_helper
-	* @return null
+	* @return void
 	*/
 	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
 	{

@@ -84,9 +84,7 @@ class report_pm_closed extends \phpbb\notification\type\pm
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

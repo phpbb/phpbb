@@ -2487,7 +2487,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * @param \phpbb\db\driver\driver_interface $db Database connection
 * @param \phpbb\cache\driver\driver_interface $cache Cache driver
 * @param \phpbb\auth\auth $auth Authentication object
-* @return null
+* @return void
 */
 function phpbb_cache_moderators($db, $cache, $auth)
 {

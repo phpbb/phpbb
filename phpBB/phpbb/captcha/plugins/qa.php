@@ -1037,7 +1037,8 @@ class qa
 			{
 				return true;
 			}
-			return false;
 		}
+
+		return false;
 	}
 }

@@ -1068,8 +1068,6 @@ class session
 		* @since 3.1.6-RC1
 		*/
 		$phpbb_dispatcher->trigger_event('core.session_gc_after');
-
-		return;
 	}
 
 	/**
@@ -1143,7 +1141,7 @@ class session
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
-			return;
+			return false;
 		}
 
 		$banned = false;

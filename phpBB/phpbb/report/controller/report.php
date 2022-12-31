@@ -258,7 +258,7 @@ class report
 	 * @param 	array	$error
 	 * @param	string	$s_hidden_fields
 	 * @param	mixed	$captcha
-	 * @return	null
+	 * @return	void
 	 */
 	protected function assign_template_data($mode, $id, $reason_id, $report_text, $user_notify, $error = array(), $s_hidden_fields = '', $captcha = false)
 	{

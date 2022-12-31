@@ -65,7 +65,7 @@ class message
 	* Set the subject of the email
 	*
 	* @param string $subject
-	* @return null
+	* @return void
 	*/
 	public function set_subject($subject)
 	{
@@ -76,7 +76,7 @@ class message
 	* Set the body of the email text
 	*
 	* @param string $body
-	* @return null
+	* @return void
 	*/
 	public function set_body($body)
 	{
@@ -87,7 +87,7 @@ class message
 	* Set the name of the email template to use
 	*
 	* @param string $template
-	* @return null
+	* @return void
 	*/
 	public function set_template($template)
 	{
@@ -98,7 +98,7 @@ class message
 	* Set the array with the "template" data for the email
 	*
 	* @param array $template_vars
-	* @return null
+	* @return void
 	*/
 	public function set_template_vars($template_vars)
 	{
@@ -109,7 +109,7 @@ class message
 	* Add a recipient from \phpbb\user
 	*
 	* @param array $user
-	* @return null
+	* @return void
 	*/
 	public function add_recipient_from_user_row(array $user)
 	{
@@ -132,7 +132,7 @@ class message
 	* @param int $recipient_notify_type	Used notification methods (Jabber, Email, ...)
 	* @param string $recipient_username	User Name (used for AntiAbuse header)
 	* @param string $recipient_jabber
-	* @return null
+	* @return void
 	*/
 	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = NOTIFY_EMAIL, $recipient_username = '', $recipient_jabber = '')
 	{
@@ -151,7 +151,7 @@ class message
 	* Set the senders data from \phpbb\user object
 	*
 	* @param \phpbb\user $user
-	* @return null
+	* @return void
 	*/
 	public function set_sender_from_user($user)
 	{
@@ -178,7 +178,7 @@ class message
 	* @param int $sender_id				User ID
 	* @param string $sender_username	User Name (used for AntiAbuse header)
 	* @param string $sender_jabber
-	* @return null
+	* @return void
 	*/
 	public function set_sender($sender_ip, $sender_name, $sender_address, $sender_lang = '', $sender_id = 0, $sender_username = '', $sender_jabber = '')
 	{
@@ -195,7 +195,7 @@ class message
 	* Which notification type should be used? Jabber, Email, ...?
 	*
 	* @param int $sender_notify_type
-	* @return null
+	* @return void
 	*/
 	public function set_sender_notify_type($sender_notify_type)
 	{
@@ -205,7 +205,7 @@ class message
 	/**
 	* Ok, now the same email if CC specified, but without exposing the user's email address
 	*
-	* @return null
+	* @return void
 	*/
 	public function cc_sender()
 	{

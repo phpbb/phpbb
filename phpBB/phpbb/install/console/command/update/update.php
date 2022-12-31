@@ -124,7 +124,7 @@ class update extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true, false);
+			$config = Yaml::parse(file_get_contents($config_file), true);
 		}
 		catch (ParseException $e)
 		{

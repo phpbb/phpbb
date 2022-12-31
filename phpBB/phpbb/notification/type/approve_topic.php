@@ -127,9 +127,7 @@ class approve_topic extends \phpbb\notification\type\topic
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

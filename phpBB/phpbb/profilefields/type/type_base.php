@@ -179,7 +179,6 @@ abstract class type_base implements type_interface
 	*/
 	public function display_options(&$template_vars, &$field_data)
 	{
-		return;
 	}
 
 	/**

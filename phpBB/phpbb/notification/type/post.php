@@ -238,9 +238,7 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

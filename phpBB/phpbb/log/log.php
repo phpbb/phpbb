@@ -129,7 +129,7 @@ class log implements \phpbb\log\log_interface
 	* in get_logs()
 	*
 	* @param	bool	$is_in_admin		Are we called from within the acp?
-	* @return	null
+	* @return	void
 	*/
 	public function set_is_admin($is_in_admin)
 	{
@@ -150,7 +150,7 @@ class log implements \phpbb\log\log_interface
 	* Set table name
 	*
 	* @param	string	$log_table		Can overwrite the table to use for the logs
-	* @return	null
+	* @return	void
 	*/
 	public function set_log_table($log_table)
 	{

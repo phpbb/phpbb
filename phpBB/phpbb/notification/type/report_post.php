@@ -91,9 +91,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

@@ -40,8 +40,11 @@ abstract class base implements reparser_interface
 	abstract protected function get_records_by_range($min_id, $max_id);
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * Save record
+	 *
+	 * @param array $record
+	 * @return void
+	 */
 	abstract protected function save_record(array $record);
 
 	/**

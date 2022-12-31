@@ -99,7 +99,7 @@ class acp_language
 	/**
 	 * Main handler for acp_language
 	 *
-	 * @param int $id Module ID
+	 * @param string $id Module ID
 	 * @param string $mode Module mode
 	 */
 	public function main($id, $mode)

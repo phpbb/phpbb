@@ -126,5 +126,7 @@ class config_text implements \phpbb\db\migration\tool\tool_interface
 		{
 			return call_user_func_array(array(&$this, $call), $arguments);
 		}
+
+		return null;
 	}
 }

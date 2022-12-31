@@ -144,8 +144,6 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		'sorts',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.gen_sort_selects_after', compact($vars)));
-
-	return;
 }
 
 /**
@@ -283,8 +281,6 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		'S_JUMPBOX_ACTION'			=> $action,
 		'HIDDEN_FIELDS_FOR_JUMPBOX'	=> build_hidden_fields($url_parts['params']),
 	));
-
-	return;
 }
 
 /**
@@ -441,6 +437,8 @@ function get_context($text, $words, $length = 400)
 	{
 		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
 	}
+
+	return '';
 }
 
 /**
@@ -468,7 +466,7 @@ function phpbb_clean_search_string($search_string)
 *
 * @param string &$message Original message, passed by reference
 * @param string $bbcode_uid BBCode UID
-* @return null
+* @return void
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
@@ -961,7 +959,6 @@ function make_clickable($text, $server_url = false, string $class = 'postlink')
 					if ($value == $static_class)
 					{
 						$element_exists = true;
-						return;
 					}
 				}
 			);

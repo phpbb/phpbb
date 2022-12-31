@@ -106,7 +106,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* @param  String $key       The configuration option's name
 	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached
-	* @return null
+	* @return void
 	*/
 	public function delete($key, $use_cache = true)
 	{

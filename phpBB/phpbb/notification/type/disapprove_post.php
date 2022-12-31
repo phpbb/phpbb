@@ -148,9 +148,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

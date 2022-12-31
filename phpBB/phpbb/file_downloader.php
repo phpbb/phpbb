@@ -30,7 +30,7 @@ class file_downloader
 	 * @param int		$port			Port to connect to; default: 80
 	 * @param int		$timeout		Connection timeout in seconds; default: 6
 	 *
-	 * @return mixed File data as string if file can be read and there is no
+	 * @return false|string File data as string if file can be read and there is no
 	 *			timeout, false if there were errors or the connection timed out
 	 *
 	 * @throws \phpbb\exception\runtime_exception If data can't be retrieved and no error

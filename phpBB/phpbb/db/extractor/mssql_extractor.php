@@ -20,7 +20,7 @@ class mssql_extractor extends base_extractor
 	/**
 	* Writes closing line(s) to database backup
 	*
-	* @return null
+	* @return void
 	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	public function write_end()
@@ -310,7 +310,7 @@ class mssql_extractor extends base_extractor
 	* Extracts data from database table (for ODBC driver)
 	*
 	* @param	string	$table_name	name of the database table
-	* @return null
+	* @return void
 	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function write_data_odbc($table_name)

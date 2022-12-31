@@ -470,14 +470,18 @@ class user extends \phpbb\session
 	* @param $number        int|float   The number we want to get the plural case for. Float numbers are floored.
 	* @param $force_rule    mixed   False to use the plural rule of the language package
 	*                               or an integer to force a certain plural rule
-	* @return int|bool     The plural-case we need to use for the number plural-rule combination, false if $force_rule
+	* @return int|false     The plural-case we need to use for the number plural-rule combination, false if $force_rule
 	* 					   was invalid.
 	*
 	* @deprecated: 3.2.0-dev (To be removed: 4.0.0)
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
-		return $this->language->get_plural_form($number, $force_rule);
+		try {
+			return $this->language->get_plural_form($number, $force_rule);
+		} catch (\phpbb\language\exception\invalid_plural_rule_exception $e) {
+			return false;
+		}
 	}
 
 	/**

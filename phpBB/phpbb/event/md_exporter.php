@@ -429,7 +429,7 @@ class md_exporter
 	* Validates a template event name
 	*
 	* @param $event_name
-	* @return null
+	* @return void
 	* @throws \LogicException
 	*/
 	public function validate_event_name($event_name)

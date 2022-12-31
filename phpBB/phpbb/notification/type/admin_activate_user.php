@@ -29,8 +29,10 @@ class admin_activate_user extends \phpbb\notification\type\base
 	}
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * Language key used to output the text
+	 *
+	 * @var string
+	 */
 	protected $language_key = 'NOTIFICATION_ADMIN_ACTIVATE_USER';
 
 	/**

@@ -311,7 +311,7 @@ class manager
 	*                               avatar data
 	* @param string         $table Database table from which the avatar should be deleted
 	* @param string         $prefix Prefix of user data columns in database
-	* @return null
+	* @return void
 	*/
 	public function handle_avatar_delete(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $avatar_data, $table, $prefix)
 	{

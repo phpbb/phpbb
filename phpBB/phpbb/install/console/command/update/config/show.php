@@ -96,7 +96,7 @@ class show extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true, false);
+			$config = Yaml::parse(file_get_contents($config_file), true);
 		}
 		catch (ParseException $e)
 		{
@@ -119,7 +119,7 @@ class show extends \phpbb\console\command\command
 			return Command::FAILURE;
 		}
 
-		$style->block(Yaml::dump(array('updater' => $config), 10, 4, true, false));
+		$style->block(Yaml::dump(array('updater' => $config), 10, 4, true));
 
 		return Command::SUCCESS;
 	}

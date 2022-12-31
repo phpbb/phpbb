@@ -1694,6 +1694,7 @@ function generate_board_url($without_script_path = false)
 * @param string $url The url to redirect to
 * @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
 * @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
+* @return string|never
 */
 function redirect($url, $return = false, $disable_cd_check = false)
 {
