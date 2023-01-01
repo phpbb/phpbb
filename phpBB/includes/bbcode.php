@@ -658,7 +658,7 @@ class bbcode
 	*
 	* Accepts variable number of parameters
 	*
-	* @return mixed Second pass result
+	* @return bool Second pass result
 	*
 	* @deprecated 3.2.10 (To be removed 4.0.0)
 	*/

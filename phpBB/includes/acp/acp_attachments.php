@@ -1349,7 +1349,7 @@ class acp_attachments
 	* Set config attachment stat values
 	*
 	* @param $stats array	Array of config key => value pairs to set.
-	* @return null
+	* @return void
 	*/
 	public function set_attachment_stats($stats)
 	{
@@ -1392,7 +1392,7 @@ class acp_attachments
 	/**
 	* Handle stats resync.
 	*
-	* @return null
+	* @return void
 	*/
 	public function handle_stats_resync()
 	{

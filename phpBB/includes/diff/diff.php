@@ -544,7 +544,7 @@ class diff3 extends diff
 	* @param string $label2 the cvs file version/label from the new set of lines
 	* @param string $label_sep the explanation between label1 and label2 - more of a helper for the user
 	*
-	* @return mixed the merged output
+	* @return array the merged output
 	*/
 	function get_conflicts_content($label1 = 'CURRENT_FILE', $label2 = 'NEW_FILE', $label_sep = 'DIFF_SEP_EXPLAIN')
 	{
@@ -582,7 +582,7 @@ class diff3 extends diff
 	/**
 	* Return merged output (used by the renderer)
 	*
-	* @return mixed the merged output
+	* @return array the merged output
 	*/
 	function merged_output()
 	{

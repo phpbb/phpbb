@@ -356,8 +356,8 @@ class acp_storage
 	 *
 	 * @param string $storage_name Storage name
 	 * @param array $options Storage provider configuration keys
-	 * @param array $messages Error messages array
-	 * @return array $messages Reference to messages array
+	 * @param array $messages Reference to error messages array
+	 * @return void
 	 */
 	protected function validate_path($storage_name, $options, &$messages)
 	{

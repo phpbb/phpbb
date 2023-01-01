@@ -1570,6 +1570,8 @@ class smtp_class
 			unset($response[0]);
 			$this->commands[$response_code] = implode(' ', $response);
 		}
+
+		return null;
 	}
 
 	/**

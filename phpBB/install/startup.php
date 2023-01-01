@@ -47,7 +47,7 @@ function phpbb_include_updated($path, $phpbb_root_path, $optional = false)
 	}
 }
 
-function installer_msg_handler($errno, $msg_text, $errfile, $errline)
+function installer_msg_handler($errno, $msg_text, $errfile, $errline): bool
 {
 	global $phpbb_installer_container, $msg_long_text;
 
@@ -88,7 +88,7 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 				print($msg);
 			}
 
-			return;
+			return false;
 		break;
 		case E_USER_ERROR:
 			$msg = '<b>General Error:</b><br>' . $msg_text . '<br> in file ' . $errfile . ' on line ' . $errline . '<br><br>';

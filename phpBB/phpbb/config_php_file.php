@@ -94,7 +94,7 @@ class config_php_file
 	/**
 	* Load the config file and store the information.
 	*
-	* @return null
+	* @return void
 	*/
 	protected function load_config_file()
 	{

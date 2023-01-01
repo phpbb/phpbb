@@ -1727,7 +1727,7 @@ function phpbb_validate_timezone($timezone)
  * @param string	$username				The username to check
  * @param string	$allowed_username		An allowed username, default being $user->data['username']
  *
- * @return mixed							Either false if validation succeeded or a string which will be
+ * @return string|false						Either false if validation succeeded or a string which will be
  *											used as the error message (with the variable name appended)
  */
 function validate_username($username, $allowed_username = false, $allow_all_names = false)
@@ -2723,7 +2723,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 *
-* @return mixed false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
+* @return string|false false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
@@ -3073,6 +3073,7 @@ function remove_default_avatar($group_id, $user_ids)
 
 /**
 * Removes the group rank of the default group from the users in user_ids who have that group as default.
+* @return bool true if successful, false if not
 */
 function remove_default_rank($group_id, $user_ids)
 {
@@ -3107,6 +3108,8 @@ function remove_default_rank($group_id, $user_ids)
 			AND user_rank = ' . (int) $row['group_rank'] . '
 			AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
+
+	return true;
 }
 
 /**

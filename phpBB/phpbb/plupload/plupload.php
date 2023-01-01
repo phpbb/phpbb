@@ -138,6 +138,7 @@ class plupload
 				'id' => 'id',
 				'result' => null,
 			));
+			return null;
 		}
 	}
 

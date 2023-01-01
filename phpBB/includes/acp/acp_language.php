@@ -224,7 +224,7 @@ class acp_language
 					}
 					catch (\Exception $e)
 					{
-						return array();
+						return;
 					}
 
 					foreach ($iterator as $file_info)

@@ -63,7 +63,7 @@ class config_text implements \phpbb\db\migration\tool\tool_interface
 	* @param string $config_name The name of the config_text setting you would
 	* 	like to update
 	* @param mixed $config_value The value of the config_text setting
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function update($config_name, $config_value)

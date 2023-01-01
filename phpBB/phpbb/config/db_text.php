@@ -48,7 +48,7 @@ class db_text
 	* @param string $key       The configuration option's name
 	* @param string $value     New configuration value
 	*
-	* @return null
+	* @return void
 	*/
 	public function set($key, $value)
 	{
@@ -75,7 +75,7 @@ class db_text
 	*
 	* @param string $key       The configuration option's name
 	*
-	* @return null
+	* @return void
 	*/
 	public function delete($key)
 	{
@@ -89,7 +89,7 @@ class db_text
 	*
 	* @param array $map        Map from configuration names to values
 	*
-	* @return null
+	* @return void
 	*/
 	public function set_array(array $map)
 	{
@@ -147,7 +147,7 @@ class db_text
 	*
 	* @param array $keys       Set of configuration option names
 	*
-	* @return null
+	* @return void
 	*/
 	public function delete_array(array $keys)
 	{

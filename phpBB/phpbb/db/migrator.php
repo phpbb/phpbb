@@ -732,7 +732,7 @@ class migrator
 
 		if ($callable_and_parameters === false)
 		{
-			return;
+			return null;
 		}
 
 		$callable = $callable_and_parameters[0];

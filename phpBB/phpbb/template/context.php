@@ -340,7 +340,7 @@ class context
 	* If key is false the position is set to 0
 	* If key is true the position is set to the last entry
 	*
-	* @return mixed false if not found, index position otherwise; be sure to test with ===
+	* @return false|int false if not found, index position otherwise; be sure to test with ===
 	*/
 	public function find_key_index($blockname, $key)
 	{
@@ -377,7 +377,7 @@ class context
 		// Change key to zero (change first position) if false and to last position if true
 		if (is_bool($key))
 		{
-			return (!$key) ? 0 : count($block) - 1;
+			return (!$key) ? 0 : (count($block) ?? 0) - 1;
 		}
 
 		// Get correct position if array given

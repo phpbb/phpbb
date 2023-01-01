@@ -793,7 +793,7 @@ class diff_renderer_side_by_side extends diff_renderer
 	{
 		if ($this->state == 'empty')
 		{
-			return '';
+			return;
 		}
 
 		// This is just an addition line.

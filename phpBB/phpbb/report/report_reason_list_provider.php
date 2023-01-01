@@ -48,7 +48,7 @@ class report_reason_list_provider
 	 * Sets template variables to render report reasons select HTML input
 	 *
 	 * @param int	$reason_id
-	 * @return null
+	 * @return void
 	 */
 	public function display_reasons($reason_id = 0)
 	{

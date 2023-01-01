@@ -1902,7 +1902,7 @@ class parse_message extends bbcode_firstpass
 	* Remove nested quotes at given depth in current parsed message
 	*
 	* @param  integer $max_depth Depth limit
-	* @return null
+	* @return void
 	*/
 	public function remove_nested_quotes($max_depth)
 	{

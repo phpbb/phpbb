@@ -136,7 +136,7 @@ function cache_moderators()
 * @deprecated 3.1.0 (To be removed: 4.0.0)
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
-* @return null
+* @return void
 */
 function update_foes($group_id = false, $user_id = false)
 {

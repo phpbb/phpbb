@@ -1011,7 +1011,7 @@ class fulltext_postgres extends base implements search_backend_interface
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Computes the stats and store them in the $this->stats associative array
 	 */
 	protected function get_stats()
 	{

@@ -27,7 +27,7 @@ class collection_pass implements CompilerPassInterface
 	* Modify the container before it is passed to the rest of the code
 	*
 	* @param ContainerBuilder $container ContainerBuilder object
-	* @return null
+	* @return void
 	*/
 	public function process(ContainerBuilder $container)
 	{

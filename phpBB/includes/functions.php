@@ -115,14 +115,14 @@ function phpbb_gmgetdate($time = false)
 /**
 * Return formatted string for filesizes
 *
-* @param mixed	$value			filesize in bytes
+* @param mixed		$value			filesize in bytes
 *								(non-negative number; int, float or string)
-* @param bool	$string_only	true if language string should be returned
-* @param array	$allowed_units	only allow these units (data array indexes)
+* @param bool		$string_only	true if language string should be returned
+* @param array|null $allowed_units	only allow these units (data array indexes)
 *
-* @return mixed					data array if $string_only is false
+* @return array|string                    data array if $string_only is false
 */
-function get_formatted_filesize($value, $string_only = true, $allowed_units = false)
+function get_formatted_filesize($value, bool $string_only = true, array $allowed_units = null)
 {
 	global $user;
 
@@ -161,7 +161,7 @@ function get_formatted_filesize($value, $string_only = true, $allowed_units = fa
 
 	foreach ($available_units as $si_identifier => $unit_info)
 	{
-		if (!empty($allowed_units) && $si_identifier != 'b' && !in_array($si_identifier, $allowed_units))
+		if (is_array($allowed_units) && $si_identifier != 'b' && !in_array($si_identifier, $allowed_units))
 		{
 			continue;
 		}
@@ -238,14 +238,14 @@ function still_on_time($extra_time = 15)
 *
 * See http://www.php.net/manual/en/function.version-compare.php
 *
-* @param string $version1		First version number
-* @param string $version2		Second version number
-* @param string $operator		Comparison operator (optional)
+* @param string			$version1		First version number
+* @param string			$version2		Second version number
+* @param string|null	$operator		Comparison operator (optional)
 *
-* @return mixed					Boolean (true, false) if comparison operator is specified.
-*								Integer (-1, 0, 1) otherwise.
+* @return mixed				Boolean (true, false) if comparison operator is specified.
+*							Integer (-1, 0, 1) otherwise.
 */
-function phpbb_version_compare($version1, $version2, $operator = null)
+function phpbb_version_compare(string $version1, string $version2, string $operator = null)
 {
 	$version1 = strtolower($version1);
 	$version2 = strtolower($version2);
@@ -447,7 +447,7 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
-* @return		array		Returns an array containing the options for the time selector.
+* @return	string		Returns an array containing the options for the time selector.
 */
 function phpbb_timezone_select($template, $user, $default = '', $truncate = false)
 {
@@ -1908,7 +1908,7 @@ function meta_refresh($time, $url, $disable_cd_check = false)
 *
 * @param int $code HTTP status code
 * @param string $message Message for the status code
-* @return null
+* @return void
 */
 function send_status_line($code, $message)
 {
@@ -2893,8 +2893,8 @@ function short_ipv6($ip, $length)
 *
 * @param string $address	IP address
 *
-* @return mixed		false if specified address is not valid,
-*					string otherwise
+* @return string|false	false if specified address is not valid,
+*						string otherwise
 */
 function phpbb_ip_normalise(string $address)
 {
@@ -2922,8 +2922,9 @@ function phpbb_ip_normalise(string $address)
 
 /**
 * Error and message handler, call with trigger_error if read
+* @return bool true to bypass internal error handler, false otherwise
 */
-function msg_handler($errno, $msg_text, $errfile, $errline)
+function msg_handler($errno, $msg_text, $errfile, $errline): bool
 {
 	global $cache, $db, $auth, $template, $config, $user, $request;
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
@@ -2932,7 +2933,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
 	{
-		return;
+		return true;
 	}
 
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
@@ -2950,7 +2951,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// If DEBUG is defined the default level is E_ALL
 			if (($errno & ($phpbb_container != null && $phpbb_container->getParameter('debug.show_errors') ? E_ALL : error_reporting())) == 0)
 			{
-				return;
+				return true;
 			}
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
@@ -2968,7 +2969,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				// echo '<br /><br />BACKTRACE<br />' . get_backtrace() . '<br />' . "\n";
 			}
 
-			return;
+			return true;
 
 		break;
 
