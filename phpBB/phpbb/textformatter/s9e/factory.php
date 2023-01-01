@@ -357,10 +357,10 @@ class factory implements \phpbb\textformatter\cache_interface
 		$tag = $configurator->Emoji->getTag();
 		$tag->template = '<xsl:choose>
 			<xsl:when test="@tseq">
-				<img alt="{.}" class="emoji" draggable="false" src="' . $emoji_base_url . '{@tseq}.svg" onerror="this.replaceWith(this.alt)"/>
+				<img alt="{.}" class="emoji" draggable="false" onerror="this.replaceWith(this.alt)" src="' . $emoji_base_url . '{@tseq}.svg"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<img alt="{.}" class="emoji" draggable="false" src="' . $emoji_base_url . '{@seq}.svg" onerror="this.replaceWith(this.alt)"/>
+				<img alt="{.}" class="emoji" draggable="false" onerror="this.replaceWith(this.alt)" src="' . $emoji_base_url . '{@seq}.svg"/>
 			</xsl:otherwise>
 		</xsl:choose>';
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
