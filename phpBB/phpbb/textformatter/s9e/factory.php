@@ -353,13 +353,14 @@ class factory implements \phpbb\textformatter\cache_interface
 		$configurator->registeredVars['max_img_width'] = 0;
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
+		$emoji_base_url = generate_board_url() . '/assets/twemoji/';
 		$tag = $configurator->Emoji->getTag();
 		$tag->template = '<xsl:choose>
 			<xsl:when test="@tseq">
-				<img alt="{.}" class="emoji" draggable="false" src="//twemoji.maxcdn.com/2/svg/{@tseq}.svg"/>
+				<img alt="{.}" class="emoji" draggable="false" src="' . $emoji_base_url . '{@tseq}.svg" onerror="this.replaceWith(this.alt)"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<img alt="{.}" class="emoji" draggable="false" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets-twemoji@11.2/dist/svgz/{@seq}.svgz"/>
+				<img alt="{.}" class="emoji" draggable="false" src="' . $emoji_base_url . '{@seq}.svg" onerror="this.replaceWith(this.alt)"/>
 			</xsl:otherwise>
 		</xsl:choose>';
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
