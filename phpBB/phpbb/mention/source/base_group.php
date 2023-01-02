@@ -41,8 +41,8 @@ abstract class base_group implements source_interface
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string|false */
-	protected $cache_ttl = false;
+	/** @var int */
+	protected $cache_ttl = 0;
 
 	/** @var array Fetched groups' data */
 	protected $groups = null;
