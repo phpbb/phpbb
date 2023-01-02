@@ -380,7 +380,7 @@ class manager
 			return $available;
 		}
 
-		$iterator = new \phpbb\iterator\recursive_path_iterator(
+		$iterator = new \phpbb\finder\recursive_path_iterator(
 			$this->phpbb_root_path . 'ext/',
 			\RecursiveIteratorIterator::SELF_FIRST,
 			\FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS

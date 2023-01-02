@@ -220,7 +220,7 @@ class acp_language
 				{
 					try
 					{
-						$iterator = new \phpbb\iterator\recursive_path_iterator($this->phpbb_root_path . 'language/' . $this->config['default_lang'] . '/');
+						$iterator = new \phpbb\finder\recursive_path_iterator($this->phpbb_root_path . 'language/' . $this->config['default_lang'] . '/');
 					}
 					catch (\Exception $e)
 					{

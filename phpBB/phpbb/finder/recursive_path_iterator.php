@@ -13,7 +13,7 @@
 
 declare(strict_types=1);
 
-namespace phpbb\iterator;
+namespace phpbb\finder;
 
 class recursive_path_iterator extends \RecursiveIteratorIterator
 {

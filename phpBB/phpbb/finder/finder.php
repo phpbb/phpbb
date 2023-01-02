@@ -486,7 +486,7 @@ class finder
 
 			if (is_dir($path))
 			{
-				$iterator = new \phpbb\iterator\recursive_path_iterator(
+				$iterator = new \phpbb\finder\recursive_path_iterator(
 					$path,
 					\RecursiveIteratorIterator::SELF_FIRST
 				);

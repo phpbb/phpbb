@@ -659,7 +659,7 @@ class md_exporter
 	{
 		try
 		{
-			$iterator = new \phpbb\iterator\recursive_path_iterator(
+			$iterator = new \phpbb\finder\recursive_path_iterator(
 				$dir,
 				\RecursiveIteratorIterator::SELF_FIRST
 			);

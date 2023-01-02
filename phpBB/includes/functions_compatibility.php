@@ -646,7 +646,7 @@ function phpbb_email_hash($email)
  */
 function phpbb_load_extensions_autoloaders($phpbb_root_path)
 {
-	$iterator = new \phpbb\iterator\recursive_path_iterator(
+	$iterator = new \phpbb\finder\recursive_path_iterator(
 		$phpbb_root_path . 'ext/',
 		\RecursiveIteratorIterator::SELF_FIRST,
 		\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS

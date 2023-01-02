@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\iterator;
+namespace phpbb\finder;
 
 /**
 * Class recursive_dot_prefix_filter_iterator
