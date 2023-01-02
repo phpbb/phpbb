@@ -429,8 +429,8 @@ class acp_search
 				);
 
 				$this->template->assign_vars([
-					'INDEXING_TITLE'		=> $this->language->lang($message_progress),
-					'INDEXING_EXPLAIN'		=> $this->language->lang($message_progress_explain),
+					'INDEXING_TITLE'		=> $message_progress,
+					'INDEXING_EXPLAIN'		=> $message_progress_explain,
 					'INDEXING_PROGRESS'		=> $message_redirect,
 					'INDEXING_RATE'			=> $message_redirect_rate,
 					'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
@@ -483,8 +483,8 @@ class acp_search
 		]);
 
 		$this->template->assign_vars([
-			'INDEXING_TITLE'		=> $this->language->lang($message_progress),
-			'INDEXING_EXPLAIN'		=> $this->language->lang($message_progress_explain),
+			'INDEXING_TITLE'		=> $message_progress,
+			'INDEXING_EXPLAIN'		=> $message_progress_explain,
 			'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
 		]);
 
