@@ -100,6 +100,8 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 
 	/**
 	* Part of the \Countable implementation, will always result in a FATAL error
+	* @return void
+	* @psalm-suppress InvalidReturnType
 	*/
 	public function count()
 	{
@@ -108,6 +110,8 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 
 	/**
 	* Part of the Traversable/IteratorAggregate implementation, will always result in a FATAL error
+	* @return void
+	* @psalm-suppress InvalidReturnType
 	*/
 	public function getIterator()
 	{

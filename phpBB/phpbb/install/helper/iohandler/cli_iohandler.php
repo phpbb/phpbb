@@ -188,11 +188,11 @@ class cli_iohandler extends iohandler_base
 	/**
 	 * {@inheritdoc
 	 */
-	public function add_success_message($error_title, $error_description = false)
+	public function add_success_message($success_title, $success_description = false)
 	{
 		$this->io->newLine();
 
-		$message = $this->translate_message($error_title, $error_description);
+		$message = $this->translate_message($success_title, $success_description);
 		$message_string = $message['title'] . (!empty($message['description']) ? "\n" . $message['description'] : '');
 		$this->io->success($message_string);
 

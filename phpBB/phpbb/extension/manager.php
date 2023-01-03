@@ -69,7 +69,7 @@ class manager
 	/**
 	* Loads all extension information from the database
 	*
-	* @return null
+	* @return void
 	*/
 	public function load_extensions()
 	{
@@ -254,7 +254,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function enable($name)
 	{
@@ -302,7 +302,7 @@ class manager
 	* while so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function disable($name)
 	{
@@ -357,7 +357,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function purge($name)
 	{
@@ -380,11 +380,10 @@ class manager
 			return $available;
 		}
 
-		$iterator = new \RecursiveIteratorIterator(
-			new \phpbb\recursive_dot_prefix_filter_iterator(
-				new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS)
-			),
-			\RecursiveIteratorIterator::SELF_FIRST
+		$iterator = new \phpbb\finder\recursive_path_iterator(
+			$this->phpbb_root_path . 'ext/',
+			\RecursiveIteratorIterator::SELF_FIRST,
+			\FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS
 		);
 		$iterator->setMaxDepth(2);
 

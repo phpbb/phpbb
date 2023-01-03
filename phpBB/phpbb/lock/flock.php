@@ -27,7 +27,7 @@ class flock
 
 	/**
 	* File pointer for the lock file
-	* @var string|bool
+	* @var resource|closed-resource|false
 	*/
 	private $lock_fp;
 
@@ -130,7 +130,7 @@ class flock
 	* Note: Attempting to release a lock that is already released,
 	* that is, calling release() multiple times, is harmless.
 	*
-	* @return null
+	* @return void
 	*/
 	public function release()
 	{

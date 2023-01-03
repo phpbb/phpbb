@@ -49,17 +49,21 @@ class remove_duplicate_migrations extends \phpbb\db\migration\migration
 
 		$this->db->sql_freeresult($result);
 
+		/**
+		 * @var string $name
+		 * @var array $migration
+		 */
 		foreach ($migration_state as $name => $migration)
 		{
 			$prepended_name = ($name[0] == '\\' ? '' : '\\') . $name;
 			$prefixless_name = $name[0] == '\\' ? substr($name, 1) : $name;
 
-			if ($prepended_name != $name && isset($migration_state[$prepended_name]) && $migration_state[$prepended_name]['migration_depends_on'] == $migration_state[$name]['migration_depends_on'])
+			if ($prepended_name != $name && isset($migration_state[$prepended_name]) && $migration_state[$prepended_name]['migration_depends_on'] == $migration['migration_depends_on'])
 			{
 				$duplicate_migrations[] = $name;
 				unset($migration_state[$prepended_name]);
 			}
-			else if ($prefixless_name != $name && isset($migration_state[$prefixless_name]) && $migration_state[$prefixless_name]['migration_depends_on'] == $migration_state[$name]['migration_depends_on'])
+			else if ($prefixless_name != $name && isset($migration_state[$prefixless_name]) && $migration_state[$prefixless_name]['migration_depends_on'] == $migration['migration_depends_on'])
 			{
 				$duplicate_migrations[] = $prefixless_name;
 				unset($migration_state[$prefixless_name]);

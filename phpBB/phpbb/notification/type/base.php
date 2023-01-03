@@ -129,7 +129,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function __get($name)
 	{
-		return (!isset($this->data[$name])) ? null : $this->data[$name];
+		return $this->data[$name] ?? null;
 	}
 
 
@@ -139,13 +139,24 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param mixed $name
 	* @param mixed $value
 	*
-	* @return null
+	* @return void
 	*/
 	public function __set($name, $value)
 	{
 		$this->data[$name] = $value;
 	}
 
+	/**
+	 * Magic method check if a variable is defined and is not null
+	 *
+	 * @param mixed $name
+	 *
+	 * @return bool
+	 */
+	public function __isset($name)
+	{
+		return isset($this->data[$name]);
+	}
 
 	/**
 	* Magic method to get a string of this notification
@@ -162,12 +173,12 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* Get special data (only important for the classes that extend this)
 	*
-	* @param string $name Name of the variable to get
+	* @param string|false $name Name of the variable to get, false if all data should be returned
 	* @return mixed
 	*/
 	protected function get_data($name)
 	{
-		return ($name === false) ? $this->data['notification_data'] : ((isset($this->data['notification_data'][$name])) ? $this->data['notification_data'][$name] : null);
+		return ($name === false) ? $this->data['notification_data'] : ($this->data['notification_data'][$name] ?? null);
 	}
 
 	/**
@@ -394,7 +405,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 */
 	public function load_special($data, $notifications)
 	{
-		return;
 	}
 
 	/**
@@ -405,6 +415,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	public function is_available()
 	{
 		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_email_template()
+	{
+		return false;
 	}
 
 	/**

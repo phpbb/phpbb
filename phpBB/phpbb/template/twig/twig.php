@@ -92,25 +92,12 @@ class twig extends \phpbb\template\base
 		}
 
 		// Add admin namespace
-		if ($this->path_helper->get_adm_relative_path() !== null && is_dir($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/'))
+		if ($this->path_helper->get_adm_relative_path() !== null
+			&& is_dir($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/')
+			&& $this->loader instanceof \Twig\Loader\FilesystemLoader)
 		{
 			$this->loader->setPaths($this->phpbb_root_path . $this->path_helper->get_adm_relative_path() . 'style/', 'admin');
 		}
-	}
-
-	/**
-	* Clear the cache
-	*
-	* @return \phpbb\template\template
-	*/
-	public function clear_cache()
-	{
-		if (is_dir($this->cachepath))
-		{
-			$this->twig->clearCacheFiles();
-		}
-
-		return $this;
 	}
 
 	/**

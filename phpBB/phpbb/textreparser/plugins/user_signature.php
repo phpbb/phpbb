@@ -24,21 +24,21 @@ class user_signature extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function add_missing_fields(array $row)
+	protected function add_missing_fields(array $record)
 	{
 		if (!isset($this->keyoptions))
 		{
 			$this->save_keyoptions();
 		}
 
-		$options = $row['user_options'];
-		$row += array(
+		$options = $record['user_options'];
+		$record += array(
 			'enable_bbcode'    => phpbb_optionget($this->keyoptions['sig_bbcode'], $options),
 			'enable_smilies'   => phpbb_optionget($this->keyoptions['sig_smilies'], $options),
 			'enable_magic_url' => phpbb_optionget($this->keyoptions['sig_links'], $options),
 		);
 
-		return parent::add_missing_fields($row);
+		return parent::add_missing_fields($record);
 	}
 
 	/**

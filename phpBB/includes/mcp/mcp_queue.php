@@ -677,7 +677,7 @@ class mcp_queue
 	* @param $post_id_list	array	IDs of the posts to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
 	public static function approve_posts($action, $post_id_list, $id, $mode)
 	{
@@ -937,7 +937,7 @@ class mcp_queue
 	* @param $topic_id_list	array	IDs of the topics to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
 	public static function approve_topics($action, $topic_id_list, $id, $mode)
 	{
@@ -1136,7 +1136,7 @@ class mcp_queue
 	* @param $post_id_list	array	IDs of the posts to disapprove/delete
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
 	public static function disapprove_posts($post_id_list, $id, $mode)
 	{

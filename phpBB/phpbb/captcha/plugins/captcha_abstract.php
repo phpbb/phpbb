@@ -75,7 +75,7 @@ abstract class captcha_abstract
 			if (!$this->load_code())
 			{
 				// invalid request, bail out
-				return false;
+				return;
 			}
 		}
 		$generator = $this->get_generator_class();

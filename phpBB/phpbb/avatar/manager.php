@@ -29,7 +29,7 @@ class manager
 
 	/**
 	* Array that contains a list of enabled drivers
-	* @var array|bool
+	* @var array|false
 	*/
 	protected static $enabled_drivers = false;
 
@@ -87,7 +87,7 @@ class manager
 	* @param string $avatar_type Avatar type; by default an avatar's service container name
 	* @param bool $load_enabled Load only enabled avatars
 	*
-	* @return object Avatar driver object
+	* @return object|null Avatar driver object
 	*/
 	public function get_driver($avatar_type, $load_enabled = true)
 	{
@@ -181,7 +181,7 @@ class manager
 			$this->load_enabled_drivers();
 		}
 
-		return self::$enabled_drivers;
+		return self::$enabled_drivers ?: [];
 	}
 
 	/**
@@ -254,7 +254,7 @@ class manager
 	{
 		$config_name = $driver->get_config_name();
 
-		return $this->config["allow_avatar_{$config_name}"];
+		return (bool) $this->config["allow_avatar_{$config_name}"];
 	}
 
 	/**
@@ -311,7 +311,7 @@ class manager
 	*                               avatar data
 	* @param string         $table Database table from which the avatar should be deleted
 	* @param string         $prefix Prefix of user data columns in database
-	* @return null
+	* @return void
 	*/
 	public function handle_avatar_delete(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $avatar_data, $table, $prefix)
 	{

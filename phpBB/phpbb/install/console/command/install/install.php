@@ -16,12 +16,14 @@ namespace phpbb\install\console\command\install;
 use phpbb\install\exception\installer_exception;
 use phpbb\install\helper\install_helper;
 use phpbb\install\helper\iohandler\cli_iohandler;
+use phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception;
 use phpbb\install\helper\iohandler\factory;
 use phpbb\install\installer;
 use phpbb\install\installer_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -89,10 +91,11 @@ class install extends \phpbb\console\command\command
 	 *
 	 * Install the board
 	 *
-	 * @param InputInterface  $input  An InputInterface instance
+	 * @param InputInterface $input An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
-	 * @return null
+	 * @return int 0 if everything went fine, or a non-zero exit code
+	 * @throws iohandler_not_implemented_exception
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -111,25 +114,25 @@ class install extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INSTALL_PHPBB_INSTALLED');
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		if (!is_file($config_file))
 		{
 			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true, false);
+			$config = Yaml::parse(file_get_contents($config_file), true);
 		}
 		catch (ParseException $e)
 		{
 			$iohandler->add_error_message(array('INVALID_YAML_FILE', $config_file));
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		$processor = new Processor();
@@ -143,7 +146,7 @@ class install extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return 1;
+			return Command::FAILURE;
 		}
 
 		$this->register_configuration($iohandler, $config);
@@ -151,12 +154,12 @@ class install extends \phpbb\console\command\command
 		try
 		{
 			$this->installer->run();
-			return 0;
+			return Command::SUCCESS;
 		}
 		catch (installer_exception $e)
 		{
 			$iohandler->add_error_message($e->getMessage());
-			return 1;
+			return Command::FAILURE;
 		}
 	}
 

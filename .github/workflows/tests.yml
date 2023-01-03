@@ -72,6 +72,10 @@ jobs:
               run: |
                   .github/check-doctum-parse-errors.sh
 
+            - name: Check code with psalm
+              run: |
+                  phpBB/vendor/bin/psalm --output-format=github
+
             - name: Check image ICC profiles
               run: |
                   .github/check-image-icc-profiles.sh

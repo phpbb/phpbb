@@ -31,7 +31,7 @@ if (!defined('IN_PHPBB'))
 * @param string $column Column whose values to change
 * @param array $from_values An array of values that should be changed
 * @param int $to_value The new value
-* @return null
+* @return void
 */
 function phpbb_update_rows_avoiding_duplicates(\phpbb\db\driver\driver_interface $db, $table, $column, $from_values, $to_value)
 {

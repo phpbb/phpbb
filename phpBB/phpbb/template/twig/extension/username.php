@@ -28,14 +28,12 @@ class username extends AbstractExtension
 	}
 
 	/**
-	 * Returns a list of global functions to add to the existing list.
-	 *
-	 * @return array An array of global functions
+	 * {@inheritDoc}
 	 */
 	public function getFunctions()
 	{
 		return array(
-			new \Twig\TwigFunction('username', array($this, 'get_username')),
+			new \Twig\TwigFunction('username', [$this, 'get_username']),
 		);
 	}
 

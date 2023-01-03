@@ -75,6 +75,7 @@ class obtain_update_files extends task_base
 		// The file should be checked in the requirements, so we assume that it exists
 		$update_info_file = $this->phpbb_root_path . 'install/update/index.' . $this->php_ext;
 		include($update_info_file);
+		/** @var array $update_info */
 		$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 
 		// If the file is invalid, abort mission

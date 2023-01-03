@@ -54,9 +54,9 @@ class environment extends \Twig\Environment
 	* @param \phpbb\filesystem\filesystem $filesystem
 	* @param \phpbb\path_helper $path_helper phpBB path helper
 	* @param string $cache_path The path to the cache directory
-	* @param \phpbb\extension\manager $extension_manager phpBB extension manager
-	* @param \Twig\Loader\LoaderInterface $loader Twig loader interface
-	* @param \phpbb\event\dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
+	* @param \phpbb\extension\manager|null $extension_manager phpBB extension manager
+	* @param \Twig\Loader\LoaderInterface|null $loader Twig loader interface
+	* @param \phpbb\event\dispatcher_interface|null	$phpbb_dispatcher	Event dispatcher object
 	* @param array $options Array of options to pass to Twig
 	*/
 	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig\Loader\LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
@@ -195,7 +195,7 @@ class environment extends \Twig\Environment
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Get template with assets
 	 */
 	private function display_with_assets($name, array $context = [])
 	{
@@ -261,7 +261,7 @@ class environment extends \Twig\Environment
 	*
 	* @param string  $cls   The template class associated with the given template name
 	* @param string  $name  The template name
-	* @param integer $index The index if it is an embedded template
+	* @param integer|null $index The index if it is an embedded template
 	* @return \Twig\Template A template instance representing the given template name
 	* @throws \Twig\Error\LoaderError
 	*/

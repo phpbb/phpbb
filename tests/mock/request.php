@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_mock_request implements \phpbb\request\request_interface
+class phpbb_mock_request extends \phpbb\request\request
 {
 	protected $data;
 

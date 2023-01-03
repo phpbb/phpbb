@@ -205,7 +205,7 @@ class gd_wave
 				$x_index_old = intval(($x - 1) / $subdivision_factor);
 				$x_index_new = intval($x / $subdivision_factor);
 
-				if (!empty($plane[$y_index_new][$x_index_new]))
+				if ($plane[$y_index_new][$x_index_new])
 				{
 					$img_pos_cur[1]	+= $this->wave_height($x, $y, $subdivision_factor, 1) - 30 - $cur_height;
 					$color			= $colors[20];
@@ -213,10 +213,10 @@ class gd_wave
 				$img_pos_cur[1] = min($img_pos_cur[1], $img_y - 1);
 				$img_buffer[$buffer_cur][$x] = $img_pos_cur;
 
-				// Smooth the edges as much as possible by having not more than one low<->high traingle per square
+				// Smooth the edges as much as possible by having not more than one low<->high triangle per square
 				// Otherwise, just
-				$diag_down	= (empty($plane[$y_index_old][$x_index_old]) == empty($plane[$y_index_new][$x_index_new]));
-				$diag_up	= (empty($plane[$y_index_old][$x_index_new]) == empty($plane[$y_index_new][$x_index_old]));
+				$diag_down	= !$plane[$y_index_old][$x_index_old] && !$plane[$y_index_new][$x_index_new];
+				$diag_up	= !$plane[$y_index_old][$x_index_new] && !$plane[$y_index_new][$x_index_old];
 
 				// natural switching
 				$mode = ($x + $y) & 1;

@@ -45,7 +45,7 @@ class update_extensions extends task_base
 	protected $update_helper;
 
 	/**
-	 * @var \phpbb\config\db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
@@ -111,9 +111,9 @@ class update_extensions extends task_base
 		// Make sure asset version exists in config. Otherwise we might try to
 		// insert the assets_version setting into the database and cause a
 		// duplicate entry error.
-		if (!isset($this->config['assets_version']))
+		if (!$this->config->offsetExists('assets_version'))
 		{
-			$this->config['assets_version'] = 0;
+			$this->config->offsetSet('assets_version', 0);
 		}
 
 		parent::__construct(true);

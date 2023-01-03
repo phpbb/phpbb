@@ -437,8 +437,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return isset($vars['renderer'])
 			&& $vars['renderer'] instanceof \phpbb\textformatter\s9e\renderer
-			&& isset($vars['xml'])
-			&& $vars['xml'] === '<t>...</t>';
+			&& isset($vars['text'])
+			&& $vars['text'] === '<t>...</t>';
 	}
 
 	public function render_after_event_callback($vars)

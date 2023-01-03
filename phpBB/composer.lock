@@ -6979,16 +6979,16 @@
         },
         {
             "name": "psalm/plugin-symfony",
-            "version": "v3.1.9",
+            "version": "v3.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/psalm/psalm-plugin-symfony.git",
-                "reference": "b9511a3c4dd67131d2ae55f6d12b6c28ce56a561"
+                "reference": "5dca17839a6d48766ac760b8aa6d1f6d12759b28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/psalm/psalm-plugin-symfony/zipball/b9511a3c4dd67131d2ae55f6d12b6c28ce56a561",
-                "reference": "b9511a3c4dd67131d2ae55f6d12b6c28ce56a561",
+                "url": "https://api.github.com/repos/psalm/psalm-plugin-symfony/zipball/5dca17839a6d48766ac760b8aa6d1f6d12759b28",
+                "reference": "5dca17839a6d48766ac760b8aa6d1f6d12759b28",
                 "shasum": ""
             },
             "require": {
@@ -7038,9 +7038,9 @@
             "description": "Psalm Plugin for Symfony",
             "support": {
                 "issues": "https://github.com/psalm/psalm-plugin-symfony/issues",
-                "source": "https://github.com/psalm/psalm-plugin-symfony/tree/v3.1.9"
+                "source": "https://github.com/psalm/psalm-plugin-symfony/tree/v3.1.10"
             },
-            "time": "2022-09-12T13:01:42+00:00"
+            "time": "2022-10-22T13:09:05+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -8727,16 +8727,16 @@
         },
         {
             "name": "vimeo/psalm",
-            "version": "4.29.0",
+            "version": "4.30.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/vimeo/psalm.git",
-                "reference": "7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3"
+                "reference": "d0bc6e25d89f649e4f36a534f330f8bb4643dd69"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vimeo/psalm/zipball/7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3",
-                "reference": "7ec5ffbd5f68ae03782d7fd33fff0c45a69f95b3",
+                "url": "https://api.github.com/repos/vimeo/psalm/zipball/d0bc6e25d89f649e4f36a534f330f8bb4643dd69",
+                "reference": "d0bc6e25d89f649e4f36a534f330f8bb4643dd69",
                 "shasum": ""
             },
             "require": {
@@ -8829,9 +8829,9 @@
             ],
             "support": {
                 "issues": "https://github.com/vimeo/psalm/issues",
-                "source": "https://github.com/vimeo/psalm/tree/4.29.0"
+                "source": "https://github.com/vimeo/psalm/tree/4.30.0"
             },
-            "time": "2022-10-11T17:09:17+00:00"
+            "time": "2022-11-06T20:37:08+00:00"
         },
         {
             "name": "webmozart/assert",

@@ -27,9 +27,10 @@ abstract class base implements type_interface
 	/**
 	 * Check if upload exceeds maximum file size
 	 *
-	 * @param \phpbb\files\filespec $file Filespec object
+	 * @template filespec_type of \phpbb\files\filespec|\phpbb\files\filespec_storage
+	 * @param filespec_type $file Filespec object
 	 *
-	 * @return \phpbb\files\filespec Returns same filespec instance
+	 * @return filespec_type Returns same filespec instance
 	 */
 	public function check_upload_size($file)
 	{
@@ -47,7 +48,14 @@ abstract class base implements type_interface
 				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
 			}
 
-			$file->error[] = (empty($max_filesize)) ? $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_NA') : $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
+			if (empty($max_filesize))
+			{
+				$file->error[] = $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_NA');
+			}
+			else
+			{
+				$file->error[] = $this->language->lang($this->upload->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, $this->language->lang($unit));
+			}
 		}
 
 		return $file;

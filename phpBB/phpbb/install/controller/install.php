@@ -99,6 +99,8 @@ class install
 	 * @return Response|StreamedResponse
 	 *
 	 * @throws http_exception When phpBB is already installed
+	 * @throws \phpbb\install\helper\iohandler\exception\iohandler_not_implemented_exception
+	 * @psalm-suppress InvalidNullableReturnType
 	 */
 	public function handle()
 	{

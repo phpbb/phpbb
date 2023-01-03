@@ -285,11 +285,12 @@ class pagination
 	*
 	* @param int $per_page the number of items, posts, etc. per page
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
+	*
 	* @return int	Current page number
 	*/
-	public function get_on_page($per_page, $start)
+	public function get_on_page(int $per_page, int $start): int
 	{
-		return floor((int) $start / (int) $per_page) + 1;
+		return (int) floor($start / $per_page) + 1;
 	}
 
 	/**
@@ -318,7 +319,7 @@ class pagination
 	{
 		if ($start < 0 || $start >= $num_items)
 		{
-			return ($start < 0 || $num_items <= 0) ? 0 : floor(($num_items - 1) / $per_page) * $per_page;
+			return ($start < 0 || $num_items <= 0) ? 0 : (int) floor(($num_items - 1) / $per_page) * $per_page;
 		}
 
 		return $start;

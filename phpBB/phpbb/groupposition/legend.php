@@ -47,8 +47,9 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	* Returns the group_legend for a given group, if the group exists.
 	*
 	* @param	int		$group_id	group_id of the group to be selected
+	*
 	* @return	int			position of the group
-	* @throws \phpbb\groupposition\exception
+	* @throws exception
 	*/
 	public function get_group_value($group_id)
 	{
@@ -62,7 +63,7 @@ class legend implements \phpbb\groupposition\groupposition_interface
 		if ($current_value === false)
 		{
 			// Group not found.
-			throw new \phpbb\groupposition\exception('NO_GROUP');
+			throw new exception('NO_GROUP');
 		}
 
 		return (int) $current_value;
@@ -109,12 +110,13 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
-	*
-	* @param	int		$group_id		group_id of the group to be deleted
-	* @param	bool	$skip_group		Skip setting the value for this group, to save the query, when you need to update it anyway.
-	* @return	bool		True if the group was deleted successfully
-	*/
+	 * Deletes a group by setting the field to self::GROUP_DISABLED and closing the gap in the list.
+	 *
+	 * @param int $group_id group_id of the group to be deleted
+	 * @param bool $skip_group Skip setting the value for this group, to save the query, when you need to update it anyway.
+	 * @return    bool        True if the group was deleted successfully
+	 * @throws exception
+	 */
 	public function delete_group($group_id, $skip_group = false)
 	{
 		$current_value = $this->get_group_value($group_id);
@@ -212,11 +214,13 @@ class legend implements \phpbb\groupposition\groupposition_interface
 	}
 
 	/**
-	* Get group type language var
-	*
-	* @param	int		$group_type	group_type from the groups-table
-	* @return	string		name of the language variable for the given group-type.
-	*/
+	 * Get group type language var
+	 *
+	 * @param int $group_type group_type from the groups-table
+	 *
+	 * @return    string        name of the language variable for the given group-type.
+	 * @throws exception        If invalid group type is supplied
+	 */
 	public static function group_type_language($group_type)
 	{
 		switch ($group_type)
@@ -231,6 +235,8 @@ class legend implements \phpbb\groupposition\groupposition_interface
 				return 'GROUP_SPECIAL';
 			case GROUP_FREE:
 				return 'GROUP_OPEN';
+			default:
+				throw new exception('NO_GROUP');
 		}
 	}
 }

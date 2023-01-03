@@ -99,7 +99,7 @@ class acp_language
 	/**
 	 * Main handler for acp_language
 	 *
-	 * @param int $id Module ID
+	 * @param string $id Module ID
 	 * @param string $mode Module mode
 	 */
 	public function main($id, $mode)
@@ -220,24 +220,15 @@ class acp_language
 				{
 					try
 					{
-						$iterator = new \RecursiveIteratorIterator(
-							new \phpbb\recursive_dot_prefix_filter_iterator(
-								new \RecursiveDirectoryIterator(
-									$this->phpbb_root_path . 'language/' . $this->config['default_lang'] . '/',
-									\FilesystemIterator::SKIP_DOTS
-								)
-							),
-							\RecursiveIteratorIterator::LEAVES_ONLY
-						);
+						$iterator = new \phpbb\finder\recursive_path_iterator($this->phpbb_root_path . 'language/' . $this->config['default_lang'] . '/');
 					}
 					catch (\Exception $e)
 					{
-						return array();
+						return;
 					}
 
 					foreach ($iterator as $file_info)
 					{
-						/** @var \RecursiveDirectoryIterator $file_info */
 						$relative_path = $iterator->getInnerIterator()->getSubPathname();
 						$relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
 

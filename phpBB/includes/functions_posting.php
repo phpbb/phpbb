@@ -253,6 +253,7 @@ function generate_smilies($mode, $forum_id)
 * @param	string	$type				Can be forum|topic
 * @param	mixed	$ids				topic/forum ids
 * @param	bool	$return_update_sql	true: SQL query shall be returned, false: execute SQL
+* @return	array|null	SQL query, null otherwise
 */
 function update_post_information($type, $ids, $return_update_sql = false)
 {
@@ -412,7 +413,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$db->sql_query($sql);
 	}
 
-	return;
+	return null;
 }
 
 /**
@@ -2780,7 +2781,7 @@ function phpbb_upload_popup($forum_style = 0)
 * @param bool		$is_soft		The flag indicating whether it is the soft delete mode
 * @param string		$delete_reason	Description for the post deletion reason
 *
-* @return null
+* @return void
 */
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {

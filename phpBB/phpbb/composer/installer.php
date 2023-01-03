@@ -147,11 +147,12 @@ class installer
 	 * @param array $packages Packages to install.
 	 *        Each entry may be a name or an array associating a version constraint to a name
 	 * @param array $whitelist White-listed packages (packages that can be installed/updated/removed)
-	 * @param IOInterface|null $io IO object used for the output
+	 * @param io\io_interface|null $io IO object used for the output
 	 *
 	 * @throws runtime_exception
+	 * @throws JsonValidationException
 	 */
-	protected function do_install(array $packages, $whitelist, IOInterface $io = null)
+	protected function do_install(array $packages, $whitelist, io\io_interface $io = null)
 	{
 		if (!$io)
 		{
@@ -501,6 +502,7 @@ class installer
 	 *
 	 * @param array $packages Packages to update.
 	 *        Each entry may be a name or an array associating a version constraint to a name
+	 * @throws JsonValidationException
 	 */
 	protected function generate_ext_json_file(array $packages)
 	{

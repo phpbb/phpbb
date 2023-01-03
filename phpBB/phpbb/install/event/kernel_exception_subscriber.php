@@ -113,14 +113,12 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	}
 
 	/**
-	 * Returns an array of events the object is subscribed to
-	 *
-	 * @return array	Array of events the object is subscribed to
+	 * {@inheritDoc}
 	 */
 	public static function getSubscribedEvents()
 	{
-		return array(
+		return [
 			KernelEvents::EXCEPTION		=> 'on_kernel_exception',
-		);
+		];
 	}
 }

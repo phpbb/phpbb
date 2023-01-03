@@ -119,6 +119,7 @@ class helper
 	public function get_name_string($mode, $group_id, $group_name, $group_colour = '', $custom_profile_url = false)
 	{
 		$s_is_bots = ($group_name === 'BOTS');
+		$group_name_string = null;
 
 		// This switch makes sure we only run code required for the mode
 		switch ($mode)

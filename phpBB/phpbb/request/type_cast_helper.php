@@ -72,7 +72,7 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 	/**
 	* Recursively sets a variable to a given type using {@link set_var set_var}
 	*
-	* @param	string	$var		The value which shall be sanitised (passed by reference).
+	* @param	mixed	$var		The value which shall be sanitised (passed by reference).
 	* @param	mixed	$default	Specifies the type $var shall have.
 	* 								If it is an array and $var is not one, then an empty array is returned.
 	* 								Otherwise var is cast to the same type, and if $default is an array all

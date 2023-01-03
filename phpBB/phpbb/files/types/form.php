@@ -18,7 +18,7 @@ use phpbb\files\factory;
 use phpbb\files\filespec;
 use phpbb\language\language;
 use phpbb\plupload\plupload;
-use phpbb\request\request_interface;
+use phpbb\request\request;
 
 class form extends base
 {
@@ -28,7 +28,7 @@ class form extends base
 	/** @var plupload */
 	protected $plupload;
 
-	/** @var request_interface */
+	/** @var request */
 	protected $request;
 
 	/**
@@ -38,9 +38,9 @@ class form extends base
 	 * @param language			$language	Language class
 	 * @param IniGetWrapper		$php_ini	ini_get() wrapper
 	 * @param plupload			$plupload	Plupload
-	 * @param request_interface	$request	Request object
+	 * @param request	$request	Request object
 	 */
-	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, plupload $plupload, request_interface $request)
+	public function __construct(factory $factory, language $language, IniGetWrapper $php_ini, plupload $plupload, request $request)
 	{
 		$this->factory = $factory;
 		$this->language = $language;

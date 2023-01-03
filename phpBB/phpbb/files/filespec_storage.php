@@ -99,7 +99,7 @@ class filespec_storage
 	 *
 	 * @param array $upload_ary Upload ary
 	 *
-	 * @return filespec This instance of the filespec class
+	 * @return filespec_storage This instance of the filespec class
 	 */
 	public function set_upload_ary($upload_ary)
 	{
@@ -142,7 +142,7 @@ class filespec_storage
 	 *
 	 * @param upload $namespace Instance of upload class
 	 *
-	 * @return filespec This instance of the filespec class
+	 * @return filespec_storage This instance of the filespec class
 	 */
 	public function set_upload_namespace($namespace)
 	{
@@ -166,7 +166,7 @@ class filespec_storage
 	 *
 	 * @param mixed $error Content for error array
 	 *
-	 * @return \phpbb\files\filespec This instance of the filespec class
+	 * @return filespec_storage This instance of the filespec class
 	 */
 	public function set_error($error)
 	{
@@ -313,7 +313,7 @@ class filespec_storage
 	 * Get mime type
 	 *
 	 * @param string $filename Filename that needs to be checked
-	 * @return string Mime type of supplied filename
+	 * @return string Mime type of supplied filename or empty string if mimetype could not be guessed
 	 */
 	public function get_mimetype($filename)
 	{
@@ -327,7 +327,7 @@ class filespec_storage
 			}
 		}
 
-		return $this->mimetype;
+		return $this->mimetype ?: '';
 	}
 
 	/**

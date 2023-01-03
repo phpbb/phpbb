@@ -700,7 +700,7 @@ abstract class nestedset implements \phpbb\tree\tree_interface
 	* @param bool	$set_subset_zero	Should the parent, left and right id of the items be set to 0, or kept unchanged?
 	*									In case of removing an item from the tree, we should the values to 0
 	*									In case of moving an item, we shouldkeep the original values, in order to allow "+ diff" later
-	* @return	null
+	* @return	void
 	*/
 	protected function remove_subset(array $subset_items, array $bounding_item, $set_subset_zero = true)
 	{

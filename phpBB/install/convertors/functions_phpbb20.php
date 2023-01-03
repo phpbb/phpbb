@@ -1317,7 +1317,7 @@ function phpbb_get_files_dir()
 {
 	if (!defined('MOD_ATTACHMENT'))
 	{
-		return;
+		return '';
 	}
 
 	global $src_db, $same_db, $convert, $user;

@@ -23,6 +23,7 @@ require_once $phpbb_root_path . 'includes/startup.php';
 $table_prefix = 'phpbb_';
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'phpbb/class_loader.' . $phpEx;
+require_once $phpbb_root_path . 'includes/acp/acp_database.' . $phpEx;
 require_once $phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_acp.' . $phpEx;
@@ -38,6 +39,18 @@ require_once $phpbb_root_path . 'includes/functions_posting.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_transfer.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_user.' . $phpEx;
+require_once $phpbb_root_path . 'includes/sphinxapi.' . $phpEx;
+require_once $phpbb_root_path . 'includes/diff/diff.' . $phpEx;
+require_once $phpbb_root_path . 'includes/diff/engine.' . $phpEx;
+require_once $phpbb_root_path . 'includes/compatibility_globals.' . $phpEx;
 
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', $phpbb_root_path . 'phpbb/', "php");
 $phpbb_class_loader->register();
+
+// Include files that require class loader to be initialized
+require_once $phpbb_root_path . 'includes/acp/auth.' . $phpEx;
+require_once $phpbb_root_path . 'includes/acp/acp_captcha.' . $phpEx;
+
+class phpbb_cache_container extends \Symfony\Component\DependencyInjection\Container
+{
+}

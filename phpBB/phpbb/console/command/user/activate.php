@@ -87,7 +87,7 @@ class activate extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -186,7 +186,7 @@ class activate extends command
 	 *
 	 * @param array           $user_row The user data array
 	 * @param InputInterface  $input    The input stream used to get the options
-	 * @return null
+	 * @return void
 	 */
 	protected function send_notification($user_row, InputInterface $input)
 	{

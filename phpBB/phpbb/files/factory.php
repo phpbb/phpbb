@@ -35,7 +35,7 @@ class factory
 	 *
 	 * @param string $name Service name
 	 *
-	 * @return object|bool Requested service or false if service could not be
+	 * @return object|false Requested service or false if service could not be
 	 *				found by the container
 	 */
 	public function get($name)
@@ -46,7 +46,7 @@ class factory
 
 		try
 		{
-			$service = $this->container->get($name);
+			$service = $this->container->get($name) ?? false;
 		}
 		catch (\Exception $e)
 		{

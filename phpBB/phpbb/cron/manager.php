@@ -164,7 +164,7 @@ class manager
 	* Web runner uses this method to resolve names to tasks.
 	*
 	* @param string				$name Name of the task to look up.
-	* @return wrapper	A wrapped task corresponding to the given name, or null.
+	* @return wrapper|null	A wrapped task corresponding to the given name, or null.
 	*/
 	public function find_task($name)
 	{

@@ -462,7 +462,8 @@ class doctrine implements tools_interface
 		}
 		catch (Exception $e)
 		{
-			return $e->getMessage();
+			// @todo: check if it makes sense to properly handle the exception
+			return false;
 		}
 	}
 

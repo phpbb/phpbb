@@ -48,7 +48,7 @@ class manage extends \phpbb\console\command\command
 	/**
 	* Sets the command name and description
 	*
-	* @return null
+	* @return void
 	*/
 	protected function configure()
 	{

@@ -67,19 +67,19 @@ class pm extends \phpbb\notification\type\base
 	/**
 	* Get the id of the
 	*
-	* @param array $pm The data from the private message
+	* @param array $type_data The data from the private message
 	*/
-	public static function get_item_id($pm)
+	public static function get_item_id($type_data)
 	{
-		return (int) $pm['msg_id'];
+		return (int) $type_data['msg_id'];
 	}
 
 	/**
 	* Get the id of the parent
 	*
-	* @param array $pm The data from the pm
+	* @param array $type_data The data from the pm
 	*/
-	public static function get_item_parent_id($pm)
+	public static function get_item_parent_id($type_data)
 	{
 		// No parent
 		return 0;
@@ -88,27 +88,27 @@ class pm extends \phpbb\notification\type\base
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $pm Data from submit_pm
+	* @param array $type_data Data from submit_pm
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($pm, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		if (!count($pm['recipients']))
+		if (!count($type_data['recipients']))
 		{
 			return array();
 		}
 
-		unset($pm['recipients'][$pm['from_user_id']]);
+		unset($type_data['recipients'][$type_data['from_user_id']]);
 
-		$this->user_loader->load_users(array_keys($pm['recipients']));
+		$this->user_loader->load_users(array_keys($type_data['recipients']));
 
-		return $this->check_user_notification_options(array_keys($pm['recipients']), $options);
+		return $this->check_user_notification_options(array_keys($type_data['recipients']), $options);
 	}
 
 	/**
@@ -145,9 +145,7 @@ class pm extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{
@@ -194,12 +192,12 @@ class pm extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($pm, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('from_user_id', $pm['from_user_id']);
+		$this->set_data('from_user_id', $type_data['from_user_id']);
 
-		$this->set_data('message_subject', $pm['message_subject']);
+		$this->set_data('message_subject', $type_data['message_subject']);
 
-		parent::create_insert_array($pm, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 	}
 }

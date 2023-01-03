@@ -15,14 +15,6 @@ namespace phpbb\template;
 
 interface template
 {
-
-	/**
-	* Clear the cache
-	*
-	* @return \phpbb\template\template
-	*/
-	public function clear_cache();
-
 	/**
 	* Sets the template filenames for handles.
 	*

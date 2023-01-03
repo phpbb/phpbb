@@ -43,7 +43,7 @@ class file_info
 	/**
 	 * Constructor
 	 *
-	 * @param \Symfony\Component\DependencyInjection\ContainerInterface $adapter
+	 * @param adapter_interface $adapter
 	 * @param string $path
 	 */
 	public function __construct(adapter_interface $adapter, $path)

@@ -57,11 +57,11 @@ interface manager_interface
 	/**
 	 * Tells whether or not a package is managed by Composer.
 	 *
-	 * @param string $packages Package name
+	 * @param string $package Package name
 	 *
 	 * @return bool
 	 */
-	public function is_managed($packages);
+	public function is_managed($package);
 
 	/**
 	 * Returns the list of managed packages for the current type

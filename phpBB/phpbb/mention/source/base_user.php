@@ -34,8 +34,8 @@ abstract class base_user implements source_interface
 	/** @var string */
 	protected $php_ext;
 
-	/** @var string|false */
-	protected $cache_ttl = false;
+	/** @var int */
+	protected $cache_ttl = 0;
 
 	/**
 	 * base_user constructor.

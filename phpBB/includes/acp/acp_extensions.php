@@ -767,7 +767,7 @@ class acp_extensions
 	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
 	 * @param array                     $managed_packages            List of managed packages
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function list_enabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
 	{
@@ -850,7 +850,7 @@ class acp_extensions
 	 * @param \phpbb\extension\manager  $phpbb_extension_manager     An instance of the extension manager
 	 * @param array                     $managed_packages            List of managed packages
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function list_disabled_exts(\phpbb\extension\manager $phpbb_extension_manager, array $managed_packages)
 	{
@@ -930,7 +930,7 @@ class acp_extensions
 	 *
 	 * @param array                     $managed_packages            List of managed packages
 	 *
-	 * @return null
+	 * @return void
 	 */
 	public function list_available_exts(array $managed_packages)
 	{
@@ -1026,7 +1026,7 @@ class acp_extensions
 	* Outputs extension metadata into the template
 	*
 	* @param array $metadata Array with all metadata for the extension
-	* @return null
+	* @return void
 	*/
 	public function output_metadata_to_template($metadata)
 	{

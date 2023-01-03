@@ -65,8 +65,8 @@ class local extends base
 		$upload = $this->get_upload_ary($source_file, $filedata);
 
 		/** @var filespec $file */
-		$file = $this->factory->get('filespec')
-			->set_upload_ary($upload)
+		$file = $this->factory->get('filespec');
+		$file->set_upload_ary($upload)
 			->set_upload_namespace($this->upload);
 
 		if ($file->init_error())

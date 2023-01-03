@@ -86,7 +86,7 @@ class mysql_extractor extends base_extractor
 	* Extracts data from database table (for MySQLi driver)
 	*
 	* @param	string	$table_name	name of the database table
-	* @return null
+	* @return void
 	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function write_data_mysqli($table_name)
@@ -176,7 +176,7 @@ class mysql_extractor extends base_extractor
 	* Extracts database table structure (for MySQLi or MySQL 3.23.20+)
 	*
 	* @param	string	$table_name	name of the database table
-	* @return null
+	* @return void
 	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function new_write_table($table_name)
@@ -201,7 +201,7 @@ class mysql_extractor extends base_extractor
 	* Extracts database table structure (for MySQL versions older than 3.23.20)
 	*
 	* @param	string	$table_name	name of the database table
-	* @return null
+	* @return void
 	* @throws extractor_not_initialized_exception when calling this function before init_extractor()
 	*/
 	protected function old_write_table($table_name)

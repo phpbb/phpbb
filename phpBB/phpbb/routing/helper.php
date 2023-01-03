@@ -83,7 +83,7 @@ class helper
 	 * @param array	$params		String or array of additional url parameters
 	 * @param bool	$is_amp		Is url using &amp; (true) or & (false)
 	 * @param string|bool		$session_id	Possibility to use a custom session id instead of the global one
-	 * @param bool|string		$reference_type The type of reference to be generated (one of the constants)
+	 * @param int		$reference_type The type of reference to be generated (one of the constants)
 	 * @return string The URL already passed through append_sid()
 	 */
 	public function route($route, array $params = array(), $is_amp = true, $session_id = false, $reference_type = UrlGeneratorInterface::ABSOLUTE_PATH)

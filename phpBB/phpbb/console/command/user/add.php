@@ -85,7 +85,7 @@ class add extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -226,7 +226,7 @@ class add extends command
 	 * Validate the submitted user data
 	 *
 	 * @throws runtime_exception if any data fails validation
-	 * @return null
+	 * @return void
 	 */
 	protected function validate_user_data()
 	{
@@ -283,7 +283,7 @@ class add extends command
 	 * Send account activation email
 	 *
 	 * @param int   $user_id The new user's id
-	 * @return null
+	 * @return void
 	 */
 	protected function send_activation_email($user_id)
 	{

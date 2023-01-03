@@ -124,7 +124,7 @@ class help
 	 * Assigns the help data to the template blocks
 	 *
 	 * @param array $help_data
-	 * @return null
+	 * @return void
 	 */
 	protected function assign_to_template(array $help_data)
 	{

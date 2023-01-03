@@ -183,8 +183,8 @@ abstract class profilefield_base_migration extends container_aware_migration
 	}
 
 	/**
-	* @param int			$start		Start of staggering step
-	* @return		mixed		int start of the next step, null if the end was reached
+	* @param	int			$start		Start of staggering step
+	* @return	int|null	int start of the next step, null if the end was reached
 	*/
 	public function convert_user_field_to_custom_field($start)
 	{
@@ -226,7 +226,7 @@ abstract class profilefield_base_migration extends container_aware_migration
 		if ($converted_users < $limit)
 		{
 			// No more users left, we are done...
-			return;
+			return null;
 		}
 
 		return $start + $limit;

@@ -46,7 +46,7 @@ class container_builder
 	/**
 	 * The container under construction
 	 *
-	 * @var ContainerBuilder
+	 * @var \phpbb_cache_container|ContainerBuilder
 	 */
 	protected $container;
 
@@ -143,6 +143,7 @@ class container_builder
 	 * Build and return a new Container respecting the current configuration
 	 *
 	 * @return \phpbb_cache_container|ContainerBuilder
+	 * @throws \Exception
 	 */
 	public function get_container()
 	{
@@ -449,6 +450,7 @@ class container_builder
 			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
 
+			/** @var \phpbb\config\config $config */
 			$config = $ext_container->get('config');
 			if (@is_file($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
 			{

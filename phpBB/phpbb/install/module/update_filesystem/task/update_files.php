@@ -224,7 +224,7 @@ class update_files extends task_base
 		}
 
 		$file_updater_method = $this->installer_config->get('file_update_method', '');
-		if ($file_updater_method === 'compression' || $file_updater_method === 'ftp')
+		if ($file_updater_method === 'compression' || $file_updater_method === 'ftp' && method_exists($this->file_updater, 'close'))
 		{
 			$this->file_updater->close();
 		}

@@ -855,6 +855,7 @@ class fulltext_sphinx implements search_backend_interface
 		generate a config for the index. We use a config value
 		fulltext_sphinx_id for this, as it should be unique. */
 		$config_object = new \phpbb\search\backend\sphinx\config();
+		/** @psalm-suppress UndefinedVariable */
 		$config_data = array(
 			'source source_phpbb_' . $this->id . '_main' => array(
 				array('type',						$this->dbtype . ' # mysql or pgsql'),

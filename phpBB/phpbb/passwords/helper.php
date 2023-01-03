@@ -50,8 +50,8 @@ class helper
 	* @param string $type Data type of the supplied value
 	* @param string $value Value that should be put into the data array
 	*
-	* @return string|null Return complete combined hash if type is neither
-	*			'prefix' nor 'settings', nothing if it is
+	* @return string|false Return complete combined hash if type is neither
+	*			'prefix' nor 'settings', false if it is
 	*/
 	public function combine_hash_output(&$data, $type, $value)
 	{
@@ -70,6 +70,8 @@ class helper
 			// Return full hash
 			return $data['prefix'] . $data['settings'] . '$' . $value;
 		}
+
+		return false;
 	}
 
 	/**

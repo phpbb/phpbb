@@ -99,6 +99,6 @@ abstract class report_handler implements report_handler_interface
 		$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
 
-		return $this->db->sql_nextid();
+		return (int) $this->db->sql_nextid();
 	}
 }

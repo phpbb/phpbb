@@ -63,7 +63,7 @@ interface driver_interface
 	* @param string		$hash Password hash
 	* @param bool		$full Return full settings or only settings
 	*			related to the salt
-	* @return string	String containing the hash settings
+	* @return string|false	String containing the hash settings or false if settings are empty or not supported
 	*/
 	public function get_settings_only($hash, $full = false);
 }

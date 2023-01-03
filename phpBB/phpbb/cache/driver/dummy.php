@@ -96,6 +96,14 @@ class dummy extends \phpbb\cache\driver\base
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	protected function _read(string $var)
+	{
+		return false;
+	}
+
+	/**
 	* {@inheritDoc}
 	*/
 	function sql_load($query)

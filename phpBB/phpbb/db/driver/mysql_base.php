@@ -27,9 +27,9 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	 * {@inheritDoc}
+	 */
+	protected function _sql_query_limit(string $query, int $total, int $offset = 0, int $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -103,34 +103,13 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_like_expression($expression)
+	protected function _sql_custom_build(string $stage, $data)
 	{
-		return $expression;
-	}
-
-	/**
-	* Build NOT LIKE expression
-	* @access private
-	*/
-	function _sql_not_like_expression($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		switch ($stage)
+		if ($stage === 'FROM' && is_string($data))
 		{
-			case 'FROM':
-				$data = '(' . $data . ')';
-			break;
+			$data = '(' . $data . ')';
 		}
 
 		return $data;

@@ -21,9 +21,8 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 	*
 	* @param \Twig\Token $token A Twig\Token instance
 	*
-	* @return \Twig\Node\Node A Twig\Node instance
 	* @throws \Twig\Error\SyntaxError
-	* @throws \phpbb\template\twig\node\definenode
+	* @return \Twig\Node\Node A Twig\Node instance
 	*/
 	public function parse(\Twig\Token $token)
 	{

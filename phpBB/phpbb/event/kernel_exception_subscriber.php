@@ -66,7 +66,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	* This listener is run when the KernelEvents::EXCEPTION event is triggered
 	*
 	* @param ExceptionEvent $event
-	* @return null
+	* @return void
 	*/
 	public function on_kernel_exception(ExceptionEvent $event)
 	{
