@@ -13,6 +13,7 @@
 
 namespace phpbb\notification;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -897,7 +898,7 @@ class manager
 	 * @param array $data
 	 *
 	 * @return type\type_interface
-	 * @throws \Exception When type name is not o notification type
+	 * @throws runtime_exception When type name is not o notification type
 	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
@@ -905,7 +906,7 @@ class manager
 
 		if (!$item instanceof type\type_interface)
 		{
-			throw new \Exception('Supplied type name returned invalid service: ' . $notification_type_name);
+			throw new runtime_exception('Supplied type name returned invalid service: ' . $notification_type_name);
 		}
 
 		$item->set_initial_data($data);
@@ -919,7 +920,7 @@ class manager
 	 * @param string $method_name
 	 *
 	 * @return method\method_interface
-	 * @throws \Exception When object name is not o notification method
+	 * @throws runtime_exception When object name is not o notification method
 	 */
 	public function get_method_class($method_name)
 	{
@@ -927,7 +928,7 @@ class manager
 
 		if (!$object instanceof method\method_interface)
 		{
-			throw new \Exception('Supplied method name returned invalid service: ' . $method_name);
+			throw new runtime_exception('Supplied method name returned invalid service: ' . $method_name);
 		}
 
 		return $object;
@@ -940,7 +941,7 @@ class manager
 	 *
 	 * @return method\method_interface|type\type_interface
 	 * @psalm-suppress NullableReturnStatement Invalid service will result in exception
-	 * @throws \Exception When object name is not o notification method or type
+	 * @throws runtime_exception When object name is not o notification method or type
 	 */
 	protected function load_object($object_name)
 	{
@@ -953,7 +954,7 @@ class manager
 
 		if (!$object instanceof method\method_interface && !$object instanceof type\type_interface)
 		{
-			throw new \Exception('Supplied object name returned invalid service: ' . $object_name);
+			throw new runtime_exception('Supplied object name returned invalid service: ' . $object_name);
 		}
 
 		return $object;
