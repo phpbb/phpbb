@@ -274,6 +274,12 @@ acp_overall_footer_after
 * Since: 3.1.0-a1
 * Purpose: Add content below the footer in the ACP
 
+acp_overall_footer_body_after
+===
+* Location: adm/style/overall_footer.html
+* Since: 3.3.10-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
+
 acp_overall_header_body_before
 ===
 * Location: adm/style/overall_header.html
@@ -557,6 +563,12 @@ acp_simple_footer_after
 * Location: adm/style/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content below the simple footer in the ACP
+
+acp_simple_footer_body_after
+===
+* Location: adm/style/simple_footer.html
+* Since: 3.3.10-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
 
 acp_simple_header_body_before
 ===
