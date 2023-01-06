@@ -386,7 +386,7 @@ class mcp_warn
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$user_row)
+		if (!$user_row || (int) $user_row['user_id'] === ANONYMOUS)
 		{
 			trigger_error('NO_USER');
 		}
