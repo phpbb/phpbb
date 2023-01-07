@@ -98,7 +98,7 @@ class mcp_notes
 		$userrow = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$userrow)
+		if (!$userrow || (int) $userrow['user_id'] === ANONYMOUS)
 		{
 			trigger_error('NO_USER');
 		}
