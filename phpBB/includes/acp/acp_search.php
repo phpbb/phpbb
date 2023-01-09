@@ -371,13 +371,6 @@ class acp_search
 	 */
 	private function index_action(string $id, string $mode, string $action): void
 	{
-		// Start displaying progress on first submit
-		if ($this->request->is_set_post('submit'))
-		{
-			$this->display_progress_bar($id, $mode);
-			return;
-		}
-
 		// For some this may be of help...
 		@ini_set('memory_limit', '128M');
 
@@ -397,6 +390,13 @@ class acp_search
 			{
 				trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
+		}
+
+		// Start displaying progress on first submit
+		if ($this->request->is_set_post('submit'))
+		{
+			$this->display_progress_bar($id, $mode);
+			return;
 		}
 
 		// Execute create/delete
