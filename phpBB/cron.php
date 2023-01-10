@@ -12,6 +12,8 @@
 */
 
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\ExceptionInterface;
 
 /**
 */
@@ -30,8 +32,20 @@ $get_params_array = $request->get_super_global(\phpbb\request\request_interface:
 
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
-$response = new RedirectResponse(
-	$controller_helper->route('phpbb_cron_run', $get_params_array, false),
-	301
-);
-$response->send();
+try
+{
+	$response = new RedirectResponse(
+		$controller_helper->route('phpbb_cron_run', $get_params_array, false),
+		Response::HTTP_MOVED_PERMANENTLY
+	);
+	$response->send();
+}
+catch(ExceptionInterface $exception)
+{
+	$language = $phpbb_container->get('language');
+	$response = new Response(
+		$language->lang('PAGE_NOT_FOUND'),
+		Response::HTTP_BAD_REQUEST
+	);
+	$response->send();
+}
