@@ -386,7 +386,7 @@ $lang = array_merge($lang, array(
 	'ACP_LOAD_SETTINGS_EXPLAIN'	=> 'Here you can enable and disable certain board functions to reduce the amount of processing required. On most servers there is no need to disable any functions. However on certain systems or in shared hosting environments it may be beneficial to disable capabilities you do not really need. You can also specify limits for system load and active sessions beyond which the board will go offline.',
 
 	'ALLOW_CDN'						=> 'Allow usage of third party content delivery networks',
-	'ALLOW_CDN_EXPLAIN'				=> 'If this setting is enabled, some files will be served from external third party servers instead of your server. This reduces the network bandwidth required by your server, but may present a privacy issue for some board administrators. In a default phpBB installation, this includes loading “jQuery” and the font “Open Sans” from Google’s content delivery network.',
+	'ALLOW_CDN_EXPLAIN'				=> 'If this setting is enabled, some files will be served from external third party servers instead of your server. This reduces the network bandwidth used by your server, but may present a privacy issue in some countries. In a default phpBB installation, this includes loading “jQuery” and the font “Open Sans” from Google’s content delivery network. This also applies to the “Font Awesome” font, which phpBB and some extensions use to render icons.',
 	'ALLOW_LIVE_SEARCHES'			=> 'Allow live searches',
 	'ALLOW_LIVE_SEARCHES_EXPLAIN'	=> 'If this setting is enabled, users are provided with keyword suggestions as they type in certain fields throughout the board.',
 	'CUSTOM_PROFILE_FIELDS'			=> 'Custom profile fields',
