@@ -1,7 +1,7 @@
 installer:
     admin:
         name: admin
-        password: mypassword
+        password: adminadmin
         email: admin@example.org
 
     board:
