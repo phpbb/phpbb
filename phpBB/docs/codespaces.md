@@ -20,7 +20,7 @@ Features include:
 * Under the `Code` button, click the `Codespaces` tab and then the `+` button to create a new Codespace.
 * It may take several minutes to configure and install phpBB on the newly created virtual machine. Once it is ready, a web-based VS Code instance will appear.
 * Under the `Ports` tab, click on the local address under port 80 to open the private website for the new phpBB installation.
-    * By default, the login details for the new phpBB installation are `admin` / `mypassword`
+    * By default, the login details for the new phpBB installation are `admin` / `adminadmin`
     * Port 9003 is also open to allow Xdebug connections.
 
 ### To use the command line
