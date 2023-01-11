@@ -14,6 +14,7 @@
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\ExceptionInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
 */
@@ -32,20 +33,38 @@ $get_params_array = $request->get_super_global(\phpbb\request\request_interface:
 
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
+$cron_route = 'phpbb_cron_run';
+
 try
 {
 	$response = new RedirectResponse(
-		$controller_helper->route('phpbb_cron_run', $get_params_array, false),
+		$controller_helper->route($cron_route, $get_params_array, false),
 		Response::HTTP_MOVED_PERMANENTLY
 	);
 	$response->send();
 }
-catch(ExceptionInterface $exception)
+catch (RouteNotFoundException $exception)
 {
-	$language = $phpbb_container->get('language');
-	$response = new Response(
-		$language->lang('PAGE_NOT_FOUND'),
-		Response::HTTP_BAD_REQUEST
-	);
-	$response->send();
+	$error = 'ROUTE_NOT_FOUND';
+	$error_parameters = $cron_route;
+	$error_code = Response::HTTP_NOT_FOUND;
 }
+catch (ExceptionInterface $exception)
+{
+	$error = 'ROUTE_INVALID_MISSING_PARAMS';
+	$error_parameters = $cron_route;
+	$error_code = Response::HTTP_BAD_REQUEST;
+}
+catch (Throwable $exception)
+{
+	$error = $exception->getMessage();
+	$error_parameters = [];
+	$error_code = Response::HTTP_INTERNAL_SERVER_ERROR;
+}
+
+$language = $phpbb_container->get('language');
+$response = new Response(
+	$language->lang($error, $error_parameters),
+	$error_code
+);
+$response->send();
