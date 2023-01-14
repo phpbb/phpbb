@@ -17,4 +17,4 @@ ADD resources/xdebug.ini /etc/php/8.1/apache2/conf.d/xdebug.ini
 
 # Configure Apache
 RUN echo "Listen 8080" >> /etc/apache2/ports.conf && \
-    a2enmod rewrite \
+    a2enmod rewrite
