@@ -16,7 +16,7 @@ echo "$SSH_KEY" > /home/vscode/.ssh/id_rsa && chmod 600 /home/vscode/.ssh/id_rsa
 # Create a MySQL user to use
 echo "[Codespaces] Create MySQL user"
 sudo mysql -u root<<EOFMYSQL
-    CREATE USER 'phpbb'@'localhost' IDENTIFIED BY 'phpbb'; 
+    CREATE USER 'phpbb'@'localhost' IDENTIFIED BY 'phpbb';
     GRANT ALL PRIVILEGES ON *.* TO 'phpbb'@'localhost' WITH GRANT OPTION;
     CREATE DATABASE IF NOT EXISTS phpbb;
 EOFMYSQL
@@ -38,7 +38,7 @@ cp /workspaces/phpbb/.devcontainer/resources/phpbb-config.yml /workspaces/phpbb/
 echo "[Codespaces] Run phpBB CLI installation"
 cd /workspaces/phpbb/phpBB && composer install --no-interaction
 sudo php /workspaces/phpbb/phpBB/install/phpbbcli.php install /workspaces/phpbb/phpBB/install/install-config.yml
-rm -rf /workspaces/phpbb/phpBB/install 
+rm -rf /workspaces/phpbb/phpBB/install
 
 # Finished
 echo "[Codespaces] phpBB installation completed"
