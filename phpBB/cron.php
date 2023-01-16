@@ -31,6 +31,12 @@ $cron_type = $request->variable('cron_type', '');
 
 $get_params_array = $request->get_super_global(\phpbb\request\request_interface::GET);
 
+/* @var $http_kernel \Symfony\Component\HttpKernel\HttpKernel */
+$http_kernel = $phpbb_container->get('http_kernel');
+
+/* @var $symfony_request \phpbb\symfony_request */
+$symfony_request = $phpbb_container->get('symfony_request');
+
 /** @var \phpbb\controller\helper $controller_helper */
 $controller_helper = $phpbb_container->get('controller.helper');
 $cron_route = 'phpbb_cron_run';
@@ -42,6 +48,8 @@ try
 		Response::HTTP_MOVED_PERMANENTLY
 	);
 	$response->send();
+	$http_kernel->terminate($symfony_request, $response);
+	exit();
 }
 catch (RouteNotFoundException $exception)
 {
@@ -68,3 +76,4 @@ $response = new Response(
 	$error_code
 );
 $response->send();
+$http_kernel->terminate($symfony_request, $response);
