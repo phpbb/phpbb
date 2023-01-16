@@ -1347,6 +1347,110 @@ class session
 	}
 
 	/**
+	* Check if ip is blacklisted by Spamhaus SBL
+	*
+	* Disables DNSBL setting if errors are returned by Spamhaus due to a policy violation.
+	* https://www.spamhaus.com/product/help-for-spamhaus-public-mirror-users/
+	*
+	* @param string 		$dnsbl	the blacklist to check against
+	* @param string|false	$ip		the IPv4 address to check
+    *
+	* @return true if listed in spamhaus database
+	*/
+	function check_dnsbl_spamhaus($dnsbl, $ip = false)
+	{
+		global $config, $phpbb_log;
+
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		// Spamhaus does not support IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
+		if ($ip)
+		{
+			$quads = explode('.', $ip);
+			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+			$records = dns_get_record($reverse_ip . '.' . $dnsbl . '.', DNS_A);
+			if ($records === false || empty($records))
+			{
+				return false;
+			}
+			else
+			{
+				$error = false;
+				foreach ($records as $record)
+				{
+					if ($record['ip'] == '127.255.255.254')
+					{
+						$error = 'LOG_SPAMHAUS_OPEN_RESOLVER';
+						break;
+					}
+					else if ($record['ip'] == '127.255.255.255')
+					{
+						$error = 'LOG_SPAMHAUS_VOLUME_LIMIT';
+						break;
+					}
+				}
+
+				if ($error !== false)
+				{
+					echo 'Error encountered<br>';
+					$config->set('check_dnsbl', 0);
+					$phpbb_log->add('critical', $this->data['user_id'], $ip, $error);
+				}
+				else
+				{
+					// The existence of a non-error A record means it's a hit
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Checks if an IPv4 address is in a specified DNS blacklist
+	*
+	* Only checks if a record is returned or not.
+	*
+	* @param string 		$dnsbl	the blacklist to check against
+	* @param string|false	$ip		the IPv4 address to check
+    *
+	* @return true if record is returned
+	*/
+	function check_dnsbl_ipv4_generic($dnsbl, $ip = false)
+	{
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		// This function does not support IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
+		$quads = explode('.', $ip);
+		$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+		if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Check if ip is blacklisted
 	* This should be called only where absolutely necessary
 	*
@@ -1372,28 +1476,25 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+			'sbl.spamhaus.org'	=> ['http://www.spamhaus.org/query/bl?ip=', 'check_dnsbl_spamhaus'],
 		);
 
 		if ($mode == 'register')
 		{
-			$dnsbl_check['bl.spamcop.net'] = 'http://spamcop.net/bl.shtml?';
+			$dnsbl_check['bl.spamcop.net'] = ['http://spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
 		}
 
 		if ($ip)
 		{
-			$quads = explode('.', $ip);
-			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
-
 			// Need to be listed on all servers...
 			$listed = true;
 			$info = array();
 
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
-				if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				if (call_user_func(array($this, $lookup[1]), $dnsbl, $ip) === true)
 				{
-					$info = array($dnsbl, $lookup . $ip);
+					$info = array($dnsbl, $lookup[0] . $ip);
 				}
 				else
 				{
