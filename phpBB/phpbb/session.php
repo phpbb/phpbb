@@ -1401,7 +1401,6 @@ class session
 
 				if ($error !== false)
 				{
-					echo 'Error encountered<br>';
 					$config->set('check_dnsbl', 0);
 					$phpbb_log->add('critical', $this->data['user_id'], $ip, $error);
 				}
