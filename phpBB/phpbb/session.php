@@ -1354,7 +1354,7 @@ class session
 	*
 	* @param string 		$dnsbl	the blacklist to check against
 	* @param string|false	$ip		the IPv4 address to check
-    *
+	*
 	* @return true if listed in spamhaus database
 	*/
 	function check_dnsbl_spamhaus($dnsbl, $ip = false)
@@ -1422,7 +1422,7 @@ class session
 	*
 	* @param string 		$dnsbl	the blacklist to check against
 	* @param string|false	$ip		the IPv4 address to check
-    *
+	*
 	* @return true if record is returned
 	*/
 	function check_dnsbl_ipv4_generic($dnsbl, $ip = false)
