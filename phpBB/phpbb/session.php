@@ -1355,7 +1355,7 @@ class session
 	* @param string 		$dnsbl	the blacklist to check against
 	* @param string|false	$ip		the IPv4 address to check
 	*
-	* @return true if listed in spamhaus database
+	* @return bool true if listed in spamhaus database, false if not
 	*/
 	function check_dnsbl_spamhaus($dnsbl, $ip = false)
 	{
@@ -1378,7 +1378,7 @@ class session
 			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
 
 			$records = dns_get_record($reverse_ip . '.' . $dnsbl . '.', DNS_A);
-			if ($records === false || empty($records))
+			if (empty($records))
 			{
 				return false;
 			}
@@ -1423,7 +1423,7 @@ class session
 	* @param string 		$dnsbl	the blacklist to check against
 	* @param string|false	$ip		the IPv4 address to check
 	*
-	* @return true if record is returned
+	* @return bool true if record is returned, false if not
 	*/
 	function check_dnsbl_ipv4_generic($dnsbl, $ip = false)
 	{
