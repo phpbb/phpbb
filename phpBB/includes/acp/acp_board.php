@@ -1055,7 +1055,7 @@ class acp_board
 	{
 		global $user;
 
-		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'] . '</option>';
+		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'] . '</option>';
 	}
 
 	/**
