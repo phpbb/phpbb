@@ -1030,7 +1030,7 @@ class acp_board
 	/**
 	 * Board disable access for which group: admins: 0; plus global moderators: 1 and plus all moderators: 2
 	 */
-	function board_disable_access($value, $key ='')
+	function board_disable_access($value, $key = '')
 	{
 		global $user;
 
