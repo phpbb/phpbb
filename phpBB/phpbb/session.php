@@ -420,7 +420,7 @@ class session
 						// Else check the autologin length... and also removing those having autologin enabled but no longer allowed board-wide.
 						if (!$this->data['session_autologin'])
 						{
-							if ($this->data['session_time'] < $this->time_now - ($config['session_length'] + 60))
+							if ($this->data['session_time'] < $this->time_now - ((int) $config['session_length'] + 60))
 							{
 								$session_expired = true;
 							}
