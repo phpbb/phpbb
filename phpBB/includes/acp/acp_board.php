@@ -64,6 +64,7 @@ class acp_board
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
+						'board_disable_access'	=> array('lang' => 'DISABLE_BOARD_ACCESS', 	'validate' => 'int',	'type' => 'select', 'method' => 'board_disable_access', 'explain' => true),
 						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
@@ -1024,6 +1025,16 @@ class acp_board
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
+	}
+
+	/**
+	 * Board disable access for which group: admins: 0; plus global moderators: 1 and plus all moderators: 2
+	 */
+	function board_disable_access($value, $key ='')
+	{
+		global $user;
+
+		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'] . '</option>';
 	}
 
 	/**

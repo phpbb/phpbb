@@ -369,7 +369,23 @@ class user extends \phpbb\session
 		}
 
 		// Is board disabled and user not an admin or moderator?
-		if ($config['board_disable'] && !defined('IN_INSTALL') && !defined('IN_LOGIN') && !defined('SKIP_CHECK_DISABLED') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+		// Check acp setting who has access: only admins "case: 0", plus global moderators "case: 1" and plus moderators "case: 2"
+		$disable_board_access = (int) $config['add_disable_board_access_config'];
+
+		switch ($disable_board_access) {
+			case 0:
+				$access_disabled_board = $auth->acl_gets('a_');
+				break;
+			case 1:
+				$access_disabled_board = $auth->acl_gets('a_') && $auth->acl_getf_global('m_');
+				break;
+			default:
+			case 2:
+				$access_disabled_board = $auth->acl_gets('a_', 'm_') && $auth->acl_getf_global('m_');
+				break;
+		}
+
+		if ($config['board_disable'] && !defined('IN_INSTALL') && !defined('IN_LOGIN') && !defined('SKIP_CHECK_DISABLED') && !$access_disabled_board)
 		{
 			if ($this->data['is_bot'])
 			{
