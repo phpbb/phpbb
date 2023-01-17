@@ -375,12 +375,13 @@ class user extends \phpbb\session
 		// Check acp setting who has access: only admins "case: 0", plus global moderators "case: 1" and plus moderators "case: 2"
 		$board_disable_access = (int) $config['board_disable_access'];
 
-		switch ($board_disable_access) {
+		switch ($board_disable_access)
+		{
 			case 0:
 				$access_disabled_board = $auth->acl_gets('a_');
 				break;
 			case 1:
-				$access_disabled_board = $auth->acl_gets('a_') || $auth->acl_getf_global('m_');
+				$access_disabled_board = $auth->acl_gets('a_', 'm_');
 				break;
 			default:
 			case 2:
