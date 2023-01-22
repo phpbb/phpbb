@@ -383,7 +383,7 @@ function mcp_topic_view($id, $mode, $action)
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_info['topic_id']),
 
-		'TO_TOPIC_ID'		=> $to_topic_id,
+		'TO_TOPIC_ID'		=> $to_topic_id ?: '',
 		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
