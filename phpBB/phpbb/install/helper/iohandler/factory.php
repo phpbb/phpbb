@@ -52,7 +52,7 @@ class factory
 	/**
 	 * Factory getter for iohandler
 	 *
-	 * @return \phpbb\install\helper\iohandler\iohandler_interface
+	 * @return \phpbb\install\helper\iohandler\iohandler_interface|null
 	 *
 	 * @throws iohandler_not_implemented_exception
 	 * 		When the specified iohandler_interface does not exists
@@ -63,17 +63,16 @@ class factory
 		{
 			case 'ajax':
 				return $this->container->get('installer.helper.iohandler_ajax');
-			break;
+
 			case 'nojs':
 				// @todo replace this
 				return $this->container->get('installer.helper.iohandler_ajax');
-			break;
+
 			case 'cli':
 				return $this->container->get('installer.helper.iohandler_cli');
-			break;
+
 			default:
 				throw new iohandler_not_implemented_exception();
-			break;
 		}
 	}
 }

@@ -21,7 +21,6 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 {
 	protected $cache_dir;
 	protected $cache;
-	protected $command_name;
 	protected $db;
 	protected $config;
 	protected $user;
@@ -60,7 +59,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		);
 
 		$command_tester = $this->get_command_tester();
-		$exit_status = $command_tester->execute(array('command' => $this->command_name));
+		$exit_status = $command_tester->execute([]);
 
 		$this->assertSame(false, $this->cache->get('test_key'));
 		$this->assertSame(2, $this->config['assets_version']);
@@ -90,7 +89,6 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		$application->add(new purge($this->user, $this->cache, $this->db, $this->createMock('\phpbb\auth\auth'), new \phpbb\log\dummy(), $this->config));
 
 		$command = $application->find('cache:purge');
-		$this->command_name = $command->getName();
 		return new CommandTester($command);
 	}
 }

@@ -38,12 +38,12 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 			),
 			// Gravatar with incorrect size
 			array(
-				'The submitted avatar is 120 wide and 120 high. Avatars must be at least 20 wide and 20 high, but no larger than 90 wide and 90 high.',
+				'The submitted avatar is 140 wide and 140 high. Avatars must be at least 40 wide and 40 high, but no larger than 120 wide and 120 high.',
 				'avatar_driver_gravatar',
 				array(
 					'avatar_gravatar_email'		=> 'test@example.com',
-					'avatar_gravatar_width'		=> 120,
-					'avatar_gravatar_height'	=> 120,
+					'avatar_gravatar_width'		=> 140,
+					'avatar_gravatar_height'	=> 140,
 				),
 			),
 			// Delete avatar image to reset group settings

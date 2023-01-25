@@ -15,7 +15,7 @@ namespace phpbb\files\types;
 
 use bantu\IniGetWrapper\IniGetWrapper;
 use phpbb\files\factory;
-use phpbb\files\filespec;
+use phpbb\files\filespec_storage;
 use phpbb\language\language;
 use phpbb\request\request_interface;
 
@@ -67,15 +67,15 @@ class local_storage extends base
 	 * @param string $source_file Filename of source file
 	 * @param array|bool $filedata Array with filedata or false
 	 *
-	 * @return filespec Object "filespec" is returned, all further operations can be done with this object
+	 * @return filespec_storage Object "filespec_storage" is returned, all further operations can be done with this object
 	 */
 	protected function local_upload($source_file, $filedata = false)
 	{
 		$upload = $this->get_upload_ary($source_file, $filedata);
 
-		/** @var filespec $file */
-		$file = $this->factory->get('filespec_storage')
-			->set_upload_ary($upload)
+		/** @var filespec_storage $file */
+		$file = $this->factory->get('filespec_storage');
+		$file->set_upload_ary($upload)
 			->set_upload_namespace($this->upload);
 
 		if ($file->init_error())
@@ -85,6 +85,7 @@ class local_storage extends base
 		}
 
 		// PHP Upload file size check
+		/** @var filespec_storage $file */
 		$file = $this->check_upload_size($file);
 		if (count($file->error))
 		{

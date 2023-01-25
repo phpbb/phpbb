@@ -216,6 +216,21 @@ class session
 	}
 
 	/**
+	 * Setup basic user-specific items (style, language, ...)
+	 *
+	 * @param array|string|false $lang_set Lang set(s) to include, false if none shall be included
+	 * @param int|false $style_id Style ID to load, false to load default style
+	 *
+	 * @throws \RuntimeException When called on session and not user instance
+	 *
+	 * @return void
+	 */
+	public function setup($lang_set = false, $style_id = false)
+	{
+		throw new \RuntimeException('Calling setup on session class is not supported.');
+	}
+
+	/**
 	* Start session management
 	*
 	* This is where all session activity begins. We gather various pieces of
@@ -415,7 +430,7 @@ class session
 						// Else check the autologin length... and also removing those having autologin enabled but no longer allowed board-wide.
 						if (!$this->data['session_autologin'])
 						{
-							if ($this->data['session_time'] < $this->time_now - ($config['session_length'] + 60))
+							if ($this->data['session_time'] < $this->time_now - ((int) $config['session_length'] + 60))
 							{
 								$session_expired = true;
 							}
@@ -1053,8 +1068,6 @@ class session
 		* @since 3.1.6-RC1
 		*/
 		$phpbb_dispatcher->trigger_event('core.session_gc_after');
-
-		return;
 	}
 
 	/**
@@ -1124,11 +1137,11 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db, $phpbb_dispatcher;
+		global $db, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
-			return;
+			return false;
 		}
 
 		$banned = false;
@@ -1254,14 +1267,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $phpbb_root_path, $phpEx;
-
-			// If the session is empty we need to create a valid one...
-			if (empty($this->session_id))
-			{
-				// This seems to be no longer needed? - #14971
-//				$this->session_create(ANONYMOUS);
-			}
+			global $phpEx;
 
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
@@ -1295,13 +1301,7 @@ class session
 			}
 
 			// Determine which message to output
-			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
-			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-
-			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
-			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
-			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
-			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+			$message = $this->get_ban_message($ban_row, $ban_triggered_by);
 
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
@@ -1346,6 +1346,122 @@ class session
 	}
 
 	/**
+	 * Get ban info message
+	 *
+	 * @param array $ban_row Ban data row from database
+	 * @param string $ban_triggered_by Ban triggered by; allowed 'user', 'ip', 'email'
+	 *
+	 * @return string
+	 */
+	protected function get_ban_message(array $ban_row, string $ban_triggered_by): string
+	{
+		return ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+	}
+
+	/**
+	* Check if ip is blacklisted by Spamhaus SBL
+	*
+	* Disables DNSBL setting if errors are returned by Spamhaus due to a policy violation.
+	* https://www.spamhaus.com/product/help-for-spamhaus-public-mirror-users/
+	*
+	* @param string 		$dnsbl	the blacklist to check against
+	* @param string|false	$ip		the IPv4 address to check
+	*
+	* @return bool true if listed in spamhaus database, false if not
+	*/
+	function check_dnsbl_spamhaus($dnsbl, $ip = false)
+	{
+		global $config, $phpbb_log;
+
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		// Spamhaus does not support IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
+		if ($ip)
+		{
+			$quads = explode('.', $ip);
+			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+			$records = dns_get_record($reverse_ip . '.' . $dnsbl . '.', DNS_A);
+			if (empty($records))
+			{
+				return false;
+			}
+			else
+			{
+				$error = false;
+				foreach ($records as $record)
+				{
+					if ($record['ip'] == '127.255.255.254')
+					{
+						$error = 'LOG_SPAMHAUS_OPEN_RESOLVER';
+						break;
+					}
+					else if ($record['ip'] == '127.255.255.255')
+					{
+						$error = 'LOG_SPAMHAUS_VOLUME_LIMIT';
+						break;
+					}
+				}
+
+				if ($error !== false)
+				{
+					$config->set('check_dnsbl', 0);
+					$phpbb_log->add('critical', $this->data['user_id'], $ip, $error);
+				}
+				else
+				{
+					// The existence of a non-error A record means it's a hit
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	* Checks if an IPv4 address is in a specified DNS blacklist
+	*
+	* Only checks if a record is returned or not.
+	*
+	* @param string 		$dnsbl	the blacklist to check against
+	* @param string|false	$ip		the IPv4 address to check
+	*
+	* @return bool true if record is returned, false if not
+	*/
+	function check_dnsbl_ipv4_generic($dnsbl, $ip = false)
+	{
+		if ($ip === false)
+		{
+			$ip = $this->ip;
+		}
+
+		// This function does not support IPv6 addresses.
+		if (strpos($ip, ':') !== false)
+		{
+			return false;
+		}
+
+		$quads = explode('.', $ip);
+		$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
+
+		if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Check if ip is blacklisted
 	* This should be called only where absolutely necessary
 	*
@@ -1355,7 +1471,7 @@ class session
 	* @param string 		$mode	register/post - spamcop for example is omitted for posting
 	* @param string|false	$ip		the IPv4 address to check
 	*
-	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
+	* @return array|false false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
 	function check_dnsbl($mode, $ip = false)
 	{
@@ -1371,28 +1487,25 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+			'sbl.spamhaus.org'	=> ['http://www.spamhaus.org/query/bl?ip=', 'check_dnsbl_spamhaus'],
 		);
 
 		if ($mode == 'register')
 		{
-			$dnsbl_check['bl.spamcop.net'] = 'http://spamcop.net/bl.shtml?';
+			$dnsbl_check['bl.spamcop.net'] = ['http://spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
 		}
 
 		if ($ip)
 		{
-			$quads = explode('.', $ip);
-			$reverse_ip = $quads[3] . '.' . $quads[2] . '.' . $quads[1] . '.' . $quads[0];
-
 			// Need to be listed on all servers...
 			$listed = true;
 			$info = array();
 
 			foreach ($dnsbl_check as $dnsbl => $lookup)
 			{
-				if (checkdnsrr($reverse_ip . '.' . $dnsbl . '.', 'A') === true)
+				if (call_user_func(array($this, $lookup[1]), $dnsbl, $ip) === true)
 				{
-					$info = array($dnsbl, $lookup . $ip);
+					$info = array($dnsbl, $lookup[0] . $ip);
 				}
 				else
 				{
@@ -1680,7 +1793,9 @@ class session
 
 			$this->data = array_merge($this->data, $sql_ary);
 
-			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit'])
+				&& $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts']
+				&& $this instanceof user)
 			{
 				$this->leave_newly_registered();
 			}

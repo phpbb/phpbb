@@ -98,7 +98,7 @@ class mcp_notes
 		$userrow = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$userrow)
+		if (!$userrow || (int) $userrow['user_id'] === ANONYMOUS)
 		{
 			trigger_error('NO_USER');
 		}
@@ -162,16 +162,16 @@ class mcp_notes
 		{
 			if (check_form_key('mcp_notes'))
 			{
-				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array($userrow['username']));
-				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, array(
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, [$userrow['username']]);
+				$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_USER_FEEDBACK', false, [
 					'forum_id' => 0,
 					'topic_id' => 0,
 					$userrow['username']
-				));
-				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, array(
+				]);
+				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_GENERAL', false, [
 					'reportee_id' => $user_id,
-					$usernote
-				));
+					utf8_encode_ucr($usernote)
+				]);
 
 				$msg = $user->lang['USER_FEEDBACK_ADDED'];
 			}

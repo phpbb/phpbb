@@ -18,6 +18,7 @@ use phpbb\install\updater_configuration;
 use phpbb\language\language;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -73,7 +74,7 @@ class show extends \phpbb\console\command\command
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 *
-	 * @return null
+	 * @return int 0 if everything went fine, or a non-zero exit code
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -90,18 +91,18 @@ class show extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message(array('MISSING_FILE', $config_file));
 
-			return;
+			return Command::FAILURE;
 		}
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true, false);
+			$config = Yaml::parse(file_get_contents($config_file), true);
 		}
 		catch (ParseException $e)
 		{
 			$iohandler->add_error_message('INVALID_YAML_FILE');
 
-			return;
+			return Command::FAILURE;
 		}
 
 		$processor = new Processor();
@@ -115,9 +116,11 @@ class show extends \phpbb\console\command\command
 		{
 			$iohandler->add_error_message('INVALID_CONFIGURATION', $e->getMessage());
 
-			return;
+			return Command::FAILURE;
 		}
 
-		$style->block(Yaml::dump(array('updater' => $config), 10, 4, true, false));
+		$style->block(Yaml::dump(array('updater' => $config), 10, 4, true));
+
+		return Command::SUCCESS;
 	}
 }

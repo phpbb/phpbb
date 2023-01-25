@@ -57,7 +57,7 @@ class check extends \phpbb\console\command\command
 	*
 	* Sets the name and description of the command.
 	*
-	* @return null
+	* @return void
 	*/
 	protected function configure()
 	{

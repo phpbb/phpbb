@@ -75,7 +75,6 @@ class acp_modules
 		$this->parent_id = $request->variable('parent_id', 0);
 		$module_id = $request->variable('m', 0);
 		$action = $request->variable('action', '');
-		$errors = array();
 
 		switch ($action)
 		{
@@ -249,12 +248,8 @@ class acp_modules
 							trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 						}
 
-						if (!count($errors))
-						{
-							$module_manager->remove_cache_file($this->module_class);
-
-							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-						}
+						$module_manager->remove_cache_file($this->module_class);
+						trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 				else
@@ -364,12 +359,8 @@ class acp_modules
 						trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
-					if (!count($errors))
-					{
-						$module_manager->remove_cache_file($this->module_class);
-
-						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-					}
+					$module_manager->remove_cache_file($this->module_class);
+					trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
 				// Category/not category?
@@ -430,36 +421,9 @@ class acp_modules
 					array_change_key_case($module_data, CASE_UPPER))
 				);
 
-				if (count($errors))
-				{
-					$template->assign_vars(array(
-						'S_ERROR'	=> true,
-						'ERROR_MSG'	=> implode('<br />', $errors))
-					);
-				}
-
 				return;
 
 			break;
-		}
-
-		// Default management page
-		if (count($errors))
-		{
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
-					'MESSAGE_TEXT'	=> implode('<br />', $errors),
-					'SUCCESS'	=> false,
-				));
-			}
-
-			$template->assign_vars(array(
-				'S_ERROR'	=> true,
-				'ERROR_MSG'	=> implode('<br />', $errors))
-			);
 		}
 
 		if (!$this->parent_id)
@@ -605,7 +569,7 @@ class acp_modules
 			ORDER BY left_id ASC";
 		$result = $db->sql_query($sql);
 
-		$right = $iteration = 0;
+		$right = 0;
 		$padding_store = array('0' => '');
 		$module_list = $padding = '';
 

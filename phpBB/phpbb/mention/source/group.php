@@ -15,7 +15,7 @@ namespace phpbb\mention\source;
 
 class group extends base_group
 {
-	/** @var string|false */
+	/** @var int */
 	protected $cache_ttl = 300;
 
 	/**

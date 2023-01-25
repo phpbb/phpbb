@@ -75,7 +75,7 @@ class container_factory
 	 *
 	 * @param null|string	$service_name	Name of the service to return
 	 *
-	 * @return \Symfony\Component\DependencyInjection\ContainerInterface|Object	phpBB's dependency injection container
+	 * @return \Symfony\Component\DependencyInjection\ContainerInterface|object|null	phpBB's dependency injection container
 	 * 																			or the service specified in $service_name
 	 *
 	 * @throws cannot_build_container_exception														When container cannot be built
@@ -91,7 +91,7 @@ class container_factory
 			$this->build_container();
 		}
 
-		return ($service_name === null) ? $this->container : $this->container->get($service_name);
+		return $service_name === null ? $this->container : $this->container->get($service_name);
 	}
 
 	/**

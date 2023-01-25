@@ -18,8 +18,10 @@ namespace phpbb\db\driver;
 */
 class oracle extends \phpbb\db\driver\driver
 {
-	var $last_query_text = '';
 	var $connect_error = '';
+
+	/** @var array|false Last error result or false if no last error set */
+	private $last_error_result = false;
 
 	/**
 	* {@inheritDoc}
@@ -107,24 +109,20 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_transaction(string $status = 'begin'): bool
 	{
 		switch ($status)
 		{
 			case 'begin':
 				return true;
-			break;
 
 			case 'commit':
 				return @oci_commit($this->db_connect_id);
-			break;
 
 			case 'rollback':
 				return @oci_rollback($this->db_connect_id);
-			break;
 		}
 
 		return true;
@@ -465,9 +463,9 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIMIT query
+	* {@inheritDoc}
 	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	protected function _sql_query_limit(string $query, int $total, int $offset = 0, int $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -621,16 +619,13 @@ class oracle extends \phpbb\db\driver\driver
 
 		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 		{
-			return $cache->sql_freeresult($query_id);
+			 $cache->sql_freeresult($query_id);
 		}
-
-		if (isset($this->open_queries[(int) $query_id]))
+		else if (isset($this->open_queries[(int) $query_id]))
 		{
 			unset($this->open_queries[(int) $query_id]);
-			return oci_free_statement($query_id);
+			oci_free_statement($query_id);
 		}
-
-		return false;
 	}
 
 	/**
@@ -642,26 +637,19 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_like_expression($expression)
+	protected function _sql_like_expression(string $expression): string
 	{
 		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
-	* Build NOT LIKE expression
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_not_like_expression($expression)
+	protected function _sql_not_like_expression(string $expression): string
 	{
 		return $expression . " ESCAPE '\\'";
-	}
-
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
 	}
 
 	function _sql_bit_and($column_name, $bit, $compare = '')
@@ -675,10 +663,9 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* return sql error array
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_error()
+	protected function _sql_error(): array
 	{
 		if (function_exists('oci_error'))
 		{
@@ -692,7 +679,7 @@ class oracle extends \phpbb\db\driver\driver
 			}
 			else
 			{
-				$error = (isset($this->last_error_result) && $this->last_error_result) ? $this->last_error_result : array();
+				$error = $this->last_error_result ?: ['message' => '', 'code' => ''];
 			}
 		}
 		else
@@ -707,19 +694,17 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Close sql connection
-	* @access private
-	*/
-	function _sql_close()
+	 * {@inheritDoc}
+	 */
+	protected function _sql_close(): bool
 	{
 		return @oci_close($this->db_connect_id);
 	}
 
 	/**
-	* Build db-specific report
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report(string $mode, string $query = ''): void
 	{
 		switch ($mode)
 		{
@@ -795,8 +780,6 @@ class oracle extends \phpbb\db\driver\driver
 					$success = @oci_execute($result, OCI_DEFAULT);
 					if ($success)
 					{
-						array();
-
 						while ($row = oci_fetch_array($result, OCI_ASSOC + OCI_RETURN_NULLS))
 						{
 							// Take the time spent on parsing rows into account

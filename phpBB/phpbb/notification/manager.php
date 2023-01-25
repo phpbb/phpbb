@@ -13,6 +13,7 @@
 
 namespace phpbb\notification;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -873,9 +874,9 @@ class manager
 	/**
 	 * Helper to get the list of methods enabled by default
 	 *
-	 * @return method\method_interface[]
+	 * @return string[] Default method types
 	 */
-	public function get_default_methods()
+	public function get_default_methods(): array
 	{
 		$default_methods = array();
 
@@ -894,12 +895,19 @@ class manager
 	 * Helper to get the notifications item type class and set it up
 	 *
 	 * @param string $notification_type_name
-	 * @param array  $data
+	 * @param array $data
+	 *
 	 * @return type\type_interface
+	 * @throws runtime_exception When type name is not o notification type
 	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
 		$item = $this->load_object($notification_type_name);
+
+		if (!$item instanceof type\type_interface)
+		{
+			throw new runtime_exception('Supplied type name returned invalid service: ' . $notification_type_name);
+		}
 
 		$item->set_initial_data($data);
 
@@ -910,18 +918,30 @@ class manager
 	 * Helper to get the notifications method class and set it up
 	 *
 	 * @param string $method_name
+	 *
 	 * @return method\method_interface
+	 * @throws runtime_exception When object name is not o notification method
 	 */
 	public function get_method_class($method_name)
 	{
-		return $this->load_object($method_name);
+		$object = $this->load_object($method_name);
+
+		if (!$object instanceof method\method_interface)
+		{
+			throw new runtime_exception('Supplied method name returned invalid service: ' . $method_name);
+		}
+
+		return $object;
 	}
 
 	/**
 	 * Helper to load objects (notification types/methods)
 	 *
 	 * @param string $object_name
+	 *
 	 * @return method\method_interface|type\type_interface
+	 * @psalm-suppress NullableReturnStatement Invalid service will result in exception
+	 * @throws runtime_exception When object name is not o notification method or type
 	 */
 	protected function load_object($object_name)
 	{
@@ -930,6 +950,11 @@ class manager
 		if (method_exists($object, 'set_notification_manager'))
 		{
 			$object->set_notification_manager($this);
+		}
+
+		if (!$object instanceof method\method_interface && !$object instanceof type\type_interface)
+		{
+			throw new runtime_exception('Supplied object name returned invalid service: ' . $object_name);
 		}
 
 		return $object;

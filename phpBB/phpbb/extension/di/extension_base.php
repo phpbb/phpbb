@@ -122,6 +122,7 @@ class extension_base extends Extension
 			}
 		}
 
+		return null;
 	}
 
 	/**

@@ -26,8 +26,6 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	/** @var \phpbb\user */
 	protected $user;
 
-	protected $command_name;
-
 	protected $command_tester;
 
 	protected function setUp(): void
@@ -111,7 +109,6 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 		$application->add(new cron_list($this->user, $this->cron_manager));
 
 		$command = $application->find('cron:list');
-		$this->command_name = $command->getName();
 		return new CommandTester($command);
 	}
 
@@ -131,6 +128,6 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 
 		$this->get_cron_manager($tasks);
 		$this->command_tester = $this->get_command_tester();
-		$this->command_tester->execute(array('command' => $this->command_name), array('decorated' => false));
+		$this->command_tester->execute([], array('decorated' => false));
 	}
 }

@@ -843,8 +843,6 @@ function generate_forum_nav(&$forum_data_ary)
 	$template->assign_block_vars_array('navlinks', $navlinks_parents);
 	$template->assign_block_vars('navlinks', $navlinks);
 	$template->assign_vars($forum_template_data);
-
-	return;
 }
 
 /**
@@ -966,8 +964,6 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		}
 	}
 	$db->sql_freeresult($result);
-
-	return;
 }
 
 /**
@@ -999,8 +995,6 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 	{
 		$template->assign_block_vars('rules', array('RULE' => $rule));
 	}
-
-	return;
 }
 
 /**
@@ -1482,15 +1476,13 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		$s_watching['title_toggle'] = $user->lang[((!$is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 		$s_watching['is_watching'] = $is_watching;
 	}
-
-	return;
 }
 
 /**
 * Get user rank title and image
 *
 * @param array $user_data the current stored users data
-* @param int $user_posts the users number of posts
+* @param int|false $user_posts the users number of posts or false if guest
 *
 * @return array An associative array containing the rank title (title), the rank image as full img tag (img) and the rank image source (img_src)
 *

@@ -40,8 +40,11 @@ abstract class base implements reparser_interface
 	abstract protected function get_records_by_range($min_id, $max_id);
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * Save record
+	 *
+	 * @param array $record
+	 * @return void
+	 */
 	abstract protected function save_record(array $record);
 
 	/**
@@ -243,7 +246,8 @@ abstract class base implements reparser_interface
 		// generate_text_for_edit() and decode_message() actually return the text as HTML. It has to
 		// be decoded to plain text before it can be reparsed
 		$text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
-		$bitfield = $flags = null;
+		$bitfield = '';
+		$flags = 0;
 		generate_text_for_storage(
 			$text,
 			$unparsed['bbcode_uid'],

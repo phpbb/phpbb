@@ -15,18 +15,13 @@ namespace phpbb\captcha\plugins;
 
 class recaptcha extends captcha_abstract
 {
-	var $recaptcha_server = 'http://www.google.com/recaptcha/api';
-	var $recaptcha_server_secure = 'https://www.google.com/recaptcha/api'; // class constants :(
-
-	var $response;
+	private $response;
 
 	/**
 	* Constructor
 	*/
 	public function __construct()
 	{
-		global $request;
-		$this->recaptcha_server = $request->is_secure() ? $this->recaptcha_server_secure : $this->recaptcha_server;
 	}
 
 	function init($type)
@@ -94,6 +89,12 @@ class recaptcha extends captcha_abstract
 				}
 			}
 
+			$recaptcha_domain = $request->variable('recaptcha_v2_domain', '', true);
+			if (in_array($recaptcha_domain, recaptcha_v3::$supported_domains))
+			{
+				$config->set('recaptcha_v2_domain', $recaptcha_domain);
+			}
+
 			$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
@@ -110,9 +111,11 @@ class recaptcha extends captcha_abstract
 			}
 
 			$template->assign_vars(array(
-				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
-				'CAPTCHA_NAME'		=> $this->get_service_name(),
-				'U_ACTION'			=> $module->u_action,
+				'CAPTCHA_PREVIEW'		=> $this->get_demo_template($id),
+				'CAPTCHA_NAME'			=> $this->get_service_name(),
+				'RECAPTCHA_V2_DOMAIN'	=> $config['recaptcha_v2_domain'] ?? recaptcha_v3::GOOGLE,
+				'RECAPTCHA_V2_DOMAINS'	=> recaptcha_v3::$supported_domains,
+				'U_ACTION'				=> $module->u_action,
 			));
 
 		}
@@ -140,9 +143,10 @@ class recaptcha extends captcha_abstract
 		{
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="' . $contact_link . '">', '</a>');
+			$domain = $config['recaptcha_v2_domain'] ?? recaptcha_v3::GOOGLE;
 
 			$template->assign_vars(array(
-				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
+				'RECAPTCHA_SERVER'			=> sprintf('//%1$s/recaptcha/api', $domain),
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 				'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 				'S_CONFIRM_CODE'			=> true,

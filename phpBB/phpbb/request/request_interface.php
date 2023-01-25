@@ -39,10 +39,10 @@ interface request_interface
 	* @param	string	$var_name	  	The name of the variable that shall be overwritten
 	* @param	mixed	$value		  	The value which the variable shall contain.
 	* 								  	If this is null the variable will be unset.
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 									Specifies which super global shall be changed
 	*/
-	public function overwrite($var_name, $value, $super_global = \phpbb\request\request_interface::REQUEST);
+	public function overwrite($var_name, $value, $super_global = request_interface::REQUEST);
 
 	/**
 	* Central type safe input handling function.
@@ -56,13 +56,13 @@ interface request_interface
 	* 										This function will always return a value of the same type as the default.
 	* @param	bool			$multibyte	If $default is a string this parameter has to be true if the variable may contain any UTF-8 characters
 	*										Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
-	* @param	string	$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int				$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 										Specifies which super global shall be changed
 	*
 	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
-	public function variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST);
+	public function variable($var_name, $default, $multibyte = false, $super_global = request_interface::REQUEST);
 
 	/**
 	 * Get a variable without trimming strings and without escaping.
@@ -78,13 +78,13 @@ interface request_interface
 	 * 										then specifying array("var", 1) as the name will return "a".
 	 * @param	mixed			$default	A default value that is returned if the variable was not set.
 	 * 										This function will always return a value of the same type as the default.
-	 * @param	string	$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	 * @param	int				$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	 * 										Specifies which super global shall be changed
 	 *
 	 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
 	 *					the same as that of $default. If the variable is not set $default is returned.
 	 */
-	public function raw_variable($var_name, $default, $super_global = \phpbb\request\request_interface::REQUEST);
+	public function raw_variable($var_name, $default, $super_global = request_interface::REQUEST);
 
 	/**
 	* Shortcut method to retrieve SERVER variables.
@@ -123,12 +123,12 @@ interface request_interface
 	* arrays.
 	*
 	* @param	string	$var			Name of the variable
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 									Specifies which super global shall be changed
 	*
 	* @return	bool					True if the variable was sent as input
 	*/
-	public function is_set($var, $super_global = \phpbb\request\request_interface::REQUEST);
+	public function is_set($var, $super_global = request_interface::REQUEST);
 
 	/**
 	* Checks whether the current request is an AJAX request (XMLHttpRequest)
@@ -147,23 +147,23 @@ interface request_interface
 	/**
 	* Returns all variable names for a given super global
 	*
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	*									The super global from which names shall be taken
 	*
 	* @return	array	All variable names that are set for the super global.
 	*					Pay attention when using these, they are unsanitised!
 	*/
-	public function variable_names($super_global = \phpbb\request\request_interface::REQUEST);
+	public function variable_names($super_global = request_interface::REQUEST);
 
 	/**
 	* Returns the original array of the requested super global
 	*
-	* @param	string	$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
+	* @param	int		$super_global	(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	*									The super global which will be returned
 	*
 	* @return	array	The original array of the requested super global.
 	*/
-	public function get_super_global($super_global = \phpbb\request\request_interface::REQUEST);
+	public function get_super_global($super_global = request_interface::REQUEST);
 
 	/**
 	 * Escape a string variable.

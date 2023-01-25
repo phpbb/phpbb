@@ -15,7 +15,7 @@ namespace phpbb\mention\source;
 
 class team extends base_user
 {
-	/** @var string|false */
+	/** @var int */
 	protected $cache_ttl = 300;
 
 	/**

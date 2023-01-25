@@ -23,6 +23,12 @@ class acp_captcha
 {
 	var $u_action;
 
+	/** @var string Template name */
+	public $tpl_name = 'acp_captcha';
+
+	/** @var string Page title language variable */
+	public $page_title = 'ACP_VC_SETTINGS';
+
 	function main($id, $mode)
 	{
 		global $user, $template, $phpbb_log, $request;
@@ -85,8 +91,6 @@ class acp_captcha
 				),
 			);
 
-			$this->tpl_name = 'acp_captcha';
-			$this->page_title = 'ACP_VC_SETTINGS';
 			$form_key = 'acp_captcha';
 			add_form_key($form_key);
 

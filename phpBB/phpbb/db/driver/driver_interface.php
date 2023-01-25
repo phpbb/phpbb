@@ -180,7 +180,7 @@ interface driver_interface
 	* Return on error or display error message
 	*
 	* @param bool	$fail		Should we return on errors, or stop
-	* @return null
+	* @return void
 	*/
 	public function sql_return_on_error($fail = false);
 
@@ -190,9 +190,9 @@ interface driver_interface
 	* @param	string	$query		Should be on of the following strings:
 	*						INSERT, INSERT_SELECT, UPDATE, SELECT, DELETE
 	* @param	array	$assoc_ary	Array with "column => value" pairs
-	* @return	string		A SQL statement like "c1 = 'a' AND c2 = 'b'"
+	* @return	string|false		A SQL statement like "c1 = 'a' AND c2 = 'b'", false on invalid assoc_ary
 	*/
-	public function sql_build_array($query, $assoc_ary = array());
+	public function sql_build_array($query, $assoc_ary = []);
 
 	/**
 	* Fetch all rows
@@ -291,7 +291,7 @@ interface driver_interface
 	/**
 	* Get last inserted id after insert statement
 	*
-	* @return	string		Autoincrement value of the last inserted row
+	* @return	int|false		Autoincrement value of the last inserted row
 	*/
 	public function sql_nextid();
 
@@ -299,7 +299,7 @@ interface driver_interface
 	* Add to query count
 	*
 	* @param bool $cached	Is this query cached?
-	* @return null
+	* @return void
 	*/
 	public function sql_add_num_queries($cached = false);
 
@@ -365,7 +365,7 @@ interface driver_interface
 	*
 	* @param	mixed	$query_id	Already executed query result,
 	*								if false, the last query will be used.
-	* @return	null
+	* @return	void
 	*/
 	public function sql_freeresult($query_id = false);
 

@@ -226,8 +226,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_before
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_before', compact($vars)));
 
 		// Reset the list of allowed schemes
@@ -361,10 +362,10 @@ class factory implements \phpbb\textformatter\cache_interface
 		$tag = $configurator->Emoji->getTag();
 		$tag->template = '<xsl:choose>
 			<xsl:when test="@tseq">
-				<img alt="{.}" class="emoji" draggable="false" src="//twemoji.maxcdn.com/2/svg/{@tseq}.svg"/>
+				<img alt="{.}" class="emoji" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/{@tseq}.svg"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<img alt="{.}" class="emoji" draggable="false" src="https://cdn.jsdelivr.net/gh/s9e/emoji-assets-twemoji@11.2/dist/svgz/{@seq}.svgz"/>
+				<img alt="{.}" class="emoji" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/{@seq}.svg"/>
 			</xsl:otherwise>
 		</xsl:choose>';
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
@@ -375,8 +376,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_after
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_after', compact($vars)));
 
 		return $configurator;
@@ -444,7 +446,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		}
 		catch (\Exception $e)
 		{
-			$this->log->add('critical', null, null, 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
 		}
 	}
 

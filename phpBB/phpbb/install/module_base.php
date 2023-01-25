@@ -106,6 +106,7 @@ abstract class module_base implements module_interface
 	{
 		// Recover install progress
 		$task_index	= $this->recover_progress();
+		/** @psalm-suppress InvalidTemplateParam */
 		$iterator	= $this->task_collection->getIterator();
 
 		if ($task_index < $iterator->count())

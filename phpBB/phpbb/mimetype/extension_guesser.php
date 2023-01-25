@@ -252,7 +252,7 @@ class extension_guesser extends guesser_base
 		'omc'		=> 'application/x-omc',
 		'oga'		=> 'audio/ogg',
 		'ogg'		=> 'audio/ogg',
-		'ogg'		=> 'video/ogg',
+		'ogv'		=> 'video/ogg',
 		'ogm'		=> 'video/ogg',
 		'omcd'		=> 'application/x-omcdatamaker',
 		'omcr'		=> 'application/x-omcregerator',
@@ -425,7 +425,6 @@ class extension_guesser extends guesser_base
 		'wb1'		=> 'application/x-qpro',
 		'wbmp'		=> 'image/vnd.wap.wbmp',
 		'web'		=> 'application/vnd.xara',
-		'webm'		=> 'audio/webm',
 		'webm'		=> 'video/webm',
 		'wiz'		=> 'application/msword',
 		'wk1'		=> 'application/x-123',
@@ -505,13 +504,6 @@ class extension_guesser extends guesser_base
 	{
 		$extension = pathinfo($file_name, PATHINFO_EXTENSION);
 
-		if (isset($this->extension_map[$extension]))
-		{
-			return $this->extension_map[$extension];
-		}
-		else
-		{
-			return null;
-		}
+		return $this->extension_map[$extension] ?? null;
 	}
 }

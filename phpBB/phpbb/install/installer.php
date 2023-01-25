@@ -179,6 +179,7 @@ class installer
 
 		try
 		{
+			/** @psalm-suppress InvalidTemplateParam */
 			$iterator = $this->installer_modules->getIterator();
 
 			if ($module_index < $iterator->count())

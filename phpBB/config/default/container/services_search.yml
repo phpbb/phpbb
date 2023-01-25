@@ -1,5 +1,11 @@
 services:
 
+    search.state_helper:
+        class: phpbb\search\state_helper
+        arguments:
+            - '@config'
+            - '@search.backend_factory'
+
 # Search backends
     search.fulltext.mysql:
         class: phpbb\search\backend\fulltext_mysql
@@ -9,6 +15,7 @@ services:
             - '@dispatcher'
             - '@language'
             - '@user'
+            - '%tables.search_results%'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
@@ -22,6 +29,9 @@ services:
             - '@dispatcher'
             - '@language'
             - '@user'
+            - '%tables.search_results%'
+            - '%tables.search_wordlist%'
+            - '%tables.search_wordmatch%'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
@@ -35,6 +45,7 @@ services:
             - '@dispatcher'
             - '@language'
             - '@user'
+            - '%tables.search_results%'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:

@@ -357,6 +357,11 @@ ol.def-rules li {
 	padding: 5px;
 }
 
+.c-cropper-avatar-box {
+	min-height: 240px;
+	max-height: 400px;
+}
+
 p.notification-title,
 p.notification-forum,
 p.notification-reason,

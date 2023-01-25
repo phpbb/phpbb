@@ -22,7 +22,7 @@ use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\passwords\manager;
-use phpbb\request\request_interface;
+use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,7 +53,7 @@ class reset_password
 	/** @var manager */
 	protected $passwords_manager;
 
-	/** @var request_interface */
+	/** @var request */
 	protected $request;
 
 	/** @var template */
@@ -81,7 +81,7 @@ class reset_password
 	 * @param language $language
 	 * @param log_interface $log
 	 * @param manager $passwords_manager
-	 * @param request_interface $request
+	 * @param request $request
 	 * @param template $template
 	 * @param user $user
 	 * @param string $users_table
@@ -90,7 +90,7 @@ class reset_password
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
 								language $language, log_interface $log, manager $passwords_manager,
-								request_interface $request, template $template, user $user, string $users_table,
+								request $request, template $template, user $user, string $users_table,
 								string $root_path, string $php_ext)
 	{
 		$this->config = $config;
@@ -415,6 +415,7 @@ class reset_password
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . (int) $user_row['user_id'];
 				$this->db->sql_query($sql);
+				$this->user->reset_login_keys();
 				$this->log->add('user', $user_row['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, [
 					'reportee_id' => $user_row['user_id'],
 					$user_row['username']

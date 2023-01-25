@@ -246,6 +246,40 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.searchindex.list_all:
+        class: phpbb\console\command\searchindex\list_all
+        arguments:
+            - '@config'
+            - '@language'
+            - '@search.backend_collection'
+            - '@user'
+        tags:
+            - { name: console.command }
+
+    console.command.searchindex.create:
+        class: phpbb\console\command\searchindex\create
+        arguments:
+            - '@language'
+            - '@log'
+            - '@post.helper'
+            - '@search.backend_factory'
+            - '@search.state_helper'
+            - '@user'
+        tags:
+            - { name: console.command }
+
+    console.command.searchindex.delete:
+        class: phpbb\console\command\searchindex\delete
+        arguments:
+            - '@language'
+            - '@log'
+            - '@post.helper'
+            - '@search.backend_factory'
+            - '@search.state_helper'
+            - '@user'
+        tags:
+            - { name: console.command }
+
     console.command.thumbnail.delete:
         class: phpbb\console\command\thumbnail\delete
         arguments:

@@ -1224,7 +1224,7 @@ class acp_forums
 					if ($action_subforums == 'delete')
 					{
 						$rows = get_forum_branch($row['forum_id'], 'children', 'descending', false);
-
+						$forum_ids = [];
 						foreach ($rows as $_row)
 						{
 							// Do not remove the forum id we are about to change. ;)
@@ -2183,29 +2183,4 @@ class acp_forums
 
 		adm_page_footer();
 	}
-
-	/**
-	* Display copy permission page
-	* Not used at the moment - we will have a look at it for 3.0.7
-	*/
-	function copy_permission_page($forum_data)
-	{
-		global $phpEx, $phpbb_admin_path, $template, $user;
-
-		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
-		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
-
-		$l_acl = sprintf($user->lang['COPY_TO_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
-
-		$this->tpl_name = 'acp_forums_copy_perm';
-
-		$template->assign_vars(array(
-			'U_ACL'				=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url),
-			'L_ACL_LINK'		=> $l_acl,
-			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
-			'S_COPY_ACTION'		=> $action,
-			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], $forum_data['forum_id'], false, false, false),
-		));
-	}
-
 }

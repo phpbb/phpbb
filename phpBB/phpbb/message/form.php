@@ -118,7 +118,7 @@ abstract class form
 	* Bind the values of the request to the form
 	*
 	* @param \phpbb\request\request_interface $request
-	* @return null
+	* @return void
 	*/
 	public function bind(\phpbb\request\request_interface $request)
 	{
@@ -130,7 +130,7 @@ abstract class form
 	* Submit form, generate the email and send it
 	*
 	* @param \messenger $messenger
-	* @return null
+	* @return void
 	*/
 	public function submit(\messenger $messenger)
 	{
@@ -162,7 +162,7 @@ abstract class form
 	* Render the template of the form
 	*
 	* @param \phpbb\template\template $template
-	* @return null
+	* @return void
 	*/
 	public function render(\phpbb\template\template $template)
 	{

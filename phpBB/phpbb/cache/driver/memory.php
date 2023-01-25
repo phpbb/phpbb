@@ -270,13 +270,33 @@ abstract class memory extends \phpbb\cache\driver\base
 	/**
 	* Check if a cache var exists
 	*
-	* @access protected
 	* @param string $var Cache key
+	*
 	* @return bool True if it exists, otherwise false
 	*/
-	function _isset($var)
+	protected function _isset(string $var): bool
 	{
 		// Most caches don't need to check
 		return true;
 	}
+
+	/**
+	 * Remove an item from the cache
+	 *
+	 * @param string $var Cache key
+	 *
+	 * @return bool True if the operation succeeded
+	 */
+	abstract protected function _delete(string $var): bool;
+
+	/**
+	 * Store data in the cache
+	 *
+	 * @param string $var Cache key
+	 * @param mixed $data Data to store
+	 * @param int $ttl Time-to-live of cached data
+	 *
+	 * @return bool True if the operation succeeded
+	 */
+	abstract protected function _write(string $var, $data, int $ttl = 2592000): bool;
 }

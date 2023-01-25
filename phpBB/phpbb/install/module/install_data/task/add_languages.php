@@ -102,7 +102,7 @@ class add_languages extends database_task
 		]);
 
 		$installed_languages = $this->config->get('installed_languages', []);
-		array_push($installed_languages, (int) $this->get_last_insert_id());
+		$installed_languages[] = (int) $this->get_last_insert_id();
 		$this->config->set('installed_languages', $installed_languages);
 	}
 

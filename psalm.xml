@@ -14,5 +14,19 @@
 
     <issueHandlers>
         <InvalidGlobal errorLevel="suppress" />
+        <UndefinedDocblockClass>
+            <errorLevel type="suppress">
+                <referencedClass name="UnitEnum" />
+            </errorLevel>
+        </UndefinedDocblockClass>
     </issueHandlers>
+
+    <stubs>
+        <file name="build/psalm/stubs/apcu/apcu.php"/>
+        <file name="build/psalm/stubs/memcached/memcached.php"/>
+        <file name="build/psalm/stubs/oci8/oci8.php"/>
+        <file name="build/psalm/stubs/pgsql/pgsql.php"/>
+        <file name="build/psalm/stubs/redis/redis.php"/>
+        <file name="build/psalm/stubs/sqlite3/sqlite3.php"/>
+    </stubs>
 </psalm>

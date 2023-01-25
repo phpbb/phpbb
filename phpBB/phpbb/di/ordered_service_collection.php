@@ -85,13 +85,13 @@ class ordered_service_collection extends service_collection
 	/**
 	 * Adds a service ID to the collection
 	 *
-	 * @param string	$service_id
+	 * @param string	$name
 	 * @param int		$order
 	 */
-	public function add($service_id, $order = 0)
+	public function add($name, $order = 0)
 	{
 		$order = (int) $order;
-		$this->service_ids[$order][] = $service_id;
+		$this->service_ids[$order][] = $name;
 		$this->is_ordered = false;
 	}
 

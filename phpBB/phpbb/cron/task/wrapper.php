@@ -91,7 +91,7 @@ class wrapper
 	{
 		$params = [];
 		$params['cron_type'] = $this->get_name();
-		if ($this->is_parametrized())
+		if ($this->task instanceof parametrized)
 		{
 			$params = array_merge($params, $this->task->get_parameters());
 		}
@@ -113,7 +113,7 @@ class wrapper
 
 		$this->template->assign_var('CRON_TASK_URL', $this->get_url());
 
-		return $this->template->assign_display('cron_html_tag');
+		return (string) $this->template->assign_display('cron_html_tag');
 	}
 
 	/**

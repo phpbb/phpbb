@@ -253,6 +253,7 @@ function generate_smilies($mode, $forum_id)
 * @param	string	$type				Can be forum|topic
 * @param	mixed	$ids				topic/forum ids
 * @param	bool	$return_update_sql	true: SQL query shall be returned, false: execute SQL
+* @return	array|null	SQL query, null otherwise
 */
 function update_post_information($type, $ids, $return_update_sql = false)
 {
@@ -412,7 +413,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$db->sql_query($sql);
 	}
 
-	return;
+	return null;
 }
 
 /**
@@ -834,7 +835,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		'FILESIZE'						=> $config['max_filesize'],
 		'FILE_COMMENT'					=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 		'MAX_ATTACHMENT_FILESIZE'		=> $config['max_filesize'] > 0 ? $user->lang('MAX_ATTACHMENT_FILESIZE', get_formatted_filesize($config['max_filesize'])) : '',
-		'ALLOWED_ATTACHMENTS'			=> !empty($allowed_attachments) ? implode(',', $allowed_attachments) : '',
+		'ALLOWED_ATTACHMENTS'			=> !empty($allowed_attachments) ? '.' . implode(',.', $allowed_attachments) : '',
 	];
 
 	/**
@@ -2356,16 +2357,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$search_backend_factory = $phpbb_container->get('search.backend_factory');
 			$search = $search_backend_factory->get_active();
 		}
-		catch (RuntimeException $e)
+		catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 		{
-			if (strpos($e->getMessage(), 'No service found') === 0)
-			{
-				trigger_error('NO_SUCH_SEARCH_MODULE');
-			}
-			else
-			{
-				throw $e;
-			}
+			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
 		$search->index($mode, (int) $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, (int) $data_ary['forum_id']);
@@ -2787,7 +2781,7 @@ function phpbb_upload_popup($forum_style = 0)
 * @param bool		$is_soft		The flag indicating whether it is the soft delete mode
 * @param string		$delete_reason	Description for the post deletion reason
 *
-* @return null
+* @return void
 */
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {

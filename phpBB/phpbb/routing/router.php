@@ -58,12 +58,12 @@ class router implements RouterInterface
 	protected $php_ext;
 
 	/**
-	 * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface|null
+	 * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
 	 */
 	protected $matcher;
 
 	/**
-	 * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface|null
+	 * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface
 	 */
 	protected $generator;
 

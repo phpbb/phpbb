@@ -65,8 +65,9 @@ class parser implements \phpbb\textformatter\parser_interface
 		* @event core.text_formatter_s9e_parser_setup
 		* @var \phpbb\textformatter\s9e\parser parser This parser service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('parser');
+		$vars = ['parser'];
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_parser_setup', compact($vars)));
 	}
 

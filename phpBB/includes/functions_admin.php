@@ -761,6 +761,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 
 /**
 * Remove topic(s)
+* @return array with topics and posts affected
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
@@ -1092,16 +1093,9 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$search_backend_factory = $phpbb_container->get('search.backend_factory');
 		$search = $search_backend_factory->get_active();
 	}
-	catch (RuntimeException $e)
+	catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 	{
-		if (strpos($e->getMessage(), 'No service found') === 0)
-		{
-			trigger_error('NO_SUCH_SEARCH_MODULE');
-		}
-		else
-		{
-			throw $e;
-		}
+		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
@@ -1209,7 +1203,7 @@ function delete_topic_shadows($forum_id, $sql_more = '', $auto_sync = true)
 	if (!$forum_id)
 	{
 		// Nothing to do.
-		return;
+		return [];
 	}
 
 	// Set of affected forums we have to resync
@@ -2332,6 +2326,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 /**
 * Prune function
+* @return array with topics and posts affected
 */
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true, $prune_limit = 0)
 {
@@ -2344,7 +2339,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 
 	if (!count($forum_id))
 	{
-		return;
+		return ['topics' => 0, 'posts' => 0];
 	}
 
 	$sql_and = '';
@@ -2494,7 +2489,7 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * @param \phpbb\db\driver\driver_interface $db Database connection
 * @param \phpbb\cache\driver\driver_interface $cache Cache driver
 * @param \phpbb\auth\auth $auth Authentication object
-* @return null
+* @return void
 */
 function phpbb_cache_moderators($db, $cache, $auth)
 {
@@ -2704,7 +2699,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 * @param \phpbb\auth\auth $auth Authentication object
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
-* @return null
+* @return void
 */
 function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 {
@@ -3123,7 +3118,7 @@ function add_permission_language()
  * @param int		$flag			The binary flag which is OR-ed with the current column value
  * @param string	$sql_more		This string is attached to the sql query generated to update the table.
  *
- * @return null
+ * @return void
  */
 function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
 {

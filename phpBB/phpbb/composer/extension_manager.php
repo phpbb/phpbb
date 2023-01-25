@@ -29,7 +29,7 @@ use phpbb\filesystem\filesystem;
 class extension_manager extends manager
 {
 	/**
-	 * @var manager
+	 * @var ext_manager
 	 */
 	protected $extension_manager;
 
@@ -102,7 +102,8 @@ class extension_manager extends manager
 	{
 		if ($this->enable_on_install)
 		{
-			$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
+			/** @psalm-suppress InvalidArgument */
+			$io->writeError([['ENABLING_EXTENSIONS', [], 1]]);
 			foreach ($packages as $package => $version)
 			{
 				try
@@ -111,11 +112,13 @@ class extension_manager extends manager
 				}
 				catch (\phpbb\exception\runtime_exception $e)
 				{
-					$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
+					/** @psalm-suppress InvalidArgument */
+					$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
 				}
 				catch (\Exception $e)
 				{
-					$io->writeError([[$e->getMessage(), [], 4]], true);
+					/** @psalm-suppress InvalidArgument */
+					$io->writeError([[$e->getMessage(), [], 4]]);
 				}
 			}
 		}
@@ -126,7 +129,8 @@ class extension_manager extends manager
 	 */
 	protected function pre_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
+		/** @psalm-suppress InvalidArgument */
+		$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
 		$this->enabled_extensions = [];
 		foreach ($packages as $package => $version)
 		{
@@ -140,11 +144,13 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError([[$e->getMessage(), [], 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), [], 4]]);
 			}
 		}
 	}
@@ -154,7 +160,8 @@ class extension_manager extends manager
 	 */
 	protected function post_update(array $packages, IOInterface $io = null)
 	{
-		$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
+		/** @psalm-suppress InvalidArgument */
+		$io->writeError([['ENABLING_EXTENSIONS', [], 1]]);
 		foreach ($this->enabled_extensions as $package)
 		{
 			try
@@ -163,11 +170,13 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError([[$e->getMessage(), [], 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), [], 4]]);
 			}
 		}
 	}
@@ -195,7 +204,8 @@ class extension_manager extends manager
 	{
 		if ($this->purge_on_remove)
 		{
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
+			/** @psalm-suppress InvalidArgument */
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
 		}
 
 		foreach ($packages as $package => $version)
@@ -216,11 +226,13 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
 			}
 			catch (\Exception $e)
 			{
-				$io->writeError([[$e->getMessage(), [], 4]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([[$e->getMessage(), [], 4]]);
 			}
 		}
 	}
@@ -244,7 +256,8 @@ class extension_manager extends manager
 		if ($this->extension_manager->is_enabled($package))
 		{
 			$enabled = true;
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]], true);
+			/** @psalm-suppress InvalidArgument */
+			$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
 			$this->extension_manager->disable($package);
 		}
 
@@ -279,7 +292,8 @@ class extension_manager extends manager
 		{
 			try
 			{
-				$io->writeError([['ENABLING_EXTENSIONS', [], 1]], true);
+				/** @psalm-suppress InvalidArgument */
+				$io->writeError([['ENABLING_EXTENSIONS', [], 1]]);
 				$this->extension_manager->enable($package);
 			}
 			catch (\Exception $e)

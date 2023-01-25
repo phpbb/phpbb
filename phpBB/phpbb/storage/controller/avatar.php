@@ -107,7 +107,7 @@ class avatar extends controller
 
 		$response->headers->set('Content-Disposition', $disposition);
 
-		$time = new \Datetime();
+		$time = new \DateTime();
 		$response->setExpires($time->modify('+1 year'));
 
 		parent::prepare($response, $file);

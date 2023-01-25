@@ -59,24 +59,24 @@ class mention extends post
 	/**
 	 * {@inheritDoc}
 	 */
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
 		), $options);
 
-		$user_ids = $this->helper->get_mentioned_user_ids($post['post_text']);
+		$user_ids = $this->helper->get_mentioned_user_ids($type_data['post_text']);
 
 		$user_ids = array_unique($user_ids);
 
-		$user_ids = array_diff($user_ids, [(int) $post['poster_id']]);
+		$user_ids = array_diff($user_ids, [(int) $type_data['poster_id']]);
 
 		if (empty($user_ids))
 		{
 			return array();
 		}
 
-		return $this->get_authorised_recipients($user_ids, $post['forum_id'], $options, true);
+		return $this->get_authorised_recipients($user_ids, $type_data['forum_id'], $options, true);
 	}
 
 	/**

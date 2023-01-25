@@ -83,27 +83,20 @@ class sqlite3 extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* SQL Transaction
-	*
-	* @param	string	$status		Should be one of the following strings:
-	*								begin, commit, rollback
-	* @return	bool	Success/failure of the transaction query
+	* {@inheritDoc}
 	*/
-	protected function _sql_transaction($status = 'begin')
+	protected function _sql_transaction(string $status = 'begin'): bool
 	{
 		switch ($status)
 		{
 			case 'begin':
 				return $this->dbo->exec('BEGIN IMMEDIATE');
-			break;
 
 			case 'commit':
 				return $this->dbo->exec('COMMIT');
-			break;
 
 			case 'rollback':
 				return @$this->dbo->exec('ROLLBACK');
-			break;
 		}
 
 		return true;
@@ -188,16 +181,9 @@ class sqlite3 extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIMIT query
-	*
-	* @param	string	$query		The SQL query to execute
-	* @param	int		$total		The number of rows to select
-	* @param	int		$offset
-	* @param	int		$cache_ttl	Either 0 to avoid caching or
-	*				the time in seconds which the result shall be kept in cache
-	* @return	mixed	Buffered, seekable result handle, false on error
+	* {@inheritDoc}
 	*/
-	protected function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	protected function _sql_query_limit(string $query, int $total, int $offset = 0, int $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -263,12 +249,13 @@ class sqlite3 extends \phpbb\db\driver\driver
 
 		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
 		{
-			return $cache->sql_freeresult($query_id);
+			$cache->sql_freeresult($query_id);
+			return;
 		}
 
 		if ($query_id)
 		{
-			return @$query_id->finalize();
+			@$query_id->finalize();
 		}
 	}
 
@@ -315,11 +302,9 @@ class sqlite3 extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* return sql error array
-	*
-	* @return array
+	* {@inheritDoc}
 	*/
-	protected function _sql_error()
+	protected function _sql_error(): array
 	{
 		if (class_exists('SQLite3', false) && isset($this->dbo))
 		{
@@ -340,24 +325,9 @@ class sqlite3 extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build db-specific query data
-	*
-	* @param	string	$stage		Available stages: FROM, WHERE
-	* @param	mixed	$data		A string containing the CROSS JOIN query or an array of WHERE clauses
-	*
-	* @return	string	The db-specific query fragment
+	* {@inheritDoc}
 	*/
-	protected function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
-
-	/**
-	* Close sql connection
-	*
-	* @return	bool		False if failure
-	*/
-	protected function _sql_close()
+	protected function _sql_close(): bool
 	{
 		return $this->dbo->close();
 	}
@@ -365,12 +335,13 @@ class sqlite3 extends \phpbb\db\driver\driver
 	/**
 	* Build db-specific report
 	*
-	* @param	string	$mode		Available modes: display, start, stop,
+	* @param string $mode Available modes: display, start, stop,
 	*								add_select_row, fromcache, record_fromcache
-	* @param	string	$query		The Query that should be explained
-	* @return	mixed		Either a full HTML page, boolean or null
+	* @param string $query		The Query that should be explained
+	*
+	* @return    void		Either writes HTML to html_hold or outputs a full HTML page
 	*/
-	protected function _sql_report($mode, $query = '')
+	protected function _sql_report(string $mode, string $query = ''): void
 	{
 		switch ($mode)
 		{

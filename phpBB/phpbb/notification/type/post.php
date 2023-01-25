@@ -76,40 +76,42 @@ class post extends \phpbb\notification\type\base
 	*/
 	public function is_available()
 	{
-		return $this->config['allow_topic_notify'];
+		return (bool) $this->config['allow_topic_notify'];
 	}
 
 	/**
 	* Get the id of the item
 	*
-	* @param array $post The data from the post
+	* @param array $type_data The data from the post
+	*
 	* @return int The post id
 	*/
-	public static function get_item_id($post)
+	public static function get_item_id($type_data)
 	{
-		return (int) $post['post_id'];
+		return (int) $type_data['post_id'];
 	}
 
 	/**
 	* Get the id of the parent
 	*
-	* @param array $post The data from the post
+	* @param array $type_data The data from the post
+	*
 	* @return int The topic id
 	*/
-	public static function get_item_parent_id($post)
+	public static function get_item_parent_id($type_data)
 	{
-		return (int) $post['topic_id'];
+		return (int) $type_data['topic_id'];
 	}
 
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from submit_post
+	* @param array $type_data Data from submit_post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = array())
+	public function find_users_for_notification($type_data, $options = array())
 	{
 		$options = array_merge(array(
 			'ignore_users'		=> array(),
@@ -119,9 +121,9 @@ class post extends \phpbb\notification\type\base
 
 		$sql = 'SELECT user_id
 			FROM ' . TOPICS_WATCH_TABLE . '
-			WHERE topic_id = ' . (int) $post['topic_id'] . '
+			WHERE topic_id = ' . (int) $type_data['topic_id'] . '
 				AND notify_status = ' . NOTIFY_YES . '
-				AND user_id <> ' . (int) $post['poster_id'];
+				AND user_id <> ' . (int) $type_data['poster_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -129,7 +131,7 @@ class post extends \phpbb\notification\type\base
 		}
 		$this->db->sql_freeresult($result);
 
-		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+		$notify_users = $this->get_authorised_recipients($users, $type_data['forum_id'], $options, true);
 
 		if (empty($notify_users))
 		{
@@ -138,7 +140,7 @@ class post extends \phpbb\notification\type\base
 
 		// Try to find the users who already have been notified about replies and have not read the topic since and just update their notifications
 		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), array(
-			'item_parent_id'	=> static::get_item_parent_id($post),
+			'item_parent_id'	=> static::get_item_parent_id($type_data),
 			'read'				=> 0,
 		));
 
@@ -148,11 +150,11 @@ class post extends \phpbb\notification\type\base
 
 			/** @var post $notification */
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
-			$update_responders = $notification->add_responders($post);
+			$update_responders = $notification->add_responders($type_data);
 			if (!empty($update_responders))
 			{
 				$this->notification_manager->update_notification($notification, $update_responders, array(
-					'item_parent_id'	=> self::get_item_parent_id($post),
+					'item_parent_id'	=> self::get_item_parent_id($type_data),
 					'read'				=> 0,
 					'user_id'			=> $user,
 				));
@@ -236,9 +238,7 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{
@@ -338,12 +338,13 @@ class post extends \phpbb\notification\type\base
 	* and load data, before create_insert_array() is run. The data
 	* returned from this function will be sent to create_insert_array().
 	*
-	* @param array $post Post data from submit_post
+	* @param array $type_data Post data from submit_post
 	* @param array $notify_users Notify users list
 	* 		Formatted from find_users_for_notification()
+	*
 	* @return array Whatever you want to send to create_insert_array().
 	*/
-	public function pre_create_insert_array($post, $notify_users)
+	public function pre_create_insert_array($type_data, $notify_users)
 	{
 		if (!count($notify_users) || !$this->inherit_read_status)
 		{
@@ -352,7 +353,7 @@ class post extends \phpbb\notification\type\base
 
 		$tracking_data = array();
 		$sql = 'SELECT user_id, mark_time FROM ' . TOPICS_TRACK_TABLE . '
-			WHERE topic_id = ' . (int) $post['topic_id'] . '
+			WHERE topic_id = ' . (int) $type_data['topic_id'] . '
 				AND ' . $this->db->sql_in_set('user_id', array_keys($notify_users));
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
@@ -367,21 +368,21 @@ class post extends \phpbb\notification\type\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('poster_id', $post['poster_id']);
+		$this->set_data('poster_id', $type_data['poster_id']);
 
-		$this->set_data('topic_title', $post['topic_title']);
+		$this->set_data('topic_title', $type_data['topic_title']);
 
-		$this->set_data('post_subject', $post['post_subject']);
+		$this->set_data('post_subject', $type_data['post_subject']);
 
-		$this->set_data('post_username', (($post['poster_id'] == ANONYMOUS) ? $post['post_username'] : ''));
+		$this->set_data('post_username', (($type_data['poster_id'] == ANONYMOUS) ? $type_data['post_username'] : ''));
 
-		$this->set_data('forum_id', $post['forum_id']);
+		$this->set_data('forum_id', $type_data['forum_id']);
 
-		$this->set_data('forum_name', $post['forum_name']);
+		$this->set_data('forum_name', $type_data['forum_name']);
 
-		$this->notification_time = $post['post_time'];
+		$this->notification_time = $type_data['post_time'];
 
 		// Topics can be "read" before they are public (while awaiting approval).
 		// Make sure that if the user has read the topic, it's marked as read in the notification
@@ -390,7 +391,7 @@ class post extends \phpbb\notification\type\base
 			$this->notification_read = true;
 		}
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 	}
 
 	/**

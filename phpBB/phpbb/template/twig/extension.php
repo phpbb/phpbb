@@ -53,7 +53,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Returns the token parser instance to add to the existing list.
 	*
-	* @return array An array of \Twig\TokenParser\AbstractTokenParser instances
+	* @return \Twig\TokenParser\TokenParserInterface[] An array of \Twig\TokenParser\AbstractTokenParser instances
 	*/
 	public function getTokenParsers()
 	{
@@ -69,7 +69,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Returns a list of filters to add to the existing list.
 	*
-	* @return array An array of filters
+	* @return \Twig\TwigFilter[] An array of filters
 	*/
 	public function getFilters()
 	{
@@ -85,7 +85,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Returns a list of global functions to add to the existing list.
 	*
-	* @return array An array of global functions
+	* @return \Twig\TwigFunction[] An array of global functions
 	*/
 	public function getFunctions()
 	{
@@ -100,7 +100,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	/**
 	* Returns a list of operators to add to the existing list.
 	*
-	* @return array An array of operators
+	* @return array[] An array of operators
 	*/
 	public function getOperators()
 	{

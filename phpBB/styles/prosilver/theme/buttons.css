@@ -42,6 +42,29 @@
 	vertical-align: top;
 }
 
+/** Button groups */
+.button-group {
+	display: inline-block;
+}
+
+.button-group + .button-group {
+	margin-left: 8px;
+}
+
+.button-group > .button:first-child {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.button-group > .button:last-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.button-group > .button:not(:first-child):not(:last-child) {
+	border-radius: 0;
+}
+
 /* Posting page styles
 ---------------------------------------- */
 .button-form,
@@ -172,4 +195,14 @@
 button::-moz-focus-inner {
 	border: 0;
 	padding: 0;
+}
+
+/* UCP: Avatar cropper */
+.avatar-cropper-buttons {
+	text-align: center;
+	display: none;
+}
+
+.avatar-cropper-buttons > .button-group {
+	margin: 4px;
 }

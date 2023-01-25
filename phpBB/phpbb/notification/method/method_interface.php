@@ -102,7 +102,7 @@ interface method_interface
 	/**
 	* Mark notifications read or unread from a parent identifier
 	*
-	* @param string $notification_type_id Type identifier of item types
+	* @param string|int|array $notification_type_id Type identifier of item types
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)

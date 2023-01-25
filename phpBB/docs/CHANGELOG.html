@@ -50,6 +50,8 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v339">Changes since 3.3.9</a></li>
+		<li><a href="#v339rc1">Changes since 3.3.9-RC1</a></li>
 		<li><a href="#v338">Changes since 3.3.8</a></li>
 		<li><a href="#v337">Changes since 3.3.7</a></li>
 		<li><a href="#v336">Changes since 3.3.6</a></li>
@@ -163,6 +165,44 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v339"></a><h3>Changes since 3.3.9</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16938">PHPBB3-16938</a>] - Unexistent css property in inline style</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17039">PHPBB3-17039</a>] - Group name not colored in manage groups due to typo</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17056">PHPBB3-17056</a>] - PHP 8.2 Deprecation warning about ${var} syntax</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17065">PHPBB3-17065</a>] - Emoji characters in MCP add feedback cause SQL error</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17074">PHPBB3-17074</a>] - Condition to avoid creation of roles with same name is broken</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17081">PHPBB3-17081</a>] - Invalid accept attribute in the post editor</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17082">PHPBB3-17082</a>] - Ability to warn Anonymous</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13291">PHPBB3-13291</a>] - Close notification drop down after clicking &quot;mark all read&quot;</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16105">PHPBB3-16105</a>] - Use &quot;global&quot; reCAPTCHA domain to circumvent blocking in some countries</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17068">PHPBB3-17068</a>] - ALLOW_CDN_EXPLAIN: Incomplete and imprecise description</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17075">PHPBB3-17075</a>] - Add template events to ACP footer after SCRIPTS</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17066">PHPBB3-17066</a>] - Update GitHub Actions configuration to resolve deprecations</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17071">PHPBB3-17071</a>] - Update the emoji CDN</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-275">SECURITY-275</a>] - Improve handling of exceptions in cron redirect</li>
+			</ul>
+
+			<a name="v339rc1"></a><h3>Changes since 3.3.9-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17058">PHPBB3-17058</a>] - Special character issue in emails from PHP 8.0 and higher</li>
+			</ul>
+			<h4>Hardening</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/SECURITY-274">SECURITY-274</a>] - Reset login keys/session when resetting password</li>
+			</ul>
+
 			<a name="v338"></a><h3>Changes since 3.3.8</h3>
 			<h4>Bug</h4>
 			<ul>

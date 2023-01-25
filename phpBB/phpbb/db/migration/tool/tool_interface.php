@@ -31,7 +31,7 @@ interface tool_interface
 	* First argument is the original call to the class (e.g. add, remove)
 	* After the first argument, send the original arguments to the function in the original call
 	*
-	* @return null
+	* @return mixed|null Return of function call or null if no valid function call found
 	*/
 	public function reverse();
 }

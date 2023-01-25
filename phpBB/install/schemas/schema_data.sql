@@ -46,12 +46,12 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_bbcode_pm', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_img_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_method', 'db');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('auth_smilies_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize', '6144');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_filesize', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_gallery_path', 'images/avatars/gallery');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height', '90');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width', '90');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_height', '20');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_width', '20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_height', '120');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_max_width', '120');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_height', '40');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_min_width', '40');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('avatar_salt', 'phpbb_avatar');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact', 'contact@yourdomain.tld');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('board_contact_name', '');

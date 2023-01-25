@@ -62,7 +62,7 @@ class phpbb_mock_session_testable extends \phpbb\session
 		}
 	}
 
-	public function setup()
+	public function setup($lang_set = false, $style_id = false)
 	{
 	}
 }

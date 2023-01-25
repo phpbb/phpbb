@@ -122,6 +122,8 @@ class soft_delete_mod_convert extends container_aware_migration
 	 */
 	protected function get_content_visibility()
 	{
-		return $this->container->get('content.visibility');
+		/** @var \phpbb\content_visibility $content_visibility */
+		$content_visibility = $this->container->get('content.visibility');
+		return $content_visibility;
 	}
 }

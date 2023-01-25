@@ -108,8 +108,13 @@ class user extends \phpbb\session
 
 	/**
 	* Setup basic user-specific items (style, language, ...)
+	*
+	* @param array|string|false $lang_set Lang set(s) to include, false if none shall be included
+	* @param int|false $style_id Style ID to load, false to load default style
+	*
+	* @return void
 	*/
-	function setup($lang_set = false, $style_id = false)
+	public function setup($lang_set = false, $style_id = false)
 	{
 		global $db, $request, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
 		global $phpbb_dispatcher, $phpbb_container;
@@ -437,8 +442,6 @@ class user extends \phpbb\session
 		}
 
 		$this->is_setup_flag = true;
-
-		return;
 	}
 
 	/**
@@ -467,14 +470,18 @@ class user extends \phpbb\session
 	* @param $number        int|float   The number we want to get the plural case for. Float numbers are floored.
 	* @param $force_rule    mixed   False to use the plural rule of the language package
 	*                               or an integer to force a certain plural rule
-	* @return int|bool     The plural-case we need to use for the number plural-rule combination, false if $force_rule
+	* @return int|false     The plural-case we need to use for the number plural-rule combination, false if $force_rule
 	* 					   was invalid.
 	*
 	* @deprecated: 3.2.0-dev (To be removed: 4.0.0)
 	*/
 	function get_plural_form($number, $force_rule = false)
 	{
-		return $this->language->get_plural_form($number, $force_rule);
+		try {
+			return $this->language->get_plural_form($number, $force_rule);
+		} catch (\phpbb\language\exception\invalid_plural_rule_exception $e) {
+			return false;
+		}
 	}
 
 	/**
@@ -590,7 +597,7 @@ class user extends \phpbb\session
 	* Format user date
 	*
 	* @param int $gmepoch unix timestamp
-	* @param string $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
+	* @param string|false $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
 	* @param bool $forcedate force non-relative date format.
 	*
 	* @return mixed translated date
@@ -614,7 +621,7 @@ class user extends \phpbb\session
 		* set $format_date_override to new return value
 		*
 		* @event core.user_format_date_override
-		* @var DateTimeZone	utc Is DateTimeZone in UTC
+		* @var \DateTimeZone	utc Is DateTimeZone in UTC
 		* @var array function_arguments is array comprising a function's argument list
 		* @var string format_date_override Shall we return custom format (string) or not (false)
 		* @since 3.2.1-RC1
@@ -668,12 +675,11 @@ class user extends \phpbb\session
 	/**
 	* Create a \phpbb\datetime object in the context of the current user
 	*
-	* @since 3.1
 	* @param string $time String in a format accepted by strtotime().
-	* @param DateTimeZone|null $timezone Time zone of the time.
+	* @param ?\DateTimeZone $timezone Time zone of the time.
 	* @return \phpbb\datetime Date time object linked to the current users locale
 	*/
-	public function create_datetime($time = 'now', \DateTimeZone $timezone = null)
+	public function create_datetime(string $time = 'now', ?\DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->create_timezone();
 		return new $this->datetime($this, $time, $timezone);
@@ -684,14 +690,14 @@ class user extends \phpbb\session
 	*
 	* @param	string			$format		Format of the entered date/time
 	* @param	string			$time		Date/time with the timezone applied
-	* @param	DateTimeZone|null	$timezone	Timezone of the date/time, falls back to timezone of current user
-	* @return	int			Returns the unix timestamp
+	* @param	?\DateTimeZone	$timezone	Timezone of the date/time, falls back to timezone of current user
+	* @return	string|false			Returns the unix timestamp or false if date is invalid
 	*/
-	public function get_timestamp_from_format($format, $time, \DateTimeZone $timezone = null)
+	public function get_timestamp_from_format($format, $time, ?\DateTimeZone $timezone = null)
 	{
 		$timezone = $timezone ?: $this->create_timezone();
 		$date = \DateTime::createFromFormat($format, $time, $timezone);
-		return ($date !== false) ? $date->format('U') : false;
+		return $date !== false ? $date->format('U') : false;
 	}
 
 	/**
@@ -760,7 +766,7 @@ class user extends \phpbb\session
 	* Get option bit field from user options.
 	*
 	* @param int $key option key, as defined in $keyoptions property.
-	* @param int $data bit field value to use, or false to use $this->data['user_options']
+	* @param int|false $data bit field value to use, or false to use $this->data['user_options']
 	* @return bool true if the option is set in the bit field, false otherwise
 	*/
 	function optionget($key, $data = false)
@@ -774,7 +780,7 @@ class user extends \phpbb\session
 	*
 	* @param int $key Option key, as defined in $keyoptions property.
 	* @param bool $value True to set the option, false to clear the option.
-	* @param int $data Current bit field value, or false to use $this->data['user_options']
+	* @param int|false $data Current bit field value, or false to use $this->data['user_options']
 	* @return int|bool If $data is false, the bit field is modified and
 	*                  written back to $this->data['user_options'], and
 	*                  return value is true if the bit field changed and
@@ -864,5 +870,23 @@ class user extends \phpbb\session
 		$db->sql_freeresult($result);
 
 		return $forum_ids;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function get_ban_message(array $ban_row, string $ban_triggered_by): string
+	{
+		global $config, $phpbb_root_path, $phpEx;
+
+		$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
+		$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+
+		$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+		$message = $this->language->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
+		$message .= ($ban_row['ban_give_reason']) ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['ban_give_reason']) : '';
+		$message .= '<br><br><em>' . $this->language->lang('BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)) . '</em>';
+
+		return $message;
 	}
 }

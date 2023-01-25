@@ -22,6 +22,7 @@ class table_helper
 	 * @param array $column_data Column data.
 	 *
 	 * @return array<string, array> A pair of type and array of column options.
+	 * @psalm-return array{string, array}
 	 */
 	public static function convert_column_data(array $column_data, string $dbms_layer): array
 	{

@@ -43,19 +43,17 @@ abstract class mssql_base extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_like_expression($expression)
+	protected function _sql_like_expression(string $expression): string
 	{
 		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
-	* Build NOT LIKE expression
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_not_like_expression($expression)
+	protected function _sql_not_like_expression(string $expression): string
 	{
 		return $expression . " ESCAPE '\\'";
 	}
@@ -66,15 +64,6 @@ abstract class mssql_base extends \phpbb\db\driver\driver
 	function cast_expr_to_bigint($expression)
 	{
 		return 'CONVERT(BIGINT, ' . $expression . ')';
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
 	}
 
 	/**

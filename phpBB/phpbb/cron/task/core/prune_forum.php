@@ -66,7 +66,7 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 	/**
 	* Runs this cron task.
 	*
-	* @return null
+	* @return void
 	*/
 	public function run()
 	{
@@ -137,7 +137,7 @@ class prune_forum extends \phpbb\cron\task\base implements \phpbb\cron\task\para
 	*
 	* @param \phpbb\request\request_interface $request Request object.
 	*
-	* @return null
+	* @return void
 	*/
 	public function parse_parameters(\phpbb\request\request_interface $request)
 	{

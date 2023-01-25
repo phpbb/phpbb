@@ -241,7 +241,7 @@ interface filesystem_interface
 	 *
 	 * @param ?string	$path	Path to resolve
 	 *
-	 * @return string	Resolved path
+	 * @return string|false	Resolved path or false if path could not be resolved
 	 */
 	public function realpath($path);
 

@@ -117,8 +117,9 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* @event core.text_formatter_s9e_renderer_setup
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('renderer');
+		$vars = ['renderer'];
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
 	}
 
@@ -147,7 +148,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*
 	* @param  \phpbb\config\config $config
 	* @param  \phpbb\path_helper   $path_helper
-	* @return null
+	* @return void
 	*/
 	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
 	{
@@ -234,16 +235,16 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function render($xml)
+	public function render($text)
 	{
 		if (isset($this->mention_helper))
 		{
-			$xml = $this->mention_helper->inject_metadata($xml);
+			$text = $this->mention_helper->inject_metadata($text);
 		}
 
 		if (isset($this->quote_helper))
 		{
-			$xml = $this->quote_helper->inject_metadata($xml);
+			$text = $this->quote_helper->inject_metadata($text);
 		}
 
 		$renderer = $this;
@@ -253,13 +254,14 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		*
 		* @event core.text_formatter_s9e_render_before
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
-		* @var string xml The parsed text, in its XML form
+		* @var string text The parsed text, in its XML form
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('renderer', 'xml');
+		$vars = ['renderer', 'text'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_before', compact($vars)));
 
-		$html = $this->renderer->render($xml);
+		$html = $this->renderer->render($text);
 		if (isset($this->censor) && $this->viewcensors)
 		{
 			$html = $this->censor->censorHtml($html, true);
@@ -272,8 +274,9 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* @var string html The rendered text's HTML
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('html', 'renderer');
+		$vars = ['html', 'renderer'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
 
 		return $html;

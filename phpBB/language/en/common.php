@@ -215,6 +215,9 @@ $lang = array_merge($lang, array(
 		2	=> 'Downloaded %d times',
 	),
 
+	'DI_SERVICE_NOT_FOUND'				=> 'Service for class "%1$s" not found in collection.',
+	'DI_MULTIPLE_SERVICE_DEFINITIONS'	=> 'More than one service definitions found for class "%1$s" in collection.',
+
 	'EDIT_POST'							=> 'Edit post',
 	'ELLIPSIS'							=>	'…',
 	'EMAIL'								=> 'Email', // Short form for EMAIL_ADDRESS
@@ -678,6 +681,10 @@ $lang = array_merge($lang, array(
 	'RETURN_TOPIC'				=> '%sReturn to the topic last visited%s',
 	'RETURN_TO'					=> 'Return to “%s”',
 	'RETURN_TO_INDEX'			=> 'Return to Board Index',
+
+	'ROUTE_NOT_FOUND'				=> 'The requested route “%s” could not be found.',
+	'ROUTE_INVALID_MISSING_PARAMS'	=> 'Invalid or missing parameters passed for route “%s”.',
+
 	'FEED'						=> 'Feed',
 	'FEED_NEWS'					=> 'News',
 	'FEED_TOPICS_ACTIVE'		=> 'Active Topics',
@@ -715,6 +722,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_UNANSWERED'			=> 'Unanswered topics',
 	'SEARCH_UNREAD'				=> 'Unread posts',
 	'SEARCH_USER_POSTS'			=> 'Search user’s posts',
+	'SEARCH_BACKEND_NOT_FOUND'	=> 'No search backend could be found.',
 	'SECONDS'					=> 'Seconds',
 	'SEE_ALL'					=> 'See All',
 	'SELECT'					=> 'Select',

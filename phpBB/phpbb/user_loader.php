@@ -132,10 +132,10 @@ class user_loader
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
-	* @return array|bool Row from the database of the user or Anonymous if the user wasn't loaded/does not exist
+	* @return array|false Row from the database of the user or Anonymous if the user wasn't loaded/does not exist
 	* 						or bool False if the anonymous user was not loaded
 	*/
-	public function get_user($user_id, $query = false)
+	public function get_user(int $user_id, bool $query = false)
 	{
 		if (isset($this->users[$user_id]))
 		{
@@ -162,14 +162,14 @@ class user_loader
 	* 			colour (for obtaining the user colour)
 	* 			full (for obtaining a html string representing a coloured link to the users profile)
 	* 			no_profile (the same as full but forcing no profile link)
-	* @param string $guest_username Optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
-	* @param string $custom_profile_url Optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
+	* @param string|bool $guest_username Optional parameter to specify the guest username. It will be used in favor of the GUEST language variable then.
+	* @param string|bool $custom_profile_url Optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
 	* @param bool $query Should we query the database if this user has not yet been loaded?
 	* 						Typically this should be left as false and you should make sure
 	* 						you load users ahead of time with load_users()
 	* @return string
 	*/
-	public function get_username($user_id, $mode, $guest_username = false, $custom_profile_url = false, $query = false)
+	public function get_username(int $user_id, string $mode, $guest_username = false, $custom_profile_url = false, bool $query = false): string
 	{
 		if (!($user = $this->get_user($user_id, $query)))
 		{
@@ -215,11 +215,11 @@ class user_loader
 	* 						you load users ahead of time with load_users()
 	* @return array Array with keys 'rank_title', 'rank_img', and 'rank_img_src'
 	*/
-	public function get_rank($user_id, $query = false)
+	public function get_rank(int $user_id, bool $query = false): array
 	{
 		if (!($user = $this->get_user($user_id, $query)))
 		{
-			return '';
+			return [];
 		}
 
 		if (!function_exists('phpbb_get_user_rank'))
@@ -233,7 +233,7 @@ class user_loader
 			'rank_img_src',
 		);
 
-		$user_rank_data = phpbb_get_user_rank($user, (($user['user_id'] == ANONYMOUS) ? false : $user['user_posts']));
+		$user_rank_data = phpbb_get_user_rank($user, ($user['user_id'] == ANONYMOUS ? false : $user['user_posts']));
 		$rank['rank_title'] = $user_rank_data['title'];
 		$rank['rank_img'] = $user_rank_data['img'];
 		$rank['rank_img_src'] = $user_rank_data['img_src'];

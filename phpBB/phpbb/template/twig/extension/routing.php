@@ -22,7 +22,7 @@ use Twig\TwigFunction;
 
 class routing extends AbstractExtension
 {
-	/** @var \phpbb\controller\helper */
+	/** @var \phpbb\routing\helper */
 	protected $helper;
 
 	/**
