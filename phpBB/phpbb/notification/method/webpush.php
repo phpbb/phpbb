@@ -293,6 +293,19 @@ class webpush extends messenger_base
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function prune_notifications($timestamp, $only_read = true): void
+	{
+		$sql = 'DELETE FROM ' . $this->notification_webpush_table . '
+			WHERE notification_time < ' . (int) $timestamp .
+			(($only_read) ? ' AND notification_read = 1' : '');
+		$this->db->sql_query($sql);
+
+		$this->config->set('read_notification_last_gc', (string) time(), false);
+	}
+
+	/**
 	 * Clean data to contain only what we need for webpush notifications table
 	 *
 	 * @param array $data Notification data
