@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 require_once __DIR__ . '/base.php';
 
 /**
- * @group
+ * @group slow
  */
 class notification_method_webpush_test extends phpbb_tests_notification_base
 {
