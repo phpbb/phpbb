@@ -176,7 +176,7 @@ class webpush extends messenger_base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($user_subscriptions[$row['user_id']]))
+			if (isset($user_subscription_map[$row['user_id']]))
 			{
 				$user_subscription_map[$row['user_id']] += $row;
 			}
@@ -274,7 +274,7 @@ class webpush extends messenger_base
 	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_webpush_table . '
-			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', is_array($notification_type_id) ? $notification_type_id : [$notification_type_id]) : '1=1') .
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_id !== false ? ' AND ' . $this->db->sql_in_set('item_id', $item_id) : '');
 		$this->db->sql_query($sql);
@@ -286,7 +286,7 @@ class webpush extends messenger_base
 	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_webpush_table . '
-			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', is_array($notification_type_id) ? $notification_type_id : [$notification_type_id]) : '1=1') .
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_parent_id !== false ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '');
 		$this->db->sql_query($sql);
