@@ -218,12 +218,10 @@ jobs:
                   .github/setup-ldap.sh
 
             - name: Setup node
-              if: ${{ matrix.SLOWTESTS != 1 }}
               uses: actions/setup-node@v3
               with:
                   node-version: 16
             - name: Setup node dependencies
-              if: ${{ matrix.SLOWTESTS != 1 }}
               run: npm ci
 
             - name: Setup SPHINX
