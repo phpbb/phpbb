@@ -74,11 +74,12 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_text($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user, $phpbb_dispatcher;
+		global $user, $phpbb_dispatcher, $language;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$language = new phpbb_mock_lang();
+		$user->lang = $language;
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -421,24 +422,69 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 
 	public function build_cfg_template_select_data()
 	{
-		return array(
-			array(
-				array('select'),
+		return [
+			[
+				['select'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array('method' => 'select_helper'),
-				'<select id="key_name" name="config[config_key_name]"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
-			),
-			array(
-				array('select', 8),
+				['method' => 'select_helper'],
+				[
+					'tag'		=> 'select',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'options'	=> [
+						[
+							'value'		=> 1,
+							'label'		=> 'First_Option',
+							'selected'	=> false,
+						],
+						[
+							'value'		=> 2,
+							'label'		=> 'Second_Option',
+							'selected'	=> true,
+						],
+						[
+							'value'		=> 3,
+							'label'		=> 'Third_Option',
+							'selected'	=> false,
+						]
+					],
+					'toggleable' => false,
+				],
+			],
+			[
+				['select', 8],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '1'],
 				'config_key_name',
-				array('method' => 'select_helper'),
-				'<select id="key_name" name="config[config_key_name]" size="8"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
-			),
-		);
+				['method' => 'select_helper'],
+				[
+					'tag'		=> 'select',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'size'		=> 8,
+					'options'	=> [
+						[
+							'value'		=> 1,
+							'label'		=> 'First_Option',
+							'selected'	=> false,
+						],
+						[
+							'value'		=> 2,
+							'label'		=> 'Second_Option',
+							'selected'	=> true,
+						],
+						[
+							'value'		=> 3,
+							'label'		=> 'Third_Option',
+							'selected'	=> false,
+						]
+					],
+					'toggleable' => false,
+				],
+			],
+		];
 	}
 
 	/**
@@ -446,11 +492,12 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_select($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $module, $user, $phpbb_dispatcher;
+		global $module, $user, $phpbb_dispatcher, $language;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$language = new phpbb_mock_lang();
+		$user->lang = $language;
 		$user->module = $this;
 		$module = $user;
 

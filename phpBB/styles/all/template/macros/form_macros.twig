@@ -43,7 +43,8 @@
 		{% if id %}id="{{ id }}"{% endif %}
 		{% if class %}class="{{ class }}"{% endif %}
 		name="{% if name %}{{ name }}{% else %}{{ form_data.name }}{% endif %}"
-		{% if form_data.toggleable %}data-togglable-settings="true"{% endif %}>
+		{% if form_data.toggleable %}data-togglable-settings="true"{% endif %}
+		{% if form_data.size %}size="{{ form_data.size }}"{% endif %}>
 	{% endapply %}
 	{% for element in form_data.options %}
 		{% if not group_only and element.options %}

@@ -37,7 +37,7 @@
 
 <!-- IF S_ATTACHMENT_SETTINGS -->
 
-	{% import "form_macros.twig" as form_macros %}
+	{% import 'macros/form_macros.twig' as form_macros %}
 	<form id="attachsettings" method="post" action="{U_ACTION}">
 	<!-- BEGIN options -->
 		<!-- IF options.S_LEGEND -->
@@ -210,7 +210,7 @@
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}{L_COLON}</label></dt>
 			<dd>
 				<input type="number" id="extgroup_filesize" min="0" max="999999999999999" step="any" name="max_filesize" value="{EXTGROUP_FILESIZE}" />
-				{% from 'form_macros.twig' import select %}
+				{% from 'macros/form_macros.twig' import select %}
 				{{ select(EXT_GROUP_SIZE_OPTIONS) }}
 			</dd>
 		</dl>

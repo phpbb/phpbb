@@ -1,5 +1,5 @@
 <dl>
-	{% from "form_macros.twig" import select %}
+	{% from "macros/form_macros.twig" import select %}
 	<dt><label for="timezone">{{ lang('BOARD_TIMEZONE') | lang('COLON') }}</label></dt>
 	{% if TIMEZONE_OPTIONS %}
 	<dd id="tz_select_date hidden">

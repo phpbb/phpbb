@@ -485,9 +485,10 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 			if ($tpl_type[0] == 'select')
 			{
+				$size = (isset($tpl_type[1])) ? (int)$tpl_type[1] : 1;
+
 				if (is_string($return))
 				{
-					$size = (isset($tpl_type[1])) ? (int)$tpl_type[1] : 1;
 					$data_toggle = (!empty($tpl_type[2])) ? ' data-togglable-settings="true"' : '';
 
 					$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . $data_toggle . '>' . $return . '</select>';
@@ -501,6 +502,12 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 						'toggleable'	=> !empty($tpl_type[2]),
 						'options'		=> $return,
 					];
+
+					// Add size if it differs from default value of 1
+					if ($size != 1)
+					{
+						$tpl['size'] = $size;
+					}
 				}
 			}
 			else
