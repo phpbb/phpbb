@@ -27,7 +27,10 @@ To run an installation from the repo (and not from a pre-built package) on a loc
   php ../composer.phar install
   ```
 
-Alternatively, you can read our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use Vagrant to develop and contribute to phpBB.
+Alternatively, you can read:
+
+* Our [Vagrant documentation](phpBB/docs/vagrant.md) to find out how to use Vagrant to develop and contribute to phpBB.
+* Our [GitHub Codespaces documentation](phpBB/docs/codespaces.md) to learn about phpBB's cloud-based development environment.
 
 ## 📓 Documentation
 
