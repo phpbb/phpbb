@@ -570,9 +570,9 @@ class oracle extends \phpbb\db\driver\driver
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * {@inheritdoc}
 	 */
-	function sql_nextid()
+	public function sql_last_inserted_id()
 	{
 		$query_id = $this->query_result;
 
@@ -605,14 +605,6 @@ class oracle extends \phpbb\db\driver\driver
 		}
 
 		return false;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function sql_last_inserted_id()
-	{
-		return $this->sql_nextid();
 	}
 
 	/**

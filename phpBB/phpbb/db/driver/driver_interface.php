@@ -299,8 +299,9 @@ interface driver_interface
 	 * The returned value can be used for selecting the item that has just been
 	 * inserted or for updating another table with an ID pointing to that item.
 	 *
-	 * Will be deprecated in a future version of phpBB in favor of
-	 * `sql_last_inserted_id`.
+	 * Alias of `sql_last_inserted_id`.
+	 *
+	 * @deprecated 3.3.11-RC1 Replaced by sql_last_inserted_id(), to be removed in 4.1.0-a1
 	 *
 	 * @return	string|false	Auto-incremented value of the last inserted row
 	 */
@@ -312,11 +313,7 @@ interface driver_interface
 	 * just been inserted or for updating another table with an ID pointing to
 	 * that item.
 	 *
-	 * Alias of `sql_nextid`.
-	 *
 	 * @return	string|false	Auto-incremented value of the last inserted row
-	 *
-	 * @since 3.3.8-RC1
 	 */
 	public function sql_last_inserted_id();
 

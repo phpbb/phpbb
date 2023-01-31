@@ -318,7 +318,7 @@ class factory implements driver_interface
 	 */
 	public function sql_nextid()
 	{
-		return $this->get_driver()->sql_nextid();
+		return $this->get_driver()->sql_last_inserted_id();
 	}
 
 	/**
@@ -326,7 +326,7 @@ class factory implements driver_interface
 	 */
 	public function sql_last_inserted_id()
 	{
-		return $this->get_driver()->sql_nextid();
+		return $this->get_driver()->sql_last_inserted_id();
 	}
 
 	/**
