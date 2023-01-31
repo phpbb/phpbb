@@ -239,7 +239,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $template, $phpbb_log, $request;
+		global $db, $language, $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_admin_path, $phpEx;
 
 		$action = $request->variable('action', '');
@@ -262,11 +262,6 @@ class acp_search
 		{
 			switch ($action)
 			{
-				case 'progress_bar':
-					$type = $request->variable('type', '');
-					$this->display_progress_bar($type);
-				break;
-
 				case 'delete':
 					$this->state[1] = 'delete';
 				break;
@@ -311,14 +306,29 @@ class acp_search
 						{
 							$this->state = array('');
 							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
+					}
+					else if ($submit)
+					{
+						meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
+						$template->assign_vars([
+							'S_INDEX_PROGRESS'		=> true,
+							'INDEXING_TITLE'		=> $language->lang('DELETING_INDEX_IN_PROGRESS'),
+							'INDEXING_EXPLAIN'		=> $language->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
+							'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+						]);
+
+						$this->tpl_name = 'acp_search';
+						$this->page_title = 'ACP_SEARCH_INDEX';
+
+						return;
 					}
 					else
 					{
 						$starttime = microtime(true);
 						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
+						while (still_on_time() && $post_counter < $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
@@ -350,7 +360,20 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_DELETE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second));
+
+							$template->assign_vars([
+								'S_INDEX_PROGRESS'		=> true,
+								'INDEXING_TITLE'		=> $language->lang('DELETING_INDEX_IN_PROGRESS'),
+								'INDEXING_EXPLAIN'		=> $language->lang('DELETING_INDEX_IN_PROGRESS_EXPLAIN'),
+								'INDEXING_PROGRESS'		=> $language->lang('SEARCH_INDEX_DELETE_REDIRECT', $row_count, $post_counter),
+								'INDEXING_RATE'			=> $language->lang('SEARCH_INDEX_DELETE_REDIRECT_RATE', $rows_per_second),
+								'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+							]);
+
+							$this->tpl_name = 'acp_search';
+							$this->page_title = 'ACP_SEARCH_INDEX';
+
+							return;
 						}
 					}
 
@@ -360,7 +383,7 @@ class acp_search
 					$this->save_state();
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_REMOVED', false, array($name));
-					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action));
 				break;
 
 				case 'create':
@@ -371,8 +394,24 @@ class acp_search
 						{
 							$this->state = array('');
 							$this->save_state();
-							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
+					}
+					else if ($submit)
+					{
+						meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
+
+						$template->assign_vars([
+							'S_INDEX_PROGRESS'		=> true,
+							'INDEXING_TITLE'		=> $language->lang('INDEXING_IN_PROGRESS'),
+							'INDEXING_EXPLAIN'		=> $language->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
+							'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+						]);
+
+						$this->tpl_name = 'acp_search';
+						$this->page_title = 'ACP_SEARCH_INDEX';
+
+						return;
 					}
 					else
 					{
@@ -388,7 +427,7 @@ class acp_search
 
 						$starttime = microtime(true);
 						$row_count = 0;
-						while (still_on_time() && $post_counter <= $this->max_post_id)
+						while (still_on_time() && $post_counter < $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
@@ -437,7 +476,19 @@ class acp_search
 							$totaltime = microtime(true) - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter . '&amp;hash=' . generate_link_hash('acp_search')));
-							trigger_error($user->lang('SEARCH_INDEX_CREATE_REDIRECT', (int) $row_count, $post_counter) . $user->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second));
+							$template->assign_vars([
+								'S_INDEX_PROGRESS'		=> true,
+								'INDEXING_TITLE'		=> $language->lang('INDEXING_IN_PROGRESS'),
+								'INDEXING_EXPLAIN'		=> $language->lang('INDEXING_IN_PROGRESS_EXPLAIN'),
+								'INDEXING_PROGRESS'		=> $language->lang('SEARCH_INDEX_CREATE_REDIRECT', $row_count, $post_counter),
+								'INDEXING_RATE'			=> $language->lang('SEARCH_INDEX_CREATE_REDIRECT_RATE', $rows_per_second),
+								'INDEXING_PROGRESS_BAR'	=> $this->get_post_index_progress($post_counter),
+							]);
+
+							$this->tpl_name = 'acp_search';
+							$this->page_title = 'ACP_SEARCH_INDEX';
+
+							return;
 						}
 					}
 
@@ -447,7 +498,7 @@ class acp_search
 					$this->save_state();
 
 					$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_SEARCH_INDEX_CREATED', false, array($name));
-					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action));
 				break;
 			}
 		}
@@ -516,8 +567,6 @@ class acp_search
 		$template->assign_vars(array(
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_search'),
-			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
-			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
 		));
 
 		if (isset($this->state[1]))
@@ -525,39 +574,9 @@ class acp_search
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1] . '&amp;hash=' . generate_link_hash('acp_search'),
-				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
-			);
+				'CONTINUE_PROGRESS'	=> (isset($this->state[2]) && $this->state[2] > 0) ? $this->get_post_index_progress($this->state[2]) : $this->get_post_index_progress(0)
+			));
 		}
-	}
-
-	function display_progress_bar($type)
-	{
-		global $template, $user;
-
-		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
-
-		adm_page_header($user->lang[$l_type]);
-
-		$template->set_filenames(array(
-			'body'	=> 'progress_bar.html')
-		);
-
-		$template->assign_vars(array(
-			'L_PROGRESS'			=> $user->lang[$l_type],
-			'L_PROGRESS_EXPLAIN'	=> $user->lang[$l_type . '_EXPLAIN'])
-		);
-
-		adm_page_footer();
-	}
-
-	function close_popup_js()
-	{
-		return "<script type=\"text/javascript\">\n" .
-			"// <![CDATA[\n" .
-			"	close_waitscreen = 1;\n" .
-			"// ]]>\n" .
-			"</script>\n";
 	}
 
 	function get_search_types()
@@ -584,6 +603,41 @@ class acp_search
 		$db->sql_freeresult($result);
 
 		return $max_post_id;
+	}
+
+	/**
+	 * Get progress stats of search index with HTML progress bar.
+	 *
+	 * @param int		$post_counter	Post ID of last post indexed.
+	 * @return array	Returns array with progress bar data.
+	 */
+	function get_post_index_progress(int $post_counter)
+	{
+		global $db, $language;
+
+		$sql = 'SELECT COUNT(post_id) as done_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id <= ' . (int) $post_counter;
+		$result = $db->sql_query($sql);
+		$done_count = (int) $db->sql_fetchfield('done_count');
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(post_id) as remain_count
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id > ' . (int) $post_counter;
+		$result = $db->sql_query($sql);
+		$remain_count = (int) $db->sql_fetchfield('remain_count');
+		$db->sql_freeresult($result);
+
+		$total_count = $done_count + $remain_count;
+		$percent = ($done_count / $total_count) * 100;
+
+		return [
+			'VALUE'			=> $done_count,
+			'TOTAL'			=> $total_count,
+			'PERCENTAGE'	=> $percent,
+			'REMAINING'		=> $remain_count,
+		];
 	}
 
 	function save_state($state = false)

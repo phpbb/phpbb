@@ -78,28 +78,31 @@
 
 <!-- ELSEIF S_INDEX -->
 
-	<script>
-	// <![CDATA[
-		/**
-		* Popup search progress bar
-		*/
-		function popup_progress_bar(progress_type)
-		{
-			close_waitscreen = 0;
-			// no scrollbars
-			popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
-		}
-	// ]]>
-	</script>
-
 	<h1>{L_ACP_SEARCH_INDEX}</h1>
 
 	<!-- IF S_CONTINUE_INDEXING -->
-		<p>{L_CONTINUE_EXPLAIN}</p>
+		<p>
+			{% if S_CONTINUE_INDEXING == 'create' %}
+				{{ lang('CONTINUE_INDEXING_EXPLAIN') }}
+			{% else %}
+				{{ lang('CONTINUE_DELETING_INDEX_EXPLAIN') }}
+			{% endif %}
+		</p>
 
 		<form id="acp_search_continue" method="post" action="{U_CONTINUE_INDEXING}">
 			<fieldset>
-				<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+				<legend>{{ lang('CONTINUE_INDEXING') }}</legend>
+				{% if CONTINUE_PROGRESS %}
+					<div class="centered-text">
+						<br>
+						<progress
+							value="{{ CONTINUE_PROGRESS.VALUE }}"
+							max="{{ CONTINUE_PROGRESS.TOTAL }}"
+							style="height: 2em; width: 20em;"></progress><br>
+						{{ CONTINUE_PROGRESS.PERCENTAGE|number_format(2) ~ ' %' }}<br>
+						{{ lang('SEARCH_INDEX_PROGRESS', CONTINUE_PROGRESS.VALUE, CONTINUE_PROGRESS.REMAINING, CONTINUE_PROGRESS.TOTAL) }}
+					</div>
+				{% endif %}
 				<p class="submit-buttons">
 					<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 					<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
@@ -151,10 +154,10 @@
 			<p class="quick">
 			<!-- IF backend.S_INDEXED -->
 				<input type="hidden" name="action" value="delete" />
-				<input class="button2" type="submit" value="{L_DELETE_INDEX}" onclick="popup_progress_bar('delete');" />
+				<input class="button2" type="submit" name="submit" value="{{ lang('DELETE_INDEX') }}" />
 			<!-- ELSE -->
 				<input type="hidden" name="action" value="create" />
-				<input class="button2" type="submit" value="{L_CREATE_INDEX}" onclick="popup_progress_bar('create');" />
+				<input class="button2" type="submit" name="submit" value="{{ lang('CREATE_INDEX') }}" />
 			<!-- ENDIF -->
 			</p>
 			{S_FORM_TOKEN}
@@ -165,6 +168,24 @@
 
 	<!-- ENDIF -->
 
+<!-- ELSEIF S_INDEX_PROGRESS -->
+	<div class="successbox">
+		<h3>{{ INDEXING_TITLE }}</h3>
+		<p>
+			{{ INDEXING_EXPLAIN }}
+			{% if INDEXING_PROGRESS %}<br>{{ INDEXING_PROGRESS }}{% endif %}
+			{% if INDEXING_RATE %}<br>{{ INDEXING_RATE }}{% endif %}
+			{% if INDEXING_PROGRESS_BAR %}
+				<br>
+				<progress
+					value="{{ INDEXING_PROGRESS_BAR.VALUE }}"
+					max="{{ INDEXING_PROGRESS_BAR.TOTAL }}"
+					style="height: 2em; width: 20em;"></progress><br>
+				{{ INDEXING_PROGRESS_BAR.PERCENTAGE|number_format(2) ~ ' %' }}<br>
+				{{ lang('SEARCH_INDEX_PROGRESS', INDEXING_PROGRESS_BAR.VALUE, INDEXING_PROGRESS_BAR.REMAINING, INDEXING_PROGRESS_BAR.TOTAL) }}
+			{% endif %}
+		</p>
+	</div>
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->
