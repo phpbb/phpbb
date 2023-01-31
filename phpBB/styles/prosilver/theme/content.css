@@ -98,7 +98,7 @@ li.row strong {
 }
 
 li.header dt, li.header dd {
-	line-height: 1em;
+	line-height: 1.6em;
 	border-left-width: 0;
 	margin: 2px 0 4px 0;
 	padding-top: 2px;
