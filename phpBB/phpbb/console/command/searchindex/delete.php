@@ -138,7 +138,7 @@ class delete extends command
 				$this->state_helper->update_counter($status['post_counter']);
 
 				$progress->setProgress($status['post_counter']);
-				$progress->setMessage(round($status['rows_per_second'], 2) . ' rows/s');
+				$progress->setMessage($this->language->lang('CLI_ROWS_PER_SECOND', round($status['rows_per_second'], 2)));
 			}
 
 			$progress->finish();
