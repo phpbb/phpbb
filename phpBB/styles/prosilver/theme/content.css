@@ -867,3 +867,13 @@ table.fixed-width-table {
 #memberlist tr.inactive, #team tr.inactive {
 	font-style: italic;
 }
+
+/* Memberlist
+----------------------------------------*/
+.group-description {
+	font-size: 1.3em;
+}
+
+.group-description ul {
+	list-style-position: inside;
+}
