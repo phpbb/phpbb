@@ -1,7 +1,7 @@
 <ul>
 <!-- IF BASE_URL and TOTAL_PAGES > 6 -->
 	<li class="dropdown-container dropdown-button-control dropdown-page-jump page-jump">
-		<a class="button button-icon-only dropdown-trigger" href="#" title="{L_JUMP_TO_PAGE_CLICK}" role="button"><i class="icon fa-level-down fa-rotate-270" aria-hidden="true"></i><span class="sr-only">{PAGE_NUMBER}</span></a>
+		<a class="button button-icon-only dropdown-trigger" href="#" title="{L_JUMP_TO_PAGE_CLICK}" role="button"><i class="icon fa-level-{% if S_CONTENT_DIRECTION eq 'rtl' %}up{% else %}down{% endif %} fa-rotate-270" aria-hidden="true"></i><span class="sr-only">{PAGE_NUMBER}</span></a>
 		<div class="dropdown">
 			<div class="pointer"><div class="pointer-inner"></div></div>
 			<ul class="dropdown-contents">
