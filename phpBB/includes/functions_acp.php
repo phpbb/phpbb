@@ -485,7 +485,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 			if ($tpl_type[0] == 'select')
 			{
-				$size = (isset($tpl_type[1])) ? (int)$tpl_type[1] : 1;
+				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
 
 				if (is_string($return))
 				{
