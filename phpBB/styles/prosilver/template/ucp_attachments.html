@@ -10,7 +10,7 @@
 	<p>{L_ATTACHMENTS_EXPLAIN}</p>
 
 	<!-- IF .attachrow -->
-		<div class="action-bar top">
+		<div class="action-bar bar-top">
 			<div class="pagination">
 				{NUM_ATTACHMENTS}
 				<!-- IF .pagination -->
@@ -50,12 +50,12 @@
 		<!-- END attachrow -->
 		</ul>
 
-		<div class="action-bar bottom">
+		<div class="action-bar bar-bottom">
 			<!-- INCLUDE display_options.html -->
 			{S_FORM_TOKEN}
 
 			<div class="pagination">
-				{TOTAL_ATTACHMENTS} {L_TITLE}
+				{NUM_ATTACHMENTS}
 				<!-- IF .pagination -->
 					<!-- INCLUDE pagination.html -->
 				<!-- ELSE -->
