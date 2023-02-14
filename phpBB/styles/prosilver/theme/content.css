@@ -942,3 +942,9 @@ table.fixed-width-table {
 
 /* stylelint-enable selector-max-compound-selectors */
 /* stylelint-enable selector-no-qualifying-type */
+
+/* Memberlist
+---------------------------------------- */
+.group-description ul {
+	list-style-position: inside;
+}
