@@ -800,7 +800,7 @@ class doctrine implements tools_interface
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
-	 * @param        $column
+	 * @param string|array $column
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
@@ -822,7 +822,7 @@ class doctrine implements tools_interface
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
-	 * @param        $column
+	 * @param string|array $column
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
