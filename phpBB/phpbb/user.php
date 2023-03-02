@@ -379,14 +379,17 @@ class user extends \phpbb\session
 		{
 			case 0:
 				$access_disabled_board = $auth->acl_gets('a_');
-				break;
+			break;
+
 			case 1:
 				$access_disabled_board = $auth->acl_gets('a_', 'm_');
-				break;
-			default:
+			break;
+
 			case 2:
+			default:
 				$access_disabled_board = $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_');
-				break;
+			break;
+
 		}
 
 		if ($config['board_disable'] && !defined('IN_INSTALL') && !defined('IN_LOGIN') && !defined('SKIP_CHECK_DISABLED') && !$access_disabled_board)

@@ -18,7 +18,7 @@ class add_disable_board_access_config extends \phpbb\db\migration\migration
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\v339',
+			'\phpbb\db\migration\data\v33x\v3310',
 		];
 	}
 
