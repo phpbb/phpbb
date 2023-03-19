@@ -267,7 +267,7 @@ class doctrine implements tools_interface
 				{
 					foreach ($column_indexes as $index)
 					{
-						$this->schema_create_index($index->getColumns(), $schema, $table_name, $index->getName());
+						$this->schema_create_index($schema, $table_name, $index->getName(), $index->getColumns());
 					}
 				}
 			}
@@ -319,7 +319,7 @@ class doctrine implements tools_interface
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
-				$this->schema_create_index($column, $schema, $table_name, $index_name);
+				$this->schema_create_index($schema, $table_name, $index_name, $column);
 			}
 		);
 	}
@@ -345,7 +345,7 @@ class doctrine implements tools_interface
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
-				$this->schema_create_unique_index($column, $schema, $table_name, $index_name);
+				$this->schema_create_unique_index($schema, $table_name, $index_name, $column);
 			}
 		);
 	}
@@ -797,15 +797,15 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
+	 * @param string|array $column
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
 	 */
-	protected function schema_create_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
+	protected function schema_create_index(Schema $schema, string $table_name, string $index_name, $column, bool $safe_check = false): void
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
@@ -819,15 +819,15 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
+	 * @param string|array $column
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
 	 */
-	protected function schema_create_unique_index($column, Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
+	protected function schema_create_unique_index(Schema $schema, string $table_name, string $index_name, $column, bool $safe_check = false): void
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
