@@ -376,6 +376,10 @@
 		margin-top: 5px;
 	}
 
+	.smiley-message-box {
+		display: block;
+	}
+
 	.bbcode-status {
 		display: none;
 	}

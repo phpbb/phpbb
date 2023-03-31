@@ -284,6 +284,12 @@ fieldset.submit-buttons input {
 	margin: 3px;
 }
 
+.smiley-message-box {
+	display: flex;
+	flex-direction: row-reverse;
+	justify-content: space-between;
+}
+
 /* Input field styles
 ---------------------------------------- */
 .inputbox {
