@@ -265,6 +265,9 @@ fieldset.submit-buttons input {
 	font-size: 13px;
 	outline: 3px dashed transparent;
 	outline-offset: -4px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	width: 450px;
 	min-width: 100%;
 	max-width: 100%;
