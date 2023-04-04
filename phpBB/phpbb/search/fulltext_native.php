@@ -393,7 +393,7 @@ class fulltext_native extends \phpbb\search\base
 				$word = substr($word, 1);
 
 				// a group of which at least one may not be in the resulting posts
-				if ($word[0] == '(')
+				if (isset($word[0]) && $word[0] == '(')
 				{
 					$word = array_unique(explode('|', substr($word, 1, -1)));
 					$mode = 'must_exclude_one';
