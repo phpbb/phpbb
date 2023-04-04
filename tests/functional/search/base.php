@@ -183,6 +183,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		}
 
 		$this->assert_search_not_found('loremipsumdedo');
+		$this->assert_search_not_found('loremipsumdedo+-'); // test search query ending with the space followed by hyphen
 		$this->assert_search_not_found('barsearch+-testing'); // test excluding keyword
 		$this->assert_search_for_author_not_found('authornotexists');
 
