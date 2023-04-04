@@ -259,6 +259,9 @@ fieldset.submit-buttons input {
 
 .message-box textarea {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 	width: 450px;
 	height: 270px;
 	min-width: 100%;
