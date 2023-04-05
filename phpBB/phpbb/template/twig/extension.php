@@ -101,6 +101,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	* Returns a list of operators to add to the existing list.
 	*
 	* @return array[] An array of operators
+	* @psalm-suppress LessSpecificImplementedReturnType
 	*/
 	public function getOperators()
 	{
