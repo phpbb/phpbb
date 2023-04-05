@@ -230,7 +230,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually created
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $search_type . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $search_type) . ' td')->eq(1)->text();
 		$this->assertTrue($posts_indexed > 0);
 	}
 
@@ -267,7 +267,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually removed
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $this->search_backend . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $this->search_backend) . ' td')->eq(1)->text();
 		$this->assertEquals(0, $posts_indexed);
 	}
 }

@@ -21,6 +21,7 @@ use phpbb\di\service_collection;
 use phpbb\language\language;
 use phpbb\log\log;
 use phpbb\request\request;
+use phpbb\search\backend\search_backend_interface;
 use phpbb\search\search_backend_factory;
 use phpbb\search\state_helper;
 use phpbb\template\template;
@@ -322,6 +323,7 @@ class acp_search
 		$this->tpl_name = 'acp_search_index';
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
+		/** @var search_backend_interface $search */
 		foreach ($this->search_backend_collection as $search)
 		{
 			$this->template->assign_block_vars('backends', [
