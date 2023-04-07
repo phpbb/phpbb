@@ -10,7 +10,7 @@
 
 	{% if backend.S_STATS is not empty %}
 
-	<form id="acp_search_index_{{ backend.TYPE }}" method="post" action="{{ U_ACTION }}">
+	<form id="acp_search_index_{{ backend.TYPE|replace({'\\': '-'}) }}" method="post" action="{{ U_ACTION }}">
 
 		<fieldset class="tabulated">
 
