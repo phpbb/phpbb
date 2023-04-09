@@ -266,7 +266,6 @@ function phpbb_version_compare(string $version1, string $version2, string $opera
  * Pick a language, any language ...
  *
  * @param \phpbb\db\driver\driver_interface $db DBAL driver
- * @param \phpbb\template\template $template Template engine
  * @param string $default	Language ISO code to be selected by default in the dropdown list
  * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
  */
