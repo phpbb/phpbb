@@ -6,8 +6,7 @@
 	<form method="post" action="{S_UCP_ACTION}" id="register">
 		<p class="rightside">
 			<label for="{{ LANG_OPTIONS.id }}">{{ lang('LANGUAGE') ~ lang('COLON') }}</label>
-			{% import "macros/form_macros.twig" as form_macros %}
-			{{ form_macros.select(LANG_OPTIONS) }}
+			{{ FormsSelect(LANG_OPTIONS) }}
 			{S_HIDDEN_FIELDS}
 		</p>
 	</form>

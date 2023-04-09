@@ -1,0 +1,9 @@
+{% apply  replace({"\n": ' ', '\t': ''}) %}
+	<textarea
+		id="{{ ID }}"
+		name="{{ NAME }}"
+		rows="{{ ROWS }}"
+		cols="{{ COLS }}">
+			{{ CONTENT }}
+		</textarea>
+{% endapply %}

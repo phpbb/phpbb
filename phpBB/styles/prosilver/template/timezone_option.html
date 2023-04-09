@@ -1,16 +1,15 @@
 <dl>
-	{% from "macros/form_macros.twig" import select %}
 	<dt><label for="timezone">{{ lang('BOARD_TIMEZONE') ~ lang('COLON') }}</label></dt>
 	{% if TIMEZONE_OPTIONS %}
 	<dd id="tz_select_date hidden">
-		{% set tz_date_data = TIMEZONE_OPTIONS|merge({ options: [{ value: "", label: lang('SELECT_CURRENT_TIME') }]|merge(TIMEZONE_OPTIONS.options) }) %}
-		{{ select(tz_date_data, 'autowidth tz_select', 'tz_date', 'tz_date', true) }}
+		{% set tz_date_data = TIMEZONE_OPTIONS | merge({ options: [{ value: "", label: lang('SELECT_CURRENT_TIME') }] | merge(TIMEZONE_OPTIONS.options) }) %}
+		{{ FormsSelect(tz_date_data | merge({class: 'autowidth tz_select', id: 'tz_date', name: 'tz_date', group_only: true})) }}
 		<input type="button" id="tz_select_date_suggest" class="button1 button button-form-bold" style="display: none;" timezone-preselect="<!-- IF S_TZ_PRESELECT -->true<!-- ELSE -->false<!-- ENDIF -->" data-l-suggestion="{L_TIMEZONE_DATE_SUGGESTION}" value="{L_TIMEZONE_DATE_SUGGESTION}" />
 	</dd>
 	{% endif %}
 	<dd>
-		{% set tz_select_data = TIMEZONE_OPTIONS|merge({ options: [{ value: "", label: lang('SELECT_TIMEZONE') }]|merge(TIMEZONE_OPTIONS.options) }) %}
-		{{ select(tz_select_data, 'autowidth tz_select timezone', 'timezone') }}
+		{% set tz_select_data = TIMEZONE_OPTIONS | merge({ options: [{ value: "", label: lang('SELECT_TIMEZONE') }] | merge(TIMEZONE_OPTIONS.options) }) %}
+		{{ FormsSelect(tz_select_data | merge({class: 'autowidth tz_select', id: 'timezone'})) }}
 
 		{% INCLUDEJS('timezone.js') %}
 	</dd>

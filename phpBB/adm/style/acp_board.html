@@ -13,7 +13,6 @@
 	</div>
 <!-- ENDIF -->
 
-{% import 'macros/form_macros.twig' as form_macros %}
 <form id="acp_board" method="post" action="{U_ACTION}">
 
 <!-- BEGIN options -->
@@ -30,7 +29,7 @@
 			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>
 				{% if options.CONTENT is iterable %}
-					{{ form_macros.build_template(options.CONTENT)}}
+					{{ FormsBuildTemplate(options.CONTENT)}}
 				{% else %}
 					{{ options.CONTENT }}
 				{% endif %}

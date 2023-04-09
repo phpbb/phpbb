@@ -69,6 +69,13 @@ services:
     template.twig.extensions.debug:
         class: Twig\Extension\DebugExtension
 
+    template.twig.extensions.forms:
+        class: phpbb\template\twig\extension\forms
+        arguments:
+            - '@user'
+        tags:
+            - { name: twig.extension }
+
     template:
         class: phpbb\template\twig\twig
         arguments:

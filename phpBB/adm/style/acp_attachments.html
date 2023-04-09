@@ -37,7 +37,6 @@
 
 <!-- IF S_ATTACHMENT_SETTINGS -->
 
-	{% import 'macros/form_macros.twig' as form_macros %}
 	<form id="attachsettings" method="post" action="{U_ACTION}">
 	<!-- BEGIN options -->
 		<!-- IF options.S_LEGEND -->
@@ -52,7 +51,7 @@
 				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 				<dd>
 					{% if options.CONTENT is iterable %}
-						{{ form_macros.build_template(options.CONTENT)}}
+						{{ FormsBuildTemplate(options.CONTENT)}}
 					{% else %}
 						{options.CONTENT}
 					{% endif %}
@@ -210,8 +209,7 @@
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}{L_COLON}</label></dt>
 			<dd>
 				<input type="number" id="extgroup_filesize" min="0" max="999999999999999" step="any" name="max_filesize" value="{EXTGROUP_FILESIZE}" />
-				{% from 'macros/form_macros.twig' import select %}
-				{{ select(EXT_GROUP_SIZE_OPTIONS) }}
+				{{ FormsSelect(EXT_GROUP_SIZE_OPTIONS) }}
 			</dd>
 		</dl>
 		<dl>

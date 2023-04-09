@@ -43,8 +43,7 @@
 	<dl>
 		<dt><label for="{{ LANG_OPTIONS.id }}">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
 		<dd>
-			{% import 'macros/form_macros.twig' as form_macros %}
-			{{ form_macros.select(LANG_OPTIONS) }}
+			{{ FormsSelect(LANG_OPTIONS) }}
 		</dd>
 	</dl>
 	<dl>

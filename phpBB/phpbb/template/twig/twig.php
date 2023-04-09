@@ -90,6 +90,7 @@ class twig extends \phpbb\template\base
 		{
 			$this->twig->addExtension($extension);
 		}
+		$this->twig->addExtension(new \Twig\Extension\DebugExtension());
 
 		// Add admin namespace
 		if ($this->path_helper->get_adm_relative_path() !== null
