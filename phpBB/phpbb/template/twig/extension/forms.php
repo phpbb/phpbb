@@ -118,17 +118,17 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/input.twig', [
-				'ID'		=> (string) $form_data['id'] ?? '',
+				'ID'		=> (string) ($form_data['id'] ?? ''),
 				'TYPE'		=> (string) $form_data['type'],
 				'NAME'		=> (string) $form_data['name'],
-				'SIZE'		=> (int) $form_data['size'] ?? 0,
-				'MAXLENGTH'	=> (int) $form_data['maxlength'] ?? 0,
-				'MIN'		=> (int) $form_data['min'] ?? 0,
-				'MAX'		=> (int) $form_data['max'] ?? 0,
-				'STEP'		=> (int) $form_data['step'] ?? 0,
-				'CHECKED'	=> (bool) $form_data['checked'] ?? false,
-				'CLASS'		=> (string) $form_data['class'] ?? '',
-				'VALUE'		=> (string) $form_data['value'],
+				'SIZE'		=> (int) ($form_data['size'] ?? 0),
+				'MAXLENGTH'	=> (int) ($form_data['maxlength'] ?? 0),
+				'MIN'		=> (int) ($form_data['min'] ?? 0),
+				'MAX'		=> (int) ($form_data['max'] ?? 0),
+				'STEP'		=> (int) ($form_data['step'] ?? 0),
+				'CHECKED'	=> (bool) ($form_data['checked'] ?? false),
+				'CLASS'		=> (string) ($form_data['class'] ?? ''),
+				'VALUE'		=> (string) ($form_data['value']),
 			]);
 		}
 		catch (\Twig\Error\Error $e)
@@ -175,12 +175,12 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/select.twig', [
-				'ID'			=> (string) $form_data['id'] ?? '',
-				'CLASS'			=> (string) $form_data['class'] ?? '',
+				'ID'			=> (string) ($form_data['id'] ?? ''),
+				'CLASS'			=> (string) ($form_data['class'] ?? ''),
 				'NAME'			=> (string) $form_data['name'],
-				'TOGGLEABLE'	=> (bool) $form_data['toggleable'] ?? false,
+				'TOGGLEABLE'	=> (bool) ($form_data['toggleable'] ?? false),
 				'OPTIONS'		=> $form_data['options'] ?? [],
-				'GROUP_ONLY'	=> (bool) $form_data['group_only'] ?? false,
+				'GROUP_ONLY'	=> (bool) ($form_data['group_only'] ?? false),
 			]);
 		}
 		catch (\Twig\Error\Error $e)
@@ -202,11 +202,11 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/textarea.twig', [
-				'ID'		=> (string) $form_data['id'] ?? '',
-				'NAME'		=> (string) $form_data['name'] ?? '',
-				'ROWS'		=> (int) $form_data['rows'] ?? 1,
-				'COLS'		=> (int) $form_data['cols'] ?? 1,
-				'CONTENT'	=> (string) $form_data['content'] ?? '',
+				'ID'		=> (string) $form_data['id'],
+				'NAME'		=> (string) $form_data['name'],
+				'ROWS'		=> (int) $form_data['rows'],
+				'COLS'		=> (int) $form_data['cols'],
+				'CONTENT'	=> (string) $form_data['content'],
 			]);
 		}
 		catch (\Twig\Error\Error $e)
