@@ -18,6 +18,11 @@
 /**
 * @ignore
 */
+
+use phpbb\config\config;
+use phpbb\language\language;
+use phpbb\user;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -28,16 +33,32 @@ class acp_board
 	var $u_action;
 	var $new_config;
 
+	/** @var config */
+	protected $config;
+
+	/** @var language */
+	protected $language;
+
+	/** @var user */
+	protected $user;
+
 	function main($id, $mode)
 	{
 		global $user, $template, $request, $language;
 		global $config, $phpbb_root_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
-		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		if (!$language)
+		{
+			/** @var language $language Language object */
+			$language = $phpbb_container->get('language');
+		}
 
-		$user->add_lang('acp/board');
+		$this->config = $config;
+		$this->language = $language;
+		$this->user = $user;
+
+		$this->language->add_lang('acp/board');
 
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
@@ -503,7 +524,7 @@ class acp_board
 			{
 				if (!preg_match('#^[a-z][a-z0-9+\\-.]*$#Di', $scheme))
 				{
-					$error[] = $language->lang('URL_SCHEME_INVALID', $language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
+					$error[] = $this->language->lang('URL_SCHEME_INVALID', $this->language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
 				}
 			}
 		}
@@ -978,8 +999,6 @@ class acp_board
 	*/
 	public function bump_interval($value, $key): array
 	{
-		global $language;
-
 		$bump_type_options = [];
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
@@ -987,7 +1006,7 @@ class acp_board
 			$bump_type_options[] = [
 				'value'		=> $type,
 				'selected'	=> $this->new_config['bump_type'] == $type,
-				'label'		=> $language->lang($lang),
+				'label'		=> $this->language->lang($lang),
 			];
 		}
 
