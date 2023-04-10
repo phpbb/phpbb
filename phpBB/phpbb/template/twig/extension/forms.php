@@ -129,6 +129,7 @@ class forms extends AbstractExtension
 				'CHECKED'	=> (bool) ($form_data['checked'] ?? false),
 				'CLASS'		=> (string) ($form_data['class'] ?? ''),
 				'VALUE'		=> (string) ($form_data['value']),
+				'DATA'		=> $form_data['data'] ?? [],
 			]);
 		}
 		catch (\Twig\Error\Error $e)
@@ -181,6 +182,8 @@ class forms extends AbstractExtension
 				'TOGGLEABLE'	=> (bool) ($form_data['toggleable'] ?? false),
 				'OPTIONS'		=> $form_data['options'] ?? [],
 				'GROUP_ONLY'	=> (bool) ($form_data['group_only'] ?? false),
+				'DATA'			=> $form_data['data'] ?? [],
+				'SIZE'			=> (int) ($form_data['size'] ?? 0),
 			]);
 		}
 		catch (\Twig\Error\Error $e)

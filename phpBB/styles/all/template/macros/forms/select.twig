@@ -4,6 +4,9 @@
 		{% if CLASS %}class="{{ CLASS }}" {% endif %}
 		name="{{ NAME }}"
 		{% if TOGGLEABLE %}data-togglable-settings="true" {% endif %}
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
 		{% if SIZE %}size="{{ SIZE }}" {% endif %}>
 {% endapply %}
 {% for element in OPTIONS %}

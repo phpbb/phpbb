@@ -11,5 +11,8 @@
 		{% if TYPE == 'password' %}autocomplete="off" {% endif %}
 		{% if CHECKED %}checked="checked" {% endif %}
 		{% if CLASS %}class="{{ CLASS }}" {% endif %}
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
 		value="{{ VALUE }}">
 {% endapply %}

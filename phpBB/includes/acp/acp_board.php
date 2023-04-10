@@ -1116,44 +1116,71 @@ class acp_board
 	}
 
 	/**
-	* Select default dateformat
-	*/
-	function dateformat_select($value, $key)
+	 * Create select for default date format
+	 *
+	 * @param string $value Current date format value
+	 * @param string $key Date format key
+	 */
+	public function dateformat_select(string $value, string $key): array
 	{
-		global $user, $config;
-
 		// Let the format_date function operate with the acp values
-		$old_tz = $user->timezone;
+		$old_tz = $this->user->timezone;
 		try
 		{
-			$user->timezone = new DateTimeZone($config['board_timezone']);
+			$this->user->timezone = new DateTimeZone($this->config['board_timezone']);
 		}
 		catch (\Exception $e)
 		{
 			// If the board timezone is invalid, we just use the users timezone.
 		}
 
-		$dateformat_options = '';
+		$dateformat_options = [];
 
-		foreach ($user->lang['dateformats'] as $format => $null)
+		$dateformats = $this->language->lang_raw('dateformats');
+		if (!is_array($dateformats))
 		{
-			$dateformat_options .= '<option value="' . $format . '"' . (($format == $value) ? ' selected="selected"' : '') . '>';
-			$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
-			$dateformat_options .= '</option>';
+			$dateformats = [];
 		}
 
-		$dateformat_options .= '<option value="custom"';
-		if (!isset($user->lang['dateformats'][$value]))
+		foreach ($dateformats as $format => $null)
 		{
-			$dateformat_options .= ' selected="selected"';
+			$dateformat_options[] = [
+				'value'			=> $format,
+				'selected'		=> $format == $value,
+				'label'			=> $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->language->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '')
+			];
 		}
-		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+		// Add custom entry
+		$dateformat_options[] = [
+			'value'			=> 'custom',
+			'selected'		=> !isset($dateformats[$value]),
+			'label'			=> $this->language->lang('CUSTOM_DATEFORMAT'),
+		];
 
 		// Reset users date options
-		$user->timezone = $old_tz;
+		$this->user->timezone = $old_tz;
 
-		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
-		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"64\" />";
+		return [
+			[
+				'tag'		=> 'select',
+				'name'		=> 'dateoptions',
+				'id'		=> 'dateoptions',
+				'options'	=> $dateformat_options,
+				'data'		=> [
+					'dateoption'			=> $key,
+					'dateoption-default'	=> $value,
+				]
+			],
+			[
+				'tag'		=> 'input',
+				'type'		=> 'text',
+				'name'		=> "config[$key]",
+				'id'		=> $key,
+				'value'		=> $value,
+				'maxlength'	=> 64,
+			]
+		];
 	}
 
 	/**
