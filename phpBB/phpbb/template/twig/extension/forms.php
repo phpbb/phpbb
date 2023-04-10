@@ -184,6 +184,7 @@ class forms extends AbstractExtension
 				'GROUP_ONLY'	=> (bool) ($form_data['group_only'] ?? false),
 				'DATA'			=> $form_data['data'] ?? [],
 				'SIZE'			=> (int) ($form_data['size'] ?? 0),
+				'MULTIPLE'		=> (bool) ($form_data['multiple'] ?? false),
 			]);
 		}
 		catch (\Twig\Error\Error $e)

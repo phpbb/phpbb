@@ -1120,6 +1120,8 @@ class acp_board
 	 *
 	 * @param string $value Current date format value
 	 * @param string $key Date format key
+	 *
+	 * @return array Date format select data
 	 */
 	public function dateformat_select(string $value, string $key): array
 	{
@@ -1184,40 +1186,62 @@ class acp_board
 	}
 
 	/**
-	* Select multiple forums
-	*/
-	function select_news_forums($value, $key)
+	 * Select for multiple forums
+	 *
+	 * @param mixed $value Config value, unused
+	 * @param string $key Config key
+	 *
+	 * @return array Forum select data
+	 */
+	public function select_news_forums($value, string $key)
 	{
-		$forum_list = make_forum_select(false, false, true, true, true, false, true);
-
-		// Build forum options
-		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
-		foreach ($forum_list as $f_id => $f_row)
-		{
-			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_NEWS, $f_row['forum_options']);
-
-			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
-		}
-		$s_forum_options .= '</select>';
-
-		return $s_forum_options;
+		return $this->get_forum_select($key);
 	}
 
-	function select_exclude_forums($value, $key)
+	/**
+	 * Select for multiple forums to exclude
+	 *
+	 * @param mixed $value Config value, unused
+	 * @param string $key Config key
+	 *
+	 * @return array Forum select data
+	 */
+	public function select_exclude_forums($value, string $key): array
+	{
+		return $this->get_forum_select($key, FORUM_OPTION_FEED_EXCLUDE);
+	}
+
+	/**
+	 * Get forum select data for specified key and option
+	 *
+	 * @param string $key Config key
+	 * @param int $forum_option Forum option bit
+	 *
+	 * @return array Forum select data
+	 */
+	protected function get_forum_select(string $key, int $forum_option = FORUM_OPTION_FEED_NEWS): array
 	{
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
-		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
+		$forum_options = [];
 		foreach ($forum_list as $f_id => $f_row)
 		{
-			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $f_row['forum_options']);
-
-			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+			$forum_options[] = [
+				'value'		=> $f_id,
+				'selected'	=> phpbb_optionget($forum_option, $f_row['forum_options']),
+				'disabled'	=> $f_row['disabled'],
+				'label'		=> $f_row['padding'] . $f_row['forum_name'],
+			];
 		}
-		$s_forum_options .= '</select>';
 
-		return $s_forum_options;
+		return [
+			'tag'		=> 'select',
+			'id'		=> $key,
+			'name'		=> $key . '[]',
+			'multiple'	=> true,
+			'options'	=> $forum_options,
+		];
 	}
 
 	function store_feed_forums($option, $key)

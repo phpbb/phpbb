@@ -7,6 +7,7 @@
 		{% for attribute, attribute_value in DATA %}
 			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
 		{% endfor %}
+		{% if MULTIPLE %}multiple="multiple" {% endif %}
 		{% if SIZE %}size="{{ SIZE }}" {% endif %}>
 {% endapply %}
 {% for element in OPTIONS %}
@@ -19,11 +20,11 @@
 			{% endfor %}>
 		{% endapply %}
 		{% for option in element.options %}
-			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}{% if option.disabled %} disabled="disabled" class="disabled-option"{% endif %}>{{ option.label }}</option>
 		{% endfor %}
 		</optgroup>
 	{% else %}
-		<option value="{{ element.value }}"{% if element.selected %} selected="selected"{% endif %}>{{ element.label }}</option>
+		<option value="{{ element.value }}"{% if element.selected %} selected="selected"{% endif %}{% if element.disabled %} disabled="disabled" class="disabled-option"{% endif %}>{{ element.label }}</option>
 	{% endif %}
 {% endfor %}
 </select>
