@@ -269,9 +269,9 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
-	function sql_nextid()
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
 	{
 		$result_id = @sqlsrv_query($this->db_connect_id, 'SELECT @@IDENTITY');
 
