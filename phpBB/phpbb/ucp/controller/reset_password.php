@@ -415,7 +415,7 @@ class reset_password
 							SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . (int) $user_row['user_id'];
 				$this->db->sql_query($sql);
-				$this->user->reset_login_keys();
+				$this->user->reset_login_keys($user_row['user_id']);
 				$this->log->add('user', $user_row['user_id'], $this->user->ip, 'LOG_USER_NEW_PASSWORD', false, [
 					'reportee_id' => $user_row['user_id'],
 					$user_row['username']
