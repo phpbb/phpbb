@@ -143,7 +143,7 @@ class ucp_profile
 							));
 						}
 
-						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !$passwords_manager->check($data['new_password'], $user->data['user_password']))
+						if ($auth->acl_get('u_chgpasswd') && $data['new_password'])
 						{
 							$sql_ary['user_passchg'] = time();
 
