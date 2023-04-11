@@ -635,6 +635,14 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function sql_nextid()
+	{
+		return $this->sql_last_inserted_id();
+	}
+
+	/**
 	* {@inheritDoc}
 	*/
 	function cast_expr_to_string($expression)

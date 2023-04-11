@@ -269,9 +269,9 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
-	function sql_nextid()
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
 	{
 		$result_id = @odbc_exec($this->db_connect_id, 'SELECT @@IDENTITY');
 

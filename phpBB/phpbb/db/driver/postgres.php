@@ -342,9 +342,9 @@ class postgres extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* {@inheritDoc}
-	*/
-	function sql_nextid()
+	 * {@inheritdoc}
+	 */
+	public function sql_last_inserted_id()
 	{
 		$query_id = $this->query_result;
 
