@@ -524,19 +524,19 @@ class auth
 			ORDER BY role_id ASC';
 		$result = $db->sql_query($sql);
 
-		$this->role_cache = array();
+		$role_cache = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
+			$role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
 		}
 		$db->sql_freeresult($result);
 
-		foreach ($this->role_cache as $role_id => $role_options)
+		foreach ($role_cache as $role_id => $role_options)
 		{
-			$this->role_cache[$role_id] = serialize($role_options);
+			$role_cache[$role_id] = serialize($role_options);
 		}
 
-		$cache->put('_role_cache', $this->role_cache);
+		$cache->put('_role_cache', $role_cache);
 
 		// Now empty user permissions
 		$where_sql = '';
@@ -828,9 +828,9 @@ class auth
 		global $db, $cache;
 
 		// Check if the role-cache is there
-		if (($this->role_cache = $cache->get('_role_cache')) === false)
+		if (($role_cache = $cache->get('_role_cache')) === false)
 		{
-			$this->role_cache = array();
+			$role_cache = array();
 
 			// We pre-fetch roles
 			$sql = 'SELECT *
@@ -840,16 +840,16 @@ class auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
+				$role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
 			}
 			$db->sql_freeresult($result);
 
-			foreach ($this->role_cache as $role_id => $role_options)
+			foreach ($role_cache as $role_id => $role_options)
 			{
-				$this->role_cache[$role_id] = serialize($role_options);
+				$role_cache[$role_id] = serialize($role_options);
 			}
 
-			$cache->put('_role_cache', $this->role_cache);
+			$cache->put('_role_cache', $role_cache);
 		}
 
 		$hold_ary = array();
@@ -865,7 +865,7 @@ class auth
 			// If a role is assigned, assign all options included within this role. Else, only set this one option.
 			if ($row['auth_role_id'])
 			{
-				$hold_ary[$row['forum_id']] = (empty($hold_ary[$row['forum_id']])) ? unserialize($this->role_cache[$row['auth_role_id']]) : $hold_ary[$row['forum_id']] + unserialize($this->role_cache[$row['auth_role_id']]);
+				$hold_ary[$row['forum_id']] = (empty($hold_ary[$row['forum_id']])) ? unserialize($role_cache[$row['auth_role_id']]) : $hold_ary[$row['forum_id']] + unserialize($role_cache[$row['auth_role_id']]);
 			}
 			else
 			{
@@ -890,9 +890,9 @@ class auth
 			{
 				$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $row['auth_option_id'], $row['auth_setting']);
 			}
-			else if (!empty($this->role_cache[$row['auth_role_id']]))
+			else if (!empty($role_cache[$row['auth_role_id']]))
 			{
-				foreach (unserialize($this->role_cache[$row['auth_role_id']]) as $option_id => $setting)
+				foreach (unserialize($role_cache[$row['auth_role_id']]) as $option_id => $setting)
 				{
 					$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $option_id, $setting);
 				}

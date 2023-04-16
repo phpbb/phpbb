@@ -50,6 +50,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* @param  string $key The configuration option's name.
 	* @return bool        Whether the configuration option exists.
 	*/
+	#[\ReturnTypeWillChange]
 	public function offsetExists($key)
 	{
 		return isset($this->config[$key]);
@@ -61,6 +62,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* @param  string $key The configuration option's name.
 	* @return string      The configuration value
 	*/
+	#[\ReturnTypeWillChange]
 	public function offsetGet($key)
 	{
 		return (isset($this->config[$key])) ? $this->config[$key] : '';
@@ -75,6 +77,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* @param string $key   The configuration option's name.
 	* @param string $value The temporary value.
 	*/
+	#[\ReturnTypeWillChange]
 	public function offsetSet($key, $value)
 	{
 		$this->config[$key] = $value;
@@ -85,6 +88,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*
 	* @param string $key The configuration option's name.
 	*/
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($key)
 	{
 		trigger_error('Config values have to be deleted explicitly with the \phpbb\config\config::delete($key) method.', E_USER_ERROR);
