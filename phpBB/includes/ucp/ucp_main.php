@@ -111,7 +111,6 @@ class ucp_main
 						$topic_list[] = $row['topic_id'];
 						$rowset[$row['topic_id']] = $row;
 					}
-					$topics_count = (int) $db->sql_fetchfield('topics_count');
 					$db->sql_freeresult($result);
 				}
 
@@ -161,16 +160,6 @@ class ucp_main
 
 					// Replies
 					$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
-
-					if ($topics_count)
-					{
-						$start = $pagination->validate_start($start, $config['topics_per_page'], $topics_count);
-						$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $topics_count, $config['topics_per_page'], $start);
-
-						$template->assign_vars(array(
-							'TOTAL_TOPICS'	=> $language->lang('VIEW_FORUM_TOPICS', (int) $topics_count),
-						));
-					}
 
 					if ($row['topic_status'] == ITEM_LOCKED)
 					{
