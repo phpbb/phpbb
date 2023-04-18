@@ -944,7 +944,7 @@ if ($submit || $preview || $refresh)
 
 	$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
-	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
+	$post_data['enable_urls']		= (!$url_status || isset($_POST['disable_magic_url'])) ? 0 : 1;
 	$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 	if ($config['allow_topic_notify'] && $user->data['is_registered'])
