@@ -75,7 +75,7 @@ class profilefields_update extends \phpbb\db\migration\migration
 					field_minlen = '3',
 					field_maxlen = '60',
 					field_validation = '$field_validation',
-					field_contact_url = '%s'
+					field_contact_url = 'https://youtube.com/%s'
 				WHERE field_name = 'phpbb_youtube'"
 		);
 
