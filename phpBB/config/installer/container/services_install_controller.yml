@@ -4,6 +4,7 @@ services:
         arguments:
             - '@phpbb.installer.controller.helper'
             - '@language'
+            - '@path_helper'
             - '@template'
             - '%core.root_path%'
 
