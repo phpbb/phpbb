@@ -63,7 +63,6 @@ $template->set_custom_style(
 	],
 	[
 		$phpbb_admin_path . 'style',
-		$phpbb_root_path . 'styles/all/template/',
 	],
 );
 
