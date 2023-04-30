@@ -48,12 +48,6 @@ class acp_board
 		global $config, $phpbb_root_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
-		if (!$language)
-		{
-			/** @var language $language Language object */
-			$language = $phpbb_container->get('language');
-		}
-
 		$this->config = $config;
 		$this->language = $language;
 		$this->user = $user;
@@ -1071,9 +1065,7 @@ class acp_board
 	*/
 	function timezone_select($value, $key)
 	{
-		global $user;
-
-		$timezone_select = phpbb_timezone_select($user, $value, true);
+		$timezone_select = phpbb_timezone_select($this->user, $value, true);
 
 		return [
 			'tag'			=> 'select',

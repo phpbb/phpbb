@@ -368,7 +368,7 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $conf
 
 		case 'radio':
 			$tpl_type_cond = explode('_', $tpl_type[1]);
-			$type_no = !(($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled'));
+			$type_no = $tpl_type_cond[0] != 'disabled' && $tpl_type_cond[0] != 'enabled';
 
 			$no_button = [
 				'type'		=> 'radio',
