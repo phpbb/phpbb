@@ -119,7 +119,9 @@
 										<abbr title="{{ stack_item.full_class }}">{{ stack_item.class }}</abbr>
 									</span>
 								</h3>
-								<p class="break-long-words trace-message">{{ stack_item.message }}</p>
+								{% for message in stack_item.message %}
+									<p class="break-long-words trace-message">{{ message }}</p>
+								{% endfor %}
 							</th>
 						</tr>
 					</thead>

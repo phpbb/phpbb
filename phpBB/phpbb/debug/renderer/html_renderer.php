@@ -119,7 +119,7 @@ class html_renderer extends renderer_base
 				$stack_item_data = [
 					'index'			=> $index,
 					'total'			=> $total,
-					'message'		=> $this->escape_html($stack_item['message']),
+					'message'		=> $this->separate_paragraphs($stack_item['message']),
 					'traces'		=> [],
 				];
 
@@ -260,5 +260,17 @@ class html_renderer extends renderer_base
 	private function escape_html(string $str): string
 	{
 		return htmlspecialchars($str, ENT_COMPAT, $this->charset);
+	}
+
+	/**
+	 * Separate paragraphs of messages
+	 *
+	 * @param string $text Message to separate by paragraphs
+	 *
+	 * @return array|false|string[]
+	 */
+	private function separate_paragraphs(string $text)
+	{
+		return preg_split('/(<br>)+/', $text, -1, PREG_SPLIT_NO_EMPTY);
 	}
 }
