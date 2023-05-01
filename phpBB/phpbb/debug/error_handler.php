@@ -13,7 +13,7 @@
 
 namespace phpbb\debug;
 
-use Symfony\Component\Debug\ErrorHandler;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
  * @psalm-suppress InvalidExtendClass
@@ -23,7 +23,7 @@ class error_handler extends ErrorHandler
 	/**
 	 * @psalm-suppress MethodSignatureMismatch
 	 */
-	public function handleError($type, $message, $file, $line)
+	public function handleError(int $type, string $message, string $file, int $line): bool
 	{
 		if ($type === E_USER_WARNING || $type === E_USER_NOTICE)
 		{

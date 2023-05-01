@@ -16,9 +16,9 @@ namespace phpbb\debug;
 use phpbb\config\config;
 use phpbb\language\language;
 use phpbb\language\language_file_loader;
-use Symfony\Component\Debug\BufferingLogger;
-use Symfony\Component\Debug\DebugClassLoader;
-use Symfony\Component\Debug\ExceptionHandler;
+use Symfony\Component\ErrorHandler\BufferingLogger;
+use Symfony\Component\ErrorHandler\DebugClassLoader;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
  * Registers all the debug tools.
@@ -67,7 +67,7 @@ class debug
 			ini_set('display_errors', 0);
 			if (!self::$exception_handler_enabled)
 			{
-				ExceptionHandler::register();
+				ErrorHandler::register();
 			}
 		}
 		else if ($displayErrors && (!ini_get('log_errors') || ini_get('error_log')))
