@@ -1052,14 +1052,14 @@ abstract class driver implements driver_interface
 
 		if (!$this->return_on_error)
 		{
-			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $this->sql_error_returned['message'] . ' [' . $this->sql_error_returned['code'] . ']';
+			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br><br>' . $this->sql_error_returned['message'] . ' [' . $this->sql_error_returned['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
 			// The DEBUG constant is for development only!
 			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || $this->debug_sql_explain)
 			{
-				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql, ENT_COMPAT) : '';
+				$message .= ($sql) ? '<br><br>SQL<br><br>' . htmlspecialchars($sql, ENT_COMPAT) : '';
 			}
 			else
 			{
@@ -1067,17 +1067,17 @@ abstract class driver implements driver_interface
 				// This could happen if the connection could not be established for example (then we are not able to grab the default language)
 				if (!isset($user->lang['SQL_ERROR_OCCURRED']))
 				{
-					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persists.';
+					$message .= '<br><br>An sql error occurred while fetching this page. Please contact an administrator if this problem persists.';
 				}
 				else
 				{
 					if (!empty($config['board_contact']))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars($config['board_contact'], ENT_COMPAT) . '">', '</a>');
+						$message .= '<br><br>' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars($config['board_contact'], ENT_COMPAT) . '">', '</a>');
 					}
 					else
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '', '');
+						$message .= '<br><br>' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '', '');
 					}
 				}
 			}
@@ -1158,12 +1158,12 @@ abstract class driver implements driver_interface
 								<span class="corners-top"><span></span></span>
 								<div id="content">
 									<h1>SQL Report</h1>
-									<br />
+									<br>
 									<p><b>Page generated in ' . round($totaltime, 4) . " seconds with {$this->num_queries['normal']} queries" . (($this->num_queries['cached']) ? " + {$this->num_queries['cached']} " . (($this->num_queries['cached'] == 1) ? 'query' : 'queries') . ' returning data from cache' : '') . '</b></p>
 
 									<p>Time spent on ' . $this->sql_layer . ' queries: <b>' . round($this->sql_time, 5) . 's</b> | Time spent on PHP: <b>' . round($totaltime - $this->sql_time, 5) . 's</b></p>
 
-									<br /><br />
+									<br><br>
 									' . $this->sql_report . '
 								</div>
 								<span class="corners-bottom"><span></span></span>
@@ -1219,7 +1219,7 @@ abstract class driver implements driver_interface
 					$this->sql_report .= '<b style="color: red">FAILED</b> - ' . $this->sql_layer . ' Error ' . $error['code'] . ': ' . htmlspecialchars($error['message'], ENT_COMPAT);
 				}
 
-				$this->sql_report .= '</p><br /><br />';
+				$this->sql_report .= '</p><br><br>';
 
 				$this->sql_time += $endtime - $this->curtime;
 			break;
@@ -1283,7 +1283,7 @@ abstract class driver implements driver_interface
 				$this->sql_report .= '<table cellspacing="1"><thead><tr><th>Query results obtained from the cache</th></tr></thead><tbody><tr>';
 				$this->sql_report .= '<td class="row3"><textarea style="font-family:\'Courier New\',monospace;width:99%" rows="5" cols="10">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query), ENT_COMPAT)) . '</textarea></td></tr></tbody></table>';
 				$this->sql_report .= '<p style="text-align: center;">';
-				$this->sql_report .= 'Before: ' . sprintf('%.5f', $this->curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p><br /><br />';
+				$this->sql_report .= 'Before: ' . sprintf('%.5f', $this->curtime - $starttime) . 's | After: ' . sprintf('%.5f', $endtime - $starttime) . 's | Elapsed [cache]: <b style="color: ' . $color . '">' . sprintf('%.5f', ($time_cache)) . 's</b> | Elapsed [db]: <b>' . sprintf('%.5f', $time_db) . 's</b></p><br><br>';
 
 				// Pad the start time to not interfere with page timing
 				$starttime += $time_db;
