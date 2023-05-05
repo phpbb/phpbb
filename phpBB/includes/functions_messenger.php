@@ -581,7 +581,7 @@ class messenger
 	 */
 	function get_transport($dummy = false)
 	{
-		if ($dummy)
+		if ($dummy || empty($this->config['smtp_host']))
 		{
 			$dsn = 'null://null';
 		}
@@ -600,7 +600,7 @@ class messenger
 
 		$transport = Transport::fromDsn($dsn);
 
-		if ($this->config['smtp_delivery'])
+		if ($this->config['smtp_delivery'] && $dsn != 'null://null')
 		{
 			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
 			$verify_peer = (bool) $this->config['smtp_verify_peer'];
