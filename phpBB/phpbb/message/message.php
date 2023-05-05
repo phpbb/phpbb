@@ -250,16 +250,16 @@ class message
 			$messenger->to($recipient['address'], $recipient['name']);
 			$messenger->im($recipient['jabber'], $recipient['username']);
 
-			$messenger->headers('X-AntiAbuse: Board servername - ' . $this->server_name);
-			$messenger->headers('X-AntiAbuse: User IP - ' . $this->sender_ip);
+			$messenger->headers('X-AntiAbuse', 'Board servername - ' . $this->server_name);
+			$messenger->headers('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
 
 			if ($this->sender_id)
 			{
-				$messenger->headers('X-AntiAbuse: User_id - ' . $this->sender_id);
+				$messenger->headers('X-AntiAbuse', 'User_id - ' . $this->sender_id);
 			}
 			if ($this->sender_username)
 			{
-				$messenger->headers('X-AntiAbuse: Username - ' . $this->sender_username);
+				$messenger->headers('X-AntiAbuse', 'Username - ' . $this->sender_username);
 			}
 
 			$messenger->subject(html_entity_decode($this->subject, ENT_COMPAT));
