@@ -23,7 +23,6 @@ installer:
         smtp_delivery : ~
         smtp_host: ~
         smtp_port: ~
-        smtp_auth: ~
         smtp_user: ~
         smtp_pass: ~
 
