@@ -52,11 +52,8 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 		$smtp_delivery	= $this->io_handler->get_input('smtp_delivery', '');
 		$smtp_host		= $this->io_handler->get_input('smtp_host', '', true);
 		$smtp_port		= $this->io_handler->get_input('smtp_port', '');
-		$smtp_auth		= $this->io_handler->get_input('smtp_auth', '');
 		$smtp_user		= $this->io_handler->get_input('smtp_user', '', true);
 		$smtp_passwd	= $this->io_handler->get_input('smtp_pass', '', true);
-
-		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
 
 		// Check if data is sent
 		if ($this->io_handler->get_input('submit_email', false))
@@ -65,22 +62,11 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 			$this->install_config->set('smtp_delivery', $smtp_delivery);
 			$this->install_config->set('smtp_host', $smtp_host);
 			$this->install_config->set('smtp_port', $smtp_port);
-			$this->install_config->set('smtp_auth', $smtp_auth);
 			$this->install_config->set('smtp_user', $smtp_user);
 			$this->install_config->set('smtp_pass', $smtp_passwd);
 		}
 		else
 		{
-			$auth_options = array();
-			foreach ($auth_methods as $method)
-			{
-				$auth_options[] = array(
-					'value'		=> $method,
-					'label'		=> 'SMTP_' . str_replace('-', '_', $method),
-					'selected'	=> false,
-				);
-			}
-
 			$email_form = array(
 				'email_enable' => array(
 					'label'			=> 'ENABLE_EMAIL',
@@ -125,12 +111,6 @@ class obtain_email_data extends \phpbb\install\task_base implements \phpbb\insta
 					'label'			=> 'SMTP_PORT',
 					'type'			=> 'text',
 					'default'		=> $smtp_port,
-				),
-				'smtp_auth' => array(
-					'label'			=> 'SMTP_AUTH_METHOD',
-					'description'	=> 'SMTP_AUTH_METHOD_EXPLAIN',
-					'type'			=> 'select',
-					'options'		=> $auth_options,
 				),
 				'smtp_user' => array(
 					'label'			=> 'SMTP_USERNAME',

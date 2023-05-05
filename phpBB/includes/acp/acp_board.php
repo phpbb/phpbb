@@ -473,7 +473,6 @@ class acp_board
 						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'smtp_host'				=> array('lang' => 'SMTP_SERVER',			'validate' => 'string',	'type' => 'text:25:50', 'explain' => true),
 						'smtp_port'				=> array('lang' => 'SMTP_PORT',				'validate' => 'int:0:99999',	'type' => 'number:0:99999', 'explain' => true),
-						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'validate' => 'string',	'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
 						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'validate' => 'string',	'type' => 'text:25:255', 'explain' => true),
 						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true),
 						'smtp_verify_peer'		=> array('lang' => 'SMTP_VERIFY_PEER',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -881,30 +880,6 @@ class acp_board
 
 		return [
 			'options' => $auth_select_options,
-		];
-	}
-
-	/**
-	* Select mail authentication method
-	*/
-	function mail_auth_select($selected_method, $key = '')
-	{
-		global $user;
-
-		$auth_methods = ['PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP'];
-		$s_smtp_auth_options = [];
-
-		foreach ($auth_methods as $method)
-		{
-			$s_smtp_auth_options[] = [
-				'value'		=> $method,
-				'selected'	=> $selected_method == $method,
-				'label'		=> $user->lang('SMTP_' . str_replace('-', '_', $method)),
-			];
-		}
-
-		return [
-			'options' => $s_smtp_auth_options,
 		];
 	}
 

@@ -419,7 +419,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('email_enable', true);
 		$iohandler->set_input('smtp_delivery', '1');
 		$iohandler->set_input('smtp_host', '');
-		$iohandler->set_input('smtp_auth', 'PLAIN');
 		$iohandler->set_input('smtp_user', 'nxuser');
 		$iohandler->set_input('smtp_pass', 'nxpass');
 		$iohandler->set_input('submit_email', 'submit');
