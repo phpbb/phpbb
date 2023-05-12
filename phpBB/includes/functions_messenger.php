@@ -1,15 +1,15 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
@@ -18,18 +18,19 @@ use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Header\Headers;
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
 /**
-* Messenger
-*/
+ * Messenger class
+ */
 class messenger
 {
+	/** @var array */
 	private const PRIORITY_MAP = [
 		Email::PRIORITY_HIGHEST => 'Highest',
 		Email::PRIORITY_HIGH => 'High',
@@ -37,6 +38,8 @@ class messenger
 		Email::PRIORITY_LOW => 'Low',
 		Email::PRIORITY_LOWEST => 'Lowest',
 	];
+
+	/** @var array */
 	private const HEADER_CLASS_MAP = [
 		'date' => DateHeader::class,
 		'from' => MailboxListHeader::class,
@@ -51,11 +54,22 @@ class messenger
 		'return-path' => PathHeader::class,
 	];
 
-	var $msg, $replyto, $from, $subject;
-	var $addresses = [];
-	var $extra_headers = [];
+	/** @var array */
+	protected $addresses = [];
 
 	/**
+	 * @var string
+	 *
+	 * Symfony Mailer transport DSN
+	 */
+	protected $dsn = '';
+
+	/** @var string */
+	protected $from;
+
+	/**
+	 * @var int
+	 *
 	 * Possible values are:
 	 * Email::PRIORITY_HIGHEST
 	 * Email::PRIORITY_HIGH
@@ -63,18 +77,34 @@ class messenger
 	 * Email::PRIORITY_LOW
 	 * Email::PRIORITY_LOWEST
 	 */
-	var $mail_priority = Email::PRIORITY_NORMAL;
-	var $use_queue = true;
+	protected $mail_priority = Email::PRIORITY_NORMAL;
+
+	/** @var string */
+	protected $msg;
+
+	/** @var string */
+	protected $replyto;
+
+	/** @var string */
+	protected $subject;
 
 	/** @var \phpbb\template\template */
 	protected $template;
 
+	/** @var Symfony\Component\Mailer\Transport */
+	protected $transport;
+
+	/** @var bool */
+	protected $use_queue = true;
+
 	/**
-	 * Constructor
+	 * Messenger class constructor
+	 *
+	 * @param bool $use_queue Flag to switch the use of the messenger file queue
 	 */
 	function __construct($use_queue = true)
 	{
-		global $phpbb_container, $phpbb_root_path, $phpEx;
+		global $phpbb_container;
 
 		$this->phpbb_container = $phpbb_container;
 		$this->config = $this->phpbb_container->get('config');
@@ -87,16 +117,19 @@ class messenger
 		$this->headers = $this->email->getHeaders();
 		$this->use_queue = (!$this->config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
-		$this->root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
+		$this->php_ext = $this->phpbb_container->getParameter('core.php_ext');
+		$this->root_path = $this->phpbb_container->getParameter('core.root_path');
+		$this->set_transport();
 	}
 
 	/**
 	 * Resets all the data (address, template file, etc etc) to default
+	 *
+	 * @return void
 	 */
-	function reset()
+	public function reset()
 	{
-		$this->addresses = $this->extra_headers = [];
+		$this->addresses = [];
 		$this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = Email::PRIORITY_NORMAL;
 	}
@@ -105,8 +138,9 @@ class messenger
 	 * Set addresses for to/im as available
 	 *
 	 * @param array $user User row
+	 * @return void
 	 */
-	function set_addresses($user)
+	public function set_addresses($user)
 	{
 		if (isset($user['user_email']) && $user['user_email'])
 		{
@@ -120,9 +154,13 @@ class messenger
 	}
 
 	/**
-	 * Sets an email address to send to
+	 * Sets email address to send to
+	 *
+	 * @param string	$address	Email "To" recipient address
+	 * @param string	$realname	Email "To" recipient name
+	 * @return void
 	 */
-	function to($address, $realname = '')
+	public function to($address, $realname = '')
 	{
 		if (!trim($address))
 		{
@@ -137,9 +175,13 @@ class messenger
 	}
 
 	/**
-	 * Sets an cc address to send to
+	 * Sets cc address to send to
+	 *
+	 * @param string	$address	Email carbon copy recipient address
+	 * @param string	$realname	Email carbon copy recipient name
+	 * @return void
 	 */
-	function cc($address, $realname = '')
+	public function cc($address, $realname = '')
 	{
 		if (!trim($address))
 		{
@@ -151,9 +193,13 @@ class messenger
 	}
 
 	/**
-	 * Sets an bcc address to send to
+	 * Sets bcc address to send to
+	 *
+	 * @param string	$address	Email black carbon copy recipient address
+	 * @param string	$realname	Email black carbon copy recipient name
+	 * @return void
 	 */
-	function bcc($address, $realname = '')
+	public function bcc($address, $realname = '')
 	{
 		if (!trim($address))
 		{
@@ -166,8 +212,12 @@ class messenger
 
 	/**
 	 * Sets a im contact to send to
+	 *
+	 * @param string	$address	Jabber recipient address
+	 * @param string	$realname	Jabber recipient name
+	 * @return void
 	 */
-	function im($address, $realname = '')
+	public function im($address, $realname = '')
 	{
 		// IM-Addresses could be empty
 		if (!trim($address))
@@ -182,8 +232,11 @@ class messenger
 
 	/**
 	 * Set the reply to address
+	 *
+	 * @param string	$address	Email "Reply to" address
+	 * @return void
 	 */
-	function replyto($address)
+	public function replyto($address)
 	{
 		$this->replyto = new Address(trim($address));
 		$this->email->getReplyTo() ? $this->email->addReplyTo($this->replyto) : $this->email->replyTo($this->replyto);
@@ -191,25 +244,36 @@ class messenger
 
 	/**
 	 * Set the from address
+	 *
+	 * @param string	$address	Email "from" address
+	 * @return void
 	 */
-	function from($address)
+	public function from($address)
 	{
 		$this->from = new Address(trim($address));
 		$this->email->getFrom() ? $this->email->addFrom($this->from) : $this->email->from($this->from);
 	}
 
 	/**
-	 * set up subject for mail
+	 * Set up subject for mail
+	 *
+	 * @param string	$subject	Email subject
+	 * @return void
 	 */
-	function subject($subject = '')
+	public function subject($subject = '')
 	{
-		$this->email->subject(trim($subject));
+		$this->subject = $subject;
+		$this->email->subject(trim($this->subject));
 	}
 
 	/**
-	 * set up extra mail headers
+	 * Set up extra mail headers
+	 *
+	 * @param string	$header_name	Email header name
+	 * @param string	$header_value	Email header body
+	 * @return void
 	 */
-	function headers($header_name, $header_value)
+	public function headers($header_name, $header_value)
 	{
 		$this->headers->addTextHeader(trim($header_name), trim($header_value));
 	}
@@ -221,7 +285,7 @@ class messenger
 	 * @param \phpbb\user			$user		User object
 	 * @return void
 	 */
-	function anti_abuse_headers($config, $user)
+	public function anti_abuse_headers($config, $user)
 	{
 		$this->headers->addTextHeader('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
 		$this->headers->addTextHeader('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
@@ -231,22 +295,33 @@ class messenger
 
 	/**
 	 * Set the email priority
+	 *
 	 * Possible values are:
-	 * Email::PRIORITY_HIGHEST
-	 * Email::PRIORITY_HIGH
-	 * Email::PRIORITY_NORMAL
-	 * Email::PRIORITY_LOW
-	 * Email::PRIORITY_LOWEST
+	 * Email::PRIORITY_HIGHEST = 1
+	 * Email::PRIORITY_HIGH = 2
+	 * Email::PRIORITY_NORMAL = 3
+	 * Email::PRIORITY_LOW = 4
+	 * Email::PRIORITY_LOWEST = 5
+	 *
+	 * @param int	$priority	Email priority level
+	 * @return void
 	 */
-	function set_mail_priority($priority = Email::PRIORITY_NORMAL)
+	public function set_mail_priority($priority = Email::PRIORITY_NORMAL)
 	{
 		$this->email->priority($priority);
 	}
 
 	/**
 	 * Set email template to use
+	 *
+	 * @param string	$template_file			Email template file name
+	 * @param string	$template_lang			Email template language
+	 * @param string	$template_path			Email template path
+	 * @param string	$template_dir_prefix	Email template directory prefix
+	 *
+	 * @return bool
 	 */
-	function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
+	public function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
 	{
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
@@ -265,27 +340,27 @@ class messenger
 			$template_lang = basename($this->config['default_lang']);
 		}
 
-		$ext_template_paths = array(
-			array(
+		$ext_template_paths = [
+			[
 				'name' 		=> $template_lang . '_email',
 				'ext_path' 	=> 'language/' . $template_lang . '/email' . $template_dir_prefix,
-			),
-		);
+			],
+		];
 
 		if ($template_path)
 		{
-			$template_paths = array(
+			$template_paths = [
 				$template_path . $template_dir_prefix,
-			);
+			];
 		}
 		else
 		{
 			$template_path = (!empty($this->user->lang_path)) ? $this->user->lang_path : $this->root_path . 'language/';
 			$template_path .= $template_lang . '/email';
 
-			$template_paths = array(
+			$template_paths = [
 				$template_path . $template_dir_prefix,
-			);
+			];
 
 			$board_language = basename($this->config['default_lang']);
 
@@ -298,10 +373,10 @@ class messenger
 
 				$template_paths[] = $fallback_template_path . $template_dir_prefix;
 
-				$ext_template_paths[] = array(
+				$ext_template_paths[] = [
 					'name'		=> $board_language . '_email',
 					'ext_path'	=> 'language/' . $board_language . '/email' . $template_dir_prefix,
-				);
+				];
 			}
 			// If everything fails just fall back to en template
 			if ($template_lang !== 'en' && $board_language !== 'en')
@@ -311,33 +386,36 @@ class messenger
 
 				$template_paths[] = $fallback_template_path . $template_dir_prefix;
 
-				$ext_template_paths[] = array(
+				$ext_template_paths[] = [
 					'name'		=> 'en_email',
 					'ext_path'	=> 'language/en/email' . $template_dir_prefix,
-				);
+				];
 			}
 		}
 
 		$this->set_template_paths($ext_template_paths, $template_paths);
 
-		$this->template->set_filenames(array(
+		$this->template->set_filenames([
 			'body'		=> $template_file . '.txt',
-		));
+		]);
 
 		return true;
 	}
 
 	/**
-	 * assign variables to email template
+	 * Assign variables to email template
+	 *
+	 * @param array	$vars	Array of VAR => VALUE to assign to email template
+	 * @return void
 	 */
-	function assign_vars($vars)
+	public function assign_vars($vars)
 	{
 		$this->setup_template();
 
 		$this->template->assign_vars($vars);
 	}
 
-	function assign_block_vars($blockname, $vars)
+	public function assign_block_vars($blockname, $vars)
 	{
 		$this->setup_template();
 
@@ -345,15 +423,14 @@ class messenger
 	}
 
 	/**
-	 * Send the mail out to the recipients set previously in var $this->addresses
+	 * Send the mail out to the recipients
 	 *
 	 * @param int	$method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
 	 * @param bool	$break	Flag indicating if the function only formats the subject
 	 *						and the message without sending it
-	 *
 	 * @return bool
 	 */
-	function send($method = NOTIFY_EMAIL, $break = false)
+	public function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars([
@@ -411,7 +488,7 @@ class messenger
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
 		$drop_header = '';
-		$match = array();
+		$match = [];
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $this->user->lang['NO_EMAIL_SUBJECT']);
@@ -463,8 +540,12 @@ class messenger
 
 	/**
 	 * Add error message to log
+	 *
+	 * @param string	$type	Error type: EMAIL / etc
+	 * @param string	$msg	Error message text
+	 * @return void
 	 */
-	function error($type, $msg)
+	public function error($type, $msg)
 	{
 		// Session doesn't exist, create it
 		if (!isset($this->user->session_id) || $this->user->session_id === '')
@@ -490,9 +571,10 @@ class messenger
 	}
 
 	/**
-	 * Save to queue
+	 * Save message data to the messemger file queue
+	 * @return void
 	 */
-	function save_queue()
+	public function save_queue()
 	{
 		if ($this->config['email_package_size'] && $this->use_queue && !empty($this->queue))
 		{
@@ -502,11 +584,12 @@ class messenger
 	}
 
 	/**
-	 * Detect proper method to add header
+	 * Detect proper Header class method to add header
 	 *
+	 * @param string	$name	Email header name
 	 * @return string
 	 */
-	public function get_header_method(string $name)
+	protected function get_header_method(string $name)
 	{
 		$parts = explode('\\', self::HEADER_CLASS_MAP[strtolower($name)] ?? UnstructuredHeader::class);
 		$method = 'add'.ucfirst(array_pop($parts));
@@ -524,8 +607,10 @@ class messenger
 
 	/**
 	 * Set email headers
+	 *
+	 * @return bool
 	 */
-	function build_header()
+	protected function build_header()
 	{
 		$headers = [];
 
@@ -557,7 +642,7 @@ class messenger
 		 * @var	array	headers	Array containing email header entries
 		 * @since 3.1.11-RC1
 		 */
-		$vars = array('headers');
+		$vars = ['headers'];
 		extract($this->dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
 		foreach ($headers as $header => $value)
@@ -574,33 +659,64 @@ class messenger
 	}
 
 	/**
-	 * Generates a valid transport to send email
+	 * Generates valid DSN for Symfony Mailer transport
 	 *
-	 * @param bool $dummy Flag to disable mail delivery
-	 * @return Symfony\Component\Mailer\Transport Symfony Transport object
+	 * @param string $dsn Symfony Mailer transport DSN
+	 * @return void
 	 */
-	function get_transport($dummy = false)
+	public function set_dsn($dsn = '')
 	{
-		if ($dummy || empty($this->config['smtp_host']))
+		if (!empty($dsn))
 		{
-			$dsn = 'null://null';
+			$this->dsn = $dsn;
 		}
 		else if ($this->config['smtp_delivery'])
 		{
-			$user = urlencode($this->config['smtp_username']);
-			$password = urlencode($this->config['smtp_password']);
-			$smtp_host = urlencode($this->config['smtp_host']);
-			$smtp_port = $this->config['smtp_port'];
-			$dsn = "smtp://$user:$password@$smtp_host:$smtp_port";
+			if (empty($this->config['smtp_host']))
+			{
+				$this->dsn = 'null://null';
+			}
+			else
+			{
+				$user = urlencode($this->config['smtp_username']);
+				$password = urlencode($this->config['smtp_password']);
+				$smtp_host = urlencode($this->config['smtp_host']);
+				$smtp_port = $this->config['smtp_port'];
+
+				$this->dsn = "smtp://$user:$password@$smtp_host:$smtp_port";
+			}
 		}
 		else
 		{
-			$dsn = 'sendmail://default';
+			$this->dsn = 'sendmail://default';
+		}
+	}
+
+	/**
+	 * Get Symfony Mailer transport DSN
+	 *
+	 * @return void
+	 */
+	public function get_dsn()
+	{
+		return $this->dsn;
+	}
+
+	/**
+	 * Generates a valid transport to send email
+	 *
+	 * @return void
+	 */
+	public function set_transport()
+	{
+		if (empty($this->dsn))
+		{
+			$this->set_dsn();
 		}
 
-		$transport = Transport::fromDsn($dsn);
+		$this->transport = Transport::fromDsn($this->dsn);
 
-		if ($this->config['smtp_delivery'] && $dsn != 'null://null')
+		if ($this->config['smtp_delivery'] && !in_array($this->dsn, ['null://null', 'sendmail://default']))
 		{
 			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
 			$verify_peer = (bool) $this->config['smtp_verify_peer'];
@@ -613,16 +729,26 @@ class messenger
 					'allow_self_signed' => $allow_self_signed,
 				]
 			];
-			$transport->getStream()->setStreamOptions($options);
+			$this->transport->getStream()->setStreamOptions($options);
 		}
+	}
 
-		return $transport;
+	/**
+	 * Get mailer transport object
+	 *
+	 * @return Symfony\Component\Mailer\Transport Symfony Mailer transport object
+	 */
+	public function get_transport()
+	{
+		return $this->transport;
 	}
 
 	/**
 	 * Send out emails
+	 *
+	 * @return bool
 	 */
-	function msg_email()
+	protected function msg_email()
 	{
 		if (empty($this->config['email_enable']))
 		{
@@ -665,12 +791,12 @@ class messenger
 		 * @since 3.2.4-RC1
 		 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses
 		 */
-		$vars = array(
+		$vars = [
 			'break',
 			'subject',
 			'msg',
 			'email',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.notification_message_email', compact($vars)));
 
 		$this->addresses = $addresses;
@@ -699,8 +825,7 @@ class messenger
 		// Send message ...
 		if (!$use_queue)
 		{
-			$transport = $this->get_transport();
-			$mailer = new Mailer($transport);
+			$mailer = new Mailer($this->transport);
 
 			$subject = $this->subject;
 			$msg = $this->msg;
@@ -770,9 +895,11 @@ class messenger
 	}
 
 	/**
-	* Send jabber message out
-	*/
-	function msg_jabber()
+	 * Send jabber message out
+	 *
+	 * @return bool
+	 */
+	protected function msg_jabber()
 	{
 		if (empty($this->config['jab_enable']) || empty($this->config['jab_host']) || empty($this->config['jab_username']) || empty($this->config['jab_password']))
 		{
@@ -796,7 +923,7 @@ class messenger
 			$use_queue = true;
 		}
 
-		$addresses = array();
+		$addresses = [];
 		foreach ($this->addresses['im'] as $type => $uid_ary)
 		{
 			$addresses[] = $uid_ary['uid'];
@@ -829,19 +956,21 @@ class messenger
 		}
 		else
 		{
-			$this->queue->put('jabber', array(
+			$this->queue->put('jabber', [
 				'addresses'		=> $addresses,
 				'subject'		=> $this->subject,
-				'msg'			=> $this->msg)
-			);
+				'msg'			=> $this->msg
+			]);
 		}
 		unset($addresses);
 		return true;
 	}
 
 	/**
-	* Setup template engine
-	*/
+	 * Setup template engine
+	 *
+	 * @return void
+	 */
 	protected function setup_template()
 	{
 		if ($this->template instanceof \phpbb\template\template)
@@ -875,8 +1004,12 @@ class messenger
 	}
 
 	/**
-	* Set template paths to load
-	*/
+	 * Set template paths to load
+	 *
+	 * @param string $path_name Email template path name
+	 * @param string $paths 	Email template paths
+	 * @return void
+	 */
 	protected function set_template_paths($path_name, $paths)
 	{
 		$this->setup_template();
@@ -886,15 +1019,18 @@ class messenger
 }
 
 /**
-* handling email and jabber queue
-*/
+ * Handling messenger file queue
+ */
 class queue
 {
-	var $data = [];
-	var $queue_data = [];
-	var $package_size = 0;
-	var $cache_file = '';
-	var $eol = "\n";
+	/** @var array */
+	protected $data = [];
+
+	/** @var array */
+	protected $queue_data = [];
+
+	/** @var string */
+	protected $cache_file = '';
 
 	/**
 	 * @var \phpbb\filesystem\filesystem_interface
@@ -902,8 +1038,8 @@ class queue
 	protected $filesystem;
 
 	/**
-	* constructor
-	*/
+	 * Messenger file queue class constructor
+	 */
 	function __construct()
 	{
 		global $phpbb_container;
@@ -918,28 +1054,37 @@ class queue
 	}
 
 	/**
-	* Init a queue object
-	*/
-	function init($object, $package_size)
+	 * Init a queue object
+	 *
+	 * @param string $object 	Queue object type: email/jabber/etc
+	 * @param int $package_size Size of the messenger package to send
+	 * @return void
+	 */
+	public function init($object, $package_size)
 	{
-		$this->data[$object] = array();
+		$this->data[$object] = [];
 		$this->data[$object]['package_size'] = $package_size;
-		$this->data[$object]['data'] = array();
+		$this->data[$object]['data'] = [];
 	}
 
 	/**
-	* Put object in queue
-	*/
-	function put($object, $scope)
+	 * Put message into the messenger file queue
+	 *
+	 * @param string $object 		Queue object type: email/jabber/etc
+	 * @param mixed $message_data	Message data to send
+	 * @return void
+	 */
+	public function put($object, $message_data)
 	{
-		$this->data[$object]['data'][] = $scope;
+		$this->data[$object]['data'][] = $message_data;
 	}
 
 	/**
-	* Process queue
-	* Using lock file
-	*/
-	function process()
+	 * Process the messemger file queue (using lock file)
+	 *
+	 * @return void
+	 */
+	public function process()
 	{
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -972,19 +1117,6 @@ class queue
 
 			$package_size = $data_ary['package_size'];
 			$num_items = (!$package_size || count($data_ary['data']) < $package_size) ? count($data_ary['data']) : $package_size;
-
-			/*
-			* This code is commented out because it causes problems on some web hosts.
-			* The core problem is rather restrictive email sending limits.
-			* This code is nly useful if you have no such restrictions from the
-			* web host and the package size setting is wrong.
-
-			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
-			if (count($data_ary['data']) > $package_size * 2.5)
-			{
-				$num_items = count($data_ary['data']);
-			}
-			*/
 
 			switch ($object)
 			{
@@ -1055,8 +1187,7 @@ class queue
 						if (!$break)
 						{
 							$messenger = new messenger();
-							$transport = $messenger->get_transport();
-							$mailer = new Mailer($transport);
+							$mailer = new Mailer($messenger->get_transport());
 
 							try
 							{
@@ -1132,9 +1263,11 @@ class queue
 	}
 
 	/**
-	* Save queue
-	*/
-	function save()
+	 * Save message data to the messenger file queue
+	 *
+	 * @return void
+	 */
+	public function save()
 	{
 		if (!count($this->data))
 		{
@@ -1180,7 +1313,7 @@ class queue
 				// Do nothing
 			}
 
-			$this->data = array();
+			$this->data = [];
 		}
 
 		$lock->release();
