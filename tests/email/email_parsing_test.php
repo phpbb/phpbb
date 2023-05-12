@@ -106,6 +106,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$auth = $this->createMock('\phpbb\auth\auth');
 		$log = new \phpbb\log\log($db, $user, $auth, $dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 		$phpbb_container->set('log', $log);
+		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
+		$phpbb_container->setParameter('core.php_ext', $phpEx);
 
 		if (!class_exists('messenger'))
 		{
