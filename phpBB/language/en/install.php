@@ -508,10 +508,12 @@ $lang = array_merge($lang, array(
 	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
 
 	// Conversion in progress
+	'CATEGORY'					=> 'Category',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
 	'CONTINUE_CONVERT_BODY'		=> 'A previous conversion attempt has been determined. You are now able to choose between starting a new conversion or continuing the conversion.',
 	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
 	'CONTINUE_OLD_CONVERSION'	=> 'Continue previously started conversion',
+	'POST_ID'					=> 'Post ID',
 
 	// Start conversion
 	'SUB_INTRO'					=> 'Introduction',
@@ -568,6 +570,10 @@ $lang = array_merge($lang, array(
 	'CONVERT_COMPLETE'			=> 'Conversion completed',
 	'CONVERT_COMPLETE_EXPLAIN'	=> 'You have now successfully converted your board to phpBB 3.3. You can now login and <a href="../">access your board</a>. Please ensure that the settings were transferred correctly before enabling your board by deleting the install directory. Remember that help on using phpBB is available online via the <a href="https://www.phpbb.com/support/docs/en/3.3/ug/">Documentation</a> and the <a href="https://www.phpbb.com/community/viewforum.php?f=661">support forums</a>.',
 
+	'COLLIDING_CLEAN_USERNAME'			=> '<strong>%s</strong> is the clean username for:',
+	'COLLIDING_USER'					=> '» user id: <strong>%d</strong> username: <strong>%s</strong> (%d posts)',
+	'COLLIDING_USERNAMES_FOUND'			=> 'Colliding usernames were found on your old board. In order to complete the conversion please delete or rename these users so that there is only one user on your old board for each clean username.',
+	'CONV_ERR_FATAL'					=> 'Fatal conversion error',
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',
 	'CONV_ERROR_FORUM_ACCESS'			=> 'Unable to get forum access information.',
