@@ -1,0 +1,30 @@
+{% apply  replace({"\n": ' ', "\t": ''}) %}
+	<select
+		{% if ID %}id="{{ ID }}" {% endif %}
+		{% if CLASS %}class="{{ CLASS }}" {% endif %}
+		name="{{ NAME }}"
+		{% if TOGGLEABLE %}data-togglable-settings="true" {% endif %}
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
+		{% if MULTIPLE %}multiple="multiple" {% endif %}
+		{% if SIZE %}size="{{ SIZE }}" {% endif %}>
+{% endapply %}
+{% for element in OPTIONS %}
+	{% if not GROUP_ONLY and element.options %}
+		{% apply  replace({"\n": ' ', '\t': ''}) %}
+			<optgroup
+			label="{{ element.label }}"
+			{% for key, value in element.data %}
+				data-{{ key }}="{{ value }}"
+			{% endfor %}>
+		{% endapply %}
+		{% for option in element.options %}
+			<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}{% if option.disabled %} disabled="disabled" class="disabled-option"{% endif %}>{{ option.label }}</option>
+		{% endfor %}
+		</optgroup>
+	{% else %}
+		<option value="{{ element.value }}"{% if element.selected %} selected="selected"{% endif %}{% if element.disabled %} disabled="disabled" class="disabled-option"{% endif %}>{{ element.label }}</option>
+	{% endif %}
+{% endfor %}
+</select>

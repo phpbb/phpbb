@@ -30,8 +30,10 @@
 		<dd><select id="bot_style" name="bot_style">{S_STYLE_OPTIONS}</select></dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_lang">{L_BOT_LANG}{L_COLON}</label><br /><span>{L_BOT_LANG_EXPLAIN}</span></dt>
-		<dd><select id="bot_lang" name="bot_lang">{S_LANG_OPTIONS}</select></dd>
+		<dt><label for="{{ LANG_OPTIONS.id }}">{L_BOT_LANG}{L_COLON}</label><br /><span>{L_BOT_LANG_EXPLAIN}</span></dt>
+		<dd>
+			{{ FormsSelect(LANG_OPTIONS) }}
+		</dd>
 	</dl>
 	<dl>
 		<dt><label for="bot_active">{L_BOT_ACTIVE}{L_COLON}</label></dt>

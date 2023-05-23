@@ -265,15 +265,12 @@ function phpbb_version_compare(string $version1, string $version2, string $opera
 /**
  * Pick a language, any language ...
  *
+ * @param \phpbb\db\driver\driver_interface $db DBAL driver
  * @param string $default	Language ISO code to be selected by default in the dropdown list
  * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
- *
- * @return string			HTML options for language selection dropdown list.
  */
-function language_select($default = '', array $langdata = [])
+function phpbb_language_select(\phpbb\db\driver\driver_interface $db, string $default = '', array $langdata = []): array
 {
-	global $db;
-
 	if (empty($langdata))
 	{
 		$sql = 'SELECT lang_iso, lang_local_name
@@ -284,11 +281,14 @@ function language_select($default = '', array $langdata = [])
 		$db->sql_freeresult($result);
 	}
 
-	$lang_options = '';
+	$lang_options = [];
 	foreach ($langdata as $row)
 	{
-		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
-		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
+		$lang_options[] = [
+			'value'		=> $row['lang_iso'],
+			'label'		=> $row['lang_local_name'],
+			'selected'	=> $row['lang_iso'] === $default,
+		];
 	}
 
 	return $lang_options;
@@ -442,14 +442,13 @@ function phpbb_get_timezone_identifiers($selected_timezone)
 /**
 * Options to pick a timezone and date/time
 *
-* @param	\phpbb\template\template $template	phpBB template object
 * @param	\phpbb\user	$user				Object of the current user
 * @param	string		$default			A timezone to select
 * @param	boolean		$truncate			Shall we truncate the options text
 *
 * @return	string		Returns an array containing the options for the time selector.
 */
-function phpbb_timezone_select($template, $user, $default = '', $truncate = false)
+function phpbb_timezone_select($user, $default = '', $truncate = false)
 {
 	static $timezones;
 
@@ -481,27 +480,22 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 		uksort($timezones, 'phpbb_tz_select_compare');
 	}
 
-	$tz_select = $opt_group = '';
+	$opt_group = '';
+	$tz_data = [];
 
 	foreach ($timezones as $key => $timezone)
 	{
 		if ($opt_group != $timezone['offset'])
 		{
-			// Generate tz_select for backwards compatibility
-			$tz_select .= ($opt_group) ? '</optgroup>' : '';
-			$tz_select .= '<optgroup label="' . $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']) . '">';
-			$opt_group = $timezone['offset'];
-			$template->assign_block_vars('timezone_select', array(
-				'LABEL'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
-				'VALUE'		=> $key . ' - ' . $timezone['current'],
-			));
+			$tz_data[$timezone['offset']] = [
+				'label'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
+				'value'		=> $key . ' - ' . $timezone['current'],
+				'options'	=> [],
+				'selected'	=> !empty($default_offset) && strpos($key, $default_offset) !== false,
+				'data'		=> ['tz-value'	=> $key . ' - ' . $timezone['current']],
+			];
 
-			$selected = (!empty($default_offset) && strpos($key, $default_offset) !== false) ? ' selected="selected"' : '';
-			$template->assign_block_vars('timezone_date', array(
-				'VALUE'		=> $key . ' - ' . $timezone['current'],
-				'SELECTED'	=> !empty($selected),
-				'TITLE'		=> $user->lang(array('timezones', 'UTC_OFFSET_CURRENT'), $timezone['offset'], $timezone['current']),
-			));
+			$opt_group = $timezone['offset'];
 		}
 
 		$label = $timezone['tz'];
@@ -516,19 +510,15 @@ function phpbb_timezone_select($template, $user, $default = '', $truncate = fals
 			$label = truncate_string($label, 50, 255, false, '...');
 		}
 
-		// Also generate timezone_select for backwards compatibility
-		$selected = ($timezone['tz'] === $default) ? ' selected="selected"' : '';
-		$tz_select .= '<option title="' . $title . '" value="' . $timezone['tz'] . '"' . $selected . '>' . $label . '</option>';
-		$template->assign_block_vars('timezone_select.timezone_options', array(
+		$tz_data[$timezone['offset']]['options'][] = [
 			'TITLE'			=> $title,
-			'VALUE'			=> $timezone['tz'],
-			'SELECTED'		=> !empty($selected),
-			'LABEL'			=> $label,
-		));
+			'value'			=> $timezone['tz'],
+			'selected'		=> $timezone['tz'] === $default,
+			'label'			=> $label,
+		];
 	}
-	$tz_select .= '</optgroup>';
 
-	return $tz_select;
+	return $tz_data;
 }
 
 // Functions handling topic/post tracking/marking

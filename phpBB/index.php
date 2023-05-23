@@ -86,52 +86,10 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 
 display_forums('', $config['load_moderators']);
 
-$order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
-// Grab group details for legend display
-if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-{
-	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
-		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend > 0
-		ORDER BY ' . $order_legend . ' ASC';
-}
-else
-{
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
-		FROM ' . GROUPS_TABLE . ' g
-		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-			ON (
-				g.group_id = ug.group_id
-				AND ug.user_id = ' . $user->data['user_id'] . '
-				AND ug.user_pending = 0
-			)
-		WHERE g.group_legend > 0
-			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.' . $order_legend . ' ASC';
-}
-$result = $db->sql_query($sql);
-
 /** @var \phpbb\group\helper $group_helper */
 $group_helper = $phpbb_container->get('group_helper');
 
-$legend = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
-	$group_name = $group_helper->get_name($row['group_name']);
-
-	if ($row['group_name'] == 'BOTS' || ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')))
-	{
-		$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
-	}
-	else
-	{
-		$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
-	}
-}
-$db->sql_freeresult($result);
-
-$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
+$group_helper->display_legend($db, $template);
 
 // Generate birthday list if required ...
 $show_birthdays = ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
@@ -219,7 +177,6 @@ $template->assign_vars(array(
 	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
-	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),

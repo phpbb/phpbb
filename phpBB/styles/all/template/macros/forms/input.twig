@@ -1,0 +1,18 @@
+{% apply replace({"\n": ' ', "\t": ''}) %}
+	<input
+		{% if ID %}id="{{ ID }}" {% endif %}
+		type="{{ TYPE }}"
+		name="{{ NAME }}"
+		{% if SIZE %}size="{{ SIZE }}" {% endif %}
+		{% if MAXLENGTH %}maxlength="{{ MAXLENGTH }}" {% endif %}
+		{% if MIN %}min="{{ MIN }}" {% endif %}
+		{% if MAX %}max="{{ MAX }}" {% endif %}
+		{% if STEP %}step="{{ STEP }}" {% endif %}
+		{% if TYPE == 'password' %}autocomplete="off" {% endif %}
+		{% if CHECKED %}checked="checked" {% endif %}
+		{% if CLASS %}class="{{ CLASS }}" {% endif %}
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
+		value="{{ VALUE }}">
+{% endapply %}

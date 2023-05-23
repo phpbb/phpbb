@@ -20,12 +20,68 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 
 	public static function language_select_data()
 	{
-		return array(
-			array('', '<option value="cs">Čeština</option><option value="en">English</option>'),
-			array('en', '<option value="cs">Čeština</option><option value="en" selected="selected">English</option>'),
-			array('cs', '<option value="cs" selected="selected">Čeština</option><option value="en">English</option>'),
-			array('de', '<option value="cs">Čeština</option><option value="en">English</option>'),
-		);
+		return [
+			[
+				'',
+				[
+					[
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
+					],
+					[
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
+					],
+				]
+			],
+			[
+				'en',
+				[
+					[
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
+					],
+					[
+						'selected'			=> true,
+						'value'			=> 'en',
+						'label'	=> 'English',
+					],
+				]
+			],
+			[
+				'cs',
+				[
+					[
+						'selected'			=> true,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
+					],
+					[
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
+					],
+				]
+			],
+			[
+				'de',
+				[
+					[
+						'selected'			=> false,
+						'value'			=> 'cs',
+						'label'	=> 'Čeština',
+					],
+					[
+						'selected'			=> false,
+						'value'			=> 'en',
+						'label'	=> 'English',
+					],
+				]
+			],
+		];
 	}
 
 	/**
@@ -36,6 +92,8 @@ class phpbb_functions_language_select_test extends phpbb_database_test_case
 		global $db;
 		$db = $this->new_dbal();
 
-		$this->assertEquals($expected, language_select($default));
+		$lang_options = phpbb_language_select($db, $default);
+
+		$this->assertEquals($expected, $lang_options);
 	}
 }

@@ -24,7 +24,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '1'),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="text" size="20" maxlength="255" name="config[config_key_name]" value="1" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'key_name',
+					'type'		=> 'text',
+					'name'		=> 'config[config_key_name]',
+					'size'		=> 20,
+					'maxlength'	=> 255,
+					'value'		=> '1',
+				],
 			),
 			array(
 				array('password', 20, 128),
@@ -32,7 +40,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '2'),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="password" size="20" maxlength="128" name="config[config_key_name]" value="********" autocomplete="off" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'key_name',
+					'type'		=> 'password',
+					'name'		=> 'config[config_key_name]',
+					'size'		=> 20,
+					'maxlength'	=> 128,
+					'value'		=> '********',
+				],
 			),
 			array(
 				array('text', 0, 255),
@@ -40,7 +56,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '3'),
 				'config_key_name',
 				array(),
-				'<input id="key_name" type="text" maxlength="255" name="config[config_key_name]" value="3" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'key_name',
+					'type'		=> 'text',
+					'name'		=> 'config[config_key_name]',
+					'maxlength'	=> 255,
+					'value'		=> '3',
+					'size'		=> '',
+				],
 			),
 		);
 	}
@@ -50,11 +74,12 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_text($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user, $phpbb_dispatcher;
+		global $user, $phpbb_dispatcher, $language;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$language = new phpbb_mock_lang();
+		$user->lang = $language;
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -68,7 +93,24 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" min="5" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" min="5" max="15" name="config[config_key_name_height]" value="20" />',
+				[
+					'tag'		=> 'dimension',
+					'width' => [
+						'id'		=> 'number_key_name',
+						'type'		=> 'number',
+						'name'		=> 'config[config_key_name_width]',
+						'min'		=> 5,
+						'max'		=> 15,
+						'value'		=> 10,
+					],
+					'height' => [
+						'type'		=> 'number',
+						'name'		=> 'config[config_key_name_height]',
+						'min'		=> 5,
+						'max'		=> 15,
+						'value'		=> 20,
+					],
+				],
 			),
 			array(
 				array('dimension', 0, 15),
@@ -76,7 +118,24 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name_width' => 10, 'config_key_name_height' => 20),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" min="0" max="15" name="config[config_key_name_width]" value="10" /> x <input type="number" min="0" max="15" name="config[config_key_name_height]" value="20" />',
+				[
+					'tag'		=> 'dimension',
+					'width' => [
+						'id'		=> 'number_key_name',
+						'type'		=> 'number',
+						'name'		=> 'config[config_key_name_width]',
+						'min'		=> 0,
+						'max'		=> 15,
+						'value'		=> 10,
+					],
+					'height' => [
+						'type'		=> 'number',
+						'name'		=> 'config[config_key_name_height]',
+						'min'		=> 0,
+						'max'		=> 15,
+						'value'		=> 20,
+					],
+				],
 			),
 		);
 	}
@@ -104,7 +163,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name' => 10),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" min="5" max="15" name="config[config_key_name]" value="10" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'number_key_name',
+					'type'		=> 'number',
+					'name'		=> 'config[config_key_name]',
+					'min'		=> 5,
+					'max'		=> 15,
+					'value'		=> 10,
+				],
 			),
 			array(
 				array('number', -1, 9999),
@@ -112,7 +179,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name' => 10),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" min="-1" max="9999" name="config[config_key_name]" value="10" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'number_key_name',
+					'type'		=> 'number',
+					'name'		=> 'config[config_key_name]',
+					'min'		=> -1,
+					'max'		=> 9999,
+					'value'		=> 10,
+				],
 			),
 			array(
 				array('number', 0, 9999),
@@ -120,7 +195,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name' => 10),
 				'config_key_name',
 				array(),
-				'<input id="number_key_name" type="number" min="0" max="9999" name="config[config_key_name]" value="10" />',
+				[
+					'tag'		=> 'input',
+					'id'		=> 'number_key_name',
+					'type'		=> 'number',
+					'name'		=> 'config[config_key_name]',
+					'min'		=> 0,
+					'max'		=> 9999,
+					'value'		=> 10,
+				],
 			),
 		);
 	}
@@ -148,7 +231,14 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name' => 'phpBB'),
 				'config_key_name',
 				array(),
-				'<textarea id="key_name" name="config[config_key_name]" rows="5" cols="30">phpBB</textarea>',
+				[
+					'tag'		=> 'textarea',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'rows'		=> 5,
+					'cols'		=> 30,
+					'content'	=> 'phpBB',
+				]
 			),
 		);
 	}
@@ -176,7 +266,26 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '0'),
 				'config_key_name',
 				array(),
-				'<label><input type="radio" id="key_name" name="config[config_key_name]" value="1" class="radio" /> ENABLED</label><label><input type="radio" name="config[config_key_name]" value="0" checked="checked" class="radio" /> DISABLED</label>',
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
 			),
 			array(
 				array('radio', 'enabled_disabled'),
@@ -184,7 +293,26 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '1'),
 				'config_key_name',
 				array(),
-				'<label><input type="radio" id="key_name" name="config[config_key_name]" value="1" checked="checked" class="radio" /> ENABLED</label><label><input type="radio" name="config[config_key_name]" value="0" class="radio" /> DISABLED</label>',
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
 			),
 			array(
 				array('radio', 'yes_no'),
@@ -192,7 +320,26 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '0'),
 				'config_key_name',
 				array(),
-				'<label><input type="radio" id="key_name" name="config[config_key_name]" value="1" class="radio" /> YES</label><label><input type="radio" name="config[config_key_name]" value="0" checked="checked" class="radio" /> NO</label>',
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
 			),
 			array(
 				array('radio', 'yes_no'),
@@ -200,7 +347,26 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name'	=> '1'),
 				'config_key_name',
 				array(),
-				'<label><input type="radio" id="key_name" name="config[config_key_name]" value="1" checked="checked" class="radio" /> YES</label><label><input type="radio" name="config[config_key_name]" value="0" class="radio" /> NO</label>',
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
 			),
 		);
 	}
@@ -210,11 +376,10 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_radio($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $user, $phpbb_dispatcher;
+		global $language, $phpbb_dispatcher;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$language = new \phpbb_mock_lang();
 
 		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
@@ -228,7 +393,15 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				array('config_key_name' => 'phpBB'),
 				'config_key_name',
 				array('append' => 'Bertie is cool!'),
-				'<textarea id="key_name" name="config[config_key_name]" rows="5" cols="30">phpBB</textarea>Bertie is cool!',
+				[
+					'tag'		=> 'textarea',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'rows'		=> 5,
+					'cols'		=> 30,
+					'content'	=> 'phpBB',
+					'append'	=> 'Bertie is cool!',
+				]
 			),
 		);
 	}
@@ -249,24 +422,69 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 
 	public function build_cfg_template_select_data()
 	{
-		return array(
-			array(
-				array('select'),
+		return [
+			[
+				['select'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array('method' => 'select_helper'),
-				'<select id="key_name" name="config[config_key_name]"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
-			),
-			array(
-				array('select', 8),
+				['method' => 'select_helper'],
+				[
+					'tag'		=> 'select',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'options'	=> [
+						[
+							'value'		=> 1,
+							'label'		=> 'First_Option',
+							'selected'	=> false,
+						],
+						[
+							'value'		=> 2,
+							'label'		=> 'Second_Option',
+							'selected'	=> true,
+						],
+						[
+							'value'		=> 3,
+							'label'		=> 'Third_Option',
+							'selected'	=> false,
+						]
+					],
+					'toggleable' => false,
+				],
+			],
+			[
+				['select', 8],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '1'],
 				'config_key_name',
-				array('method' => 'select_helper'),
-				'<select id="key_name" name="config[config_key_name]" size="8"><option value="1">First_Option</option><option value="2" selected="selected">Second_Option</option><option value="3">Third_Option</option></select>',
-			),
-		);
+				['method' => 'select_helper'],
+				[
+					'tag'		=> 'select',
+					'id'		=> 'key_name',
+					'name'		=> 'config[config_key_name]',
+					'size'		=> 8,
+					'options'	=> [
+						[
+							'value'		=> 1,
+							'label'		=> 'First_Option',
+							'selected'	=> false,
+						],
+						[
+							'value'		=> 2,
+							'label'		=> 'Second_Option',
+							'selected'	=> true,
+						],
+						[
+							'value'		=> 3,
+							'label'		=> 'Third_Option',
+							'selected'	=> false,
+						]
+					],
+					'toggleable' => false,
+				],
+			],
+		];
 	}
 
 	/**
@@ -274,11 +492,12 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	*/
 	public function test_build_cfg_template_select($tpl_type, $key, $new, $config_key, $vars, $expected)
 	{
-		global $module, $user, $phpbb_dispatcher;
+		global $module, $user, $phpbb_dispatcher, $language;
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user = new phpbb_mock_user();
-		$user->lang = new phpbb_mock_lang();
+		$language = new phpbb_mock_lang();
+		$user->lang = $language;
 		$user->module = $this;
 		$module = $user;
 

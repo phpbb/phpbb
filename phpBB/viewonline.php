@@ -441,44 +441,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
 
-$order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
-// Grab group details for legend display
-if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-{
-	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
-		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend > 0
-		ORDER BY ' . $order_legend . ' ASC';
-}
-else
-{
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
-		FROM ' . GROUPS_TABLE . ' g
-		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-			ON (
-				g.group_id = ug.group_id
-				AND ug.user_id = ' . $user->data['user_id'] . '
-				AND ug.user_pending = 0
-			)
-		WHERE g.group_legend > 0
-			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.' . $order_legend . ' ASC';
-}
-$result = $db->sql_query($sql);
-
-$legend = '';
-while ($row = $db->sql_fetchrow($result))
-{
-	if ($row['group_name'] == 'BOTS')
-	{
-		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . $user->lang['G_BOTS'] . '</span>';
-	}
-	else
-	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_helper->get_name($row['group_name']) . '</a>';
-	}
-}
-$db->sql_freeresult($result);
+$group_helper->display_legend($db, $template);
 
 // Refreshing the page every 60 seconds...
 meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));

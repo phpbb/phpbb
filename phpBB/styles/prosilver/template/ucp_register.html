@@ -57,11 +57,22 @@
 	<hr />
 
 	<!-- EVENT ucp_register_options_before -->
-	{% if S_LANG_OPTIONS %}
+	{% if LANG_OPTIONS %}
 	<dl>
-		<dt><label for="lang">{{ lang('LANGUAGE') ~ lang('COLON') }}</label></dt>
-		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" tabindex="6" title="{{ lang('LANGUAGE') }}">{{ S_LANG_OPTIONS }}</select></dd>
+		<dt><label for="{{ LANG_OPTIONS.id }}">{{ lang('LANGUAGE') ~ lang('COLON') }}</label></dt>
+		<dd>
+			{{ FormsSelect(LANG_OPTIONS) }}
+		</dd>
 	</dl>
+	<script>
+		/**
+		 * Change language on change
+		 */
+		document.querySelector("{{ '#' ~ LANG_OPTIONS.id }}").addEventListener('change', (event) => {
+			change_language(event.target.value);
+			return false;
+		});
+	</script>
 	{% endif %}
 
 	<!-- INCLUDE timezone_option.html -->

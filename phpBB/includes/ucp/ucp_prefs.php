@@ -156,7 +156,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT lang_iso, lang_local_name
@@ -176,6 +176,8 @@ class ucp_prefs
 				$styles_row = (array) $db->sql_fetchrowset($result);
 				$db->sql_freeresult($result);
 				$s_more_styles = count($styles_row) > 1;
+
+				$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
 
 				$template->assign_vars(array(
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
@@ -198,8 +200,17 @@ class ucp_prefs
 					'S_MORE_LANGUAGES'		=> $s_more_languages,
 					'S_MORE_STYLES'			=> $s_more_styles,
 
-					'S_LANG_OPTIONS'		=> language_select($data['lang'], $lang_row),
+					'LANG_OPTIONS'			=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style'], false, $styles_row),
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);

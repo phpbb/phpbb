@@ -340,6 +340,19 @@ $(function() {
 		});
 	}
 
+	// Handle date option changes
+	const dateoptionSelect = document.getElementById('dateoptions');
+	if (dateoptionSelect) {
+		dateoptionSelect.addEventListener('change', function() {
+			const dateoptionInput = document.getElementById(this.getAttribute('data-dateoption'));
+			if (this.value === 'custom') {
+				dateoptionInput.value = this.getAttribute('data-dateoption-default');
+			} else {
+				dateoptionInput.value = this.value;
+			}
+		})
+	}
+
 	if ($('#acp_help_phpbb')) {
 		phpbb.prepareSendStats();
 	}

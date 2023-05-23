@@ -1,0 +1,16 @@
+{% if form_data.tag == 'input' %}
+	{{ FormsInput(form_data) }}
+{% elseif form_data.tag == 'dimension' %}
+	{{ FormsDimension(form_data) }}
+{% elseif form_data.tag == 'radio' %}
+	{{ FormsRadioButtons(form_data) }}
+{% elseif form_data.tag == 'select' %}
+	{{ FormsSelect(form_data) }}
+{% elseif form_data.tag == 'textarea' %}
+	{{ FormsTextarea(form_data) }}
+{% elseif form_data[0] %}
+	{% for element in form_data %}
+		{{ FormsBuildTemplate(element) }}
+	{% endfor %}
+{% endif %}
+{% if form_data.append %}{{ form_data.append }}{% endif %}

@@ -1795,7 +1795,9 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
+				$lang_options = phpbb_language_select($db, $data['lang']);
+
 				$user_prefs_data = array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
@@ -1831,8 +1833,17 @@ class acp_users
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($data['lang']),
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
 				);
 
 				/**

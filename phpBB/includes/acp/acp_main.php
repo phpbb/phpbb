@@ -626,16 +626,7 @@ class acp_main
 				));
 			}
 
-			$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
-			if ($config['email_enable'])
-			{
-				$option_ary += array('remind' => 'REMIND');
-			}
-
-			$template->assign_vars(array(
-				'S_INACTIVE_USERS'		=> true,
-				'S_INACTIVE_OPTIONS'	=> build_select($option_ary))
-			);
+			$template->assign_var('S_INACTIVE_USERS', true);
 		}
 
 		// Warn if install is still present

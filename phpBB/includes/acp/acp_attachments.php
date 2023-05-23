@@ -452,11 +452,11 @@ class acp_attachments
 					$cache->destroy('_extensions');
 				}
 
-				$template->assign_vars(array(
+				$template->assign_vars([
 					'S_EXTENSIONS'			=> true,
 					'ADD_EXTENSION'			=> (isset($add_extension)) ? $add_extension : '',
-					'GROUP_SELECT_OPTIONS'	=> (isset($_POST['add_extension_check'])) ? $this->group_select('add_group_select', $add_extension_group, 'extension_group') : $this->group_select('add_group_select', false, 'extension_group'))
-				);
+					'GROUP_SELECT_OPTIONS'	=> $this->group_select('add_group_select', $request->is_set_post('add_extension_check') ? $add_extension_group : false, 'extension_group'),
+				]);
 
 				$sql = 'SELECT *
 					FROM ' . EXTENSIONS_TABLE . '
@@ -794,7 +794,10 @@ class acp_attachments
 							'ASSIGNED_EXTENSIONS'	=> $assigned_extensions,
 
 							'S_CATEGORY_SELECT'			=> $this->category_select('special_category', $group_id, 'category'),
-							'S_EXT_GROUP_SIZE_OPTIONS'	=> size_select_options($size_format),
+							'EXT_GROUP_SIZE_OPTIONS'	=> [
+								'name'		=> 'size_select',
+								'options'	=> size_select_options($size_format),
+							],
 							'S_EXTENSION_OPTIONS'		=> $s_extension_options,
 							'S_FILENAME_LIST'			=> $filename_list,
 							'S_EDIT_GROUP'				=> true,
@@ -1445,15 +1448,20 @@ class acp_attachments
 			$cat_type = attachment_category::NONE;
 		}
 
-		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
+		$group_select = [
+			'name'		=> $select_name,
+			'id'		=> $key,
+			'options'	=> [],
+		];
 
 		foreach ($types as $type => $mode)
 		{
-			$selected = ($type == $cat_type) ? ' selected="selected"' : '';
-			$group_select .= '<option value="' . $type . '"' . $selected . '>' . $mode . '</option>';
+			$group_select['options'][] = [
+				'value'		=> $type,
+				'selected'	=> $type == $cat_type,
+				'label'		=> $mode,
+			];
 		}
-
-		$group_select .= '</select>';
 
 		return $group_select;
 	}
@@ -1464,8 +1472,6 @@ class acp_attachments
 	function group_select($select_name, $default_group = false, $key = '')
 	{
 		global $db, $user;
-
-		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		$sql = 'SELECT group_id, group_name
 			FROM ' . EXTENSION_GROUPS_TABLE . '
@@ -1484,21 +1490,29 @@ class acp_attachments
 		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
 
+		$group_select = [
+			'name'		=> $select_name,
+			'id'		=> $key,
+			'options'	=> [],
+		];
+
 		for ($i = 0, $groups_size = count($group_name); $i < $groups_size; $i++)
 		{
 			if ($default_group === false)
 			{
-				$selected = ($i == 0) ? ' selected="selected"' : '';
+				$selected = $i == 0;
 			}
 			else
 			{
-				$selected = ($group_name[$i]['group_id'] == $default_group) ? ' selected="selected"' : '';
+				$selected = $group_name[$i]['group_id'] == $default_group;
 			}
 
-			$group_select .= '<option value="' . $group_name[$i]['group_id'] . '"' . $selected . '>' . $group_name[$i]['group_name'] . '</option>';
+			$group_select['options'][] = [
+				'value'		=> $group_name[$i]['group_id'],
+				'selected'	=> $selected,
+				'label'		=> $group_name[$i]['group_name'],
+			];
 		}
-
-		$group_select .= '</select>';
 
 		return $group_select;
 	}
@@ -1712,8 +1726,23 @@ class acp_attachments
 		$size_var = $filesize['si_identifier'];
 		$value = $filesize['value'];
 
-		// size and maxlength must not be specified for input of type number
-		return '<input type="number" id="' . $key . '" min="0" max="999999999999999" step="any" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'number',
+				'name'		=> 'config[' . $key . ']',
+				'min'		=> 0,
+				'max'		=> 999999999999999,
+				'step'		=> 'any',
+				'value'		=> $value,
+			],
+			[
+				'tag'		=> 'select',
+				'name'		=> $key,
+				'options'	=> size_select_options($size_var),
+			]
+		];
 	}
 
 	/**

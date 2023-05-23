@@ -306,7 +306,10 @@ class acp_inactive
 
 		$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,
-			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
+			'INACTIVE_OPTIONS'	=> [
+				'name'	=> 'action',
+				'options' => build_select($option_ary),
+			],
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

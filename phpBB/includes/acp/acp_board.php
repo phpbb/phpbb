@@ -18,6 +18,11 @@
 /**
 * @ignore
 */
+
+use phpbb\config\config;
+use phpbb\language\language;
+use phpbb\user;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -28,16 +33,26 @@ class acp_board
 	var $u_action;
 	var $new_config;
 
+	/** @var config */
+	protected $config;
+
+	/** @var language */
+	protected $language;
+
+	/** @var user */
+	protected $user;
+
 	function main($id, $mode)
 	{
 		global $user, $template, $request, $language;
 		global $config, $phpbb_root_path, $phpEx;
 		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_log;
 
-		/** @var \phpbb\language\language $language Language object */
-		$language = $phpbb_container->get('language');
+		$this->config = $config;
+		$this->language = $language;
+		$this->user = $user;
 
-		$user->add_lang('acp/board');
+		$this->language->add_lang('acp/board');
 
 		$submit = (isset($_POST['submit']) || isset($_POST['allow_quick_reply_enable'])) ? true : false;
 
@@ -64,7 +79,7 @@ class acp_board
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
-						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'function' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
+						'default_lang'			=> array('lang' => 'DEFAULT_LANGUAGE',		'validate' => 'lang',	'type' => 'select', 'method' => 'language_select', 'params' => array('{CONFIG_VALUE}'), 'explain' => false),
 						'default_dateformat'	=> array('lang' => 'DEFAULT_DATE_FORMAT',	'validate' => 'string',	'type' => 'custom', 'method' => 'dateformat_select', 'explain' => true),
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
 
@@ -503,7 +518,7 @@ class acp_board
 			{
 				if (!preg_match('#^[a-z][a-z0-9+\\-.]*$#Di', $scheme))
 				{
-					$error[] = $language->lang('URL_SCHEME_INVALID', $language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
+					$error[] = $this->language->lang('URL_SCHEME_INVALID', $this->language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
 				}
 			}
 		}
@@ -976,19 +991,50 @@ class acp_board
 	/**
 	* Select bump interval
 	*/
-	function bump_interval($value, $key)
+	public function bump_interval($value, $key): array
 	{
-		global $user;
-
-		$s_bump_type = '';
+		$bump_type_options = [];
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
 		{
-			$selected = ($this->new_config['bump_type'] == $type) ? ' selected="selected"' : '';
-			$s_bump_type .= '<option value="' . $type . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$bump_type_options[] = [
+				'value'		=> $type,
+				'selected'	=> $this->new_config['bump_type'] == $type,
+				'label'		=> $this->language->lang($lang),
+			];
 		}
 
-		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'text',
+				'size'		=> 3,
+				'maxlength'	=> 4,
+				'name'		=> 'config[bump_interval]',
+				'value'		=> $value,
+			],
+			[
+				'tag'		=> 'select',
+				'name'		=> 'config[bump_type]',
+				'options'	=> $bump_type_options,
+			],
+		];
+	}
+
+	/**
+	 * Wrapper function for phpbb_language_select()
+	 *
+	 * @param string $default
+	 * @param array $langdata
+	 *
+	 * @return array
+	 */
+	public function language_select(string $default = '', array $langdata = []): array
+	{
+		global $db;
+
+		return phpbb_language_select($db, $default, $langdata);
 	}
 
 	/**
@@ -1019,11 +1065,13 @@ class acp_board
 	*/
 	function timezone_select($value, $key)
 	{
-		global $template, $user;
+		$timezone_select = phpbb_timezone_select($this->user, $value, true);
 
-		$timezone_select = phpbb_timezone_select($template, $user, $value, true);
-
-		return '<select name="config[' . $key . ']" id="' . $key . '">' . $timezone_select . '</select>';
+		return [
+			'tag'			=> 'select',
+			'name'			=> 'config[' . $key . ']',
+			'options'		=> $timezone_select,
+		];
 	}
 
 	/**
@@ -1060,81 +1108,132 @@ class acp_board
 	}
 
 	/**
-	* Select default dateformat
-	*/
-	function dateformat_select($value, $key)
+	 * Create select for default date format
+	 *
+	 * @param string $value Current date format value
+	 * @param string $key Date format key
+	 *
+	 * @return array Date format select data
+	 */
+	public function dateformat_select(string $value, string $key): array
 	{
-		global $user, $config;
-
 		// Let the format_date function operate with the acp values
-		$old_tz = $user->timezone;
+		$old_tz = $this->user->timezone;
 		try
 		{
-			$user->timezone = new DateTimeZone($config['board_timezone']);
+			$this->user->timezone = new DateTimeZone($this->config['board_timezone']);
 		}
 		catch (\Exception $e)
 		{
 			// If the board timezone is invalid, we just use the users timezone.
 		}
 
-		$dateformat_options = '';
+		$dateformat_options = [];
 
-		foreach ($user->lang['dateformats'] as $format => $null)
+		$dateformats = $this->language->lang_raw('dateformats');
+		if (!is_array($dateformats))
 		{
-			$dateformat_options .= '<option value="' . $format . '"' . (($format == $value) ? ' selected="selected"' : '') . '>';
-			$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
-			$dateformat_options .= '</option>';
+			$dateformats = [];
 		}
 
-		$dateformat_options .= '<option value="custom"';
-		if (!isset($user->lang['dateformats'][$value]))
+		foreach ($dateformats as $format => $null)
 		{
-			$dateformat_options .= ' selected="selected"';
+			$dateformat_options[] = [
+				'value'			=> $format,
+				'selected'		=> $format == $value,
+				'label'			=> $this->user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $this->language->lang('VARIANT_DATE_SEPARATOR') . $this->user->format_date(time(), $format, true) : '')
+			];
 		}
-		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+
+		// Add custom entry
+		$dateformat_options[] = [
+			'value'			=> 'custom',
+			'selected'		=> !isset($dateformats[$value]),
+			'label'			=> $this->language->lang('CUSTOM_DATEFORMAT'),
+		];
 
 		// Reset users date options
-		$user->timezone = $old_tz;
+		$this->user->timezone = $old_tz;
 
-		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
-		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"64\" />";
+		return [
+			[
+				'tag'		=> 'select',
+				'name'		=> 'dateoptions',
+				'id'		=> 'dateoptions',
+				'options'	=> $dateformat_options,
+				'data'		=> [
+					'dateoption'			=> $key,
+					'dateoption-default'	=> $value,
+				]
+			],
+			[
+				'tag'		=> 'input',
+				'type'		=> 'text',
+				'name'		=> "config[$key]",
+				'id'		=> $key,
+				'value'		=> $value,
+				'maxlength'	=> 64,
+			]
+		];
 	}
 
 	/**
-	* Select multiple forums
-	*/
-	function select_news_forums($value, $key)
+	 * Select for multiple forums
+	 *
+	 * @param mixed $value Config value, unused
+	 * @param string $key Config key
+	 *
+	 * @return array Forum select data
+	 */
+	public function select_news_forums($value, string $key)
 	{
-		$forum_list = make_forum_select(false, false, true, true, true, false, true);
-
-		// Build forum options
-		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
-		foreach ($forum_list as $f_id => $f_row)
-		{
-			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_NEWS, $f_row['forum_options']);
-
-			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
-		}
-		$s_forum_options .= '</select>';
-
-		return $s_forum_options;
+		return $this->get_forum_select($key);
 	}
 
-	function select_exclude_forums($value, $key)
+	/**
+	 * Select for multiple forums to exclude
+	 *
+	 * @param mixed $value Config value, unused
+	 * @param string $key Config key
+	 *
+	 * @return array Forum select data
+	 */
+	public function select_exclude_forums($value, string $key): array
+	{
+		return $this->get_forum_select($key, FORUM_OPTION_FEED_EXCLUDE);
+	}
+
+	/**
+	 * Get forum select data for specified key and option
+	 *
+	 * @param string $key Config key
+	 * @param int $forum_option Forum option bit
+	 *
+	 * @return array Forum select data
+	 */
+	protected function get_forum_select(string $key, int $forum_option = FORUM_OPTION_FEED_NEWS): array
 	{
 		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
-		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
+		$forum_options = [];
 		foreach ($forum_list as $f_id => $f_row)
 		{
-			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $f_row['forum_options']);
-
-			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+			$forum_options[] = [
+				'value'		=> $f_id,
+				'selected'	=> phpbb_optionget($forum_option, $f_row['forum_options']),
+				'disabled'	=> $f_row['disabled'],
+				'label'		=> $f_row['padding'] . $f_row['forum_name'],
+			];
 		}
-		$s_forum_options .= '</select>';
 
-		return $s_forum_options;
+		return [
+			'tag'		=> 'select',
+			'id'		=> $key,
+			'name'		=> $key . '[]',
+			'multiple'	=> true,
+			'options'	=> $forum_options,
+		];
 	}
 
 	function store_feed_forums($option, $key)
