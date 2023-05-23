@@ -55,7 +55,16 @@ class messenger
 	];
 
 	/** @var array */
+	protected $additional_headers = [];
+
+	/** @var array */
 	protected $addresses = [];
+
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
 
 	/**
 	 * @var string
@@ -66,6 +75,15 @@ class messenger
 
 	/** @var string */
 	protected $from;
+
+	/** @var Symfony\Component\Mime\Header\Headers */
+	protected $headers;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log_interface */
+	protected $log;
 
 	/**
 	 * @var int
@@ -83,7 +101,19 @@ class messenger
 	protected $msg;
 
 	/** @var string */
+	protected $php_ext;
+
+	/** @var queue */
+	protected $queue;
+
+	/** @var string */
 	protected $replyto;
+
+	/** @var  \phpbb\request\request */
+	protected $request;
+
+	/** @var string */
+	protected $root_path;
 
 	/** @var string */
 	protected $subject;
@@ -96,6 +126,9 @@ class messenger
 
 	/** @var bool */
 	protected $use_queue = true;
+
+	/** @var phpbb\user */
+	protected $user;
 
 	/**
 	 * Messenger class constructor
@@ -144,7 +177,7 @@ class messenger
 	{
 		if (isset($user['user_email']) && $user['user_email'])
 		{
-			$this->email->to(new Address($user['user_email'], $user['username'] ?: ''));
+			$this->to($user['user_email'], $user['username'] ?: '');
 		}
 
 		if (isset($user['user_jabber']) && $user['user_jabber'])
@@ -273,9 +306,17 @@ class messenger
 	 * @param string	$header_value	Email header body
 	 * @return void
 	 */
-	public function headers($header_name, $header_value)
+	public function header($header_name, $header_value)
 	{
-		$this->headers->addTextHeader(trim($header_name), trim($header_value));
+		$header_name = trim($header_name);
+		$header_value = trim($header_value);
+
+		// addMailboxListHeader() requires value to be array
+		if ($this->get_header_method($header_name) == 'addMailboxListHeader')
+		{
+			$header_value = [$header_value];
+		}
+		$this->headers->addHeader($header_name, $header_value);
 	}
 
 	/**
@@ -287,10 +328,10 @@ class messenger
 	 */
 	public function anti_abuse_headers($config, $user)
 	{
-		$this->headers->addTextHeader('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
-		$this->headers->addTextHeader('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
-		$this->headers->addTextHeader('X-AntiAbuse', 'Username - ' . $user->data['username']);
-		$this->headers->addTextHeader('X-AntiAbuse', 'User IP - ' . $user->ip);
+		$this->header('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
+		$this->header('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
+		$this->header('X-AntiAbuse', 'Username - ' . $user->data['username']);
+		$this->header('X-AntiAbuse', 'User IP - ' . $user->ip);
 	}
 
 	/**
@@ -415,6 +456,13 @@ class messenger
 		$this->template->assign_vars($vars);
 	}
 
+	/**
+	 * Assign block of variables to email template
+	 *
+	 * @param string	$blockname	Template block name
+	 * @param array		$vars		Array of VAR => VALUE to assign to email template block
+	 * @return void
+	 */
 	public function assign_block_vars($blockname, $vars)
 	{
 		$this->setup_template();
@@ -423,14 +471,11 @@ class messenger
 	}
 
 	/**
-	 * Send the mail out to the recipients
+	 * Prepare message before sending out to the recipients
 	 *
-	 * @param int	$method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
-	 * @param bool	$break	Flag indicating if the function only formats the subject
-	 *						and the message without sending it
-	 * @return bool
+	 * @return void
 	 */
-	public function send($method = NOTIFY_EMAIL, $break = false)
+	public function prepare_message()
 	{
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars([
@@ -446,16 +491,13 @@ class messenger
 		 * Event to modify the template before parsing
 		 *
 		 * @event core.modify_notification_template
-		 * @var	bool							break	Flag indicating if the function only formats the subject
-		 *												and the message without sending it
 		 * @var	Symfony\Component\Mime\Email	email		The Symfony Email object
-		 * @var	int								method		User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
 		 * @var	string							subject		The message subject
 		 * @var \phpbb\template\template 		template	The (readonly) template object
 		 * @since 3.2.4-RC1
-		 * @changed 4.0.0-a1 Added vars: email.
+		 * @changed 4.0.0-a1 Added vars: email. Removed vars: method, break.
 		 */
-		$vars = ['break', 'email', 'method', 'subject', 'template'];
+		$vars = ['email', 'subject', 'template'];
 		extract($this->dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
 
 		// Parse message through template
@@ -465,16 +507,13 @@ class messenger
 		 * Event to modify notification message text after parsing
 		 *
 		 * @event core.modify_notification_message
-		 * @var	bool							break	Flag indicating if the function only formats the subject
-		 *												and the message without sending it
 		 * @var	Symfony\Component\Mime\Email	email	The Symfony Email object
 		 * @var	string							message	The message text
-		 * @var	int								method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
 		 * @var	string							subject	The message subject
 		 * @since 3.1.11-RC1
-		 * @changed 4.0.0-a1 Added vars: email.
+		 * @changed 4.0.0-a1 Added vars: email.  Removed vars: method, break.
 		 */
-		$vars = ['break', 'email', 'message', 'method', 'subject'];
+		$vars = ['email', 'message', 'subject'];
 		extract($this->dispatcher->trigger_event('core.modify_notification_message', compact($vars)));
 
 		$this->email = $email;
@@ -489,30 +528,39 @@ class messenger
 		// do this here because the subject may contain a variable
 		$drop_header = '';
 		$match = [];
-		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
+		if (preg_match('#^(Subject):(.*?)$#m', $this->msg, $match))
 		{
 			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $this->user->lang['NO_EMAIL_SUBJECT']);
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . preg_quote($match[0], '#');
 		}
 		else
 		{
 			$this->subject = (($this->subject != '') ? $this->subject : $this->user->lang['NO_EMAIL_SUBJECT']);
 		}
 
-		if (preg_match('#^(List-Unsubscribe:(.*?))$#m', $this->msg, $match))
+		if (preg_match('#^(List-Unsubscribe):(.*?)$#m', $this->msg, $match))
 		{
-			$this->headers->addTextHeader('List-Unsubscribe', trim($match[2]));
-			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
+			$drop_header .= '[\r\n]*?' . preg_quote($match[0], '#');
+			$this->additional_headers[$match[1]] = trim($match[2]);
 		}
 
 		if ($drop_header)
 		{
 			$this->msg = trim(preg_replace('#' . $drop_header . '#s', '', $this->msg));
 		}
+	}
 
-		$this->email->subject($this->subject);
-		$this->email->text($this->msg);
-
+	/**
+	 * Send the mail out to the recipients
+	 *
+	 * @param int	$method	User notification method NOTIFY_EMAIL|NOTIFY_IM|NOTIFY_BOTH
+	 * @param bool	$break	Flag indicating if the function only formats the subject
+	 *						and the message without sending it
+	 * @return bool
+	 */
+	public function send($method = NOTIFY_EMAIL, $break = false)
+	{
+		$this->prepare_message();
 		if ($break)
 		{
 			return true;
@@ -617,13 +665,13 @@ class messenger
 		$board_contact = $this->config['board_contact'];
 		if (empty($this->email->getReplyTo()))
 		{
-			$this->replyto = $board_contact;
+			$this->replyto($board_contact);
 			$headers['Reply-To'] =  $this->replyto;
 		}
 
 		if (empty($this->email->getFrom()))
 		{
-			$this->from = $board_contact;
+			$this->from($board_contact);
 			$headers['From'] = $this->from;
 		}
 
@@ -647,12 +695,7 @@ class messenger
 
 		foreach ($headers as $header => $value)
 		{
-			// addMailboxListHeader() requires value to be array
-			if ($this->get_header_method($header) == 'addMailboxListHeader')
-			{
-				$value = [$value];
-			}
-			$this->headers->addHeader($header, $value);
+			$this->header($header, $value);
 		}
 
 		return true;
@@ -719,15 +762,10 @@ class messenger
 		if ($this->config['smtp_delivery'] && !in_array($this->dsn, ['null://null', 'sendmail://default']))
 		{
 			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
-			$verify_peer = (bool) $this->config['smtp_verify_peer'];
-			$verify_peer_name = (bool) $this->config['smtp_verify_peer_name'];
-			$allow_self_signed = (bool) $this->config['smtp_allow_self_signed'];
-			$options = [
-				'ssl' => [
-					'verify_peer' => $verify_peer,
-					'verify_peer_name' => $verify_peer_name,
-					'allow_self_signed' => $allow_self_signed,
-				]
+			$options['ssl'] = [
+				'verify_peer' => (bool) $this->config['smtp_verify_peer'],
+				'verify_peer_name' => (bool) $this->config['smtp_verify_peer_name'],
+				'allow_self_signed' => (bool) $this->config['smtp_allow_self_signed'],
 			];
 			$this->transport->getStream()->setStreamOptions($options);
 		}
@@ -776,6 +814,9 @@ class messenger
 		$contact_name = html_entity_decode($this->config['board_contact_name'], ENT_COMPAT);
 		$board_contact = $this->config['board_contact'];
 
+		$this->email->subject($this->subject);
+		$this->email->text($this->msg);
+
 		$break = false;
 		$subject = $this->subject;
 		$msg = $this->msg;
@@ -811,15 +852,19 @@ class messenger
 
 		if (empty($this->email->getReplyto()))
 		{
-			$this->email->replyTo(new Address($board_contact));
+			$this->replyto($board_contact);
 		}
 
 		if (empty($this->email->getFrom()))
 		{
-			$this->email->from(new Address($board_contact));
+			$this->from($board_contact);
 		}
 
 		// Build header
+		foreach ($this->additional_headers as $header_name => $header_value)
+		{
+			$this->header($header_name, $header_value);
+		}
 		$this->build_header();
 
 		// Send message ...

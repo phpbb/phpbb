@@ -31,65 +31,134 @@ if (!defined('IN_PHPBB'))
 */
 class jabber
 {
-	var $connection = null;
-	var $session = array();
-	var $timeout = 10;
+	/** @var string */
+	protected $connect_server;
 
-	var $server;
-	var $connect_server;
-	var $port;
-	var $username;
-	var $password;
-	var $use_ssl;
-	var $verify_peer;
-	var $verify_peer_name;
-	var $allow_self_signed;
-	var $resource = 'functions_jabber.phpbb.php';
+	/** @var resource */
+	protected $connection = null;
 
-	var $enable_logging;
-	var $log_array;
+	/** @var bool */
+	protected $enable_logging = true;
 
-	var $features = array();
+	/** @var array */
+	protected $features = [];
+
+	/** @var array */
+	protected $jid = [];
+
+	/** @var array */
+	protected $log_array = [];
+
+	/** @var string */
+	protected $password;
+
+	/** @var string */
+	protected $port;
+
+	/** @var string */
+	protected $resource = 'functions_jabber.phpbb.php';
+
+	/** @var string */
+	protected $server;
+
+	/** @var array */
+	protected $session = [];
+
+	/** @var array */
+	protected $stream_options = [];
+
+	/** @var int */
+	protected $timeout = 10;
+
+	/** @var bool */
+	protected $use_ssl = false;
+
+	/** @var string */
+	protected $username;
 
 	/** @var string Stream close handshake */
 	private const STREAM_CLOSE_HANDSHAKE = '</stream:stream>';
 
 	/**
-	* Constructor
-	*
-	* @param string $server Jabber server
-	* @param int $port Jabber server port
-	* @param string $username Jabber username or JID
-	* @param string $password Jabber password
-	* @param bool $use_ssl Use ssl
-	* @param bool $verify_peer Verify SSL certificate
-	* @param bool $verify_peer_name Verify Jabber peer name
-	* @param bool $allow_self_signed Allow self signed certificates
-	*/
-	function __construct($server, $port, $username, $password, $use_ssl = false, $verify_peer = true, $verify_peer_name = true, $allow_self_signed = false)
+	 * Jabber class constructor
+	 *
+	 * Use (username() call should go before server()
+	 * and ssl() call should go before port() and stream_options()):
+	 *
+	 * new jabber()
+	 *		-> username($username)
+	 *		-> password($password)
+	 *		-> ssl($use_ssl)
+	 *		-> server($server)
+	 *		-> port($port) 
+	 *		-> stream_options( 
+	 *			'verify_peer' => true,
+	 *			'verify_peer_name' => true,
+	 *			'allow_self_signed' => false,
+	 *		);
+	 */
+	function __construct()
 	{
-		$this->connect_server		= ($server) ? $server : 'localhost';
-		$this->port					= ($port) ? $port : 5222;
+	}
 
-		// Get the server and the username
-		if (strpos($username, '@') === false)
+	/**
+	 * Set ssl context options
+	 * See http://php.net/manual/en/context.ssl.php
+	 *
+	 * @param array $options SSL context options array
+	 * @return $this
+	 */
+	public function stream_options($options = [])
+	{
+		if ($this->use_ssl)
 		{
-			$this->server = $this->connect_server;
-			$this->username = $username;
-		}
-		else
-		{
-			$jid = explode('@', $username, 2);
-
-			$this->username = $jid[0];
-			$this->server = $jid[1];
+			// Set default stream options and change it if needed
+			$this->stream_options['ssl'] = array_merge([
+				'verify_peer' => true,
+				'verify_peer_name' => true,
+				'allow_self_signed' => false,
+			], $options);
 		}
 
-		$this->password				= $password;
-		$this->use_ssl				= ($use_ssl && self::can_use_ssl()) ? true : false;
-		$this->verify_peer			= $verify_peer;
-		$this->verify_peer_name		= $verify_peer_name;
-		$this->allow_self_signed	= $allow_self_signed;
+		return $this;
+	}
+
+	/**
+	 * Set password to connect to server
+	 *
+	 * @param string $password Password to connect to server
+	 * @return $this
+	 */
+	public function password($password = '')
+	{
+		$this->password	= $password;
+
+		return $this;
+	}
+
+	/**
+	 * Set use of ssl to connect to server
+	 *
+	 * @param bool $use_ssl Flag indicating use of ssl to connect to server
+	 * @return $this
+	 */
+	public function ssl($use_ssl = false)
+	{
+		$this->use_ssl = $use_ssl && self::can_use_ssl();
+
+		return $this;
+	}
+
+	/**
+	 * Set port to connect to server
+	 * use_ssl flag should be set first
+	 *
+	 * @param string $port Port to connect to server
+	 * @return $this
+	 */
+	public function port($port = '')
+	{
+		$this->port	= ($port) ? $port : 5222;
 
 		// Change port if we use SSL
 		if ($this->port == 5222 && $this->use_ssl)
@@ -97,21 +166,56 @@ class jabber
 			$this->port = 5223;
 		}
 
-		$this->enable_logging		= true;
-		$this->log_array			= array();
+		return $this;
 	}
 
 	/**
-	* Able to use the SSL functionality?
-	*/
+	 * Set username to connect to server
+	 *
+	 * @param string $username Username to connect to server
+	 * @return $this
+	 */
+	public function username($username = '')
+	{
+		if (strpos($username, '@') === false)
+		{
+			$this->username = $username;
+		}
+		else
+		{
+			$this->jid = explode('@', $username, 2);
+			$this->username = $this->jid[0];
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Set server to connect
+	 * Username should be set first
+	 *
+	 * @param string $server Server to connect
+	 * @return $this
+	 */
+	public function server($server = '')
+	{
+		$this->connect_server = ($server) ? $server : 'localhost';
+		$this->server = $this->jid[1] ?? $this->connect_server;
+
+		return $this;
+	}
+
+	/**
+	 * Able to use the SSL functionality?
+	 */
 	public static function can_use_ssl()
 	{
 		return @extension_loaded('openssl');
 	}
 
 	/**
-	* Able to use TLS?
-	*/
+	 * Able to use TLS?
+	 */
 	public static function can_use_tls()
 	{
 		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('stream_set_blocking') || !function_exists('stream_get_wrappers'))
@@ -135,19 +239,19 @@ class jabber
 	}
 
 	/**
-	* Sets the resource which is used. No validation is done here, only escaping.
-	* @param string $name
-	* @access public
-	*/
-	function set_resource($name)
+	 * Sets the resource which is used. No validation is done here, only escaping.
+	 * @param string $name
+	 * @access public
+	 */
+	public function set_resource($name)
 	{
 		$this->resource = $name;
 	}
 
 	/**
-	* Connect
-	*/
-	function connect()
+	 * Connect
+	 */
+	public function connect()
 	{
 /*		if (!$this->check_jid($this->username . '@' . $this->server))
 		{
@@ -157,7 +261,7 @@ class jabber
 
 		$this->session['ssl'] = $this->use_ssl;
 
-		if ($this->open_socket($this->connect_server, $this->port, $this->use_ssl, $this->verify_peer, $this->verify_peer_name, $this->allow_self_signed))
+		if ($this->open_socket($this->connect_server, $this->port))
 		{
 			$this->send("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
 			$this->send("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
@@ -174,9 +278,9 @@ class jabber
 	}
 
 	/**
-	* Disconnect
-	*/
-	function disconnect()
+	 * Disconnect
+	 */
+	public function disconnect()
 	{
 		if ($this->connected())
 		{
@@ -195,7 +299,7 @@ class jabber
 				$this->add_to_log("Error: Unexpected stream close handshake reply ”{$stream_close_reply}”");
 			}
 
-			$this->session = array();
+			$this->session = [];
 			return fclose($this->connection);
 		}
 
@@ -203,20 +307,20 @@ class jabber
 	}
 
 	/**
-	* Connected?
-	*/
-	function connected()
+	 * Connected?
+	 */
+	public function connected()
 	{
-		return (is_resource($this->connection) && !feof($this->connection)) ? true : false;
+		return is_resource($this->connection) && !feof($this->connection);
 	}
 
 
 	/**
-	* Initiates login (using data from contructor, after calling connect())
-	* @access public
-	* @return bool
-	*/
-	function login()
+	 * Initiates login (using data from contructor, after calling connect())
+	 *
+	 * @return bool
+	 */
+	public function login()
 	{
 		if (empty($this->features))
 		{
@@ -228,12 +332,13 @@ class jabber
 	}
 
 	/**
-	* Send data to the Jabber server
-	* @param string $xml
-	* @access public
-	* @return bool
-	*/
-	function send($xml)
+	 * Send data to the Jabber server
+	 *
+	 * @param string $xml
+	 *
+	 * @return bool
+	 */
+	public function send($xml)
 	{
 		if ($this->connected())
 		{
@@ -248,17 +353,14 @@ class jabber
 	}
 
 	/**
-	* OpenSocket
-	* @param string $server host to connect to
-	* @param int $port port number
-	* @param bool $use_ssl use ssl or not
-	* @param bool $verify_peer verify ssl certificate
-	* @param bool $verify_peer_name verify peer name
-	* @param bool $allow_self_signed allow self-signed ssl certificates
-	* @access public
-	* @return bool
-	*/
-	function open_socket($server, $port, $use_ssl, $verify_peer, $verify_peer_name, $allow_self_signed)
+	 * OpenSocket
+	 *
+	 * @param string $server host to connect to
+	 * @param int $port port number
+	 *
+	 * @return bool
+	 */
+	public function open_socket($server, $port)
 	{
 		if (@function_exists('dns_get_record'))
 		{
@@ -269,21 +371,8 @@ class jabber
 			}
 		}
 
-		$options = array();
-
-		if ($use_ssl)
-		{
-			$remote_socket = 'ssl://' . $server . ':' . $port;
-
-			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
-			$options['ssl'] = array('verify_peer' => $verify_peer, 'verify_peer_name' => $verify_peer_name, 'allow_self_signed' => $allow_self_signed);
-		}
-		else
-		{
-			$remote_socket = $server . ':' . $port;
-		}
-
-		$socket_context = stream_context_create($options);
+		$remote_socket = $this->use_ssl ? 'ssl://' . $server . ':' . $port : $server . ':' . $port;
+		$socket_context = stream_context_create($this->stream_options);
 
 		if ($this->connection = @stream_socket_client($remote_socket, $errorno, $errorstr, $this->timeout, STREAM_CLIENT_CONNECT, $socket_context))
 		{
@@ -299,9 +388,9 @@ class jabber
 	}
 
 	/**
-	* Return log
-	*/
-	function get_log()
+	 * Return log
+	 */
+	public function get_log()
 	{
 		if ($this->enable_logging && count($this->log_array))
 		{
@@ -312,9 +401,9 @@ class jabber
 	}
 
 	/**
-	* Add information to log
-	*/
-	function add_to_log($string)
+	 * Add information to log
+	 */
+	protected function add_to_log($string)
 	{
 		if ($this->enable_logging)
 		{
@@ -323,12 +412,12 @@ class jabber
 	}
 
 	/**
-	* Listens to the connection until it gets data or the timeout is reached.
-	* Thus, it should only be called if data is expected to be received.
-	* @access public
-	* @return mixed either false for timeout or an array with the received data
-	*/
-	function listen($timeout = 10, $wait = false)
+	 * Listens to the connection until it gets data or the timeout is reached.
+	 * Thus, it should only be called if data is expected to be received.
+	 *
+	 * @return mixed either false for timeout or an array with the received data
+	 */
+	public function listen($timeout = 10, $wait = false)
 	{
 		if (!$this->connected())
 		{
@@ -358,11 +447,11 @@ class jabber
 	}
 
 	/**
-	* Initiates account registration (based on data used for contructor)
-	* @access public
-	* @return bool
-	*/
-	function register()
+	 * Initiates account registration (based on data used for contructor)
+	 *
+	 * @return bool
+	 */
+	public function register()
 	{
 		if (!isset($this->session['id']) || isset($this->session['jid']))
 		{
@@ -375,13 +464,14 @@ class jabber
 	}
 
 	/**
-	* Sets account presence. No additional info required (default is "online" status)
-	* @param $message online, offline...
-	* @param $type dnd, away, chat, xa or nothing
-	* @param $unavailable set this to true if you want to become unavailable
-	* @access public
-	* @return bool
-	*/
+	 * Sets account presence. No additional info required (default is "online" status)
+	 *
+	 * @param string	$message		online, offline...
+	 * @param string	$type			dnd, away, chat, xa or nothing
+	 * @param bool		$unavailable	set this to true if you want to become unavailable
+	 *
+	 * @return bool
+	 */
 	function send_presence($message = '', $type = '', $unavailable = false)
 	{
 		if (!isset($this->session['jid']))
@@ -402,11 +492,12 @@ class jabber
 	}
 
 	/**
-	* This handles all the different XML elements
-	* @param array $xml
-	* @access public
-	* @return bool
-	*/
+	 * This handles all the different XML elements
+	 *
+	 * @param array $xml
+	 *
+	 * @return bool
+	 */
 	function response($xml)
 	{
 		if (!is_array($xml) || !count($xml))
@@ -716,7 +807,17 @@ class jabber
 		}
 	}
 
-	function send_message($to, $text, $subject = '', $type = 'normal')
+	/**
+	 * Send Jabber message
+	 *
+	 * @param string $to		Recepient usermane
+	 * @param string $text		Message text
+	 * @param string $subject	Message subject
+	 * @param string $type		Message type
+	 *
+	 * @return string
+	 */
+	public function send_message($to, $text, $subject = '', $type = 'normal')
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -736,12 +837,13 @@ class jabber
 	}
 
 	/**
-	* Encrypts a password as in RFC 2831
-	* @param array $data Needs data from the client-server connection
-	* @access public
-	* @return string
-	*/
-	function encrypt_password($data)
+	 * Encrypts a password as in RFC 2831
+	 *
+	 * @param array $data Needs data from the client-server connection
+	 *
+	 * @return string
+	 */
+	public function encrypt_password($data)
 	{
 		// let's me think about <challenge> again...
 		foreach (array('realm', 'cnonce', 'digest-uri') as $key)
@@ -770,12 +872,12 @@ class jabber
 	}
 
 	/**
-	* parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
-	* @param string $data
-	* @access public
-	* @return array a => b ...
-	*/
-	function parse_data($data)
+	 * parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
+	 * @param string $data
+	 *
+	 * @return array a => b ...
+	 */
+	public function parse_data($data)
 	{
 		$data = explode(',', $data);
 		$pairs = array();
@@ -802,12 +904,13 @@ class jabber
 	}
 
 	/**
-	* opposite of jabber::parse_data()
-	* @param array $data
-	* @access public
-	* @return string
-	*/
-	function implode_data($data)
+	 * opposite of jabber::parse_data()
+	 *
+	 * @param array $data
+	 *
+	 * @return string
+	 */
+	public function implode_data($data)
 	{
 		$return = array();
 		foreach ($data as $key => $value)
@@ -818,10 +921,10 @@ class jabber
 	}
 
 	/**
-	* xmlize()
-	* @author Hans Anderson
-	* @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
-	*/
+	 * xmlize()
+	 * @author Hans Anderson
+	 * @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
+	 */
 	function xmlize($data, $skip_white = 1, $encoding = 'UTF-8')
 	{
 		$data = trim($data);
@@ -854,10 +957,10 @@ class jabber
 	}
 
 	/**
-	* _xml_depth()
-	* @author Hans Anderson
-	* @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
-	*/
+	 * _xml_depth()
+	 * @author Hans Anderson
+	 * @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
+	 */
 	function _xml_depth($vals, &$i)
 	{
 		$children = array();
