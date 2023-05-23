@@ -36,7 +36,13 @@ class ucp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx, $phpbb_dispatcher, $cache;
-		global $request;
+		global $request, $phpbb_container, $language;
+
+		/* @var $pagination \phpbb\pagination */
+		$pagination = $phpbb_container->get('pagination');
+
+		/* @var $phpbb_content_visibility \phpbb\content_visibility */
+		$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
 		switch ($mode)
 		{
@@ -152,6 +158,9 @@ class ucp_main
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
 					$folder_alt = ($unread_topic) ? 'UNREAD_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_UNREAD_POSTS');
 
+					// Replies
+					$replies = $phpbb_content_visibility->get_count('topic_posts', $row, $forum_id) - 1;
+
 					if ($row['topic_status'] == ITEM_LOCKED)
 					{
 						$folder_img .= '_locked';
@@ -218,6 +227,8 @@ class ucp_main
 					extract($phpbb_dispatcher->trigger_event('core.ucp_main_front_modify_template_vars', compact($vars)));
 
 					$template->assign_block_vars('topicrow', $topicrow);
+
+					$pagination->generate_template_pagination(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id"), 'topicrow.pagination', 'start', $replies + 1, $config['posts_per_page'], 1, true, true);
 				}
 
 				if ($config['load_user_activity'])
