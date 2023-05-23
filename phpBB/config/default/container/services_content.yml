@@ -71,3 +71,4 @@ services:
         class: phpbb\viewonline_helper
         arguments:
             - '@filesystem'
+            - '@dbal.conn'
