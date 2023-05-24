@@ -14,8 +14,8 @@
 namespace phpbb;
 
 /**
-* Class to handle viewonline related tasks
-*/
+ * Class to handle viewonline related tasks
+ */
 class viewonline_helper
 {
 	/** @var \phpbb\filesystem\filesystem_interface */
@@ -25,9 +25,9 @@ class viewonline_helper
 	protected $db;
 
 	/**
-	* @param \phpbb\filesystem\filesystem_interface $filesystem	phpBB's filesystem service
-	* @param \phpbb\db\driver\driver_interface $db
-	*/
+	 * @param \phpbb\filesystem\filesystem_interface $filesystem	phpBB's filesystem service
+	 * @param \phpbb\db\driver\driver_interface $db
+	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $filesystem, \phpbb\db\driver\driver_interface $db)
 	{
 		$this->filesystem = $filesystem;
@@ -40,7 +40,7 @@ class viewonline_helper
 	 * Retrieve forum IDs and add the data into the session data array
 	 * Array structure matches sql_fethrowset() result array
 	 *
-	 * @param string $session_data_rowset Users' session data array
+	 * @param array $session_data_rowset Users' session data array
 	 *
 	 * @return void
 	 */
@@ -78,11 +78,11 @@ class viewonline_helper
 	}
 
 	/**
-	* Get user page
-	*
-	* @param string $session_page User's session page
-	* @return array Match array filled by preg_match()
-	*/
+	 * Get user page
+	 *
+	 * @param string $session_page User's session page
+	 * @return array Match array filled by preg_match()
+	 */
 	public function get_user_page($session_page)
 	{
 		$session_page = $this->filesystem->clean_path($session_page);
