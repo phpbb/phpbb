@@ -281,7 +281,7 @@ class ftp extends transfer
 		}
 
 		// Init some needed values
-		$this->transfer();
+		parent::__construct();
 
 		return;
 	}
