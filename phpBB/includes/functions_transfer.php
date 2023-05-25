@@ -832,6 +832,11 @@ class ftp_fsock extends transfer
 	*/
 	function _send_command($command, $args = '', $check = true)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		if (!empty($args))
 		{
 			$command = "$command $args";
@@ -921,6 +926,11 @@ class ftp_fsock extends transfer
 	*/
 	function _close_data_connection()
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @fclose($this->data_connection);
 	}
 
@@ -930,6 +940,11 @@ class ftp_fsock extends transfer
 	*/
 	function _check_command($return = false)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		$response = '';
 
 		do
