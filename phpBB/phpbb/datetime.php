@@ -57,6 +57,7 @@ class datetime extends \DateTime
 	* @param boolean $force_absolute Force output of a non relative date
 	* @return string Formatted date time
 	*/
+	#[\ReturnTypeWillChange]
 	public function format($format = '', $force_absolute = false)
 	{
 		$format		= $format ? $format : $this->user->date_format;
