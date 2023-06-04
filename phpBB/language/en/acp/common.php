@@ -462,6 +462,7 @@ $lang = array_merge($lang, array(
 	'VERSIONCHECK_INVALID_ENTRY'	=> 'Latest version information contains an unsupported entry.',
 	'VERSIONCHECK_INVALID_URL'		=> 'Latest version information contains invalid URL.',
 	'VERSIONCHECK_INVALID_VERSION'	=> 'Latest version information contains an invalid version.',
+	'VERISONCHECK_INVALID_SHA256'	=> 'Latest version information contains an invalid sha256 checksum.',
 	'VERSION_NOT_UP_TO_DATE_ACP'	=> 'Your phpBB installation is not up to date.<br />Below is a link to the release announcement, which contains more information as well as instructions on updating.',
 	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your phpBB installation is not up to date.',
 	'VERSION_UP_TO_DATE_ACP'		=> 'Your phpBB installation is up to date. There are no updates available at this time.',
