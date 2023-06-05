@@ -1,35 +1,30 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
+
+namespace phpbb\messenger\method;
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
-/**
-*
-* Jabber class from Flyspray project
-*
-* @version class.jabber2.php 1595 2008-09-19 (0.9.9)
-* @copyright 2006 Flyspray.org
-* @author Florian Schmitz (floele)
-*
-* Only slightly modified by Acyd Burn
-*/
-class jabber
+ *
+ * Based on Jabber class from Flyspray project
+ *
+ * @version class.jabber2.php 1595 2008-09-19 (0.9.9)
+ * @copyright 2006 Flyspray.org
+ * @author Florian Schmitz (floele)
+ *
+ * Slightly modified by Acyd Burn (2006)
+ * Refactored to a service (2023)
+ */
+class jabber extends base
 {
 	/** @var string */
 	protected $connect_server;
@@ -70,6 +65,9 @@ class jabber
 	/** @var int */
 	protected $timeout = 10;
 
+	/** @var array */
+	protected $to = [];
+
 	/** @var bool */
 	protected $use_ssl = false;
 
@@ -80,25 +78,49 @@ class jabber
 	private const STREAM_CLOSE_HANDSHAKE = '</stream:stream>';
 
 	/**
-	 * Jabber class constructor
+	 * Set initial parameter values
+	 * To init correctly, username() call should go before server()
+	 * and ssl() call should go before port() and stream_options() calls.
 	 *
-	 * Use (username() call should go before server()
-	 * and ssl() call should go before port() and stream_options()):
-	 *
-	 * new jabber()
-	 *		-> username($username)
-	 *		-> password($password)
-	 *		-> ssl($use_ssl)
-	 *		-> server($server)
-	 *		-> port($port) 
-	 *		-> stream_options( 
+	 * Example:
+	 * $this->username($username)
+	 *		->password($password)
+	 *		->ssl($use_ssl)
+	 *		->server($server)
+	 *		->port($port) 
+	 *		->stream_options( 
 	 *			'verify_peer' => true,
 	 *			'verify_peer_name' => true,
 	 *			'allow_self_signed' => false,
 	 *		);
+	 *
+	 * @return void
 	 */
-	function __construct()
+	public function init()
 	{
+		$this->username($this->config['jab_username'])
+	 		->password($this->config['jab_password'])
+	 		->ssl((bool) $this->config['jab_use_ssl'])
+	 		->server($this->config['jab_host'])
+	 		->port($this->config['jab_port']) 
+			->stream_options['ssl'] = [
+				'verify_peer' => $this->config['jab_verify_peer'],
+				'verify_peer_name' => $this->config['jab_verify_peer_name'],
+				'allow_self_signed' => $this->config['jab_allow_self_signed'],
+			];
+	}
+
+	/**
+	 * Check if the messenger method is enabled
+	 * @return void
+	 */
+	public function is_enabled()
+	{
+		return
+			empty($this->config['jab_enable']) ||
+			empty($this->config['jab_host']) ||
+			empty($this->config['jab_username']) ||
+			empty($this->config['jab_password']);
 	}
 
 	/**
@@ -112,12 +134,8 @@ class jabber
 	{
 		if ($this->use_ssl)
 		{
-			// Set default stream options and change it if needed
-			$this->stream_options['ssl'] = array_merge([
-				'verify_peer' => true,
-				'verify_peer_name' => true,
-				'allow_self_signed' => false,
-			], $options);
+			// Change default stream options if needed
+			$this->stream_options['ssl'] = array_merge($this->stream_options['ssl'], $options);
 		}
 
 		return $this;
@@ -131,7 +149,7 @@ class jabber
 	 */
 	public function password($password = '')
 	{
-		$this->password	= $password;
+		$this->password	= html_entity_decode($password, ENT_COMPAT);
 
 		return $this;
 	}
@@ -263,8 +281,8 @@ class jabber
 
 		if ($this->open_socket($this->connect_server, $this->port))
 		{
-			$this->send("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-			$this->send("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+			$this->send_xml("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
+			$this->send_xml("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
 		}
 		else
 		{
@@ -332,13 +350,112 @@ class jabber
 	}
 
 	/**
+	 * Set address as available
+	 *
+	 * @param array $user User row
+	 * @return void
+	 */
+	public function set_addresses($user)
+	{
+		if (isset($user['user_jabber']) && $user['user_jabber'])
+		{
+			$this->to($user['user_jabber'], (isset($user['username']) ? $user['username'] : ''));
+		}
+	}
+
+	/**
+	 * Sets jabber contact to send message to
+	 *
+	 * @param string	$address	Jabber "To" recipient address
+	 * @param string	$realname	Jabber "To" recipient name
+	 * @return void
+	 */
+	public function to($address, $realname = '')
+	{
+		// IM-Addresses could be empty
+		if (!trim($address))
+		{
+			return;
+		}
+
+		$pos = !empty($this->to) ? count($this->to) : 0;
+		$this->to[$pos]['uid'] = trim($address);
+		$this->to[$pos]['name'] = trim($realname);
+	}
+
+	/**
+	 * Sets the use of messenger queue flag
+	 *
+	 * @return void
+	 */
+	public function set_use_queue($use_queue = true)
+	{
+		$this->use_queue = !$this->config['jab_package_size'] ? false : $use_queue;
+	}
+
+	/**
+	* Send jabber message out
+	*/
+	public function send()
+	{
+		$this->prepare_message();
+
+		if (empty($this->to))
+		{
+			$this->add_to_log('Error: Could not send, recepient addresses undefined.');
+			return false;
+		}
+
+		$addresses = [];
+		foreach ($this->to as $uid_ary)
+		{
+			$addresses[] = $uid_ary['uid'];
+		}
+		$addresses = array_unique($addresses);
+
+		if (!$this->use_queue)
+		{
+			if (!$this->connect())
+			{
+				$this->error('JABBER', $this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
+				return false;
+			}
+
+			if (!$this->login())
+			{
+				$this->error('JABBER', $this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
+				return false;
+			}
+
+			foreach ($addresses as $address)
+			{
+				$this->send_message($address, $this->msg, $this->subject);
+			}
+
+			$this->disconnect();
+		}
+		else
+		{
+			$this->queue->init('jabber', $this->config['jab_package_size']);
+			$this->queue->put('jabber', array(
+				'addresses'		=> $addresses,
+				'subject'		=> $this->subject,
+				'msg'			=> $this->msg)
+			);
+		}
+		unset($addresses);
+
+		return true;
+	}
+
+	/**
 	 * Send data to the Jabber server
 	 *
 	 * @param string $xml
 	 *
 	 * @return bool
 	 */
-	public function send($xml)
+	public function send_xml($xml)
 	{
 		if ($this->connected())
 		{
@@ -459,7 +576,7 @@ class jabber
 			return false;
 		}
 
-		$this->send("<iq type='get' id='reg_1'><query xmlns='jabber:iq:register'/></iq>");
+		$this->send_xml("<iq type='get' id='reg_1'><query xmlns='jabber:iq:register'/></iq>");
 		return $this->response($this->listen());
 	}
 
@@ -488,7 +605,7 @@ class jabber
 
 		$this->session['sent_presence'] = !$unavailable;
 
-		return $this->send("<presence$unavailable>" . $type . $message . '</presence>');
+		return $this->send_xml("<presence$unavailable>" . $type . $message . '</presence>');
 	}
 
 	/**
@@ -567,7 +684,7 @@ class jabber
 					// session required?
 					$this->session['sess_required'] = isset($xml['stream:features'][0]['#']['session']);
 
-					$this->send("<iq type='set' id='bind_1'>
+					$this->send_xml("<iq type='set' id='bind_1'>
 						<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
 							<resource>" . utf8_htmlspecialchars($this->resource) . '</resource>
 						</bind>
@@ -579,7 +696,7 @@ class jabber
 				if (!$this->session['ssl'] && self::can_use_tls() && self::can_use_ssl() && isset($xml['stream:features'][0]['#']['starttls']))
 				{
 					$this->add_to_log('Switching to TLS.');
-					$this->send("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
+					$this->send_xml("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
 					return $this->response($this->listen());
 				}
 
@@ -605,18 +722,18 @@ class jabber
 
 					if (in_array('DIGEST-MD5', $methods))
 					{
-						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>");
+						$this->send_xml("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>");
 					}
 					else if (in_array('PLAIN', $methods) && ($this->session['ssl'] || !empty($this->session['tls'])))
 					{
 						// http://www.ietf.org/rfc/rfc4616.txt (PLAIN SASL Mechanism)
-						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
+						$this->send_xml("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
 							. base64_encode($this->username . '@' . $this->server . chr(0) . $this->username . chr(0) . $this->password) .
 							'</auth>');
 					}
 					else if (in_array('ANONYMOUS', $methods))
 					{
-						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>");
+						$this->send_xml("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>");
 					}
 					else
 					{
@@ -653,7 +770,7 @@ class jabber
 				// second challenge?
 				if (isset($decoded['rspauth']))
 				{
-					$this->send("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>");
+					$this->send_xml("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'/>");
 				}
 				else
 				{
@@ -680,7 +797,7 @@ class jabber
 						}
 					}
 
-					$this->send("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" . base64_encode($this->implode_data($response)) . '</response>');
+					$this->send_xml("<response xmlns='urn:ietf:params:xml:ns:xmpp-sasl'>" . base64_encode($this->implode_data($response)) . '</response>');
 				}
 
 				return $this->response($this->listen());
@@ -707,15 +824,15 @@ class jabber
 				$this->session['tls'] = true;
 
 				// new stream
-				$this->send("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-				$this->send("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+				$this->send_xml("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
+				$this->send_xml("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
 
 				return $this->response($this->listen());
 			break;
 
 			case 'success':
 				// Yay, authentication successful.
-				$this->send("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+				$this->send_xml("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
 				$this->session['authenticated'] = true;
 
 				// we have to wait for another response
@@ -738,7 +855,7 @@ class jabber
 						// and (maybe) yet another request to be able to send messages *finally*
 						if ($this->session['sess_required'])
 						{
-							$this->send("<iq to='{$this->server}' type='set' id='sess_1'>
+							$this->send_xml("<iq to='{$this->server}' type='set' id='sess_1'>
 								<session xmlns='urn:ietf:params:xml:ns:xmpp-session'/>
 								</iq>");
 							return $this->response($this->listen());
@@ -752,7 +869,7 @@ class jabber
 					break;
 
 					case 'reg_1':
-						$this->send("<iq type='set' id='reg_2'>
+						$this->send_xml("<iq type='set' id='reg_2'>
 								<query xmlns='jabber:iq:register'>
 									<username>" . utf8_htmlspecialchars($this->username) . "</username>
 									<password>" . utf8_htmlspecialchars($this->password) . "</password>
@@ -829,7 +946,7 @@ class jabber
 			$type = 'normal';
 		}
 
-		return $this->send("<message from='" . utf8_htmlspecialchars($this->session['jid']) . "' to='" . utf8_htmlspecialchars($to) . "' type='$type' id='" . uniqid('msg') . "'>
+		return $this->send_xml("<message from='" . utf8_htmlspecialchars($this->session['jid']) . "' to='" . utf8_htmlspecialchars($to) . "' type='$type' id='" . uniqid('msg') . "'>
 			<subject>" . utf8_htmlspecialchars($subject) . "</subject>
 			<body>" . utf8_htmlspecialchars($text) . "</body>
 			</message>"

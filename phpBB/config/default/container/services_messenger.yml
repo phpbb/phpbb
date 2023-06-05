@@ -1,0 +1,46 @@
+parameters:
+    core.messenger_queue_file: '%core.cache_dir%queue.%core.php_ext%'
+
+services:
+    messenger.method_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: messenger.method, class_name_aware: true }
+
+    messenger.method_base:
+        class: phpbb\messenger\method\base
+        shared: false
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@language'
+            - '@log'
+            - '@request'
+            - '@user'
+            - '@messenger.queue'
+
+    messenger.method_email:
+        class: phpbb\messenger\method\email
+        shared: false
+        parent: messenger.method_base
+        calls:
+            - [init, []]
+            - [set_transport, []]
+
+    messenger.method_jabber:
+        class: phpbb\messenger\method\jabber
+        shared: false
+        parent: messenger.method_base
+        calls:
+            - [init, []]
+
+    messenger.queue:
+        class: phpbb\messenger\queue
+        shared: false
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@messenger.method_collection'
+            - '%core.messenger_queue_file%'

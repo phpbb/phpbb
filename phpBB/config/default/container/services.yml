@@ -19,6 +19,7 @@ imports:
     - { resource: services_http.yml }
     - { resource: services_language.yml }
     - { resource: services_mention.yml }
+    - { resource: services_messenger.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
     - { resource: services_module.yml }
