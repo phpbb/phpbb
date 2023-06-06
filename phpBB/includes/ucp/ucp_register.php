@@ -457,30 +457,26 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
-					$messenger = new messenger(false);
-
-					$messenger->template($email_template, $data['lang']);
-
-					$messenger->to($data['email'], $data['username']);
-
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->assign_vars(array(
+					$messenger = $phpbb_container->get('messenger.method_collection');
+					$email = $this->messenger->offsetGet('messenger.method.email');
+					$email->set_use_queue(false);
+					$email->template($email_template, $data['lang']);
+					$email->to($data['email'], $data['username']);
+					$email->anti_abuse_headers($config, $user);
+					$email->assign_vars([
 						'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 						'USERNAME'		=> html_entity_decode($data['username'], ENT_COMPAT),
 						'PASSWORD'		=> html_entity_decode($data['new_password'], ENT_COMPAT),
-						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
-					);
+						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey",
+					]);
 
 					if ($coppa)
 					{
-						$messenger->assign_vars(array(
+						$email->assign_vars([
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $data['email'])
-						);
+							'EMAIL_ADDRESS'	=> $data['email'],
+						]);
 					}
 
 					/**
@@ -509,7 +505,7 @@ class ucp_register
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_register_welcome_email_before', compact($vars)));
 
-					$messenger->send(NOTIFY_EMAIL);
+					$email->send();
 				}
 
 				if ($config['require_activation'] == USER_ACTIVATION_ADMIN)

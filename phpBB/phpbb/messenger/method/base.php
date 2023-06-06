@@ -25,13 +25,10 @@ use phpbb\user;
 /**
  * Messenger base class
  */
-class base
+abstract class base
 {
 	/** @var array */
 	protected $additional_headers = [];
-
-	/** @var array */
-	protected $addresses = [];
 
 	/** @var config */
 	protected $config;
@@ -91,6 +88,15 @@ class base
 	}
 
 	/**
+	 * Get messenger method id
+	 * @return mixed
+	 */
+	abstract public function get_id()
+	{
+		return;
+	}
+
+	/**
 	 * Sets the use of messenger queue flag
 	 *
 	 * @return void
@@ -105,10 +111,12 @@ class base
 	 *
 	 * @return void
 	 */
-	public function reset()
+	abstract public function reset()
 	{
-		$this->addresses = [];
+		$this->subject = $this->additional_headers = [];
 		$this->msg = '';
+		$this->use_queue = true;
+		unset($this->template);
 	}
 
 	/**
@@ -117,7 +125,7 @@ class base
 	 * @param array $user User row
 	 * @return void
 	 */
-	public function set_addresses($user)
+	abstract public function set_addresses($user)
 	{
 	}
 
@@ -161,6 +169,14 @@ class base
 	 * @return void
 	 */
 	public function replyto($address)
+	{
+	}
+
+	/**
+	 * Send out messages
+	 * @return bool
+	 */
+	abstract protected function send()
 	{
 	}
 
@@ -295,7 +311,7 @@ class base
 			'SITENAME'	=> html_entity_decode($this->config['sitename'], ENT_COMPAT),
 		]);
 
-		$subject = $this->email->getSubject();
+		$subject = $this->subject;
 		$template = $this->template;
 		/**
 		 * Event to modify the template before parsing
@@ -304,7 +320,7 @@ class base
 		 * @var	string							subject		The message subject
 		 * @var \phpbb\template\template 		template	The (readonly) template object
 		 * @since 3.2.4-RC1
-		 * @changed 4.0.0-a1 Added vars: email. Removed vars: method, break.
+		 * @changed 4.0.0-a1 Removed vars: method, break.
 		 */
 		$vars = ['subject', 'template'];
 		extract($this->dispatcher->trigger_event('core.modify_notification_template', compact($vars)));
@@ -378,7 +394,7 @@ class base
 	}
 
 	/**
-	 * Save message data to the messemger file queue
+	 * Save message data to the messenger file queue
 	 * @return void
 	 */
 	public function save_queue()
