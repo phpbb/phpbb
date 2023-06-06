@@ -14,6 +14,11 @@
 namespace phpbb\notification\method;
 
 use phpbb\notification\type\type_interface;
+use phpbb\user;
+use phpbb\user_loader;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
 
 /**
 * Email notification method class
@@ -34,20 +39,33 @@ class email extends \phpbb\notification\method\messenger_base
 	/** @var string Notification emails table */
 	protected $notification_emails_table;
 
+	/** @var service_collection */
+	protected $messenger;
+
 	/**
 	 * Notification Method email Constructor
 	 *
-	 * @param \phpbb\user_loader $user_loader
-	 * @param \phpbb\user $user
-	 * @param \phpbb\config\config $config
-	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param user_loader $user_loader
+	 * @param user $user
+	 * @param config $config
+	 * @param driver_interface $db
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 * @param string $notification_emails_table
+	 * @param service_collection $messenger
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, $phpbb_root_path, $php_ext, $notification_emails_table)
+	public function __construct(
+		user_loader $user_loader,
+		user $user,
+		config $config,
+		driver_interface $db,
+		$phpbb_root_path,
+		$php_ext,
+		$notification_emails_table,
+		service_collection $messenger
+	)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+		parent::__construct($messenger, $user_loader, $phpbb_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;

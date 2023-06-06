@@ -14,6 +14,8 @@
 namespace phpbb\notification\method;
 
 use phpbb\notification\type\type_interface;
+use phpbb\di\service_collection;
+use phpbb\user_loader;
 
 /**
 * Abstract notification method handling email and jabber notifications
@@ -21,7 +23,10 @@ use phpbb\notification\type\type_interface;
 */
 abstract class messenger_base extends \phpbb\notification\method\base
 {
-	/** @var \phpbb\user_loader */
+	/** @var service_collection */
+	protected $messenger;
+
+	/** @var user_loader */
 	protected $user_loader;
 
 	/** @var string */
@@ -33,12 +38,14 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	/**
 	 * Notification Method Board Constructor
 	 *
-	 * @param \phpbb\user_loader $user_loader
+	 * @param service_collection $messenger
+	 * @param user_loader $user_loader
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(service_collection $messenger, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
+		$this->messenger = $messenger;
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -73,7 +80,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 		}
 
 		// Load all users we want to notify (we need their email address)
-		$user_ids = array();
+		$user_ids = [];
 		foreach ($this->queue as $notification)
 		{
 			$user_ids[] = $notification->user_id;
@@ -88,13 +95,6 @@ abstract class messenger_base extends \phpbb\notification\method\base
 
 		// Load all the users we need
 		$this->user_loader->load_users(array_diff($user_ids, $banned_users), array(USER_IGNORE));
-
-		// Load the messenger
-		if (!class_exists('messenger'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-		}
-		$messenger = new \messenger();
 
 		// Time to go through the queue and send emails
 		/** @var type_interface $notification */
@@ -112,21 +112,27 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
-			$messenger->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
+			$messenger_collection_iterator = $this->messenger->getIterator();
+			while ($messenger_collection_iterator->valid())
+			{
+				$messenger_method = $messenger_collection_iterator->current();
+				if ($messenger_method->get_id() == $notify_method || $notify_method == NOTIFY_BOTH)
+				{
+					$messenger_method->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
+					$messenger_method->set_addresses($user);
+					$messenger_method->assign_vars(array_merge([
+						'USERNAME'					=> $user['username'],
+						'U_NOTIFICATION_SETTINGS'	=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
+					], $notification->get_email_template_variables()));
 
-			$messenger->set_addresses($user);
+					$messenger_method->send();
 
-			$messenger->assign_vars(array_merge(array(
-				'USERNAME'						=> $user['username'],
-
-				'U_NOTIFICATION_SETTINGS'		=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
-			), $notification->get_email_template_variables()));
-
-			$messenger->send($notify_method);
+					// Save the queue in the messenger method class (has to be called or these messages could be lost)
+					$messenger_method->save_queue();
+				}
+				$messenger_collection_iterator->next();
+			}
 		}
-
-		// Save the queue in the messenger class (has to be called or these emails could be lost?)
-		$messenger->save_queue();
 
 		// We're done, empty the queue
 		$this->empty_queue();

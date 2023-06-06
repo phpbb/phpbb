@@ -13,30 +13,35 @@
 
 namespace phpbb\cron\task\core;
 
+use \phpbb\config\config;
+use \phpbb\messenger\queue;
+
 /**
 * Queue cron task. Sends email and jabber messages queued by other scripts.
 */
 class queue extends \phpbb\cron\task\base
 {
-	protected $phpbb_root_path;
-	protected $php_ext;
-	protected $cache_dir;
+	/** var config */
 	protected $config;
+
+	/** var queue */
+	protected $queue;
+
+	/** var string */
+	protected $queue_cache_file;
 
 	/**
 	 * Constructor.
 	 *
-	 * @param string $phpbb_root_path The root path
-	 * @param string $php_ext PHP file extension
-	 * @param \phpbb\config\config $config The config
-	 * @param string $cache_dir phpBB cache directory
+	 * @param config $config The config
+	 * @param string $queue_cache_file The messenger file queue cache filename
+	 * @param queue $queue The messenger file queue object
 	 */
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\config\config $config, $cache_dir)
+	public function __construct(config $config, queue $queue, $queue_cache_file)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 		$this->config = $config;
-		$this->cache_dir = $cache_dir;
+		$this->queue = $queue;
+		$this->queue_cache_file = $queue_cache_file;
 	}
 
 	/**
@@ -46,12 +51,7 @@ class queue extends \phpbb\cron\task\base
 	*/
 	public function run()
 	{
-		if (!class_exists('queue'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-		}
-		$queue = new \queue();
-		$queue->process();
+		$this->queue->process();
 	}
 
 	/**
@@ -63,7 +63,7 @@ class queue extends \phpbb\cron\task\base
 	*/
 	public function is_runnable()
 	{
-		return file_exists($this->cache_dir . 'queue.' . $this->php_ext);
+		return file_exists($this->queue_cache_file);
 	}
 
 	/**

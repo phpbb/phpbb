@@ -428,8 +428,6 @@ switch ($mode)
 					if (check_form_key('memberlist_messaging'))
 					{
 
-						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
 						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
 						$message = $request->variable('message', '', true);
 
@@ -438,22 +436,22 @@ switch ($mode)
 							trigger_error('EMPTY_MESSAGE_IM');
 						}
 
-						$messenger = new messenger(false);
+						$messenger = $phpbb_container->get('messenger.method_collection');
+						$jabber = $messenger->offsetGet('messenger.method.jabber');
+						$jabber->set_use_queue(false);
 
-						$messenger->template('profile_send_im', $row['user_lang']);
-						$messenger->subject(html_entity_decode($subject, ENT_COMPAT));
+						$jabber->template('profile_send_im', $row['user_lang']);
+						$jabber->subject(html_entity_decode($subject, ENT_COMPAT));
+						$jabber->set_addresses($row);
 
-						$messenger->replyto($user->data['user_email']);
-						$messenger->set_addresses($row);
-
-						$messenger->assign_vars(array(
+						$jabber->assign_vars([
 							'BOARD_CONTACT'	=> phpbb_get_board_contact($config, $phpEx),
 							'FROM_USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
 							'TO_USERNAME'	=> html_entity_decode($row['username'], ENT_COMPAT),
-							'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT))
-						);
+							'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT),
+						]);
 
-						$messenger->send(NOTIFY_IM);
+						$jabber->send();
 
 						$s_select = 'S_SENT_JABBER';
 					}
@@ -888,10 +886,7 @@ switch ($mode)
 
 	case 'contactadmin':
 	case 'email':
-		if (!class_exists('messenger'))
-		{
-			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-		}
+		$messenger = $phpbb_container->get('messenger.method_collection');
 
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);
@@ -925,7 +920,6 @@ switch ($mode)
 
 		if ($request->is_set_post('submit'))
 		{
-			$messenger = new messenger(false);
 			$form->submit($messenger);
 		}
 
