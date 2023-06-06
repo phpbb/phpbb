@@ -26,6 +26,7 @@ services:
             - '%tables.users%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@messenger.method_collection'
 
     phpbb.ucp.controller.webpush:
         class: phpbb\ucp\controller\webpush

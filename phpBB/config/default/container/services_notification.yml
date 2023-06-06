@@ -229,6 +229,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables.notification_emails%'
+            - '@messenger.method_collection'
         tags:
             - { name: notification.method }
 
@@ -241,6 +242,7 @@ services:
             - '@config'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@messenger.method_collection'
         tags:
             - { name: notification.method }
 

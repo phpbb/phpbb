@@ -25,6 +25,7 @@ use phpbb\passwords\manager;
 use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
+use phpbb\di\service_collection;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -71,6 +72,9 @@ class reset_password
 	/** @var string PHP extension */
 	protected $php_ext;
 
+	/** @var service_collection */
+	protected $messenger;
+
 	/**
 	 * Reset password controller constructor.
 	 *
@@ -87,11 +91,12 @@ class reset_password
 	 * @param string $users_table
 	 * @param string $root_path
 	 * @param string $php_ext
+	 * @param service_collection $messenger
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
 								language $language, log_interface $log, manager $passwords_manager,
 								request $request, template $template, user $user, string $users_table,
-								string $root_path, string $php_ext)
+								string $root_path, string $php_ext, service_collection $messenger)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -106,6 +111,7 @@ class reset_password
 		$this->users_table = $users_table;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+		$this->messenger = $messenger;
 	}
 
 	/**
@@ -250,29 +256,19 @@ class reset_password
 					WHERE user_id = ' . $user_row['user_id'];
 				$this->db->sql_query($sql);
 
-				if (!class_exists('messenger'))
-				{
-					include($this->root_path . 'includes/functions_messenger.' . $this->php_ext);
-				}
-
-				/** @var \messenger $messenger */
-				$messenger = new \messenger(false);
-
-				$messenger->template('user_forgot_password', $user_row['user_lang']);
-
-				$messenger->set_addresses($user_row);
-
-				$messenger->anti_abuse_headers($this->config, $this->user);
-
-				$messenger->assign_vars([
-						'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
-						'U_RESET_PASSWORD'	=> generate_board_url(true) . $this->helper->route('phpbb_ucp_reset_password_controller', [
-							'u'		=> $user_row['user_id'],
-							'token'	=> $reset_token,
-						], false)
+				$email = $this->messenger->offsetGet('messenger.method.email');
+				$email->set_use_queue(false);
+				$email->template('user_forgot_password', $user_row['user_lang']);
+				$email->set_addresses($user_row);
+				$email->anti_abuse_headers($this->config, $this->user);
+				$email->assign_vars([
+					'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
+					'U_RESET_PASSWORD'	=> generate_board_url(true) . $this->helper->route('phpbb_ucp_reset_password_controller', [
+						'u'		=> $user_row['user_id'],
+						'token'	=> $reset_token,
+					], false)
 				]);
-
-				$messenger->send($user_row['user_notify_type']);
+				$email->send();
 
 				return $this->helper->message($message);
 			}

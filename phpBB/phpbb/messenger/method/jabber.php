@@ -111,6 +111,16 @@ class jabber extends base
 	}
 
 	/**
+	 * Get messenger method id
+	 *
+	 * @return int
+	 */
+	public function get_id()
+	{
+		return NOTIFY_IM;
+	}
+
+	/**
 	 * Check if the messenger method is enabled
 	 * @return void
 	 */
