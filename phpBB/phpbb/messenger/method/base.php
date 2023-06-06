@@ -133,6 +133,38 @@ class base
 	}
 
 	/**
+	 * Adds antiabuse headers
+	 *
+	 * @param \phpbb\config\config	$config		Config object
+	 * @param \phpbb\user			$user		User object
+	 * @return void
+	 */
+	public function anti_abuse_headers($config, $user)
+	{
+	}
+
+	/**
+	 * Set up extra headers
+	 *
+	 * @param string	$header_name	Email header name
+	 * @param string	$header_value	Email header body
+	 * @return void
+	 */
+	public function header($header_name, $header_value)
+	{
+	}
+
+	/**
+	 * Set the reply to address
+	 *
+	 * @param string	$address	Email "Reply to" address
+	 * @return void
+	 */
+	public function replyto($address)
+	{
+	}
+
+	/**
 	 * Set email template to use
 	 *
 	 * @param string	$template_file			Email template file name
@@ -232,7 +264,6 @@ class base
 	public function assign_vars($vars)
 	{
 		$this->setup_template();
-
 		$this->template->assign_vars($vars);
 	}
 
@@ -352,13 +383,15 @@ class base
 	 */
 	public function save_queue()
 	{
-		$this->queue->save();
-		return;
+		if ($this->use_queue && !empty($this->queue))
+		{
+			$this->queue->save();
+			return;
+		}
 	}
 
 	/**
 	 * Setup template engine
-	 *
 	 * @return void
 	 */
 	protected function setup_template()
@@ -402,7 +435,6 @@ class base
 	protected function set_template_paths($path_name, $paths)
 	{
 		$this->setup_template();
-
 		$this->template->set_custom_style($path_name, $paths);
 	}
 }

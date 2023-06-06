@@ -23,8 +23,6 @@ services:
             - '@installer.helper.container_factory'
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
-            - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
             - { name: install_finish, order: 3 }
 

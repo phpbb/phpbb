@@ -83,6 +83,16 @@ class email extends base
 	protected $transport;
 
 	/**
+	 * Get messenger method id
+	 *
+	 * @return int
+	 */
+	public function get_id()
+	{
+		return NOTIFY_EMAIL;
+	}
+
+	/**
 	 * Check if the messenger method is enabled
 	 * @return void
 	 */
@@ -284,19 +294,6 @@ class email extends base
 	{
 		$type = 'EMAIL/' . ($this->config['smtp_delivery']) ? 'SMTP' : 'PHP/mail()';
 		parent::error($type, $msg);
-	}
-
-	/**
-	 * Save message data to the messenger file queue
-	 * @return void
-	 */
-	public function save_queue()
-	{
-		if ($this->config['email_package_size'] && $this->use_queue && !empty($this->queue))
-		{
-			$this->queue->save();
-			return;
-		}
 	}
 
 	/**

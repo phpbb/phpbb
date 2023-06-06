@@ -9,7 +9,7 @@ services:
         tags:
             - { name: service_collection, tag: messenger.method, class_name_aware: true }
 
-    messenger.method_base:
+    messenger.method.base:
         class: phpbb\messenger\method\base
         shared: false
         arguments:
@@ -21,20 +21,24 @@ services:
             - '@user'
             - '@messenger.queue'
 
-    messenger.method_email:
+    messenger.method.email:
         class: phpbb\messenger\method\email
         shared: false
-        parent: messenger.method_base
+        parent: messenger.method.base
         calls:
             - [init, []]
             - [set_transport, []]
+        tags:
+            - { name: messenger.method }
 
-    messenger.method_jabber:
+    messenger.method.jabber:
         class: phpbb\messenger\method\jabber
         shared: false
-        parent: messenger.method_base
+        parent: messenger.method.base
         calls:
             - [init, []]
+        tags:
+            - { name: messenger.method }
 
     messenger.queue:
         class: phpbb\messenger\queue

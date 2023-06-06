@@ -138,10 +138,10 @@ class message
 	{
 		$this->recipients[] = array(
 			'name'			=> $recipient_name,
-			'address'		=> $recipient_address,
+			'user_email'	=> $recipient_address,
 			'lang'			=> $recipient_lang,
 			'username'		=> $recipient_username,
-			'jabber'		=> $recipient_jabber,
+			'user_jabber'		=> $recipient_jabber,
 			'notify_type'	=> $recipient_notify_type,
 			'to_name'		=> $recipient_name,
 		);
@@ -220,10 +220,10 @@ class message
 
 		$this->recipients[] = array(
 			'lang'			=> $this->sender_lang,
-			'address'		=> $this->sender_address,
+			'user_email'	=> $this->sender_address,
 			'name'			=> $this->sender_name,
 			'username'		=> $this->sender_username,
-			'jabber'		=> $this->sender_jabber,
+			'user_jabber'	=> $this->sender_jabber,
 			'notify_type'	=> $this->sender_notify_type,
 			'to_name'		=> $this->recipients[0]['to_name'],
 		);
@@ -232,11 +232,11 @@ class message
 	/**
 	* Send the email
 	*
-	* @param \messenger $messenger
+	* @param \phpbb\di\service_collection $messenger
 	* @param string $contact
 	* @return void
 	*/
-	public function send(\messenger $messenger, $contact)
+	public function send(\phpbb\di\service_collection $messenger, $contact)
 	{
 		if (!count($this->recipients))
 		{
@@ -245,38 +245,46 @@ class message
 
 		foreach ($this->recipients as $recipient)
 		{
-			$messenger->template($this->template, $recipient['lang']);
-			$messenger->replyto($this->sender_address);
-			$messenger->to($recipient['address'], $recipient['name']);
-			$messenger->im($recipient['jabber'], $recipient['username']);
-
-			$messenger->headers('X-AntiAbuse', 'Board servername - ' . $this->server_name);
-			$messenger->headers('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
-
-			if ($this->sender_id)
+			$messenger_collection_iterator = $this->messenger->getIterator();
+			while ($messenger_collection_iterator->valid())
 			{
-				$messenger->headers('X-AntiAbuse', 'User_id - ' . $this->sender_id);
+				$messenger_method = $messenger_collection_iterator->current();
+				$messenger_method->set_use_queue(false);
+				if ($messenger_method->get_id() == $recipient['notify_type'] || $recipient['notify_type'] == NOTIFY_BOTH)
+				{
+					$messenger_method->template($this->template, $recipient['lang']);
+					$messenger_method->set_addresses($recipient);
+					$messenger_method->replyto($this->sender_address);
+
+					$messenger_method->headers('X-AntiAbuse', 'Board servername - ' . $this->server_name);
+					$messenger_method->headers('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
+					if ($this->sender_id)
+					{
+						$messenger_method->headers('X-AntiAbuse', 'User_id - ' . $this->sender_id);
+					}
+					if ($this->sender_username)
+					{
+						$messenger_method->headers('X-AntiAbuse', 'Username - ' . $this->sender_username);
+					}
+
+					$messenger_method->subject(html_entity_decode($this->subject, ENT_COMPAT));
+
+					$messenger_method->assign_vars([
+						'BOARD_CONTACT'	=> $contact,
+						'TO_USERNAME'	=> html_entity_decode($recipient['to_name'], ENT_COMPAT),
+						'FROM_USERNAME'	=> html_entity_decode($this->sender_name, ENT_COMPAT),
+						'MESSAGE'		=> html_entity_decode($this->body, ENT_COMPAT),
+					]);
+
+					if (count($this->template_vars))
+					{
+						$messenger_method->assign_vars($this->template_vars);
+					}
+
+					$messenger_method->send();
+				}
+				$messenger_collection_iterator->next();
 			}
-			if ($this->sender_username)
-			{
-				$messenger->headers('X-AntiAbuse', 'Username - ' . $this->sender_username);
-			}
-
-			$messenger->subject(html_entity_decode($this->subject, ENT_COMPAT));
-
-			$messenger->assign_vars(array(
-				'BOARD_CONTACT'	=> $contact,
-				'TO_USERNAME'	=> html_entity_decode($recipient['to_name'], ENT_COMPAT),
-				'FROM_USERNAME'	=> html_entity_decode($this->sender_name, ENT_COMPAT),
-				'MESSAGE'		=> html_entity_decode($this->body, ENT_COMPAT))
-			);
-
-			if (count($this->template_vars))
-			{
-				$messenger->assign_vars($this->template_vars);
-			}
-
-			$messenger->send($recipient['notify_type']);
 		}
 	}
 }

@@ -14,62 +14,48 @@
 namespace phpbb\install\module\install_finish\task;
 
 use phpbb\config\db;
+use phpbb\install\helper\config;
+use phpbb\install\helper\iohandler\iohandler_interface;
+use phpbb\auth\auth;
+use phpbb\log\log_interface;
+use phpbb\user;
+use phpbb\install\helper\container_factory;
+use phpbb\di\service_collection;
 
 /**
  * Logs installation and sends an email to the admin
  */
 class notify_user extends \phpbb\install\task_base
 {
-	/**
-	 * @var \phpbb\install\helper\config
-	 */
+	/** @var config */
 	protected $install_config;
 
-	/**
-	 * @var \phpbb\install\helper\iohandler\iohandler_interface
-	 */
+	/** @var iohandler_interface */
 	protected $iohandler;
 
-	/**
-	 * @var \phpbb\auth\auth
-	 */
+	/** @var auth */
 	protected $auth;
 
-	/**
-	 * @var db
-	 */
+	/** @var db */
 	protected $config;
 
-	/**
-	 * @var \phpbb\log\log_interface
-	 */
+	/** @var log_interface */
 	protected $log;
 
-	/**
-	 * @var \phpbb\user
-	 */
+	/** @var user */
 	protected $user;
 
-	/**
-	 * @var string
-	 */
-	protected $phpbb_root_path;
-
-	/**
-	 * @var string
-	 */
-	protected $php_ext;
+	/** @var service_collection */
+	protected $messenger;
 
 	/**
 	 * Constructor
 	 *
-	 * @param \phpbb\install\helper\container_factory				$container
-	 * @param \phpbb\install\helper\config							$install_config
-	 * @param \phpbb\install\helper\iohandler\iohandler_interface	$iohandler
-	 * @param string												$phpbb_root_path
-	 * @param string												$php_ext
+	 * @param container_factory		$container
+	 * @param config				$install_config
+	 * @param iohandler_interface	$iohandler
 	 */
-	public function __construct(\phpbb\install\helper\container_factory $container, \phpbb\install\helper\config $install_config, \phpbb\install\helper\iohandler\iohandler_interface $iohandler, $phpbb_root_path, $php_ext)
+	public function __construct(container_factory $container, config $install_config, iohandler_interface $iohandler)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
@@ -77,8 +63,7 @@ class notify_user extends \phpbb\install\task_base
 		$this->auth				= $container->get('auth');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
-		$this->phpbb_root_path	= $phpbb_root_path;
-		$this->php_ext			= $php_ext;
+		$this->messenger		= $container->get('messenger.method_collection');
 
 		// We need to reload config for cases when it doesn't have all values
 		/** @var \phpbb\cache\driver\driver_interface $cache */
@@ -107,17 +92,16 @@ class notify_user extends \phpbb\install\task_base
 
 		if ($this->config['email_enable'])
 		{
-			include ($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-
-			$messenger = new \messenger(false);
-			$messenger->template('installed', $this->install_config->get('user_language', 'en'));
-			$messenger->to($this->config['board_email'], $this->install_config->get('admin_name'));
-			$messenger->anti_abuse_headers($this->config, $this->user);
-			$messenger->assign_vars(array(
-					'USERNAME'		=> html_entity_decode($this->install_config->get('admin_name'), ENT_COMPAT),
-					'PASSWORD'		=> html_entity_decode($this->install_config->get('admin_passwd'), ENT_COMPAT))
-			);
-			$messenger->send(NOTIFY_EMAIL);
+			$email = $this->messenger->offsetGet('messenger.method.email');
+			$email->set_use_queue(false);
+			$email->template('installed', $this->install_config->get('user_language', 'en'));
+			$email->to($this->config['board_email'], $this->install_config->get('admin_name'));
+			$email->anti_abuse_headers($this->config, $this->user);
+			$email->assign_vars([
+				'USERNAME' => html_entity_decode($this->install_config->get('admin_name'), ENT_COMPAT),
+				'PASSWORD' => html_entity_decode($this->install_config->get('admin_passwd'), ENT_COMPAT),
+			]);
+			$email->send();
 		}
 
 		// Login admin
@@ -141,7 +125,7 @@ class notify_user extends \phpbb\install\task_base
 			$this->user->ip,
 			'LOG_INSTALL_INSTALLED',
 			false,
-			array($this->config['version'])
+			[$this->config['version']]
 		);
 
 		// Remove install_lock

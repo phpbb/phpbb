@@ -20,6 +20,7 @@ use phpbb\log\log_interface;
 use phpbb\notification\manager;
 use phpbb\user;
 use phpbb\user_loader;
+use phpbb\di\service_collection;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -58,6 +59,9 @@ class activate extends command
 	 */
 	protected $php_ext;
 
+	/** @var service_collection */
+	protected $messenger;
+
 	/**
 	 * Construct method
 	 *
@@ -69,8 +73,9 @@ class activate extends command
 	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
+	 * @param service_collection $messenger
 	 */
-	public function __construct(user $user, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, config $config, language $language, log_interface $log, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext, service_collection $messenger)
 	{
 		$this->config = $config;
 		$this->language = $language;
@@ -79,6 +84,7 @@ class activate extends command
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->messenger = $messenger;
 
 		$this->language->add_lang('acp/users');
 		parent::__construct($user);
@@ -194,20 +200,15 @@ class activate extends command
 
 		if ($input->getOption('send-email'))
 		{
-			if (!class_exists('messenger'))
-			{
-				require($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-			}
-
-			$messenger = new \messenger(false);
-			$messenger->template('admin_welcome_activated', $user_row['user_lang']);
-			$messenger->set_addresses($user_row);
-			$messenger->anti_abuse_headers($this->config, $this->user);
-			$messenger->assign_vars(array(
-					'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT))
-			);
-
-			$messenger->send(NOTIFY_EMAIL);
+			$email = $this->messenger->offsetGet('messenger.method.email');
+			$email->set_use_queue(false);
+			$email->template('admin_welcome_activated', $user_row['user_lang']);
+			$email->set_addresses($user_row);
+			$email->anti_abuse_headers($this->config, $this->user);
+			$email->assign_vars([
+				'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
+			]);
+			$email->send();
 		}
 	}
 }
