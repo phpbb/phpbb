@@ -106,12 +106,14 @@ class email extends base
 	 *
 	 * @return void
 	 */
-	public function init()
+	public function reset()
 	{
 		$this->email = new Email();
 		$this->headers = $this->email->getHeaders();
 		$this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = Email::PRIORITY_NORMAL;
+
+		parent::reset();
 	}
 
 	/**
@@ -567,6 +569,7 @@ class email extends base
 				'email'	=> $this->email,
 			]);
 		}
+		$this->reset();
 
 		return true;
 	}
