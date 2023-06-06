@@ -141,7 +141,7 @@ class message
 			'user_email'	=> $recipient_address,
 			'lang'			=> $recipient_lang,
 			'username'		=> $recipient_username,
-			'user_jabber'		=> $recipient_jabber,
+			'user_jabber'	=> $recipient_jabber,
 			'notify_type'	=> $recipient_notify_type,
 			'to_name'		=> $recipient_name,
 		);
@@ -245,7 +245,7 @@ class message
 
 		foreach ($this->recipients as $recipient)
 		{
-			$messenger_collection_iterator = $this->messenger->getIterator();
+			$messenger_collection_iterator = $messenger->getIterator();
 			while ($messenger_collection_iterator->valid())
 			{
 				$messenger_method = $messenger_collection_iterator->current();
@@ -256,15 +256,15 @@ class message
 					$messenger_method->set_addresses($recipient);
 					$messenger_method->replyto($this->sender_address);
 
-					$messenger_method->headers('X-AntiAbuse', 'Board servername - ' . $this->server_name);
-					$messenger_method->headers('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
+					$messenger_method->header('X-AntiAbuse', 'Board servername - ' . $this->server_name);
+					$messenger_method->header('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
 					if ($this->sender_id)
 					{
-						$messenger_method->headers('X-AntiAbuse', 'User_id - ' . $this->sender_id);
+						$messenger_method->header('X-AntiAbuse', 'User_id - ' . $this->sender_id);
 					}
 					if ($this->sender_username)
 					{
-						$messenger_method->headers('X-AntiAbuse', 'Username - ' . $this->sender_username);
+						$messenger_method->header('X-AntiAbuse', 'Username - ' . $this->sender_username);
 					}
 
 					$messenger_method->subject(html_entity_decode($this->subject, ENT_COMPAT));

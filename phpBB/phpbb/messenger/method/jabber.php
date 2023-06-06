@@ -394,6 +394,19 @@ class jabber extends base
 	}
 
 	/**
+	 * Inits/resets the data to default
+	 *
+	 * @return void
+	 */
+	public function reset()
+	{
+		$this->msg = '';
+		$this->to = []; 
+
+		parent::reset();
+	}
+
+	/**
 	 * Sets the use of messenger queue flag
 	 *
 	 * @return void
@@ -454,6 +467,8 @@ class jabber extends base
 			);
 		}
 		unset($addresses);
+
+		$this->reset();
 
 		return true;
 	}
