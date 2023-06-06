@@ -331,6 +331,7 @@ services:
             - '@user_loader'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@messenger.method_collection'
         tags:
             - { name: console.command }
 
@@ -344,6 +345,7 @@ services:
             - '@passwords.manager'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@messenger.method_collection'
         tags:
             - { name: console.command }
 

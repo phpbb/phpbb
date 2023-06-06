@@ -20,6 +20,7 @@ use phpbb\exception\runtime_exception;
 use phpbb\language\language;
 use phpbb\passwords\manager;
 use phpbb\user;
+use phpbb\di\service_collection;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,6 +60,9 @@ class add extends command
 	 */
 	protected $php_ext;
 
+	/** @var service_collection */
+	protected $messenger;
+
 	/**
 	 * Construct method
 	 *
@@ -69,8 +73,9 @@ class add extends command
 	 * @param manager          $password_manager
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
+	 * @param service_collection $messenger
 	 */
-	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, config $config, language $language, manager $password_manager, $phpbb_root_path, $php_ext, service_collection $messenger)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -78,6 +83,7 @@ class add extends command
 		$this->password_manager = $password_manager;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
+		$this->messenger = $messenger;
 
 		$this->language->add_lang('ucp');
 		parent::__construct($user);
@@ -307,24 +313,18 @@ class add extends command
 
 		$user_actkey = $this->get_activation_key($user_id);
 
-		if (!class_exists('messenger'))
-		{
-			require($this->phpbb_root_path . 'includes/functions_messenger.' . $this->php_ext);
-		}
-
-		$messenger = new \messenger(false);
-		$messenger->template($email_template, $this->user->lang_name);
-		$messenger->to($this->data['email'], $this->data['username']);
-		$messenger->anti_abuse_headers($this->config, $this->user);
-		$messenger->assign_vars(array(
+		$email = $this->messenger->offsetGet('messenger.method.email');
+		$email->set_use_queue(false);
+		$email->template($email_template, $this->user->lang_name);
+		$email->to($this->data['email'], $this->data['username']);
+		$email->anti_abuse_headers($this->config, $this->user);
+		$email->assign_vars([
 			'WELCOME_MSG' => html_entity_decode($this->language->lang('WELCOME_SUBJECT', $this->config['sitename']), ENT_COMPAT),
 			'USERNAME'    => html_entity_decode($this->data['username'], ENT_COMPAT),
 			'PASSWORD'    => html_entity_decode($this->data['new_password'], ENT_COMPAT),
-			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey")
-		);
-
-		$messenger->send(NOTIFY_EMAIL);
-	}
+			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey",
+		]);
+		$email->send();
 
 	/**
 	 * Get user activation key
