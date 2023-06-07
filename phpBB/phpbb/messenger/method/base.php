@@ -97,6 +97,15 @@ abstract class base
 	}
 
 	/**
+	 * get messenger method fie queue object name
+	 * @return string
+	 */
+	abstract public function get_queue_object_name($user)
+	{
+		return '';
+	}
+
+	/**
 	 * Sets the use of messenger queue flag
 	 *
 	 * @return void
@@ -177,6 +186,16 @@ abstract class base
 	 * @return bool
 	 */
 	abstract protected function send()
+	{
+	}
+
+	/**
+	 * Send messages from the queue
+	 *
+	 * @param array $queue_data Queue data array
+	 * @return void
+	 */
+	abstract public function process_queue(&$queue_data)
 	{
 	}
 
