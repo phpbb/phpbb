@@ -93,6 +93,15 @@ class email extends base
 	}
 
 	/**
+	 * get messenger method fie queue object name
+	 * @return string
+	 */
+	abstract public function get_queue_object_name($user)
+	{
+		return 'email';
+	}
+
+	/**
 	 * Check if the messenger method is enabled
 	 * @return void
 	 */
@@ -435,6 +444,71 @@ class email extends base
 				'allow_self_signed' => (bool) $this->config['smtp_allow_self_signed'],
 			];
 			$this->transport->getStream()->setStreamOptions($options);
+		}
+	}
+
+	/**
+	 * Send messages from the queue
+	 *
+	 * @param array $queue_data Queue data array
+	 * @return void
+	 */
+	public function process_queue(&$queue_data)
+	{
+		$queue_object_name = $this->get_queue_object_name();
+		$messages_count = count($queue_data[$queue_object_name]['data'];
+
+		if (!$this->is_enabled() || !$messages_count)
+		{
+			unset($queue_data[$queue_object_name]);
+			return;
+		}
+
+		@set_time_limit(0);
+
+		$package_size = $queue_data[$queue_object_name]['package_size'] ?? 0;
+		$num_items = (!$package_size || $messages_count < $package_size) ? $messages_count : $package_size;
+		$mailer = new Mailer($this->transport);
+
+		for ($i = 0; $i < $num_items; $i++)
+		{
+			// Make variables available...
+			extract(array_shift($queue_data[$queue_object_name]['data']));
+
+			$break = false;
+			/**
+			 * Event to send message via external transport
+			 *
+			 * @event core.notification_message_process
+			 * @var	bool							break	Flag indicating if the function return after hook
+			 * @var	Symfony\Component\Mime\Email	email	The Symfony Email object
+			 * @since 3.2.4-RC1
+			 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, subject, msg.
+			 */
+			$vars = [
+				'break',
+				'email',
+			];
+			extract($this->dispatcher->trigger_event('core.notification_message_process', compact($vars)));
+
+			if (!$break)
+			{
+				try
+				{
+					$mailer->send($email);
+				}
+				catch (TransportExceptionInterface $e)
+				{
+					$this->error('EMAIL', $e->getDebug());
+					continue;
+				}
+			}
+		}
+
+		// No more data for this object? Unset it
+		if (!count($this->queue_data[$queue_object_name]['data']))
+		{
+			unset($this->queue_data[$queue_object_name]);
 		}
 	}
 
