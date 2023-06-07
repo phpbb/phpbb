@@ -115,6 +115,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_exists($query_id)
 	{
+		$query_id = $this->clean_query_id($query_id);
 		return isset($this->sql_rowset[$query_id]);
 	}
 
@@ -123,6 +124,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_fetchrow($query_id)
 	{
+		$query_id = $this->clean_query_id($query_id);
 		if ($this->sql_row_pointer[$query_id] < count($this->sql_rowset[$query_id]))
 		{
 			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
@@ -136,6 +138,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_fetchfield($query_id, $field)
 	{
+		$query_id = $this->clean_query_id($query_id);
 		if ($this->sql_row_pointer[$query_id] < count($this->sql_rowset[$query_id]))
 		{
 			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++][$field] : false;
@@ -149,6 +152,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_rowseek($rownum, $query_id)
 	{
+		$query_id = $this->clean_query_id($query_id);
 		if ($rownum >= count($this->sql_rowset[$query_id]))
 		{
 			return false;
@@ -163,6 +167,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*/
 	function sql_freeresult($query_id)
 	{
+		$query_id = $this->clean_query_id($query_id);
 		if (!isset($this->sql_rowset[$query_id]))
 		{
 			return false;
@@ -230,5 +235,22 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 		}
 
 		@rmdir($dir);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function clean_query_id($query_id)
+	{
+		// Some DBMS functions accept/return objects and/or resources instead of integer identifier
+		// Attempting to cast object to int will throw error, hence correctly handle all cases
+		if (is_resource($query_id))
+		{
+			return function_exists('get_resource_id') ? get_resource_id($query_id) : (int) $query_id;
+		}
+		else
+		{
+			return is_object($query_id) ? spl_object_id($query_id) : $query_id;
+		}
 	}
 }

@@ -1245,4 +1245,25 @@ abstract class driver implements driver_interface
 
 		return $rows_total;
 	}
+
+	/**
+	 * Ensure query ID can be used by cache
+	 *
+	 * @param resource|int|string $query_id Mixed type query id
+	 *
+	 * @return int|string Query id in string or integer format
+	 */
+	public function clean_query_id($query_id)
+	{
+		// Some DBMS functions accept/return objects and/or resources instead if identifiers
+		// Attempting to use objects/resources as array keys will throw error, hence correctly handle all cases
+		if (is_resource($query_id))
+		{
+			return function_exists('get_resource_id') ? get_resource_id($query_id) : (int) $query_id;
+		}
+		else
+		{
+			return is_object($query_id) ? spl_object_id($query_id) : $query_id;
+		}
+	}
 }
