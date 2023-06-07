@@ -121,16 +121,25 @@ class jabber extends base
 	}
 
 	/**
+	 * get messenger method fie queue object name
+	 * @return string
+	 */
+	abstract public function get_queue_object_name($user)
+	{
+		return 'jabber';
+	}
+
+	/**
 	 * Check if the messenger method is enabled
 	 * @return void
 	 */
 	public function is_enabled()
 	{
 		return
-			empty($this->config['jab_enable']) ||
-			empty($this->config['jab_host']) ||
-			empty($this->config['jab_username']) ||
-			empty($this->config['jab_password']);
+			!empty($this->config['jab_enable']) &&
+			!empty($this->config['jab_host']) &&
+			!empty($this->config['jab_username']) &&
+			!empty($this->config['jab_password']);
 	}
 
 	/**
@@ -417,6 +426,65 @@ class jabber extends base
 	}
 
 	/**
+	 * Send messages from the queue
+	 *
+	 * @param array $queue_data Queue data array
+	 * @return void
+	 */
+	public function process_queue(&$queue_data)
+	{
+		$queue_object_name = $this->get_queue_object_name();
+		$messages_count = count($queue_data[$queue_object_name]['data'];
+
+		if (!$this->is_enabled() || !$messages_count)
+		{
+			unset($queue_data[$queue_object_name]);
+			return;
+		}
+
+		@set_time_limit(0);
+
+		$package_size = $queue_data[$queue_object_name]['package_size'] ?? 0;
+		$num_items = (!$package_size || $messages_count < $package_size) ? $messages_count : $package_size;
+		$mailer = new Mailer($this->transport);
+
+		for ($i = 0; $i < $num_items; $i++)
+		{
+			// Make variables available...
+			extract(array_shift($queue_data[$queue_object_name]['data']));
+
+			if (!$this->connect())
+			{
+				$this->error('JABBER', $this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
+				return false;
+			}
+
+			if (!$this->login())
+			{
+				$this->error('JABBER', $this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
+				return false;
+			}
+
+			foreach ($addresses as $address)
+			{
+				if ($this->send_message($address, $msg, $subject) === false)
+				{
+					$this->error('JABBER', $this->get_log());
+					continue;
+				}
+			}
+		}
+
+		// No more data for this object? Unset it
+		if (!count($this->queue_data[$queue_object_name]['data']))
+		{
+			unset($this->queue_data[$queue_object_name]);
+		}
+
+		$this->disconnect();
+	}
+
+	/**
 	* Send jabber message out
 	*/
 	public function send()
@@ -452,7 +520,11 @@ class jabber extends base
 
 			foreach ($addresses as $address)
 			{
-				$this->send_message($address, $this->msg, $this->subject);
+				if ($this->send_message($address, $this->msg, $this->subject) === false)
+				{
+					$this->error('JABBER', $this->get_log());
+					continue;
+				}
 			}
 
 			$this->disconnect();
@@ -460,11 +532,11 @@ class jabber extends base
 		else
 		{
 			$this->queue->init('jabber', $this->config['jab_package_size']);
-			$this->queue->put('jabber', array(
+			$this->queue->put('jabber', [
 				'addresses'		=> $addresses,
 				'subject'		=> $this->subject,
-				'msg'			=> $this->msg)
-			);
+				'msg'			=> $this->msg,
+			]);
 		}
 		unset($addresses);
 
