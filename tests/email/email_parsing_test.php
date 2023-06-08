@@ -95,7 +95,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
 
 		$twig->addExtension($twig_extension);
-		$phpbb_container->set('template.twig.lexer', new \phpbb\template\twig\lexer($twig));
+		$twig_lexer = new \phpbb\template\twig\lexer($twig);
+		$phpbb_container->set('template.twig.lexer', $twig_lexer);
 		$phpbb_container->set('dispatcher', $dispatcher);
 		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('request', $request);
@@ -111,13 +112,23 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 		$core_cache_dir = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
 		$phpbb_container->setParameter('core.cache_dir', $core_cache_dir);
+
 		$core_messenger_queue_file = $core_cache_dir . 'queue.' . $phpEx;
 		$phpbb_container->setParameter('core.messenger_queue_file', $core_messenger_queue_file);
+
 		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$messenger_method_collection->add('messenger.method.email');
 		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
 		$messenger_queue = new \phpbb\messenger\queue($config, $dispatcher, $messenger_method_collection, $core_messenger_queue_file);
 		$phpbb_container->set('messenger.queue', $messenger_queue);
-		$this->email = new \phpbb\messenger\email($config, $dispatcher, $lang, $log, $request, $user, $messenger_queue);
+
+		$this->email = new \phpbb\messenger\method\phpbb_email(
+			$config, $dispatcher, $lang, $log, $request, $user, $messenger_queue,
+			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
+			$cache_path
+		);
+		$phpbb_container->set('messenger.method.email', $this->email);
 
 		$reflection = new ReflectionObject($this->email);
 		$this->reflection_template_property = $reflection->getProperty('template');

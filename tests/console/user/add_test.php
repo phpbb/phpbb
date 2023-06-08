@@ -32,7 +32,8 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 			$this->language,
 			$this->passwords_manager,
 			$this->phpbb_root_path,
-			$this->php_ext
+			$this->php_ext,
+			$this->messenger_method_collection
 		));
 
 		$command = $application->find('user:add');

@@ -26,10 +26,10 @@ use phpbb\di\service_collection;
 
 class jabber extends \phpbb\notification\method\messenger_base
 {
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
 	/** @var service_collection */

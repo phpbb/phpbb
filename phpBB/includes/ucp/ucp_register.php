@@ -458,7 +458,7 @@ class ucp_register
 				if ($config['email_enable'])
 				{
 					$messenger = $phpbb_container->get('messenger.method_collection');
-					$email = $this->messenger->offsetGet('messenger.method.email');
+					$email = $messenger->offsetGet('messenger.method.email');
 					$email->set_use_queue(false);
 					$email->template($email_template, $data['lang']);
 					$email->to($data['email'], $data['username']);

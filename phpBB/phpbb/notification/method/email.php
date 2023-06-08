@@ -27,13 +27,13 @@ use phpbb\di\service_collection;
 
 class email extends \phpbb\notification\method\messenger_base
 {
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
 	/** @var string Notification emails table */

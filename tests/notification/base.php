@@ -146,6 +146,11 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 
 		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
 
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$messenger_method_collection->add('messenger.method.email');
+		$messenger_method_collection->add('messenger.method.jabber');
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
 		$phpbb_container->compile();
 
 		$this->notifications->setDependencies($this->auth, $this->config);
