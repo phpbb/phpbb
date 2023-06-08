@@ -96,7 +96,7 @@ class user_form extends form
 	/**
 	* {inheritDoc}
 	*/
-	public function submit(\messenger $messenger)
+	public function submit(\phpbb\di\service_collection $messenger)
 	{
 		if (!$this->subject)
 		{

@@ -13,8 +13,7 @@
 
 namespace phpbb\cron\task\core;
 
-use \phpbb\config\config;
-use \phpbb\messenger\queue;
+use phpbb\config\config;
 
 /**
 * Queue cron task. Sends email and jabber messages queued by other scripts.
@@ -24,7 +23,7 @@ class queue extends \phpbb\cron\task\base
 	/** var config */
 	protected $config;
 
-	/** var queue */
+	/** var \phpbb\messenger\queue */
 	protected $queue;
 
 	/** var string */
@@ -35,9 +34,9 @@ class queue extends \phpbb\cron\task\base
 	 *
 	 * @param config $config The config
 	 * @param string $queue_cache_file The messenger file queue cache filename
-	 * @param queue $queue The messenger file queue object
+	 * @param \phpbb\messenger\queue $queue The messenger file queue object
 	 */
-	public function __construct(config $config, queue $queue, $queue_cache_file)
+	public function __construct(config $config, \phpbb\messenger\queue $queue, $queue_cache_file)
 	{
 		$this->config = $config;
 		$this->queue = $queue;

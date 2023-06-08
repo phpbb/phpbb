@@ -20,23 +20,28 @@ services:
             - '@request'
             - '@user'
             - '@messenger.queue'
+            - '@path_helper'
+            - '@ext.manager'
+            - '@template.twig.extensions.collection'
+            - '@template.twig.lexer'
+            - '%core.template.cache_path%'
 
     messenger.method.email:
-        class: phpbb\messenger\method\email
+        class: phpbb\messenger\method\phpbb_email
         shared: false
         parent: messenger.method.base
         calls:
-            - [init, []]
+            - [reset, []]
             - [set_transport, []]
         tags:
             - { name: messenger.method }
 
     messenger.method.jabber:
-        class: phpbb\messenger\method\jabber
+        class: phpbb\messenger\method\phpbb_jabber
         shared: false
         parent: messenger.method.base
         calls:
-            - [init, []]
+            - [reset, []]
         tags:
             - { name: messenger.method }
 

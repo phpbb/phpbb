@@ -105,6 +105,11 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 
+		$this->messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$this->messenger_method_collection->add('messenger.method.email');
+		$this->messenger_method_collection->add('messenger.method.jabber');
+		$phpbb_container->set('messenger.method_collection', $this->messenger_method_collection);
+
 		parent::setUp();
 	}
 
