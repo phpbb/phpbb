@@ -1247,11 +1247,7 @@ abstract class driver implements driver_interface
 	}
 
 	/**
-	 * Ensure query ID can be used by cache
-	 *
-	 * @param resource|int|string $query_id Mixed type query id
-	 *
-	 * @return int|string Query id in string or integer format
+	 * {@inheritDoc}
 	 */
 	public function clean_query_id($query_id)
 	{
