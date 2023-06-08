@@ -364,11 +364,6 @@ class acp_users
 
 							if ($config['email_enable'])
 							{
-								if (!class_exists('messenger'))
-								{
-									include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-								}
-
 								$server_url = generate_board_url();
 
 								$user_actkey = gen_rand_string(mt_rand(6, 10));
@@ -403,21 +398,18 @@ class acp_users
 								$db->sql_query($sql);
 
 								// Start sending email
-								$messenger = new messenger(false);
-
-								$messenger->template($email_template, $user_row['user_lang']);
-
-								$messenger->set_addresses($user_row);
-
-								$messenger->anti_abuse_headers($config, $user);
-
-								$messenger->assign_vars(array(
+								$messenger = $phpbb_container->get('messenger.method_collection');
+								$email = $messenger->offsetGet('messenger.method.email');
+								$email->set_use_queue(false);
+								$email->template($email_template, $user_row['user_lang']);
+								$email->set_addresses($user_row);
+								$email->anti_abuse_headers($config, $user);
+								$email->assign_vars([
 									'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 									'USERNAME'		=> html_entity_decode($user_row['username'], ENT_COMPAT),
-									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
-								);
-
-								$messenger->send(NOTIFY_EMAIL);
+									'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k=$user_actkey",
+								]);
+								$email->send();
 
 								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE', false, array($user_row['username']));
 								$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_USER_REACTIVATE_USER', false, array(
@@ -462,24 +454,16 @@ class acp_users
 									$phpbb_notifications = $phpbb_container->get('notification_manager');
 									$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-									if (!class_exists('messenger'))
-									{
-										include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-									}
-
-									$messenger = new messenger(false);
-
-									$messenger->template('admin_welcome_activated', $user_row['user_lang']);
-
-									$messenger->set_addresses($user_row);
-
-									$messenger->anti_abuse_headers($config, $user);
-
-									$messenger->assign_vars(array(
-										'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT))
-									);
-
-									$messenger->send(NOTIFY_EMAIL);
+									$messenger = $phpbb_container->get('messenger.method_collection');
+									$email = $messenger->offsetGet('messenger.method.email');
+									$email->set_use_queue(false);
+									$email->template('admin_welcome_activated', $user_row['user_lang']);
+									$email->set_addresses($user_row);
+									$email->anti_abuse_headers($config, $user);
+									$email->assign_vars([
+										'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
+									]);
+									$email->send();
 								}
 							}
 
