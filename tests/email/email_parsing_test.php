@@ -109,14 +109,17 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 
-		if (!class_exists('messenger'))
-		{
-			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-		}
+		$core_cache_dir = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
+		$phpbb_container->setParameter('core.cache_dir', $core_cache_dir);
+		$core_messenger_queue_file = $core_cache_dir . 'queue.' . $phpEx;
+		$phpbb_container->setParameter('core.messenger_queue_file', $core_messenger_queue_file);
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+		$messenger_queue = new \phpbb\messenger\queue($config, $dispatcher, $messenger_method_collection, $core_messenger_queue_file);
+		$phpbb_container->set('messenger.queue', $messenger_queue);
+		$this->email = new \phpbb\messenger\email($config, $dispatcher, $lang, $log, $request, $user, $messenger_queue);
 
-		$this->messenger = new \messenger();
-
-		$reflection = new ReflectionObject($this->messenger);
+		$reflection = new ReflectionObject($this->email);
 		$this->reflection_template_property = $reflection->getProperty('template');
 		$this->reflection_template_property->setAccessible(true);
 	}
@@ -136,9 +139,9 @@ class phpbb_email_parsing_test extends phpbb_test_case
 	{
 		global $config, $phpEx, $user;
 
-		$this->messenger->set_addresses($user->data);
+		$this->email->set_addresses($user->data);
 
-		$this->messenger->assign_vars(array(
+		$this->email->assign_vars(array(
 			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)),
 			'SITENAME'	=> html_entity_decode($config['sitename'], ENT_COMPAT),
 
@@ -150,9 +153,9 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			'U_FORUM'					=> generate_board_url() . "/viewforum.{$phpEx}?f=1",
 			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$phpEx}?uid=2&f=1&unwatch=forum",
 		));
-		$this->messenger->template('newtopic_notify', $user->data['user_lang'], '', '');
+		$this->email->template('newtopic_notify', $user->data['user_lang'], '', '');
 
-		$reflection_template = $this->reflection_template_property->getValue($this->messenger);
+		$reflection_template = $this->reflection_template_property->getValue($this->email);
 		$msg = trim($reflection_template->assign_display('body'));
 
 		$this->assertStringContainsString($author_name, $msg);

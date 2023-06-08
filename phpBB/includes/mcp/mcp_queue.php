@@ -50,8 +50,6 @@ class mcp_queue
 		{
 			case 'approve':
 			case 'restore':
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
 				$post_id_list = $request->variable('post_id_list', array(0));
 				$topic_id_list = $request->variable('topic_id_list', array(0));
 
@@ -111,11 +109,6 @@ class mcp_queue
 					}
 					mcp_delete_topic($topic_id_list, false, '', 'disapprove');
 					return;
-				}
-
-				if (!class_exists('messenger'))
-				{
-					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 				}
 
 				if (!empty($topic_id_list))

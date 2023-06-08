@@ -51,8 +51,6 @@ class mcp_pm_reports
 		{
 			case 'close':
 			case 'delete':
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
 				$report_id_list = $request->variable('report_id_list', array(0));
 
 				if (!count($report_id_list))
