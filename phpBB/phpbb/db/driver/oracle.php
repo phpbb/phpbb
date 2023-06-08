@@ -439,14 +439,16 @@ class oracle extends \phpbb\db\driver\driver
 					return false;
 				}
 
+				$safe_query_id = $this->clean_query_id($this->query_result);
+
 				if ($cache && $cache_ttl)
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
+					$this->open_queries[$safe_query_id] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
 				else if (strpos($query, 'SELECT') === 0)
 				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
+					$this->open_queries[$safe_query_id] = $this->query_result;
 				}
 			}
 			else if ($this->debug_sql_explain)
@@ -494,9 +496,10 @@ class oracle extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			return $cache->sql_fetchrow($query_id);
+			return $cache->sql_fetchrow($safe_query_id);
 		}
 
 		if ($query_id)
@@ -542,9 +545,10 @@ class oracle extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			return $cache->sql_rowseek($rownum, $query_id);
+			return $cache->sql_rowseek($rownum, $safe_query_id);
 		}
 
 		if (!$query_id)
@@ -617,13 +621,14 @@ class oracle extends \phpbb\db\driver\driver
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			 $cache->sql_freeresult($query_id);
+			 $cache->sql_freeresult($safe_query_id);
 		}
-		else if (isset($this->open_queries[(int) $query_id]))
+		else if (isset($this->open_queries[$safe_query_id]))
 		{
-			unset($this->open_queries[(int) $query_id]);
+			unset($this->open_queries[$safe_query_id]);
 			oci_free_statement($query_id);
 		}
 	}
