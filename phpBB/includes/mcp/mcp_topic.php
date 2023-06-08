@@ -107,7 +107,6 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 		if (!count($post_id_list))
 		{

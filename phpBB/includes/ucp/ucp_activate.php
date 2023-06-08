@@ -131,21 +131,25 @@ class ucp_activate
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			$messenger = $phpbb_container->get('messenger.method_collection');
+			$messenger_collection_iterator = $messenger->getIterator();
+			while ($messenger_collection_iterator->valid())
+			{
+				$messenger_method = $messenger_collection_iterator->current();
+				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == NOTIFY_BOTH)
+				{
+					$messenger_method->set_use_queue(false);
+					$messenger_method->template('admin_welcome_activated', $user_row['user_lang']);
+					$messenger_method->set_addresses($user_row);
+					$messenger_method->anti_abuse_headers($config, $user);
+					$messenger_method->assign_vars([
+						'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
+					]);
 
-			$messenger = new messenger(false);
-
-			$messenger->template('admin_welcome_activated', $user_row['user_lang']);
-
-			$messenger->set_addresses($user_row);
-
-			$messenger->anti_abuse_headers($config, $user);
-
-			$messenger->assign_vars(array(
-				'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT))
-			);
-
-			$messenger->send($user_row['user_notify_type']);
+					$messenger_method->send();
+				}
+				$messenger_collection_iterator->next();
+			}
 
 			$message = 'ACCOUNT_ACTIVE_ADMIN';
 		}
