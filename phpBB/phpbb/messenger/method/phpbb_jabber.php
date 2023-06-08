@@ -24,7 +24,7 @@ namespace phpbb\messenger\method;
  * Slightly modified by Acyd Burn (2006)
  * Refactored to a service (2023)
  */
-class jabber extends base
+class phpbb_jabber extends base
 {
 	/** @var string */
 	protected $connect_server;
@@ -87,8 +87,8 @@ class jabber extends base
 	 *		->password($password)
 	 *		->ssl($use_ssl)
 	 *		->server($server)
-	 *		->port($port) 
-	 *		->stream_options( 
+	 *		->port($port)
+	 *		->stream_options(
 	 *			'verify_peer' => true,
 	 *			'verify_peer_name' => true,
 	 *			'allow_self_signed' => false,
@@ -99,10 +99,10 @@ class jabber extends base
 	public function init()
 	{
 		$this->username($this->config['jab_username'])
-	 		->password($this->config['jab_password'])
-	 		->ssl((bool) $this->config['jab_use_ssl'])
-	 		->server($this->config['jab_host'])
-	 		->port($this->config['jab_port']) 
+			->password($this->config['jab_password'])
+			->ssl((bool) $this->config['jab_use_ssl'])
+			->server($this->config['jab_host'])
+			->port($this->config['jab_port'])
 			->stream_options['ssl'] = [
 				'verify_peer' => $this->config['jab_verify_peer'],
 				'verify_peer_name' => $this->config['jab_verify_peer_name'],
@@ -111,9 +111,7 @@ class jabber extends base
 	}
 
 	/**
-	 * Get messenger method id
-	 *
-	 * @return int
+	 * {@inheritDoc}
 	 */
 	public function get_id()
 	{
@@ -121,10 +119,9 @@ class jabber extends base
 	}
 
 	/**
-	 * get messenger method fie queue object name
-	 * @return string
+	 * {@inheritDoc}
 	 */
-	abstract public function get_queue_object_name($user)
+	public function get_queue_object_name()
 	{
 		return 'jabber';
 	}
@@ -369,10 +366,7 @@ class jabber extends base
 	}
 
 	/**
-	 * Set address as available
-	 *
-	 * @param array $user User row
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function set_addresses($user)
 	{
@@ -403,16 +397,17 @@ class jabber extends base
 	}
 
 	/**
-	 * Inits/resets the data to default
-	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function reset()
 	{
 		$this->msg = '';
-		$this->to = []; 
+		$this->to = [];
 
-		parent::reset();
+		$this->subject = $this->additional_headers = [];
+		$this->msg = '';
+		$this->use_queue = true;
+		unset($this->template);
 	}
 
 	/**
@@ -426,15 +421,12 @@ class jabber extends base
 	}
 
 	/**
-	 * Send messages from the queue
-	 *
-	 * @param array $queue_data Queue data array
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function process_queue(&$queue_data)
 	{
 		$queue_object_name = $this->get_queue_object_name();
-		$messages_count = count($queue_data[$queue_object_name]['data'];
+		$messages_count = count($queue_data[$queue_object_name]['data']);
 
 		if (!$this->is_enabled() || !$messages_count)
 		{
