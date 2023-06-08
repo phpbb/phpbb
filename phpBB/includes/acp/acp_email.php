@@ -182,25 +182,13 @@ class acp_email
 					}
 				}
 
-				// Send the messages
-				if (!class_exists('messenger'))
-				{
-					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-				}
-
-				if (!function_exists('get_group_name'))
-				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-				}
-				$messenger = new messenger($use_queue);
-
 				$errored = false;
 
 				$email_template = 'admin_send_email';
-				$template_data = array(
+				$template_data = [
 					'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
 					'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT),
-				);
+				];
 				$generate_log_entry = true;
 
 				/**
@@ -229,31 +217,50 @@ class acp_email
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
+				$messenger = $phpbb_container->get('messenger.method_collection');
+				$messenger_collection_iterator = $messenger->getIterator();
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{
 					$used_lang = $email_list[$i][0]['lang'];
 					$used_method = $email_list[$i][0]['method'];
 
-					for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+					while ($messenger_collection_iterator->valid())
 					{
-						$email_row = $email_list[$i][$j];
+						$messenger_method = $messenger_collection_iterator->current();
+						if ($messenger_method->get_id() == $used_method || $used_method == NOTIFY_BOTH)
+						{
+							$messenger_method->set_use_queue($use_queue);
+							$messenger_method->template($email_template, $used_lang);
+							$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
+							$messenger_method->assign_vars($template_data);
 
-						$messenger->{((count($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
-						$messenger->im($email_row['jabber'], $email_row['name']);
-					}
+							if ($messenger_method->get_id() == NOTIFY_EMAIL)
+							{
+								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+								{
+									$email_row = $email_list[$i][$j];
+									$messenger_method->{((count($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
+								}
 
-					$messenger->template($email_template, $used_lang);
+								$messenger_method->anti_abuse_headers($config, $user);
+								$messenger_method->set_mail_priority($priority);
+							}
+							else if ($messenger_method->get_id() == NOTIFY_JABBER)
+							{
+								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+								{
+									$email_row = $email_list[$i][$j];
+									$messenger_method->to($email_row['jabber'], $email_row['name']);
+								}
+							}
 
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->subject(html_entity_decode($subject, ENT_COMPAT));
-					$messenger->set_mail_priority($priority);
-
-					$messenger->assign_vars($template_data);
-
-					if (!($messenger->send($used_method)))
-					{
-						$errored = true;
+							$errored = !$messenger_method->send();
+							if ($use_queue)
+							{
+								$messenger_method->save_queue();
+							}
+						}
+						$messenger_collection_iterator->next();
 					}
 				}
 				unset($email_list);
