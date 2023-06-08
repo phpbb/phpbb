@@ -121,7 +121,7 @@ class queue
 		while ($messenger_collection_iterator->valid())
 		{
 			$messenger_method = $messenger_collection_iterator->current();
-			if (isset($this->queue_data[$messenger_method->get_queue_object_name()])
+			if (isset($this->queue_data[$messenger_method->get_queue_object_name()]))
 			{
 				$messenger_method->process_queue($this->queue_data);
 			}

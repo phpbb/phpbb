@@ -105,6 +105,11 @@ class notification_method_email_test extends phpbb_tests_notification_base
 			)
 		);
 
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$messenger_method_collection->add('messenger.method.email');
+		$messenger_method_collection->add('messenger.method.jabber');
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
 		$this->notification_method_email = $this->getMockBuilder('\phpbb\notification\method\email')
 			->setConstructorArgs([
 				$phpbb_container->get('user_loader'),
@@ -113,7 +118,8 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				$phpbb_container->get('dbal.conn'),
 				$phpbb_root_path,
 				$phpEx,
-				$phpbb_container->getParameter('tables.notification_emails')
+				$phpbb_container->getParameter('tables.notification_emails'),
+				$phpbb_container->get('messenger.method_collection')
 			])
 			->setMethods(['notify_using_messenger'])
 			->getMock();

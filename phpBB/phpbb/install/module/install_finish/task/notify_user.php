@@ -42,6 +42,9 @@ class notify_user extends \phpbb\install\task_base
 	/** @var log_interface */
 	protected $log;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
 	/** @var user */
 	protected $user;
 
@@ -54,8 +57,9 @@ class notify_user extends \phpbb\install\task_base
 	 * @param container_factory		$container
 	 * @param config				$install_config
 	 * @param iohandler_interface	$iohandler
+	 * @param string				$phpbb_root_path
 	 */
-	public function __construct(container_factory $container, config $install_config, iohandler_interface $iohandler)
+	public function __construct(container_factory $container, config $install_config, iohandler_interface $iohandler, $phpbb_root_path)
 	{
 		$this->install_config	= $install_config;
 		$this->iohandler		= $iohandler;
@@ -64,6 +68,7 @@ class notify_user extends \phpbb\install\task_base
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->messenger		= $container->get('messenger.method_collection');
+		$this->phpbb_root_path	= $phpbb_root_path;
 
 		// We need to reload config for cases when it doesn't have all values
 		/** @var \phpbb\cache\driver\driver_interface $cache */

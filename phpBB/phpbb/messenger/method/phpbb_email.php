@@ -22,7 +22,7 @@ use Symfony\Component\Mime\Header\Headers;
 /**
  * Messenger class
  */
-class email extends base
+class phpbb_email extends base
 {
 	/** @var array */
 	private const PRIORITY_MAP = [
@@ -58,7 +58,7 @@ class email extends base
 	/** @var string */
 	protected $from;
 
-	/** @var Symfony\Component\Mime\Header\Headers */
+	/** @var Headers */
 	protected $headers;
 
 	/**
@@ -79,13 +79,11 @@ class email extends base
 	/** @var string */
 	protected $replyto = '';
 
-	/** @var Symfony\Component\Mailer\Transport */
+	/** @var Transport */
 	protected $transport;
 
 	/**
-	 * Get messenger method id
-	 *
-	 * @return int
+	 * {@inheritDoc}
 	 */
 	public function get_id()
 	{
@@ -93,10 +91,9 @@ class email extends base
 	}
 
 	/**
-	 * get messenger method fie queue object name
-	 * @return string
+	 * {@inheritDoc}
 	 */
-	abstract public function get_queue_object_name($user)
+	public function get_queue_object_name()
 	{
 		return 'email';
 	}
@@ -111,9 +108,7 @@ class email extends base
 	}
 
 	/**
-	 * Inits/resets the data to default
-	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function reset()
 	{
@@ -122,7 +117,10 @@ class email extends base
 		$this->msg = $this->replyto = $this->from = '';
 		$this->mail_priority = Email::PRIORITY_NORMAL;
 
-		parent::reset();
+		$this->subject = $this->additional_headers = [];
+		$this->msg = '';
+		$this->use_queue = true;
+		unset($this->template);
 	}
 
 	/**
@@ -136,10 +134,7 @@ class email extends base
 	}
 
 	/**
-	 * Set address as available
-	 *
-	 * @param array $user User row
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function set_addresses($user)
 	{
@@ -251,8 +246,8 @@ class email extends base
 	 */
 	public function header($header_name, $header_value)
 	{
-		$header_name = trim($header_name);
-		$header_value = trim($header_value);
+		$header_name = $header_name;
+		$header_value = $header_value;
 
 		// addMailboxListHeader() requires value to be array
 		if ($this->get_header_method($header_name) == 'addMailboxListHeader')
@@ -293,18 +288,6 @@ class email extends base
 	public function set_mail_priority($priority = Email::PRIORITY_NORMAL)
 	{
 		$this->email->priority($priority);
-	}
-
-	/**
-	 * Add error message to log
-	 *
-	 * @param string	$msg	Error message text
-	 * @return void
-	 */
-	public function error($msg)
-	{
-		$type = 'EMAIL/' . ($this->config['smtp_delivery']) ? 'SMTP' : 'PHP/mail()';
-		parent::error($type, $msg);
 	}
 
 	/**
@@ -448,15 +431,12 @@ class email extends base
 	}
 
 	/**
-	 * Send messages from the queue
-	 *
-	 * @param array $queue_data Queue data array
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function process_queue(&$queue_data)
 	{
 		$queue_object_name = $this->get_queue_object_name();
-		$messages_count = count($queue_data[$queue_object_name]['data'];
+		$messages_count = count($queue_data[$queue_object_name]['data']);
 
 		if (!$this->is_enabled() || !$messages_count)
 		{
@@ -480,8 +460,8 @@ class email extends base
 			 * Event to send message via external transport
 			 *
 			 * @event core.notification_message_process
-			 * @var	bool							break	Flag indicating if the function return after hook
-			 * @var	Symfony\Component\Mime\Email	email	The Symfony Email object
+			 * @var	bool		break	Flag indicating if the function return after hook
+			 * @var	Email		email	The Symfony Email object
 			 * @since 3.2.4-RC1
 			 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, subject, msg.
 			 */
@@ -515,7 +495,7 @@ class email extends base
 	/**
 	 * Get mailer transport object
 	 *
-	 * @return Symfony\Component\Mailer\Transport Symfony Mailer transport object
+	 * @return Transport Symfony Mailer transport object
 	 */
 	public function get_transport()
 	{
@@ -527,7 +507,7 @@ class email extends base
 	 *
 	 * @return bool
 	 */
-	protected function send()
+	public function send()
 	{
 		$this->prepare_message();
 
@@ -544,9 +524,9 @@ class email extends base
 		 * Event to send message via external transport
 		 *
 		 * @event core.notification_message_email
-		 * @var	string							subject		The message subject
-		 * @var	string							msg			The message text
-		 * @var	Symfony\Component\Mime\Email	email		The Symfony Email object
+		 * @var	string	subject	The message subject
+		 * @var	string	msg		The message text
+		 * @var	Email	email	The Symfony Email object
 		 * @since 3.2.4-RC1
 		 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, break
 		 */
@@ -587,10 +567,10 @@ class email extends base
 			 * Modify data before sending out emails with PHP's mail function
 			 *
 			 * @event core.phpbb_mail_before
-			 * @var	Symfony\Component\Mime\Email	email	The Symfony Email object
-			 * @var	string	subject							The message subject
-			 * @var	string	msg								The message text
-			 * @var string	headers							The email headers
+			 * @var	Email	email		The Symfony Email object
+			 * @var	string	subject		The message subject
+			 * @var	string	msg			The message text
+			 * @var string	headers		The email headers
 			 * @since 3.3.6-RC1
 			 * @changed 4.0.0-a1 Added vars: email. Removed vars: to, eol, additional_parameters.
 			 */
@@ -621,10 +601,10 @@ class email extends base
 			 * Execute code after sending out emails with PHP's mail function
 			 *
 			 * @event core.phpbb_mail_after
-			 * @var	Symfony\Component\Mime\Email	email	The Symfony Email object
-			 * @var	string	subject							The message subject
-			 * @var	string	msg								The message text
-			 * @var string	headers							The email headers
+			 * @var	Email	email		The Symfony Email object
+			 * @var	string	subject		The message subject
+			 * @var	string	msg			The message text
+			 * @var string	headers		The email headers
 			 * @since 3.3.6-RC1
 			 * @changed 4.0.0-a1 Added vars: email. Removed vars: to, eol, additional_parameters, $result.
 			 */

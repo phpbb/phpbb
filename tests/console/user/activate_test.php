@@ -41,7 +41,8 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 			$this->notifications,
 			$this->user_loader,
 			$this->phpbb_root_path,
-			$this->php_ext
+			$this->php_ext,
+			$this->messenger_method_collection
 		));
 
 		$command = $application->find('user:activate');

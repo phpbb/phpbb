@@ -14,12 +14,16 @@
 namespace phpbb\messenger\method;
 
 use phpbb\config\config;
+use phpbb\di\service_collection;
 use phpbb\event\dispatcher;
+use phpbb\extension\manager;
 use phpbb\language\language;
 use phpbb\log\log_interface;
+use phpbb\path_helper;
 use phpbb\request\request;
 use phpbb\messenger\queue;
 use phpbb\template\template;
+use phpbb\template\twig\lexer;
 use phpbb\user;
 
 /**
@@ -36,6 +40,9 @@ abstract class base
 	/** @var dispatcher */
 	protected $dispatcher;
 
+	/** @var manager */
+	protected $ext_manager;
+
 	/** @var language */
 	protected $language;
 
@@ -48,6 +55,9 @@ abstract class base
 	/** @var queue */
 	protected $queue;
 
+	/** @var  path_helper */
+	protected $path_helper;
+
 	/** @var  request */
 	protected $request;
 
@@ -56,6 +66,15 @@ abstract class base
 
 	/** @var template */
 	protected $template;
+
+	/** @var string */
+	protected $template_cache_path;
+
+	/** @var service_collection */
+	protected $twig_extensions_collection;
+
+	/** @var lexer */
+	protected $twig_lexer;
 
 	/** @var bool */
 	protected $use_queue = true;
@@ -73,8 +92,26 @@ abstract class base
 	 * @param request $request
 	 * @param user $user
 	 * @param queue $queue
+	 * @param path_helper $path_helper
+	 * @param manager $ext_manager
+	 * @param service_collection $twig_extensions_collection
+	 * @param lexer $twig_lexer
+	 * @param string $template_cache_path
 	 */
-	function __construct(config $config, dispatcher $dispatcher, language $language, log_interface $log, request $request, user $user, queue $queue)
+	function __construct(
+		config $config,
+		dispatcher $dispatcher,
+		language $language,
+		log_interface $log,
+		request $request,
+		user $user,
+		queue $queue,
+		path_helper $path_helper,
+		manager $ext_manager,
+		service_collection $twig_extensions_collection,
+		lexer $twig_lexer,
+		$template_cache_path
+	)
 	{
 		$this->config = $config;
 		$this->dispatcher = $dispatcher;
@@ -83,6 +120,11 @@ abstract class base
 		$this->request = $request;
 		$this->user = $user;
 		$this->queue = $queue;
+		$this->path_helper = $path_helper;
+		$this->ext_manager = $ext_manager;
+		$this->twig_extensions_collection = $twig_extensions_collection;
+		$this->twig_lexer = $twig_lexer;
+		$this->template_cache_path = $template_cache_path;
 
 		$this->set_use_queue();
 	}
@@ -91,19 +133,7 @@ abstract class base
 	 * Get messenger method id
 	 * @return mixed
 	 */
-	abstract public function get_id()
-	{
-		return;
-	}
-
-	/**
-	 * get messenger method fie queue object name
-	 * @return string
-	 */
-	abstract public function get_queue_object_name($user)
-	{
-		return '';
-	}
+	abstract public function get_id();
 
 	/**
 	 * Sets the use of messenger queue flag
@@ -120,13 +150,7 @@ abstract class base
 	 *
 	 * @return void
 	 */
-	abstract public function reset()
-	{
-		$this->subject = $this->additional_headers = [];
-		$this->msg = '';
-		$this->use_queue = true;
-		unset($this->template);
-	}
+	abstract public function reset();
 
 	/**
 	 * Set addresses for to/im as available
@@ -134,9 +158,13 @@ abstract class base
 	 * @param array $user User row
 	 * @return void
 	 */
-	abstract public function set_addresses($user)
-	{
-	}
+	abstract public function set_addresses($user);
+
+	/**
+	 * Get messenger method fie queue object name
+	 * @return string
+	 */
+	abstract public function get_queue_object_name();
 
 	/**
 	 * Set up subject for mail
@@ -152,8 +180,8 @@ abstract class base
 	/**
 	 * Adds antiabuse headers
 	 *
-	 * @param \phpbb\config\config	$config		Config object
-	 * @param \phpbb\user			$user		User object
+	 * @param config	$config		Config object
+	 * @param user		$user		User object
 	 * @return void
 	 */
 	public function anti_abuse_headers($config, $user)
@@ -185,9 +213,7 @@ abstract class base
 	 * Send out messages
 	 * @return bool
 	 */
-	abstract protected function send()
-	{
-	}
+	abstract protected function send();
 
 	/**
 	 * Send messages from the queue
@@ -195,9 +221,7 @@ abstract class base
 	 * @param array $queue_data Queue data array
 	 * @return void
 	 */
-	abstract public function process_queue(&$queue_data)
-	{
-	}
+	abstract public function process_queue(&$queue_data);
 
 	/**
 	 * Set email template to use
@@ -336,8 +360,8 @@ abstract class base
 		 * Event to modify the template before parsing
 		 *
 		 * @event core.modify_notification_template
-		 * @var	string							subject		The message subject
-		 * @var \phpbb\template\template 		template	The (readonly) template object
+		 * @var	string			subject		The message subject
+		 * @var template 		template	The (readonly) template object
 		 * @since 3.2.4-RC1
 		 * @changed 4.0.0-a1 Removed vars: method, break.
 		 */
@@ -395,11 +419,10 @@ abstract class base
 	/**
 	 * Add error message to log
 	 *
-	 * @param string	$type	Error type: EMAIL / etc
 	 * @param string	$msg	Error message text
 	 * @return void
 	 */
-	public function error($type, $msg)
+	public function error($msg)
 	{
 		// Session doesn't exist, create it
 		if (!isset($this->user->session_id) || $this->user->session_id === '')
@@ -407,6 +430,7 @@ abstract class base
 			$this->user->session_begin();
 		}
 
+		$type = strtoupper($this->get_queue_object_name());
 		$calling_page = html_entity_decode($this->request->server('PHP_SELF'), ENT_COMPAT);
 		$message = '<strong>' . $type . '</strong><br><em>' . htmlspecialchars($calling_page, ENT_COMPAT) . '</em><br><br>' . $msg . '<br>';
 		$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_ERROR_' . $type, false, [$message]);
@@ -431,32 +455,32 @@ abstract class base
 	 */
 	protected function setup_template()
 	{
-		if ($this->template instanceof \phpbb\template\template)
+		if (isset($this->template) && $this->template instanceof template)
 		{
 			return;
 		}
 
 		$template_environment = new \phpbb\template\twig\environment(
 			$this->config,
-			$this->phpbb_container->get('filesystem'),
-			$this->phpbb_container->get('path_helper'),
-			$this->phpbb_container->getParameter('core.template.cache_path'),
-			$this->phpbb_container->get('ext.manager'),
+			new \phpbb\filesystem\filesystem(),
+			$this->path_helper,
+			$this->template_cache_path,
+			$this->ext_manager,
 			new \phpbb\template\twig\loader(),
 			$this->dispatcher,
 			[]
 		);
-		$template_environment->setLexer($this->phpbb_container->get('template.twig.lexer'));
+		$template_environment->setLexer($this->twig_lexer);
 
 		$this->template = new \phpbb\template\twig\twig(
-			$this->phpbb_container->get('path_helper'),
+			$this->path_helper,
 			$this->config,
 			new \phpbb\template\context(),
 			$template_environment,
-			$this->phpbb_container->getParameter('core.template.cache_path'),
+			$this->template_cache_path,
 			$this->user,
-			$this->phpbb_container->get('template.twig.extensions.collection'),
-			$this->phpbb_container->get('ext.manager')
+			$this->twig_extensions_collection,
+			$this->ext_manager
 		);
 	}
 

@@ -325,6 +325,7 @@ class add extends command
 			'U_ACTIVATE'  => generate_board_url() . "/ucp.{$this->php_ext}?mode=activate&u=$user_id&k=$user_actkey",
 		]);
 		$email->send();
+	}
 
 	/**
 	 * Get user activation key
