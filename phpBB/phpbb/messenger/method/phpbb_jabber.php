@@ -29,7 +29,7 @@ class phpbb_jabber extends base
 	/** @var string */
 	protected $connect_server;
 
-	/** @var resource */
+	/** @var resource|null */
 	protected $connection = null;
 
 	/** @var bool */
@@ -47,7 +47,7 @@ class phpbb_jabber extends base
 	/** @var string */
 	protected $password;
 
-	/** @var string */
+	/** @var int */
 	protected $port;
 
 	/** @var string */
@@ -127,8 +127,7 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Check if the messenger method is enabled
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function is_enabled()
 	{
@@ -187,10 +186,10 @@ class phpbb_jabber extends base
 	 * Set port to connect to server
 	 * use_ssl flag should be set first
 	 *
-	 * @param string $port Port to connect to server
+	 * @param int $port Port to connect to server
 	 * @return $this
 	 */
-	public function port($port = '')
+	public function port($port = 5222)
 	{
 		$this->port	= ($port) ? $port : 5222;
 
@@ -334,6 +333,7 @@ class phpbb_jabber extends base
 			}
 
 			$this->session = [];
+			/** @psalm-suppress InvalidPropertyAssignmentValue */
 			return fclose($this->connection);
 		}
 
@@ -352,7 +352,7 @@ class phpbb_jabber extends base
 	/**
 	 * Initiates login (using data from contructor, after calling connect())
 	 *
-	 * @return bool
+	 * @return bool|void
 	 */
 	public function login()
 	{
@@ -401,11 +401,8 @@ class phpbb_jabber extends base
 	 */
 	public function reset()
 	{
-		$this->msg = '';
-		$this->to = [];
-
-		$this->subject = $this->additional_headers = [];
-		$this->msg = '';
+		$this->subject = $this->msg = '';
+		$this->additional_headers = $this->to = [];
 		$this->use_queue = true;
 		unset($this->template);
 	}
@@ -438,7 +435,6 @@ class phpbb_jabber extends base
 
 		$package_size = $queue_data[$queue_object_name]['package_size'] ?? 0;
 		$num_items = (!$package_size || $messages_count < $package_size) ? $messages_count : $package_size;
-		$mailer = new Mailer($this->transport);
 
 		for ($i = 0; $i < $num_items; $i++)
 		{
@@ -447,30 +443,30 @@ class phpbb_jabber extends base
 
 			if (!$this->connect())
 			{
-				$this->error('JABBER', $this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
-				return false;
+				$this->error($this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
+				return;
 			}
 
 			if (!$this->login())
 			{
-				$this->error('JABBER', $this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
-				return false;
+				$this->error($this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
+				return;
 			}
 
 			foreach ($addresses as $address)
 			{
 				if ($this->send_message($address, $msg, $subject) === false)
 				{
-					$this->error('JABBER', $this->get_log());
+					$this->error($this->get_log());
 					continue;
 				}
 			}
 		}
 
 		// No more data for this object? Unset it
-		if (!count($this->queue_data[$queue_object_name]['data']))
+		if (!count($queue_data[$queue_object_name]['data']))
 		{
-			unset($this->queue_data[$queue_object_name]);
+			unset($queue_data[$queue_object_name]);
 		}
 
 		$this->disconnect();
@@ -500,13 +496,13 @@ class phpbb_jabber extends base
 		{
 			if (!$this->connect())
 			{
-				$this->error('JABBER', $this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
+				$this->error($this->user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->get_log());
 				return false;
 			}
 
 			if (!$this->login())
 			{
-				$this->error('JABBER', $this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
+				$this->error($this->user->lang['ERR_JAB_AUTH'] . '<br />' . $this->get_log());
 				return false;
 			}
 
@@ -514,7 +510,7 @@ class phpbb_jabber extends base
 			{
 				if ($this->send_message($address, $this->msg, $this->subject) === false)
 				{
-					$this->error('JABBER', $this->get_log());
+					$this->error($this->get_log());
 					continue;
 				}
 			}
@@ -542,7 +538,7 @@ class phpbb_jabber extends base
 	 *
 	 * @param string $xml
 	 *
-	 * @return bool
+	 * @return int|bool
 	 */
 	public function send_xml($xml)
 	{
@@ -655,7 +651,7 @@ class phpbb_jabber extends base
 	/**
 	 * Initiates account registration (based on data used for contructor)
 	 *
-	 * @return bool
+	 * @return bool|void
 	 */
 	public function register()
 	{
@@ -676,7 +672,7 @@ class phpbb_jabber extends base
 	 * @param string	$type			dnd, away, chat, xa or nothing
 	 * @param bool		$unavailable	set this to true if you want to become unavailable
 	 *
-	 * @return bool
+	 * @return int|bool
 	 */
 	function send_presence($message = '', $type = '', $unavailable = false)
 	{
@@ -702,7 +698,7 @@ class phpbb_jabber extends base
 	 *
 	 * @param array $xml
 	 *
-	 * @return bool
+	 * @return bool|void
 	 */
 	function response($xml)
 	{
@@ -1021,7 +1017,7 @@ class phpbb_jabber extends base
 	 * @param string $subject	Message subject
 	 * @param string $type		Message type
 	 *
-	 * @return string
+	 * @return int|bool
 	 */
 	public function send_message($to, $text, $subject = '', $type = 'normal')
 	{

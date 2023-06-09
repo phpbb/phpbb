@@ -22,7 +22,6 @@ use phpbb\log\log_interface;
 use phpbb\path_helper;
 use phpbb\request\request;
 use phpbb\messenger\queue;
-use phpbb\template\template;
 use phpbb\template\twig\lexer;
 use phpbb\user;
 
@@ -58,13 +57,16 @@ abstract class base
 	/** @var  path_helper */
 	protected $path_helper;
 
+	/** @var string */
+	protected $root_path;
+
 	/** @var  request */
 	protected $request;
 
 	/** @var string */
 	protected $subject = '';
 
-	/** @var template */
+	/** @var \phpbb\template\template */
 	protected $template;
 
 	/** @var string */
@@ -97,6 +99,7 @@ abstract class base
 	 * @param service_collection $twig_extensions_collection
 	 * @param lexer $twig_lexer
 	 * @param string $template_cache_path
+	 * @param string $phpbb_root_path
 	 */
 	function __construct(
 		config $config,
@@ -110,7 +113,8 @@ abstract class base
 		manager $ext_manager,
 		service_collection $twig_extensions_collection,
 		lexer $twig_lexer,
-		$template_cache_path
+		$template_cache_path,
+		$phpbb_root_path
 	)
 	{
 		$this->config = $config;
@@ -125,6 +129,7 @@ abstract class base
 		$this->twig_extensions_collection = $twig_extensions_collection;
 		$this->twig_lexer = $twig_lexer;
 		$this->template_cache_path = $template_cache_path;
+		$this->root_path = $phpbb_root_path;
 
 		$this->set_use_queue();
 	}
@@ -134,6 +139,12 @@ abstract class base
 	 * @return mixed
 	 */
 	abstract public function get_id();
+
+	/**
+	 * Check if the messenger method is enabled
+	 * @return bool
+	 */
+	abstract public function is_enabled();
 
 	/**
 	 * Sets the use of messenger queue flag
@@ -360,8 +371,8 @@ abstract class base
 		 * Event to modify the template before parsing
 		 *
 		 * @event core.modify_notification_template
-		 * @var	string			subject		The message subject
-		 * @var template 		template	The (readonly) template object
+		 * @var	string	subject		The message subject
+		 * @var string	template	The (readonly) template object
 		 * @since 3.2.4-RC1
 		 * @changed 4.0.0-a1 Removed vars: method, break.
 		 */
@@ -375,8 +386,8 @@ abstract class base
 		 * Event to modify notification message text after parsing
 		 *
 		 * @event core.modify_notification_message
-		 * @var	string							message	The message text
-		 * @var	string							subject	The message subject
+		 * @var	string	message	The message text
+		 * @var	string	subject	The message subject
 		 * @since 3.1.11-RC1
 		 * @changed 4.0.0-a1 Removed vars: method, break.
 		 */
@@ -455,7 +466,7 @@ abstract class base
 	 */
 	protected function setup_template()
 	{
-		if (isset($this->template) && $this->template instanceof template)
+		if (isset($this->template) && $this->template instanceof \phpbb\template\template)
 		{
 			return;
 		}
@@ -487,8 +498,8 @@ abstract class base
 	/**
 	 * Set template paths to load
 	 *
-	 * @param string $path_name Email template path name
-	 * @param string $paths 	Email template paths
+	 * @param string|array $path_name	Email template path name
+	 * @param string|array $paths		Email template paths
 	 * @return void
 	 */
 	protected function set_template_paths($path_name, $paths)

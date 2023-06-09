@@ -17,7 +17,13 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Header\DateHeader;
 use Symfony\Component\Mime\Header\Headers;
+use Symfony\Component\Mime\Header\IdentificationHeader;
+use Symfony\Component\Mime\Header\MailboxHeader;
+use Symfony\Component\Mime\Header\MailboxListHeader;
+use Symfony\Component\Mime\Header\PathHeader;
+use Symfony\Component\Mime\Header\UnstructuredHeader;
 
 /**
  * Messenger class
@@ -55,7 +61,10 @@ class phpbb_email extends base
 	 */
 	protected $dsn = '';
 
-	/** @var string */
+	/** @var Email */
+	protected $email;
+
+	/** @var Address */
 	protected $from;
 
 	/** @var Headers */
@@ -73,13 +82,13 @@ class phpbb_email extends base
 	 */
 	protected $mail_priority = Email::PRIORITY_NORMAL;
 
-	/** @var queue */
+	/** @var \phpbb\messenger\queue */
 	protected $queue;
 
-	/** @var string */
-	protected $replyto = '';
+	/** @var Address */
+	protected $replyto;
 
-	/** @var Transport */
+	/** @var \Symfony\Component\Mailer\Transport\AbstractTransport */
 	protected $transport;
 
 	/**
@@ -99,8 +108,7 @@ class phpbb_email extends base
 	}
 
 	/**
-	 * Check if the messenger method is enabled
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function is_enabled()
 	{
@@ -114,13 +122,12 @@ class phpbb_email extends base
 	{
 		$this->email = new Email();
 		$this->headers = $this->email->getHeaders();
-		$this->msg = $this->replyto = $this->from = '';
+		$this->subject =  $this->msg = '';
 		$this->mail_priority = Email::PRIORITY_NORMAL;
 
-		$this->subject = $this->additional_headers = [];
-		$this->msg = '';
+		$this->additional_headers = [];
 		$this->use_queue = true;
-		unset($this->template);
+		unset($this->template, $this->replyto, $this->from);
 	}
 
 	/**
@@ -180,7 +187,7 @@ class phpbb_email extends base
 		}
 
 		$cc = new Address($address, trim($realname));
-		$this->email->getCc() ? $this->email->addCc($to) : $this->email->cc($to);
+		$this->email->getCc() ? $this->email->addCc($cc) : $this->email->cc($cc);
 	}
 
 	/**
@@ -198,7 +205,7 @@ class phpbb_email extends base
 		}
 
 		$bcc = new Address($address, trim($realname));
-		$this->email->getBcc() ? $this->email->addBcc($to) : $this->email->bcc($to);
+		$this->email->getBcc() ? $this->email->addBcc($bcc) : $this->email->bcc($bcc);
 	}
 
 	/**
@@ -397,7 +404,7 @@ class phpbb_email extends base
 	/**
 	 * Get Symfony Mailer transport DSN
 	 *
-	 * @return void
+	 * @return string
 	 */
 	public function get_dsn()
 	{
@@ -418,7 +425,7 @@ class phpbb_email extends base
 
 		$this->transport = Transport::fromDsn($this->dsn);
 
-		if ($this->config['smtp_delivery'] && !in_array($this->dsn, ['null://null', 'sendmail://default']))
+		if ($this->config['smtp_delivery'] && method_exists($this->transport, 'getStream'))
 		{
 			// Set ssl context options, see http://php.net/manual/en/context.ssl.php
 			$options['ssl'] = [
@@ -460,8 +467,8 @@ class phpbb_email extends base
 			 * Event to send message via external transport
 			 *
 			 * @event core.notification_message_process
-			 * @var	bool		break	Flag indicating if the function return after hook
-			 * @var	Email		email	The Symfony Email object
+			 * @var	string		break	Flag indicating if the function return after hook
+			 * @var	string		email	The Symfony Email object
 			 * @since 3.2.4-RC1
 			 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, subject, msg.
 			 */
@@ -477,25 +484,25 @@ class phpbb_email extends base
 				{
 					$mailer->send($email);
 				}
-				catch (TransportExceptionInterface $e)
+				catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
 				{
-					$this->error('EMAIL', $e->getDebug());
+					$this->error($e->getDebug());
 					continue;
 				}
 			}
 		}
 
 		// No more data for this object? Unset it
-		if (!count($this->queue_data[$queue_object_name]['data']))
+		if (!count($queue_data[$queue_object_name]['data']))
 		{
-			unset($this->queue_data[$queue_object_name]);
+			unset($queue_data[$queue_object_name]);
 		}
 	}
 
 	/**
 	 * Get mailer transport object
 	 *
-	 * @return Transport Symfony Mailer transport object
+	 * @return \Symfony\Component\Mailer\Transport\TransportInterface Symfony Mailer transport object
 	 */
 	public function get_transport()
 	{
@@ -526,7 +533,7 @@ class phpbb_email extends base
 		 * @event core.notification_message_email
 		 * @var	string	subject	The message subject
 		 * @var	string	msg		The message text
-		 * @var	Email	email	The Symfony Email object
+		 * @var	string	email	The Symfony Email object
 		 * @since 3.2.4-RC1
 		 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, break
 		 */
@@ -567,7 +574,7 @@ class phpbb_email extends base
 			 * Modify data before sending out emails with PHP's mail function
 			 *
 			 * @event core.phpbb_mail_before
-			 * @var	Email	email		The Symfony Email object
+			 * @var	string	email		The Symfony Email object
 			 * @var	string	subject		The message subject
 			 * @var	string	msg			The message text
 			 * @var string	headers		The email headers
@@ -591,7 +598,7 @@ class phpbb_email extends base
 			{
 				$mailer->send($this->email);
 			}
-			catch (TransportExceptionInterface $e)
+			catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
 			{
 				$this->error($e->getDebug());
 				return false;
@@ -601,7 +608,7 @@ class phpbb_email extends base
 			 * Execute code after sending out emails with PHP's mail function
 			 *
 			 * @event core.phpbb_mail_after
-			 * @var	Email	email		The Symfony Email object
+			 * @var	string	email		The Symfony Email object
 			 * @var	string	subject		The message subject
 			 * @var	string	msg			The message text
 			 * @var string	headers		The email headers

@@ -245,6 +245,7 @@ class message
 
 		foreach ($this->recipients as $recipient)
 		{
+			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $messenger->getIterator();
 			while ($messenger_collection_iterator->valid())
 			{

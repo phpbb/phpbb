@@ -25,6 +25,7 @@ services:
             - '@template.twig.extensions.collection'
             - '@template.twig.lexer'
             - '%core.template.cache_path%'
+            - '%core.php_ext%'
 
     messenger.method.email:
         class: phpbb\messenger\method\phpbb_email
