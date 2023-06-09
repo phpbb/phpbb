@@ -35,7 +35,7 @@ class queue
 	/** @var dispatcher */
 	protected $dispatcher;
 
-	/** @var phpbb\filesystem\filesystem_interface */
+	/** @var \phpbb\filesystem\filesystem_interface */
 	protected $filesystem;
 
 	/** @var service_collection */
@@ -117,6 +117,7 @@ class queue
 
 		include($this->cache_file);
 
+		/** @psalm-suppress InvalidTemplateParam */
 		$messenger_collection_iterator = $this->messenger_method_collection->getIterator();
 		while ($messenger_collection_iterator->valid())
 		{
