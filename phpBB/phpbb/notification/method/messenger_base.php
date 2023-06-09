@@ -112,6 +112,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
+			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $this->messenger->getIterator();
 			while ($messenger_collection_iterator->valid())
 			{

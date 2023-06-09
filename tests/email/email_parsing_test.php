@@ -126,7 +126,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->email = new \phpbb\messenger\method\phpbb_email(
 			$config, $dispatcher, $lang, $log, $request, $user, $messenger_queue,
 			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
-			$cache_path
+			$cache_path, $phpbb_root_path
 		);
 		$phpbb_container->set('messenger.method.email', $this->email);
 
