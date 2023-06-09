@@ -163,6 +163,7 @@ class extension extends \Twig\Extension\AbstractExtension
 		// We always include the last element (this was the past design)
 		$end = ($end == -1 || $end === null) ? null : $end + 1;
 
+		/** @psalm-suppress UndefinedFunction */
 		return twig_slice($env, $item, $start, $end, $preserveKeys);
 	}
 
@@ -212,6 +213,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	{
 		$args = func_get_args();
 
+		/** @psalm-suppress UndefinedFunction */
 		return twig_escape_filter($this->environment, call_user_func_array([$this, 'lang'], $args), 'js');
 	}
 }
