@@ -281,7 +281,7 @@ class ftp extends transfer
 		}
 
 		// Init some needed values
-		$this->transfer();
+		parent::__construct();
 
 		return;
 	}
@@ -341,6 +341,11 @@ class ftp extends transfer
 	*/
 	function _mkdir($dir)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_mkdir($this->connection, $dir);
 	}
 
@@ -350,6 +355,11 @@ class ftp extends transfer
 	*/
 	function _rmdir($dir)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_rmdir($this->connection, $dir);
 	}
 
@@ -359,6 +369,11 @@ class ftp extends transfer
 	*/
 	function _rename($old_handle, $new_handle)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_rename($this->connection, $old_handle, $new_handle);
 	}
 
@@ -368,6 +383,11 @@ class ftp extends transfer
 	*/
 	function _chdir($dir = '')
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		if ($dir && $dir !== '/')
 		{
 			if (substr($dir, -1, 1) == '/')
@@ -385,6 +405,11 @@ class ftp extends transfer
 	*/
 	function _chmod($file, $perms)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		if (function_exists('ftp_chmod'))
 		{
 			$err = @ftp_chmod($this->connection, $perms, $file);
@@ -406,6 +431,11 @@ class ftp extends transfer
 	*/
 	function _put($from_file, $to_file)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		// We only use the BINARY file mode to cicumvent rewrite actions from ftp server (mostly linefeeds being replaced)
 		$mode = FTP_BINARY;
 
@@ -425,6 +455,11 @@ class ftp extends transfer
 	*/
 	function _delete($file)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_delete($this->connection, $file);
 	}
 
@@ -449,6 +484,11 @@ class ftp extends transfer
 	*/
 	function _cwd()
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_pwd($this->connection);
 	}
 
@@ -458,6 +498,11 @@ class ftp extends transfer
 	*/
 	function _ls($dir = './')
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		$list = @ftp_nlist($this->connection, $dir);
 
 		// See bug #46295 - Some FTP daemons don't like './'
@@ -498,6 +543,11 @@ class ftp extends transfer
 	*/
 	function _site($command)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @ftp_site($this->connection, $command);
 	}
 }
@@ -782,6 +832,11 @@ class ftp_fsock extends transfer
 	*/
 	function _send_command($command, $args = '', $check = true)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		if (!empty($args))
 		{
 			$command = "$command $args";
@@ -871,6 +926,11 @@ class ftp_fsock extends transfer
 	*/
 	function _close_data_connection()
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		return @fclose($this->data_connection);
 	}
 
@@ -880,6 +940,11 @@ class ftp_fsock extends transfer
 	*/
 	function _check_command($return = false)
 	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
 		$response = '';
 
 		do
