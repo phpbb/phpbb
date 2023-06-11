@@ -440,6 +440,12 @@ class session
 						// Is user banned? Are they excluded? Won't return on ban, exists within method
 						$this->check_ban_for_current_session($config);
 
+						// Update user last visit time accordingly, but in a minute or so
+						if ($this->time_now - $this->data['session_time'] > 60)
+						{
+							$this->update_user_lastvisit();
+						}
+
 						return true;
 					}
 				}
@@ -684,14 +690,11 @@ class session
 			{
 				$this->session_id = $this->data['session_id'];
 
-				// Only update session DB a minute or so after last update or if page changes
+				// Only sync user last visit time in a minute or so after last session data update or if the page changes
 				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
 					// Update the last visit time
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-						WHERE user_id = ' . (int) $this->data['user_id'];
-					$db->sql_query($sql);
+					$this->update_user_lastvisit();
 				}
 
 				$SID = '?sid=';
@@ -1796,5 +1799,29 @@ class session
 	public function id() : int
 	{
 		return isset($this->data['user_id']) ? (int) $this->data['user_id'] : ANONYMOUS;
+	}
+
+	/**
+	 * Update user last visit time
+	 *
+	 * @return bool
+	 */
+	public function update_user_lastvisit()
+	{
+		global $db;
+
+		if (!isset($this->data['session_time'], $this->data['user_id']))
+		{
+			return false;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+			WHERE user_id = ' . (int) $this->data['user_id'];
+
+		if ($db->sql_query($sql))
+		{
+			return true;
+		}
 	}
 }
