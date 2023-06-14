@@ -41,10 +41,9 @@ class viewonline_helper
 	 * Array structure matches sql_fethrowset() result array
 	 *
 	 * @param array $session_data_rowset Users' session data array
-	 *
 	 * @return void
 	 */
-	public function get_forum_ids(&$session_data_rowset)
+	public function get_forum_ids(array &$session_data_rowset): void
 	{
 		$topic_ids = $match = [];
 		foreach ($session_data_rowset as $number => $row)
