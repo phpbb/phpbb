@@ -19,7 +19,11 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$this->viewonline_helper = new \phpbb\viewonline_helper();
+		$db = $this->getMockBuilder('\phpbb\db\driver\mysqli')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->viewonline_helper = new \phpbb\viewonline_helper($db);
 	}
 
 	public function session_pages_data()
