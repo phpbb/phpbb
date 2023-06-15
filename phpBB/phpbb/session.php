@@ -1806,7 +1806,7 @@ class session
 	 *
 	 * @return bool
 	 */
-	public function update_user_lastvisit()
+	public function update_user_lastvisit(): bool
 	{
 		global $db;
 
@@ -1818,10 +1818,8 @@ class session
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_lastvisit = ' . (int) $this->data['session_time'] . '
 			WHERE user_id = ' . (int) $this->data['user_id'];
+		$db->sql_query($sql);
 
-		if ($db->sql_query($sql))
-		{
-			return true;
-		}
+		return (bool) $db->sql_affectedrows();
 	}
 }
