@@ -441,7 +441,7 @@ class session
 						$this->check_ban_for_current_session($config);
 
 						// Update user last visit time accordingly, but in a minute or so
-						if ($this->time_now - $this->data['session_time'] > 60)
+						if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60)
 						{
 							$this->update_user_lastvisit();
 						}
@@ -691,7 +691,7 @@ class session
 				$this->session_id = $this->data['session_id'];
 
 				// Only sync user last visit time in a minute or so after last session data update or if the page changes
-				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
 					// Update the last visit time
 					$this->update_user_lastvisit();
