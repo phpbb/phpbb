@@ -102,7 +102,7 @@ class postgres extends tools
 	function sql_table_exists($table_name)
 	{
 		$sql = "SELECT CAST(EXISTS(
-			SELECT FROM information_schema.tables
+			SELECT * FROM information_schema.tables
 				WHERE table_schema = 'public'
 					AND table_name   = '" . $this->db->sql_escape($table_name) . "'
 			) AS INTEGER)";
