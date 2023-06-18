@@ -827,15 +827,12 @@ class session
 		{
 			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
 
-			// Update the last visit time
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-				WHERE user_id = ' . (int) $this->data['user_id'];
-			$db->sql_query($sql);
-
 			$SID = '?sid=';
 			$_SID = '';
 		}
+
+		// Update the last visit time
+		$this->update_user_lastvisit();
 
 		$session_data = $sql_ary;
 		/**
