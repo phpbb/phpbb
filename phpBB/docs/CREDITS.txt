@@ -25,7 +25,6 @@ phpBB Lead Developer:    Marc (Marc Alexander)
 phpBB Developers:        CHItA (Máté Bartus)
                          Derky (Derk Ruitenbeek)
                          Hanakin (Michael Miday)
-                         mrgoldy (Gijs Martens)
                          Nicofuma (Tristan Darricau)
                          rubencm (Rubén Calvo)
 
@@ -64,6 +63,7 @@ phpBB Developers:        A_Jelly_Doughnut (Josh Woody) [01/2010 - 11/2010]
                          imkingdavid (David King)      [11/2012 - 06/2014]
                          kellanved (Henry Sudhof)      [04/2007 - 03/2011]
                          MichaelC (Michael Cullum)     [11/2017 - 09/2019]
+                         mrgoldy (Gijs Martens)        [03/2020 - 06/2023]
                          nickvergessen (Joas Schilling)[04/2010 - 12/2015]
                          Oleg (Oleg Pudeyev)           [01/2011 - 05/2013]
                          prototech (Cesar Gallegos)    [01/2014 - 12/2016]
