@@ -67,3 +67,5 @@ services:
 
     viewonline_helper:
         class: phpbb\viewonline_helper
+        arguments:
+            - '@dbal.conn'
