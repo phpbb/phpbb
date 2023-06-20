@@ -164,4 +164,13 @@ interface driver_interface
 	* @return bool
 	*/
 	public function sql_freeresult($query_id);
+
+	/**
+	 * Ensure query ID can be used by cache
+	 *
+	 * @param object|resource|int|string $query_id Mixed type query id
+	 *
+	 * @return int|string Query id in string or integer format
+	 */
+	public function clean_query_id($query_id);
 }

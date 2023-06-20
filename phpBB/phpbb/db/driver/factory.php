@@ -472,4 +472,12 @@ class factory implements driver_interface
 	{
 		return $this->get_driver()->sql_quote($msg);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function clean_query_id($query_id)
+	{
+		return $this->get_driver()->clean_query_id($query_id);
+	}
 }
