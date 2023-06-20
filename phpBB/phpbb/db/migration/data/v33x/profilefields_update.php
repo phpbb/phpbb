@@ -16,11 +16,14 @@ namespace phpbb\db\migration\data\v33x;
 class profilefields_update extends \phpbb\db\migration\migration
 {
 	/** @var string YouTube URLs matcher: handle or custom URL or channel URL */
-	protected $youtube_url_matcher = '(@[a-zA-Z0-9_.-]{3,30}|c/[a-zA-Z][\w\.,\-_]+|channel/[a-zA-Z][\w\.,\-_]+)';
+	protected $youtube_url_matcher = '(@[a-zA-Z0-9_.-]{3,30}|c/[a-zA-Z][\w\.,\-_]+|(channel|user)/[a-zA-Z][\w\.,\-_]+)';
 
 	public static function depends_on(): array
 	{
-		return ['\phpbb\db\migration\data\v33x\v3310'];
+		return [
+			'\phpbb\db\migration\data\v33x\v3310',
+			'\phpbb\db\migration\data\v33x\profilefield_youtube_update',
+		];
 	}
 
 	public function update_schema(): array
@@ -76,6 +79,7 @@ class profilefields_update extends \phpbb\db\migration\migration
 					field_maxlen = '60',
 					field_validation = '$field_validation',
 					field_contact_url = 'https://youtube.com/%s'
+					field_contact_desc = 'VIEW_YOUTUBE_PROFILE'
 				WHERE field_name = 'phpbb_youtube'"
 		);
 

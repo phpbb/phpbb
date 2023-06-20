@@ -19,6 +19,7 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 	public function test_submitting_profile_info()
 	{
 		$this->add_lang('ucp');
+		$this->add_lang('memberlist');
 		$this->login();
 
 		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
@@ -29,7 +30,7 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 			'pf_phpbb_location'	=> 'Bertie´s Empire',
 			'pf_phpbb_skype'	=> 'phpbb.skype.account',
 			'pf_phpbb_twitter'	=> 'phpbb_twitter',
-			'pf_phpbb_youtube' => 'phpbb.youtube',
+			'pf_phpbb_youtube' => 'user/phpbb.youtube',
 		));
 
 		$crawler = self::submit($form);
@@ -42,7 +43,11 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->assertEquals('Bertie´s Empire', $form->get('pf_phpbb_location')->getValue());
 		$this->assertEquals('phpbb.skype.account', $form->get('pf_phpbb_skype')->getValue());
 		$this->assertEquals('phpbb_twitter', $form->get('pf_phpbb_twitter')->getValue());
-		$this->assertEquals('phpbb.youtube', $form->get('pf_phpbb_youtube')->getValue());
+		$this->assertEquals('user/phpbb.youtube', $form->get('pf_phpbb_youtube')->getValue());
+
+		$crawler = self::request('GET', 'memberlist.php?mode=viewprofile&un=admin');
+		$link = $crawler->selectLink($this->lang('VIEW_YOUTUBE_PROFILE'));
+		$this->assertSame('https://youtube.com/user/phpbb.youtube', $link->attr('href'));
 	}
 
 	public function test_submitting_emoji()
