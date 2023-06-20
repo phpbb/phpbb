@@ -960,8 +960,8 @@ class session
 		}
 
 		/**
-		 * Get expired sessions for registered users, only most recent for each user
-		 * Inner SELECT gets most recent expired sessions for unique session_user_id
+		 * Get most recent session for each registered user to sync user last visit with it
+		 * Inner SELECT gets most recent sessions for each unique session_user_id
 		 * Outer SELECT gets data for them
 		 */
 		$sql_select = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
@@ -969,8 +969,7 @@ class session
 			INNER JOIN (
 				SELECT session_user_id, MAX(session_time) AS recent_time
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time < ' . ($this->time_now - (int) $config['session_length']) . '
-					AND session_user_id <> ' . ANONYMOUS . '
+				WHERE session_user_id <> ' . ANONYMOUS . '
 				GROUP BY session_user_id
 			) AS s2
 			ON s1.session_user_id = s2.session_user_id
