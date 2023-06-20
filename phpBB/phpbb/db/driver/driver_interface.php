@@ -495,4 +495,13 @@ interface driver_interface
 	* @return	string		Quoted version of $msg
 	*/
 	public function sql_quote($msg);
+
+	/**
+	 * Ensure query ID can be used by cache
+	 *
+	 * @param resource|int|string $query_id Mixed type query id
+	 *
+	 * @return int|string Query id in string or integer format
+	 */
+	public function clean_query_id($query_id);
 }

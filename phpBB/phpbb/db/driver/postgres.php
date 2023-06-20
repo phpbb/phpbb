@@ -509,25 +509,4 @@ class postgres extends \phpbb\db\driver\driver
 	{
 		return '"' . $msg . '"';
 	}
-
-	/**
-	 * Ensure query ID can be used by cache
-	 *
-	 * @param resource|int|string $query_id Mixed type query id
-	 *
-	 * @return int|string Query id in string or integer format
-	 */
-	private function clean_query_id($query_id)
-	{
-		// As of PHP 8.1 PgSQL functions accept/return \PgSQL\* objects instead of "pgsql *" resources
-		// Attempting to cast object to int will throw error, hence correctly handle all cases
-		if (is_resource($query_id))
-		{
-			return function_exists('get_resource_id') ? get_resource_id($query_id) : (int) $query_id;
-		}
-		else
-		{
-			return is_object($query_id) ? spl_object_id($query_id) : $query_id;
-		}
-	}
 }

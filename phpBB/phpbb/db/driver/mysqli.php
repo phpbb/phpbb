@@ -250,9 +250,10 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			return $cache->sql_fetchrow($query_id);
+			return $cache->sql_fetchrow($safe_query_id);
 		}
 
 		if ($query_id)
@@ -276,9 +277,10 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			return $cache->sql_rowseek($rownum, $query_id);
+			return $cache->sql_rowseek($rownum, $safe_query_id);
 		}
 
 		return ($query_id) ? @mysqli_data_seek($query_id, $rownum) : false;
@@ -304,9 +306,10 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			$query_id = $this->query_result;
 		}
 
-		if ($cache && !is_object($query_id) && $cache->sql_exists($query_id))
+		$safe_query_id = $this->clean_query_id($query_id);
+		if ($cache && $cache->sql_exists($safe_query_id))
 		{
-			$cache->sql_freeresult($query_id);
+			$cache->sql_freeresult($safe_query_id);
 		}
 		else if ($query_id && $query_id !== true)
 		{

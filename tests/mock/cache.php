@@ -168,4 +168,8 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 	{
 		return isset($this->data['_bots']) ? $this->data['_bots'] : array();
 	}
+
+	public function clean_query_id($query_id)
+	{
+	}
 }
