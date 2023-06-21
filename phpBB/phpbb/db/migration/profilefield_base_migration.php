@@ -40,6 +40,8 @@ abstract class profilefield_base_migration extends container_aware_migration
 
 	protected $user_column_name;
 
+	private $profile_row;
+
 	public function effectively_installed()
 	{
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $this->profilefield_name);
@@ -234,15 +236,13 @@ abstract class profilefield_base_migration extends container_aware_migration
 
 	protected function get_insert_sql_array()
 	{
-		static $profile_row;
-
-		if ($profile_row === null)
+		if ($this->profile_row === null)
 		{
 			/* @var $manager \phpbb\profilefields\manager */
 			$manager = $this->container->get('profilefields.manager');
-			$profile_row = $manager->build_insert_sql_array(array());
+			$this->profile_row = $manager->build_insert_sql_array(array());
 		}
 
-		return $profile_row;
+		return $this->profile_row;
 	}
 }
