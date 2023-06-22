@@ -441,9 +441,9 @@ class session
 						$this->check_ban_for_current_session($config);
 
 						// Update user last visit time accordingly, but in a minute or so
-						if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60)
+						if ((int) $this->time_now - (int) $this->data['user_lastvisit'] > 60)
 						{
-							$this->update_user_lastvisit();
+							$this->update_user_lastvisit((int) $this->time_now);
 						}
 
 						return true;
@@ -643,15 +643,6 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		if ($this->data['user_id'] != ANONYMOUS && !$bot)
-		{
-			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
-		}
-		else
-		{
-			$this->data['session_last_visit'] = $this->time_now;
-		}
-
 		// Force user id to be integer...
 		$this->data['user_id'] = (int) $this->data['user_id'];
 
@@ -690,11 +681,11 @@ class session
 			{
 				$this->session_id = $this->data['session_id'];
 
-				// Only sync user last visit time in a minute or so after last session data update or if the page changes
-				if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				// Only sync user last visit time in a minute or so or if the page changes
+				if ((int) $this->time_now - (int) $this->data['user_lastvisit'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
 					// Update the last visit time
-					$this->update_user_lastvisit();
+					$this->update_user_lastvisit((int) $this->time_now);
 				}
 
 				$SID = '?sid=';
@@ -715,7 +706,6 @@ class session
 		$sql_ary = array(
 			'session_user_id'		=> (int) $this->data['user_id'],
 			'session_start'			=> (int) $this->time_now,
-			'session_last_visit'	=> (int) $this->data['session_last_visit'],
 			'session_time'			=> (int) $this->time_now,
 			'session_browser'		=> (string) trim(substr($this->browser, 0, 149)),
 			'session_forwarded_for'	=> (string) $this->forwarded_for,
@@ -825,14 +815,14 @@ class session
 		}
 		else
 		{
-			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+			$this->data['session_time'] = $this->data['user_lastvisit'] = $this->time_now;
 
 			$SID = '?sid=';
 			$_SID = '';
 		}
 
 		// Update the last visit time
-		$this->update_user_lastvisit();
+		$this->update_user_lastvisit($this->time_now);
 
 		$session_data = $sql_ary;
 		/**
@@ -943,82 +933,16 @@ class session
 	/**
 	* Session garbage collection
 	*
-	* This looks a lot more complex than it really is. Effectively we are
-	* deleting any sessions older than an admin definable limit. Due to the
-	* way in which we maintain session data we have to ensure we update user
-	* data before those sessions are destroyed. In addition this method
-	* removes autologin key information that is older than an admin defined
-	* limit.
+	* Effectively delete any sessions, autologin keys and login attempts data
+	* older than an admin definable limits.
+	*
+	* @return void
 	*/
 	function session_gc()
 	{
 		global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
-		if (!$this->time_now)
-		{
-			$this->time_now = time();
-		}
-
-		/**
-		 * Get most recent session for each registered user to sync user last visit with it
-		 * Inner SELECT gets most recent sessions for each unique session_user_id
-		 * Outer SELECT gets data for them
-		 */
-		$sql_select = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
-			FROM ' . SESSIONS_TABLE . ' AS s1
-			INNER JOIN (
-				SELECT session_user_id, MAX(session_time) AS recent_time
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id <> ' . ANONYMOUS . '
-				GROUP BY session_user_id
-			) AS s2
-			ON s1.session_user_id = s2.session_user_id
-				AND s1.session_time = s2.recent_time';
-
-		switch ($db->get_sql_layer())
-		{
-			case 'sqlite3':
-				if (phpbb_version_compare($db->sql_server_info(true), '3.8.3', '>='))
-				{
-					// For SQLite versions 3.8.3+ which support Common Table Expressions (CTE)
-					$sql = "WITH s3 (session_page, session_user_id, session_time) AS ($sql_select)
-						UPDATE " . USERS_TABLE . '
-						SET (user_lastpage, user_lastvisit) = (SELECT session_page, session_time FROM s3 WHERE session_user_id = user_id)
-						WHERE EXISTS (SELECT session_user_id FROM s3 WHERE session_user_id = user_id)';
-					$db->sql_query($sql);
-
-					break;
-				}
-
-			// No break, for SQLite versions prior to 3.8.3 and Oracle
-			case 'oracle':
-				$result = $db->sql_query($sql_select);
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-						WHERE user_id = " . (int) $row['session_user_id'];
-					$db->sql_query($sql);
-				}
-				$db->sql_freeresult($result);
-			break;
-
-			case 'mysqli':
-				$sql = 'UPDATE ' . USERS_TABLE . " u,
-					($sql_select) s3
-					SET u.user_lastvisit = s3.recent_time, u.user_lastpage = s3.session_page
-					WHERE u.user_id = s3.session_user_id";
-				$db->sql_query($sql);
-			break;
-
-			default:
-				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lastvisit = s3.recent_time, user_lastpage = s3.session_page
-					FROM ($sql_select) s3
-					WHERE user_id = s3.session_user_id";
-				$db->sql_query($sql);
-			break;
-		}
+		$this->time_now = $this->time_now ?: time();
 
 		// Delete all expired sessions
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
@@ -1800,19 +1724,20 @@ class session
 	/**
 	 * Update user last visit time
 	 *
+	 * @param int	$user_lastvisit	Timestamp to update user_lastvisit field to
 	 * @return bool
 	 */
-	public function update_user_lastvisit(): bool
+	public function update_user_lastvisit(int $user_lastvisit): bool
 	{
 		global $db;
 
-		if (!isset($this->data['session_time'], $this->data['user_id']))
+		if (empty($this->data['user_id']) || empty($user_lastvisit))
 		{
 			return false;
 		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+			SET user_lastvisit = ' . (int) $user_lastvisit . '
 			WHERE user_id = ' . (int) $this->data['user_id'];
 		$db->sql_query($sql);
 

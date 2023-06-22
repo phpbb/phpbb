@@ -25,6 +25,11 @@ class update_user_lastvisit_data extends \phpbb\db\migration\migration
 	public function update_data()
 	{
 		return [
+			'drop_columns'	=> [
+				$this->table_prefix . 'sessions' => [
+					'session_last_visit',
+				],
+			],
 			['custom', [[$this, 'update_user_lastvisit_fields']]],
 		];
 	}
