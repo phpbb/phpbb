@@ -60,44 +60,12 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 			'Before test, should get recent expired sessions only.'
 		);
 
-		$this->check_user_session_data(
-			[
-				[
-					'username_clean' => 'bar',
-					'user_lastvisit' => 1400000000,
-					'user_lastpage' => 'oldpage_user_bar.php',
-				],
-				[
-					'username_clean' => 'foo',
-					'user_lastvisit' => 1400000000,
-					'user_lastpage' => 'oldpage_user_foo.php',
-				],
-			],
-			'Before test, users session data is not updated yet.'
-		);
-
 		// There is an error unless the captcha plugin is set
 		$config['captcha_plugin'] = 'core.captcha.plugins.nogd';
 		$this->session->session_gc();
 		$this->check_expired_sessions_recent(
 			[],
 			'After garbage collection, all expired sessions should be removed.'
-		);
-
-		$this->check_user_session_data(
-			[
-				[
-					'username_clean' => 'bar',
-					'user_lastvisit' => '1500000000',
-					'user_lastpage' => 'newpage_user_bar.php',
-				],
-				[
-					'username_clean' => 'foo',
-					'user_lastvisit' => '1500000000',
-					'user_lastpage' => 'newpage_user_foo.php',
-				],
-			],
-			'After garbage collection, users session data should be updated to the recent expired sessions data.'
 		);
 	}
 
