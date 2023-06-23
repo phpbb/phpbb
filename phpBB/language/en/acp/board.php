@@ -603,6 +603,7 @@ $lang = array_merge($lang, [
 	'ACP_WEBPUSH_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Webpush for board notifications. Webpush is a simple protocol for the delivery of real-time events to user agents, more commonly known as push messages. It is supported by most modern browsers on desktop and mobile devices.',
 	'WEBPUSH_ENABLE'				=> 'Enable Webpush',
 	'WEBPUSH_ENABLE_EXPLAIN'		=> 'Allow receiving notifications via Webpush.<br><em><strong>Note:</strong></em> If VAPID keys have not been set, phpBB will try to automatically create them when enabling Webpush.',
+	'WEBPUSH_GENERATE_VAPID_KEYS'	=> 'Generate VAPID keys',
 	'WEBPUSH_VAPID_PUBLIC'			=> 'VAPID public key',
 	'WEBPUSH_VAPID_PUBLIC_EXPLAIN'	=> 'The VAPID public key will be shared to authenticate push messages sent by your site.<br><em><strong>Warning:</strong> Changing the VAPID public key will automatically invalidate all webpush subscriptions.</em>',
 	'WEBPUSH_VAPID_PRIVATE'			=> 'VAPID private key',

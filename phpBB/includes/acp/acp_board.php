@@ -491,7 +491,7 @@ class acp_board
 					'title'		=> 'ACP_WEBPUSH_SETTINGS',
 					'vars' 		=> [
 						'legend1'					=> 'GENERAL_SETTINGS',
-						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
+						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'method' => 'webpush_enable', 'explain' => true],
 						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
 						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
 
@@ -535,27 +535,6 @@ class acp_board
 				if (!preg_match('#^[a-z][a-z0-9+\\-.]*$#Di', $scheme))
 				{
 					$error[] = $this->language->lang('URL_SCHEME_INVALID', $this->language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
-				}
-			}
-		}
-
-		if ($mode == 'webpush')
-		{
-			// Create VAPID keys if keys are empty and web push is enabled
-			if ($submit && $cfg_array['webpush_enable'] && $cfg_array['webpush_enable'] != $config['webpush_enable']
-				&& empty($cfg_array['webpush_vapid_public']) && empty($cfg_array['webpush_vapid_private'])
-				&& empty($config['webpush_vapid_public']) && empty($config['webpush_vapid_private']))
-			{
-				try
-				{
-					$vapid_keys = VAPID::createVapidKeys();
-					$cfg_array['webpush_vapid_public'] = $vapid_keys['publicKey'];
-					$cfg_array['webpush_vapid_private'] = $vapid_keys['privateKey'];
-				}
-				catch (\ErrorException $exception)
-				{
-					// Nothing we can do about this, user will have to follow the
-					// documentation and manually create these.
 				}
 			}
 		}
@@ -1382,5 +1361,50 @@ class acp_board
 
 		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang('SEND_TEST_EMAIL') . '" />
 				<textarea id="' . $key . '_text" name="' . $key . '_text" placeholder="' . $user->lang('MESSAGE') . '"></textarea>';
+	}
+
+	/**
+	 * Generate form data for web push enable
+	 *
+	 * @param string $value Webpush enable value
+	 * @param string $key Webpush enable config key
+	 *
+	 * @return array[] Form data
+	 */
+	public function webpush_enable($value, $key): array
+	{
+		return [
+			[
+				'tag'		=> 'radio',
+				'buttons'	=> [
+					[
+						'name'		=> "config[$key]",
+						'label'		=> $this->language->lang('YES'),
+						'type'		=> 'radio',
+						'class'		=> 'radio',
+						'value'		=> 1,
+						'checked'	=> $value,
+					],
+					[
+						'name'		=> "config[$key]",
+						'label'		=> $this->language->lang('NO'),
+						'type'		=> 'radio',
+						'class'		=> 'radio',
+						'value'		=> 0,
+						'checked'	=> !$value,
+					],
+				],
+			],
+			[
+				'tag'		=> 'input',
+				'class'		=> 'button2',
+				'name'		=> "config[$key]",
+				'type'		=> 'button',
+				'value'		=> $this->language->lang('WEBPUSH_GENERATE_VAPID_KEYS'),
+				'data'		=> [
+					'ajax'	=> 'generate_vapid_keys',
+				]
+			],
+		];
 	}
 }

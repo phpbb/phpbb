@@ -158,6 +158,68 @@ phpbb.addAjaxCallback('row_delete', function(res) {
 });
 
 /**
+ * This callback generates the VAPID keys for the web push notification service.
+ */
+phpbb.addAjaxCallback('generate_vapid_keys', (res) => {
+	function rawKeyToBase64(rawKey) {
+		const keyBuffer = new Uint8Array(rawKey);
+		let keyText = '';
+		const keyLength = keyBuffer.byteLength;
+		for (let i = 0; i < keyLength; i++) {
+			keyText += String.fromCharCode(keyBuffer[i]);
+		}
+
+		keyText = window.btoa(keyText);
+		return keyText;
+	}
+
+	function base64SafeEncode(base64String) {
+		const base64URL = base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+		return base64URL;
+	}
+
+	async function generateVAPIDKeys() {
+		try {
+			// Generate a new key pair using the Subtle Crypto API
+			const keyPair = await crypto.subtle.generateKey(
+				{
+					name: 'ECDH',
+					namedCurve: 'P-256',
+				},
+				true,
+				['deriveKey', 'deriveBits']
+			);
+
+			// Export the private key as a JWK (JSON Web Key) object
+			const privateKeyJwk = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
+			console.log(privateKeyJwk.d);
+
+			const privateKeyString = privateKeyJwk.d;
+
+			// Export the public key as a JWK object
+			const publicKeyBuffer = await crypto.subtle.exportKey('raw', keyPair.publicKey);
+			const publicKeyString = base64SafeEncode(rawKeyToBase64(publicKeyBuffer));
+			console.log(publicKeyString);
+
+			return {
+				privateKey: privateKeyString,
+				publicKey: publicKeyString
+			};
+		} catch (error) {
+			console.error('Error generating private key:', error);
+			return null;
+		}
+	}
+
+	generateVAPIDKeys().then(keyPair => {
+		const publicKeyInput = document.querySelector('#webpush_vapid_public');
+		const privateKeyInput = document.querySelector('#webpush_vapid_private');
+		publicKeyInput.value = keyPair.publicKey;
+		privateKeyInput.value = keyPair.privateKey;
+	})
+})
+
+/**
  * Handler for submitting permissions form in chunks
  * This call will submit permissions forms in chunks of 5 fieldsets.
  */
