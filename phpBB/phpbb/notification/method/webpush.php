@@ -176,14 +176,7 @@ class webpush extends messenger_base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($user_subscription_map[$row['user_id']]))
-			{
-				$user_subscription_map[$row['user_id']] += $row;
-			}
-			else
-			{
-				$user_subscription_map[$row['user_id']] = [$row];
-			}
+			$user_subscription_map[$row['user_id']][] = $row;
 		}
 
 		$auth = [
