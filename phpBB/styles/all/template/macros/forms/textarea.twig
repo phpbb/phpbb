@@ -1,9 +1,10 @@
 {% apply  replace({"\n": ' ', '\t': ''}) %}
 	<textarea
+		{% if CLASS %}class="{{ CLASS }}" {% endif %}
 		id="{{ ID }}"
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
 		name="{{ NAME }}"
 		rows="{{ ROWS }}"
-		cols="{{ COLS }}">
-			{{ CONTENT }}
-		</textarea>
-{% endapply %}
+		cols="{{ COLS }}">{% endapply %}{{ CONTENT }}</textarea>
