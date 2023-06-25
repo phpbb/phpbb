@@ -291,8 +291,7 @@ class webpush extends messenger_base
 	public function prune_notifications($timestamp, $only_read = true): void
 	{
 		$sql = 'DELETE FROM ' . $this->notification_webpush_table . '
-			WHERE notification_time < ' . (int) $timestamp .
-			(($only_read) ? ' AND notification_read = 1' : '');
+			WHERE notification_time < ' . (int) $timestamp;
 		$this->db->sql_query($sql);
 
 		$this->config->set('read_notification_last_gc', (string) time(), false);
