@@ -234,6 +234,8 @@ jobs:
             matrix:
                 include:
                     - php: '7.1'
+                      db: "postgres:9.3"
+                    - php: '7.1'
                       db: "postgres:9.5"
                     - php: '7.1'
                       db: "postgres:9.6"
@@ -264,7 +266,7 @@ jobs:
 
         services:
             postgres:
-                image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && 'postgres:10' || matrix.db }}
+                image: ${{ matrix.db != 'postgres:9.3' && matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && 'postgres:10' || matrix.db }}
                 env:
                     POSTGRES_HOST: localhost
                     POSTGRES_USER: postgres
