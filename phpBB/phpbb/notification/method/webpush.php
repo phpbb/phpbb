@@ -169,15 +169,7 @@ class webpush extends messenger_base
 		$this->user_loader->load_users($notify_users, array(USER_IGNORE));
 
 		// Get subscriptions for users
-		$user_subscription_map = [];
-		$sql = 'SELECT subscription_id, user_id, endpoint, p256dh, auth
-			FROM ' . $this->push_subscriptions_table . '
-			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$user_subscription_map[$row['user_id']][] = $row;
-		}
+		$user_subscription_map = $this->get_user_subscription_map($notify_users);
 
 		$auth = [
 			'VAPID' => [
@@ -315,5 +307,30 @@ class webpush extends messenger_base
 		];
 
 		return array_intersect_key($data, $row);
+	}
+
+	/**
+	 * Get subscriptions for notify users
+	 *
+	 * @param array $notify_users Users to notify
+	 *
+	 * @return array Subscription map
+	 */
+	protected function get_user_subscription_map(array $notify_users): array
+	{
+		// Get subscriptions for users
+		$user_subscription_map = [];
+
+		$sql = 'SELECT subscription_id, user_id, endpoint, p256dh, auth
+			FROM ' . $this->push_subscriptions_table . '
+			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$user_subscription_map[$row['user_id']][] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $user_subscription_map;
 	}
 }

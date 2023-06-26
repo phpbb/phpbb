@@ -338,7 +338,14 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$subscription_info = [];
 		foreach ($expected_users as $user_id => $user_data)
 		{
-			$subscription_info[$user_id] = $this->create_subscription_for_user($user_id);
+			$subscription_info[$user_id][] = $this->create_subscription_for_user($user_id);
+		}
+
+		// Create second subscription for first user ID passed
+		if (count($expected_users))
+		{
+			$first_user_id = array_key_first($expected_users);
+			$subscription_info[$first_user_id][] = $this->create_subscription_for_user($first_user_id);
 		}
 
 		$post_data = array_merge([
@@ -361,7 +368,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 		foreach ($expected_users as $user_id => $data)
 		{
-			$messages = $this->get_messages_for_subscription($subscription_info[$user_id]['clientHash']);
+			$messages = $this->get_messages_for_subscription($subscription_info[$user_id][0]['clientHash']);
 			$this->assertEmpty($messages);
 		}
 
@@ -372,7 +379,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 		foreach ($expected_users as $user_id => $data)
 		{
-			$messages = $this->get_messages_for_subscription($subscription_info[$user_id]['clientHash']);
+			$messages = $this->get_messages_for_subscription($subscription_info[$user_id][0]['clientHash']);
 			$this->assertNotEmpty($messages);
 		}
 	}
