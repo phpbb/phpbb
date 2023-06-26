@@ -403,6 +403,7 @@ class acp_main
 								'session_forum_id'		=> $user->page['forum'],
 								'session_user_id'		=> (int) $user->data['user_id'],
 								'session_start'			=> (int) $user->data['session_start'],
+								'session_last_visit'	=> (int) $user->data['session_last_visit'],
 								'session_time'			=> (int) $user->time_now,
 								'session_browser'		=> (string) trim(substr($user->browser, 0, 149)),
 								'session_forwarded_for'	=> (string) $user->forwarded_for,

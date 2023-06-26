@@ -663,13 +663,14 @@ switch ($mode)
 
 		if ($config['load_onlinetrack'])
 		{
-			$sql = 'SELECT MIN(session_viewonline) AS session_viewonline
+			$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 				FROM ' . SESSIONS_TABLE . "
 				WHERE session_user_id = $user_id";
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
+			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
 			unset($row);
 		}
@@ -1632,8 +1633,8 @@ switch ($mode)
 		// So, did we get any users?
 		if (count($user_list))
 		{
-			// Get recent session viewonline flags
-			$sql = 'SELECT session_user_id, MIN(session_viewonline) AS session_viewonline
+			// Session time?! Session time...
+			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time >= ' . (time() - $config['session_length']) . '
 					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
@@ -1644,6 +1645,7 @@ switch ($mode)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$session_ary[$row['session_user_id']] = [
+					'session_time' => $row['session_time'],
 					'session_viewonline' => $row['session_viewonline'],
 				];
 			}
@@ -1709,8 +1711,9 @@ switch ($mode)
 			$id_cache = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
 				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
-				$row['last_visit'] = $row['user_lastvisit'];
+				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 				$id_cache[$row['user_id']] = $row;
 			}

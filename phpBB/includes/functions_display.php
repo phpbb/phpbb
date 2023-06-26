@@ -1594,14 +1594,21 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['user_lastvisit']) && (!empty($data['session_viewonline']) || $auth->acl_get('u_viewonline'));
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['session_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	else
 	{
 		$online = false;
 	}
 
-	$last_active = ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline')) ? $data['user_lastvisit'] : '';
+	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
+	{
+		$last_active = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+	}
+	else
+	{
+		$last_active = '';
+	}
 
 	$age = '';
 

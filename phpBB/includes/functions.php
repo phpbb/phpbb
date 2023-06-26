@@ -3816,7 +3816,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	}
 
 	// Last visit date/time
-	$s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['user_lastvisit']) : '';
+	$s_last_visit = ($user->data['user_id'] != ANONYMOUS) ? $user->format_date($user->data['session_last_visit']) : '';
 
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = $l_online_time = '';
@@ -3854,10 +3854,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	{
 		if ($user->data['user_new_privmsg'])
 		{
-			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['user_lastvisit'])
+			if (!$user->data['user_last_privmsg'] || $user->data['user_last_privmsg'] > $user->data['session_last_visit'])
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_last_privmsg = ' . $user->data['user_lastvisit'] . '
+					SET user_last_privmsg = ' . $user->data['session_last_visit'] . '
 					WHERE user_id = ' . $user->data['user_id'];
 				$db->sql_query($sql);
 
