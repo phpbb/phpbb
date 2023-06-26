@@ -213,7 +213,7 @@ class path_helper
 				$this->symfony_request->get('_referer'),
 				$absolute_board_url
 			);
-			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
+			return $this->web_root_path = $referer_web_root_path;
 		}
 
 		// How many corrections might we need?
