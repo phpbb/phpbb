@@ -59,25 +59,25 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$this->set_phpbb_root_path($filesystem);
 
-		return array(
-			array(
+		return [
+			[
 				'http://www.test.com/test.php',
 				'http://www.test.com/test.php',
 				'/',
-			),
-			array(
+			],
+			[
 				$this->phpbb_root_path . 'test.php',
 				$this->phpbb_root_path . 'test.php',
-			),
-			array(
+			],
+			[
 				'test.php',
 				'test.php',
-			),
-			array(
+			],
+			[
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
 				$filesystem->clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
-			),
-		);
+			],
+		];
 	}
 
 	/**
@@ -155,6 +155,13 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'./../'.$this->phpbb_root_path . 'test.php',
 				'/',
 				'/phpbb3-fork/phpBB/app.php/',
+				'/phpbb3-fork/phpBB/app.php',
+				'',
+			),
+			array(
+				'./../'.$this->phpbb_root_path . 'test.php',
+				'',
+				'/phpbb3-fork/phpBB/foo',
 				'/phpbb3-fork/phpBB/app.php',
 				'',
 			),
@@ -393,63 +400,78 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function get_web_root_path_from_ajax_referer_data()
 	{
-		return array(
-			array(
+		return [
+			[
 				'http://www.phpbb.com/community/route1/route2/',
 				'http://www.phpbb.com/community',
 				'../../',
-			),
-			array(
+			],
+			[
+				'http://www.phpbb.com/community/route1/route2/?f=9',
+				'http://www.phpbb.com/community',
+				'../../',
+			],
+			[
 				'http://www.phpbb.com/community/route1/route2',
 				'http://www.phpbb.com/community',
 				'../',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/community/route1',
 				'http://www.phpbb.com/community',
 				'',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/community/',
 				'http://www.phpbb.com/community',
 				'',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/notcommunity/route1/route2/',
 				'http://www.phpbb.com/community',
 				'../../../community/',
-			),
-			array(
+			],
+			[
+				'http://www.phpbb.com/notcommunity/route1/route2/?f=9',
+				'http://www.phpbb.com/community',
+				'../../../community/',
+			],
+			[
 				'http://www.phpbb.com/notcommunity/route1/route2',
 				'http://www.phpbb.com/community',
 				'../../community/',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/notcommunity/route1',
 				'http://www.phpbb.com/community',
 				'../community/',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/notcommunity/',
 				'http://www.phpbb.com/community',
 				'../community/',
-			),
-			array(
+			],
+			[
 				'http://www.phpbb.com/foobar',
 				'http://www.phpbb.com',
 				'',
-			),
-			array(
+			],
+			[
 				'http://www.foobar.com',
 				'http://www.phpbb.com',
 				'/www.phpbb.com/',
-			),
-			array(
+			],
+			[
 				'foobar',
 				'http://www.phpbb.com/community',
 				'',
-			)
-		);
+			],
+			[
+				'https://www.phpbb.com',
+				'https://www.phpbb.com',
+				''
+			]
+		];
 	}
 
 	/**
