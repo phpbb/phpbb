@@ -151,11 +151,6 @@ class path_helper
 	*/
 	public function get_web_root_path()
 	{
-		if ($this->symfony_request === null)
-		{
-			return $this->phpbb_root_path;
-		}
-
 		if (null !== $this->web_root_path)
 		{
 			return $this->web_root_path;
