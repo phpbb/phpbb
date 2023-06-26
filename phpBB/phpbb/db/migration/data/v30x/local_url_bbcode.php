@@ -46,7 +46,7 @@ class local_url_bbcode extends \phpbb\db\migration\migration
 			{
 				if (function_exists('phpbb_require_updated'))
 				{
-					phpbb_require_updated('includes/acp/acp_bbcodes.' . $this->php_ext);
+					phpbb_require_updated('includes/acp/acp_bbcodes.' . $this->php_ext, $this->phpbb_root_path);
 				}
 				else
 				{
