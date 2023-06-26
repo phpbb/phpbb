@@ -65,7 +65,7 @@ class jabber extends \phpbb\notification\method\messenger_base
 	*/
 	public function is_available(type_interface $notification_type = null)
 	{
-		return parent::is_available($notification_type) && $this->global_available() && $this->user->data['user_jabber'];
+		return parent::is_available($notification_type) && $this->global_available() && !empty($this->user->data['user_jabber']);
 	}
 
 	/**
