@@ -873,7 +873,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 					'phpbb_storage_attachment',
 					[
 						'file'		=> (int) $attach_row['attach_id'],
-						'filename'	=> $attachment['real_filename'],
+						'filename'	=> $attach_row['real_filename'],
 					]
 				);
 

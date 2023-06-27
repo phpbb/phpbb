@@ -1720,7 +1720,7 @@ class parse_message extends bbcode_firstpass
 								'phpbb_storage_attachment',
 								[
 									'file'		=> (int) $new_entry['attach_id'],
-									'filename'	=> $attachment['real_filename'],
+									'filename'	=> $new_entry['real_filename'],
 								]
 							);
 
