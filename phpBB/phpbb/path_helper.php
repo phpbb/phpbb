@@ -148,11 +148,6 @@ class path_helper
 	*/
 	public function get_web_root_path()
 	{
-		if ($this->symfony_request === null)
-		{
-			return $this->phpbb_root_path;
-		}
-
 		if (null !== $this->web_root_path)
 		{
 			return $this->web_root_path;
@@ -215,7 +210,7 @@ class path_helper
 				$this->symfony_request->get('_referer'),
 				$absolute_board_url
 			);
-			return $this->web_root_path = $this->phpbb_root_path . $referer_web_root_path;
+			return $this->web_root_path = $referer_web_root_path;
 		}
 
 		// How many corrections might we need?
@@ -233,7 +228,7 @@ class path_helper
 
 		// Prepend ../ to the phpbb_root_path as many times as / exists in path_info
 		$this->web_root_path = filesystem_helper::clean_path(
-			'./' . str_repeat('../', $corrections) . $this->phpbb_root_path
+			'./' . str_repeat('../', max(0, $corrections)) . $this->phpbb_root_path
 		);
 		return $this->web_root_path;
 	}
@@ -261,7 +256,7 @@ class path_helper
 				$relative_referer_path = substr($relative_referer_path, 0, $has_params);
 			}
 			$corrections = substr_count($relative_referer_path, '/');
-			return $this->phpbb_root_path . str_repeat('../', $corrections - 1);
+			return $this->phpbb_root_path . str_repeat('../', max(0, $corrections - 1));
 		}
 
 		// If not, it's a bit more complicated. We go to the parent directory
