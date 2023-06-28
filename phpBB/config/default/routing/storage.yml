@@ -4,9 +4,9 @@ phpbb_storage_avatar:
         _controller:  storage.controller.avatar:handle
 
 phpbb_storage_attachment:
-    path:             /attachment/{file}/{filename}
+    path:             /attachment/{id}/{filename}
     defaults:
         filename: ''
-        _controller:  storage.controller.attachment:handle
+        _controller:  storage.controller.attachment:handle_attachment
     requirements:
-        file:         \d+
+        id:         \d+

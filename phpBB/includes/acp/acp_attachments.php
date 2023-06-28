@@ -1115,7 +1115,7 @@ class acp_attachments
 						'U_FILE'			=> $this->controller_helper->route(
 							'phpbb_storage_attachment',
 							[
-								'file'		=> (int) $row['attach_id'],
+								'id'		=> (int) $row['attach_id'],
 								'filename'	=> $row['real_filename'],
 							]
 						),
@@ -1311,7 +1311,7 @@ class acp_attachments
 						'U_FILE'			=> $this->controller_helper->route(
 							'phpbb_storage_attachment',
 							[
-								'file'		=> $row['attach_id'],
+								'id'		=> $row['attach_id'],
 								'filename'	=> $row['real_filename'],
 							]
 						)

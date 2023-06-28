@@ -1288,7 +1288,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 			$download_link = $controller_helper->route(
 				'phpbb_storage_attachment',
 				[
-					'file'		=> (int) $attachment['attach_id'],
+					'id'		=> (int) $attachment['attach_id'],
 					'filename'	=> $attachment['real_filename'],
 				]
 			);
@@ -1301,7 +1301,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					$inline_link = $controller_helper->route(
 						'phpbb_storage_attachment',
 						[
-							'file'		=> (int) $attachment['attach_id'],
+							'id'		=> (int) $attachment['attach_id'],
 							'filename'	=> $attachment['real_filename'],
 						]
 					);
@@ -1319,7 +1319,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 					$thumbnail_link = $controller_helper->route(
 						'phpbb_storage_attachment',
 						[
-							'file'		=> (int) $attachment['attach_id'],
+							'id'		=> (int) $attachment['attach_id'],
 							'filename'	=> $attachment['real_filename'],
 							't'			=> 1,
 						]

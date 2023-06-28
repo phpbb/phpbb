@@ -188,7 +188,7 @@ class ucp_attachments
 					'U_VIEW_ATTACHMENT'	=> $controller_helper->route(
 						'phpbb_storage_attachment',
 						[
-							'file'		=> (int) $row['attach_id'],
+							'id'		=> (int) $row['attach_id'],
 							'filename'	=> $row['real_filename'],
 						]
 					),

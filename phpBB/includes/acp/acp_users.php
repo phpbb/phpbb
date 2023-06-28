@@ -2309,7 +2309,7 @@ class acp_users
 						'U_DOWNLOAD'		=> $controller_helper->route(
 							'phpbb_storage_attachment',
 							[
-								'file'		=> (int) $row['attach_id'],
+								'id'		=> (int) $row['attach_id'],
 								'filename'	=> $row['real_filename'],
 							]
 						),
