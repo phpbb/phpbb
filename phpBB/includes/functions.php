@@ -3616,15 +3616,11 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 	{
 		if ($lazy)
 		{
-			// Determine board url - we may need it later
-			$board_url = generate_board_url() . '/';
 			// This path is sent with the base template paths in the assign_vars()
 			// call below. We need to correct it in case we are accessing from a
 			// controller because the web paths will be incorrect otherwise.
 			$phpbb_path_helper = $phpbb_container->get('path_helper');
-			$corrected_path = $phpbb_path_helper->get_web_root_path();
-
-			$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+			$web_path = $phpbb_path_helper->get_web_root_path();
 
 			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
 
@@ -3812,15 +3808,12 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		$db->sql_freeresult($result);
 	}
 
-	// Determine board url - we may need it later
-	$board_url = generate_board_url() . '/';
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
 	/* @var $phpbb_path_helper \phpbb\path_helper */
 	$phpbb_path_helper = $phpbb_container->get('path_helper');
-	$corrected_path = $phpbb_path_helper->get_web_root_path();
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+	$web_path = $phpbb_path_helper->get_web_root_path();
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
@@ -3921,7 +3914,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
-		'BOARD_URL'			=> $board_url,
+		'BOARD_URL'			=> generate_board_url() . '/',
 		'PHPBB_VERSION'		=> PHPBB_VERSION,
 		'PHPBB_MAJOR'		=> $phpbb_major,
 
