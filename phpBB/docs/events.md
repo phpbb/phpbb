@@ -3304,6 +3304,13 @@ viewtopic_body_postrow_content_after
 * Since: 3.2.4-RC1
 * Purpose: Add content after the message content in topics views
 
+viewtopic_body_postrow_content_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.3.11-RC1
+* Purpose: Add content before the message content in topics views
+
 viewtopic_body_postrow_custom_fields_after
 ===
 * Locations:
