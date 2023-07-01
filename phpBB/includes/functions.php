@@ -3542,24 +3542,6 @@ function phpbb_quoteattr($data, $entities = null)
 }
 
 /**
-* Get user avatar
-*
-* @deprecated 4.0.0 Use \phpbb\avatar\helper::get_user_avatar() instead
-*
-* @param array $user_row Row from the users table
-* @param string $alt Optional language string for alt tag within image, can be a language key or text
-* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
-* @param bool $lazy If true, will be lazy loaded (requires JS)
-*
-* @return string Avatar html
-*/
-function phpbb_get_user_avatar($user_row, $alt = 'USER_AVATAR', $ignore_config = false, $lazy = false)
-{
-	$row = \phpbb\avatar\manager::clean_row($user_row, 'user');
-	return phpbb_get_avatar($row, $alt, $ignore_config, $lazy);
-}
-
-/**
 * Get avatar
 *
 * @deprecated 4.0.0 Use \phpbb\avatar\helper::get_avatar() instead
