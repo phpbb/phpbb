@@ -11,8 +11,6 @@
  *
  */
 
-use phpbb\controller\helper;
-
 require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_extension_test extends phpbb_template_template_test_case
@@ -68,9 +66,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$controller_helper = $this->createMock(helper::class);
-		$controller_helper
-			->method('route')
+		$routing_helper = $this->createMock(\phpbb\routing\helper::class);
+		$routing_helper->method('route')
 			->willReturnCallback(function($route, $params) {
 				return 'download/avatar/' . $params['file'];
 			});
@@ -78,7 +75,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$files = new phpbb\files\factory($phpbb_container);
-		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $controller_helper, $phpbb_root_path, $phpEx, $storage, $phpbb_path_helper, $phpbb_dispatcher, $files, new \bantu\IniGetWrapper\IniGetWrapper());
+		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $phpbb_root_path, $phpEx, $storage, $phpbb_path_helper, $routing_helper, $phpbb_dispatcher, $files, new \bantu\IniGetWrapper\IniGetWrapper());
 		$upload_avatar_driver->set_name('avatar.driver.upload');
 		$phpbb_container->set('avatar.manager', new \phpbb\avatar\manager($config, $phpbb_dispatcher, [
 			$upload_avatar_driver,
