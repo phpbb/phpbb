@@ -32,7 +32,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$this->user->style['style_parent_id'] = 0;
 
 		global $auth, $request, $symfony_request, $user;
-		$user = new phpbb_mock_user();
+		$user = $this->createMock(\phpbb\user::class);
 		$user->optionset('user_id', 2);
 		$user->style['style_path'] = '';
 		$user->data['user_id'] = 2;
@@ -92,7 +92,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$lang,
 			$phpbb_container->get('avatar.manager'),
 			$phpbb_path_helper,
-			new \phpbb\user($lang, '\phpbb\datetime')
+			$user
 		);
 
 		$this->template_path = $this->test_path . '/templates';
