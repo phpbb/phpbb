@@ -605,7 +605,10 @@ $lang = array_merge($lang, array(
 	'POST_BY_AUTHOR'		=> 'by',
 	'POST_BY_FOE'			=> '<strong>%1$s</strong>, who is currently on your ignore list, made this post.',
 	'POST_DISPLAY'			=> 'Display this post',
-	'POST_DAY'				=> '%.2f posts per day',
+	'POST_DAY'				=> [
+		1	=> '%.2f posts per day',
+		2	=> '%.2f posts per day',
+	],
 	'POST_DELETED_ACTION'	=> 'Deleted post:',
 	'POST_DELETED'			=> 'This post has been deleted.',
 	'POST_DELETED_BY'		=> '<strong>%2$s</strong> deleted the post by <strong>%1$s</strong> on %3$s.',
