@@ -1,0 +1,25 @@
+services:
+    avatar.manager:
+        class: phpbb\avatar\manager
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@avatar.driver_collection'
+
+    avatar.helper:
+        class: phpbb\avatar\helper
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@language'
+            - '@avatar.manager'
+            - '@path_helper'
+            - '@user'
+
+    # ----- Avatar drivers -----
+    avatar.driver_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: avatar.driver }
