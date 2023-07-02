@@ -122,7 +122,7 @@ class webpush extends messenger_base
 					'heading'	=> $this->config['sitename'],
 					'title'		=> strip_tags($notification->get_title()),
 					'text'		=> strip_tags($notification->get_reference()),
-					'url'		=> $notification->get_url(),
+					'url'		=> htmlspecialchars_decode($notification->get_url()),
 					'avatar'	=> $notification->get_avatar(),
 				]),
 				'notification_time'		=> time(),
