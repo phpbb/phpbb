@@ -61,6 +61,10 @@ class phpbb_mock_notification_manager
 	{
 	}
 
+	public function delete_notifications_by_types()
+	{
+	}
+
 	public function get_subscription_types()
 	{
 		return array();

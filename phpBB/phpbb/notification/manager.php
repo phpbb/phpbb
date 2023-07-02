@@ -474,31 +474,41 @@ class manager
 	}
 
 	/**
-	* Delete a notification
-	*
-	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
-	* @param int|array $item_id Identifier within the type (or array of ids)
-	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
-	* @param mixed $user_id User id (Default: false; not checked)
+	 * Delete notifications of specified type
+	 *
+	 * @param string $notification_type_name Type identifier
+	 * @param int|array $item_id Identifier within the type (or array of ids)
+	 * @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	 * @param mixed $user_id User id (Default: false; not checked)
+	 *
+	 * @return void
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
+	public function delete_notifications(string $notification_type_name, $item_id, $parent_id = false, $user_id = false): void
 	{
-		if (is_array($notification_type_name))
-		{
-			foreach ($notification_type_name as $type)
-			{
-				$this->delete_notifications($type, $item_id, $parent_id, $user_id);
-			}
-
-			return;
-		}
-
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
 		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
+		}
+	}
+
+	/**
+	 * Delete notifications specified by multiple types
+	 *
+	 * @param array $notification_type_names Array of item types (only acceptable if the $item_id is identical for the specified types)
+	 * @param int|array $item_id Identifier within the type (or array of ids)
+	 * @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	 * @param mixed $user_id User id (Default: false; not checked)
+	 *
+	 * @return void
+	 */
+	public function delete_notifications_by_types(array $notification_type_names, $item_id, $parent_id = false, $user_id = false): void
+	{
+		foreach ($notification_type_names as $type)
+		{
+			$this->delete_notifications($type, $item_id, $parent_id, $user_id);
 		}
 	}
 
