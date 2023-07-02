@@ -33,12 +33,12 @@
 						<img class="row-item-sub" src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" alt="">
 					{% endif %}
 					<div class="list-inner">
-						<!-- IF topicrow.S_UNREAD -->
-							<a class="unread" href="{topicrow.U_NEWEST_POST}">
-								{{ Icon('iconify', 'fa:file', NEW_POST, true, 'c-topic-unread-icon') }}
-							</a>
-						<!-- ENDIF -->
-						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><br />
+						{% if topicrow.S_UNREAD %}
+							<a href="{{ topicrow.U_NEWEST_POST }}" class="topictitle unread">{{ topicrow.TOPIC_TITLE }}</a>
+						{% else %}
+							<a href="{{ topicrow.U_VIEW_TOPIC }}" class="topictitle">{{ topicrow.TOPIC_TITLE }}</a>
+						{% endif %}
+						<br>
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
 							<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>

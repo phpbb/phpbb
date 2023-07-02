@@ -177,12 +177,13 @@
 					{% endif %}
 					<div class="list-inner">
 						<!-- EVENT topiclist_row_prepend -->
-						<!-- IF topicrow.S_UNREAD_TOPIC and not S_IS_BOT -->
-							<a class="unread" href="{topicrow.U_NEWEST_POST}">
-								{{ Icon('iconify', 'fa:file', NEW_POST, true, 'c-topic-unread-icon') }}
-							</a>
-						<!-- ENDIF -->
-						<!-- IF topicrow.U_VIEW_TOPIC --><a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a><!-- ELSE -->{topicrow.TOPIC_TITLE}<!-- ENDIF -->
+						{% if topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}
+							<a href="{{ topicrow.U_NEWEST_POST }}" class="topictitle unread">{{ topicrow.TOPIC_TITLE }}</a>
+						{% elseif topicrow.U_VIEW_TOPIC %}
+							<a href="{{ topicrow.U_VIEW_TOPIC }}" class="topictitle">{{ topicrow.TOPIC_TITLE }}</a>
+						{% else %}
+							<span class="topictitle">{{ topicrow.TOPIC_TITLE }}</span>
+						{% endif %}
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="<!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF -->">
 								{{ Icon('iconify', 'fa:question', '', true, 'c-unapproved-icon') }}<span class="sr-only"><!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF --></span>
