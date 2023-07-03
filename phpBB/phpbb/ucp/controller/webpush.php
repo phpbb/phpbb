@@ -35,9 +35,6 @@ class webpush
 	/** @var string UCP form token name */
 	private const FORM_TOKEN_UCP = 'ucp_webpush';
 
-	/** @var string Push worker form token name */
-	private const FORM_TOKEN_WORKER = 'webpush_worker';
-
 	/** @var config */
 	protected $config;
 
@@ -206,6 +203,7 @@ class webpush
 		$template_data += [
 			'VAPID_PUBLIC_KEY'		=> $this->config['webpush_vapid_public'],
 			'U_WEBPUSH_WORKER_URL'	=> $this->controller_helper->route('phpbb_ucp_push_worker_controller'),
+			'SUBSCRIPTIONS'			=> $this->get_subscriptions(),
 		];
 
 		$content = $this->template->render('webpush.js.twig', $template_data);
@@ -272,5 +270,27 @@ class webpush
 			'success'		=> true,
 			'form_tokens'	=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
 		]);
+	}
+
+	/**
+	 * Get subscriptions for current user
+	 *
+	 * @return array Subscriptions for user
+	 */
+	protected function get_subscriptions(): array
+	{
+		$subscriptions = [];
+
+		$sql = 'SELECT endpoint, expiration_time
+			FROM ' . $this->push_subscriptions_table . '
+			WHERE user_id = ' . $this->user->id();
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$subscriptions[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $subscriptions;
 	}
 }

@@ -48,7 +48,6 @@ class add_webpush extends migration
 					'COLUMNS'	=> [
 						'subscription_id'	=> ['ULINT', null, 'auto_increment'],
 						'user_id'			=> ['ULINT', 0],
-//						'device_name'		=> ['VCHAR:64', ''],
 						'endpoint'			=> ['TEXT', ''],
 						'expiration_time'	=> ['TIMESTAMP', 0],
 						'p256dh'			=> ['VCHAR', ''],
