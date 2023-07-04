@@ -114,6 +114,14 @@ $phpbb_class_loader_ext->register();
 try
 {
 	$phpbb_container_builder = new \phpbb\di\container_builder($phpbb_root_path, $phpEx);
+
+	// Check that cache directory is writable before trying to build container
+	$cache_dir = $phpbb_container_builder->get_cache_dir();
+	if (file_exists($cache_dir) && !is_writable($phpbb_container_builder->get_cache_dir()))
+	{
+		die('Unable to write to the cache directory path "' . $cache_dir . '". Ensure that the web server user can write to the cache folder.');
+	}
+
 	$phpbb_container = $phpbb_container_builder->with_config($phpbb_config_php_file)->get_container();
 }
 catch (InvalidArgumentException $e)
