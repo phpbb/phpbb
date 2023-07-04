@@ -112,7 +112,7 @@ if ($show_birthdays)
 		'FROM' => array(
 			USERS_TABLE => 'u',
 		),
-		'WHERE' => 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . "
+		'WHERE' => 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)",
 	);
 
