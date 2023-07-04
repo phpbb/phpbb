@@ -230,7 +230,7 @@ class manager
 
 				foreach ($ban_rows as $ban_row)
 				{
-					if ($ban_row['end'] > 0 && $ban_row['end'] < time())
+					if (!$ban_row['end'] || $ban_row['end'] > time())
 					{
 						if (stripos($ban_row['item'], '*') === false)
 						{
@@ -310,7 +310,7 @@ class manager
 				$where_array[] = ['AND',
 					[
 						['b.ban_item', '=', 'u.' . $user_column],
-						['b.ban_mode', '=', $ban_mode->get_type()],
+						['b.ban_mode', '=', "'{$ban_mode->get_type()}'"],
 					],
 				];
 			}
