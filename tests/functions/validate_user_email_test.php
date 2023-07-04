@@ -28,18 +28,39 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $cache, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		parent::setUp();
 
-		$cache = new \phpbb\cache\driver\file();
-		$cache->purge();
+		$phpbb_container = new phpbb_mock_container_builder();
+		$config = new \phpbb\config\config([]);
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->user = new phpbb\user($language, '\phpbb\datetime');
 		$this->user->data['user_email'] = '';
 		$this->helper = new phpbb_functions_validate_data_helper($this);
+
+		$cache = new \phpbb\cache\service(
+			new \phpbb\cache\driver\dummy(),
+			$config,
+			$this->db,
+			$phpbb_dispatcher,
+			$phpbb_root_path,
+			$phpEx
+		);
+		$cache->get_driver()->purge();
+
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$phpbb_container->set('ban.type.email', $ban_type_email);
+		$phpbb_container->set('ban.type.user', $ban_type_user);
+		$collection = new \phpbb\di\service_collection($phpbb_container);
+		$collection->add('ban.type.email');
+		$collection->add('ban.type.user');
+
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, 'phpbb_bans', 'phpbb_users');
+		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 
 	/**
