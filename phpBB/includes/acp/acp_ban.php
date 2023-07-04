@@ -56,7 +56,6 @@ class acp_ban
 			$ban				= $request->variable('ban', '', true);
 			$ban_length			= $request->variable('banlength', 0);
 			$ban_length_other	= $request->variable('banlengthother', '');
-			$ban_exclude		= $request->variable('banexclude', 0);
 			$ban_reason			= $request->variable('banreason', '', true);
 			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
@@ -94,7 +93,15 @@ class acp_ban
 				{
 					trigger_error($abort_ban . adm_back_link($this->u_action));
 				}
-				user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
+
+				$ban_start = new \DateTime();
+				$ban_start->setTimestamp(time());
+				$ban_end = $ban_manager->get_ban_end($user, $ban_start, $ban_length, $ban_length_other);
+
+				$ban = explode("\n", $ban);
+				$ban_manager->ban($mode, $ban, $ban_start, $ban_end, $ban_reason, $ban_give_reason);
+
+				//user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
 				/**
 				* Use this event to perform actions after the ban has been performed

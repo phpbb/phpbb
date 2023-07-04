@@ -3163,7 +3163,7 @@ function display_ban_options($mode)
 	$ban_rows = $ban_manager->get_bans($mode);
 
 	$banned_options = array();
-	foreach ($ban_rows as $row)
+	foreach ($ban_rows as $ban_row)
 	{
 		$banned_options[] = '<option value="' . $ban_row['ban_id'] . '">' . $ban_row['ban_item'] . '</option>';
 
