@@ -16,6 +16,7 @@ namespace phpbb\ban;
 use phpbb\ban\exception\ban_insert_failed_exception;
 use phpbb\ban\exception\invalid_length_exception;
 use phpbb\ban\exception\type_not_found_exception;
+use phpbb\ban\type\type_interface;
 
 class manager
 {
@@ -64,28 +65,29 @@ class manager
 	 * Creates ban entries for the given $items. Returns true if successful
 	 * and false if no entries were added to the database
 	 *
-	 * @param string				$mode			A string which identifies a ban type
+	 * @param string $mode			A string which identifies a ban type
 	 * @param array					$items			An array of items which should be banned
 	 * @param \DateTimeInterface	$start			A DateTimeInterface object which is the start of the ban
 	 * @param \DateTimeInterface	$end			A DateTimeInterface object which is the end of the ban (or 0 if permanent)
-	 * @param string				$reason			An (internal) reason for the ban
-	 * @param string				$display_reason	An optional reason which should be displayed to the banned
+	 * @param string $reason			An (internal) reason for the ban
+	 * @param string $display_reason	An optional reason which should be displayed to the banned
 	 *
 	 * @return bool
 	 */
-	public function ban($mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, $reason, $display_reason = '')
+	public function ban(string $mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, string $reason, string $display_reason = '')
 	{
 		if ($start > $end && $end->getTimestamp() !== 0)
 		{
 			throw new invalid_length_exception(); // TODO
 		}
 
-		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
 		if ($ban_mode === false)
 		{
 			throw new type_not_found_exception(); // TODO
 		}
+
 		if (!empty($this->user))
 		{
 			$ban_mode->set_user($this->user);
@@ -151,7 +153,7 @@ class manager
 	 */
 	public function unban($mode, array $items)
 	{
-		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
 		if ($ban_mode === false)
 		{
@@ -205,7 +207,7 @@ class manager
 
 		foreach ($ban_info as $mode => $ban_rows)
 		{
-			/** @var \phpbb\ban\type\type_interface $ban_mode */
+			/** @var type_interface $ban_mode */
 			$ban_mode = $this->find_type($mode);
 			if ($ban_mode === false)
 			{
@@ -264,7 +266,7 @@ class manager
 	 */
 	public function get_bans($mode)
 	{
-		/** @var \phpbb\ban\type\type_interface $ban_mode */
+		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
 		if ($ban_mode === false)
 		{
@@ -298,7 +300,7 @@ class manager
 			$manual_modes = [];
 			$where_array = [];
 
-			/** @var \phpbb\ban\type\type_interface $ban_mode */
+			/** @var type_interface $ban_mode */
 			foreach ($this->types as $ban_mode)
 			{
 				$user_column = $ban_mode->get_user_column();
@@ -345,7 +347,7 @@ class manager
 			}
 			$this->db->sql_freeresult($result);
 
-			/** @var \phpbb\ban\type\type_interface $manual_mode */
+			/** @var type_interface $manual_mode */
 			foreach ($manual_modes as $manual_mode)
 			{
 				$mode_banned_users = $manual_mode->get_banned_users();
@@ -368,6 +370,39 @@ class manager
 		});
 	}
 
+	public function get_ban_end(\phpbb\user $user, \DateTimeInterface $ban_start, $length, $end_date): \DateTimeInterface
+	{
+		$current_time = $ban_start->getTimestamp();
+		$end_time = 0;
+
+		if ($length)
+		{
+			if ($length != -1 || !$end_date)
+			{
+				$end_time = max($current_time, $current_time + ($length) * 60);
+			}
+			else
+			{
+				if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date))
+				{
+					$end_time = max(
+						$current_time,
+						\DateTime::createFromFormat('Y-m-d', $end_date, $user->timezone)->getTimestamp()
+					);
+				}
+				else
+				{
+					trigger_error('LENGTH_BAN_INVALID', E_USER_WARNING);
+				}
+			}
+		}
+
+		$ban_end = new \DateTime();
+		$ban_end->setTimestamp($end_time);
+
+		return $ban_end;
+	}
+
 	/**
 	 * Sets the current user to exclude from banning
 	 *
@@ -388,7 +423,7 @@ class manager
 			WHERE ban_end > 0 AND ban_end < ' . (int) time();
 		$this->db->sql_query($sql);
 
-		/** @var \phpbb\ban\type\type_interface $type */
+		/** @var type_interface $type */
 		foreach ($this->types as $type)
 		{
 			$type->tidy();
@@ -405,7 +440,7 @@ class manager
 	 */
 	protected function find_type($mode)
 	{
-		/** @var \phpbb\ban\type\type_interface $type */
+		/** @var type_interface $type */
 		foreach ($this->types as $type)
 		{
 			if ($type->get_type() === $mode)

@@ -21,7 +21,7 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_type()
+	public function get_type(): string
 	{
 		return 'email';
 	}
@@ -29,7 +29,7 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_user_column()
+	public function get_user_column(): ?string
 	{
 		return 'user_email';
 	}
@@ -37,17 +37,7 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_ban(array $data)
-	{
-		$this->logout_affected_users($data['items']);
-
-		return parent::after_ban($data);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function prepare_for_storage(array $items)
+	public function prepare_for_storage(array $items): array
 	{
 		if (!$this->get_excluded())
 		{

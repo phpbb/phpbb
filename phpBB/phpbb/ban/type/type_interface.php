@@ -23,7 +23,7 @@ interface type_interface
 	 *
 	 * @return string
 	 */
-	public function get_type();
+	public function get_type(): string;
 
 	/**
 	 * Returns the column in the users table which contains
@@ -33,7 +33,7 @@ interface type_interface
 	 *
 	 * @return string|null
 	 */
-	public function get_user_column();
+	public function get_user_column(): ?string;
 
 	/**
 	 * Sets a user object to the ban type to have it excluded
@@ -41,9 +41,9 @@ interface type_interface
 	 *
 	 * @param \phpbb\user	$user	An user object
 	 *
-	 * @return null
+	 * @return void
 	 */
-	public function set_user(\phpbb\user $user);
+	public function set_user(\phpbb\user $user): void;
 
 	/**
 	 * Gives the possibility to do some clean up after banning.
@@ -98,7 +98,7 @@ interface type_interface
 	 * @return array An array of banned users, where the user ids are the keys
 	 *               and the value is the end of the ban (or 0 if permanent)
 	 */
-	public function get_banned_users();
+	public function get_banned_users(): array;
 
 	/**
 	 * Prepares the given ban items before saving them in the database
@@ -107,13 +107,13 @@ interface type_interface
 	 *
 	 * @return array
 	 */
-	public function prepare_for_storage(array $items);
+	public function prepare_for_storage(array $items): array;
 
 	/**
 	 * Does some cleanup work for the banning mode.
 	 * Is called before banning and unbanning and as cron job.
 	 *
-	 * @return null
+	 * @return void
 	 */
-	public function tidy();
+	public function tidy(): void;
 }

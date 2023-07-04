@@ -13,9 +13,11 @@
 
 namespace phpbb\ban\type;
 
+use phpbb\db\driver\driver_interface;
+
 abstract class base implements type_interface
 {
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
 	/** @var array */
@@ -36,12 +38,12 @@ abstract class base implements type_interface
 	/**
 	 * Creates a ban type.
 	 *
-	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
+	 * @param driver_interface	$db						A phpBB DBAL object
 	 * @param string							$users_table			The users table
 	 * @param string							$sessions_table			The sessions table
 	 * @param string							$sessions_keys_table	The sessions keys table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, $users_table, $sessions_table, $sessions_keys_table)
+	public function __construct(driver_interface $db, string $users_table, string $sessions_table, string $sessions_keys_table)
 	{
 		$this->db = $db;
 		$this->users_table = $users_table;
@@ -52,7 +54,7 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function set_user(\phpbb\user $user)
+	public function set_user(\phpbb\user $user): void
 	{
 		// TODO: Implement new logging
 		$this->user = $user;
@@ -63,6 +65,7 @@ abstract class base implements type_interface
 	 */
 	public function after_ban(array $data)
 	{
+		$this->logout_affected_users($data['items']);
 		return $data['items'];
 	}
 
@@ -85,14 +88,14 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function tidy()
+	public function tidy(): void
 	{
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_banned_users()
+	public function get_banned_users(): array
 	{
 		return [];
 	}
