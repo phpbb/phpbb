@@ -14,6 +14,11 @@
 /**
 * @ignore
 */
+
+use phpbb\ban\exception\type_not_found_exception;
+use phpbb\ban\manager;
+use phpbb\language\language;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -25,10 +30,10 @@ class acp_ban
 
 	function main($id, $mode)
 	{
-		global $user, $template, $request, $phpbb_dispatcher, $phpbb_container;
+		global $language, $template, $request, $phpbb_dispatcher, $phpbb_container;
 		global $phpbb_root_path, $phpEx;
 
-		/** @var \phpbb\ban\manager $ban_manager */
+		/** @var manager $ban_manager */
 		$ban_manager = $phpbb_container->get('ban.manager');
 
 		if (!function_exists('user_ban'))
@@ -39,14 +44,15 @@ class acp_ban
 		$bansubmit	= $request->is_set_post('bansubmit');
 		$unbansubmit = $request->is_set_post('unbansubmit');
 
-		$user->add_lang(array('acp/ban', 'acp/users'));
+		/** @var language $language */
+		$language->add_lang(['acp/ban', 'acp/users']);
 		$this->tpl_name = 'acp_ban';
 		$form_key = 'acp_ban';
 		add_form_key($form_key);
 
 		if (($bansubmit || $unbansubmit) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($language->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Ban submitted?
@@ -96,12 +102,10 @@ class acp_ban
 
 				$ban_start = new \DateTime();
 				$ban_start->setTimestamp(time());
-				$ban_end = $ban_manager->get_ban_end($user, $ban_start, $ban_length, $ban_length_other);
+				$ban_end = $ban_manager->get_ban_end($ban_start, $ban_length, $ban_length_other);
 
 				$ban = explode("\n", $ban);
 				$ban_manager->ban($mode, $ban, $ban_start, $ban_end, $ban_reason, $ban_give_reason);
-
-				//user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
 				/**
 				* Use this event to perform actions after the ban has been performed
@@ -127,43 +131,46 @@ class acp_ban
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_ban_after', compact($vars)));
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($language->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 			}
 		}
 		else if ($unbansubmit)
 		{
-			$ban = $request->variable('unban', array(''));
+			$ban = $request->variable('unban', []);
 
 			if ($ban)
 			{
-				user_unban($mode, $ban);
+				$ban_manager->unban($mode, $ban);
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error($language->lang('BAN_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 			}
 		}
 
 		// Define language vars
-		$this->page_title = $user->lang[strtoupper($mode) . '_BAN'];
+		$this->page_title = $language->lang(strtoupper($mode) . '_BAN');
 
-		$l_ban_explain = $user->lang[strtoupper($mode) . '_BAN_EXPLAIN'];
-		$l_ban_exclude_explain = $user->lang[strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang[strtoupper($mode) . '_UNBAN'];
-		$l_unban_explain = $user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
-		$l_no_ban_cell = $user->lang[strtoupper($mode) . '_NO_BANNED'];
+		$l_ban_explain = $language->lang(strtoupper($mode) . '_BAN_EXPLAIN');
+		$l_ban_exclude_explain = $language->lang(strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN');
+		$l_unban_title = $language->lang(strtoupper($mode) . '_UNBAN');
+		$l_unban_explain = $language->lang(strtoupper($mode) . '_UNBAN_EXPLAIN');
+		$l_no_ban_cell = $language->lang(strtoupper($mode) . '_NO_BANNED');
 
 		switch ($mode)
 		{
 			case 'user':
-				$l_ban_cell = $user->lang['USERNAME'];
+				$l_ban_cell = $language->lang('USERNAME');
 			break;
 
 			case 'ip':
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+				$l_ban_cell = $language->lang('IP_HOSTNAME');
 			break;
 
 			case 'email':
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+				$l_ban_cell = $language->lang('EMAIL_ADDRESS');
 			break;
+
+			default:
+				throw new type_not_found_exception();
 		}
 
 		display_ban_end_options();
@@ -178,7 +185,7 @@ class acp_ban
 			'L_BAN_EXCLUDE_EXPLAIN'	=> $l_ban_exclude_explain,
 			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
 
-			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
+			'S_USERNAME_BAN'	=> $mode == 'user',
 
 			'U_ACTION'			=> $this->u_action,
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),
