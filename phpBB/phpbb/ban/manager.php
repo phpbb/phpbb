@@ -49,15 +49,17 @@ class manager
 	 * @param \phpbb\di\service_collection		$types					A service collection containing all ban types
 	 * @param \phpbb\cache\service				$cache					A cache object
 	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
+	 * @param \phpbb\user						$user					User object
 	 * @param string							$bans_table				The bans table
 	 * @param string							$users_table			The users table
 	 */
-	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, $bans_table, $users_table = '')
+	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $bans_table, $users_table = '')
 	{
 		$this->bans_table = $bans_table;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->types = $types;
+		$this->user = $user;
 		$this->users_table = $users_table;
 	}
 
@@ -264,7 +266,7 @@ class manager
 	 *
 	 * @return array|bool
 	 */
-	public function get_bans($mode)
+	public function get_bans(string $mode)
 	{
 		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
@@ -370,7 +372,15 @@ class manager
 		});
 	}
 
-	public function get_ban_end(\phpbb\user $user, \DateTimeInterface $ban_start, $length, $end_date): \DateTimeInterface
+	/**
+	 * Get ban end
+	 *
+	 * @param \DateTimeInterface $ban_start
+	 * @param int $length
+	 * @param string $end_date
+	 * @return \DateTimeInterface
+	 */
+	public function get_ban_end(\DateTimeInterface $ban_start, int $length, string $end_date): \DateTimeInterface
 	{
 		$current_time = $ban_start->getTimestamp();
 		$end_time = 0;
@@ -387,7 +397,7 @@ class manager
 				{
 					$end_time = max(
 						$current_time,
-						\DateTime::createFromFormat('Y-m-d', $end_date, $user->timezone)->getTimestamp()
+						\DateTime::createFromFormat('Y-m-d', $end_date, $this->user->timezone)->getTimestamp()
 					);
 				}
 				else
@@ -401,16 +411,6 @@ class manager
 		$ban_end->setTimestamp($end_time);
 
 		return $ban_end;
-	}
-
-	/**
-	 * Sets the current user to exclude from banning
-	 *
-	 * @param \phpbb\user	$user	An user object
-	 */
-	public function set_user(\phpbb\user $user)
-	{
-		$this->user = $user;
 	}
 
 	/**

@@ -6,6 +6,7 @@ services:
             - '@ban.type_collection'
             - '@cache'
             - '@dbal.conn'
+            - '@user'
             - '%tables.bans%'
             - '%tables.users%'
 
