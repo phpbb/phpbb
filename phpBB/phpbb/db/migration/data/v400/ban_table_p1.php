@@ -11,59 +11,61 @@
  *
  */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
-class ban_table_p1 extends \phpbb\db\migration\migration
+use phpbb\db\migration\migration;
+
+class ban_table_p1 extends migration
 {
-	static public function depends_on()
+	static public function depends_on(): array
 	{
-		return array('\phpbb\db\migration\data\v320\default_data_type_ids');
+		return ['\phpbb\db\migration\data\v320\default_data_type_ids'];
 	}
 
-	public function update_schema()
+	public function update_schema(): array
 	{
-		return array(
-			'add_tables'	=> array(
-				$this->table_prefix . 'bans'	=> array(
-					'COLUMNS'		=> array(
-						'ban_id'				=> array('ULINT', null, 'auto_increment'),
-						'ban_mode'				=> array('VCHAR', ''),
-						'ban_item'				=> array('STEXT_UNI', ''),
-						'ban_start'				=> array('TIMESTAMP', 0),
-						'ban_end'				=> array('TIMESTAMP', 0),
-						'ban_reason'			=> array('VCHAR_UNI', ''),
-						'ban_reason_display'	=> array('VCHAR_UNI', ''),
-					),
+		return [
+			'add_tables'	=> [
+				$this->table_prefix . 'bans'	=> [
+					'COLUMNS'		=> [
+						'ban_id'				=> ['ULINT', null, 'auto_increment'],
+						'ban_mode'				=> ['VCHAR', ''],
+						'ban_item'				=> ['STEXT_UNI', ''],
+						'ban_start'				=> ['TIMESTAMP', 0],
+						'ban_end'				=> ['TIMESTAMP', 0],
+						'ban_reason'			=> ['VCHAR_UNI', ''],
+						'ban_reason_display'	=> ['VCHAR_UNI', ''],
+					],
 					'PRIMARY_KEY'	=> 'ban_id',
-					'KEYS'			=> array(
-						'ban_end'	=> array('INDEX', 'ban_end'),
-					),
-				),
-			),
-		);
+					'KEYS'			=> [
+						'ban_end'	=> ['INDEX', 'ban_end'],
+					],
+				],
+			],
+		];
 	}
 
-	public function revert_schema()
+	public function revert_schema(): array
 	{
-		return array(
-			'drop_tables'	=> array(
+		return [
+			'drop_tables'	=> [
 				$this->table_prefix . 'bans',
-			),
-		);
+			],
+		];
 	}
 
-	public function update_data()
+	public function update_data(): array
 	{
-		return array(
-			array('custom', array(array($this, 'old_to_new'))),
-		);
+		return [
+			['custom', [[$this, 'old_to_new']]],
+		];
 	}
 
-	public function revert_data()
+	public function revert_data(): array
 	{
-		return array(
-			array('custom', array(array($this, 'new_to_old'))),
-		);
+		return [
+			['custom', [[$this, 'new_to_old']]],
+		];
 	}
 
 	public function old_to_new($start)
@@ -73,7 +75,7 @@ class ban_table_p1 extends \phpbb\db\migration\migration
 		$processed_rows = 0;
 
 		$sql = 'SELECT *
-			FROM ' . $this->table_prefix . "banlist";
+			FROM ' . $this->table_prefix . 'banlist';
 		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		$bans = [];
@@ -139,7 +141,7 @@ class ban_table_p1 extends \phpbb\db\migration\migration
 		$processed_rows = 0;
 
 		$sql = 'SELECT *
-			FROM ' . $this->table_prefix . "bans";
+			FROM ' . $this->table_prefix . 'bans';
 		$result = $this->db->sql_query_limit($sql, $limit, $start);
 
 		$bans = [];
