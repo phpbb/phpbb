@@ -1204,7 +1204,7 @@ class session
 			}
 
 			// Determine which message to output
-			$till_date = ($ban_row['end'] > 0) ? $this->format_date($ban_row['end']) : '';
+			$till_date = ($ban_row && $ban_row['end'] > 0) ? $this->format_date($ban_row['end']) : '';
 			$message = $this->get_ban_message($ban_row, $ban_triggered_by);
 
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);

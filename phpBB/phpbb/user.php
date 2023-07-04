@@ -879,12 +879,12 @@ class user extends \phpbb\session
 	{
 		global $config, $phpbb_root_path, $phpEx;
 
-		$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
-		$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+		$till_date = ($ban_row['end']) ? $this->format_date($ban_row['end']) : '';
+		$message = ($ban_row['end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 
 		$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
 		$message = $this->language->lang($message, $till_date, '<a href="' . $contact_link . '">', '</a>');
-		$message .= ($ban_row['ban_give_reason']) ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['ban_give_reason']) : '';
+		$message .= ($ban_row['reason']) ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['reason']) : '';
 		$message .= '<br><br><em>' . $this->language->lang('BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)) . '</em>';
 
 		return $message;

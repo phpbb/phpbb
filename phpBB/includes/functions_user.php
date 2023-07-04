@@ -1493,7 +1493,7 @@ function validate_user_email($email, $allowed_email = false)
 	$ban = $user->check_ban(false, false, $email, true);
 	if (!empty($ban))
 	{
-		return !empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : 'EMAIL_BANNED';
+		return !empty($ban['reason']) ? $ban['reason'] : 'EMAIL_BANNED';
 	}
 
 	if (!$config['allow_emailreuse'])
