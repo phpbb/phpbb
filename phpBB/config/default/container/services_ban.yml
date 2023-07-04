@@ -27,6 +27,16 @@ services:
         tags:
             - { name: ban.type }
 
+    ban.type.ip:
+        class: \phpbb\ban\type\ip
+        arguments:
+            - '@dbal.conn'
+            - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.sessions_keys%'
+        tags:
+            - { name: ban.type }
+
     ban.type.user:
         class: \phpbb\ban\type\user
         arguments:
