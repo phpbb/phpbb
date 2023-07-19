@@ -137,9 +137,13 @@
 				<td><a href="{group.U_EDIT_GROUP}">{group.GROUP_NAME}</a></td>
 				<td><!-- IF group.S_IS_MEMBER --><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE --><strong>{L_GROUP_DEFAULT}</strong><!-- ENDIF --><!-- ELSEIF not group.S_IS_MEMBER and group.U_APPROVE --><a href="{group.U_APPROVE}">{L_GROUP_APPROVE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 				<td><!-- IF group.S_IS_MEMBER and not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
-				<td><a href="{group.U_DELETE}">{L_GROUP_DELETE}</a></td>
+				<td>{% if group.U_DELETE %}<a href="{{ group.U_DELETE }}">{{ lang('GROUP_DELETE') }}</a>{% endif %}</td>
 			</tr>
 		<!-- ENDIF -->
+	<!-- BEGINELSE -->
+		<tr>
+			<td class="row3 centered-text" colspan="4">{{ lang('NO_GROUP') }}</td>
+		</tr>
 	<!-- END group -->
 	</tbody>
 	</table>
