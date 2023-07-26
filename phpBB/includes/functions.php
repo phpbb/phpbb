@@ -2842,7 +2842,7 @@ function get_censor_preg_expression($word)
 
 /**
 * Returns the first block of the specified IPv6 address and as many additional
-* ones as specified in the length paramater.
+* ones as specified in the length parameter.
 * If length is zero, then an empty string is returned.
 * If length is greater than 3 the complete IP will be returned
 */
@@ -2851,6 +2851,14 @@ function short_ipv6($ip, $length)
 	if ($length < 1)
 	{
 		return '';
+	}
+
+	// Handle IPv4 embedded IPv6 addresses
+	if (preg_match('/(?:\d{1,3}\.){3}\d{1,3}$/i', $ip))
+	{
+		$binary_ip = inet_pton($ip);
+		$ip_v6 = $binary_ip ? inet_ntop($binary_ip) : $ip;
+		$ip = $ip_v6 ?: $ip;
 	}
 
 	// extend IPv6 addresses
