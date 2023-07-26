@@ -86,7 +86,7 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 		// Get attach id, the link looks similar to ./download/attachment/3
 		$attach_link = $crawler->filter('span.file-name > a')->attr('href');
 		$matches = [];
-		preg_match('/\/([0-9]+)$/', $attach_link, $matches);
+		preg_match('/\/([0-9]+)\/valid\.jpg$/', $attach_link, $matches);
 		$attach_id = (int) $matches[1];
 
 		// Set file time older than 3 hours to consider it orphan

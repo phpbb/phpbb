@@ -185,7 +185,13 @@ class ucp_attachments
 					'S_IN_MESSAGE'		=> $row['in_message'],
 					'S_LOCKED'			=> !$row['in_message'] && !$auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']),
 
-					'U_VIEW_ATTACHMENT'	=> $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $row['attach_id']]),
+					'U_VIEW_ATTACHMENT'	=> $controller_helper->route(
+						'phpbb_storage_attachment',
+						[
+							'id'		=> (int) $row['attach_id'],
+							'filename'	=> $row['real_filename'],
+						]
+					),
 					'U_VIEW_TOPIC'		=> $view_topic)
 				);
 

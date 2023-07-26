@@ -1716,7 +1716,13 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
-							$download_url = $controller_helper->route('phpbb_storage_attachment', ['file' => (int) $new_entry['attach_id']]);
+							$download_url = $controller_helper->route(
+								'phpbb_storage_attachment',
+								[
+									'id'		=> (int) $new_entry['attach_id'],
+									'filename'	=> $new_entry['real_filename'],
+								]
+							);
 
 							// Send the client the attachment data to maintain state
 							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));

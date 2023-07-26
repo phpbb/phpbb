@@ -86,11 +86,14 @@ class attachment extends controller
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Handle attachments
+	 *
+	 * @param int $id File ID
+	 * @param string $filename Filename
 	 */
-	public function handle(string $file): Response
+	public function handle_attachment(int $id, string $filename): Response
 	{
-		$attach_id = (int) $file;
+		$attach_id = $id;
 		$thumbnail = $this->request->variable('t', false);
 
 		$this->language->add_lang('viewtopic');
@@ -109,7 +112,8 @@ class attachment extends controller
 				is_orphan, physical_filename, real_filename, extension, mimetype,
 				filesize, filetime
 			FROM ' . ATTACHMENTS_TABLE . "
-			WHERE attach_id = $attach_id";
+			WHERE attach_id = $attach_id" .
+				(($filename) ? " AND real_filename = '" . $this->db->sql_escape($filename) . "'" : '');
 		$result = $this->db->sql_query($sql);
 		$attachment = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
