@@ -21,18 +21,22 @@ define('IN_PHPBB', true);
 $phpbb_root_path = dirname(__FILE__) . '/../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-include($phpbb_root_path . 'vendor/autoload.php');
-include($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'phpbb/class_loader.' . $phpEx);
-$phpbb_class_loader = new \phpbb\class_loader('phpbb\\', "{$phpbb_root_path}phpbb/", $phpEx);
-$phpbb_class_loader->register();
+include($phpbb_root_path . 'common.' . $phpEx);
+
+/** @var \phpbb\assets\iconify_bundler $iconify_bundler */
+$iconify_bundler = $phpbb_container->get('assets.iconify_bundler');
 
 // JS file to save bundle to
 $target = $phpbb_root_path . 'assets/iconify/iconify-bundle.js';
 
 // Icons to bundle, the list of iconify icons used in phpBB
-$iconify_bundler = new \phpbb\assets\iconify_bundler($phpbb_root_path);
-$output = $iconify_bundler->run();
+$iconify_bundler->find_icons([
+	$phpbb_root_path . 'styles/',
+	$phpbb_root_path . 'adm/style/',
+]);
+$output = $iconify_bundler->with_extensions()
+	->with_styles()
+	->run();
 
 // Save to file
 file_put_contents($target, $output);

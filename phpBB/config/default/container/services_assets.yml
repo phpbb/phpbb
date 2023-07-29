@@ -1,0 +1,7 @@
+services:
+    assets.iconify_bundler:
+        class: phpbb\assets\iconify_bundler
+        arguments:
+            - '@dbal.conn'
+            - '@ext.manager'
+            - '%core.root_path%'

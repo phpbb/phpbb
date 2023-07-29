@@ -19,17 +19,24 @@ use Symfony\Component\Finder\Finder;
 
 class iconify_bundler
 {
+	protected $db;
+
+	protected $ext_manager;
+
 	protected $root_path = '';
 	protected $icons_list = [];
 
-	public function __construct(string $root_path)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, string $root_path)
 	{
+		$this->db = $db;
+		$this->ext_manager = $ext_manager;
 		$this->root_path = $root_path;
 	}
 
 	public function run()
 	{
-		$this->find_icons();
+		// Sort icons first
+		sort($this->icons_list, SORT_NATURAL);
 
 		$organized_icons = $this->organize_icons_list();
 
@@ -55,12 +62,27 @@ class iconify_bundler
 		return $output;
 	}
 
-	protected function find_icons()
+	/**
+	 * @param array $paths Icon paths
+	 *
+	 * @return void
+	 */
+	public function find_icons(array $paths): void
 	{
+		if (!count($paths))
+		{
+			return;
+		}
+
 		$finder = new Finder();
-		$finder->files()->in($this->root_path . '/styles/')
-			->in($this->root_path . '/adm/style/')
-			->name('*.html')
+		$finder->files();
+
+		foreach ($paths as $cur_path)
+		{
+			$finder->in($cur_path);
+		}
+
+		$finder->name('*.html')
 			->name('*.twig')
 			->contains("Icon('iconify',");
 
@@ -95,8 +117,44 @@ class iconify_bundler
 				}
 			}
 		}
+	}
 
-		sort($this->icons_list, SORT_NATURAL);
+	public function with_extensions(): iconify_bundler
+	{
+		$extensions = $this->ext_manager->all_enabled();
+
+		$search_paths = [];
+
+		foreach ($extensions as $path)
+		{
+			if (file_exists($path))
+			{
+				$search_paths[] = $path;
+			}
+		}
+
+		$this->find_icons($search_paths);
+
+		return $this;
+	}
+
+	public function with_styles(): iconify_bundler
+	{
+		$sql = 'SELECT *
+			FROM ' . STYLES_TABLE;
+		$result = $this->db->sql_query($sql);
+
+		$style_paths = [];
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$style_paths[] = $this->root_path . 'styles/' . $row['style_path'];
+		}
+		$this->db->sql_freeresult($result);
+
+		$this->find_icons($style_paths);
+
+		return $this;
 	}
 
 	protected function add_icon(string $icon_name): void
@@ -111,6 +169,8 @@ class iconify_bundler
 	 * Organize icons list by prefix
 	 *
 	 * Result is an object, where key is prefix, value is array of icon names
+	 *
+	 * @return array Organized icons list
 	 */
 	protected function organize_icons_list(): array
 	{
@@ -156,7 +216,8 @@ class iconify_bundler
 	 * This function was converted to PHP from @iconify/utils/src/icon/name.ts
 	 * See https://github.com/iconify/iconify/blob/master/packages/utils/src/icon/name.ts
 	 *
-	 * @param string $icon_name
+	 * @param string $icon_name Icon name
+	 * @return array|null Icon data or null if icon is invalid
 	 */
 	protected function name_to_icon(string $icon_name): ?array
 	{
@@ -216,7 +277,7 @@ class iconify_bundler
 			// Load icon set
 			$collection = new Collection($prefix);
 			if (!$collection->loadIconifyCollection($prefix)) {
-				throw new Error(
+				throw new \Error(
 					'Icons with prefix "' . $prefix . '" do not exist in Iconify. Update iconify/json?'
 				);
 			}
