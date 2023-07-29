@@ -139,7 +139,7 @@ class acp_ban
 		}
 		else if ($unbansubmit)
 		{
-			$ban = $request->variable('unban', []);
+			$ban = $request->variable('unban', ['']);
 
 			if ($ban)
 			{
