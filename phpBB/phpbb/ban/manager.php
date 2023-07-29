@@ -13,7 +13,6 @@
 
 namespace phpbb\ban;
 
-use phpbb\ban\exception\ban_insert_failed_exception;
 use phpbb\ban\exception\invalid_length_exception;
 use phpbb\ban\exception\type_not_found_exception;
 use phpbb\ban\type\type_interface;
