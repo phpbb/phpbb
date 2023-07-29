@@ -102,9 +102,12 @@ class user extends base
 		// Fill excluded user list
 		$this->get_excluded();
 
+		// Prevent banning of anonymous
+		$this->excluded[ANONYMOUS] = ANONYMOUS;
+
 		$sql_usernames = [];
 		$sql_or_like = [];
-		foreach ($items as $item) // TODO: Prevent banning Anonymous
+		foreach ($items as $item)
 		{
 			$cleaned_username = utf8_clean_string($item);
 			if (stripos($cleaned_username, '*') === false)
