@@ -71,6 +71,32 @@ class user extends base
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_ban_options(): array
+	{
+		$ban_options = [];
+
+		// @todo replace table constant by string
+		$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
+				FROM ' . BANS_TABLE . ' b, ' . $this->users_table . ' u
+				WHERE (b.ban_end >= ' . time() . "
+						OR b.ban_end = 0)
+					AND b.ban_mode = '{$this->get_type()}'
+					AND u.user_id = b.ban_item
+				ORDER BY u.username_clean ASC";
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$row['ban_item'] = $row['username'];
+			$ban_options[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $ban_options;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function prepare_for_storage(array $items): array
 	{
 		// Fill excluded user list

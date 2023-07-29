@@ -101,6 +101,13 @@ interface type_interface
 	public function get_banned_users(): array;
 
 	/**
+	 * Get ban options mapping ban ID to an option to display to admins
+	 *
+	 * @return array
+	 */
+	public function get_ban_options(): array;
+
+	/**
 	 * Prepares the given ban items before saving them in the database
 	 *
 	 * @param array $items

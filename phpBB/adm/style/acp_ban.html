@@ -11,11 +11,11 @@
 <script>
 // <![CDATA[
 
-	var ban_length = new Array();
-		ban_length[-1] = '';
-	var ban_reason = new Array();
+	const ban_length = [];
+	ban_length[-1] = '';
+	const ban_reason = [];
 		ban_reason[-1] = '';
-	var ban_give_reason = new Array();
+	const ban_give_reason = [];
 		ban_give_reason[-1] = '';
 
 	<!-- BEGIN bans -->
@@ -42,6 +42,19 @@
 			document.getElementById('unbangivereason').innerHTML = '';
 		}
 	}
+
+	document.addEventListener("DOMContentLoaded", () => {
+		const $unbanSelect = document.getElementById('unban');
+		if ($unbanSelect) {
+			$unbanSelect.addEventListener('change', function () {
+				if (this.selectedIndex > -1) {
+					display_details(this.options[this.selectedIndex].value);
+				} else {
+					display_details(-1);
+				}
+			});
+		}
+	});
 
 // ]]>
 </script>
@@ -85,43 +98,40 @@
 
 <p>{L_UNBAN_EXPLAIN}</p>
 
-<form id="acp_unban" method="post" action="{U_ACTION}">
+<form id="acp_unban" method="post" action="{{ U_ACTION }}">
 
 <fieldset>
-	<legend>{L_UNBAN_TITLE}</legend>
+	<legend>{{ lang('UNBAN_TITLE') }}</legend>
 
-<!-- IF S_BANNED_OPTIONS -->
+{% if BANNED_SELECT %}
 	<dl>
-		<dt><label for="unban">{L_BAN_CELL}{L_COLON}</label></dt>
-		<dd><select id="unban" name="unban[]" multiple="multiple" size="10" style="width: 50%" onchange="if (this.selectedIndex > -1) display_details(this.options[this.selectedIndex].value); else display_details(-1);">{BANNED_OPTIONS}</select></dd>
+		<dt><label for="unban">{{ lang('BAN_CELL') ~ lang('COLON') }}</label></dt>
+		<dd>
+			{{ FormsSelect(BANNED_SELECT) }}
+		</dd>
 	</dl>
 	<dl>
-		<dt><label for="unbanlength">{L_BAN_LENGTH}{L_COLON}</label></dt>
+		<dt><label for="unbanlength">{{ lang('BAN_LENGTH') ~ lang('COLON') }}</label></dt>
 		<dd><input style="border: 0;" type="text" class="text full" readonly="readonly" name="unbanlength" id="unbanlength" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="unbanreason">{L_BAN_REASON}{L_COLON}</label></dt>
+		<dt><label for="unbanreason">{{ lang('BAN_REASON') ~ lang('COLON') }}</label></dt>
 		<dd><textarea style="border: 0;" class="text full" readonly="readonly" name="unbanreason" id="unbanreason" rows="5" cols="80">&nbsp;</textarea></dd>
 	</dl>
 	<dl>
-		<dt><label for="unbangivereason">{L_BAN_GIVE_REASON}{L_COLON}</label></dt>
+		<dt><label for="unbangivereason">{{ lang('BAN_GIVE_REASON') ~ lang('COLON') }}</label></dt>
 		<dd><textarea style="border: 0;" class="text full" readonly="readonly" name="unbangivereason" id="unbangivereason" rows="5" cols="80">&nbsp;</textarea></dd>
 	</dl>
 
 	<p class="submit-buttons">
-		<input class="button1" type="submit" id="unbansubmit" name="unbansubmit" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="unbanreset" name="unbanreset" value="{L_RESET}" />
+		<input class="button1" type="submit" id="unbansubmit" name="unbansubmit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="unbanreset" name="unbanreset" value="{{ lang('RESET') }}" />
 	</p>
-	{S_FORM_TOKEN}
-	</fieldset>
-
-<!-- ELSE -->
-
-	<p>{L_NO_BAN_CELL}</p>
-	{S_FORM_TOKEN}
+{% else %}
+	<p>{{ lang('NO_BAN_CELL') }}</p>
+{% endif %}
+	{{ S_FORM_TOKEN }}
 </fieldset>
-
-<!-- ENDIF -->
 
 </form>
 

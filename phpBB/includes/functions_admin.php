@@ -3156,33 +3156,37 @@ function display_ban_end_options()
 */
 function display_ban_options($mode)
 {
-	global $user, $template, $phpbb_container;
+	global $language, $user, $template, $phpbb_container;
 
 	/** @var \phpbb\ban\manager $ban_manager */
 	$ban_manager = $phpbb_container->get('ban.manager');
 	$ban_rows = $ban_manager->get_bans($mode);
 
-	$banned_options = array();
+	$banned_options = [];
+
 	foreach ($ban_rows as $ban_row)
 	{
-		$banned_options[] = '<option value="' . $ban_row['ban_id'] . '">' . $ban_row['ban_item'] . '</option>';
+		$banned_options[] = [
+			'value'		=> $ban_row['ban_id'],
+			'label'		=> $ban_row['ban_item'],
+		];
 
 		$time_length = ($ban_row['ban_end']) ? ($ban_row['ban_end'] - $ban_row['ban_start']) / 60 : 0;
 
 		if ($time_length == 0)
 		{
 			// Banned permanently
-			$ban_length = $user->lang['PERMANENT'];
+			$ban_length = $language->lang('PERMANENT');
 		}
 		else if (isset($ban_end_text[$time_length]))
 		{
 			// Banned for a given duration
-			$ban_length = $user->lang('BANNED_UNTIL_DURATION', $ban_end_text[$time_length], $user->format_date($ban_row['ban_end'], false, true));
+			$ban_length = $language->lang('BANNED_UNTIL_DURATION', $ban_end_text[$time_length], $user->format_date($ban_row['ban_end'], false, true));
 		}
 		else
 		{
 			// Banned until given date
-			$ban_length = $user->lang('BANNED_UNTIL_DATE', $user->format_date($ban_row['ban_end'], false, true));
+			$ban_length = $language->lang('BANNED_UNTIL_DATE', $user->format_date($ban_row['ban_end'], false, true));
 		}
 
 		$template->assign_block_vars('bans', array(
@@ -3196,16 +3200,24 @@ function display_ban_options($mode)
 		));
 	}
 
-	$options = '';
-	if ($banned_options)
+	if (count($banned_options))
 	{
-		$options .= '<optgroup label="' . $user->lang['OPTIONS_BANNED'] . '">';
-		$options .= implode('', $banned_options);
-		$options .= '</optgroup>';
-	}
+		$banned_select = [
+			'tag'		=> 'select',
+			'name'		=> 'unban[]',
+			'id'		=> 'unban',
+			'class'		=> 'w-50',
+			'multiple'	=> true,
+			'size'		=> 10,
+			'data'		=> [
+				'onchange'	=> 'display_details',
+			],
+			'options'	=> [[
+				'label'		=> $language->lang('OPTIONS_BANNED'),
+				'options'	=> $banned_options,
+			]],
+		];
 
-	$template->assign_vars(array(
-		'S_BANNED_OPTIONS'	=> (bool) $banned_options,
-		'BANNED_OPTIONS'	=> $options,
-	));
+		$template->assign_vars(['BANNED_SELECT' => $banned_select]);
+	}
 }

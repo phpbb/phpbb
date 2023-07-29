@@ -101,6 +101,25 @@ abstract class base implements type_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function get_ban_options(): array
+	{
+		// @todo replace table constant by string
+		$sql = 'SELECT *
+			FROM ' . BANS_TABLE . '
+			WHERE (ban_end >= ' . time() . "
+					OR ban_end = 0)
+				AND ban_mode = '{$this->get_type()}'
+			ORDER BY ban_item";
+		$result = $this->db->sql_query($sql);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $rowset;
+	}
+
+	/**
 	 * Queries users that are excluded from banning (like founders)
 	 * from the database and saves them in $this->excluded array.
 	 * Returns true on success and false on failure

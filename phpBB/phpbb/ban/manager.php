@@ -263,23 +263,15 @@ class manager
 	 */
 	public function get_bans(string $mode)
 	{
-		/** @var type_interface $ban_mode */
-		$ban_mode = $this->find_type($mode);
-		if ($ban_mode === false)
+		/** @var type_interface $ban_type */
+		$ban_type = $this->find_type($mode);
+		if ($ban_type === false)
 		{
-			throw new type_not_found_exception(); // TODO
+			throw new type_not_found_exception();
 		}
 		$this->tidy();
 
-		$sql = 'SELECT ban_id, ban_item, ban_start, ban_end, ban_reason, ban_reason_display
-			FROM ' . $this->bans_table . "
-			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
-				AND (ban_end = 0 OR ban_end >= " . time() . ')';
-		$result = $this->db->sql_query($sql);
-		$rowset = $this->db->sql_fetchrowset($result);
-		$this->db->sql_freeresult($result);
-
-		return $rowset;
+		return $ban_type->get_ban_options();
 	}
 
 	/**
