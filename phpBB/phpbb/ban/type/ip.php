@@ -85,7 +85,7 @@ class ip extends base
 
 		if (empty($ban_items))
 		{
-			throw new no_valid_ips_exception(); // TODO
+			throw new no_valid_ips_exception('NO_IPS_DEFINED');
 		}
 
 		return $ban_items;

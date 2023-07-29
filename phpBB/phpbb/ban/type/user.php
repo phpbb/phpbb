@@ -147,7 +147,7 @@ class user extends base
 
 		if (empty($ban_items))
 		{
-			throw new no_valid_users_exception(); // TODO
+			throw new no_valid_users_exception('NO_USER_SPECIFIED');
 		}
 
 		return $ban_items;

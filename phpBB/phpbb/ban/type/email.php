@@ -56,7 +56,7 @@ class email extends base
 
 		if (empty($ban_items))
 		{
-			throw new no_valid_emails_exception(); // TODO
+			throw new no_valid_emails_exception('NO_EMAILS_DEFINED');
 		}
 
 		return $ban_items;

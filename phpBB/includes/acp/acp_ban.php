@@ -103,7 +103,14 @@ class acp_ban
 				$ban_end = $ban_manager->get_ban_end($ban_start, $ban_length, $ban_length_other);
 
 				$ban = explode("\n", $ban);
-				$ban_manager->ban($mode, $ban, $ban_start, $ban_end, $ban_reason, $ban_give_reason);
+				try
+				{
+					$ban_manager->ban($mode, $ban, $ban_start, $ban_end, $ban_reason, $ban_give_reason);
+				}
+				catch (\phpbb\exception\exception_interface $exception)
+				{
+					trigger_error($language->lang_array($exception->getMessage(), $exception->get_parameters()), E_USER_WARNING);
+				}
 
 				/**
 				* Use this event to perform actions after the ban has been performed

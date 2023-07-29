@@ -79,14 +79,14 @@ class manager
 	{
 		if ($start > $end && $end->getTimestamp() !== 0)
 		{
-			throw new invalid_length_exception(); // TODO
+			throw new invalid_length_exception('LENGTH_BAN_INVALID');
 		}
 
 		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
 		if ($ban_mode === false)
 		{
-			throw new type_not_found_exception(); // TODO
+			throw new type_not_found_exception();
 		}
 
 		if (!empty($this->user))
@@ -154,31 +154,36 @@ class manager
 		$ban_mode = $this->find_type($mode);
 		if ($ban_mode === false)
 		{
-			throw new type_not_found_exception(); // TODO
+			throw new type_not_found_exception();
 		}
 		$this->tidy();
 
 		$sql_ids = array_map('intval', $items);
-		$sql = 'SELECT ban_item
-			FROM ' . $this->bans_table . '
-			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids); // TODO (what if empty?)
-		$result = $this->db->sql_query($sql);
 
-		$unbanned_items = [];
-		while ($row = $this->db->sql_fetchrow($result))
+		if (count($sql_ids))
 		{
-			$unbanned_items[] = $row['ban_item'];
+			$sql = 'SELECT ban_item
+				FROM ' . $this->bans_table . '
+				WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
+			$result = $this->db->sql_query($sql);
+
+			$unbanned_items = [];
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$unbanned_items[] = $row['ban_item'];
+			}
+			$this->db->sql_freeresult($result);
+
+			$sql = 'DELETE FROM ' . $this->bans_table . '
+				WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
+			$this->db->sql_query($sql);
+
+			$unban_data = [
+				'items' => $unbanned_items,
+			];
+			$unbanned_users = $ban_mode->after_unban($unban_data);
+			// @todo: add logging for unbanned users
 		}
-		$this->db->sql_freeresult($result);
-
-		$sql = 'DELETE FROM ' . $this->bans_table . '
-			WHERE ' . $this->db->sql_in_set('ban_id', $sql_ids);
-		$this->db->sql_query($sql);
-
-		$unban_data = [
-			'items'		=> $unbanned_items,
-		];
-		$unbanned_users = $ban_mode->after_unban($unban_data);
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
 		$this->cache->destroy(self::CACHE_KEY_USERS);
@@ -389,7 +394,7 @@ class manager
 				}
 				else
 				{
-					throw new invalid_length_exception();
+					throw new invalid_length_exception('LENGTH_BAN_INVALID');
 				}
 			}
 		}
