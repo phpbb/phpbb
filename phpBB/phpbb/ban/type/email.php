@@ -39,10 +39,8 @@ class email extends base
 	 */
 	public function prepare_for_storage(array $items): array
 	{
-		if (!$this->get_excluded())
-		{
-			throw new runtime_exception(); // TODO
-		}
+		$this->get_excluded();
+
 		$regex = '#^.*?@.*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i'; // TODO
 
 		$ban_items = [];

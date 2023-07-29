@@ -76,7 +76,7 @@ class manager
 	 *
 	 * @return bool
 	 */
-	public function ban(string $mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, string $reason, string $display_reason = '')
+	public function ban(string $mode, array $items, \DateTimeInterface $start, \DateTimeInterface $end, string $reason, string $display_reason = ''): bool
 	{
 		if ($start > $end && $end->getTimestamp() !== 0)
 		{
@@ -122,11 +122,7 @@ class manager
 			return false;
 		}
 
-		$result = $this->db->sql_multi_insert($this->bans_table, $insert_array);
-		if ($result === false)
-		{
-			throw new ban_insert_failed_exception(); // TODO
-		}
+		$this->db->sql_multi_insert($this->bans_table, $insert_array);
 
 		$ban_data = [
 			'items'				=> $ban_items,
@@ -138,7 +134,7 @@ class manager
 
 		if ($ban_mode->after_ban($ban_data))
 		{
-			// TODO
+			// @todo: Add logging
 		}
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
@@ -153,7 +149,7 @@ class manager
 	 * @param string	$mode		The ban type in which the ban IDs were created
 	 * @param array		$items		An array of ban IDs which should be removed
 	 */
-	public function unban($mode, array $items)
+	public function unban(string $mode, array $items)
 	{
 		/** @var type_interface $ban_mode */
 		$ban_mode = $this->find_type($mode);
@@ -245,7 +241,7 @@ class manager
 						}
 						else
 						{
-							$regex = str_replace('\*', '.*?', preg_quote($ban_row['item'], '#'));
+							$regex = '#^' . str_replace('\*', '.*?', preg_quote($ban_row['item'], '#')) . '$#i';
 							if (preg_match($regex, $user_data[$user_column]))
 							{
 								return $ban_row + ['mode' => $mode];
@@ -279,7 +275,7 @@ class manager
 		$sql = 'SELECT ban_id, ban_item, ban_start, ban_end, ban_reason, ban_reason_display
 			FROM ' . $this->bans_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
-				AND (ban_end <= 0 OR ban_end >= " . (int) time() . ')';
+				AND (ban_end = 0 OR ban_end >= " . time() . ')';
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
@@ -294,7 +290,7 @@ class manager
 	 *
 	 * @return array
 	 */
-	public function get_banned_users()
+	public function get_banned_users(): array
 	{
 		$banned_users = $this->cache->get(self::CACHE_KEY_USERS);
 		if ($banned_users === false)
@@ -375,10 +371,10 @@ class manager
 	/**
 	 * Get ban end
 	 *
-	 * @param \DateTimeInterface $ban_start
-	 * @param int $length
-	 * @param string $end_date
-	 * @return \DateTimeInterface
+	 * @param \DateTimeInterface $ban_start Ban start time
+	 * @param int $length Ban length in minutes
+	 * @param string $end_date Ban end date as YYYY-MM-DD string
+	 * @return \DateTimeInterface Ban end as DateTimeInterface instance
 	 */
 	public function get_ban_end(\DateTimeInterface $ban_start, int $length, string $end_date): \DateTimeInterface
 	{
@@ -402,7 +398,7 @@ class manager
 				}
 				else
 				{
-					trigger_error('LENGTH_BAN_INVALID', E_USER_WARNING);
+					throw new invalid_length_exception();
 				}
 			}
 		}
@@ -434,11 +430,11 @@ class manager
 	 * Finds the ban type for the given mode string.
 	 * Returns false if none was found
 	 *
-	 * @param string	$mode	The mode string
+	 * @param string $mode	The mode string
 	 *
 	 * @return bool|type\type_interface
 	 */
-	protected function find_type($mode)
+	protected function find_type(string $mode)
 	{
 		/** @var type_interface $type */
 		foreach ($this->types as $type)
@@ -461,7 +457,7 @@ class manager
 	 *
 	 * @return array
 	 */
-	protected function get_info_cache()
+	protected function get_info_cache(): array
 	{
 		$ban_info = $this->cache->get(self::CACHE_KEY_INFO);
 		if ($ban_info === false)

@@ -73,10 +73,8 @@ class user extends base
 	 */
 	public function prepare_for_storage(array $items): array
 	{
-		if (!$this->get_excluded())
-		{
-			throw new runtime_exception(); // TODO
-		}
+		// Fill excluded user list
+		$this->get_excluded();
 
 		$sql_usernames = [];
 		$sql_or_like = [];

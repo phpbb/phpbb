@@ -51,7 +51,10 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 			'BAN_TRIGGERED_BY_USER'		=> 'BAN_TRIGGERED_BY_USER',
 		];
 
-		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem, $phpbb_container;
+		global $cache, $config, $phpbb_root_path, $phpEx, $phpbb_filesystem, $phpbb_container, $user;
+
+		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$user = new \phpbb\user($language, '\phpbb\datetime');
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 
@@ -81,7 +84,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 

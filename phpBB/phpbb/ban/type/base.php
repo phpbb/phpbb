@@ -107,7 +107,7 @@ abstract class base implements type_interface
 	 *
 	 * @return bool
 	 */
-	protected function get_excluded()
+	protected function get_excluded(): bool
 	{
 		$user_column = $this->get_user_column();
 		if (empty($user_column))
@@ -119,7 +119,7 @@ abstract class base implements type_interface
 
 		if (!empty($this->user))
 		{
-			$this->excluded[(int) $this->user->data['user_id']]	= $this->user->data[$user_column];
+			$this->excluded[$this->user->id()] = $this->user->data[$user_column];
 		}
 
 		$sql = "SELECT user_id, {$user_column}
@@ -143,15 +143,15 @@ abstract class base implements type_interface
 	 *
 	 * @param array $ban_items
 	 *
-	 * @return array
+	 * @return array Logged out users
 	 */
-	protected function logout_affected_users(array $ban_items)
+	protected function logout_affected_users(array $ban_items): array
 	{
 		$user_column = $this->get_user_column();
 
 		if (empty($user_column))
 		{
-			// TODO throw ex (it's a developer exception)
+			return [];
 		}
 
 		if ($user_column !== 'user_id')

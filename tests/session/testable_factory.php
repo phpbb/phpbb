@@ -75,7 +75,7 @@ class phpbb_session_testable_factory
 	{
 		// set up all the global variables used by session
 		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container, $phpbb_dispatcher;
-		global $phpbb_root_path, $phpEx;
+		global $user, $phpbb_root_path, $phpEx;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -90,6 +90,8 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
+		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$user = new \phpbb\user($language, '\phpbb\datetime');
 
 		$phpbb_container = $this->container = new phpbb_mock_container_builder();
 		$phpbb_container->set(
@@ -124,7 +126,7 @@ class phpbb_session_testable_factory
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache_service, $db, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache_service, $db,  $user,'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$session = new phpbb_mock_session_testable;

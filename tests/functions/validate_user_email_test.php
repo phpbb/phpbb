@@ -59,7 +59,7 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $this->user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 
