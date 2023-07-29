@@ -921,12 +921,11 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 * @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
 * @param int $ban_len Ban length in minutes
 * @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
-* @param boolean $ban_exclude Exclude these entities from banning?
 * @param string $ban_reason String describing the reason for this ban
 * @param string $ban_give_reason
 * @return boolean
 */
-function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
+function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_reason, $ban_give_reason = '')
 {
 	global $phpbb_container, $user;
 
