@@ -145,7 +145,7 @@ class ucp_attachments
 		$pagination = $phpbb_container->get('pagination');
 		$start = $pagination->validate_start($start, $config['topics_per_page'], $num_attachments);
 
-		$sql = 'SELECT a.*, t.topic_title, pr.message_subject as message_title, pr.message_time as message_time, pt.folder_id, p.post_edit_locked, t.topic_status, f.forum_id, f.forum_status
+		$sql = 'SELECT a.*, t.topic_title, pr.message_subject as message_title, pr.message_time as message_time, pt.folder_id, p.post_edit_locked, p.post_time, t.topic_status, f.forum_id, f.forum_status
 			FROM ' . ATTACHMENTS_TABLE . ' a
 				LEFT JOIN ' . POSTS_TABLE . ' p ON (a.post_msg_id = p.post_id AND a.in_message = 0)
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
