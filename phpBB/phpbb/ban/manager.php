@@ -459,8 +459,7 @@ class manager
 		if ($ban_info === false)
 		{
 			$sql = 'SELECT ban_mode, ban_item, ban_end, ban_reason_display
-				FROM ' . $this->bans_table . '
-				WHERE 1';
+				FROM ' . $this->bans_table;
 			$result = $this->db->sql_query($sql);
 
 			$ban_info = [];
