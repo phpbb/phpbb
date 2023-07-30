@@ -50,6 +50,7 @@ abstract class base implements type_interface
 	public function __construct(driver_interface $db, string $bans_table, string $users_table, string $sessions_table, string $sessions_keys_table)
 	{
 		$this->db = $db;
+		$this->bans_table = $bans_table;
 		$this->users_table = $users_table;
 		$this->sessions_table = $sessions_table;
 		$this->sessions_keys_table = $sessions_keys_table;
@@ -109,9 +110,8 @@ abstract class base implements type_interface
 	 */
 	public function get_ban_options(): array
 	{
-		// @todo replace table constant by string
 		$sql = 'SELECT *
-			FROM ' . BANS_TABLE . '
+			FROM ' . $this->bans_table . '
 			WHERE (ban_end >= ' . time() . "
 					OR ban_end = 0)
 				AND ban_mode = '{$this->get_type()}'
