@@ -16,6 +16,10 @@ namespace phpbb\ban;
 use phpbb\ban\exception\invalid_length_exception;
 use phpbb\ban\exception\type_not_found_exception;
 use phpbb\ban\type\type_interface;
+use phpbb\cache\driver\driver_interface as cache_driver;
+use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
+use phpbb\user;
 
 class manager
 {
@@ -26,16 +30,16 @@ class manager
 	/** @var string */
 	protected $bans_table;
 
-	/** @var \phpbb\cache\service */
+	/** @var cache_driver */
 	protected $cache;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\di\service_collection */
+	/** @var service_collection */
 	protected $types;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
 	/** @var string */
@@ -45,14 +49,14 @@ class manager
 	 * Creates a service which manages all bans. Developers can
 	 * create their own ban types which will be handled in this.
 	 *
-	 * @param \phpbb\di\service_collection		$types					A service collection containing all ban types
-	 * @param \phpbb\cache\service				$cache					A cache object
-	 * @param \phpbb\db\driver\driver_interface	$db						A phpBB DBAL object
-	 * @param \phpbb\user						$user					User object
-	 * @param string							$bans_table				The bans table
-	 * @param string							$users_table			The users table
+	 * @param service_collection	$types					A service collection containing all ban types
+	 * @param cache_driver			$cache					A cache object
+	 * @param driver_interface		$db						A phpBB DBAL object
+	 * @param user					$user					User object
+	 * @param string				$bans_table				The bans table
+	 * @param string				$users_table			The users table
 	 */
-	public function __construct($types, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $bans_table, $users_table = '')
+	public function __construct(service_collection $types, cache_driver $cache, driver_interface $db, user $user, string $bans_table, string $users_table = '')
 	{
 		$this->bans_table = $bans_table;
 		$this->cache = $cache;

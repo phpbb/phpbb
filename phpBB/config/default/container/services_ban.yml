@@ -4,7 +4,7 @@ services:
         class: \phpbb\ban\manager
         arguments:
             - '@ban.type_collection'
-            - '@cache'
+            - '@cache.driver'
             - '@dbal.conn'
             - '@user'
             - '%tables.bans%'

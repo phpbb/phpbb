@@ -36,18 +36,6 @@ class ban_manager_test extends \phpbb_session_test_case
 		$config = new \phpbb\config\config([]);
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
 
-		// Change the global cache object for this test because
-		// the mock cache object does not hit the database as is needed
-		// for this test.
-		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\dummy(),
-			$config,
-			$this->db,
-			$phpbb_dispatcher,
-			$phpbb_root_path,
-			$phpEx
-		);
-
 		$phpbb_container = new \phpbb_mock_container_builder();
 		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
@@ -60,7 +48,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
 
-		$this->ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$this->ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $this->ban_manager);
 		$this->phpbb_container = $phpbb_container;
 	}
@@ -385,19 +373,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$config = new \phpbb\config\config([]);
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
 
-		// Change the global cache object for this test because
-		// the mock cache object does not hit the database as is needed
-		// for this test.
-		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\dummy(),
-			$config,
-			$this->db,
-			$phpbb_dispatcher,
-			$phpbb_root_path,
-			$phpEx
-		);
-
-		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
 
 		$this->assertEquals(
 			[
@@ -442,19 +418,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$config = new \phpbb\config\config([]);
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
 
-		// Change the global cache object for this test because
-		// the mock cache object does not hit the database as is needed
-		// for this test.
-		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\dummy(),
-			$config,
-			$this->db,
-			$phpbb_dispatcher,
-			$phpbb_root_path,
-			$phpEx
-		);
-
-		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
 
 		$start_time = new \DateTime();
 		$start_time->setTimestamp(1000);

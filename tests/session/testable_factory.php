@@ -109,15 +109,6 @@ class phpbb_session_testable_factory
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$cache_service = new \phpbb\cache\service(
-			$cache,
-			$config,
-			$db,
-			$phpbb_dispatcher,
-			$phpbb_root_path,
-			$phpEx
-		);
-
 		$ban_type_email = new \phpbb\ban\type\email($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$ban_type_user = new \phpbb\ban\type\user($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$ban_type_ip = new \phpbb\ban\type\ip($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
@@ -130,7 +121,7 @@ class phpbb_session_testable_factory
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache_service, $db,  $user,'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $db,  $user,'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$session = new phpbb_mock_session_testable;
