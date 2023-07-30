@@ -14,7 +14,6 @@
 namespace phpbb\ban\type;
 
 use phpbb\ban\exception\no_valid_users_exception;
-use phpbb\exception\runtime_exception;
 
 class user extends base
 {

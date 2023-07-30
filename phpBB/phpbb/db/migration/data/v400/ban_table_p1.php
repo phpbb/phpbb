@@ -17,7 +17,7 @@ use phpbb\db\migration\migration;
 
 class ban_table_p1 extends migration
 {
-	static public function depends_on(): array
+	public static function depends_on(): array
 	{
 		return ['\phpbb\db\migration\data\v320\default_data_type_ids'];
 	}

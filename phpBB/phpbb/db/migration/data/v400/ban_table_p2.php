@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v400;
 
 class ban_table_p2 extends \phpbb\db\migration\migration
 {
-	static public function depends_on(): array
+	public static function depends_on(): array
 	{
 		return ['\phpbb\db\migration\data\v400\ban_table_p1'];
 	}
