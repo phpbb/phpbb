@@ -118,7 +118,9 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/input.twig', [
+				'CLASS'		=> (string) ($form_data['class'] ?? ''),
 				'ID'		=> (string) ($form_data['id'] ?? ''),
+				'DATA'		=> $form_data['data'] ?? [],
 				'TYPE'		=> (string) $form_data['type'],
 				'NAME'		=> (string) $form_data['name'],
 				'SIZE'		=> (int) ($form_data['size'] ?? 0),
@@ -127,9 +129,7 @@ class forms extends AbstractExtension
 				'MAX'		=> (int) ($form_data['max'] ?? 0),
 				'STEP'		=> (int) ($form_data['step'] ?? 0),
 				'CHECKED'	=> (bool) ($form_data['checked'] ?? false),
-				'CLASS'		=> (string) ($form_data['class'] ?? ''),
 				'VALUE'		=> (string) ($form_data['value']),
-				'DATA'		=> $form_data['data'] ?? [],
 			]);
 		}
 		catch (\Twig\Error\Error $e)
@@ -176,13 +176,13 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/select.twig', [
-				'ID'			=> (string) ($form_data['id'] ?? ''),
 				'CLASS'			=> (string) ($form_data['class'] ?? ''),
+				'ID'			=> (string) ($form_data['id'] ?? ''),
+				'DATA'			=> $form_data['data'] ?? [],
 				'NAME'			=> (string) $form_data['name'],
 				'TOGGLEABLE'	=> (bool) ($form_data['toggleable'] ?? false),
 				'OPTIONS'		=> $form_data['options'] ?? [],
 				'GROUP_ONLY'	=> (bool) ($form_data['group_only'] ?? false),
-				'DATA'			=> $form_data['data'] ?? [],
 				'SIZE'			=> (int) ($form_data['size'] ?? 0),
 				'MULTIPLE'		=> (bool) ($form_data['multiple'] ?? false),
 			]);
@@ -206,7 +206,9 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/textarea.twig', [
+				'CLASS'			=> (string) ($form_data['class'] ?? ''),
 				'ID'		=> (string) $form_data['id'],
+				'DATA'			=> $form_data['data'] ?? [],
 				'NAME'		=> (string) $form_data['name'],
 				'ROWS'		=> (int) $form_data['rows'],
 				'COLS'		=> (int) $form_data['cols'],
