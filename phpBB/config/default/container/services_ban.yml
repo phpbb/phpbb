@@ -22,6 +22,7 @@ services:
         class: \phpbb\ban\type\email
         arguments:
             - '@dbal.conn'
+            - '%tables.bans%'
             - '%tables.users%'
             - '%tables.sessions%'
             - '%tables.sessions_keys%'
@@ -32,6 +33,7 @@ services:
         class: \phpbb\ban\type\ip
         arguments:
             - '@dbal.conn'
+            - '%tables.bans%'
             - '%tables.users%'
             - '%tables.sessions%'
             - '%tables.sessions_keys%'
@@ -42,6 +44,7 @@ services:
         class: \phpbb\ban\type\user
         arguments:
             - '@dbal.conn'
+            - '%tables.bans%'
             - '%tables.users%'
             - '%tables.sessions%'
             - '%tables.sessions_keys%'

@@ -118,13 +118,17 @@ class phpbb_session_testable_factory
 			$phpEx
 		);
 
-		$ban_type_email = new \phpbb\ban\type\email($db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_user = new \phpbb\ban\type\user($db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_email = new \phpbb\ban\type\email($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_ip = new \phpbb\ban\type\ip($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$phpbb_container->set('ban.type.email', $ban_type_email);
 		$phpbb_container->set('ban.type.user', $ban_type_user);
+		$phpbb_container->set('ban.type.ip', $ban_type_ip);
+
 		$collection = new \phpbb\di\service_collection($phpbb_container);
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
+		$collection->add('ban.type.ip');
 
 		$ban_manager = new \phpbb\ban\manager($collection, $cache_service, $db,  $user,'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);

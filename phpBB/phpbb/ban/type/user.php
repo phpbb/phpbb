@@ -86,7 +86,7 @@ class user extends base
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$row['ban_item'] = $row['username'];
+			$row['ban_item'] = $row['username'] ?: $row['ban_item'];
 			$ban_options[] = $row;
 		}
 		$this->db->sql_freeresult($result);

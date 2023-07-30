@@ -76,13 +76,16 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		);
 
 		$phpbb_container = new phpbb_mock_container_builder();
-		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_ip = new \phpbb\ban\type\ip($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$phpbb_container->set('ban.type.email', $ban_type_email);
 		$phpbb_container->set('ban.type.user', $ban_type_user);
+		$phpbb_container->set('ban.type.ip', $ban_type_ip);
 		$collection = new \phpbb\di\service_collection($phpbb_container);
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
+		$collection->add('ban.type.ip');
 
 		$ban_manager = new \phpbb\ban\manager($collection, $cache, $this->db, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);

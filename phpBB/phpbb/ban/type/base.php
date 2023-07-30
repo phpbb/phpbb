@@ -24,6 +24,9 @@ abstract class base implements type_interface
 	protected $excluded;
 
 	/** @var string */
+	protected $bans_table;
+
+	/** @var string */
 	protected $sessions_keys_table;
 
 	/** @var string */
@@ -39,11 +42,12 @@ abstract class base implements type_interface
 	 * Creates a ban type.
 	 *
 	 * @param driver_interface	$db						A phpBB DBAL object
-	 * @param string							$users_table			The users table
-	 * @param string							$sessions_table			The sessions table
-	 * @param string							$sessions_keys_table	The sessions keys table
+	 * @param string			$bans_table				The bans table
+	 * @param string			$users_table			The users table
+	 * @param string			$sessions_table			The sessions table
+	 * @param string			$sessions_keys_table	The sessions keys table
 	 */
-	public function __construct(driver_interface $db, string $users_table, string $sessions_table, string $sessions_keys_table)
+	public function __construct(driver_interface $db, string $bans_table, string $users_table, string $sessions_table, string $sessions_keys_table)
 	{
 		$this->db = $db;
 		$this->users_table = $users_table;

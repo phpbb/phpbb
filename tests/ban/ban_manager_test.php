@@ -49,9 +49,9 @@ class ban_manager_test extends \phpbb_session_test_case
 		);
 
 		$phpbb_container = new \phpbb_mock_container_builder();
-		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_ip = new \phpbb\ban\type\ip($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_ip = new \phpbb\ban\type\ip($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$phpbb_container->set('ban.type.email', $ban_type_email);
 		$phpbb_container->set('ban.type.user', $ban_type_user);
 		$phpbb_container->set('ban.type.ip', $ban_type_ip);
@@ -192,12 +192,22 @@ class ban_manager_test extends \phpbb_session_test_case
 				'ip',
 				[
 					[
+						'ban_id' => '6',
+						'ban_item' => '10.0.0.1/28',
+						'ban_start' => '1111',
+						'ban_end' => '0',
+						'ban_reason' => 'HAHAHA',
+						'ban_reason_display' => '1',
+						'ban_mode' => 'ip',
+					],
+					[
 						'ban_id' => '2',
 						'ban_item' => '127.0.0.1',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
+						'ban_mode' => 'ip',
 					],
 					[
 						'ban_id' => '3',
@@ -206,14 +216,7 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
-					],
-					[
-						'ban_id' => '6',
-						'ban_item' => '10.0.0.1/28',
-						'ban_start' => '1111',
-						'ban_end' => '0',
-						'ban_reason' => 'HAHAHA',
-						'ban_reason_display' => '1',
+						'ban_mode' => 'ip',
 					],
 					[
 						'ban_id' => '7',
@@ -222,6 +225,7 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
+						'ban_mode' => 'ip',
 					],
 				],
 			],
@@ -229,20 +233,22 @@ class ban_manager_test extends \phpbb_session_test_case
 				'email',
 				[
 					[
-						'ban_id' => '5',
-						'ban_item' => 'bar@example.org',
-						'ban_start' => '1111',
-						'ban_end' => '0',
-						'ban_reason' => 'HAHAHA',
-						'ban_reason_display' => '1',
-					],
-					[
 						'ban_id' => '9',
 						'ban_item' => '*@foo.bar',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
+						'ban_mode' => 'email',
+					],
+					[
+						'ban_id' => '5',
+						'ban_item' => 'bar@example.org',
+						'ban_start' => '1111',
+						'ban_end' => '0',
+						'ban_reason' => 'HAHAHA',
+						'ban_reason_display' => '1',
+						'ban_mode' => 'email',
 					],
 				],
 			],
@@ -256,6 +262,10 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
+						'ban_mode' => 'user',
+						'user_id' => '4',
+						'username' => '',
+						'username_clean' => 'ipv6_user',
 					],
 				],
 			],
@@ -354,10 +364,10 @@ class ban_manager_test extends \phpbb_session_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$phpbb_container = new \phpbb_mock_container_builder();
-		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$ban_type_ip = $this->getMockBuilder(\phpbb\ban\type\ip::class)
-			->setConstructorArgs([$this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys'])
+			->setConstructorArgs([$this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys'])
 			->getMock();
 		$ban_type_ip->method('get_banned_users')
 			->willReturn([19 => 1234, 20 => 0]);
@@ -409,10 +419,10 @@ class ban_manager_test extends \phpbb_session_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$phpbb_container = new \phpbb_mock_container_builder();
-		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
-		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
 		$ban_type_ip = $this->getMockBuilder(\phpbb\ban\type\ip::class)
-			->setConstructorArgs([$this->db, 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys'])
+			->setConstructorArgs([$this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys'])
 			->getMock();
 		$ban_type_ip->method('prepare_for_storage')
 			->willReturn([]);
@@ -652,6 +662,10 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
+						'ban_mode' => 'user',
+						'user_id' => '4',
+						'username' => '',
+						'username_clean' => 'ipv6_user',
 					],
 				],
 			],
