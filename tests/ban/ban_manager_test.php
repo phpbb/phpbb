@@ -276,6 +276,13 @@ class ban_manager_test extends \phpbb_session_test_case
 		{
 			$this->expectException($expected_exception);
 		}
+
+		// Fix weird sorting by postgres
+		if (is_array($expected) && $ban_type == 'email' && $this->db->get_sql_layer() == 'postgres')
+		{
+			$expected = array_reverse($expected);
+		}
+
 		$this->assertEquals($expected, $this->ban_manager->get_bans($ban_type));
 	}
 
