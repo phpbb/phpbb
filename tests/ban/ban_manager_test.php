@@ -278,7 +278,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		}
 
 		// Fix weird sorting by postgres
-		if (is_array($expected) && $ban_type == 'email' && $this->db->get_sql_layer() == 'postgres')
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'linux' && is_array($expected) && $ban_type == 'email' && $this->db->get_sql_layer() == 'postgres')
 		{
 			$expected = array_reverse($expected);
 		}
