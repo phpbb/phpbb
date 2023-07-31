@@ -307,9 +307,12 @@ class manager
 					$manual_modes[] = $ban_mode;
 					continue;
 				}
+
+				$where_column = $user_column == 'user_id' ? 'b.ban_userid' : 'b.ban_item';
+
 				$where_array[] = ['AND',
 					[
-						['b.ban_item', '=', 'u.' . $user_column],
+						[$where_column, '=', 'u.' . $user_column],
 						['b.ban_mode', '=', "'{$ban_mode->get_type()}'"],
 					],
 				];

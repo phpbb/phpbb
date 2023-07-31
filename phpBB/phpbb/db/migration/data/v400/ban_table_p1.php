@@ -29,6 +29,7 @@ class ban_table_p1 extends migration
 				$this->table_prefix . 'bans'	=> [
 					'COLUMNS'		=> [
 						'ban_id'				=> ['ULINT', null, 'auto_increment'],
+						'ban_userid'			=> ['ULINT', 0],
 						'ban_mode'				=> ['VCHAR', ''],
 						'ban_item'				=> ['STEXT_UNI', ''],
 						'ban_start'				=> ['TIMESTAMP', 0],
@@ -38,6 +39,7 @@ class ban_table_p1 extends migration
 					],
 					'PRIMARY_KEY'	=> 'ban_id',
 					'KEYS'			=> [
+						'ban_userid'	=> ['INDEX', 'ban_userid'],
 						'ban_end'	=> ['INDEX', 'ban_end'],
 					],
 				],
@@ -113,6 +115,7 @@ class ban_table_p1 extends migration
 
 			$bans[] = [
 				'ban_mode'				=> $mode,
+				'ban_userid'			=> $row['ban_userid'],
 				'ban_item'				=> $item,
 				'ban_start'				=> $row['ban_start'],
 				'ban_end'				=> $row['ban_end'],
@@ -150,7 +153,7 @@ class ban_table_p1 extends migration
 			$processed_rows++;
 
 			$bans[] = [
-				'ban_userid'		=> ($row['ban_mode'] === 'user') ? (int) $row['ban_item'] : 0,
+				'ban_userid'		=> (int) $row['ban_userid'],
 				'ban_ip'			=> ($row['ban_mode'] === 'ip') ? $row['ban_item'] : '',
 				'ban_email'			=> ($row['ban_mode'] === 'email') ? $row['ban_item'] : '',
 				'ban_start'			=> $row['ban_start'],

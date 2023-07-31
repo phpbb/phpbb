@@ -70,6 +70,7 @@
 	</table>
 	<table name="phpbb_bans">
         <column>ban_id</column>
+		<column>ban_userid</column>
         <column>ban_mode</column>
         <column>ban_item</column>
         <column>ban_start</column>
@@ -78,6 +79,7 @@
         <column>ban_reason_display</column>
         <row>
             <value>2</value>
+			<value>0</value>
             <value>ip</value>
             <value>127.0.0.1</value>
             <value>1111</value>
@@ -87,6 +89,7 @@
         </row>
         <row>
             <value>3</value>
+			<value>0</value>
             <value>ip</value>
             <value>127.1.1.1</value>
             <value>1111</value>
@@ -96,6 +99,7 @@
         </row>
         <row>
             <value>4</value>
+			<value>4</value>
             <value>user</value>
             <value>4</value>
             <value>1111</value>
@@ -105,6 +109,7 @@
         </row>
         <row>
             <value>5</value>
+			<value>0</value>
             <value>email</value>
             <value>bar@example.org</value>
             <value>1111</value>
@@ -114,6 +119,7 @@
         </row>
 		<row>
 			<value>6</value>
+			<value>0</value>
 			<value>ip</value>
 			<value>10.0.0.1/28</value>
 			<value>1111</value>
@@ -123,6 +129,7 @@
 		</row>
 		<row>
 			<value>7</value>
+			<value>0</value>
 			<value>ip</value>
 			<value>2001:4860:4860::8888/12</value>
 			<value>1111</value>
@@ -132,6 +139,7 @@
 		</row>
 		<row>
 			<value>8</value>
+			<value>0</value>
 			<value>invalid_mode</value>
 			<value>foo</value>
 			<value>1111</value>
@@ -141,6 +149,7 @@
 		</row>
 		<row>
 			<value>9</value>
+			<value>0</value>
 			<value>email</value>
 			<value>*@foo.bar</value>
 			<value>1111</value>
@@ -149,6 +158,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>10</value>
 			<value>10</value>
 			<value>user</value>
 			<value>3</value>

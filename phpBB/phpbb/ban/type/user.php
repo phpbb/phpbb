@@ -73,39 +73,20 @@ class user extends base
 	public function get_ban_options(): array
 	{
 		$ban_options = [];
-		$ban_data = [];
-		$user_ids = [];
 
-		$sql = 'SELECT b.*
-			FROM ' . $this->bans_table . ' b
+		$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
+			FROM ' . $this->bans_table . ' b, ' . $this->users_table . ' u
 			WHERE (b.ban_end >= ' . time() . "
 					OR b.ban_end = 0)
-				AND b.ban_mode = '{$this->get_type()}'";
+				AND b.ban_userid = u.user_id
+				AND b.ban_mode = '{$this->get_type()}'
+			ORDER BY username_clean";
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$user_ids[] = $row['ban_item'];
-			$ban_data[$row['ban_item']] = $row;
+			$ban_options[] = $row;
 		}
 		$this->db->sql_freeresult($result);
-
-		if (count($user_ids))
-		{
-			// Grab usernames for banned user IDs
-			$sql = 'SELECT user_id, username, username_clean
-				FROM ' . $this->users_table . '
-				WHERE ' . $this->db->sql_in_set('user_id', $user_ids) . '
-				ORDER BY username_clean';
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$ban_options[] = array_merge(
-					$ban_data[$row['user_id']],
-					$row
-				);
-			}
-			$this->db->sql_freeresult($result);
-		}
 
 		return $ban_options;
 	}

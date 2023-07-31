@@ -181,6 +181,7 @@ class ban_manager_test extends \phpbb_session_test_case
 				[
 					[
 						'ban_id' => '6',
+						'ban_userid' => 0,
 						'ban_item' => '10.0.0.1/28',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -190,6 +191,7 @@ class ban_manager_test extends \phpbb_session_test_case
 					],
 					[
 						'ban_id' => '2',
+						'ban_userid' => 0,
 						'ban_item' => '127.0.0.1',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -199,6 +201,7 @@ class ban_manager_test extends \phpbb_session_test_case
 					],
 					[
 						'ban_id' => '3',
+						'ban_userid' => 0,
 						'ban_item' => '127.1.1.1',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -208,6 +211,7 @@ class ban_manager_test extends \phpbb_session_test_case
 					],
 					[
 						'ban_id' => '7',
+						'ban_userid' => 0,
 						'ban_item' => '2001:4860:4860::8888/12',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -222,6 +226,7 @@ class ban_manager_test extends \phpbb_session_test_case
 				[
 					[
 						'ban_id' => '9',
+						'ban_userid' => 0,
 						'ban_item' => '*@foo.bar',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -231,6 +236,7 @@ class ban_manager_test extends \phpbb_session_test_case
 					],
 					[
 						'ban_id' => '5',
+						'ban_userid' => 0,
 						'ban_item' => 'bar@example.org',
 						'ban_start' => '1111',
 						'ban_end' => '0',
@@ -251,6 +257,7 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_reason' => 'HAHAHA',
 						'ban_reason_display' => '1',
 						'ban_mode' => 'user',
+						'ban_userid' => 4,
 						'user_id' => '4',
 						'username' => '',
 						'username_clean' => 'ipv6_user',
@@ -621,6 +628,7 @@ class ban_manager_test extends \phpbb_session_test_case
 				[
 					[
 						'ban_id' => '4',
+						'ban_userid' => '4',
 						'ban_item' => '4',
 						'ban_start' => '1111',
 						'ban_end' => '0',
