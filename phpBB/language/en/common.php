@@ -169,6 +169,10 @@ $lang = array_merge($lang, array(
 		1	=> '%d character',
 		2	=> '%d characters',
 	),
+	'CHARACTERS_XY'			=> array(
+		1	=> '%d character',
+		2	=> '%d characters',
+	),
 	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'CODE'					=> 'Code',
