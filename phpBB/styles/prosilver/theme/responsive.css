@@ -23,18 +23,6 @@
 	.section-viewtopic .search-box .inputbox {
 		width: 57px;
 	}
-
-	.action-bar .search-box .inputbox ::-moz-placeholder {
-    	content: "Search...";
-  	}
-
-  	.action-bar .search-box .inputbox :-ms-input-placeholder {
-  		content: "Search...";
-  	}
-
-  	.action-bar .search-box .inputbox ::-webkit-input-placeholder {
-  		content: "Search...";
-  	}
 }
 
 @media (max-width: 500px) {
