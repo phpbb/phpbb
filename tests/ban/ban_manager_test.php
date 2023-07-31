@@ -48,7 +48,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
 
-		$this->ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$this->ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $this->ban_manager);
 		$this->phpbb_container = $phpbb_container;
 	}
@@ -225,9 +225,9 @@ class ban_manager_test extends \phpbb_session_test_case
 				'email',
 				[
 					[
-						'ban_id' => '5',
+						'ban_id' => '9',
 						'ban_userid' => 0,
-						'ban_item' => 'bar@example.org',
+						'ban_item' => '*@foo.bar',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
@@ -235,9 +235,9 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_mode' => 'email',
 					],
 					[
-						'ban_id' => '9',
+						'ban_id' => '5',
 						'ban_userid' => 0,
-						'ban_item' => '*@foo.bar',
+						'ban_item' => 'bar@example.org',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
@@ -377,10 +377,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$user = new \phpbb\user($language, '\phpbb\datetime');
 
-		$config = new \phpbb\config\config([]);
-		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
-
-		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
 
 		$this->assertEquals(
 			[
@@ -422,10 +419,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$user = new \phpbb\user($language, '\phpbb\datetime');
 
-		$config = new \phpbb\config\config([]);
-		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
-
-		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
 
 		$start_time = new \DateTime();
 		$start_time->setTimestamp(1000);

@@ -80,7 +80,7 @@ class user extends base
 					OR b.ban_end = 0)
 				AND b.ban_userid = u.user_id
 				AND b.ban_mode = '{$this->get_type()}'
-			ORDER BY username_clean";
+			ORDER BY username_clean ASC";
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{

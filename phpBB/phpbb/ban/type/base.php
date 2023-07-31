@@ -115,7 +115,7 @@ abstract class base implements type_interface
 			WHERE (ban_end >= ' . time() . "
 					OR ban_end = 0)
 				AND ban_mode = '{$this->get_type()}'
-			ORDER BY ban_item, ban_id";
+			ORDER BY ban_item ASC, ban_id ASC";
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);

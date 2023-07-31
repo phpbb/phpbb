@@ -1204,13 +1204,8 @@ class session
 			}
 
 			// Determine which message to output
-			$till_date = ($ban_row && $ban_row['end'] > 0) ? $this->format_date($ban_row['end']) : '';
-			$message = $this->get_ban_message($ban_row, $ban_triggered_by);
-
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
-			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
-			$message .= ($ban_row['reason']) ? '<br><br>' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['reason']) : '';
-			$message .= '<br><br><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+			$message = $ban_manager->get_ban_message($ban_row, $ban_triggered_by, $contact_link);
 
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
@@ -1252,19 +1247,6 @@ class session
 				$this->check_ban($this->data['user_id'], $ips);
 			}
 		}
-	}
-
-	/**
-	 * Get ban info message
-	 *
-	 * @param array $ban_row Ban data row from database
-	 * @param string $ban_triggered_by Ban triggered by; allowed 'user', 'ip', 'email'
-	 *
-	 * @return string
-	 */
-	protected function get_ban_message(array $ban_row, string $ban_triggered_by): string
-	{
-		return ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 	}
 
 	/**

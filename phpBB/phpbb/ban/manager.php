@@ -19,6 +19,7 @@ use phpbb\ban\type\type_interface;
 use phpbb\cache\driver\driver_interface as cache_driver;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
+use phpbb\language\language;
 use phpbb\user;
 
 class manager
@@ -39,6 +40,9 @@ class manager
 	/** @var service_collection */
 	protected $types;
 
+	/** @var language */
+	protected $language;
+
 	/** @var user */
 	protected $user;
 
@@ -56,12 +60,14 @@ class manager
 	 * @param string				$bans_table				The bans table
 	 * @param string				$users_table			The users table
 	 */
-	public function __construct(service_collection $types, cache_driver $cache, driver_interface $db, user $user, string $bans_table, string $users_table = '')
+	public function __construct(service_collection $types, cache_driver $cache, driver_interface $db,
+								language $language, user $user, string $bans_table, string $users_table = '')
 	{
 		$this->bans_table = $bans_table;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->types = $types;
+		$this->language = $language;
 		$this->user = $user;
 		$this->users_table = $users_table;
 	}
@@ -490,5 +496,26 @@ class manager
 		}
 
 		return $ban_info;
+	}
+
+	/**
+	 * Get ban info message
+	 *
+	 * @param array $ban_row Ban data row from database
+	 * @param string $ban_triggered_by Ban triggered by; allowed 'user', 'ip', 'email
+	 * @param string $contact_link Contact link URL
+	 *
+	 * @return string Ban message
+	 */
+	public function get_ban_message(array $ban_row, string $ban_triggered_by, string $contact_link): string
+	{
+		$till_date = ($ban_row && $ban_row['end'] > 0) ? $this->user->format_date($ban_row['end']) : '';
+
+		$ban_type = $ban_row['ban_end'] ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
+		$message = $this->language->lang($ban_type, $till_date, '<a href="' . $contact_link . '">', '</a>');
+		$message .= $ban_row['reason'] ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['reason']) : '';
+		$message .= '<br><br><em>' . $this->language->lang('BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)) . '</em>';
+
+		return $message;
 	}
 }
