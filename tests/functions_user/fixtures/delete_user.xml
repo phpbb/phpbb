@@ -38,6 +38,7 @@
 	</table>
 	<table name="phpbb_bans">
 		<column>ban_id</column>
+		<column>ban_userid</column>
 		<column>ban_mode</column>
 		<column>ban_item</column>
 		<column>ban_start</column>
@@ -46,6 +47,7 @@
 		<column>ban_reason_display</column>
 		<row>
 			<value>1</value>
+			<value>2</value>
 			<value>user</value>
 			<value>2</value>
 			<value>0</value>
@@ -55,6 +57,7 @@
 		</row>
 		<row>
 			<value>2</value>
+			<value>3</value>
 			<value>user</value>
 			<value>3</value>
 			<value>0</value>
@@ -64,6 +67,7 @@
 		</row>
 		<row>
 			<value>3</value>
+			<value>0</value>
 			<value>user</value>
 			<value>0</value>
 			<value>0</value>

@@ -225,9 +225,9 @@ class ban_manager_test extends \phpbb_session_test_case
 				'email',
 				[
 					[
-						'ban_id' => '9',
+						'ban_id' => '5',
 						'ban_userid' => 0,
-						'ban_item' => '*@foo.bar',
+						'ban_item' => 'bar@example.org',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',
@@ -235,9 +235,9 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_mode' => 'email',
 					],
 					[
-						'ban_id' => '5',
+						'ban_id' => '9',
 						'ban_userid' => 0,
-						'ban_item' => 'bar@example.org',
+						'ban_item' => '*@foo.bar',
 						'ban_start' => '1111',
 						'ban_end' => '0',
 						'ban_reason' => 'HAHAHA',

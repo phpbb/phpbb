@@ -140,7 +140,7 @@ class user extends base
 		$this->banned_users = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$ban_items[] = (int) $row['user_id'];
+			$ban_items[] = (string) $row['user_id'];
 			$this->banned_users[(int) $row['user_id']] = $row['username'];
 		}
 		$this->db->sql_freeresult($result);
