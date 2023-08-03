@@ -735,6 +735,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 		// Update forum statistics
 		$config->increment('num_topics', 1, false);
+		sync('forum', 'forum_id', [$to_forum_id], true, true);
 
 		// Link back to both topics
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $to_topic_id) . '">', '</a>');
