@@ -66,10 +66,10 @@ th a:hover {
 
 /* Links for forum/topic lists */
 a.forumtitle,
-a.topictitle {
+a.topictitle,
+span.topictitle {
 	font-family: "Trebuchet MS", Helvetica, Arial, sans-serif;
 	font-size: 13px;
-	font-weight: bold;
 	text-decoration: none;
 }
 
@@ -79,6 +79,10 @@ a.forumtitle:hover {
 
 a.topictitle {
 	display: inline;
+}
+
+a.unread {
+	font-weight: bold;
 }
 
 a.topictitle:hover {

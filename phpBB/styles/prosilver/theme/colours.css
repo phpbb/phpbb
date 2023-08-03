@@ -220,8 +220,7 @@ a:hover .icon.icon-red, /* DEPRECATED 4.0 */
 .c-topic-reported-icon,
 .c-topic-unread-icon,
 .c-warning-icon,
-.c-unapproved-icon,
-.unread {
+.c-unapproved-icon {
 	color: #d41142;
 }
 
