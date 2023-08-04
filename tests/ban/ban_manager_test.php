@@ -277,13 +277,22 @@ class ban_manager_test extends \phpbb_session_test_case
 			$this->expectException($expected_exception);
 		}
 
-		// Fix weird sorting by postgres
-		if (strtolower(substr(PHP_OS, 0, 3)) === 'linux' && is_array($expected) && $ban_type == 'email' && $this->db->get_sql_layer() == 'postgres')
+		$actual = $this->ban_manager->get_bans($ban_type);
+		// Sort both arrays by ban_item to be synced
+		if (is_array($expected) && !empty($actual))
 		{
-			$expected = array_reverse($expected);
+			usort($expected, function($a, $b)
+			{
+				return strcmp($a['ban_item'], $b['ban_item']) <=> 0;
+			}
+			);
+			usort($actual, function($a, $b)
+			{
+				return strcmp($a['ban_item'], $b['ban_item']) <=> 0;
+			}
+			);
 		}
-
-		$this->assertEquals($expected, $this->ban_manager->get_bans($ban_type));
+		$this->assertEquals($expected, $actual);
 	}
 
 	public function data_get_ban_end(): array
