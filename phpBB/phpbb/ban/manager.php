@@ -554,11 +554,19 @@ class manager
 	 */
 	public function get_ban_message(array $ban_row, string $ban_triggered_by, string $contact_link): string
 	{
-		$till_date = ($ban_row && $ban_row['end'] > 0) ? $this->user->format_date($ban_row['end']) : '';
+		if ($ban_row['end'] > 0)
+		{
+			$till_date = $this->user->format_date($ban_row['end']);
+			$ban_type = 'BOARD_BAN_TIME';
+		}
+		else
+		{
+			$till_date = '';
+			$ban_type = 'BOARD_BAN_PERM';
+		}
 
-		$ban_type = $ban_row['ban_end'] ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 		$message = $this->language->lang($ban_type, $till_date, '<a href="' . $contact_link . '">', '</a>');
-		$message .= $ban_row['reason'] ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['reason']) : '';
+		$message .= !empty($ban_row['reason']) ? '<br><br>' . $this->language->lang('BOARD_BAN_REASON', $ban_row['reason']) : '';
 		$message .= '<br><br><em>' . $this->language->lang('BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)) . '</em>';
 
 		return $message;

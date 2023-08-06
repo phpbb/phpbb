@@ -1170,7 +1170,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $phpEx;
+			global $config, $phpbb_root_path, $phpEx;
 
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
