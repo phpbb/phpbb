@@ -156,6 +156,11 @@ class path_helper
 			return $this->web_root_path;
 		}
 
+		if (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH)
+		{
+			return $this->web_root_path = generate_board_url() . '/';
+		}
+
 		// We do not need to escape $path_info, $request_uri and $script_name because we can not find their content in the result.
 		// Path info (e.g. /foo/bar)
 		$path_info = $this->filesystem->clean_path($this->symfony_request->getPathInfo());
