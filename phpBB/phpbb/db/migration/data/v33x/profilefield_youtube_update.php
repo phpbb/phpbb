@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v33x;
 
 class profilefield_youtube_update extends \phpbb\db\migration\migration
 {
-	protected $youtube_url_matcher = 'https:\\/\\/(www\\.)?youtube\\.com\\/.+';
+	public static $youtube_url_matcher = 'https:\\/\\/(www\\.)?youtube\\.com\\/.+';
 
 	public function effectively_installed()
 	{
@@ -30,7 +30,7 @@ class profilefield_youtube_update extends \phpbb\db\migration\migration
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return !$row || $row['field_validation'] === $this->youtube_url_matcher;
+		return !$row || $row['field_validation'] === self::$youtube_url_matcher;
 	}
 
 	public static function depends_on()
@@ -48,7 +48,7 @@ class profilefield_youtube_update extends \phpbb\db\migration\migration
 		$profile_fields = $this->table_prefix . 'profile_fields';
 		$profile_fields_data = $this->table_prefix . 'profile_fields_data';
 
-		$field_validation = $this->db->sql_escape($this->youtube_url_matcher);
+		$field_validation = $this->db->sql_escape(self::$youtube_url_matcher);
 
 		$min_length = strlen('https://youtube.com/c/') + 1;
 
