@@ -247,12 +247,12 @@ class ucp_attachments
 
 		if ($row['in_message'])
 		{
-			return ($row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $row['folder_id'] == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit');
+			return ($row['message_time'] > (time() - ($config['pm_edit_time'] * 60)) || !$config['pm_edit_time']) && $row['folder_id'] == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit');
 		}
 		else
 		{
-			$can_edit_time = !$config['edit_time'] || $row['post_time'] > time() - ($config['edit_time'] * 60);
-			$can_delete_time = !$config['delete_time'] || $row['post_time'] > time() - ($config['delete_time'] * 60);
+			$can_edit_time = !$config['edit_time'] || $row['post_time'] > (time() - ($config['edit_time'] * 60));
+			$can_delete_time = !$config['delete_time'] || $row['post_time'] > (time() - ($config['delete_time'] * 60));
 			$item_locked = !$auth->acl_get('m_edit', $row['forum_id']) && ($row['forum_status'] == ITEM_LOCKED || $row['topic_status'] == ITEM_LOCKED || $row['post_edit_locked']);
 
 			return !$item_locked && $can_edit_time && $can_delete_time;
