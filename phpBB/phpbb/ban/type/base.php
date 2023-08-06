@@ -68,18 +68,17 @@ abstract class base implements type_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_ban(array $data)
+	public function after_ban(array $data): array
 	{
-		$this->logout_affected_users($data['items']);
-		return $data['items'];
+		return $this->logout_affected_users($data['items']);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_unban(array $data)
+	public function after_unban(array $data): array
 	{
-		return $data['items'];
+		return [];
 	}
 
 	/**

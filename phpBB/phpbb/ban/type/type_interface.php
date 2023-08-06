@@ -54,21 +54,21 @@ interface type_interface
 	 *                    the bans, like the reason or the start
 	 *                    and end of the ban
 	 *
-	 * @return mixed
+	 * @return array List of banned users
 	 */
-	public function after_ban(array $data);
+	public function after_ban(array $data): array;
 
 	/**
-	 * Gives the possiblity to do some clean up after unbanning.
+	 * Gives the possibility to do some clean up after unbanning.
 	 * The return value of this method will be passed through
 	 * to the caller.
 	 *
 	 * @param array $data An array containing information about
 	 *                    the unbans, e.g. the unbanned items.
 	 *
-	 * @return mixed
+	 * @return array List of unbanned users
 	 */
-	public function after_unban(array $data);
+	public function after_unban(array $data): array;
 
 	/**
 	 * In the case that get_user_column() returns null, this method

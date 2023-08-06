@@ -86,8 +86,9 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache->get_driver(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache->get_driver(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 

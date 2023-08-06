@@ -120,8 +120,9 @@ class phpbb_session_testable_factory
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache, $db, $language,  $user,'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $db, $language, $phpbb_log, $user,'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$session = new phpbb_mock_session_testable;

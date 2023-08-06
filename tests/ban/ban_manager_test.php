@@ -33,6 +33,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		$user = new \phpbb\user($language, '\phpbb\datetime');
 		$user->data['user_id'] = 2;
 		$user->data['user_email'] = 'foo@bar.com';
+		$user->data['user_timezone'] = 0;
 		$config = new \phpbb\config\config([]);
 		$phpbb_dispatcher = new \phpbb_mock_event_dispatcher();
 
@@ -47,8 +48,9 @@ class ban_manager_test extends \phpbb_session_test_case
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$this->ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
+		$this->ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $this->ban_manager);
 		$this->phpbb_container = $phpbb_container;
 	}
@@ -392,8 +394,9 @@ class ban_manager_test extends \phpbb_session_test_case
 
 		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$user = new \phpbb\user($language, '\phpbb\datetime');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
 
 		$this->assertEquals(
 			[
@@ -434,8 +437,9 @@ class ban_manager_test extends \phpbb_session_test_case
 
 		$language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$user = new \phpbb\user($language, '\phpbb\datetime');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
 
 		$start_time = new \DateTime();
 		$start_time->setTimestamp(1000);

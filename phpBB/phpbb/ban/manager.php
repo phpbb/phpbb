@@ -20,6 +20,7 @@ use phpbb\cache\driver\driver_interface as cache_driver;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
 use phpbb\language\language;
+use phpbb\log\log_interface;
 use phpbb\user;
 
 class manager
@@ -43,6 +44,9 @@ class manager
 	/** @var language */
 	protected $language;
 
+	/** @var log_interface */
+	protected $log;
+
 	/** @var user */
 	protected $user;
 
@@ -56,18 +60,21 @@ class manager
 	 * @param service_collection	$types					A service collection containing all ban types
 	 * @param cache_driver			$cache					A cache object
 	 * @param driver_interface		$db						A phpBB DBAL object
+	 * @param language				$language				Language object
+	 * @param log_interface			$log					Log object
 	 * @param user					$user					User object
 	 * @param string				$bans_table				The bans table
 	 * @param string				$users_table			The users table
 	 */
-	public function __construct(service_collection $types, cache_driver $cache, driver_interface $db,
-								language $language, user $user, string $bans_table, string $users_table = '')
+	public function __construct(service_collection $types, cache_driver $cache, driver_interface $db, language $language,
+								log_interface $log, user $user, string $bans_table, string $users_table = '')
 	{
 		$this->bans_table = $bans_table;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->types = $types;
 		$this->language = $language;
+		$this->log = $log;
 		$this->user = $user;
 		$this->users_table = $users_table;
 	}
@@ -141,9 +148,28 @@ class manager
 			'display_reason'	=> $display_reason,
 		];
 
-		if ($ban_mode->after_ban($ban_data))
+		// Add to admin log, moderator log and user notes
+		$ban_list_log = implode(', ', $items);
+
+		$log_operation = 'LOG_BAN_' . strtoupper($mode);
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$reason, $ban_list_log]);
+		$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [
+			'forum_id' => 0,
+			'topic_id' => 0,
+			$reason,
+			$ban_list_log
+		]);
+
+		if ($banlist_ary = $ban_mode->after_ban($ban_data))
 		{
-			// @todo: Add logging
+			foreach ($banlist_ary as $user_id)
+			{
+				$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [
+					'reportee_id' => $user_id,
+					$reason,
+					$ban_list_log
+				]);
+			}
 		}
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);
@@ -192,7 +218,25 @@ class manager
 				'items' => $unbanned_items,
 			];
 			$unbanned_users = $ban_mode->after_unban($unban_data);
-			// @todo: add logging for unbanned users
+
+			// Add to moderator log, admin log and user notes
+			$log_operation = 'LOG_UNBAN_' . strtoupper($mode);
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$unbanned_users]);
+			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [
+				'forum_id' => 0,
+				'topic_id' => 0,
+				$unbanned_users
+			]);
+			if (count($unbanned_users))
+			{
+				foreach ($unbanned_users as $user_id)
+				{
+					$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $log_operation, false, array(
+						'reportee_id' => $user_id,
+						$unbanned_users
+					));
+				}
+			}
 		}
 
 		$this->cache->destroy(self::CACHE_KEY_INFO);

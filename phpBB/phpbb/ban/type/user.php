@@ -39,7 +39,7 @@ class user extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_ban(array $data)
+	public function after_ban(array $data): array
 	{
 		$this->logout_affected_users($data['items']);
 		return $this->banned_users;
@@ -48,7 +48,7 @@ class user extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function after_unban(array $data)
+	public function after_unban(array $data): array
 	{
 		$user_ids = array_map('intval', $data['items']);
 

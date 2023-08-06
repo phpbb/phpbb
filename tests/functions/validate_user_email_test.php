@@ -61,8 +61,9 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
+		$phpbb_log = new \phpbb\log\dummy();
 
-		$ban_manager = new \phpbb\ban\manager($collection, $cache->get_driver(), $this->db, $language, $this->user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, $cache->get_driver(), $this->db, $language, $phpbb_log, $this->user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 
