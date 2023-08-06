@@ -261,8 +261,9 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_mode' => 'user',
 						'ban_userid' => 4,
 						'user_id' => '4',
-						'username' => '',
+						'username' => 'ipv6_user',
 						'username_clean' => 'ipv6_user',
+						'label' => 'ipv6_user',
 					],
 				],
 			],
@@ -650,8 +651,9 @@ class ban_manager_test extends \phpbb_session_test_case
 						'ban_reason_display' => '1',
 						'ban_mode' => 'user',
 						'user_id' => '4',
-						'username' => '',
+						'username' => 'ipv6_user',
 						'username_clean' => 'ipv6_user',
+						'label' => 'ipv6_user',
 					],
 				],
 			],
@@ -691,9 +693,73 @@ class ban_manager_test extends \phpbb_session_test_case
 		$ban_type_ip = $this->phpbb_container->get('ban.type.ip');
 		$base_type_reflection = new \ReflectionClass(\phpbb\ban\type\base::class);
 		$after_unban = $base_type_reflection->getMethod('after_unban');
-		$this->assertEquals(['foo'], $after_unban->invoke($ban_type_ip, ['items' => ['foo']]));
+		$this->assertEquals([], $after_unban->invoke($ban_type_ip, ['items' => ['foo']]));
 
 		$check = $base_type_reflection->getMethod('check');
 		$this->assertFalse($check->invoke($ban_type_ip, [], []));
+	}
+
+	public function data_get_ban_message(): array
+	{
+		return [
+			[
+				[
+					'end'	=> 0,
+				],
+				'foobar',
+				'http://foo.bar',
+				'You have been <strong>permanently</strong> banned from this board.<br><br>Please contact the <a href="http://foo.bar">Board Administrator</a> for more information.<br><br><em>BAN_TRIGGERED_BY_FOOBAR</em>',
+			],
+			[
+				[
+					'end'	=> 1,
+				],
+				'foobar',
+				'http://foo.bar',
+				'You have been banned from this board until <strong></strong>.<br><br>Please contact the <a href="http://foo.bar">Board Administrator</a> for more information.<br><br><em>BAN_TRIGGERED_BY_FOOBAR</em>',
+			],
+			[
+				[
+					'end'	=> 1,
+					'reason'	=> 'just because',
+				],
+				'foobar',
+				'http://foo.bar',
+				'You have been banned from this board until <strong></strong>.<br><br>Please contact the <a href="http://foo.bar">Board Administrator</a> for more information.<br><br>Reason given for ban: <strong>just because</strong><br><br><em>BAN_TRIGGERED_BY_FOOBAR</em>',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider data_get_ban_message
+	 */
+	public function test_get_ban_message($ban_row, $ban_triggered_by, $contact_link, $expected)
+	{
+		$this->assertEquals($expected, $this->ban_manager->get_ban_message($ban_row, $ban_triggered_by, $contact_link));
+	}
+
+	public function test_get_ban_options_user()
+	{
+		$foo = $this->ban_manager->get_bans('user');
+
+		$this->assertEquals(
+			[
+				[
+					'ban_id'	=> 4,
+					'ban_userid' => '4',
+					'ban_mode' => 'user',
+					'ban_item' => '4',
+					'ban_start' => '1111',
+					'ban_end' => '0',
+					'ban_reason' => 'HAHAHA',
+					'ban_reason_display' => '1',
+					'user_id' => '4',
+					'username' => 'ipv6_user',
+					'username_clean' => 'ipv6_user',
+					'label' => 'ipv6_user',
+				],
+			],
+			$foo
+		);
 	}
 }

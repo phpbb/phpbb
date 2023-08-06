@@ -3168,7 +3168,7 @@ function display_ban_options($mode)
 	{
 		$banned_options[] = [
 			'value'		=> $ban_row['ban_id'],
-			'label'		=> $ban_row['ban_item'],
+			'label'		=> $ban_row['label'] ?? $ban_row['ban_item'],
 		];
 
 		$time_length = ($ban_row['ban_end']) ? ($ban_row['ban_end'] - $ban_row['ban_start']) / 60 : 0;

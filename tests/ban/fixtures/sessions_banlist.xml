@@ -2,6 +2,7 @@
 <dataset>
 	<table name="phpbb_users">
 		<column>user_id</column>
+		<column>username</column>
 		<column>username_clean</column>
 		<column>user_permissions</column>
 		<column>user_sig</column>
@@ -10,6 +11,7 @@
 		<column>user_type</column>
 		<row>
 			<value>1</value>
+			<value>anonymous</value>
 			<value>anonymous</value>
 			<value></value>
 			<value></value>
@@ -20,6 +22,7 @@
 		<row>
 			<value>2</value>
 			<value>founder</value>
+			<value>founder</value>
 			<value></value>
 			<value></value>
 			<value>admin@foo.bar</value>
@@ -28,6 +31,7 @@
 		</row>
 		<row>
 			<value>3</value>
+			<value>normal_user</value>
 			<value>normal_user</value>
 			<value></value>
 			<value></value>
@@ -38,6 +42,7 @@
 		<row>
 			<value>4</value>
 			<value>ipv6_user</value>
+			<value>ipv6_user</value>
 			<value></value>
 			<value></value>
 			<value>normal_user@foo.bar</value>
@@ -46,6 +51,7 @@
 		</row>
 		<row>
 			<value>5</value>
+			<value>another_user</value>
 			<value>another_user</value>
 			<value></value>
 			<value></value>

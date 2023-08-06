@@ -126,6 +126,7 @@ class manager
 			$insert_array[] = [
 				'ban_mode'				=> $mode,
 				'ban_item'				=> $ban_item,
+				'ban_userid'			=> $mode === 'user' ? $ban_item : 0,
 				'ban_start'				=> $start->getTimestamp(),
 				'ban_end'				=> $end->getTimestamp(),
 				'ban_reason'			=> $reason,
