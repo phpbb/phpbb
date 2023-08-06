@@ -231,8 +231,7 @@ class helper
 		 * We need to correct the phpBB root path in case this is called from a controller,
 		 * because the web path will be incorrect otherwise.
 		 */
-		$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-		$web_path	= $board_url ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+		$web_path	= $this->path_helper->get_web_root_path();
 		$style_path	= rawurlencode($this->user->style['style_path']);
 
 		return "{$web_path}styles/{$style_path}/theme/images/no_avatar.gif";

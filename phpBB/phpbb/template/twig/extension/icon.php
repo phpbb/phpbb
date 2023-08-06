@@ -95,15 +95,12 @@ class icon extends AbstractExtension
 				$filesystem	= $environment->get_filesystem();
 				$root_path	= $environment->get_web_root_path();
 
-				$board_url	= defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-				$base_path	= $board_url ? generate_board_url() . '/' : $root_path;
-
 				// Iterate over the user's styles and check for icon existance
 				foreach ($this->get_style_list() as $style_path)
 				{
 					if ($filesystem->exists("{$root_path}styles/{$style_path}/theme/png/{$icon}.png"))
 					{
-						$source = "{$base_path}styles/{$style_path}/theme/png/{$icon}.png";
+						$source = "{$root_path}styles/{$style_path}/theme/png/{$icon}.png";
 
 						break;
 					}

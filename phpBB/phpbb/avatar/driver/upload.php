@@ -100,8 +100,7 @@ class upload extends \phpbb\avatar\driver\driver
 			return false;
 		}
 
-		$use_board = defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH;
-		$web_path = $use_board ? generate_board_url() . '/' : $this->path_helper->get_web_root_path();
+		$web_path = $this->path_helper->get_web_root_path();
 
 		$template->assign_vars([
 			'AVATAR_ALLOWED_EXTENSIONS' => implode(',', preg_replace('/^/', '.', $this->allowed_extensions)),
