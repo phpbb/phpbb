@@ -755,7 +755,7 @@ class convertor
 										{
 											if (!$db->sql_query($insert_query . $waiting_sql))
 											{
-												$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
+												$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 											}
 										}
 
@@ -774,7 +774,7 @@ class convertor
 
 								if (!$db->sql_query($insert_sql))
 								{
-									$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
+									$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 								}
 								$db->sql_return_on_error(false);
 
@@ -809,7 +809,7 @@ class convertor
 						foreach ($waiting_rows as $waiting_sql)
 						{
 							$db->sql_query($insert_query . $waiting_sql);
-							$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->_sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
+							$this->db_error($user->lang['DB_ERR_INSERT'], htmlspecialchars($insert_query . $waiting_sql, ENT_COMPAT) . '<br /><br />' . htmlspecialchars(print_r($db->sql_error(), true), ENT_COMPAT), __LINE__, __FILE__, true);
 						}
 
 						$db->sql_return_on_error(false);
