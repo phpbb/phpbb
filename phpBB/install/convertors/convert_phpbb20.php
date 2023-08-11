@@ -446,28 +446,38 @@ if (!$get_info)
 
 			array(
 				'target'		=> BANS_TABLE,
-				'execute_first'	=> 'phpbb_check_username_collisions();',
+				'execute_first' => 'phpbb_check_username_collisions();',
 				'query_first'	=> array('target', $convert->truncate_statement . BANS_TABLE),
 
 				array('ban_mode',				'user',					''),
 				array('ban_item',				'banlist.ban_userid',	'phpbb_user_id'),
+				array('ban_userid',			'banlist.ban_userid',	'phpbb_user_id'),
 				array('ban_reason',				'',						''),
-				array('ban_give_reason',		'',						''),
+				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AMD banlist.ban_userid <> 0",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AND banlist.ban_userid <> 0",
 			),
 
 			array(
 				'target'		=> BANS_TABLE,
-				'execute_first'	=> 'phpbb_check_username_collisions();',
-				'query_first'	=> array('target', $convert->truncate_statement . BANS_TABLE),
 
 				array('ban_mode',				'email',				''),
 				array('ban_item',				'banlist.ban_email',	''),
 				array('ban_reason',				'',						''),
 				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AMD banlist.ban_email <> ''",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AND banlist.ban_email <> ''",
+			),
+
+			array(
+				'target'		=> BANS_TABLE,
+
+				array('ban_mode',				'ip',				''),
+				array('ban_item',				'banlist.ban_ip',	'decode_ban_ip'),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
+
+				'where'			=> "banlist.ban_userid = 0 AND banlist.ban_ip <> ''",
 			),
 
 			array(
