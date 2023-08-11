@@ -49,6 +49,7 @@
 /vagrant/phpbb-install-config.yml
 .vagrant
 node_modules
+/build/package_signature
 
 # Excludes IDE / editors files
 *~
