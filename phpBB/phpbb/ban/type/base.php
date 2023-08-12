@@ -61,7 +61,6 @@ abstract class base implements type_interface
 	 */
 	public function set_user(\phpbb\user $user): void
 	{
-		// TODO: Implement new logging
 		$this->user = $user;
 	}
 

@@ -40,7 +40,7 @@ class email extends base
 	{
 		$this->get_excluded();
 
-		$regex = '#^.*?@.*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i'; // TODO
+		$regex = '#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i';
 
 		$ban_items = [];
 		foreach ($items as $item)
