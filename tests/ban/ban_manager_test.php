@@ -403,6 +403,7 @@ class ban_manager_test extends \phpbb_session_test_case
 			[
 				4 => 0,
 				5 => 0,
+				19 => 1234,
 				20 => 0,
 			],
 			$ban_manager->get_banned_users()

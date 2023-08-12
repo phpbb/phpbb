@@ -915,7 +915,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 /**
 * Add a ban or ban exclusion to the banlist. Bans either a user, an IP or an email address
 *
-* @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+* @deprecated 4.0.0-a1 (To be removed: 4.1.0)
 *
 * @param string $mode Type of ban. One of the following: user, ip, email
 * @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
@@ -970,14 +970,12 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_reason, $ban_give_
 	$end->setTimestamp($ban_end);
 
 	return $ban_manager->ban($mode, $items, $start, $end, $ban_reason, $ban_give_reason);
-
-	// TODO: logging
 }
 
 /**
 * Unban User
 *
-* @deprecated 3.3.0-a1 (To be removed: 4.0.0)
+* @deprecated 4.0.0-a1 (To be removed: 4.1.0)
 */
 function user_unban($mode, $ban)
 {
@@ -3254,8 +3252,6 @@ function remove_newly_registered($user_id, $user_data = false)
 /**
 * Gets user ids of currently banned registered users.
 *
-* @deprecated 3.3.0-a1 (To be removed: 4.0.0)
-*
 * @param array $user_ids Array of users' ids to check for banning,
 *						leave empty to get complete list of banned ids
 * @param bool|int $ban_end Bool True to get users currently banned
@@ -3283,10 +3279,21 @@ function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 			return $end <= 0 || $end > (int) $ban_end;
 		});
 	}
+	else
+	{
+		$banned_users = array_filter($banned_users, function ($end) {
+			return $end <= 0 || $end > time();
+		});
+	}
 
 	$result_array = [];
 	foreach ($banned_users as $user_id => $_)
 	{
+		if (count($user_ids) && !in_array($user_id, $user_ids))
+		{
+			continue;
+		}
+
 		$result_array[$user_id] = $user_id;
 	}
 

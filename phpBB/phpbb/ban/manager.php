@@ -417,9 +417,7 @@ class manager
 			$this->cache->put(self::CACHE_KEY_USERS, $banned_users, self::CACHE_TTL);
 		}
 
-		return array_filter($banned_users, function ($end) {
-			return $end <= 0 || $end > time();
-		});
+		return $banned_users;
 	}
 
 	/**
