@@ -54,20 +54,19 @@ $lang = array_merge($lang, array(
 	'EMAIL_BAN'					=> 'Ban one or more email addresses',
 	'EMAIL_BAN_EXPLAIN'			=> 'To specify more than one email address enter each on a new line. To match partial addresses use * as the wildcard, e.g. <samp>*@hotmail.com</samp>, <samp>*@*.domain.tld</samp>, etc.',
 	'EMAIL_NO_BANNED'			=> 'No banned email addresses',
-	'EMAIL_UNBAN'				=> 'Un-ban or un-exclude emails',
-	'EMAIL_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded email addresses are emphasised.',
+	'EMAIL_UNBAN'				=> 'Un-ban emails',
+	'EMAIL_UNBAN_EXPLAIN'		=> 'You can unban multiple email addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser.',
 
 	'IP_BAN'					=> 'Ban one or more IPs',
 	'IP_BAN_EXPLAIN'			=> 'To specify several different IPs or hostnames enter each on a new line. To specify a range of IP addresses separate the start and end with a hyphen (-), to specify a wildcard use “*”.',
 	'IP_HOSTNAME'				=> 'IP addresses or hostnames',
 	'IP_NO_BANNED'				=> 'No banned IP addresses',
-	'IP_UNBAN'					=> 'Un-ban or un-exclude IPs',
-	'IP_UNBAN_EXPLAIN'			=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IPs are emphasised.',
+	'IP_UNBAN'					=> 'Un-ban IPs',
+	'IP_UNBAN_EXPLAIN'			=> 'You can unban multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser.',
 
 	'LENGTH_BAN_INVALID'		=> 'The date has to be formatted <kbd>YYYY-MM-DD</kbd>.',
 
 	'OPTIONS_BANNED'			=> 'Banned',
-	'OPTIONS_EXCLUDED'			=> 'Excluded',
 
 	'PERMANENT'		=> 'Permanent',
 
@@ -75,6 +74,6 @@ $lang = array_merge($lang, array(
 	'USER_BAN'					=> 'Ban one or more users by username',
 	'USER_BAN_EXPLAIN'			=> 'You can ban multiple users in one go by entering each name on a new line. Use the <span style="text-decoration: underline;">Find a member</span> facility to look up and add one or more users automatically.',
 	'USER_NO_BANNED'			=> 'No banned usernames',
-	'USER_UNBAN'				=> 'Un-ban or un-exclude users by username',
-	'USER_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users are emphasised.',
+	'USER_UNBAN'				=> 'Un-ban users by username',
+	'USER_UNBAN_EXPLAIN'		=> 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser.',
 ));
