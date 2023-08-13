@@ -19,21 +19,35 @@ use Symfony\Component\Finder\Finder;
 
 class iconify_bundler
 {
+	protected const BUNDLE_PATH = 'assets/iconify/iconify_bundle.js';
+
 	protected $db;
 
 	protected $ext_manager;
 
+	/** @var \phpbb\log\log_interface */
+	protected $log;
+
+	/** @var \phpbb\filesystem\filesystem_interface */
+	protected $filesystem;
+
 	protected $root_path = '';
+
+	protected $bundle_path = '';
 	protected $icons_list = [];
 
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, string $root_path)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, \phpbb\log\log_interface $log, string $root_path)
 	{
 		$this->db = $db;
 		$this->ext_manager = $ext_manager;
+		$this->filesystem = new \phpbb\filesystem\filesystem();
+		$this->log = $log;
 		$this->root_path = $root_path;
+
+		$this->bundle_path = $root_path . self::BUNDLE_PATH;
 	}
 
-	public function run()
+	protected function run()
 	{
 		// Sort icons first
 		sort($this->icons_list, SORT_NATURAL);
@@ -60,6 +74,22 @@ class iconify_bundler
 })();' . "\n";
 
 		return $output;
+	}
+
+	public function get_bundle(bool $force_rebuild = false): string
+	{
+		if (!$force_rebuild && $this->is_dumped())
+		{
+			return file_get_contents($this->bundle_path);
+		}
+
+		$iconify_bundle = $this->with_extensions()
+			->with_styles()
+			->run();
+
+		$this->filesystem->dump_file($this->bundle_path, $iconify_bundle);
+
+		return $iconify_bundle;
 	}
 
 	/**
@@ -155,6 +185,11 @@ class iconify_bundler
 		$this->find_icons($style_paths);
 
 		return $this;
+	}
+
+	protected function is_dumped(): bool
+	{
+		return $this->filesystem->exists($this->bundle_path) && $this->filesystem->is_readable($this->bundle_path);
 	}
 
 	protected function add_icon(string $icon_name): void
@@ -276,18 +311,16 @@ class iconify_bundler
 		{
 			// Load icon set
 			$collection = new Collection($prefix);
-			if (!$collection->loadIconifyCollection($prefix)) {
-				throw new \Error(
-					'Icons with prefix "' . $prefix . '" do not exist in Iconify. Update iconify/json?'
-				);
+			if (!$collection->loadIconifyCollection($prefix))
+			{
+				$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);
 			}
 
 			// Make sure all icons exist
 			foreach ($iconsList as $name) {
-				if (!$collection->iconExists($name)) {
-					// Uncomment next line to throw error if an icon does not exist
-					// throw new Error('Could not find icon: "' . $prefix . ':' . $name . '"');
-					echo 'Could not find icon: "', $prefix, ':', $name, "\"\n";
+				if (!$collection->iconExists($name))
+				{
+					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix, $name]);
 				}
 			}
 

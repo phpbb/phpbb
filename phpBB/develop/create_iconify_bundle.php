@@ -34,9 +34,7 @@ $iconify_bundler->find_icons([
 	$phpbb_root_path . 'styles/',
 	$phpbb_root_path . 'adm/style/',
 ]);
-$output = $iconify_bundler->with_extensions()
-	->with_styles()
-	->run();
+$output = $iconify_bundler->get_bundle();
 
 // Save to file
 file_put_contents($target, $output);
