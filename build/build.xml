@@ -207,6 +207,8 @@
 		<phingcall target="sign-packages">
 			<property name="dir" value="build/new_version/release_files" />
 		</phingcall>
+
+		<exec dir="build" command="php generate_package_json.php > new_version/packages.json"/>
 	</target>
 
 	<target name="checksum-dir">
