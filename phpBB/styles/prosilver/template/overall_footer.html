@@ -76,8 +76,8 @@
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS forum_fn.js -->
 <!-- INCLUDEJS ajax.js -->
-<script src="{{ T_ASSETS_PATH ~ '/iconify/iconify-bundle.js?assets_version=' ~ T_ASSETS_VERSION }}"></script>
-<script src="{T_ASSETS_PATH}/iconify/iconify.min.js?assets_version={T_ASSETS_VERSION}"></script>
+{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify-bundle.js' %}
+{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify.min.js' %}
 
 <!-- IF S_COOKIE_NOTICE -->
 	<script src="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.js?assets_version={T_ASSETS_VERSION}"></script>

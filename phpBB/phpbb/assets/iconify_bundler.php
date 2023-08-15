@@ -19,7 +19,7 @@ use Symfony\Component\Finder\Finder;
 
 class iconify_bundler
 {
-	protected const BUNDLE_PATH = 'assets/iconify/iconify_bundle.js';
+	protected const BUNDLE_PATH = 'assets/iconify/iconify-bundle.js';
 
 	protected $db;
 
@@ -83,6 +83,11 @@ class iconify_bundler
 			return file_get_contents($this->bundle_path);
 		}
 
+		return $this->create_bundle();
+	}
+
+	public function create_bundle(): string
+	{
 		$iconify_bundle = $this->with_extensions()
 			->with_styles()
 			->run();
@@ -187,7 +192,7 @@ class iconify_bundler
 		return $this;
 	}
 
-	protected function is_dumped(): bool
+	public function is_dumped(): bool
 	{
 		return $this->filesystem->exists($this->bundle_path) && $this->filesystem->is_readable($this->bundle_path);
 	}
