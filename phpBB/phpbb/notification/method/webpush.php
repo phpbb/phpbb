@@ -16,6 +16,7 @@ namespace phpbb\notification\method;
 use Minishlink\WebPush\Subscription;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\log\log_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
 use phpbb\user_loader;
@@ -33,6 +34,9 @@ class webpush extends messenger_base
 	/** @var driver_interface */
 	protected $db;
 
+	/** @var log_interface */
+	protected $log;
+
 	/** @var user */
 	protected $user;
 
@@ -45,23 +49,25 @@ class webpush extends messenger_base
 	/**
 	 * Notification Method web push constructor
 	 *
-	 * @param user_loader $user_loader
-	 * @param user $user
 	 * @param config $config
 	 * @param driver_interface $db
+	 * @param log_interface $log
+	 * @param user_loader $user_loader
+	 * @param user $user
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
 	 * @param string $notification_webpush_table
 	 * @param string $push_subscriptions_table
 	 */
-	public function __construct(user_loader $user_loader, user $user, config $config, driver_interface $db, string $phpbb_root_path,
+	public function __construct(config $config, driver_interface $db, log_interface $log, user_loader $user_loader, user $user, string $phpbb_root_path,
 								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table)
 	{
 		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
 
-		$this->user = $user;
 		$this->config = $config;
 		$this->db = $db;
+		$this->log = $log;
+		$this->user = $user;
 		$this->notification_webpush_table = $notification_webpush_table;
 		$this->push_subscriptions_table = $push_subscriptions_table;
 	}
@@ -222,6 +228,10 @@ class webpush extends messenger_base
 				catch (\ErrorException $exception)
 				{
 					$remove_subscriptions[] = $subscription['subscription_id'];
+					$this->log->add('user', $user['user_id'], $user['user_ip'] ?? '', 'LOG_WEBPUSH_SUBSCRIPTION_REMOVED', false, [
+						'reportee_id' => $user['user_id'],
+						$user['username'],
+					]);
 				}
 			}
 		}
@@ -240,13 +250,14 @@ class webpush extends messenger_base
 			{
 				if (!$report->isSuccess())
 				{
-					// @todo: log errors / remove subscription
+					$report_data = \phpbb\json\sanitizer::sanitize($report->jsonSerialize());
+					$this->log->add('admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$report_data['reason']]);
 				}
 			}
 		}
 		catch (\ErrorException $exception)
 		{
-			// @todo: write to log
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
 		}
 
 		// We're done, empty the queue

@@ -106,6 +106,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('log', new \phpbb\log\dummy());
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set(
 			'text_formatter.s9e.mention_helper',

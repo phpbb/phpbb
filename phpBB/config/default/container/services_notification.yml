@@ -248,10 +248,11 @@ services:
         class: phpbb\notification\method\webpush
         shared: false
         arguments:
-            - '@user_loader'
-            - '@user'
             - '@config'
             - '@dbal.conn'
+            - '@log'
+            - '@user_loader'
+            - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
             - '%tables.notification_push%'

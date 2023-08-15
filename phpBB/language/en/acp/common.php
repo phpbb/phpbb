@@ -814,6 +814,9 @@ $lang = array_merge($lang, array(
 	),
 	'LOG_WARNINGS_DELETED_ALL'	=> '<strong>Deleted all user warnings</strong><br />» %s',
 
+	'LOG_WEBPUSH_MESSAGE_FAIL'			=> '<strong>WebPush message could not be sent:</strong> %s',
+	'LOG_WEBPUSH_SUBSCRIPTION_REMOVED'	=> '<strong>Removed WebPush subscription:</strong>» %s',
+
 	'LOG_WORD_ADD'			=> '<strong>Added word censor</strong><br />» %s',
 	'LOG_WORD_DELETE'		=> '<strong>Deleted word censor</strong><br />» %s',
 	'LOG_WORD_EDIT'			=> '<strong>Edited word censor</strong><br />» %s',
