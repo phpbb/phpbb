@@ -48,19 +48,18 @@ class profilefield_youtube_update extends \phpbb\db\migration\migration
 		$profile_fields = $this->table_prefix . 'profile_fields';
 		$profile_fields_data = $this->table_prefix . 'profile_fields_data';
 
-		$field_validation = $this->db->sql_escape(self::$youtube_url_matcher);
+		$field_data = [
+			'field_length'		=> 40,
+			'field_minlen'		=> strlen('https://youtube.com/c/') + 1,
+			'field_maxlen'		=> 255,
+			'field_validation'	=> self::$youtube_url_matcher,
+			'field_contact_url'	=> '%s'
+		];
 
-		$min_length = strlen('https://youtube.com/c/') + 1;
-
-		$this->db->sql_query(
-			"UPDATE $profile_fields SET
-				field_length = '40',
-				field_minlen = '$min_length',
-				field_maxlen = '255',
-				field_validation = '$field_validation',
-				field_contact_url = '%s'
-				WHERE field_name = 'phpbb_youtube'"
-		);
+		$sql = 'UPDATE ' . $profile_fields . '
+			SET ' . $this->db->sql_build_array('UPDATE', $field_data) . "
+			WHERE field_name = 'phpbb_youtube'";
+		$this->db->sql_query($sql);
 
 		$yt_profile_field = 'pf_phpbb_youtube';
 		$prepend_legacy_youtube_url = $this->db->sql_concatenate(
