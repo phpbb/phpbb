@@ -1345,7 +1345,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	{
 		$post_mode = 'delete_first_post';
 	}
-	else if ($data['topic_last_post_id'] == $post_id)
+	else if ($data['topic_last_post_id'] <= $post_id)
 	{
 		$post_mode = 'delete_last_post';
 	}
