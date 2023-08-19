@@ -164,6 +164,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
 	{
+		// Remove files from form if no file was submitted
+		// See: https://github.com/symfony/symfony/issues/49014
+		foreach ($form->getFiles() as $field_name => $value)
+		{
+			if (!$value['name'] && !$value['tmp_name'])
+			{
+				$form->remove($field_name);
+			}
+		}
+
 		$crawler = self::$client->submit($form, $values);
 
 		if ($assert_response_html)
