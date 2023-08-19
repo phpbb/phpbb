@@ -13,8 +13,6 @@
 
 namespace phpbb\request;
 
-use ReturnTypeWillChange;
-
 /**
 * Replacement for a superglobal (like $_GET or $_POST) which calls
 * trigger_error on all operations but isset, overloads the [] operator with SPL.
@@ -115,7 +113,7 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	* @return void
 	* @psalm-suppress InvalidReturnType
 	*/
-	#[ReturnTypeWillChange] public function getIterator(): void
+	#[\ReturnTypeWillChange] public function getIterator(): void
 	{
 		$this->error();
 	}
