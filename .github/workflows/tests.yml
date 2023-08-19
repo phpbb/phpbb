@@ -22,7 +22,7 @@ jobs:
             matrix:
                 include:
                     - db: 'none'
-                      php: '7.3'
+                      php: '8.1'
                       NOTESTS: 1
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -104,38 +104,44 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.3'
-                      db: "mariadb:10.1"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "mariadb:10.2"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "mariadb:10.3"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "mariadb:10.4"
-                    - php: '7.3'
-                      db: "mariadb:10.5"
-                    - php: '7.3'
-                      db: "mysql:5.6"
-                      db_alias: "MySQL Slow Tests"
-                      SLOWTESTS: 1
-                    - php: '7.3'
-                      db: "mysql:5.6"
-                      db_alias: "MyISAM Tests"
-                      MYISAM: 1
-                    - php: '7.3'
-                      db: "mysql:5.6"
-                    - php: '7.3'
-                      db: "mysql:5.7"
-                    - php: '7.4'
-                      db: "mysql:5.7"
-                    - php: '7.4'
-                      db: "mysql:8.0"
-                    - php: '8.0'
-                      db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mariadb:10.6"
+                    - php: '8.1'
+                      db: "mariadb:10.9"
+                    - php: '8.1'
+                      db: "mariadb:10.10"
+                    - php: '8.1'
+                      db: "mariadb:10.11"
+                    - php: '8.1'
+                      db: "mariadb:11.0"
                     - php: '8.1'
                       db: "mysql:5.7"
+                      db_alias: "MySQL Slow Tests"
+                      SLOWTESTS: 1
+                    - php: '8.1'
+                      db: "mysql:5.7"
+                      db_alias: "MyISAM Tests"
+                      MYISAM: 1
+                    - php: '8.1'
+                      db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:8.0"
+                    - php: '8.1'
+                      db: "mysql:8.1"
                     - php: '8.2'
                       db: "mysql:5.7"
+                    - php: '8.2'
+                      db: "mysql:8.0"
+                    - php: '8.2'
+                      db: "mysql:8.1"
+                    - php: '8.3'
+                      db: "mysql:8.0"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -245,34 +251,38 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "postgres:9.5"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "postgres:9.6"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "postgres:10"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "postgres:11"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "postgres:12"
-                    - php: '7.3'
-                      db: "postgres:13"
-                    - php: '7.4'
-                      db: "postgres:13"
-                    - php: '8.0'
-                      db: "postgres:12"
-                    - php: '8.0'
+                    - php: '8.1'
                       db: "postgres:13"
                     - php: '8.1'
                       db: "postgres:14"
+                    - php: '8.1'
+                      db: "postgres:15"
+                    - php: '8.2'
+                      db: "postgres:12"
+                    - php: '8.2'
+                      db: "postgres:13"
                     - php: '8.2'
                       db: "postgres:14"
+                    - php: '8.2'
+                      db: "postgres:15"
+                    - php: '8.3'
+                      db: "postgres:15"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         services:
             postgres:
-                image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && 'postgres:10' || matrix.db }}
+                image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && 'postgres:10' || matrix.db }}
                 env:
                     POSTGRES_HOST: localhost
                     POSTGRES_USER: postgres
@@ -357,14 +367,17 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "sqlite3"
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "mcr.microsoft.com/mssql/server:2017-latest"
                       db_alias: 'MSSQL 2017'
-                    - php: '7.3'
+                    - php: '8.1'
                       db: "mcr.microsoft.com/mssql/server:2019-latest"
                       db_alias: 'MSSQL 2019'
+                    - php: '8.1'
+                      db: "mcr.microsoft.com/mssql/server:2022-latest"
+                      db_alias: 'MSSQL 2022'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -460,28 +473,22 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '7.4'
-                      db: "postgres"
-                      type: 'unit'
-                    - php: '8.0'
-                      db: "postgres"
-                      type: 'unit'
                     - php: '8.1'
                       db: "postgres"
                       type: 'unit'
                     - php: '8.2'
                       db: "postgres"
                       type: 'unit'
-                    - php: '7.4'
+                    - php: '8.3'
                       db: "postgres"
-                      type: 'functional'
-                    - php: '8.0'
-                      db: "postgres"
-                      type: 'functional'
+                      type: 'unit'
                     - php: '8.1'
                       db: "postgres"
                       type: 'functional'
                     - php: '8.2'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.3'
                       db: "postgres"
                       type: 'functional'
 
