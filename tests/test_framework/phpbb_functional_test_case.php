@@ -11,12 +11,17 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\HttpClient;
 
 require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
-	/** @var \Goutte\Client */
+	/** @var HttpClient */
+	protected static $http_client;
+
+	/** @var HttpBrowser */
 	protected static $client;
 	protected static $cookieJar;
 	protected static $root_url;
@@ -89,7 +94,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
+		self::$http_client = HttpClient::create();
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone

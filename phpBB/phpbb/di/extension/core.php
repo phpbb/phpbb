@@ -62,7 +62,7 @@ class core extends Extension
 
 		if ($config['require_dev_dependencies'])
 		{
-			if (!class_exists('Goutte\Client', true))
+			if (!class_exists('Symfony\Component\BrowserKit\HttpBrowser'))
 			{
 				trigger_error(
 					'Composer development dependencies have not been set up for the ' . $container->getParameter('core.environment') . ' environment yet, run ' .
