@@ -26,7 +26,7 @@
 		"phpbb/phpbb-core": "self.version"
 	},
 	"require": {
-		"php": "^7.3 || ^8.0",
+		"php": "^8.1",
 		"ext-json": "*",
 		"ext-mbstring": "*",
 		"ext-pdo": "*",
@@ -41,47 +41,47 @@
 		"lusitanian/oauth": "^0.8.1",
 		"marc1706/fast-image-size": "^1.1",
 		"s9e/text-formatter": "^2.0",
-		"symfony/config": "^5.4",
-		"symfony/console": "^5.4",
+		"symfony/config": "^6.3",
+		"symfony/console": "^6.3",
 		"symfony/debug": "~4.4",
-		"symfony/dependency-injection": "^5.4",
-		"symfony/event-dispatcher": "^5.4",
-		"symfony/filesystem": "^5.4",
-		"symfony/finder": "^5.4",
-		"symfony/http-foundation": "^5.4",
-		"symfony/http-kernel": "^5.4",
+		"symfony/dependency-injection": "^6.3",
+		"symfony/event-dispatcher": "^6.3",
+		"symfony/filesystem": "^6.3",
+		"symfony/finder": "^6.3",
+		"symfony/http-foundation": "^6.3",
+		"symfony/http-kernel": "^6.3",
 		"symfony/polyfill-intl-normalizer": "^1.23",
 		"symfony/polyfill-mbstring": "^1.23",
 		"symfony/polyfill-php72": "^1.23",
-		"symfony/mime": "^5.4",
-		"symfony/process": "^5.4",
-		"symfony/proxy-manager-bridge": "^5.4",
-		"symfony/routing": "^5.4",
-		"symfony/twig-bridge": "^5.4",
-		"symfony/yaml": "^5.4",
+		"symfony/mime": "^6.3",
+		"symfony/process": "^6.3",
+		"symfony/proxy-manager-bridge": "^6.3",
+		"symfony/routing": "^6.3",
+		"symfony/twig-bridge": "^6.3",
+		"symfony/yaml": "^6.3",
 		"twig/twig": "^3.0"
 	},
 	"require-dev": {
-		"fabpot/goutte": "~3.2",
-		"laravel/homestead": "~10.17",
+		"laravel/homestead": "~14.4",
 		"misantron/dbunit": "~5.0",
 		"phing/phing": "~2.4",
 		"phpunit/phpunit": "^9.0",
 		"squizlabs/php_codesniffer": "~3.4",
-		"symfony/browser-kit": "^5.4",
-		"symfony/css-selector": "^5.4",
-		"symfony/dom-crawler": "^5.4",
+		"symfony/browser-kit": "^6.3",
+		"symfony/css-selector": "^6.3",
+		"symfony/dom-crawler": "^6.3",
+		"symfony/http-client": "^6.3",
 		"vimeo/psalm": "^4.14",
 		"psalm/plugin-symfony": "^3.1"
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "3.3.x-dev"
+			"dev-master": "4.0.x-dev"
 		}
 	},
 	"config": {
 		"platform": {
-			"php": "7.3.0"
+			"php": "8.1.0"
 		},
 		"allow-plugins": {
 			"composer/installers": true
