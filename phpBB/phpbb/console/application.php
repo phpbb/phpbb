@@ -45,7 +45,7 @@ class application extends \Symfony\Component\Console\Application
 	/**
 	* {@inheritdoc}
 	*/
-	protected function getDefaultInputDefinition()
+	protected function getDefaultInputDefinition(): InputDefinition
 	{
 		$input_definition = parent::getDefaultInputDefinition();
 
