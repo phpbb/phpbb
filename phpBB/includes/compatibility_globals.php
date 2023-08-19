@@ -45,7 +45,7 @@ function register_compatibility_globals()
 
 	// Instantiate some basic classes
 	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
-	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	$phpbb_dispatcher = $phpbb_container->get('event_dispatcher');
 
 	/* @var $request \phpbb\request\request_interface */
 	$request = $phpbb_container->get('request');

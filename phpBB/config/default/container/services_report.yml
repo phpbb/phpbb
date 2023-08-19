@@ -35,7 +35,7 @@ services:
         shared: false
         arguments:
             - '@dbal.conn.driver'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@config'
             - '@auth'
             - '@user'
@@ -46,7 +46,7 @@ services:
         shared: false
         arguments:
             - '@dbal.conn.driver'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@config'
             - '@auth'
             - '@user'

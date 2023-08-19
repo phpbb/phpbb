@@ -120,7 +120,7 @@ class create_search_index extends database_task
 		$this->db				= $container->get('dbal.conn');
 		$this->iohandler		= $iohandler;
 		$this->installer_config	= $config;
-		$this->phpbb_dispatcher = $container->get('dispatcher');
+		$this->phpbb_dispatcher = $container->get('event_dispatcher');
 		$this->user 			= $container->get('user');
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;

@@ -503,9 +503,9 @@ class phpbb_test_case_helpers
 		}
 
 		// Create an event dispatcher
-		if ($container->has('dispatcher'))
+		if ($container->has('event_dispatcher'))
 		{
-			$dispatcher = $container->get('dispatcher');
+			$dispatcher = $container->get('event_dispatcher');
 		}
 		else if (isset($phpbb_dispatcher))
 		{

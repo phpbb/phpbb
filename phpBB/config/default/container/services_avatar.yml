@@ -3,14 +3,14 @@ services:
         class: phpbb\avatar\manager
         arguments:
             - '@config'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@avatar.driver_collection'
 
     avatar.helper:
         class: phpbb\avatar\helper
         arguments:
             - '@config'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '@avatar.manager'
             - '@path_helper'
@@ -61,7 +61,7 @@ services:
             - '%core.php_ext%'
             - '@storage.avatar'
             - '@path_helper'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@files.factory'
             - '@php_ini'
         calls:

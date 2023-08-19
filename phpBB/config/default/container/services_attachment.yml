@@ -5,7 +5,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@attachment.resync'
             - '@storage.attachment'
 
@@ -32,7 +32,7 @@ services:
             - '@config'
             - '@files.upload'
             - '@language'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@plupload'
             - '@storage.attachment'
             - '@filesystem.temp'

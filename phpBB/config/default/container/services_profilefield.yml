@@ -6,7 +6,7 @@ services:
             - '@config_text'
             - '@dbal.conn'
             - '@dbal.tools'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '@log'
             - '@template'

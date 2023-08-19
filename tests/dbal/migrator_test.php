@@ -80,7 +80,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			new \phpbb\db\migration\helper()
 		);
 		$container->set('migrator', $this->migrator);
-		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
+		$container->set('event_dispatcher', new phpbb_mock_event_dispatcher());
 
 		$this->extension_manager = new \phpbb\extension\manager(
 			$container,

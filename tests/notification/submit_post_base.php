@@ -146,7 +146,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 				$phpEx
 			)
 		);
-		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
+		$phpbb_container->set('event_dispatcher', $phpbb_dispatcher);
 		$phpbb_container->set('storage.attachment', $storage);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);

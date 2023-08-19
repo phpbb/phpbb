@@ -261,9 +261,9 @@ class migrator
 	*/
 	public function update()
 	{
-		$this->container->get('dispatcher')->disable();
+		$this->container->get('event_dispatcher')->disable();
 		$this->update_do();
-		$this->container->get('dispatcher')->enable();
+		$this->container->get('event_dispatcher')->enable();
 	}
 
 	/**
@@ -509,9 +509,9 @@ class migrator
 	*/
 	public function revert($migration)
 	{
-		$this->container->get('dispatcher')->disable();
+		$this->container->get('event_dispatcher')->disable();
 		$this->revert_do($migration);
-		$this->container->get('dispatcher')->enable();
+		$this->container->get('event_dispatcher')->enable();
 	}
 
 	/**

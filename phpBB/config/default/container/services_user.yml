@@ -2,7 +2,7 @@ services:
     acl.permissions:
         class: phpbb\permissions
         arguments:
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@user'
 
     user:

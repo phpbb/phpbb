@@ -286,7 +286,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$container->set('migrator', $migrator);
-		$container->set('dispatcher', $phpbb_dispatcher);
+		$container->set('event_dispatcher', $phpbb_dispatcher);
 		$cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setConstructorArgs([$this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx])
 			->setMethods(['deferred_purge'])

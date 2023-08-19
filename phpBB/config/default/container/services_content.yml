@@ -4,7 +4,7 @@ services:
         arguments:
             - '@auth'
             - '@config'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@dbal.conn'
             - '@user'
             - '%core.root_path%'
@@ -33,7 +33,7 @@ services:
             - '@config_text'
             - '@dbal.conn'
             - '@user'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.root_path%'
             - '%core.php_ext%'
 
@@ -63,7 +63,7 @@ services:
             - '@template'
             - '@user'
             - '@controller.helper'
-            - '@dispatcher'
+            - '@event_dispatcher'
 
     viewonline_helper:
         class: phpbb\viewonline_helper
