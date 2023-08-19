@@ -19,6 +19,7 @@ use phpbb\log\log_interface;
 use phpbb\user;
 use phpbb\user_loader;
 use Symfony\Component\Console\Command\Command as symfony_command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -151,6 +152,10 @@ class delete extends command
 	protected function interact(InputInterface $input, OutputInterface $output)
 	{
 		$helper = $this->getHelper('question');
+		if (!$helper instanceof QuestionHelper)
+		{
+			return;
+		}
 
 		$question = new ConfirmationQuestion(
 			$this->language->lang('CLI_USER_DELETE_CONFIRM', $input->getArgument('username')),
