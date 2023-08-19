@@ -80,6 +80,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 			'num_posts' => 1,
 			'allow_board_notifications'	=> true,
 			'allow_mentions' => true,
+			'board_startdate' => 1692429414,
 		));
 
 		// Event dispatcher
@@ -113,8 +114,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		);
 
 		// Request
-		$type_cast_helper = $this->createMock('\phpbb\request\type_cast_helper_interface');
-		$request = $this->createMock('\phpbb\request\request');
+		$request = new phpbb_mock_request();
 
 		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
 			->disableOriginalConstructor()

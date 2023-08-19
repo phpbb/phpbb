@@ -46,7 +46,7 @@ class service_collection extends \ArrayObject
 	/**
 	* {@inheritdoc}
 	*/
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		return new service_collection_iterator($this);
 	}
@@ -54,9 +54,9 @@ class service_collection extends \ArrayObject
 	/**
 	* {@inheritdoc}
 	*/
-	public function offsetGet($index)
+	public function offsetGet($key): mixed
 	{
-		return $this->container->get($index);
+		return $this->container->get($key);
 	}
 
 	/**

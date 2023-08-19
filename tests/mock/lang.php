@@ -17,25 +17,25 @@
 */
 class phpbb_mock_lang implements ArrayAccess
 {
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return true;
 	}
 
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		return $offset;
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 	}
 
-	public function lang()
+	public function lang(): string
 	{
 		return implode(' ', func_get_args());
 	}

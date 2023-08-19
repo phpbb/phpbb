@@ -39,7 +39,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*
 	* @return \ArrayIterator An iterator over all config data
 	*/
-	public function getIterator()
+	public function getIterator(): \ArrayIterator
 	{
 		return new \ArrayIterator($this->config);
 	}
@@ -99,7 +99,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	*
 	* @return int Number of config options
 	*/
-	public function count()
+	public function count(): int
 	{
 		return count($this->config);
 	}

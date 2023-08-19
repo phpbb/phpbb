@@ -77,7 +77,7 @@ class finder
 		);
 		$this->extensions = array();
 
-		$this->cached_queries = ($this->cache) ? $this->cache->get($this->cache_name) : false;
+		$this->cached_queries = $this->cache ? ($this->cache->get($this->cache_name) ?: []) : [];
 	}
 
 	/**

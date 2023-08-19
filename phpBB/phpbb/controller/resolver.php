@@ -160,7 +160,7 @@ class resolver implements ControllerResolverInterface
 					$arguments[] = $attributes[$param->name];
 				}
 			}
-			else if ($param->getClass() && $param->getClass()->isInstance($request))
+			else if ($param->getType() && $param->getType() instanceof $request)
 			{
 				$arguments[] = $request;
 			}

@@ -47,7 +47,7 @@ class session
 
 		// First of all, get the request uri...
 		$script_name = $request->escape($symfony_request->getScriptName(), true);
-		$args = $request->escape(explode('&', $symfony_request->getQueryString()), true);
+		$args = $request->escape(explode('&', $symfony_request->getQueryString() ?? ''), true);
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
