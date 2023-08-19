@@ -52,7 +52,7 @@ class tables extends Extension
 	 *
 	 * @return string The alias
 	 */
-	public function getAlias()
+	public function getAlias(): string
 	{
 		return 'tables';
 	}

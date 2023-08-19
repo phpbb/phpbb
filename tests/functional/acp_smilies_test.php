@@ -38,6 +38,6 @@ class phpbb_functional_acp_smilies_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 
 		$html = $crawler->filter('#preview')->html();
-		$this->assertRegexp('(<img [^>]+ alt="&gt;:D" title="&gt;:D"[^>]*>)', $html);
+		$this->assertRegexp('(<img [^>]+ alt=">:D" title=">:D"[^>]*>)', $html);
 	}
 }

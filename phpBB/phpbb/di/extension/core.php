@@ -144,7 +144,7 @@ class core extends Extension
 	 *
 	 * @return string The alias
 	 */
-	public function getAlias()
+	public function getAlias(): string
 	{
 		return 'core';
 	}
