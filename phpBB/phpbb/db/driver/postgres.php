@@ -436,7 +436,7 @@ class postgres extends \phpbb\db\driver\driver
 		{
 			return true;
 		}
-		return @pg_close($this->db_connect_id);
+		return pg_close($this->db_connect_id);
 	}
 
 	/**

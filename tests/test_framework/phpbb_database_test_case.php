@@ -303,8 +303,9 @@ abstract class phpbb_database_test_case extends TestCase
 	{
 		$config = $this->get_database_config();
 
+		/** @var \phpbb\db\driver\driver_interface $db */
 		$db = new $config['dbms']();
-		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
+		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport'], false, true);
 
 		$this->db_connections[] = $db;
 

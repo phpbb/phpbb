@@ -478,7 +478,7 @@ class factory implements driver_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function clean_query_id(mixed $query_id): int|string
+	public function clean_query_id(mixed $query_id): int|string|null
 	{
 		return $this->get_driver()->clean_query_id($query_id);
 	}
