@@ -499,9 +499,9 @@ interface driver_interface
 	/**
 	 * Ensure query ID can be used by cache
 	 *
-	 * @param resource|int|string $query_id Mixed type query id
+	 * @param mixed $query_id Mixed type query id
 	 *
 	 * @return int|string Query id in string or integer format
 	 */
-	public function clean_query_id($query_id);
+	public function clean_query_id(mixed $query_id): int|string;
 }
