@@ -2,7 +2,6 @@
 <psalm
     errorLevel="5"
     phpVersion="8.1"
-    resolveFromConfigFile="true"
     autoloader="build/psalm_bootstrap.php"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -23,10 +22,13 @@
 
     <stubs>
         <file name="build/psalm/stubs/apcu/apcu.php"/>
+        <file name="build/psalm/stubs/gd.php"/>
+        <file name="build/psalm/stubs/ldap.php"/>
         <file name="build/psalm/stubs/memcached/memcached.php"/>
         <file name="build/psalm/stubs/oci8/oci8.php"/>
         <file name="build/psalm/stubs/pgsql/pgsql.php"/>
         <file name="build/psalm/stubs/redis/redis.php"/>
         <file name="build/psalm/stubs/sqlite3/sqlite3.php"/>
+        <file name="build/psalm/stubs/sqlsrv.php"/>
     </stubs>
 </psalm>
