@@ -35,7 +35,7 @@
 		"composer/composer": "^2.0",
 		"composer/installers": "^1.9",
 		"composer/package-versions-deprecated": "^1.11",
-		"doctrine/dbal": "^3.0",
+		"doctrine/dbal": "~3.3.6",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": "~6.3",
 		"lusitanian/oauth": "^0.8.1",
