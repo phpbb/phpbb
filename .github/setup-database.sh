@@ -22,5 +22,5 @@ fi
 
 if [ "$MYISAM" == '1' ]
 then
-	mysql -h 127.0.0.1 -u root -e 'SET GLOBAL storage_engine=MyISAM;'
+	mysql -h 127.0.0.1 -u root -e 'SET GLOBAL default_storage_engine=MyISAM;'
 fi
