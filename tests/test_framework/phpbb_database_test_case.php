@@ -305,7 +305,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 		/** @var \phpbb\db\driver\driver_interface $db */
 		$db = new $config['dbms']();
-		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport'], false, true);
+		$db->sql_connect($config['dbhost'], $config['dbuser'], $config['dbpasswd'], $config['dbname'], $config['dbport']);
 
 		$this->db_connections[] = $db;
 

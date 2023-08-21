@@ -431,8 +431,8 @@ class postgres extends \phpbb\db\driver\driver
 	 */
 	protected function _sql_close(): bool
 	{
-		// Released resources are already closed, return true in this case
-		if (!$this->db_connect_id instanceof \PgSql\Connection)
+		// Skip if connection is already closed or not persistent
+		if (!$this->persistency || !$this->db_connect_id instanceof \PgSql\Connection)
 		{
 			return true;
 		}
