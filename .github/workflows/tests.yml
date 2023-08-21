@@ -42,19 +42,16 @@ jobs:
 
             - name: Get Composer Cache Directory
               id: composer-cache
-              env:
-                  PHP_VERSION: ${{ matrix.php }}
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
@@ -194,14 +191,13 @@ jobs:
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
@@ -331,14 +327,13 @@ jobs:
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
@@ -437,14 +432,13 @@ jobs:
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
@@ -515,15 +509,13 @@ jobs:
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $env:GITHUB_OUTPUT
-                  $major_version="${{ matrix.php }}".substring(0,1)
-                  echo "version=$major_version" >> $env:GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v3
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
