@@ -387,7 +387,7 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 

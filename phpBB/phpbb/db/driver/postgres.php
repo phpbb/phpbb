@@ -298,7 +298,7 @@ class postgres extends \phpbb\db\driver\driver
 	/**
 	 * {@inheritDoc}
 	 */
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 

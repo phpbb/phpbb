@@ -294,7 +294,7 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function sql_fetchfield($field, $rownum = false, $query_id = false)
+	public function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		return $this->get_driver()->sql_fetchfield($field, $rownum, $query_id);
 	}

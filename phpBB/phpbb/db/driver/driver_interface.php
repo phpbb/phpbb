@@ -268,7 +268,7 @@ interface driver_interface
 	* @return	mixed		String value of the field in the selected row,
 	*						false, if the row does not exist
 	*/
-	public function sql_fetchfield($field, $rownum = false, $query_id = false);
+	public function sql_fetchfield($field, $rownum = false, &$query_id = false);
 
 	/**
 	* Fetch current row
