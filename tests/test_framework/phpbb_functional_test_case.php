@@ -13,12 +13,14 @@
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\NativeHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
-	/** @var HttpClient */
+	/** @var HttpClientInterface */
 	protected static $http_client;
 
 	/** @var HttpBrowser */
@@ -94,7 +96,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		self::$http_client = HttpClient::create();
+		// Force native client on windows platform
+		self::$http_client = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? new NativeHttpClient() : HttpClient::create();
 		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things

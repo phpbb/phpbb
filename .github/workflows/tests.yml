@@ -583,7 +583,7 @@ jobs:
               if: ${{ matrix.type == 'unit' }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
-            - name: Run unit tests
+            - name: Run functional tests
               if: ${{ matrix.type == 'functional' }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
