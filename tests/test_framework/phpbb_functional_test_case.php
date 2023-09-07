@@ -208,10 +208,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$backupStaticAttributesBlacklist = [
+		$this->backupStaticAttributesExcludeList += [
 			'phpbb_functional_test_case' => ['config', 'already_installed'],
 		];
-		$this->excludeBackupStaticAttributes($backupStaticAttributesBlacklist);
 	}
 
 	protected function get_db()

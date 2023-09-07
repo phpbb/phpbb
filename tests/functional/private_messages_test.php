@@ -79,7 +79,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quotepost&p=' . $post['post_id'] . '&sid=' . $this->sid);
 
-		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+		$this->assertMatchesRegularExpression($expected, $crawler->filter('textarea#message')->text());
 	}
 
 	public function test_quote_pm()
@@ -92,7 +92,7 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=quote&p=' . $message_id . '&sid=' . $this->sid);
 
-		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+		$this->assertMatchesRegularExpression($expected, $crawler->filter('textarea#message')->text());
 	}
 
 	public function test_quote_forward()
@@ -105,6 +105,6 @@ class phpbb_functional_private_messages_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', 'ucp.php?i=pm&mode=compose&action=forward&f=0&p=' . $message_id . '&sid=' . $this->sid);
 
-		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+		$this->assertMatchesRegularExpression($expected, $crawler->filter('textarea#message')->text());
 	}
 }

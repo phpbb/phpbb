@@ -156,7 +156,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$factory->tidy();
 
 		$this->assertFileExists($new_file, 'The current renderer has been deleted');
-		$this->assertFileNotExists($old_file, 'The old renderer has not been deleted');
+		$this->assertFileDoesNotExist($old_file, 'The old renderer has not been deleted');
 
 		unlink($new_file);
 	}

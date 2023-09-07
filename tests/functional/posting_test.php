@@ -78,7 +78,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', "posting.php?mode=quote&p={$post['post_id']}&sid={$this->sid}");
 
-		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+		$this->assertMatchesRegularExpression($expected, $crawler->filter('textarea#message')->text());
 	}
 
 	/**
@@ -122,7 +122,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		{
 			$this->set_quote_depth($quote_depth);
 			$crawler = self::request('GET', $quote_url);
-			$this->assertRegexp(
+			$this->assertMatchesRegularExpression(
 				"(\[quote=admin[^\]]*\]\s?" . preg_quote($expected_text) . "\s?\[\/quote\])",
 				$crawler->filter('textarea#message')->text()
 			);

@@ -528,7 +528,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$filename = 'file_not_found.html';
 
 		$this->template->set_filenames(array('test' => $filename));
-		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
+		$this->assertFileDoesNotExist($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
 		$this->expectException(\Twig\Error\LoaderError::class);
 
