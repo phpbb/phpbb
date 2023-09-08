@@ -11,25 +11,17 @@
 *
 */
 
-namespace foo\bar\acp;
-
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
+namespace foo\bar\mcp;
 
 class main_info
 {
 	function module()
 	{
 		return array(
-			'filename'	=> '\foo\bar\acp\main_module',
-			'title'		=> 'ACP_FOOBAR_TITLE',
+			'filename'	=> '\foo\bar\mcp\main_module',
+			'title'		=> 'MCP_FOOBAR_TITLE',
 			'modes'		=> array(
-				'mode'		=> array('title' => 'ACP_FOOBAR_MODE', 'auth' => '', 'cat' => array('ACP_FOOBAR_TITLE')),
+				'mode'		=> array('title' => 'MCP_FOOBAR_MODE', 'auth' => '', 'cat' => array('MCP_FOOBAR_TITLE')),
 			),
 		);
 	}

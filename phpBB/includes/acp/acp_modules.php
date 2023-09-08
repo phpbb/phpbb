@@ -618,8 +618,6 @@ class acp_modules
 
 			$langname = $user->lang($row['module_langname']);
 			$module_list .= '<option value="' . $row['module_id'] . '"' . $selected . ((!$row['module_enabled']) ? ' class="disabled"' : '') . '>' . $padding . $langname . '</option>';
-
-			$iteration++;
 		}
 		$db->sql_freeresult($result);
 

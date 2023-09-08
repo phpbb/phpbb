@@ -78,7 +78,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
@@ -101,7 +101,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
@@ -134,7 +134,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
@@ -159,7 +159,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
@@ -189,7 +189,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
@@ -217,7 +217,7 @@ class forms extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 }

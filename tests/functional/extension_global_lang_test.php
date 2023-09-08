@@ -21,9 +21,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 	private static $helper;
 
 	protected static $fixtures = array(
-		'foo/bar/config/',
-		'foo/bar/event/',
-		'foo/bar/language/en/',
+		'./',
 	);
 
 	static public function setUpBeforeClass(): void
@@ -46,23 +44,23 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		parent::setUp();
 
 		$this->get_db();
-
-		$this->phpbb_extension_manager = $this->get_extension_manager();
-
 		$this->purge_cache();
 	}
 
 	protected function tearDown(): void
 	{
-		parent::tearDown();
+		$this->uninstall_ext('foo/bar');
 
-		$this->purge_cache();
+		parent::tearDown();
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar'];
 	}
 
 	public function test_load_extension_lang_globally()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
-
 		// The board index, which should contain an overwritten translation
 		$crawler = self::request('GET', 'index.php');
 

@@ -442,6 +442,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 
@@ -473,6 +477,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 
@@ -504,6 +512,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 

@@ -129,7 +129,7 @@ class icon extends AbstractExtension
 				}
 				catch (\Twig\Error\Error $e)
 				{
-					return '';
+					return $e->getMessage();
 				}
 			break;
 
@@ -148,7 +148,7 @@ class icon extends AbstractExtension
 			}
 			catch (\Twig\Error\Error $e)
 			{
-				return '';
+				return $e->getMessage();
 			}
 
 			$type = 'svg';
@@ -170,7 +170,7 @@ class icon extends AbstractExtension
 		}
 		catch (\Twig\Error\Error $e)
 		{
-			return '';
+			return $e->getMessage();
 		}
 	}
 
