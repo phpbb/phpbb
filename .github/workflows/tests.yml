@@ -125,12 +125,12 @@ jobs:
                     - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MySQL Slow Tests"
-                      type: 'unit'
+                      type: 'slow'
                       SLOWTESTS: 1
                     - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MyISAM Tests"
-                      type: 'functional'
+                      type: 'MyISAM'
                       MYISAM: 1
 
         name: ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
@@ -225,7 +225,7 @@ jobs:
                   DB: ${{steps.database-type.outputs.db}}
               if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 && matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error --exclude-group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error --exclude-group functional,slow
 
             - name: Run functional tests
               env:
@@ -566,7 +566,7 @@ jobs:
             - name: Run unit tests
               if: ${{ matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional,slow
             - name: Run functional tests
               if: ${{ matrix.type == 'functional' }}
               run: |

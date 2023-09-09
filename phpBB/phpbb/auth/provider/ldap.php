@@ -201,7 +201,7 @@ class ldap extends base
 			1
 		);
 
-		$ldap_result = @ldap_get_entries($ldap, $search);
+		$ldap_result = $search !== false ? @ldap_get_entries($ldap, $search) : [];
 
 		if (is_array($ldap_result) && count($ldap_result) > 1)
 		{
