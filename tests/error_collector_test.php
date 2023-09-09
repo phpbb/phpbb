@@ -53,15 +53,14 @@ class phpbb_error_collector_test extends phpbb_test_case
 		// Division by zero was promoted to fatal error and throws DivisionByZeroError exception in PHP 8+
 		version_compare(PHP_VERSION, '8', '>=') ? '1b'['0xFF'] : 1/0; $line = __LINE__;
 
-		// Cause a "Notice: unserialize(): Error at offset 0 of 27 bytes in ..."
-		// "Undefined array index" used earlier was promoted to warning in PHP 8.0,
-		// see https://github.com/php/php-src/commit/c48b745f0090c944e77c1fbcfb6c4df3b54356ad
-		unserialize("obvious non-serialized data"); $line2 = __LINE__;
+		// Cause a "Notice: date_default_timezone_set(): Timezone ID 'ThisTimeZoneDoesNotExist' is invalid"
+		// https://github.com/php/php-src/blob/880faa39e8c648bdc3aad7aeca170755c6557831/ext/date/php_date.c#L5205
+		date_default_timezone_set('ThisTimeZoneDoesNotExist'); $line2 = __LINE__;
 
 		$collector->uninstall();
 
 		// The notice should not be collected
-		$this->assertFalse(isset($collector->errors[1]));
+		$this->assertFalse(isset($collector->errors[1]), 'Notice should not be added to errors');
 		$this->assertEquals(count($collector->errors), 1);
 
 		list($errno, $msg_text, $errfile, $errline) = $collector->errors[0];
