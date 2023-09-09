@@ -520,7 +520,7 @@ class phpbb_database_test_connection_manager
 		$queries = array();
 
 		// Get escaped versions of the table names to synchronise
-		$table_names = array_map(array($this->pdo, 'PDO::quote'), array_keys($table_column_map));
+		$table_names = array_map([$this->pdo, 'quote'], array_keys($table_column_map));
 
 		switch ($this->config['dbms'])
 		{

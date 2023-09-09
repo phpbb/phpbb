@@ -13,6 +13,9 @@
 
 class phpbb_passwords_helper_test extends \phpbb_test_case
 {
+	/** @var array */
+	protected $passwords_drivers = [];
+
 	protected function setUp(): void
 	{
 		// Prepare dependencies for drivers
@@ -21,7 +24,7 @@ class phpbb_passwords_helper_test extends \phpbb_test_case
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
 		$phpbb_root_path = __DIR__ . '/../../phpBB/';
 		$php_ext = 'php';
-		
+
 		// Initialize argon2 default options
 		$this->argon2_default_cost_options = [
 			'memory_cost' => 65536,

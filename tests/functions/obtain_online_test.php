@@ -162,7 +162,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 
 		global $config, $user, $auth, $phpbb_dispatcher;
 		$config['load_online_guests'] = $display_guests;
-		$user = new phpbb_mock_lang();
+		$user = new phpbb_mock_user();
 		$user->data['user_id'] = 100;
 		$user->lang = $this->load_language();
 		$auth = $this->createMock('\phpbb\auth\auth');
