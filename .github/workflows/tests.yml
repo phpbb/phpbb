@@ -137,8 +137,8 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.2'
                       db: "mysql:8.1"
-                    #- php: '8.3'
-                    #  db: "mysql:8.0"
+                    - php: '8.3'
+                      db: "mysql:8.0"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
