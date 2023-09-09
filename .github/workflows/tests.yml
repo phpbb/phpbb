@@ -466,25 +466,15 @@ jobs:
         runs-on: windows-latest
         strategy:
             matrix:
+                type: ['unit', 'functional']
                 include:
                     - php: '8.1'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.2'
                       db: "postgres"
-                      type: 'unit'
                     #- php: '8.3'
                     #  db: "postgres"
                     #  type: 'unit'
-                    - php: '8.1'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.2'
-                      db: "postgres"
-                      type: 'functional'
-                    #- php: '8.3'
-                    #  db: "postgres"
-                    #  type: 'functional'
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
 
