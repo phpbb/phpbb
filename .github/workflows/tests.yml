@@ -117,6 +117,12 @@ jobs:
                 ]
                 include:
                     - php: '8.1'
+                      db: 'mysql:5.7'
+                      type: 'unit'
+                    - php: '8.1'
+                      db: 'mysql:5.7'
+                      type: 'functional'
+                    - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MySQL Slow Tests"
                       type: 'unit'
@@ -124,10 +130,10 @@ jobs:
                     - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MyISAM Tests"
-                      type: 'unit'
+                      type: 'functional'
                       MYISAM: 1
 
-        name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }} - ${{ matrix.type }}
+        name: ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mysql:
@@ -464,7 +470,7 @@ jobs:
                 php: ['8.1', '8.2']
                 db: ['postgres']
 
-        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
+        name: Windows - ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         steps:
             - name: Prepare git for Windows
