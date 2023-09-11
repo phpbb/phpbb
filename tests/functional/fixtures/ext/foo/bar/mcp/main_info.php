@@ -17,12 +17,12 @@ class main_info
 {
 	function module()
 	{
-		return array(
+		return [
 			'filename'	=> '\foo\bar\mcp\main_module',
 			'title'		=> 'MCP_FOOBAR_TITLE',
-			'modes'		=> array(
-				'mode'		=> array('title' => 'MCP_FOOBAR_MODE', 'auth' => '', 'cat' => array('MCP_FOOBAR_TITLE')),
-			),
-		);
+			'modes'		=> [
+				'mode'		=> ['title' => 'MCP_FOOBAR_MODE', 'auth' => '', 'cat' => ['MCP_FOOBAR_TITLE']],
+			],
+		];
 	}
 }
