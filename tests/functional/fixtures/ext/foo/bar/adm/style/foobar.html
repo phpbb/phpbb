@@ -1,3 +1,32 @@
 <!-- INCLUDE overall_header.html -->
-Bertie rulez!
+<h1>{{ lang('TITLE') }}</h1>
+<p>{{ lang('TITLE_EXPLAIN') }}</p>
+{% if S_ERROR %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		<p>{{ ERROR_MSG }}</p>
+	</div>
+{% endif %}
+
+{% for options in loops.options %}
+	{% if options.S_LEGEND %}
+		{% if not options.S_FIRST_ROW %}
+			</fieldset>
+		{% endif %}
+		<fieldset>
+			<legend>{{ options.LEGEND }}</legend>
+	{% else %}
+		<dl>
+			<dt><label for="{{ options.KEY }}">{{ options.TITLE }}{{ lang('COLON') }}</label>{% if options.S_EXPLAIN %}<br /><span>{{ options.TITLE_EXPLAIN }}</span>{% endif %}</dt>
+			<dd>
+				{% if options.CONTENT is iterable %}
+					{{ FormsBuildTemplate(options.CONTENT) }}
+				{% else %}
+					{{ options.CONTENT }}
+				{% endif %}
+			</dd>
+		</dl>
+
+	{% endif %}
+{% endfor %}
 <!-- INCLUDE overall_footer.html -->

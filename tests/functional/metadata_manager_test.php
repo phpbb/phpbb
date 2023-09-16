@@ -21,12 +21,12 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	private static $helper;
 
 	protected static $fixtures = array(
-		'foo/bar/',
+		'./',
 	);
 
 	protected function tearDown(): void
 	{
-		$this->purge_cache();
+		$this->uninstall_ext('foo/bar');
 
 		parent::tearDown();
 	}
@@ -50,14 +50,14 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	{
 		parent::setUp();
 
-		$this->phpbb_extension_manager = $this->get_extension_manager();
-
-		$this->purge_cache();
-		$this->phpbb_extension_manager->enable('foo/bar');
-
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/extensions');
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar'];
 	}
 
 	public function test_extensions_list()

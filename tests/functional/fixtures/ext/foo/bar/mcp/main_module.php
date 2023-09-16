@@ -11,18 +11,15 @@
 *
 */
 
-namespace foo\bar\ucp;
+namespace foo\bar\mcp;
 
-class main_info
+class main_module
 {
-	function module()
+	var $u_action;
+
+	function main($id, $mode)
 	{
-		return [
-			'filename'	=> '\foo\bar\ucp\main_module',
-			'title'		=> 'UCP_FOOBAR_TITLE',
-			'modes'		=> [
-				'mode'		=> ['title' => 'UCP_FOOBAR_MODE', 'auth' => '', 'cat' => ['UCP_FOOBAR_TITLE']],
-			],
-		];
+		$this->tpl_name = 'foobar_mcp';
+		$this->page_title = 'Bertie MCP';
 	}
 }

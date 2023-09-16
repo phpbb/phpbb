@@ -11,17 +11,17 @@
 *
 */
 
-namespace foo\bar\ucp;
+namespace foo\bar\mcp;
 
 class main_info
 {
 	function module()
 	{
 		return [
-			'filename'	=> '\foo\bar\ucp\main_module',
-			'title'		=> 'UCP_FOOBAR_TITLE',
+			'filename'	=> '\foo\bar\mcp\main_module',
+			'title'		=> 'MCP_FOOBAR_TITLE',
 			'modes'		=> [
-				'mode'		=> ['title' => 'UCP_FOOBAR_MODE', 'auth' => '', 'cat' => ['UCP_FOOBAR_TITLE']],
+				'mode'		=> ['title' => 'MCP_FOOBAR_MODE', 'auth' => '', 'cat' => ['MCP_FOOBAR_TITLE']],
 			],
 		];
 	}
