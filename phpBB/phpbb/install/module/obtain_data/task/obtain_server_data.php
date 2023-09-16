@@ -65,11 +65,11 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 			$server_name = substr($server_name, 0, strpos($server_name, ':'));
 		}
 
-		$script_path = html_entity_decode($this->io_handler->get_server_variable('PHP_SELF'), ENT_COMPAT);
+		$script_path = html_entity_decode($this->io_handler->get_server_variable('REQUEST_URI'), ENT_COMPAT);
 
 		if (!$script_path)
 		{
-			$script_path = html_entity_decode($this->io_handler->get_server_variable('REQUEST_URI'), ENT_COMPAT);
+			$script_path = html_entity_decode($this->io_handler->get_server_variable('PHP_SELF'), ENT_COMPAT);
 		}
 
 		$script_path = str_replace(array('\\', '//'), '/', $script_path);
