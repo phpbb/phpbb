@@ -7,4 +7,5 @@
 		{% endfor %}
 		name="{{ NAME }}"
 		rows="{{ ROWS }}"
-		cols="{{ COLS }}">{% endapply %}{{ CONTENT }}</textarea>
+		cols="{{ COLS }}"
+		{% if PLACEHOLDER %}placeholder="{{ PLACEHOLDER }}"{% endif %}>{% endapply %}{{ CONTENT }}</textarea>
