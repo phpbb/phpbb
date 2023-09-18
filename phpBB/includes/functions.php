@@ -291,7 +291,9 @@ function phpbb_language_select(\phpbb\db\driver\driver_interface $db, string $de
 		];
 	}
 
-	return $lang_options;
+	return [
+		'options' => $lang_options
+	];
 }
 
 /**
@@ -319,14 +321,20 @@ function style_select($default = '', $all = false, array $styledata = [])
 		$db->sql_freeresult($result);
 	}
 
-	$style_options = '';
+	$style_options = [];
 	foreach ($styledata as $row)
 	{
-		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
-		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
+		$style_options[] = [
+			'tag'		=> 'select',
+			'value' 	=> $row['style_id'],
+			'selected'	=> $row['style_id'] == $default,
+			'label'		=> $row['style_name'],
+		];
 	}
 
-	return $style_options;
+	return [
+		'options' => $style_options,
+	];
 }
 
 /**

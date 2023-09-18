@@ -398,6 +398,32 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $conf
 				$tpl['buttons'] = [$no_button, $yes_button];
 			}
 		break;
+
+		case 'select':
+			$tpl = [
+				'tag'			=> 'select',
+				'class'			=> $tpl_type['class'] ?? false,
+				'id'			=> $key,
+				'data'			=> $tpl_type['data'] ?? [],
+				'name'			=> $name,
+				'toggleable'	=> !empty($tpl_type[2]) || !empty($tpl_type['toggleable']),
+				'options'		=> $tpl_type['options'],
+				'group_only'	=> $tpl_type['group_only'] ?? false,
+				'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
+				'multiple'		=> $tpl_type['multiple'] ?? false,
+			];
+		break;
+
+		case 'button':
+			$tpl = [
+				'tag'		=> 'input',
+				'class'		=> $tpl_type['options']['class'],
+				'id'		=> $key,
+				'type'		=> $tpl_type['options']['type'],
+				'name'		=> $tpl_type['options']['name'] ?? $name,
+				'value'		=> $tpl_type['options']['value'],
+			];
+		break;
 	}
 
 	return $tpl;
@@ -484,38 +510,15 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 			$return = call_user_func_array($call, $args);
 
-			if ($tpl_type[0] == 'select')
+			if (in_array($tpl_type[0], ['select', 'button']))
 			{
-				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
-
-				if (is_string($return))
-				{
-					$data_toggle = (!empty($tpl_type[2])) ? ' data-togglable-settings="true"' : '';
-
-					$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . $data_toggle . '>' . $return . '</select>';
-				}
-				else
-				{
-					$tpl = [
-						'tag'			=> 'select',
-						'id'			=> $key,
-						'name'			=> $name,
-						'toggleable'	=> !empty($tpl_type[2]),
-						'options'		=> $return,
-					];
-
-					// Add size if it differs from default value of 1
-					if ($size != 1)
-					{
-						$tpl['size'] = $size;
-					}
-				}
+				$tpl_type = array_merge($tpl_type, $return);
+				$tpl = phpbb_build_cfg_template($tpl_type, $key, $new_ary, $config_key, $vars);
 			}
 			else
 			{
 				$tpl = $return;
 			}
-
 		break;
 
 		default:

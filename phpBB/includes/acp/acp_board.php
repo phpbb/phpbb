@@ -851,7 +851,7 @@ class acp_board
 
 		/* @var $auth_providers \phpbb\auth\provider_collection */
 		$auth_providers = $phpbb_container->get('auth.provider_collection');
-		$auth_plugins = array();
+		$auth_plugins = [];
 
 		foreach ($auth_providers as $key => $value)
 		{
@@ -864,14 +864,22 @@ class acp_board
 
 		sort($auth_plugins);
 
-		$auth_select = '';
+		$auth_select_options = [];
 		foreach ($auth_plugins as $method)
 		{
-			$selected = ($selected_method == $method) ? ' selected="selected"' : '';
-			$auth_select .= "<option value=\"$method\"$selected data-toggle-setting=\"#auth_{$method}_settings\">" . ucfirst($method) . '</option>';
+			$auth_select_options[] = [
+				'value'		=> $method,
+				'selected'	=> $selected_method == $method,
+				'label'		=> ucfirst($method),
+				'data' 		=> [
+					'toggle-setting' => "#auth_{$method}_settings",
+				],
+			];
 		}
 
-		return $auth_select;
+		return [
+			'options' => $auth_select_options,
+		];
 	}
 
 	/**
@@ -881,15 +889,21 @@ class acp_board
 	{
 		global $user;
 
-		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
-		$s_smtp_auth_options = '';
+		$auth_methods = ['PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP'];
+		$s_smtp_auth_options = [];
 
 		foreach ($auth_methods as $method)
 		{
-			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
+			$s_smtp_auth_options[] = [
+				'value'		=> $method,
+				'selected'	=> $selected_method == $method,
+				'label'		=> $user->lang('SMTP_' . str_replace('-', '_', $method)),
+			];
 		}
 
-		return $s_smtp_auth_options;
+		return [
+			'options' => $s_smtp_auth_options,
+		];
 	}
 
 	/**
@@ -899,7 +913,22 @@ class acp_board
 	{
 		global $user;
 
-		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
+		$full_folder_select_options = [
+			0	=> [
+				'value'		=> 1,
+				'selected'	=> $value == 1,
+				'label'		=> $user->lang('DELETE_OLDEST_MESSAGES'),
+			],
+			1	=> [
+				'value'		=> 2,
+				'selected'	=> $value == 2,
+				'label'		=> $user->lang('HOLD_NEW_MESSAGES_SHORT'),
+			],
+		];
+
+		return [
+			'options' => $full_folder_select_options,
+		];
 	}
 
 	/**
@@ -907,7 +936,7 @@ class acp_board
 	*/
 	function select_ip_check($value, $key = '')
 	{
-		$radio_ary = array(4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NO_IP_VALIDATION');
+		$radio_ary = [4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NO_IP_VALIDATION'];
 
 		return h_radio('config[ip_check]', $radio_ary, $value, $key);
 	}
@@ -917,7 +946,7 @@ class acp_board
 	*/
 	function select_ref_check($value, $key = '')
 	{
-		$radio_ary = array(REFERER_VALIDATE_PATH => 'REF_PATH', REFERER_VALIDATE_HOST => 'REF_HOST', REFERER_VALIDATE_NONE => 'NO_REF_VALIDATION');
+		$radio_ary = [REFERER_VALIDATE_PATH => 'REF_PATH', REFERER_VALIDATE_HOST => 'REF_HOST', REFERER_VALIDATE_NONE => 'NO_REF_VALIDATION'];
 
 		return h_radio('config[referer_validation]', $radio_ary, $value, $key);
 	}
@@ -929,23 +958,28 @@ class acp_board
 	{
 		global $user, $config;
 
-		$act_ary = array(
-			'ACC_DISABLE'	=> array(true, USER_ACTIVATION_DISABLE),
-			'ACC_NONE'		=> array(true, USER_ACTIVATION_NONE),
-			'ACC_USER'		=> array($config['email_enable'], USER_ACTIVATION_SELF),
-			'ACC_ADMIN'		=> array($config['email_enable'], USER_ACTIVATION_ADMIN),
-		);
+		$act_ary = [
+			'ACC_DISABLE'	=> [true, USER_ACTIVATION_DISABLE],
+			'ACC_NONE'		=> [true, USER_ACTIVATION_NONE],
+			'ACC_USER'		=> [$config['email_enable'], USER_ACTIVATION_SELF],
+			'ACC_ADMIN'		=> [$config['email_enable'], USER_ACTIVATION_ADMIN],
+		];
 
-		$act_options = '';
+		$act_options = [];
 		foreach ($act_ary as $key => $data)
 		{
 			list($available, $value) = $data;
-			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$class = (!$available) ? ' class="disabled-option"' : '';
-			$act_options .= '<option value="' . $value . '"' . $selected . $class . '>' . $user->lang($key) . '</option>';
+			$act_options[] = [
+				'value' => $value,
+				'selected' => $selected_value == $value,
+				'label' => $user->lang($key),
+				'disabled' => !$available,
+			];
 		}
 
-		return $act_options;
+		return [
+			'options' => $act_options,
+		];
 	}
 
 	/**
@@ -955,7 +989,27 @@ class acp_board
 	{
 		global $user;
 
-		return '<input id="' . $key . '" type="number" min="1" max="999" name="config[min_name_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="number" min="8" max="180" name="config[max_name_chars]" value="' . $this->new_config['max_name_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'number',
+				'name'		=> 'config[min_name_chars]',
+				'min'		=> 1,
+				'max'		=> 999,
+				'value'		=> $value,
+				'append'	=> $user->lang('MIN_CHARS') . '&nbsp;&nbsp;',
+			],
+			[
+				'tag'		=> 'input',
+				'type'		=> 'number',
+				'name'		=> 'config[max_name_chars]',
+				'min'		=> 8,
+				'max'		=> 180,
+				'value'		=> $this->new_config['max_name_chars'],
+				'append'	=> $user->lang('MAX_CHARS'),
+			],
+		];
 	}
 
 	/**
@@ -965,15 +1019,20 @@ class acp_board
 	{
 		global $user;
 
-		$user_char_ary = array('USERNAME_CHARS_ANY', 'USERNAME_ALPHA_ONLY', 'USERNAME_ALPHA_SPACERS', 'USERNAME_LETTER_NUM', 'USERNAME_LETTER_NUM_SPACERS', 'USERNAME_ASCII');
-		$user_char_options = '';
+		$user_char_ary = ['USERNAME_CHARS_ANY', 'USERNAME_ALPHA_ONLY', 'USERNAME_ALPHA_SPACERS', 'USERNAME_LETTER_NUM', 'USERNAME_LETTER_NUM_SPACERS', 'USERNAME_ASCII'];
+		$user_char_options = [];
 		foreach ($user_char_ary as $user_type)
 		{
-			$selected = ($selected_value == $user_type) ? ' selected="selected"' : '';
-			$user_char_options .= '<option value="' . $user_type . '"' . $selected . '>' . $user->lang[$user_type] . '</option>';
+			$user_char_options[] = [
+				'value'		=> $user_type,
+				'selected'	=> $selected_value == $user_type,
+				'label'		=> $user->lang($user_type),
+			];
 		}
 
-		return $user_char_options;
+		return [
+			'options' => $user_char_options,
+		];
 	}
 
 	/**
@@ -983,7 +1042,16 @@ class acp_board
 	{
 		global $user;
 
-		return '<input id="' . $key . '" type="number" min="1" max="999" name="config[min_pass_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'];
+		return [
+			[
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> 'number',
+				'name'		=> 'config[min_pass_chars]',
+				'value'		=> $value,
+				'append'	=> $user->lang('MIN_CHARS'),
+			],
+		];
 	}
 
 	/**
@@ -994,14 +1062,20 @@ class acp_board
 		global $user;
 
 		$pass_type_ary = array('PASS_TYPE_ANY', 'PASS_TYPE_CASE', 'PASS_TYPE_ALPHA', 'PASS_TYPE_SYMBOL');
-		$pass_char_options = '';
+		$pass_char_options = [];
 		foreach ($pass_type_ary as $pass_type)
 		{
-			$selected = ($selected_value == $pass_type) ? ' selected="selected"' : '';
-			$pass_char_options .= '<option value="' . $pass_type . '"' . $selected . '>' . $user->lang[$pass_type] . '</option>';
+			$pass_char_options[] = [
+				'tag'		=> 'select',
+				'value' 	=> $pass_type,
+				'selected'	=> $selected_value == $pass_type,
+				'label'		=> $user->lang[$pass_type],
+			];
 		}
 
-		return $pass_char_options;
+		return [
+			'options' => $pass_char_options,
+		];
 	}
 
 	/**
@@ -1359,8 +1433,22 @@ class acp_board
 	{
 		global $user;
 
-		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang('SEND_TEST_EMAIL') . '" />
-				<textarea id="' . $key . '_text" name="' . $key . '_text" placeholder="' . $user->lang('MESSAGE') . '"></textarea>';
+		return [
+			[
+				'tag'		=> 'input',
+				'type'		=> 'submit',
+				'name'		=> $key,
+				'id'		=> $key,
+				'class'		=> 'button2',
+				'value'		=> $user->lang('SEND_TEST_EMAIL'),
+			],
+			[
+				'tag'			=> 'textarea',
+				'name'			=> $key . '_text',
+				'id'			=> $key . '_text',
+				'placeholder'	=> $user->lang('MESSAGE'),
+			],
+		];
 	}
 
 	/**
