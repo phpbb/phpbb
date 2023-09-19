@@ -506,13 +506,14 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 
 	public function select_helper()
 	{
-		return build_select(
-			array(
-				'1'	=> 'First_Option',
-				'2'	=> 'Second_Option',
-				'3'	=> 'Third_Option',
-			),
-			'2'
-		);
+		return [
+			'options' => build_select(
+				[
+					'1'	=> 'First_Option',
+					'2'	=> 'Second_Option',
+					'3'	=> 'Third_Option',
+				],
+				'2'),
+		];
 	}
 }
