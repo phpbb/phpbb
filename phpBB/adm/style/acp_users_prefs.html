@@ -48,7 +48,9 @@
 	</dl>
 	<dl>
 		<dt><label for="style">{L_BOARD_STYLE}{L_COLON}</label></dt>
-		<dd><select id="style" name="style">{S_STYLE_OPTIONS}</select></dd>
+		<dd>
+			{{ FormsSelect(S_STYLE_OPTIONS) }}
+		</dd>
 	</dl>
 	<!-- INCLUDE timezone_option.html -->
 	<dl>

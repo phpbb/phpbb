@@ -205,14 +205,18 @@ class ucp_prefs
 						'name'		=> 'lang',
 						'options'	=> $lang_options,
 					],
-					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style'], false, $styles_row),
+					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : [
+						'id'		=> 'user_style',
+						'name'		=> 'user_style',
+						'options'	=> style_select($data['user_style'], false, $styles_row)
+					],
 					'TIMEZONE_OPTIONS'	=> [
 						'tag'		=> 'select',
 						'name'		=> 'tz',
 						'options'	=> $timezone_select,
 					],
-					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
+					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
+					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 
 			break;
