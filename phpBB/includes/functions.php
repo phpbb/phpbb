@@ -291,9 +291,7 @@ function phpbb_language_select(\phpbb\db\driver\driver_interface $db, string $de
 		];
 	}
 
-	return [
-		'options' => $lang_options
-	];
+	return $lang_options;
 }
 
 /**
@@ -325,16 +323,13 @@ function style_select($default = '', $all = false, array $styledata = [])
 	foreach ($styledata as $row)
 	{
 		$style_options[] = [
-			'tag'		=> 'select',
 			'value' 	=> $row['style_id'],
 			'selected'	=> $row['style_id'] == $default,
 			'label'		=> $row['style_name'],
 		];
 	}
 
-	return [
-		'options' => $style_options,
-	];
+	return $style_options;
 }
 
 /**

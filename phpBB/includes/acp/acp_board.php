@@ -86,8 +86,8 @@ class acp_board
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
 
 						'legend2'				=> 'BOARD_STYLE',
-						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
-						'guest_style'			=> array('lang' => 'GUEST_STYLE',			'validate' => 'int',	'type' => 'select', 'function' => 'style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
+						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
+						'guest_style'			=> array('lang' => 'GUEST_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'WARNINGS',
@@ -1125,6 +1125,18 @@ class acp_board
 		global $db;
 
 		return phpbb_language_select($db, $default, $langdata);
+	}
+
+	/**
+	 * Wrapper function for style_select()
+	 *
+	 * @return array
+	 */
+	public function style_select(): array
+	{
+		global $db;
+
+		return ['options' => style_select()];
 	}
 
 	/**

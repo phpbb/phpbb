@@ -321,12 +321,15 @@ class acp_bots
 					unset($bot_row['user_lang'], $bot_row['user_style']);
 				}
 
-				$s_active_options = '';
+				$s_active_options = [];
 				$_options = array('0' => 'NO', '1' => 'YES');
 				foreach ($_options as $value => $lang)
 				{
-					$selected = ($bot_row['bot_active'] == $value) ? ' selected="selected"' : '';
-					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+					$s_active_options[] = [
+						'value' 	=> $value,
+						'selected'	=> $bot_row['bot_active'] == $value,
+						'label'		=> $user->lang($lang),
+					];
 				}
 
 				$style_select = style_select($bot_row['bot_style'], true);
@@ -345,14 +348,22 @@ class acp_bots
 					'BOT_AGENT'		=> $bot_row['bot_agent'],
 
 					'S_EDIT_BOT'		=> true,
-					'S_ACTIVE_OPTIONS'	=> $s_active_options,
-					'S_STYLE_OPTIONS'	=> $style_select,
+					'S_ACTIVE_OPTIONS'	=> [
+						'id'		=> 'bot_active',
+						'name'		=> 'bot_active',
+						'options'	=> $s_active_options,
+					],
+					'S_STYLE_OPTIONS'	=> [
+						'id'		=> 'bot_style',
+						'name'		=> 'bot_style',
+						'options'	=> $style_select,
+					],
 					'LANG_OPTIONS'		=> [
 						'id'		=> 'bot_lang',
 						'name'		=> 'bot_lang',
 						'options'	=> $lang_options,
 					],
-					'S_ERROR'			=> (count($error)) ? true : false,
+					'S_ERROR'		=> (bool) count($error),
 				));
 
 				return;
