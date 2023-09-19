@@ -247,18 +247,19 @@ function h_radio($name, $input_ary, $input_default = false, $id = false, $key = 
 }
 
 /**
- * HTML-less version of build_cfg_template
+ * Build configuration data arrays or templates for configuration settings
  *
- * @param array $tpl_type Template type
- * @param string $key Config key
- * @param $new_ary
- * @param $config_key
- * @param $vars
- * @return array
+ * @param array		$tpl_type	Configuration setting type data
+ * @param string	$key		Configuration option name
+ * @param array		$new_ary	Updated configuration data
+ * @param string	$config_key	Configuration option name
+ * @param Array		$vars		Configuration setting data
+ *
+ * @return array|string
  */
-function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $config_key, $vars): array
+function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 {
-	global $language;
+	global $language, $module, $phpbb_dispatcher;
 
 	$tpl = [];
 	$name = 'config[' . $config_key . ']';
@@ -399,78 +400,9 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $conf
 			}
 		break;
 
-		case 'select':
-			$tpl = [
-				'tag'			=> 'select',
-				'class'			=> $tpl_type['class'] ?? false,
-				'id'			=> $key,
-				'data'			=> $tpl_type['data'] ?? [],
-				'name'			=> $name,
-				'toggleable'	=> !empty($tpl_type[2]) || !empty($tpl_type['toggleable']),
-				'options'		=> $tpl_type['options'],
-				'group_only'	=> $tpl_type['group_only'] ?? false,
-				'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
-				'multiple'		=> $tpl_type['multiple'] ?? false,
-			];
-		break;
-
 		case 'button':
-			$tpl = [
-				'tag'		=> 'input',
-				'class'		=> $tpl_type['options']['class'],
-				'id'		=> $key,
-				'type'		=> $tpl_type['options']['type'],
-				'name'		=> $tpl_type['options']['name'] ?? $name,
-				'value'		=> $tpl_type['options']['value'],
-			];
-		break;
-	}
-
-	return $tpl;
-}
-
-/**
-* Build configuration template for acp configuration pages
-*/
-function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
-{
-	global $module, $phpbb_dispatcher;
-
-	$tpl = '';
-	$name = 'config[' . $config_key . ']';
-
-	// Make sure there is no notice printed out for non-existent config options (we simply set them)
-	if (!isset($new_ary[$config_key]))
-	{
-		$new_ary[$config_key] = '';
-	}
-
-	switch ($tpl_type[0])
-	{
-		case 'password':
-		case 'text':
-		case 'url':
-		case 'email':
-		case 'tel':
-		case 'search':
-		case 'color':
-		case 'datetime':
-		case 'datetime-local':
-		case 'month':
-		case 'week':
-		case 'date':
-		case 'time':
-		case 'number':
-		case 'range':
-		case 'dimension':
-		case 'textarea':
-		case 'radio':
-			$tpl = phpbb_build_cfg_template($tpl_type, $key, $new_ary, $config_key, $vars);
-		break;
-
 		case 'select':
 		case 'custom':
-
 			if (isset($vars['method']))
 			{
 				$call = array($module->module, $vars['method']);
@@ -513,7 +445,33 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			if (in_array($tpl_type[0], ['select', 'button']))
 			{
 				$tpl_type = array_merge($tpl_type, $return);
-				$tpl = phpbb_build_cfg_template($tpl_type, $key, $new_ary, $config_key, $vars);
+
+				if ($tpl_type[0] == 'select')
+				{
+					$tpl = [
+						'tag'			=> 'select',
+						'class'			=> $tpl_type['class'] ?? false,
+						'id'			=> $key,
+						'data'			=> $tpl_type['data'] ?? [],
+						'name'			=> $name,
+						'toggleable'	=> !empty($tpl_type[2]) || !empty($tpl_type['toggleable']),
+						'options'		=> $tpl_type['options'],
+						'group_only'	=> $tpl_type['group_only'] ?? false,
+						'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
+						'multiple'		=> $tpl_type['multiple'] ?? false,
+					];
+				}
+				else
+				{
+					$tpl = [
+						'tag'		=> 'input',
+						'class'		=> $tpl_type['options']['class'],
+						'id'		=> $key,
+						'type'		=> $tpl_type['options']['type'],
+						'name'		=> $tpl_type['options']['name'] ?? $name,
+						'value'		=> $tpl_type['options']['value'],
+					];
+				}
 			}
 			else
 			{
@@ -542,15 +500,15 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 	* Overwrite the html code we display for the config value
 	*
 	* @event core.build_config_template
-	* @var	array	tpl_type	Config type array:
-	*						0 => data type
-	*						1 [optional] => string: size, int: minimum
-	*						2 [optional] => string: max. length, int: maximum
-	* @var	string	key			Should be used for the id attribute in html
-	* @var	array	new			Array with the config values we display
-	* @var	string	name		Should be used for the name attribute
-	* @var	array	vars		Array with the options for the config
-	* @var	string	tpl			The resulting html code we display
+	* @var	array			tpl_type	Config type array:
+	*							0 => data type
+	*							1 [optional] => string: size, int: minimum
+	*							2 [optional] => string: max. length, int: maximum
+	* @var	string			key			Should be used for the id attribute in html
+	* @var	array			new			Array with the config values we display
+	* @var	string			name		Should be used for the name attribute
+	* @var	array			vars		Array with the options for the config
+	* @var	array|string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
