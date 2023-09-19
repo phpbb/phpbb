@@ -24,14 +24,14 @@
 			<option
 				value="{{ option.value }}"
 				{% if option.selected %}selected="selected"{% endif %}
-				{% if option.disabled %} disabled="disabled" class="disabled-option"{% endif %}>{{ option.label }}</option>
+				{% if option.disabled %} disabled="disabled"{% endif %}{% if option.class %} class="{{ option.class }}"{% endif %}>{{ option.label }}</option>
 		{% endfor %}
 		</optgroup>
 	{% else %}
 		<option
 			value="{{ element.value }}"
 			{% if element.selected %} selected="selected"{% endif %}
-			{% if element.disabled %} disabled="disabled" class="disabled-option"{% endif %}
+			{% if element.disabled %} disabled="disabled"{% endif %}{% if element.class %} class="{{ element.class }}"{% endif %}
 			{% if element.data %}{% for key, value in element.data %} data-{{ key }}="{{ value }}"{% endfor %}{% endif %}>{{ element.label }}</option>
 	{% endif %}
 {% endfor %}

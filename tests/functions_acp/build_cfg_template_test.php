@@ -431,8 +431,11 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				['method' => 'select_helper'],
 				[
 					'tag'		=> 'select',
+					'class'		=> false,
 					'id'		=> 'key_name',
+					'data'		=> [],
 					'name'		=> 'config[config_key_name]',
+					'toggleable' => false,
 					'options'	=> [
 						[
 							'value'		=> 1,
@@ -450,7 +453,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'selected'	=> false,
 						]
 					],
-					'toggleable' => false,
+					'group_only'	=> false,
+					'size'			=> 1,
+					'multiple'		=> false,
 				],
 			],
 			[
@@ -461,9 +466,11 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				['method' => 'select_helper'],
 				[
 					'tag'		=> 'select',
+					'class'		=> false,
 					'id'		=> 'key_name',
+					'data'		=> [],
 					'name'		=> 'config[config_key_name]',
-					'size'		=> 8,
+					'toggleable' => false,
 					'options'	=> [
 						[
 							'value'		=> 1,
@@ -481,7 +488,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'selected'	=> false,
 						]
 					],
-					'toggleable' => false,
+					'group_only'	=> false,
+					'size'			=> 8,
+					'multiple'		=> false,
 				],
 			],
 		];
