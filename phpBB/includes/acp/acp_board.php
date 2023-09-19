@@ -970,10 +970,10 @@ class acp_board
 		{
 			list($available, $value) = $data;
 			$act_options[] = [
-				'value' => $value,
-				'selected' => $selected_value == $value,
-				'label' => $user->lang($key),
-				'disabled' => !$available,
+				'value'		=> $value,
+				'selected'	=> $selected_value == $value,
+				'label'		=> $user->lang($key),
+				'class'		=> !$available ? 'disabled-option' : '',
 			];
 		}
 

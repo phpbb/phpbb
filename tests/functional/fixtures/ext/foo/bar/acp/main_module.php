@@ -125,11 +125,25 @@ class main_module
 
 	function create_select()
 	{
-		return '
-			<option value="1" selected="selected">Option 1</option>
-			<option value="2">Option 2</option>
-			<option value="3">Option 3</option>
-		';
+		return [
+			'options' => [
+				[
+					'value'		=> 1,
+					'selected'	=> true,
+					'label'		=> 'Option 1',
+				],
+				[
+					'value'		=> 2,
+					'selected'	=> false,
+					'label'		=> 'Option 2',
+				],
+				[
+					'value'		=> 3,
+					'selected'	=> false,
+					'label'		=> 'Option 3',
+				],
+			]
+		];
 	}
 
 	function submit_button()
