@@ -151,10 +151,7 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/radio_buttons.twig', [
-				'FIRST_BUTTON'			=> $form_data['buttons'][0],
-				'FIRST_BUTTON_LABEL'	=> $form_data['buttons'][0]['label'],
-				'SECOND_BUTTON'			=> $form_data['buttons'][1],
-				'SECOND_BUTTON_LABEL'	=> $form_data['buttons'][1]['label'],
+				'BUTTONS'	=>	$form_data['buttons'],
 			]);
 		}
 		catch (\Twig\Error\Error $e)

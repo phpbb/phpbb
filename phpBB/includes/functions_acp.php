@@ -270,6 +270,12 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		$new_ary[$config_key] = '';
 	}
 
+	// For BC check if parameter is json format and if yes split $tpl_type in 2 parts only
+	if (isset($tpl_type[1]) && strpos($tpl_type[1], '{') !== false)
+	{
+		$tpl_type = explode(':', $vars['type'], 2);
+	}
+
 	switch ($tpl_type[0])
 	{
 		case 'password':
@@ -369,35 +375,37 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'radio':
-			$tpl_type_cond = explode('_', $tpl_type[1]);
-			$type_no = $tpl_type_cond[0] != 'disabled' && $tpl_type_cond[0] != 'enabled';
-
-			$no_button = [
-				'type'		=> 'radio',
-				'name'		=> $name,
-				'value'		=> 0,
-				'checked'	=> !$new_ary[$config_key],
-				'label'		=> $type_no ? $language->lang('NO') : $language->lang('DISABLED'),
-			];
-
-			$yes_button = [
-				'id'		=> $key,
-				'type'		=> 'radio',
-				'name'		=> $name,
-				'value'		=> 1,
-				'checked'	=> (bool) $new_ary[$config_key],
-				'label'		=> $type_no ? $language->lang('YES') : $language->lang('ENABLED'),
-			];
-
-			$tpl = ['tag' => 'radio'];
-			if ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled')
+			// Convert 'old' radio button parameters to json encoded string for BC
+			if (in_array($tpl_type[1], ['yes_no', 'enabled_disabled']))
 			{
-				$tpl['buttons'] = [$yes_button, $no_button];
+				$params = explode('_', $tpl_type[1]);
+				$tpl_type[1] = '{"' . $params[0] . '":1, "' . $params[1] . '":0}';
 			}
-			else
+
+			$params = json_decode($tpl_type[1], true);
+			$id_assigned = false;
+			$buttons = [];
+			foreach ($params as $param => $value)
 			{
-				$tpl['buttons'] = [$no_button, $yes_button];
-			}
+				$buttons[] = [
+					'type'		=> 'radio',
+					'name'		=> $name,
+					'value'		=> $value,
+					'checked'	=> $new_ary[$config_key] == $value,
+					'label'		=> $language->lang(strtoupper($param)),
+				];
+
+				// Only assign id to the one (1st) button in the list
+				if (!$id_assigned)
+				{
+					$buttons[key($buttons)]['id'] = $key;
+				}
+			};
+
+			$tpl = [
+				'tag' => 'radio',
+				'buttons' => $buttons,
+			];
 		break;
 
 		case 'button':

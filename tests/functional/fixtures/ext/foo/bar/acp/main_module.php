@@ -49,6 +49,7 @@ class main_module
 				'setting_7'	=> ['lang' => 'SETTING_7',	'validate' => 'email',		'type' => 'email:0:100', 'explain' => true],
 				'setting_8'	=> ['lang' => 'SETTING_8',	'validate' => 'string',		'type' => 'textarea:5:30', 'explain' => true],
 				'setting_9'	=> ['lang' => 'SETTING_9',	'validate' => 'bool',		'type' => 'radio:enabled_disabled', 'explain' => true],
+				'setting_10'=> ['lang' => 'SETTING_10',	'validate' => 'bool',		'type' => 'radio:{"LABEL_1":1, "LABEL_3":3, "LABEL_2":2}', 'explain' => true],
 			]
 		];
 
