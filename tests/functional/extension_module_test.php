@@ -101,6 +101,16 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		$this->assertStringContainsString('SETTING_9', $crawler->filter('dl')->eq(9)->filter('dt > label[for="setting_9"]')->text());
 		$this->assertStringContainsString('SETTING_9_EXPLAIN', $crawler->filter('dl')->eq(9)->filter('dt > span')->text());
 		$this->assertEquals(2, $crawler->filter('dl')->eq(9)->filter('dd > label > input[type="radio"]')->count());
+
+		$this->assertStringContainsString('SETTING_10', $crawler->filter('dl')->eq(10)->filter('dt > label[for="setting_10"]')->text());
+		$this->assertStringContainsString('SETTING_10_EXPLAIN', $crawler->filter('dl')->eq(10)->filter('dt > span')->text());
+		$this->assertEquals(3, $crawler->filter('dl')->eq(10)->filter('dd > label > input[type="radio"]')->count());
+		$this->assertEquals(1, $crawler->filter('dl')->eq(10)->filter('dd > label > input[type="radio"]')->eq(0)->attr('value'));
+		$this->assertStringContainsString('LABEL_1', $crawler->filter('dl')->eq(10)->filter('dd > label')->eq(0)->text());
+		$this->assertEquals(3, $crawler->filter('dl')->eq(10)->filter('dd > label > input[type="radio"]')->eq(1)->attr('value'));
+		$this->assertStringContainsString('LABEL_3', $crawler->filter('dl')->eq(10)->filter('dd > label')->eq(1)->text());
+		$this->assertEquals(2, $crawler->filter('dl')->eq(10)->filter('dd > label > input[type="radio"]')->eq(2)->attr('value'));
+		$this->assertStringContainsString('LABEL_2', $crawler->filter('dl')->eq(10)->filter('dd > label')->eq(2)->text());
 	}
 
 	public function test_ucp()

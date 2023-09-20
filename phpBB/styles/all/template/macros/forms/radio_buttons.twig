@@ -1,2 +1,3 @@
-<label>{{ FormsInput(FIRST_BUTTON) ~ FIRST_BUTTON_LABEL }}</label>
-<label>{{ FormsInput(SECOND_BUTTON) ~ SECOND_BUTTON_LABEL }}</label>
+{% for button in BUTTONS %}
+<label>{{ FormsInput(button) ~ button.label }}</label>
+{% endfor %}
