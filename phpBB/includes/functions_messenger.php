@@ -427,7 +427,7 @@ class messenger
 			$user->session_begin();
 		}
 
-		$calling_page = html_entity_decode($request->server('PHP_SELF'), ENT_COMPAT);
+		$calling_page = html_entity_decode($request->server('REQUEST_URI'), ENT_COMPAT);
 
 		switch ($type)
 		{
