@@ -13,9 +13,12 @@
 
 namespace phpbb\debug;
 
-use Symfony\Component\Debug\BufferingLogger;
-use Symfony\Component\Debug\DebugClassLoader;
-use Symfony\Component\Debug\ExceptionHandler;
+use phpbb\config\config;
+use phpbb\language\language;
+use phpbb\language\language_file_loader;
+use Symfony\Component\ErrorHandler\BufferingLogger;
+use Symfony\Component\ErrorHandler\DebugClassLoader;
+use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
  * Registers all the debug tools.
@@ -25,6 +28,10 @@ use Symfony\Component\Debug\ExceptionHandler;
 class debug
 {
 	private static $enabled = false;
+	private static $exception_handler_enabled = false;
+
+	/** @var exception_handler */
+	private static $exception_handler;
 
 	/**
 	 * Enables the debug tools.
@@ -58,7 +65,10 @@ class debug
 		if ('cli' !== php_sapi_name())
 		{
 			ini_set('display_errors', 0);
-			ExceptionHandler::register();
+			if (!self::$exception_handler_enabled)
+			{
+				ErrorHandler::register();
+			}
 		}
 		else if ($displayErrors && (!ini_get('log_errors') || ini_get('error_log')))
 		{
@@ -76,5 +86,56 @@ class debug
 		}
 
 		DebugClassLoader::enable();
+	}
+
+	/**
+	 * Enable exception handler
+	 *
+	 * @param string $root_path phpBB root path
+	 * @param string $php_ext PHP file extension
+	 *
+	 * @return void
+	 */
+	static public function enable_exception_handler(string $root_path, string $php_ext): void
+	{
+		if (self::$exception_handler_enabled)
+		{
+			return;
+		}
+
+		self::$exception_handler_enabled = true;
+
+		$language = new language(new language_file_loader($root_path, $php_ext));
+
+		self::$exception_handler = exception_handler::register(PHPBB_ENVIRONMENT === 'development');
+		self::$exception_handler->set_language($language)
+			->set_root_path($root_path);
+	}
+
+	/**
+	 * Set config instance for exception handler
+	 *
+	 * @param config $config
+	 *
+	 * @return void
+	 */
+	static public function set_exception_handler_config(config $config)
+	{
+		if (!self::$exception_handler_enabled || !self::$exception_handler)
+		{
+			return;
+		}
+
+		self::$exception_handler->set_config($config);
+	}
+
+	/**
+	 * Enable debug in exception handler
+	 *
+	 * @return void
+	 */
+	static public function enable_exception_handler_debug(): void
+	{
+		self::$exception_handler->set_debug_enabled();
 	}
 }
