@@ -35,7 +35,8 @@ $hash = hash_file('sha384', $file_path, true);
 try
 {
 	$signature = sodium_crypto_sign_detached($hash, $secret_key);
-} catch (SodiumException $e)
+}
+catch (SodiumException $e)
 {
 	$keypair = sodium_crypto_sign_keypair();
 
