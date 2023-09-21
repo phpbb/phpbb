@@ -14,7 +14,7 @@
 namespace phpbb\debug;
 
 use Symfony\Component\ErrorHandler\BufferingLogger;
-use Symfony\Component\ErrorHandler\Debug as DebugHandler;
+use Symfony\Component\ErrorHandler\DebugClassLoader;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
@@ -37,7 +37,7 @@ class debug
 	 * @param int|null $errorReportingLevel The level of error reporting you want
 	 * @param bool $displayErrors Whether to display errors (for development) or just log them (for production)
 	 */
-	public static function enable(?int $errorReportingLevel = null, bool $displayErrors = true): void
+	public static function enable(int|null $errorReportingLevel = null, bool $displayErrors = true): void
 	{
 		if (static::$enabled)
 		{
@@ -58,7 +58,6 @@ class debug
 		if ('cli' !== php_sapi_name())
 		{
 			ini_set('display_errors', 0);
-			ErrorHandler::register();
 		}
 		else if ($displayErrors && (!ini_get('log_errors') || ini_get('error_log')))
 		{
@@ -68,13 +67,13 @@ class debug
 
 		if ($displayErrors)
 		{
-			error_handler::register(new error_handler(new BufferingLogger()));
+			error_handler::register(new error_handler(new BufferingLogger(), true));
 		}
 		else
 		{
 			error_handler::register()->throwAt(0, true);
 		}
 
-		DebugHandler::enable();
+		DebugClassLoader::enable();
 	}
 }
