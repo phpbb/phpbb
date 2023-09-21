@@ -14,6 +14,7 @@
 namespace phpbb\debug;
 
 use Symfony\Component\ErrorHandler\BufferingLogger;
+use Symfony\Component\ErrorHandler\Debug as DebugHandler;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
@@ -74,6 +75,6 @@ class debug
 			error_handler::register()->throwAt(0, true);
 		}
 
-		Debug::enable();
+		DebugHandler::enable();
 	}
 }
