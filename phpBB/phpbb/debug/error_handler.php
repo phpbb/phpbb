@@ -24,7 +24,7 @@ class error_handler extends ErrorHandler
 	/**
 	 * @psalm-suppress MethodSignatureMismatch
 	 */
-	public function __construct(BufferingLogger $bootstrappingLogger = null, private readonly bool $debug = false)
+	public function __construct(BufferingLogger $bootstrappingLogger = null, private readonly bool $debug = false) // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod.Found
 	{
 		parent::__construct($bootstrappingLogger, $debug);
 	}
