@@ -15,7 +15,6 @@ namespace phpbb\debug;
 
 use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\ErrorHandler\DebugClassLoader;
-use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
  * Registers all the debug tools.

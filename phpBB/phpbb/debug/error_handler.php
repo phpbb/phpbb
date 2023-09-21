@@ -21,7 +21,10 @@ use Symfony\Component\ErrorHandler\ErrorHandler;
  */
 class error_handler extends ErrorHandler
 {
-	public function __construct(BufferingLogger $bootstrappingLogger = null, private bool $debug = false)
+	/**
+	 * @psalm-suppress MethodSignatureMismatch
+	 */
+	public function __construct(BufferingLogger $bootstrappingLogger = null, private readonly bool $debug = false)
 	{
 		parent::__construct($bootstrappingLogger, $debug);
 	}
