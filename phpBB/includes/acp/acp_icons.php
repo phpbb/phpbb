@@ -550,7 +550,7 @@ class acp_icons
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . basename($pak))))
+					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . utf8_basename($pak))))
 					{
 						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
