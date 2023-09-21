@@ -24,8 +24,8 @@
 		"local-name": "British English",
 		"phpbb-version": "4.0.0-a1-dev",
 		"direction": "ltr",
-		"user_lang": "en-gb",
-		"plural_rule": "1",
-		"recaptcha_lang": "en-GB"
+		"user-lang": "en-gb",
+		"plural-rule": "1",
+		"recaptcha-lang": "en-GB"
 	}
 }

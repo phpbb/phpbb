@@ -91,7 +91,7 @@ class language_file_helper
 	 */
 	protected function get_language_data_from_json(array $data) : array
 	{
-		if (!isset($data['extra']['language-iso']) || !isset($data['extra']['english-name']) || !isset($data['extra']['local-name']))
+		if (!isset($data['extra']['language-iso']) || !isset($data['extra']['english-name']) || !isset($data['extra']['local-name']) || !isset($data['extra']['direction']) || !isset($data['extra']['user-lang']) || !isset($data['extra']['plural-rule']) || !isset($data['extra']['recaptcha-lang']))
 		{
 			throw new DomainException('INVALID_LANGUAGE_PACK');
 		}
@@ -115,6 +115,10 @@ class language_file_helper
 			'author'		=> implode(', ', $authors),
 			'version'		=> $data['version'],
 			'phpbb_version'	=> $data['extra']['phpbb-version'],
+			'direction'		=> $data['extra']['direction'],
+			'user-lang'		=> $data['extra']['user-lang'],
+			'plural-rule'	=> $data['extra']['plural-rule'],
+			'recaptcha-lang'=> $data['extra']['recaptcha-lang'],
 		];
 	}
 }
