@@ -654,7 +654,7 @@ class acp_icons
 							{
 								$replace_sql = ($mode == 'smilies') ? $code : $img;
 								$sql = array(
-									$fields . '_url'		=> utf8_substr(htmlspecialchars($img, ENT_COMPAT), 0, 50),
+									$fields . '_url'		=> utf8_substr(rawurlencode($img), 0, 50),
 									$fields . '_height'		=> (int) $height,
 									$fields . '_width'		=> (int) $width,
 									'display_on_posting'	=> (int) $display_on_posting,
@@ -676,7 +676,7 @@ class acp_icons
 								++$order;
 
 								$sql = array(
-									$fields . '_url'	=> utf8_substr(htmlspecialchars($img, ENT_COMPAT), 0, 50),
+									$fields . '_url'	=> utf8_substr(rawurlencode($img), 0, 50),
 									$fields . '_height'	=> (int) $height,
 									$fields . '_width'	=> (int) $width,
 									$fields . '_order'	=> (int) $order,
