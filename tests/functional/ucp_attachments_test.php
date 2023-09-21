@@ -134,7 +134,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$attachment_filename = $crawler->filter('.attachment-filename');
 		$this->assertEquals('valid.jpg', $attachment_filename->attr('title'));
 		$this->assertStringContainsString('app.php/download/attachment/' . $attach_id . '/valid.jpg', $attachment_filename->attr('href'));
-		$this->assertEquals('', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertFalse($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 	}
 
 	public function test_ucp_delete_expired_attachment()
@@ -219,7 +219,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
 		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		// It should not be possible to delete the attachment
 		$crawler = self::request('POST', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid, [
@@ -238,7 +238,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		});
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
 		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		$this->logout();
 
@@ -327,7 +327,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
 		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
-		$this->assertEquals('', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertFalse($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		// Update message time to 60 minutes later
 		$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
@@ -347,7 +347,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
 		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		$this->set_flood_interval(15);
 

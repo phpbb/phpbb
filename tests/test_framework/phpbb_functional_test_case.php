@@ -11,12 +11,19 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\NativeHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
-	/** @var \Goutte\Client */
+	/** @var HttpClientInterface */
+	protected static $http_client;
+
+	/** @var HttpBrowser */
 	protected static $client;
 	protected static $cookieJar;
 	protected static $root_url;
@@ -89,7 +96,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
+		// Force native client on windows platform
+		self::$http_client = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? new NativeHttpClient() : HttpClient::create();
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -158,6 +167,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
 	{
+		// Remove files from form if no file was submitted
+		// See: https://github.com/symfony/symfony/issues/49014
+		foreach ($form->getFiles() as $field_name => $value)
+		{
+			if (!$value['name'] && !$value['tmp_name'])
+			{
+				$form->remove($field_name);
+			}
+		}
+
 		$crawler = self::$client->submit($form, $values);
 
 		if ($assert_response_html)
@@ -189,10 +208,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$backupStaticAttributesBlacklist = [
+		$this->backupStaticAttributesExcludeList += [
 			'phpbb_functional_test_case' => ['config', 'already_installed'],
 		];
-		$this->excludeBackupStaticAttributes($backupStaticAttributesBlacklist);
 	}
 
 	protected function get_db()
@@ -270,7 +288,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$container->set('migrator', $migrator);
-		$container->set('dispatcher', $phpbb_dispatcher);
+		$container->set('event_dispatcher', $phpbb_dispatcher);
 		$cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setConstructorArgs([$this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx])
 			->setMethods(['deferred_purge'])

@@ -2,7 +2,7 @@ services:
     phpbb.help.manager:
         class: phpbb\help\manager
         arguments:
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '@template'
 

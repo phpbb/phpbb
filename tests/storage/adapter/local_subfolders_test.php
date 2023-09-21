@@ -88,8 +88,8 @@ class phpbb_storage_adapter_local_subfolders_test extends phpbb_local_test_case
 		$this->adapter->delete('file.txt');
 
 		// Then
-		$this->assertFileNotExists($this->path . '3d/8e/file.txt');
-		$this->assertFileNotExists($this->path . '3d');
+		$this->assertFileDoesNotExist($this->path . '3d/8e/file.txt');
+		$this->assertFileDoesNotExist($this->path . '3d');
 	}
 
 	public function test_rename(): void
@@ -102,9 +102,9 @@ class phpbb_storage_adapter_local_subfolders_test extends phpbb_local_test_case
 		$this->adapter->rename('file.txt', 'file2.txt');
 
 		// Then
-		$this->assertFileNotExists($this->path . '3d/8e/file.txt');
+		$this->assertFileDoesNotExist($this->path . '3d/8e/file.txt');
 		$this->assertFileExists($this->path . '27/36/file2.txt');
-		$this->assertFileNotExists($this->path . '3d');
+		$this->assertFileDoesNotExist($this->path . '3d');
 
 		// Clean test
 		unlink($this->path . '27/36/file2.txt');

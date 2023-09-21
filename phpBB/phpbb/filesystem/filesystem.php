@@ -606,7 +606,7 @@ class filesystem implements filesystem_interface
 	protected function phpbb_own_realpath($path)
 	{
 		// Replace all directory separators with '/'
-		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path ?: '');
 
 		$is_absolute_path = false;
 		$path_prefix = '';

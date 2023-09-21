@@ -39,7 +39,7 @@ class service_collection_iterator extends \ArrayIterator
 	/**
 	* {@inheritdoc}
 	*/
-	public function current()
+	public function current(): mixed
 	{
 		return $this->collection->offsetGet($this->key());
 	}

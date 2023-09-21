@@ -1448,17 +1448,22 @@ function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 * @param string $filename The filename basename() should be applied to
 * @return string The basenamed filename
 */
-function utf8_basename($filename)
+function utf8_basename($filename): string
 {
+	if (!$filename)
+	{
+		return '';
+	}
+
 	// We always check for forward slash AND backward slash
 	// because they could be mixed or "sneaked" in. ;)
 	// You know, never trust user input...
-	if (strpos($filename, '/') !== false)
+	if (str_contains($filename, '/'))
 	{
 		$filename = utf8_substr($filename, utf8_strrpos($filename, '/') + 1);
 	}
 
-	if (strpos($filename, '\\') !== false)
+	if (str_contains($filename, '\\'))
 	{
 		$filename = utf8_substr($filename, utf8_strrpos($filename, '\\') + 1);
 	}

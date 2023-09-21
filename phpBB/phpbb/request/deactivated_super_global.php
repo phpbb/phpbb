@@ -74,7 +74,7 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	*
 	* @return	bool	Whether the key on the super global exists.
 	*/
-	public function offsetExists($offset)
+	public function offsetExists($offset): bool
 	{
 		return $this->request->is_set($offset, $this->super_global);
 	}
@@ -82,17 +82,17 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**#@+
 	* Part of the \ArrayAccess implementation, will always result in a FATAL error.
 	*/
-	public function offsetGet($offset)
+	public function offsetGet($offset): mixed
 	{
 		$this->error();
 	}
 
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
 		$this->error();
 	}
 
-	public function offsetUnset($offset)
+	public function offsetUnset($offset): void
 	{
 		$this->error();
 	}
@@ -101,9 +101,8 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**
 	* Part of the \Countable implementation, will always result in a FATAL error
 	* @return void
-	* @psalm-suppress InvalidReturnType
 	*/
-	public function count()
+	#[\ReturnTypeWillChange] public function count(): void
 	{
 		$this->error();
 	}
@@ -111,9 +110,8 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**
 	* Part of the Traversable/IteratorAggregate implementation, will always result in a FATAL error
 	* @return void
-	* @psalm-suppress InvalidReturnType
 	*/
-	public function getIterator()
+	#[\ReturnTypeWillChange] public function getIterator(): void
 	{
 		$this->error();
 	}

@@ -42,6 +42,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\extension\manager */
+	protected $extension_manager;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator.xml');
@@ -80,7 +83,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			new \phpbb\db\migration\helper()
 		);
 		$container->set('migrator', $this->migrator);
-		$container->set('dispatcher', new phpbb_mock_event_dispatcher());
+		$container->set('event_dispatcher', new phpbb_mock_event_dispatcher());
 
 		$this->extension_manager = new \phpbb\extension\manager(
 			$container,
@@ -98,6 +101,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->migrator->set_migrations(array('phpbb_dbal_migration_dummy'));
 
 		// schema
+		$start_time = time();
 		$this->migrator->update();
 		$this->assertFalse($this->migrator->finished());
 
@@ -106,12 +110,13 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			"SELECT 1 as success
 				FROM phpbb_migrations
 				WHERE migration_name = 'phpbb_dbal_migration_dummy'
-					AND migration_start_time >= " . (time() - 1) . "
+					AND migration_start_time >= " . ($start_time - 1) . "
 					AND migration_start_time <= " . (time() + 1),
 			'Start time set correctly'
 		);
 
 		// data
+		$start_time = time();
 		$this->migrator->update();
 		$this->assertTrue($this->migrator->finished());
 
@@ -127,7 +132,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				FROM phpbb_migrations
 				WHERE migration_name = 'phpbb_dbal_migration_dummy'
 					AND migration_start_time <= migration_end_time
-					AND migration_end_time >= " . (time() - 1) . "
+					AND migration_end_time >= " . ($start_time - 1) . "
 					AND migration_end_time <= " . (time() + 1),
 			'End time set correctly'
 		);

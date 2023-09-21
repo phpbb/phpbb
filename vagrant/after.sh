@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PHP_VERSION="7.3"
+PHP_VERSION="8.1"
 PHPBB_PATH="/home/vagrant/phpbb"
 PHPBB_CONFIG="${PHPBB_PATH}/phpBB/config.php"
 PHPBB_INSTALL="${PHPBB_PATH}/vagrant/phpbb-install-config.yml"

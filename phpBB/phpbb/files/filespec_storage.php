@@ -117,7 +117,7 @@ class filespec_storage
 		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
-		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
+		$this->mimetype	= ($this->mimetype && str_contains($this->mimetype, '; name')) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
 
 		if (!$this->mimetype)
 		{

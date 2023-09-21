@@ -101,7 +101,7 @@ services:
             - '@config'
             - '@content.visibility'
             - '@dbal.conn'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '@request'
             - '@storage.attachment'

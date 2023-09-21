@@ -69,6 +69,9 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	/** @var \phpbb\request\request */
 	protected $request;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/resync.xml');

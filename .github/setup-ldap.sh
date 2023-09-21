@@ -16,4 +16,4 @@ mkdir /var/tmp/slapd
 cp .github/ldap/slapd.conf /var/tmp/slapd/slapd.conf
 slapd -d 256 -d 128 -f /var/tmp/slapd/slapd.conf -h ldap://localhost:3389 &
 sleep 3
-ldapadd -h localhost:3389 -D "cn=admin,dc=example,dc=com" -w adminadmin -f .github/ldap/base.ldif
+ldapadd -H ldap://localhost:3389 -D "cn=admin,dc=example,dc=com" -w adminadmin -f .github/ldap/base.ldif

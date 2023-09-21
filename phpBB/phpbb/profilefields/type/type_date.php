@@ -150,7 +150,7 @@ class type_date extends type_base
 	*/
 	public function validate_profile_field(&$field_value, $field_data)
 	{
-		$field_validate = explode('-', $field_value);
+		$field_validate = explode('-', $field_value ?: '');
 
 		$day = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
 		$month = (isset($field_validate[1])) ? (int) $field_validate[1] : 0;
@@ -184,7 +184,7 @@ class type_date extends type_base
 	*/
 	public function get_profile_value($field_value, $field_data)
 	{
-		$date = explode('-', $field_value);
+		$date = explode('-', $field_value ?: '');
 		$day = (isset($date[0])) ? (int) $date[0] : 0;
 		$month = (isset($date[1])) ? (int) $date[1] : 0;
 		$year = (isset($date[2])) ? (int) $date[2] : 0;

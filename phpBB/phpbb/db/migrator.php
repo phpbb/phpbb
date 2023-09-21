@@ -91,9 +91,9 @@ class migrator
 	*
 	* 'effectively_installed' set and set to true if the migration was effectively_installed
 	*
-	* @var array|false
+	* @var array
 	*/
-	protected $last_run_migration = false;
+	protected $last_run_migration = [];
 
 	/**
 	 * The output handler. A null handler is configured by default.
@@ -193,9 +193,9 @@ class migrator
 	 * The array contains 'name', 'class' and 'state'. 'effectively_installed' is set
 	 * and set to true if the last migration was effectively_installed.
 	 *
-	 * @return array|false Last run migration information or false if no migration has been run yet
+	 * @return array Last run migration information or false if no migration has been run yet
 	 */
-	public function get_last_run_migration()
+	public function get_last_run_migration(): array
 	{
 		return $this->last_run_migration;
 	}
@@ -261,9 +261,9 @@ class migrator
 	*/
 	public function update()
 	{
-		$this->container->get('dispatcher')->disable();
+		$this->container->get('event_dispatcher')->disable();
 		$this->update_do();
-		$this->container->get('dispatcher')->enable();
+		$this->container->get('event_dispatcher')->enable();
 	}
 
 	/**
@@ -509,9 +509,9 @@ class migrator
 	*/
 	public function revert($migration)
 	{
-		$this->container->get('dispatcher')->disable();
+		$this->container->get('event_dispatcher')->disable();
 		$this->revert_do($migration);
-		$this->container->get('dispatcher')->enable();
+		$this->container->get('event_dispatcher')->enable();
 	}
 
 	/**
@@ -630,7 +630,7 @@ class migrator
 					WHERE migration_name = '" . $this->db->sql_escape($name) . "'";
 				$this->db->sql_query($sql);
 
-				$this->last_run_migration = false;
+				$this->last_run_migration = [];
 				unset($this->migration_state[$name]);
 
 				$this->output_handler->write(array('MIGRATION_REVERT_SCHEMA_DONE', $name, $total_time), migrator_output_handler_interface::VERBOSITY_NORMAL);

@@ -120,7 +120,7 @@ class type_int extends type_base
 	*/
 	public function validate_profile_field(&$field_value, $field_data)
 	{
-		if (trim($field_value) === '' && !$field_data['field_required'])
+		if (trim($field_value ?: '') === '' && !$field_data['field_required'])
 		{
 			return false;
 		}

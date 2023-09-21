@@ -387,7 +387,7 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 
@@ -1330,7 +1330,7 @@ abstract class driver implements driver_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function clean_query_id($query_id)
+	public function clean_query_id(mixed $query_id): int|string|null
 	{
 		// Some DBMS functions accept/return objects and/or resources instead if identifiers
 		// Attempting to use objects/resources as array keys will throw error, hence correctly handle all cases

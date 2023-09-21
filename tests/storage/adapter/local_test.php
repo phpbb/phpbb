@@ -77,7 +77,7 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 		$this->adapter->delete('file.txt');
 
 		// Then
-		$this->assertFileNotExists($this->path . 'file.txt');
+		$this->assertFileDoesNotExist($this->path . 'file.txt');
 	}
 
 	public function test_rename(): void
@@ -85,13 +85,13 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 		// Given
 		touch($this->path . 'file.txt');
 		$this->assertFileExists($this->path . 'file.txt');
-		$this->assertFileNotExists($this->path . 'file2.txt');
+		$this->assertFileDoesNotExist($this->path . 'file2.txt');
 
 		// When
 		$this->adapter->rename('file.txt', 'file2.txt');
 
 		// Then
-		$this->assertFileNotExists($this->path . 'file.txt');
+		$this->assertFileDoesNotExist($this->path . 'file.txt');
 		$this->assertFileExists($this->path . 'file2.txt');
 
 		// Clean test

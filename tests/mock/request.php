@@ -41,13 +41,13 @@ class phpbb_mock_request extends \phpbb\request\request
 
 	public function variable($var_name, $default, $multibyte = false, $super_global = \phpbb\request\request_interface::REQUEST)
 	{
-		return isset($this->data[$super_global][$var_name]) ? $this->data[$super_global][$var_name] : $default;
+		return $this->data[$super_global][$var_name] ?? $default;
 	}
 
 	public function server($var_name, $default = '')
 	{
 		$super_global = \phpbb\request\request_interface::SERVER;
-		return isset($this->data[$super_global][$var_name]) ? $this->data[$super_global][$var_name] : $default;
+		return $this->data[$super_global][$var_name] ?? $default;
 	}
 
 	public function header($header_name, $default = '')
@@ -115,7 +115,7 @@ class phpbb_mock_request extends \phpbb\request\request
 		$this->data[\phpbb\request\request_interface::SERVER][$var_name] = $value;
 	}
 
-	public function merge($super_global = \phpbb\request\request_interface::REQUEST, $values)
+	public function merge($values, $super_global = \phpbb\request\request_interface::REQUEST): void
 	{
 		$this->data[$super_global] = array_merge($this->data[$super_global], $values);
 	}

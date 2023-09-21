@@ -90,6 +90,6 @@ $user->data['user_id'] = ANONYMOUS;
 $user->ip = '127.0.0.1';
 
 $application = new \phpbb\console\application('phpBB Console', PHPBB_VERSION, $language, $config);
-$application->setDispatcher($phpbb_container->get('dispatcher'));
+$application->setDispatcher($phpbb_container->get('event_dispatcher'));
 $application->register_container_commands($phpbb_container->get('console.command_collection'));
 $application->run($input);

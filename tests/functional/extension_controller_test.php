@@ -105,7 +105,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'app.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
-		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz()" requires that you provide a value for the "$test" argument', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz" requires that you provide a value for the "$test" argument', $crawler->filter('body')->text());
 	}
 
 	/**

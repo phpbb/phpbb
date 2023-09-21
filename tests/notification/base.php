@@ -117,7 +117,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 				$phpEx
 			)
 		);
-		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
+		$phpbb_container->set('event_dispatcher', $this->phpbb_dispatcher);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');

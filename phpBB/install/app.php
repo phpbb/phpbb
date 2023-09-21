@@ -47,7 +47,7 @@ $template->set_custom_style(array(
 ), $paths);
 
 /** @var $phpbb_dispatcher \phpbb\event\dispatcher */
-$phpbb_dispatcher = $phpbb_installer_container->get('dispatcher');
+$phpbb_dispatcher = $phpbb_installer_container->get('event_dispatcher');
 
 /** @var \phpbb\language\language $language */
 $language = $phpbb_installer_container->get('language');

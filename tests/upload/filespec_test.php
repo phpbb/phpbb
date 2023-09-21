@@ -230,7 +230,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$name = $filespec->get('realname');
 
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
-			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
+			$this->assertMatchesRegularExpression('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
 		}
@@ -246,7 +246,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$name = $filespec->get('realname');
 
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX) + strlen('.jpg'));
-			$this->assertRegExp('#^[A-Za-z0-9]+\.jpg$#', substr($name, strlen(self::PREFIX)));
+			$this->assertMatchesRegularExpression('#^[A-Za-z0-9]+\.jpg$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
 		}

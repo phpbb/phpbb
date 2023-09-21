@@ -2,7 +2,7 @@ services:
     http_kernel:
         class: Symfony\Component\HttpKernel\HttpKernel
         arguments:
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@controller.resolver'
             - '@request_stack'
 

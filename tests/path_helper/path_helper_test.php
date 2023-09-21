@@ -127,8 +127,8 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array(
 				$this->phpbb_root_path . 'test.php',
 				'/',
-				null,
-				null,
+				'',
+				'',
 				'',
 			),
 			array(

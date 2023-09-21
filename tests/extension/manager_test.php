@@ -30,7 +30,6 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		$this->db = null;
 		$this->extension_manager = $this->create_extension_manager();
 	}
 

@@ -13,6 +13,15 @@
 
 class phpbb_passwords_manager_test extends \phpbb_test_case
 {
+	/** @var \phpbb\passwords\driver\helper */
+	protected $driver_helper;
+
+	/** @var \phpbb\passwords\helper */
+	protected $helper;
+
+	/** @var \phpbb\passwords\manager */
+	protected $manager;
+
 	protected $passwords_drivers;
 
 	protected $pw_characters = '0123456789abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVXYZ.,_!?/\\';

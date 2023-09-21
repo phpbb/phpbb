@@ -74,7 +74,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		);
 
 		$mock_container = new phpbb_mock_container_builder();
-		$mock_container->set('cron.task_collection', []);
+		$task_collection = new \phpbb\di\service_collection($mock_container);
+		$mock_container->set('cron.task_collection', $task_collection);
 
 		$this->cron_manager = new \phpbb\cron\manager($mock_container, $routing_helper, $phpbb_root_path, $phpEx, null);
 		$this->cron_manager->load_tasks($tasks);
@@ -152,7 +153,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		);
 
 		$mock_container = new phpbb_mock_container_builder();
-		$mock_container->set('cron.task_collection', []);
+		$task_collection = new \phpbb\di\service_collection($mock_container);
+		$mock_container->set('cron.task_collection', $task_collection);
 
 		$this->cron_manager = new \phpbb\cron\manager($mock_container, $routing_helper, $phpbb_root_path, $phpEx, null);
 		$this->cron_manager->load_tasks($tasks);
@@ -199,7 +201,8 @@ class phpbb_console_command_cron_run_test extends phpbb_database_test_case
 		);
 
 		$mock_container = new phpbb_mock_container_builder();
-		$mock_container->set('cron.task_collection', []);
+		$task_collection = new \phpbb\di\service_collection($mock_container);
+		$mock_container->set('cron.task_collection', $task_collection);
 
 		$this->cron_manager = new \phpbb\cron\manager($mock_container, $routing_helper, $phpbb_root_path, $phpEx, null);
 		$this->cron_manager->load_tasks($tasks);

@@ -36,7 +36,7 @@ function gen_rand_string($num_chars = 8)
 	$output = '';
 	for ($i = 0; $i < $num_chars; $i++)
 	{
-		$rand = random_int(0, $size-1);
+		$rand = random_int(0, $size - 1);
 		$output .= $range[$rand];
 	}
 

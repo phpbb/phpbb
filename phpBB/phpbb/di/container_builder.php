@@ -205,11 +205,11 @@ class container_builder
 				// Mark all services public
 				$this->container->addCompilerPass(new pass\markpublic_pass());
 
-				// Event listeners "phpBB style"
-				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
+				// Convert old event dispatcher syntax
+				$this->container->addCompilerPass(new pass\convert_events());
 
-				// Event listeners "Symfony style"
-				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+				// Event listeners
+				$this->container->addCompilerPass(new RegisterListenersPass());
 
 				if ($this->use_extensions)
 				{

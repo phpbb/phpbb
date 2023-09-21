@@ -65,10 +65,10 @@ class resolver implements ControllerResolverInterface
 	* Load a controller callable
 	*
 	* @param Request $request Symfony Request object
-	* @return false|Callable Callable or false (fixme: method is returning an array)
+	* @return callable|false Callable or false
 	* @throws \phpbb\controller\exception
 	*/
-	public function getController(Request $request)
+	public function getController(Request $request): callable|false
 	{
 		$controller = $request->attributes->get('_controller');
 
@@ -160,7 +160,7 @@ class resolver implements ControllerResolverInterface
 					$arguments[] = $attributes[$param->name];
 				}
 			}
-			else if ($param->getClass() && $param->getClass()->isInstance($request))
+			else if ($param->getType() && $param->getType() instanceof $request)
 			{
 				$arguments[] = $request;
 			}

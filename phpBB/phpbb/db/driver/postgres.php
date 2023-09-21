@@ -298,7 +298,7 @@ class postgres extends \phpbb\db\driver\driver
 	/**
 	 * {@inheritDoc}
 	 */
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 
@@ -431,12 +431,12 @@ class postgres extends \phpbb\db\driver\driver
 	 */
 	protected function _sql_close(): bool
 	{
-		// Released resources are already closed, return true in this case
-		if (!is_resource($this->db_connect_id))
+		// Skip if connection is already closed or not persistent
+		if (!$this->persistency || !$this->db_connect_id instanceof \PgSql\Connection)
 		{
 			return true;
 		}
-		return @pg_close($this->db_connect_id);
+		return pg_close($this->db_connect_id);
 	}
 
 	/**

@@ -21,6 +21,7 @@ use phpbb\language\language;
 use phpbb\passwords\manager;
 use phpbb\user;
 use Symfony\Component\Console\Command\Command as symfony_command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -184,6 +185,10 @@ class add extends command
 	protected function interact(InputInterface $input, OutputInterface $output)
 	{
 		$helper = $this->getHelper('question');
+		if (!$helper instanceof QuestionHelper)
+		{
+			return;
+		}
 
 		$this->data = array(
 			'username'     => $input->getOption('username'),
