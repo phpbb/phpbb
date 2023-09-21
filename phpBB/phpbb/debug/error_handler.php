@@ -13,6 +13,7 @@
 
 namespace phpbb\debug;
 
+use Symfony\Component\ErrorHandler\BufferingLogger;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 
 /**
@@ -20,16 +21,21 @@ use Symfony\Component\ErrorHandler\ErrorHandler;
  */
 class error_handler extends ErrorHandler
 {
+	public function __construct(BufferingLogger $bootstrappingLogger = null, private bool $debug = false)
+	{
+		parent::__construct($bootstrappingLogger, $debug);
+	}
+
 	/**
 	 * @psalm-suppress MethodSignatureMismatch
 	 */
 	public function handleError(int $type, string $message, string $file, int $line): bool
 	{
-		if ($type === E_USER_WARNING || $type === E_USER_NOTICE)
+		if (!$this->debug)
 		{
 			$handler = defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler';
 
-			$handler($type, $message, $file, $line);
+			return $handler($type, $message, $file, $line);
 		}
 
 		return parent::handleError($type, $message, $file, $line);

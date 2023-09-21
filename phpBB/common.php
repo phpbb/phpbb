@@ -97,14 +97,7 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Registered before building the container so the development environment stay capable of intercepting
 // the container builder exceptions.
-if (PHPBB_ENVIRONMENT === 'development')
-{
-	\phpbb\debug\debug::enable();
-}
-else
-{
-	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
-}
+\phpbb\debug\debug::enable(null, PHPBB_ENVIRONMENT === 'development');
 
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();

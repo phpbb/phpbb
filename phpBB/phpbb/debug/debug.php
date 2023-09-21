@@ -65,15 +65,8 @@ class debug
 			ini_set('display_errors', 1);
 		}
 
-		if ($displayErrors)
-		{
-			error_handler::register(new error_handler(new BufferingLogger(), true));
-		}
-		else
-		{
-			error_handler::register()->throwAt(0, true);
-		}
-
 		DebugClassLoader::enable();
+
+		error_handler::register(new error_handler(new BufferingLogger(), $displayErrors));
 	}
 }
