@@ -3668,7 +3668,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
+	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path, $language_helper;
 
 	if (defined('HEADER_INC'))
 	{
@@ -3824,7 +3824,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$web_path = $phpbb_path_helper->get_web_root_path();
 
 	// Send a proper content-language to the output
-	$user_lang = $user->lang['USER_LANG'];
+	$language_file_helper = $phpbb_container->get('language.helper.language_file');
+
+	$available_languages = $language_file_helper->get_available_languages();
+	$user_lang = $available_languages[0]['user_lang'];
 	if (strpos($user_lang, '-x-') !== false)
 	{
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
@@ -3879,6 +3882,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
+
+	// Grab the users lang direction and store it for later use
+	$available_languages = $language_file_helper->get_available_languages();
+	$direction = $available_languages[0]['direction'];
 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');
@@ -3970,9 +3977,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_DIRECTION'	=> $direction,
+		'S_CONTENT_FLOW_BEGIN'	=> ($direction  == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($direction  == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_TIMEZONE'			=> sprintf($user->lang['ALL_TIMES'], $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,

@@ -116,9 +116,9 @@ class language_file_helper
 			'version'		=> $data['version'],
 			'phpbb_version'	=> $data['extra']['phpbb-version'],
 			'direction'		=> $data['extra']['direction'],
-			'user-lang'		=> $data['extra']['user-lang'],
-			'plural-rule'	=> $data['extra']['plural-rule'],
-			'recaptcha-lang'=> $data['extra']['recaptcha-lang'],
+			'user_lang'		=> $data['extra']['user-lang'],
+			'plural_rule'	=> $data['extra']['plural-rule'],
+			'recaptcha_lang'=> $data['extra']['recaptcha-lang'],
 		];
 	}
 }
