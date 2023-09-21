@@ -404,8 +404,16 @@ class language
 	 */
 	public function get_plural_form($number, $force_rule = false)
 	{
+		global $phpbb_container;
+		// Get the language helper
+		/* @var $language_helper \phpbb\language\language_file_helper */
+		$language_file_helper = $phpbb_container->get('language.helper.language_file');
+
+		// Grab the users lang plural rule
+		$plural_rule_content = $language_file_helper->get_lang_key_value('plural_rule');
+
 		$number			= (int) $number;
-		$plural_rule	= ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
+		$plural_rule	= ($force_rule !== false) ? $force_rule : ((isset($plural_rule_content)) ? $plural_rule_content : 1);
 
 		/**
 		 * The following plural rules are based on a list published by the Mozilla Developer Network

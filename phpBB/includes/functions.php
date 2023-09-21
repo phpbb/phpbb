@@ -3668,7 +3668,7 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 function page_header($page_title = '', $display_online_list = false, $item_id = 0, $item = 'forum', $send_headers = true)
 {
 	global $db, $config, $template, $SID, $_SID, $_EXTRA_URL, $user, $auth, $phpEx, $phpbb_root_path;
-	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path, $language_helper;
+	global $phpbb_dispatcher, $request, $phpbb_container, $phpbb_admin_path;
 
 	if (defined('HEADER_INC'))
 	{
@@ -3824,6 +3824,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$web_path = $phpbb_path_helper->get_web_root_path();
 
 	// Send a proper content-language to the output
+	// Get the language helper
+	/* @var $language_helper \phpbb\language\language_file_helper */
 	$language_file_helper = $phpbb_container->get('language.helper.language_file');
 
 	// Grab the users lang direction and store it for later use

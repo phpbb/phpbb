@@ -69,6 +69,16 @@ function adm_page_header($page_title)
 	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
 	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
+	// Get the language helper
+	/* @var $language_helper \phpbb\language\language_file_helper */
+	$language_file_helper = $phpbb_container->get('language.helper.language_file');
+
+	// Grab the users lang direction and store it for later use
+	$direction = $language_file_helper->get_lang_key_value('direction');
+
+	// Get the user_lang string
+	$user_lang = $language_file_helper->get_lang_key_value('user_lang');
+
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
@@ -109,11 +119,11 @@ function adm_page_header($page_title)
 		'ICON_SYNC_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
 
 		'S_USER_ID'				=> $user->data['user_id'],
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_USER_LANG'			=> $user_lang,
+		'S_CONTENT_DIRECTION'	=> $direction,
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_FLOW_BEGIN'	=> ($direction == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($direction == 'ltr') ? 'right' : 'left',
 
 		'CONTAINER_EXCEPTION'	=> $phpbb_container->hasParameter('container_exception') ? $phpbb_container->getParameter('container_exception') : false,
 	));
