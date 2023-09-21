@@ -3826,8 +3826,11 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	// Send a proper content-language to the output
 	$language_file_helper = $phpbb_container->get('language.helper.language_file');
 
-	$available_languages = $language_file_helper->get_available_languages();
-	$user_lang = $available_languages[0]['user_lang'];
+	// Grab the users lang direction and store it for later use
+	$direction = $language_file_helper->get_lang_key_value('direction');
+
+	// Get the user_lang string
+	$user_lang = $language_file_helper->get_lang_key_value('user_lang');
 	if (strpos($user_lang, '-x-') !== false)
 	{
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
@@ -3882,10 +3885,6 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
 
 	$s_login_redirect = build_hidden_fields(array('redirect' => $phpbb_path_helper->remove_web_root_path(build_url())));
-
-	// Grab the users lang direction and store it for later use
-	$available_languages = $language_file_helper->get_available_languages();
-	$direction = $available_languages[0]['direction'];
 
 	// Add form token for login box, in case page is presenting a login form.
 	add_form_key('login', '_LOGIN');

@@ -68,6 +68,18 @@ class language_file_helper
 	}
 
 	/**
+	 * Return by given lang key its composer.json value
+	 *
+	 * @return string
+	 *
+	 */
+	public function get_lang_key_value($lang_key) : string
+	{
+		$available_languages = $this->get_available_languages();
+		return $available_languages[0][$lang_key];
+	}
+
+	/**
 	 * Collect some data from the composer.json file
 	 *
 	 * @param string $path
