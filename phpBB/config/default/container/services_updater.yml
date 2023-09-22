@@ -1,0 +1,14 @@
+services:
+    updater.get_updates:
+        class: phpbb\update\get_updates
+        arguments:
+            - '@filesystem'
+            - '%public_key%'
+            - '%core.root_path%'
+
+    updater.controller:
+        class: phpbb\update\controller
+        arguments:
+            - '@filesystem'
+            - '@updater.get_updates'
+            - '%core.root_path%'

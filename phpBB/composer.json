@@ -29,6 +29,7 @@
 		"php": "^8.1",
 		"ext-pdo": "*",
 		"ext-zlib": "*",
+		"ext-sodium": "*",
 		"bantu/ini-get-wrapper": "~1.0",
 		"carlos-mg89/oauth": "^0.8.15",
 		"chita/topological_sort": "^3.0",

@@ -37,6 +37,7 @@ imports:
     - { resource: services_twig.yml }
     - { resource: services_twig_extensions.yml }
     - { resource: services_ucp.yml }
+    - { resource: services_updater.yml }
     - { resource: services_user.yml }
 
     - { resource: tables.yml }
