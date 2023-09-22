@@ -14,7 +14,6 @@
 namespace phpbb\language;
 
 use phpbb\language\exception\invalid_plural_rule_exception;
-use phpbb\language\language_file_helper;
 
 /**
  * Wrapper class for loading translations
