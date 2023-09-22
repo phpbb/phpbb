@@ -142,8 +142,8 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	 */
 	public function test_login_redirect()
 	{
-		$this->markTestIncomplete('Session table contains incorrect data for controllers on travis,'
-			. 'therefor the redirect fails.');
+		$this->markTestIncomplete('Session table contains incorrect data for controllers on CI,'
+			. 'therefore the redirect fails.');
 
 		$crawler = self::request('GET', 'app.php/foo/login_redirect');
 		$this->assertContainsLang('LOGIN', $crawler->filter('h2')->text());
