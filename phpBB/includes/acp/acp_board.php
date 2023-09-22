@@ -1108,7 +1108,7 @@ class acp_board
 	{
 		global $db;
 
-		return phpbb_language_select($db, $default, $langdata);
+		return ['options' => phpbb_language_select($db, $default, $langdata)];
 	}
 
 	/**
