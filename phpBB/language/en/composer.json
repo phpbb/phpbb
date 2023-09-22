@@ -25,7 +25,7 @@
 		"phpbb-version": "4.0.0-a1-dev",
 		"direction": "ltr",
 		"user-lang": "en-gb",
-		"plural-rule": "1",
+		"plural-rule": 1,
 		"recaptcha-lang": "en-GB"
 	}
 }
