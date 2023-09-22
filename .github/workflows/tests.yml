@@ -100,40 +100,45 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                type: ['unit', 'functional']
-                php: ['8.1', '8.2', '8.3']
-                db: [
-                        'mariadb:10.2',
-                        'mariadb:10.3',
-                        'mariadb:10.4',
-                        'mariadb:10.6',
-                        'mariadb:10.9',
-                        'mariadb:10.10',
-                        'mariadb:10.11',
-                        # 'mariadb:11.0' # currently disabled
-                        'mysql:5.7',
-                        'mysql:8.0',
-                        'mysql:8.1'
-                ]
                 include:
                     - php: '8.1'
-                      db: 'mysql:5.7'
-                      type: 'unit'
+                      db: "mariadb:10.2"
                     - php: '8.1'
-                      db: 'mysql:5.7'
-                      type: 'functional'
+                      db: "mariadb:10.3"
+                    - php: '8.1'
+                      db: "mariadb:10.4"
+                    - php: '8.1'
+                      db: "mariadb:10.6"
+                    - php: '8.1'
+                      db: "mariadb:10.9"
+                    - php: '8.1'
+                      db: "mariadb:10.10"
+                    - php: '8.1'
+                      db: "mariadb:10.11"
                     - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MySQL Slow Tests"
-                      type: 'slow'
                       SLOWTESTS: 1
                     - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MyISAM Tests"
-                      type: 'MyISAM'
                       MYISAM: 1
+                    - php: '8.1'
+                      db: "mysql:5.7"
+                    - php: '8.1'
+                      db: "mysql:8.0"
+                    - php: '8.1'
+                      db: "mysql:8.1"
+                    - php: '8.2'
+                      db: "mysql:8.0"
+                    - php: '8.2'
+                      db: "mariadb:10.2"
+                    - php: '8.3'
+                      db: "mysql:5.7"
+                    - php: '8.3'
+                      db: "mariadb:10.2"
 
-        name: ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
+        name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mysql:
@@ -223,16 +228,9 @@ jobs:
             - name: Run unit tests
               env:
                   DB: ${{steps.database-type.outputs.db}}
-              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 && matrix.type == 'unit' }}
+              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error --exclude-group functional,slow
-
-            - name: Run functional tests
-              env:
-                  DB: ${{steps.database-type.outputs.db}}
-              if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 && matrix.type == 'functional' }}
-              run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error --group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --verbose --stop-on-error
 
             - name: Slow tests
               env:
@@ -264,15 +262,9 @@ jobs:
                     - php: '8.1'
                       db: "postgres:15"
                     - php: '8.2'
-                      db: "postgres:12"
-                    - php: '8.2'
-                      db: "postgres:13"
-                    - php: '8.2'
-                      db: "postgres:14"
-                    - php: '8.2'
-                      db: "postgres:15"
-                    #- php: '8.3'
-                    #  db: "postgres:15"
+                      db: "postgres:9.5"
+                    - php: '8.3'
+                      db: "postgres:9.5"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
