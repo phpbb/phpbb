@@ -23,6 +23,7 @@ use phpbb\feed\exception\feed_unavailable_exception;
 use phpbb\feed\exception\unauthorized_exception;
 use phpbb\feed\helper as feed_helper;
 use phpbb\controller\helper as controller_helper;
+use phpbb\language\language_file_helper;
 use phpbb\symfony_request;
 use phpbb\user;
 use phpbb\language\language;
@@ -94,6 +95,11 @@ class feed
 	protected $language;
 
 	/**
+	 * @var language_file_helper
+	 */
+	protected $lang_helper;
+
+	/**
 	 * Constructor
 	 *
 	 * @param Environment $twig
@@ -108,8 +114,9 @@ class feed
 	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param language $language
 	 * @param string $php_ext
+	 * @param language_file_helper $lang_helper
 	 */
-	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, language $language, $php_ext)
+	public function __construct(Environment $twig, symfony_request $request, controller_helper $controller_helper, config $config, driver_interface $db, ContainerInterface $container, feed_helper $feed_helper, user $user, auth $auth, dispatcher_interface $phpbb_dispatcher, language $language, $php_ext, language_file_helper $lang_helper)
 	{
 		$this->request = $request;
 		$this->controller_helper = $controller_helper;
@@ -123,6 +130,7 @@ class feed
 		$this->template = $twig;
 		$this->language = $language;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->lang_helper = $lang_helper;
 	}
 
 	/**
@@ -387,7 +395,7 @@ class feed
 			'FEED_TITLE'			=> $this->config['sitename'],
 			'FEED_SUBTITLE'			=> $this->config['site_desc'],
 			'FEED_UPDATED'			=> $this->feed_helper->format_date($feed_updated_time),
-			'FEED_LANG'				=> $this->user->lang['USER_LANG'],
+			'FEED_LANG'				=> $this->lang_helper->get_lang_key_value('user_lang'),
 			'FEED_AUTHOR'			=> $this->config['sitename'],
 
 			// Feed entries
