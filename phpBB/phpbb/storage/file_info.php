@@ -13,7 +13,7 @@
 
 namespace phpbb\storage;
 
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\adapter\adapter_interface;
 
 class file_info
@@ -66,7 +66,7 @@ class file_info
 		{
 			if (!method_exists($this->adapter, 'file_' . $name))
 			{
-				throw new exception('STORAGE_METHOD_NOT_IMPLEMENTED');
+				throw new storage_exception('STORAGE_METHOD_NOT_IMPLEMENTED');
 			}
 
 			$this->properties = array_merge($this->properties, call_user_func([$this->adapter, 'file_' . $name], $this->path));

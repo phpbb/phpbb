@@ -287,7 +287,7 @@ class acp_database
 								fclose($fp);
 								fclose($stream);
 							}
-							catch (\phpbb\storage\exception\exception $e)
+							catch (\phpbb\storage\exception\storage_exception $e)
 							{
 								trigger_error($user->lang['RESTORE_DOWNLOAD_FAIL'] . adm_back_link($this->u_action));
 							}

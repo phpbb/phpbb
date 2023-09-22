@@ -13,7 +13,7 @@
 
 namespace phpbb\storage\adapter;
 
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 
 interface adapter_interface
 {
@@ -29,7 +29,7 @@ interface adapter_interface
 	 *
 	 * @param string $path
 	 * @param string $content
-	 * @throws exception When the file cannot be written
+	 * @throws storage_exception When the file cannot be written
 	 */
 	public function put_contents(string $path, string $content): void;
 
@@ -39,7 +39,7 @@ interface adapter_interface
 	 * @param string $path The file to read
 	 *
 	 * @return string Returns file contents
-	 * @throws exception When cannot read file contents
+	 * @throws storage_exception When cannot read file contents
 	 */
 	public function get_contents(string $path): string;
 
@@ -57,7 +57,7 @@ interface adapter_interface
 	 *
 	 * @param string $path file/directory to remove
 	 *
-	 * @throws exception When removal fails.
+	 * @throws storage_exception When removal fails.
 	 */
 	public function delete(string $path): void;
 
@@ -67,7 +67,7 @@ interface adapter_interface
 	 * @param string $path_orig The original file/direcotry
 	 * @param string $path_dest The target file/directory
 	 *
-	 * @throws exception When file/directory cannot be renamed
+	 * @throws storage_exception When file/directory cannot be renamed
 	 */
 	public function rename(string $path_orig, string $path_dest): void;
 
@@ -77,7 +77,7 @@ interface adapter_interface
 	 * @param string $path_orig The original filename
 	 * @param string $path_dest The target filename
 	 *
-	 * @throws exception When the file cannot be copied
+	 * @throws storage_exception When the file cannot be copied
 	 */
 	public function copy(string $path_orig, string $path_dest): void;
 
@@ -94,7 +94,7 @@ interface adapter_interface
 	 * Get space available in bytes
 	 *
 	 * @return float Returns available space
-	 * @throws exception When unable to retrieve available storage space
+	 * @throws storage_exception When unable to retrieve available storage space
 	 */
 	public function free_space(): float;
 }
