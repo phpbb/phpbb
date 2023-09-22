@@ -14,12 +14,11 @@ keys:
 folders:
     - map: "."
       to: "/home/vagrant/phpbb"
-      php: "7.2"
-
 sites:
     - map: phpbb.app
       to: "/home/vagrant/phpbb/phpBB"
       type: apache
+      php: "7.2"
 
 databases:
     - phpbb
