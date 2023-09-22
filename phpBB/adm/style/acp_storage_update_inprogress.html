@@ -1,0 +1,32 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('STORAGE_TITLE') }}</h1>
+
+<script>
+	// <![CDATA[
+	/**
+	 * Popup storage update progress bar
+	 */
+	function popup_progress_bar()
+	{
+		close_waitscreen = 0;
+		// no scrollbars
+		popup('{{ UA_PROGRESS_BAR }}', 400, 240, '_storage');
+	}
+	// ]]>
+</script>
+
+<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
+
+<form id="acp_storage_continue" method="post" action="{{ U_CONTINUE_UPDATING }}">
+	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="continue" name="continue" value="{{ lang('CONTINUE') }}" onclick="popup_progress_bar();" />&nbsp;
+		<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

@@ -351,7 +351,7 @@ class upload
 				return false;
 			}
 		}
-		catch (\phpbb\storage\exception\exception $e)
+		catch (\phpbb\storage\exception\storage_exception $e)
 		{
 			// Do nothing
 		}

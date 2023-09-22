@@ -14,7 +14,7 @@
 namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\container_aware_migration;
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\storage;
 
 class storage_track extends container_aware_migration
@@ -97,7 +97,7 @@ class storage_track extends container_aware_migration
 			{
 				$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
 			}
-			catch (exception $e)
+			catch (storage_exception $e)
 			{
 				// If file doesn't exist, don't track it
 			}
@@ -121,7 +121,7 @@ class storage_track extends container_aware_migration
 			{
 				$storage->track_file($row['physical_filename']);
 			}
-			catch (exception $e)
+			catch (storage_exception $e)
 			{
 				// If file doesn't exist, don't track it
 			}
@@ -132,7 +132,7 @@ class storage_track extends container_aware_migration
 				{
 					$storage->track_file('thumb_' . $row['physical_filename']);
 				}
-				catch (exception $e)
+				catch (storage_exception $e)
 				{
 					// If file doesn't exist, don't track it
 				}
@@ -157,7 +157,7 @@ class storage_track extends container_aware_migration
 			{
 				$storage->track_file($row['filename']);
 			}
-			catch (exception $e)
+			catch (storage_exception $e)
 			{
 				// If file doesn't exist, don't track it
 			}

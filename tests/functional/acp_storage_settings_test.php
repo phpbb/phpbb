@@ -68,9 +68,9 @@ class phpbb_functional_acp_storage_settings_test extends phpbb_functional_test_c
 			// Visit ACP Storage settings again - warning should be displayed
 			$crawler = self::request('GET', 'adm/index.php?i=acp_storage&mode=settings&sid=' . $this->sid);
 			$this->assertContainsLang('WARNING', $crawler->filter('div[class="errorbox"] > h3')->text());
-			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_ATTACHMENT_TITLE')), $crawler->filter('div[class="errorbox"] > p')->text());
-			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_AVATAR_TITLE')), $crawler->filter('div[class="errorbox"] > p')->text());
-			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_BACKUP_TITLE')), $crawler->filter('div[class="errorbox"] > p')->text());
+			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_ATTACHMENT_TITLE')), $crawler->filter('div[class="errorbox"]')->text());
+			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_AVATAR_TITLE')), $crawler->filter('div[class="errorbox"]')->text());
+			$this->assertStringContainsString($this->lang('STORAGE_PATH_NOT_EXISTS', $this->lang('STORAGE_BACKUP_TITLE')), $crawler->filter('div[class="errorbox"]')->text());
 
 			// Restore default state
 			$filesystem->chmod($phpbb_root_path . $attachments_storage_path, 777);

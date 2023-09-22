@@ -11,14 +11,14 @@
 *
 */
 
-use phpbb\config\db as config;
-use phpbb\config\db_text as config_text;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
 use phpbb\language\language;
 use phpbb\log\log_interface;
-use phpbb\path_helper;
 use phpbb\request\request;
+use phpbb\storage\helper;
+use phpbb\storage\state_helper;
+use phpbb\storage\update_type;
 use phpbb\template\template;
 use phpbb\user;
 
@@ -32,12 +32,6 @@ if (!defined('IN_PHPBB'))
 
 class acp_storage
 {
-	/** @var config $config */
-	protected $config;
-
-	/** @var config_text $config_text */
-	protected $config_text;
-
 	/** @var driver_interface $db */
 	protected $db;
 
@@ -47,9 +41,6 @@ class acp_storage
 	/** @var log_interface $log */
 	protected $log;
 
-	/** @var path_helper $path_helper */
-	protected $path_helper;
-
 	/** @var request */
 	protected $request;
 
@@ -58,9 +49,6 @@ class acp_storage
 
 	/** @var user */
 	protected $user;
-
-	/** @var service_collection */
-	protected $adapter_collection;
 
 	/** @var service_collection */
 	protected $provider_collection;
@@ -83,51 +71,43 @@ class acp_storage
 	/** @var string */
 	public $u_action;
 
-	/** @var mixed */
-	protected $state;
+	/** @var state_helper */
+	private $state_helper;
 
-	/**
-	 * Update type constants
-	 */
-	public const STORAGE_UPDATE_TYPE_CONFIG = 0;
-	public const STORAGE_UPDATE_TYPE_COPY = 1;
-	public const STORAGE_UPDATE_TYPE_MOVE = 2;
+	/** @var helper */
+	private $storage_helper;
 
 	/**
 	 * @param string $id
 	 * @param string $mode
 	 */
-	public function main(string $id, string $mode)
+	public function main(string $id, string $mode): void
 	{
 		global $phpbb_container, $phpbb_dispatcher, $phpbb_root_path;
 
-		$this->config = $phpbb_container->get('config');
-		$this->config_text = $phpbb_container->get('config_text');
 		$this->db = $phpbb_container->get('dbal.conn');
-		$this->filesystem = $phpbb_container->get('filesystem');
 		$this->lang = $phpbb_container->get('language');
 		$this->log = $phpbb_container->get('log');
-		$this->path_helper = $phpbb_container->get('path_helper');
 		$this->request = $phpbb_container->get('request');
 		$this->template = $phpbb_container->get('template');
 		$this->user = $phpbb_container->get('user');
-		$this->adapter_collection = $phpbb_container->get('storage.adapter_collection');
 		$this->provider_collection = $phpbb_container->get('storage.provider_collection');
 		$this->storage_collection = $phpbb_container->get('storage.storage_collection');
+		$this->filesystem = $phpbb_container->get('filesystem');
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->state_helper = $phpbb_container->get('storage.state_helper');
+		$this->storage_helper = $phpbb_container->get('storage.helper');
 
-		// Add necesary language files
+		// Add necessary language files
 		$this->lang->add_lang(['acp/storage']);
 
 		/**
 		 * Add language strings
 		 *
 		 * @event core.acp_storage_load
-		 * @since 3.3.0-a1
+		 * @since 4.0.0-a1
 		 */
 		$phpbb_dispatcher->trigger_event('core.acp_storage_load');
-
-		@ini_set('memory_limit', '128M');
 
 		switch ($mode)
 		{
@@ -141,173 +121,173 @@ class acp_storage
 	 * @param string $id
 	 * @param string $mode
 	 */
-	public function settings(string $id, string $mode)
+	private function settings(string $id, string $mode): void
 	{
-		$form_key = 'acp_storage';
-		add_form_key($form_key);
-
-		// Template from adm/style
-		$this->tpl_name = 'acp_storage';
-
-		// Set page title
-		$this->page_title = 'STORAGE_TITLE';
-
 		$action = $this->request->variable('action', '');
-		$this->load_state();
-
-		// If user cancelled to continue, remove state
-		if ($this->request->is_set_post('cancel'))
+		if ($action && !$this->request->is_set_post('cancel'))
 		{
-			if (!check_form_key($form_key) || !check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
+			switch ($action)
 			{
-				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
-			}
+				case 'progress_bar':
+					$this->display_progress_bar();
+				break;
 
-			if ($this->request->variable('cancel', false))
-			{
-				$action = '';
-				$this->state = false;
-				$this->save_state();
+				case 'update':
+					$this->update_action();
+				break;
+
+				default:
+					trigger_error('NO_ACTION', E_USER_ERROR);
 			}
 		}
-
-		if ($action)
+		else
 		{
-			if ($action == 'progress_bar')
+			// If clicked to cancel (acp_storage_update_progress form)
+			if ($this->request->is_set_post('cancel'))
 			{
-				$this->display_progress_bar();
-			}
-			else if ($action != 'update')
-			{
-				trigger_error('NO_ACTION', E_USER_ERROR);
+				$this->state_helper->clear_state();
 			}
 
-			if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
+			// There is an updating in progress, show the form to continue or cancel
+			if ($this->state_helper->is_action_in_progress())
 			{
-				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+				$this->update_inprogress($id, $mode);
+			}
+			else
+			{
+				$this->settings_form($id, $mode);
+			}
+		}
+	}
+
+	private function update_action(): void
+	{
+		// Probably it has sense to disable the forum while this is in progress
+
+		if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
+		{
+			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		// If update_type is copy or move, copy files from the old to the new storage
+		if (in_array($this->state_helper->update_type(), [update_type::COPY, update_type::MOVE], true))
+		{
+			$i = 0;
+			foreach ($this->state_helper->storages() as $storage_name)
+			{
+				// Skip storages that have already copied files
+				if ($this->state_helper->storage_index() > $i++)
+				{
+					continue;
+				}
+
+				$sql = 'SELECT file_id, file_path
+						FROM ' . STORAGE_TABLE . "
+						WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
+							AND file_id > " . $this->state_helper->file_index();
+				$result = $this->db->sql_query($sql);
+
+				while ($row = $this->db->sql_fetchrow($result))
+				{
+					if (!still_on_time())
+					{
+						$this->db->sql_freeresult($result);
+						meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
+						// Here could be included the current file compared with the number of total files too
+						trigger_error($this->lang->lang('STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state_helper->storages())));
+					}
+
+					// Copy file from old adapter to the new one
+					$this->storage_helper->copy_file_to_new_adapter($storage_name, $row['file_path']);
+
+					$this->state_helper->set_file_index($row['file_id']); // update last file index copied
+				}
+
+				$this->db->sql_freeresult($result);
+
+				// Copied all files of a storage, increase storage index and reset file index
+				$this->state_helper->set_storage_index($this->state_helper->storage_index()+1);
+				$this->state_helper->set_file_index(0);
 			}
 
-			// If update_type is copy or move, copy files from the old to the new storage
-			if (in_array($this->state['update_type'], [self::STORAGE_UPDATE_TYPE_COPY, self::STORAGE_UPDATE_TYPE_MOVE], true))
+			// If update_type is move files, remove the old files
+			if ($this->state_helper->update_type() === update_type::MOVE)
 			{
 				$i = 0;
-				foreach ($this->state['storages'] as $storage_name => $storage_options)
+				foreach ($this->state_helper->storages() as $storage_name)
 				{
 					// Skip storages that have already moved files
-					if ($this->state['storage_index'] > $i)
+					if ($this->state_helper->remove_storage_index() > $i++)
 					{
-						$i++;
 						continue;
 					}
 
-					$current_adapter = $this->get_current_adapter($storage_name);
-					$new_adapter = $this->get_new_adapter($storage_name);
-
 					$sql = 'SELECT file_id, file_path
-						FROM ' . STORAGE_TABLE . "
-						WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
-							AND file_id > " . (int) $this->state['file_index'];
+							FROM ' . STORAGE_TABLE . "
+							WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
+								AND file_id > " . $this->state_helper->file_index();
 					$result = $this->db->sql_query($sql);
 
 					while ($row = $this->db->sql_fetchrow($result))
 					{
 						if (!still_on_time())
 						{
-							$this->save_state();
+							$this->db->sql_freeresult($result);
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-							trigger_error($this->lang->lang('self::STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
+							trigger_error($this->lang->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state_helper->storages())));
 						}
 
-						$stream = $current_adapter->read_stream($row['file_path']);
-						$new_adapter->write_stream($row['file_path'], $stream);
+						// remove file from old (current) adapter
+						$current_adapter = $this->storage_helper->get_current_adapter($storage_name);
+						$current_adapter->delete($row['file_path']);
 
-						if (is_resource($stream))
-						{
-							fclose($stream);
-						}
-
-						$this->state['file_index'] = $row['file_id']; // Set last uploaded file
+						$this->state_helper->set_file_index($row['file_id']);
 					}
 
-					// Copied all files of a storage, increase storage index and reset file index
-					$this->state['storage_index']++;
-					$this->state['file_index'] = 0;
-				}
+					$this->db->sql_freeresult($result);
 
-				// If update_type is move files, remove the old files
-				if ($this->state['update_type'] === self::STORAGE_UPDATE_TYPE_MOVE)
-				{
-					$i = 0;
-					foreach ($this->state['storages'] as $storage_name => $storage_options)
-					{
-						// Skip storages that have already moved files
-						if ($this->state['remove_storage_index'] > $i)
-						{
-							$i++;
-							continue;
-						}
-
-						$current_adapter = $this->get_current_adapter($storage_name);
-
-						$sql = 'SELECT file_id, file_path
-							FROM ' . STORAGE_TABLE . "
-							WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
-								AND file_id > " . (int) $this->state['file_index'];
-						$result = $this->db->sql_query($sql);
-
-						while ($row = $this->db->sql_fetchrow($result))
-						{
-							if (!still_on_time())
-							{
-								$this->save_state();
-								meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-								trigger_error($this->lang->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state['storages'])));
-							}
-
-							$current_adapter->delete($row['file_path']);
-
-							$this->state['file_index'] = $row['file_id']; // Set last uploaded file
-						}
-
-						// Remove all files of a storage, increase storage index and reset file index
-						$this->state['remove_storage_index']++;
-						$this->state['file_index'] = 0;
-					}
+					// Remove all files of a storage, increase storage index and reset file index
+					$this->state_helper->set_remove_storage_index($this->state_helper->remove_storage_index()+1);
+					$this->state_helper->set_file_index(0);
 				}
 			}
-
-			// Here all files have been copied/moved, so save new configuration
-			foreach (array_keys($this->state['storages']) as $storage_name)
-			{
-				$this->update_storage_config($storage_name);
-			}
-
-			$storages = array_keys($this->state['storages']);
-			$this->state = false;
-			$this->save_state();
-
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false, $storages);
-			trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
 		}
 
-		// There is an updating in progress, show the form to continue or cancel
-		if ($this->state != false)
+		// Here all files have been copied/moved, so save new configuration
+		foreach ($this->state_helper->storages() as $storage_name)
 		{
-			$this->template->assign_vars(array(
-				'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->path_helper->get_phpbb_root_path() . $this->path_helper->get_adm_relative_path() . "index." . $this->path_helper->get_php_ext(), "i=$id&amp;mode=$mode&amp;action=progress_bar")),
-				'S_CONTINUE_UPDATING'	=> true,
-				'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-				'L_CONTINUE'			=> $this->lang->lang('CONTINUE_UPDATING'),
-				'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('CONTINUE_UPDATING_EXPLAIN'),
-			));
-
-			return;
+			$this->storage_helper->update_storage_config($storage_name);
 		}
+
+		$storages = $this->state_helper->storages();
+		$this->state_helper->clear_state();
+		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false, [implode(', ', $storages)]);
+		trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
+	}
+
+	private function update_inprogress(string $id, string $mode): void
+	{
+		// Template from adm/style
+		$this->tpl_name = 'acp_storage_update_inprogress';
+
+		// Set page title
+		$this->page_title = 'STORAGE_TITLE';
+
+		$this->template->assign_vars(array(
+			'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->u_action, "action=progress_bar")),
+			'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
+			'L_CONTINUE'			=> $this->lang->lang('CONTINUE_UPDATING'),
+			'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('CONTINUE_UPDATING_EXPLAIN'),
+		));
+	}
+
+	private function settings_form(string $id, string $mode): void
+	{
+		$form_key = 'acp_storage';
+		add_form_key($form_key);
 
 		// Process form and create a "state" for the update,
 		// then show a confirm form
-		$messages = [];
-
 		if ($this->request->is_set_post('submit'))
 		{
 			if (!check_form_key($form_key) || !check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
@@ -315,109 +295,125 @@ class acp_storage
 				trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$modified_storages = [];
+			$modified_storages = $this->get_modified_storages();
 
-			foreach ($this->storage_collection as $storage)
+			// validate submited paths if they are local
+			$messages = [];
+			foreach ($modified_storages as $storage_name)
 			{
-				$storage_name = $storage->get_name();
-
-				$options = $this->get_provider_options($this->get_current_provider($storage_name));
-
-				$this->validate_path($storage_name, $options, $messages);
-
-				$modified = false;
-
-				// Check if provider have been modified
-				if ($this->request->variable([$storage_name, 'provider'], '') != $this->get_current_provider($storage_name))
-				{
-					$modified = true;
-				}
-
-				// Check if options have been modified
-				if (!$modified)
-				{
-					foreach (array_keys($options) as $definition)
-					{
-						if ($this->request->variable([$storage_name, $definition], '') != $this->get_current_definition($storage_name, $definition))
-						{
-							$modified = true;
-							break;
-						}
-					}
-				}
-
-				// If the storage have been modified, validate options
-				if ($modified)
-				{
-					$modified_storages[] = $storage_name;
-					$this->validate_data($storage_name, $messages);
-				}
+				$this->validate_data($storage_name, $messages);
+			}
+			if (!empty($messages))
+			{
+				trigger_error(implode('<br>', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
+			// Start process and show form
 			if (!empty($modified_storages))
 			{
-				if (empty($messages))
-				{
-					// Create state
-					$this->state = [
-						// Save the value of the checkbox, to remove all files from the
-						// old storage once they have been successfully moved
-						'update_type' => (int) $this->request->variable('update_type', self::STORAGE_UPDATE_TYPE_CONFIG),
-						'storage_index' => 0,
-						'file_index' => 0,
-						'remove_storage_index' => 0,
-					];
+				// Create state
+				$this->state_helper->init(update_type::from((int) $this->request->variable('update_type', update_type::CONFIG->value)), $modified_storages, $this->request);
 
-					// Save in the state the selected storages and their configuration
-					foreach ($modified_storages as $storage_name)
-					{
-						$this->state['storages'][$storage_name]['provider'] = $this->request->variable([$storage_name, 'provider'], '');
+				// Show the confirmation form to start the process
+				$this->template->assign_vars(array(
+					'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->u_action, "action=progress_bar")),
+					'S_CONTINUE_UPDATING'	=> true,
+					'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
+					'L_CONTINUE'			=> $this->lang->lang('START_UPDATING'),
+					'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('START_UPDATING_EXPLAIN'),
+				));
 
-						$options = $this->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
+				// Template from adm/style
+				$this->tpl_name = 'acp_storage_update_inprogress';
 
-						foreach (array_keys($options) as $definition)
-						{
-							$this->state['storages'][$storage_name]['config'][$definition] = $this->request->variable([$storage_name, $definition], '');
-						}
-					}
+				// Set page title
+				$this->page_title = 'STORAGE_TITLE';
 
-					$this->save_state(); // A storage update is going to be done here
-
-					// Show the confirmation form to start the process
-					$this->template->assign_vars(array(
-						'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->path_helper->get_phpbb_root_path() . $this->path_helper->get_adm_relative_path() . "index." . $this->path_helper->get_php_ext(), "i=$id&amp;mode=$mode&amp;action=progress_bar")), // same
-						'S_CONTINUE_UPDATING'	=> true,
-						'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-						'L_CONTINUE'			=> $this->lang->lang('START_UPDATING'),
-						'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('START_UPDATING_EXPLAIN'),
-					));
-
-					return;
-				}
-				else
-				{
-					trigger_error(implode('<br>', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
-				}
+				return;
 			}
 
 			// If there is no changes
 			trigger_error($this->lang->lang('STORAGE_NO_CHANGES') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
+		// Template from adm/style
+		$this->tpl_name = 'acp_storage';
+
+		// Set page title
+		$this->page_title = 'STORAGE_TITLE';
+
+		$this->storage_stats(); // Show table with storage stats
+
+		// Validate local paths to check if everything is fine
+		$messages = [];
+		foreach ($this->storage_collection as $storage)
+		{
+			$this->validate_path($storage->get_name(), $messages);
+		}
+
+		$this->template->assign_vars([
+			'STORAGES'						=> $this->storage_collection,
+			'PROVIDERS' 					=> $this->provider_collection,
+
+			'ERROR_MESSAGES'				=> $messages,
+
+			'U_ACTION'						=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_storage'),
+
+			'STORAGE_UPDATE_TYPE_CONFIG'	=> update_type::CONFIG->value,
+			'STORAGE_UPDATE_TYPE_COPY'		=> update_type::COPY->value,
+			'STORAGE_UPDATE_TYPE_MOVE'		=> update_type::MOVE->value,
+		]);
+	}
+
+	private function get_modified_storages(): array
+	{
+		$modified_storages = [];
+
+		foreach ($this->storage_collection as $storage)
+		{
+			$storage_name = $storage->get_name();
+			$options = $this->storage_helper->get_provider_options($this->storage_helper->get_current_provider($storage_name));
+
+			$modified = false;
+
+			// Check if provider have been modified
+			if ($this->request->variable([$storage_name, 'provider'], '') != $this->storage_helper->get_current_provider($storage_name))
+			{
+				$modified = true;
+			}
+			else
+			{
+				// Check if options have been modified
+				foreach (array_keys($options) as $definition)
+				{
+					if ($this->request->variable([$storage_name, $definition], '') != $this->storage_helper->get_current_definition($storage_name, $definition))
+					{
+						$modified = true;
+						break;
+					}
+				}
+			}
+
+			if ($modified)
+			{
+				$modified_storages[] = $storage_name;
+			}
+		}
+
+		return $modified_storages;
+	}
+
+	protected function storage_stats()
+	{
 		// Top table with stats of each storage
 		$storage_stats = [];
 		foreach ($this->storage_collection as $storage)
 		{
-			$storage_name = $storage->get_name();
-			$options = $this->get_provider_options($this->get_current_provider($storage_name));
-
-			$this->validate_path($storage_name, $options, $messages);
-
 			try
 			{
 				$free_space = get_formatted_filesize($storage->free_space());
 			}
-			catch (\phpbb\storage\exception\exception $e)
+			catch (\phpbb\storage\exception\storage_exception $e)
 			{
 				$free_space = $this->lang->lang('STORAGE_UNKNOWN');
 			}
@@ -431,18 +427,7 @@ class acp_storage
 		}
 
 		$this->template->assign_vars([
-			'STORAGES'						=> $this->storage_collection,
-			'STORAGE_STATS'					=> $storage_stats,
-			'PROVIDERS' 					=> $this->provider_collection,
-
-			'ERROR_MSG'						=> implode('<br>', $messages),
-			'S_ERROR'						=> !empty($messages),
-
-			'U_ACTION'						=> $this->u_action . '&amp;hash=' . generate_link_hash('acp_storage'),
-
-			'STORAGE_UPDATE_TYPE_CONFIG'	=> self::STORAGE_UPDATE_TYPE_CONFIG,
-			'STORAGE_UPDATE_TYPE_COPY'		=> self::STORAGE_UPDATE_TYPE_COPY,
-			'STORAGE_UPDATE_TYPE_MOVE'		=> self::STORAGE_UPDATE_TYPE_MOVE,
+			'STORAGE_STATS' => $storage_stats,
 		]);
 	}
 
@@ -453,11 +438,11 @@ class acp_storage
 	{
 		adm_page_header($this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'));
 		$this->template->set_filenames(array(
-			'body'	=> 'progress_bar.html')
+				'body'	=> 'progress_bar.html')
 		);
 		$this->template->assign_vars(array(
-			'L_PROGRESS'			=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'),
-			'L_PROGRESS_EXPLAIN'	=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'))
+				'L_PROGRESS'			=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'),
+				'L_PROGRESS_EXPLAIN'	=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'))
 		);
 		adm_page_footer();
 	}
@@ -474,70 +459,6 @@ class acp_storage
 			"	close_waitscreen = 1;\n" .
 			"// ]]>\n" .
 			"</script>\n";
-	}
-
-	/**
-	 * Save state of storage update
-	 */
-	protected function save_state() : void
-	{
-		$state = $this->state;
-
-		if ($state == false)
-		{
-			$state = [];
-		}
-
-		$this->config_text->set('storage_update_state', json_encode($state));
-	}
-
-	/**
-	 * Load state of storage update
-	 */
-	protected function load_state() : void
-	{
-		$state = json_decode($this->config_text->get('storage_update_state'), true);
-
-		if ($state == null || empty($state))
-		{
-			$state = false;
-		}
-
-		$this->state = $state;
-	}
-
-	/**
-	 * Get the current provider from config
-	 *
-	 * @param string $storage_name Storage name
-	 * @return string The current provider
-	 */
-	protected function get_current_provider(string $storage_name) : string
-	{
-		return $this->config['storage\\' . $storage_name . '\\provider'];
-	}
-
-	/**
-	 * Get adapter definitions from a provider
-	 *
-	 * @param string $provider Provider class
-	 * @return array Adapter definitions
-	 */
-	protected function get_provider_options(string $provider) : array
-	{
-		return $this->provider_collection->get_by_class($provider)->get_options();
-	}
-
-	/**
-	 * Get the current value of the definition of a storage from config
-	 *
-	 * @param string $storage_name Storage name
-	 * @param string $definition Definition
-	 * @return string Definition value
-	 */
-	protected function get_current_definition(string $storage_name, string $definition) : string
-	{
-		return $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
 	}
 
 	/**
@@ -569,7 +490,7 @@ class acp_storage
 		}
 
 		// Check options
-		$new_options = $this->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
+		$new_options = $this->storage_helper->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
 
 		foreach ($new_options as $definition_key => $definition_value)
 		{
@@ -594,6 +515,20 @@ class acp_storage
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
+
+					if ($provider->get_name() == 'local' && $definition_key == 'path')
+					{
+						$path = $value;
+
+						if (empty($path))
+						{
+							$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
+						}
+						else if (!$this->filesystem->exists($this->phpbb_root_path . $path) || !$this->filesystem->is_writable($this->phpbb_root_path . $path))
+						{
+							$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
+						}
+					}
 				break;
 
 				case 'radio':
@@ -608,122 +543,31 @@ class acp_storage
 	}
 
 	/**
-	 * Updates an storage with the info provided in the form
+	 * Validates path when the filesystem is local
 	 *
 	 * @param string $storage_name Storage name
-	 */
-	protected function update_storage_config(string $storage_name) : void
-	{
-		$current_options = $this->get_provider_options($this->get_current_provider($storage_name));
-
-		// Remove old storage config
-		foreach (array_keys($current_options) as $definition)
-		{
-			$this->config->delete('storage\\' . $storage_name . '\\config\\' . $definition);
-		}
-
-		// Update provider
-		$this->config->set('storage\\' . $storage_name . '\\provider', $this->state['storages'][$storage_name]['provider']);
-
-		// Set new storage config
-		$new_options = $this->get_provider_options($this->state['storages'][$storage_name]['provider']);
-
-		foreach (array_keys($new_options) as $definition)
-		{
-			$this->config->set('storage\\' . $storage_name . '\\config\\' . $definition, $this->state['storages'][$storage_name]['config'][$definition]);
-		}
-	}
-
-	/**
-	 * Validates path
-	 *
-	 * @param string $storage_name Storage name
-	 * @param array $options Storage provider configuration keys
 	 * @param array $messages Error messages array
 	 * @return void
 	 */
-	protected function validate_path(string $storage_name, array $options, array &$messages) : void
+	protected function validate_path(string $storage_name, array &$messages) : void
 	{
-		if ($this->provider_collection->get_by_class($this->get_current_provider($storage_name))->get_name() == 'local' && isset($options['path']))
+		$current_provider = $this->storage_helper->get_current_provider($storage_name);
+		$options = $this->storage_helper->get_provider_options($current_provider);
+
+		if ($this->provider_collection->get_by_class($current_provider)->get_name() == 'local' && isset($options['path']))
 		{
-			$path = $this->request->is_set_post('submit') ? $this->request->variable([$storage_name, 'path'], '') : $this->get_current_definition($storage_name, 'path');
+			$path = $this->storage_helper->get_current_definition($storage_name, 'path');
 
 			if (empty($path))
 			{
 				$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
 			}
-			else if (!$this->filesystem->is_writable($this->phpbb_root_path . $path) || !$this->filesystem->exists($this->phpbb_root_path . $path))
+			else if (!$this->filesystem->exists($this->phpbb_root_path . $path) || !$this->filesystem->is_writable($this->phpbb_root_path . $path))
 			{
 				$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
 			}
 		}
 	}
 
-	/**
-	 * Get current storage adapter
-	 *
-	 * @param string $storage_name Storage adapter name
-	 *
-	 * @return object Storage adapter instance
-	 */
-	protected function get_current_adapter(string $storage_name): object
-	{
-		static $adapters = [];
 
-		if (!isset($adapters[$storage_name]))
-		{
-			$provider = $this->get_current_provider($storage_name);
-			$provider_class = $this->provider_collection->get_by_class($provider);
-
-			$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
-			$definitions = $this->get_provider_options($provider);
-
-			$options = [];
-			foreach (array_keys($definitions) as $definition)
-			{
-				$options[$definition] = $this->get_current_definition($storage_name, $definition);
-			}
-
-			$adapter->configure($options);
-			//$adapter->set_storage($storage_name);
-
-			$adapters[$storage_name] = $adapter;
-		}
-
-		return $adapters[$storage_name];
-	}
-
-	/**
-	 * Get new storage adapter
-	 *
-	 * @param string $storage_name
-	 *
-	 * @return object Storage adapter instance
-	 */
-	protected function get_new_adapter(string $storage_name) : object
-	{
-		static $adapters = [];
-
-		if (!isset($adapters[$storage_name]))
-		{
-			$provider = $this->state['storages'][$storage_name]['provider'];
-			$provider_class = $this->provider_collection->get_by_class($provider);
-
-			$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
-			$definitions = $this->get_provider_options($provider);
-
-			$options = [];
-			foreach (array_keys($definitions) as $definition)
-			{
-				$options[$definition] = $this->state['storages'][$storage_name]['config'][$definition];
-			}
-
-			$adapter->configure($options);
-			//$adapter->set_storage($storage_name);
-
-			$adapters[$storage_name] = $adapter;
-		}
-
-		return $adapters[$storage_name];
-	}
 }

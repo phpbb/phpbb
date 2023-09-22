@@ -13,7 +13,7 @@
 
 namespace phpbb\storage;
 
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 
 interface stream_interface
 {
@@ -23,7 +23,7 @@ interface stream_interface
 	 * @param string $path File to read
 	 *
 	 * @return resource Returns a file pointer
-	 * @throws exception When unable to open file
+	 * @throws storage_exception When unable to open file
 	 */
 	public function read_stream(string $path);
 
@@ -34,7 +34,7 @@ interface stream_interface
 	 * @param resource $resource The resource
 	 *
 	 * @return void
-	 * @throws exception When target file exists
+	 * @throws storage_exception When target file exists
 	 * When target file cannot be created
 	 */
 	public function write_stream(string $path, $resource): void;
