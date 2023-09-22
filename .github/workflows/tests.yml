@@ -116,10 +116,6 @@ jobs:
                     - php: '8.1'
                       db: "mariadb:10.11"
                     - php: '8.1'
-                      db: "mariadb:11.0"
-                    - php: '8.1'
-                      db: "mariadb:11.1"
-                    - php: '8.1'
                       db: "mysql:5.7"
                       db_alias: "MySQL Slow Tests"
                       SLOWTESTS: 1
