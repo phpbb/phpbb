@@ -15,6 +15,7 @@ namespace phpbb\language;
 
 use DomainException;
 use phpbb\json\sanitizer as json_sanitizer;
+use phpbb\user;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -27,14 +28,19 @@ class language_file_helper
 	 */
 	protected $phpbb_root_path;
 
+	/** @var user */
+	protected $user;
+
 	/**
 	 * Constructor
 	 *
 	 * @param string $phpbb_root_path Path to phpBB's root
+	 * @param user $user			  User Object
 	 */
-	public function __construct(string $phpbb_root_path)
+	public function __construct(string $phpbb_root_path, \phpbb\user $user)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
+		$this->user = $user;
 	}
 
 	/**
@@ -76,7 +82,13 @@ class language_file_helper
 	public function get_lang_key_value($lang_key) : string
 	{
 		$available_languages = $this->get_available_languages();
-		return $available_languages[0][$lang_key];
+
+		foreach ($available_languages as $key => $value)
+		{
+			$available_languages[$value['iso']] = $value;
+		}
+		$user_lang = $this->user->data['user_lang'] ?? 'en';
+		return $available_languages[$user_lang][$lang_key];
 	}
 
 	/**

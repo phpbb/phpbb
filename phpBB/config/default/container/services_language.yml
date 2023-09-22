@@ -3,6 +3,7 @@ services:
         class: phpbb\language\language_file_helper
         arguments:
             - '%core.root_path%'
+            - '@user'
 
     language:
         class: phpbb\language\language
