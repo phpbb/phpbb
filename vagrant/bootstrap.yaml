@@ -14,12 +14,11 @@ keys:
 folders:
     - map: "."
       to: "/home/vagrant/phpbb"
-      php: "8.1"
-
 sites:
     - map: phpbb.app
       to: "/home/vagrant/phpbb/phpBB"
       type: apache
+      php: "8.1"
 
 # blackfire:
 #     - id: foo
