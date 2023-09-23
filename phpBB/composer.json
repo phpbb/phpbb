@@ -28,8 +28,8 @@
 	"require": {
 		"php": "^8.1",
 		"ext-json": "*",
-		"ext-mbstring": "*",
 		"ext-pdo": "*",
+		"ext-zlib": "*",
 		"bantu/ini-get-wrapper": "~1.0",
 		"chita/topological_sort": "^3.0",
 		"composer/composer": "^2.0",
@@ -50,6 +50,7 @@
 		"symfony/finder": "^6.3",
 		"symfony/http-foundation": "^6.3",
 		"symfony/http-kernel": "^6.3",
+		"symfony/polyfill-mbstring": "^1.23",
 		"symfony/mime": "^6.3",
 		"symfony/process": "^6.3",
 		"symfony/proxy-manager-bridge": "^6.3",
@@ -70,6 +71,9 @@
 		"symfony/http-client": "^6.3",
 		"vimeo/psalm": "^4.14",
 		"psalm/plugin-symfony": "^3.1"
+	},
+	"suggest": {
+		"ext-mbstring": "Better performance in search"
 	},
 	"extra": {
 		"branch-alias": {
