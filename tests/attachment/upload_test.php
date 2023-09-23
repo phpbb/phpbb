@@ -11,6 +11,9 @@
 *
 */
 
+use phpbb\config\config;
+use phpbb\language\language_file_helper;
+
 require_once(__DIR__ . '/../../phpBB/includes/functions_posting.php');
 
 class phpbb_attachment_upload_test extends \phpbb_database_test_case
@@ -95,7 +98,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		$this->request = $this->createMock('\phpbb\request\request');
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
-		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx), new language_file_helper($phpbb_root_path, $config), $config);
 		$this->php_ini = new \bantu\IniGetWrapper\IniGetWrapper;
 		$guessers = array(
 			new \Symfony\Component\Mime\FileinfoMimeTypeGuesser(),
