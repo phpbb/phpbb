@@ -129,6 +129,7 @@ class forms extends AbstractExtension
 				'MAX'		=> (int) ($form_data['max'] ?? 0),
 				'STEP'		=> (int) ($form_data['step'] ?? 0),
 				'CHECKED'	=> (bool) ($form_data['checked'] ?? false),
+				'DISABLED'	=> (bool) ($form_data['disabled'] ?? false),
 				'VALUE'		=> (string) ($form_data['value']),
 			]);
 		}

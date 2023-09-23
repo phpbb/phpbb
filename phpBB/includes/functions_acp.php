@@ -230,20 +230,25 @@ function build_select($option_ary, $option_default = false): array
 /**
 * Build radio fields in acp pages
 */
-function h_radio($name, $input_ary, $input_default = false, $id = false, $key = false, $separator = '')
+function build_radio($value, $key, $options)
 {
-	global $user;
+	global $language;
 
-	$html = '';
-	$id_assigned = false;
-	foreach ($input_ary as $value => $title)
+	$buttons = [];
+	foreach ($options as $val => $option)
 	{
-		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>' . $separator;
-		$id_assigned = true;
+		$buttons[] = [
+			'type'		=> 'radio',
+			'value'		=> $val,
+			'name'		=> 'config[' . $key . ']',
+			'checked'	=> $val == $value,
+			'label'		=> $language->lang($option),
+		];
 	}
 
-	return $html;
+	return [
+		'buttons' => $buttons,
+	];
 }
 
 /**
@@ -268,12 +273,6 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 	if (!isset($new_ary[$config_key]))
 	{
 		$new_ary[$config_key] = '';
-	}
-
-	// For BC check if parameter is json format and if yes split $tpl_type in 2 parts only
-	if (isset($tpl_type[1]) && strpos($tpl_type[1], '{') !== false)
-	{
-		$tpl_type = explode(':', $vars['type'], 2);
 	}
 
 	switch ($tpl_type[0])
@@ -375,39 +374,6 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'radio':
-			// Convert 'old' radio button parameters to json encoded string for BC
-			if (in_array($tpl_type[1], ['yes_no', 'enabled_disabled']))
-			{
-				$params = explode('_', $tpl_type[1]);
-				$tpl_type[1] = '{"' . $params[0] . '":1, "' . $params[1] . '":0}';
-			}
-
-			$params = json_decode($tpl_type[1], true);
-			$id_assigned = false;
-			$buttons = [];
-			foreach ($params as $param => $value)
-			{
-				$buttons[] = [
-					'type'		=> 'radio',
-					'name'		=> $name,
-					'value'		=> $value,
-					'checked'	=> $new_ary[$config_key] == $value,
-					'label'		=> $language->lang(strtoupper($param)),
-				];
-
-				// Only assign id to the one (1st) button in the list
-				if (!$id_assigned)
-				{
-					$buttons[key($buttons)]['id'] = $key;
-				}
-			};
-
-			$tpl = [
-				'tag' => 'radio',
-				'buttons' => $buttons,
-			];
-		break;
-
 		case 'button':
 		case 'select':
 		case 'custom':
@@ -436,7 +402,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 						break;
 
 						case '{KEY}':
-							$value = $key;
+							$value = $config_key;
 						break;
 					}
 
@@ -445,12 +411,12 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			}
 			else
 			{
-				$args = array($new_ary[$config_key], $key);
+				$args = array($new_ary[$config_key], $config_key);
 			}
 
 			$return = call_user_func_array($call, $args);
 
-			if (in_array($tpl_type[0], ['select', 'button']))
+			if (in_array($tpl_type[0], ['select', 'radio', 'button']))
 			{
 				$tpl_type = array_merge($tpl_type, $return);
 
@@ -467,6 +433,24 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 						'group_only'	=> $tpl_type['group_only'] ?? false,
 						'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
 						'multiple'		=> $tpl_type['multiple'] ?? false,
+					];
+				}
+				else if ($tpl_type[0] == 'radio')
+				{
+					// Only assign id to the one (1st) radio button in the list
+					$id_assigned = false;
+					foreach ($tpl_type['buttons'] as $i => $button)
+					{
+						if (!$id_assigned)
+						{
+							$tpl_type['buttons'][$i]['id'] = $key;
+							$id_assigned = true;
+						}
+					}
+
+					$tpl = [
+						'tag'		=> 'radio',
+						'buttons'	=> $tpl_type['buttons'],
 					];
 				}
 				else
