@@ -1,4 +1,4 @@
-{% apply  replace({"\n": ' ', "\t": ''}) %}
+{% apply  replace({"\n\t": ' ', "\t": '', "\n": ''}) %}
 	<select
 		{% if CLASS %}class="{{ CLASS }}" {% endif %}
 		{% if ID %}id="{{ ID }}" {% endif %}
@@ -6,20 +6,16 @@
 			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
 		{% endfor %}
 		name="{{ NAME }}"
-		{% if TOGGLEABLE %}data-togglable-settings="true" {% endif %}
-
-		{% if MULTIPLE %}multiple="multiple" {% endif %}
-		{% if SIZE %}size="{{ SIZE }}" {% endif %}>
-{% endapply %}
+		{% if TOGGLEABLE %}data-togglable-settings="true"{% endif %}
+		{% if MULTIPLE %}multiple="multiple"{% endif %}
+		{% if SIZE %}size="{{ SIZE }}"{% endif %}>
 {% for element in OPTIONS %}
 	{% if not GROUP_ONLY and element.options %}
-		{% apply  replace({"\n": ' ', '\t': ''}) %}
 			<optgroup
 			{% for key, value in element.data %}
 				data-{{ key }}="{{ value }}"
 			{% endfor %}
 			label="{{ element.label }}">
-		{% endapply %}
 		{% for option in element.options %}
 			<option
 				value="{{ option.value }}"
@@ -36,3 +32,4 @@
 	{% endif %}
 {% endfor %}
 </select>
+{% endapply %}
