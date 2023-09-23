@@ -161,7 +161,7 @@ function installer_shutdown_function($display_errors)
 
 		$cache = new \phpbb\cache\driver\file(__DIR__ . '/../cache/installer');
 		$filesystem = new \phpbb\filesystem\filesystem();
-		if (strpos($error['file'], $filesystem->realpath($cache->cache_dir)) !== false)
+		if (strpos($error['file'], $filesystem->realpath($cache->cache_dir)) !== false && is_writable($cache->cache_dir))
 		{
 			$file_age = @filemtime($error['file']);
 
