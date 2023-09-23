@@ -73,29 +73,6 @@ class local implements adapter_interface, stream_interface
 	 */
 	protected $path;
 
-	/*
-	 * Subdirectories depth
-	 *
-	 * Instead of storing all folders in the same directory, they can be divided
-	 * into smaller directories. The variable describes the number of subdirectories
-	 * to be used for storing the files. For example:
-	 * depth = 0 -> /images/avatars/upload/my_avatar.jpg
-	 * depth = 2 -> /images/avatars/upload/d9/8c/my_avatar.jpg
-	 * This is for those who have problems storing a large number of files in
-	 * a single directory.
-	 * More info: https://tracker.phpbb.com/browse/PHPBB3-15371
-	 */
-
-	/*
-	 * @var bool subfolders
-	 */
-	protected $subfolders;
-
-	/*
-	 * @var int dir_depth
-	 */
-	protected $dir_depth = 2;
-
 	/**
 	 * Constructor
 	 *
@@ -125,7 +102,6 @@ class local implements adapter_interface, stream_interface
 		}
 
 		$this->root_path = filesystem_helper::realpath($this->phpbb_root_path . $options['path']) . DIRECTORY_SEPARATOR;
-		$this->subfolders = (bool) $options['subfolders'];
 	}
 
 	/**
@@ -181,8 +157,6 @@ class local implements adapter_interface, stream_interface
 		{
 			throw new exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
 		}
-
-		$this->remove_empty_dirs($path);
 	}
 
 	/**
@@ -200,8 +174,6 @@ class local implements adapter_interface, stream_interface
 		{
 			throw new exception('STORAGE_CANNOT_RENAME', $path_orig, array(), $e);
 		}
-
-		$this->remove_empty_dirs($path_orig);
 	}
 
 	/**
@@ -259,31 +231,7 @@ class local implements adapter_interface, stream_interface
 	}
 
 	/**
-	 * Removes the directory tree ascending until it finds a non empty directory.
-	 *
-	 * @param string	$path	The file path
-	 */
-	protected function remove_empty_dirs(string $path): void
-	{
-		if ($this->subfolders)
-		{
-			$dirpath = dirname($this->root_path . $path);
-			$filepath = dirname($this->root_path . $this->get_path($path) . $this->get_filename($path));
-			$path = filesystem_helper::make_path_relative($filepath, $dirpath);
-
-			do
-			{
-				$parts = explode('/', $path);
-				$parts = array_slice($parts, 0, -1);
-				$path = implode('/', $parts);
-			}
-			while ($path && @rmdir($dirpath . '/' . $path));
-		}
-	}
-
-	/**
-	 * Get the path to the file, appending subdirectories for directory depth
-	 * if $dir_depth > 0.
+	 * Get the path to the file
 	 *
 	 * @param string $path The file path
 	 * @return string
@@ -292,19 +240,6 @@ class local implements adapter_interface, stream_interface
 	{
 		$dirname = dirname($path);
 		$dirname = ($dirname != '.') ? $dirname . DIRECTORY_SEPARATOR : '';
-
-		if ($this->subfolders)
-		{
-			$hash = md5(basename($path));
-
-			$parts = str_split($hash, 2);
-			$parts = array_slice($parts, 0, $this->dir_depth);
-
-			if (!empty($parts))
-			{
-				$dirname .= implode(DIRECTORY_SEPARATOR, $parts) . DIRECTORY_SEPARATOR;
-			}
-		}
 
 		return $dirname;
 	}

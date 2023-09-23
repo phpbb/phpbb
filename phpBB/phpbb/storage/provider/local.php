@@ -38,13 +38,6 @@ class local implements provider_interface
 	{
 		return [
 			'path' => ['type' => 'text'],
-			'subfolders' => [
-				'type' => 'radio',
-				'options' => [
-					'ENABLE' => '1',
-					'DISABLE' => '0',
-				],
-			],
 		];
 	}
 
