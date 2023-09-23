@@ -14,5 +14,6 @@
 		{% if STEP %}step="{{ STEP }}" {% endif %}
 		{% if TYPE == 'password' %}autocomplete="off" {% endif %}
 		{% if CHECKED %}checked="checked" {% endif %}
+		{% if DISABLED %}disabled="disabled" {% endif %}
 		value="{{ VALUE }}">
 {% endapply %}

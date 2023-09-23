@@ -259,13 +259,13 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 
 	public function build_cfg_template_radio_data()
 	{
-		return array(
-			array(
-				array('radio', 'enabled_disabled'),
+		return [
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array(),
+				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -286,13 +286,13 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'enabled_disabled'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '1'],
 				'config_key_name',
-				array(),
+				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -313,13 +313,13 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'yes_no'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array(),
+				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -340,13 +340,13 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'yes_no'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '1'],
 				'config_key_name',
-				array(),
+				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -367,8 +367,8 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-		);
+			],
+		];
 	}
 
 	/**
