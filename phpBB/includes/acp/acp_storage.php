@@ -247,7 +247,7 @@ class acp_storage
 					$this->db->sql_freeresult($result);
 
 					// Remove all files of a storage, increase storage index and reset file index
-					$this->state_helper->set_remove_storage_index($this->state_helper->remove_storage_index()+1);
+					$this->state_helper->set_remove_storage_index($this->state_helper->remove_storage_index() + 1);
 					$this->state_helper->set_file_index(0);
 				}
 			}
