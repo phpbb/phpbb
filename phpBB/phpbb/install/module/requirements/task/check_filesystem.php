@@ -217,6 +217,7 @@ class check_filesystem extends \phpbb\install\task_base
 			catch (\phpbb\filesystem\exception\filesystem_exception $e)
 			{
 				// Do nothing
+				$this->response->add_warning_message($e->getMessage(), $e->get_filename());
 			}
 		}
 
@@ -232,6 +233,7 @@ class check_filesystem extends \phpbb\install\task_base
 			}
 			catch (\phpbb\filesystem\exception\filesystem_exception $e)
 			{
+				$this->response->add_warning_message($e->getMessage(), $e->get_filename());
 				// Do nothing
 			}
 		}
