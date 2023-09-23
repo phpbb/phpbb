@@ -29,7 +29,7 @@ class language_file_helper
 	protected $phpbb_root_path;
 
 	/**
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 

@@ -77,7 +77,7 @@ class language
 	protected $lang_helper;
 
 	/**
-	 * @var \phpbb\config\config
+	 * @var config
 	 */
 	protected $config;
 
