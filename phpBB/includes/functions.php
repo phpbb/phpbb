@@ -3829,10 +3829,10 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$language_file_helper = $phpbb_container->get('language.helper.language_file');
 
 	// Grab the users lang direction and store it for later use
-	$direction = $language_file_helper->get_lang_key_value('direction');
+	$direction = $language_file_helper->get_lang_key_value('direction', $user->data['user_lang']);
 
 	// Get the user_lang string
-	$user_lang = $language_file_helper->get_lang_key_value('user_lang');
+	$user_lang = $language_file_helper->get_lang_key_value('user_lang', $user->data['user_lang']);
 	if (strpos($user_lang, '-x-') !== false)
 	{
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
@@ -3938,7 +3938,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
 		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
-		'L_RECAPTCHA_LANG'	=> $language_file_helper->get_lang_key_value('recaptcha_lang'),
+		'L_RECAPTCHA_LANG'	=> $language_file_helper->get_lang_key_value('recaptcha_lang', $user->data['user_lang']),
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),

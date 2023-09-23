@@ -15,8 +15,8 @@ namespace phpbb\language;
 
 use DomainException;
 use phpbb\json\sanitizer as json_sanitizer;
-use phpbb\user;
 use Symfony\Component\Finder\Finder;
+use phpbb\config\config;
 
 /**
  * Helper class for language file related functions
@@ -28,19 +28,22 @@ class language_file_helper
 	 */
 	protected $phpbb_root_path;
 
-	/** @var user */
-	protected $user;
+	/**
+	 * @var \phpbb\config\config
+	 */
+	protected $config;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $phpbb_root_path Path to phpBB's root
-	 * @param user $user			  User Object
+	 * @param string $phpbb_root_path 		Path to phpBB's root
+	 * @param config $config 				The config
+	 *
 	 */
-	public function __construct(string $phpbb_root_path, \phpbb\user $user)
+	public function __construct(string $phpbb_root_path, config $config)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->user = $user;
+		$this->config = $config;
 	}
 
 	/**
@@ -79,16 +82,18 @@ class language_file_helper
 	 * @return string
 	 *
 	 */
-	public function get_lang_key_value($lang_key) : string
+	public function get_lang_key_value($lang_key, $user_lang_db) : string
 	{
 		$available_languages = $this->get_available_languages();
 
 		foreach ($available_languages as $key => $value)
 		{
 			$available_languages[$value['iso']] = $value;
+			unset($available_languages[$key]);
 		}
-		$user_lang = $this->user->data['user_lang'] ?? 'en';
-		return $available_languages[$user_lang][$lang_key];
+		$board_default_lang = $this->config['default_lang'];
+		$user_lang_db = $user_lang_db ?? $board_default_lang;
+		return $available_languages[$user_lang_db][$lang_key];
 	}
 
 	/**

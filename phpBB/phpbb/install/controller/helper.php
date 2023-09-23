@@ -253,19 +253,16 @@ class helper
 	 */
 	protected function page_header($page_title, $selected_language = false)
 	{
-		global $phpbb_container;
+		global $user;
 
 		// Path to templates
 		$paths = array($this->phpbb_root_path . 'install/update/new/adm/', $this->phpbb_admin_path);
 		$paths = array_filter($paths, 'is_dir');
 		$path = array_shift($paths);
 		$path = substr($path, strlen($this->phpbb_root_path));
-		// Get the language helper
-		/* @var $language_helper \phpbb\language\language_file_helper */
-		$language_file_helper = $phpbb_container->get('language.helper.language_file');
 
 		// Grab the users lang direction and store it for later use
-		$direction = $language_file_helper->get_lang_key_value('direction');
+		$direction = $this->lang_helper->get_lang_key_value('direction', $user->data['user_lang']);
 
 		$this->template->assign_vars(array(
 			'L_CHANGE'				=> $this->language->lang('CHANGE'),
@@ -285,7 +282,7 @@ class helper
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_LANG_SELECT'			=> $selected_language,
 
-			'S_USER_LANG'			=> $language_file_helper->get_lang_key_value('user_lang'),
+			'S_USER_LANG'			=> $this->lang_helper->get_lang_key_value('user_lang', $user->data['user_lang']),
 		));
 
 		$this->render_navigation();

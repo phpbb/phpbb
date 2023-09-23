@@ -74,10 +74,10 @@ function adm_page_header($page_title)
 	$language_file_helper = $phpbb_container->get('language.helper.language_file');
 
 	// Grab the users lang direction and store it for later use
-	$direction = $language_file_helper->get_lang_key_value('direction');
+	$direction = $language_file_helper->get_lang_key_value('direction', $user->data['user_lang']);
 
 	// Get the user_lang string
-	$user_lang = $language_file_helper->get_lang_key_value('user_lang');
+	$user_lang = $language_file_helper->get_lang_key_value('user_lang', $user->data['user_lang']);
 
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,

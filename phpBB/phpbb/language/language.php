@@ -13,6 +13,7 @@
 
 namespace phpbb\language;
 
+use phpbb\config\config;
 use phpbb\language\exception\invalid_plural_rule_exception;
 
 /**
@@ -71,14 +72,28 @@ class language
 	protected $loader;
 
 	/**
+	 * @var language_file_helper
+	 */
+	protected $lang_helper;
+
+	/**
+	 * @var \phpbb\config\config
+	 */
+	protected $config;
+
+	/**
 	 * Constructor
 	 *
 	 * @param \phpbb\language\language_file_loader	$loader			Language file loader
+	 * @param language_file_helper 					$lang_helper
 	 * @param array|null							$common_modules	Array of common language modules to load (optional)
+	 * @param config $config The config
 	 */
-	public function __construct(language_file_loader $loader, $common_modules = null)
+	public function __construct(language_file_loader $loader, language_file_helper $lang_helper, config $config, $common_modules = null)
 	{
 		$this->loader = $loader;
+		$this->lang_helper = $lang_helper;
+		$this->config = $config;
 
 		// Set up default information
 		$this->user_language		= null;
@@ -403,13 +418,10 @@ class language
 	 */
 	public function get_plural_form($number, $force_rule = false)
 	{
-		global $phpbb_container;
-		// Get the language helper
-		/* @var $language_helper \phpbb\language\language_file_helper */
-		$language_file_helper = $phpbb_container->get('language.helper.language_file');
+		global $user;
 
 		// Grab the users lang plural rule
-		$plural_rule_content = $language_file_helper->get_lang_key_value('plural_rule');
+		$plural_rule_content = $this->lang_helper->get_lang_key_value('plural_rule', $user->data['user_lang']);
 
 		$number			= (int) $number;
 		$plural_rule	= ($force_rule !== false) ? $force_rule : ((isset($plural_rule_content)) ? $plural_rule_content : 1);
