@@ -268,9 +268,16 @@ class manager
 	{
 		$config_name = $driver->get_config_name();
 
-		return array(
-			'allow_avatar_' . $config_name	=> array('lang' => 'ALLOW_' . strtoupper(str_replace('\\', '_', $config_name)),		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-		);
+		return [
+			'allow_avatar_' . $config_name	=> [
+				'lang' => 'ALLOW_' . strtoupper(str_replace('\\', '_', $config_name)),
+				'validate' => 'bool',
+				'type' => 'radio',
+				'function' => 'build_radio',
+				'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']],
+				'explain' => true
+			],
+		];
 	}
 
 	/**
