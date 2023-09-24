@@ -32,7 +32,7 @@
 		<li class="row">
 			<!-- EVENT forumlist_body_forum_row_prepend -->
 			<dl class="row-item">
-				<dt title="{forumrow.FORUM_FOLDER_IMG_ALT}">
+				<dt title="{% if forumrow.S_IS_LINK %}{{ lang('FORUM_LINK') }}{% else %}{{ forumrow.FORUM_FOLDER_IMG_ALT }}{% endif %}">
 					<a class="row-item-link{% if forumrow.S_UNREAD_FORUM %} unread{% else %} read{% endif %}" href="{forumrow.U_VIEWFORUM}">
 						{{ Icon('iconify', {
 							'mdi:link-variant' : forumrow.S_IS_LINK,
@@ -65,7 +65,7 @@
 								<strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
 								<!-- EVENT forumlist_body_subforum_link_prepend -->
-								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="<!-- IF forumrow.subforum.S_UNREAD -->{L_UNREAD_POSTS}<!-- ELSE -->{L_NO_UNREAD_POSTS}<!-- ENDIF -->">
+								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="{% if forumrow.subforum.IS_LINK %}{{ lang('FORUM_LINK') }}{% elseif forumrow.subforum.S_UNREAD %}{{ lang('UNREAD_POSTS') }}{% else %}{{ lang('NO_UNREAD_POSTS') }}{% endif %}">
 									{{ Icon('iconify', {
 										'fa:external-link' : forumrow.subforum.IS_LINK,
 										'fa:file-o' : true,
