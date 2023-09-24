@@ -54,6 +54,7 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 
 	public function test_acp()
 	{
+		$this->add_lang('common');
 		$this->login();
 		$this->admin_login();
 
@@ -111,6 +112,20 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		$this->assertStringContainsString('LABEL_3', $crawler->filter('dl')->eq(10)->filter('dd > label')->eq(1)->text());
 		$this->assertEquals(2, $crawler->filter('dl')->eq(10)->filter('dd > label > input[type="radio"]')->eq(2)->attr('value'));
 		$this->assertStringContainsString('LABEL_2', $crawler->filter('dl')->eq(10)->filter('dd > label')->eq(2)->text());
+
+		$this->assertStringContainsString('SETTING_11', $crawler->filter('dl')->eq(11)->filter('dt > label[for="setting_11"]')->text());
+		$this->assertStringContainsString('SETTING_11_EXPLAIN', $crawler->filter('dl')->eq(11)->filter('dt > span')->text());
+		$this->assertEquals('1', $crawler->filter('dl')->eq(11)->filter('dd > label > input[type="radio"]')->eq(0)->attr('value'));
+		$this->assertEquals('0', $crawler->filter('dl')->eq(11)->filter('dd > label > input[type="radio"]')->eq(1)->attr('value'));
+		$this->assertContainsLang('YES', $crawler->filter('dl')->eq(11)->filter('dd > label')->eq(0)->text());
+		$this->assertContainsLang('NO', $crawler->filter('dl')->eq(11)->filter('dd > label')->eq(1)->text());
+
+		$this->assertStringContainsString('SETTING_12', $crawler->filter('dl')->eq(12)->filter('dt > label[for="setting_12"]')->text());
+		$this->assertStringContainsString('SETTING_12_EXPLAIN', $crawler->filter('dl')->eq(12)->filter('dt > span')->text());
+		$this->assertContainsLang('ENABLED', $crawler->filter('dl')->eq(12)->filter('dd > label')->eq(0)->text());
+		$this->assertEquals(1, $crawler->filter('dl')->eq(12)->filter('dd > label > input[type="radio"]')->eq(0)->attr('value'));
+		$this->assertContainsLang('DISABLED', $crawler->filter('dl')->eq(12)->filter('dd > label')->eq(1)->text());
+		$this->assertEquals(0, $crawler->filter('dl')->eq(12)->filter('dd > label > input[type="radio"]')->eq(1)->attr('value'));
 	}
 
 	public function test_ucp()

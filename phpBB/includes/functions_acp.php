@@ -374,47 +374,48 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		break;
 
 		case 'radio':
+			if (!isset($vars['method']) && !isset($vars['function']))
+			{
+				if (in_array($tpl_type[1], ['yes_no', 'enabled_disabled']))
+				{
+					$options = array_reverse(explode('_', strtoupper($tpl_type[1])));
+					krsort($options);
+					$tpl_type = array_merge ($tpl_type, build_radio($new_ary[$config_key], $config_key, $options));
+				}
+			}
 		case 'button':
 		case 'select':
 		case 'custom':
-			if (isset($vars['method']))
-			{
-				$call = array($module->module, $vars['method']);
-			}
-			else if (isset($vars['function']))
-			{
-				$call = $vars['function'];
-			}
-			else
-			{
-				break;
-			}
+			$args = [];
+			$call = $vars['function'] ?? (isset($vars['method']) ? [$module->module, $vars['method']] : false);
 
-			if (isset($vars['params']))
+			if ($call)
 			{
-				$args = array();
-				foreach ($vars['params'] as $value)
+				if (isset($vars['params']))
 				{
-					switch ($value)
+					foreach ($vars['params'] as $value)
 					{
-						case '{CONFIG_VALUE}':
-							$value = $new_ary[$config_key];
-						break;
+						switch ($value)
+						{
+							case '{CONFIG_VALUE}':
+								$value = $new_ary[$config_key];
+							break;
 
-						case '{KEY}':
-							$value = $config_key;
-						break;
+							case '{KEY}':
+								$value = $config_key;
+							break;
+						}
+
+						$args[] = $value;
 					}
-
-					$args[] = $value;
+				}
+				else
+				{
+					$args = array($new_ary[$config_key], $config_key);
 				}
 			}
-			else
-			{
-				$args = array($new_ary[$config_key], $config_key);
-			}
 
-			$return = call_user_func_array($call, $args);
+			$return = $call ? call_user_func_array($call, $args) : [];
 
 			if (in_array($tpl_type[0], ['select', 'radio', 'button']))
 			{
