@@ -50,6 +50,8 @@ class main_module
 				'setting_8'	=> ['lang' => 'SETTING_8',	'validate' => 'string',		'type' => 'textarea:5:30', 'explain' => true],
 				'setting_9'	=> ['lang' => 'SETTING_9',	'validate' => 'bool',		'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']], 'explain' => true],
 				'setting_10'=> ['lang' => 'SETTING_10',	'validate' => 'bool',		'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'LABEL_1', 3 => 'LABEL_3', 2 => 'LABEL_2']], 'explain' => true],
+				'setting_11'=> ['lang' => 'SETTING_11',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true],
+				'setting_12'=> ['lang' => 'SETTING_12',	'validate' => 'bool',		'type' => 'radio:enabled_disabled', 'explain' => true],
 			]
 		];
 
