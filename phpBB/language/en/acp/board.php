@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'BOARD_STYLE'					=> 'Board style',
 	'CUSTOM_DATEFORMAT'				=> 'Custom…',
 	'DEFAULT_DATE_FORMAT'			=> 'Date format',
-	'DEFAULT_DATE_FORMAT_EXPLAIN'	=> 'The date format is the same as the PHP <code><a href="https://secure.php.net/manual/function.date.php">date()</a></code> function.',
+	'DEFAULT_DATE_FORMAT_EXPLAIN'	=> 'The syntax uses the same format as the PHP <a href="https://www.php.net/manual/datetime.format.php">date functions</a>.',
 	'DEFAULT_LANGUAGE'				=> 'Default language',
 	'DEFAULT_STYLE'					=> 'Default style',
 	'DEFAULT_STYLE_EXPLAIN'			=> 'The default style for new users.',
