@@ -639,9 +639,12 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		));
 
 		// Change topic title of first post and write icon_id to post
-		$sql = 'UPDATE ' . POSTS_TABLE . "
-			SET post_subject = '" . $db->sql_escape($subject) . "',
-			icon_id = '" . $icon_id .  "'
+		$sql_ary = [
+			'post_subject'		=> $subject,
+			'icon_id'			=> $icon_id,
+		];
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 			WHERE post_id = {$post_id_list[0]}";
 		$db->sql_query($sql);
 
