@@ -227,6 +227,7 @@ $template->assign_vars(array(
 	'S_DISPLAY_BIRTHDAY_LIST'	=> $show_birthdays,
 	'S_INDEX'					=> true,
 
+	'U_CANONICAL'		=> generate_board_url() . '/',
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
