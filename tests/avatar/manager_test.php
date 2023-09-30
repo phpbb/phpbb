@@ -27,7 +27,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		// Mock phpbb_container
 		$phpbb_container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
@@ -60,6 +60,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$imagesize = new \FastImageSize\FastImageSize();
 
 		$dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_dispatcher = $dispatcher;
 
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMockBuilder('\phpbb\avatar\driver\foobar')
