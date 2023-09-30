@@ -21,13 +21,11 @@
 			<!-- IF $SHOW_PM_HISTORY_POST_BUTTONS -->
 			<ul class="post-buttons">
 				<!-- EVENT ucp_pm_history_post_buttons_before -->
-				<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
 				<li>
 					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}', {time:{history_row.MESSAGE_TIME},user_id:{history_row.USER_ID}});"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button button-icon-only">
 						<i class="icon fa-quote-left fa-fw" aria-hidden="true"></i><span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
 					</a>
 				</li>
-				<!-- ENDIF -->
 				<!-- EVENT ucp_pm_history_post_buttons_after -->
 			</ul>
 			<!-- ENDIF -->
