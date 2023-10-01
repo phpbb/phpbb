@@ -501,11 +501,15 @@ class content_visibility
 			$postcounts[$num_posts][] = $poster_id;
 		}
 
+		$postcount_change = 0;
+
 		// Update users postcounts
 		foreach ($postcounts as $num_posts => $poster_ids)
 		{
 			if (in_array($visibility, array(ITEM_REAPPROVE, ITEM_DELETED)))
 			{
+				$postcount_change -= $num_posts;
+
 				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = 0
 					WHERE ' . $this->db->sql_in_set('user_id', $poster_ids) . '
@@ -520,11 +524,18 @@ class content_visibility
 			}
 			else
 			{
+				$postcount_change += $num_posts;
+
 				$sql = 'UPDATE ' . $this->users_table . '
 					SET user_posts = user_posts + ' . $num_posts . '
 					WHERE ' . $this->db->sql_in_set('user_id', $poster_ids);
 				$this->db->sql_query($sql);
 			}
+		}
+
+		if ($postcount_change != 0)
+		{
+			$this->config->increment('num_posts', $postcount_change, false);
 		}
 
 		$update_topic_postcount = true;

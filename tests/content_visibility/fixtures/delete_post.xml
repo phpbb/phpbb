@@ -39,6 +39,19 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>1</value>
+			<value>0</value>
+			<value>0</value>
+			<value>5</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_topics">
 		<column>topic_id</column>
@@ -80,6 +93,20 @@
 			<value></value>
 			<value>1</value>
 			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>3</value>
+			<value>1</value>
+			<value>Approved</value>
+			<value>5</value>
+			<value>5</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value>1</value>
+			<value>1</value>
 			<value>0</value>
 		</row>
 	</table>
@@ -130,7 +157,6 @@
 			<value>0</value>
 			<value></value>
 		</row>
-
 		<row>
 			<value>4</value>
 			<value>1</value>
@@ -139,6 +165,30 @@
 			<value>1</value>
 			<value>4</value>
 			<value>Approved</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>3</value>
+			<value>3</value>
+			<value>1</value>
+			<value>4</value>
+			<value>Approved</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>1</value>
+			<value>3</value>
+			<value>3</value>
+			<value>0</value>
+			<value>4</value>
+			<value>Unpproved</value>
 			<value>0</value>
 			<value>0</value>
 			<value></value>

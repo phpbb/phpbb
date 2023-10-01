@@ -45,6 +45,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 2,
 				)),
 				false, 'harddelete',
+				3, // expected next post id
 				array(
 					array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					//array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
@@ -74,6 +75,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 1,
 				)),
 				false, 'harddelete',
+				2, // expected next post id
 				array(
 					//array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
@@ -103,6 +105,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 3,
 				)),
 				false, 'harddelete',
+				2, // expected next post id
 				array(
 					array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
@@ -132,6 +135,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 2,
 				)),
 				true, 'soft delete',
+				3, // expected next post id
 				array(
 					array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 2, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => 'soft delete'),
@@ -161,6 +165,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 1,
 				)),
 				true, 'soft delete',
+				2, // expected next post id
 				array(
 					array('post_id' => 1, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => 'soft delete'),
 					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
@@ -190,6 +195,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_time'				=> 3,
 				)),
 				true, 'soft delete',
+				3, // expected next post id
 				array(
 					array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
@@ -230,6 +236,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_reported'			=> false,
 				),
 				false, 'harddelete',
+				false, // expected next post id
 				array(
 				),
 				array(
@@ -258,6 +265,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					'post_reported'			=> false,
 				),
 				true, 'soft delete',
+				false, // expected next post id
 				array(
 					array('post_id' => 4, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => ''),
 				),
@@ -279,13 +287,93 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 					array('user_posts' => 3),
 				),
 			),
+			// Delete actual last post that is unapproved
+			array(
+				3, 3, 6,
+				array(
+					'topic_first_post_id'	=> 5,
+					'topic_last_post_id'	=> 5,
+					'topic_posts_approved'		=> 1,
+					'topic_posts_unapproved'	=> 1,
+					'topic_posts_softdeleted'	=> 0,
+					'topic_visibility'		=> ITEM_APPROVED,
+					'post_time'				=> 4,
+					'post_visibility'		=> ITEM_UNAPPROVED,
+					'post_postcount'		=> true,
+					'poster_id'				=> 1,
+					'post_reported'			=> false,
+				),
+				false, 'harddelete',
+				5, // expected next post id
+				array(
+					array('post_id' => 5, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
+					// array('post_id' => 6, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
+				),
+				array(
+					array(
+						'topic_visibility'		=> ITEM_APPROVED,
+						'topic_first_post_id'	=> 5,
+						'topic_last_post_id'	=> 5,
+						'topic_posts_approved'		=> 1,
+						'topic_posts_unapproved'	=> 0,
+						'topic_posts_softdeleted'	=> 0,
+						'topic_delete_reason'	=> '',
+					),
+				),
+				array(
+					array('forum_posts_approved' => 1, 'forum_posts_unapproved' => 0, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 5),
+				),
+				array(
+					array('user_posts' => 4),
+				),
+			),
+			// Hard delete last approved post
+			array(
+				3, 3, 5,
+				array(
+					'topic_first_post_id'	=> 5,
+					'topic_last_post_id'	=> 5,
+					'topic_posts_approved'		=> 1,
+					'topic_posts_unapproved'	=> 1,
+					'topic_posts_softdeleted'	=> 0,
+					'topic_visibility'		=> ITEM_APPROVED,
+					'post_time'				=> 4,
+					'post_visibility'		=> ITEM_APPROVED,
+					'post_postcount'		=> true,
+					'poster_id'				=> 1,
+					'post_reported'			=> false,
+				),
+				false, 'harddelete',
+				6, // expected next post id
+				array(
+					//array('post_id' => 5, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 6, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
+				),
+				array(
+					array(
+						'topic_visibility'		=> ITEM_APPROVED,
+						'topic_first_post_id'	=> 6,
+						'topic_last_post_id'	=> 5, // can't be updated with no valid data
+						'topic_posts_approved'		=> 0,
+						'topic_posts_unapproved'	=> 1,
+						'topic_posts_softdeleted'	=> 0,
+						'topic_delete_reason'	=> '',
+					),
+				),
+				array(
+					array('forum_posts_approved' => 0, 'forum_posts_unapproved' => 1, 'forum_posts_softdeleted' => 0, 'forum_topics_approved' => 1, 'forum_topics_unapproved' => 0, 'forum_topics_softdeleted' => 0, 'forum_last_post_id' => 5),
+				),
+				array(
+					array('user_posts' => 3),
+				),
+			),
 		);
 	}
 
 	/**
 	* @dataProvider delete_post_data
 	*/
-	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_posts, $expected_topic, $expected_forum, $expected_user)
+	public function test_delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason, $expected_next_post_id, $expected_posts, $expected_topic, $expected_forum, $expected_user)
 	{
 		global $auth, $cache, $config, $db, $user, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
@@ -321,7 +409,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', $attachment_delete);
 
-		delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason);
+		$this->assertSame($expected_next_post_id, delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason));
 
 		$result = $db->sql_query('SELECT post_id, post_visibility, post_delete_reason
 			FROM phpbb_posts
