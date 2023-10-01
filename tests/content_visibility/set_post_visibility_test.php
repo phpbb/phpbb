@@ -30,8 +30,8 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'approve',
 				true, false,
 				array(
-					array('post_id' => 1, 'post_visibility' => 1, 'post_delete_reason' => 'approve'),
-					array('post_id' => 2, 'post_visibility' => 1, 'post_delete_reason' => ''),
+					array('post_id' => 1, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => 'approve'),
+					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 3, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
 				array(
@@ -44,9 +44,9 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'approve',
 				false, true,
 				array(
-					array('post_id' => 1, 'post_visibility' => 0, 'post_delete_reason' => ''),
-					array('post_id' => 2, 'post_visibility' => 1, 'post_delete_reason' => ''),
-					array('post_id' => 3, 'post_visibility' => 1, 'post_delete_reason' => 'approve'),
+					array('post_id' => 1, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 2, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 3, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => 'approve'),
 				),
 				array(
 					array('topic_visibility' => 1, 'topic_first_post_id' => 2, 'topic_last_post_id' => 3),
@@ -58,7 +58,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'deleted',
 				true, true,
 				array(
-					array('post_id' => 1, 'post_visibility' => 0, 'post_delete_reason' => ''),
+					array('post_id' => 1, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
 					array('post_id' => 2, 'post_visibility' => 2, 'post_delete_reason' => 'deleted'),
 					array('post_id' => 3, 'post_visibility' => 2, 'post_delete_reason' => ''),
 				),
@@ -72,10 +72,10 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'deleted',
 				true, false,
 				array(
-					array('post_id' => 4, 'post_visibility' => 0, 'post_delete_reason' => ''),
-					array('post_id' => 5, 'post_visibility' => 2, 'post_delete_reason' => 'deleted'),
-					array('post_id' => 6, 'post_visibility' => 1, 'post_delete_reason' => ''),
-					array('post_id' => 7, 'post_visibility' => 2, 'post_delete_reason' => ''),
+					array('post_id' => 4, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 5, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => 'deleted'),
+					array('post_id' => 6, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 7, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => ''),
 				),
 				array(
 					array('topic_visibility' => 1, 'topic_first_post_id' => 6, 'topic_last_post_id' => 6),
@@ -87,10 +87,10 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'deleted',
 				false, true,
 				array(
-					array('post_id' => 4, 'post_visibility' => 0, 'post_delete_reason' => ''),
-					array('post_id' => 5, 'post_visibility' => 1, 'post_delete_reason' => ''),
-					array('post_id' => 6, 'post_visibility' => 2, 'post_delete_reason' => 'deleted'),
-					array('post_id' => 7, 'post_visibility' => 2, 'post_delete_reason' => ''),
+					array('post_id' => 4, 'post_visibility' => ITEM_UNAPPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 5, 'post_visibility' => ITEM_APPROVED, 'post_delete_reason' => ''),
+					array('post_id' => 6, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => 'deleted'),
+					array('post_id' => 7, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => ''),
 				),
 				array(
 					array('topic_visibility' => 1, 'topic_first_post_id' => 5, 'topic_last_post_id' => 5),
@@ -102,7 +102,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 				2, time(), 'deleted',
 				true, true,
 				array(
-					array('post_id' => 8, 'post_visibility' => 2, 'post_delete_reason' => 'deleted'),
+					array('post_id' => 8, 'post_visibility' => ITEM_DELETED, 'post_delete_reason' => 'deleted'),
 				),
 				array(
 					array('topic_visibility' => 2, 'topic_first_post_id' => 8, 'topic_last_post_id' => 8),
