@@ -1353,7 +1353,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data, $is_soft = false, $
 	{
 		$post_mode = 'delete_first_post';
 	}
-	else if ($data['topic_last_post_id'] == $post_id)
+	else if ($data['topic_last_post_id'] <= $post_id)
 	{
 		$post_mode = 'delete_last_post';
 	}
@@ -2879,7 +2879,14 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 					$delete_reason
 				));
 
-				$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$next_post_id") . "#p$next_post_id";
+				if ($next_post_id > 0)
+				{
+					$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$next_post_id") . "#p$next_post_id";
+				}
+				else
+				{
+					$meta_info = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id");
+				}
 				$message = $user->lang['POST_DELETED'];
 
 				if (!$request->is_ajax())
