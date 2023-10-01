@@ -116,7 +116,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 	*/
 	public function test_set_post_visibility($visibility, $post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $expected, $expected_topic)
 	{
-		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
+		global $cache, $db, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
@@ -124,7 +124,8 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
-		$config = new phpbb\config\config(array());
+		$before_posts = 5;
+		$config = new phpbb\config\config(['num_posts' => $before_posts]);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$content_visibility = new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE);
 
@@ -144,6 +145,14 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 
 		$this->assertEquals($expected_topic, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
+		if ($visibility == ITEM_APPROVED)
+		{
+			$this->assertEquals($before_posts + 1, $config['num_posts'], 'Number of posts did not increment as expected');
+		}
+		else if ($visibility == ITEM_DELETED)
+		{
+			$this->assertEquals($before_posts - 1, $config['num_posts'], 'Number of posts did not increment as expected');
+		}
 	}
 
 	public function set_post_soft_deleted_data()
@@ -169,7 +178,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 	*/
 	public function test_set_post_soft_deleted($post_id, $topic_id, $forum_id, $user_id, $time, $reason, $is_starter, $is_latest, $expected)
 	{
-		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
+		global $cache, $db, $auth, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
