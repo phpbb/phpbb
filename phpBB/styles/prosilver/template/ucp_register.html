@@ -67,8 +67,7 @@
 	<!-- INCLUDE timezone_option.html -->
 
 	<!-- EVENT ucp_register_profile_fields_before -->
-	<!-- IF .profile_fields -->
-		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
+	{% if PROFILE_FIELDS_REQUIRED %}<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>{% endif %}
 
 	<!-- BEGIN profile_fields -->
 		<dl>
@@ -78,7 +77,6 @@
 			<dd>{profile_fields.FIELD}</dd>
 		</dl>
 	<!-- END profile_fields -->
-	<!-- ENDIF -->
 
 	<!-- EVENT ucp_register_profile_fields_after -->
 	</fieldset>
