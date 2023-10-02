@@ -49,13 +49,31 @@ class main_module
 				'setting_7'	=> ['lang' => 'SETTING_7',	'validate' => 'email',		'type' => 'email:0:100', 'explain' => true],
 				'setting_8'	=> ['lang' => 'SETTING_8',	'validate' => 'string',		'type' => 'textarea:5:30', 'explain' => true],
 				'setting_9'	=> ['lang' => 'SETTING_9',	'validate' => 'bool',		'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']], 'explain' => true],
-				'setting_10'=> ['lang' => 'SETTING_10',	'validate' => 'bool',		'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'LABEL_1', 3 => 'LABEL_3', 2 => 'LABEL_2']], 'explain' => true],
+				'setting_10'=> ['lang' => 'SETTING_10',	'validate' => 'int',		'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'LABEL_1', 3 => 'LABEL_3', 2 => 'LABEL_2']], 'explain' => true],
 				'setting_11'=> ['lang' => 'SETTING_11',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true],
 				'setting_12'=> ['lang' => 'SETTING_12',	'validate' => 'bool',		'type' => 'radio:enabled_disabled', 'explain' => true],
 			]
 		];
 
-		$this->new_config = $cfg_array = $error = [];
+		$config = new \phpbb\config\config([
+			'setting_0_width' => '1',
+			'setting_0_height' => '17',
+			'setting_0' => '10',
+			'setting_2' => '1',
+			'setting_3' => '15',
+			'setting_4' => '2',
+			'setting_5' => 'Setting 5',
+			'setting_6' => 'password',
+			'setting_7' => 'test@example.dom',
+			'setting_8' => 'Textarea',
+			'setting_9' => '1',
+			'setting_10' => '3',
+			'setting_11' => '0',
+			'setting_12' => '0',
+		]);
+		$this->new_config = clone $config;
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', ['' => ''], true) : $this->new_config;
+		$error = [];
 
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
@@ -126,27 +144,15 @@ class main_module
 		}
 	}
 
-	function create_select()
+	function create_select($value)
 	{
-		return [
-			'options' => [
-				[
-					'value'		=> 1,
-					'selected'	=> true,
-					'label'		=> 'Option 1',
-				],
-				[
-					'value'		=> 2,
-					'selected'	=> false,
-					'label'		=> 'Option 2',
-				],
-				[
-					'value'		=> 3,
-					'selected'	=> false,
-					'label'		=> 'Option 3',
-				],
-			]
+		$options = [
+			1 => 'Option 1',
+			2 => 'Option 2',
+			3 => 'Option 3',
 		];
+
+		return ['options' => build_select($options, $value)];
 	}
 
 	function submit_button()
