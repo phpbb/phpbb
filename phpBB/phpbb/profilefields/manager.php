@@ -154,8 +154,10 @@ class manager
 			break;
 		}
 
+		$has_required = false;
+
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
@@ -168,6 +170,8 @@ class manager
 			/** @var \phpbb\profilefields\type\type_interface $profile_field */
 			$profile_field = $this->type_collection[$row['field_type']];
 
+			$has_required = $has_required || $row['field_required'];
+
 			$this->template->assign_block_vars('profile_fields', [
 				'FIELD'			=> $profile_field->process_field_row('change', $row),
 				'FIELD_ID'		=> $profile_field->get_field_ident($row),
@@ -177,6 +181,8 @@ class manager
 			]);
 		}
 		$this->db->sql_freeresult($result);
+
+		$this->template->assign_var('PROFILE_FIELDS_REQUIRED', $has_required);
 	}
 
 	/**
@@ -192,7 +198,7 @@ class manager
 		$sql_where = !$this->auth->acl_gets('a_', 'm_') && !$this->auth->acl_getf_global('m_') ? ' AND f.field_hide = 0' : '';
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
@@ -241,7 +247,7 @@ class manager
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . $this->fields_lang_table . ' l, 
+			FROM ' . $this->fields_lang_table . ' l,
 				' . $this->fields_table . ' f
 			WHERE l.field_id = f.field_id
 				AND f.field_active = 1
