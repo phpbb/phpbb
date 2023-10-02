@@ -261,6 +261,33 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 	{
 		return [
 			[
+				['radio', 'enabled_disabled'],
+				'key_name',
+				['config_key_name'	=> '0'],
+				'config_key_name',
+				[],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
+			],
+			[
 				['radio'],
 				'key_name',
 				['config_key_name'	=> '0'],
@@ -281,6 +308,33 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'type'		=> 'radio',
 							'value'		=> 0,
 							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
+			],
+			[
+				['radio', 'enabled_disabled'],
+				'key_name',
+				['config_key_name'	=> '1'],
+				'config_key_name',
+				[],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
 							'name'		=> 'config[config_key_name]',
 							'label'		=> 'DISABLED',
 						],
@@ -315,6 +369,33 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				],
 			],
 			[
+				['radio', 'yes_no'],
+				'key_name',
+				['config_key_name'	=> '0'],
+				'config_key_name',
+				[],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
+			],
+			[
 				['radio'],
 				'key_name',
 				['config_key_name'	=> '0'],
@@ -335,6 +416,33 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'type'		=> 'radio',
 							'value'		=> 0,
 							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
+			],
+			[
+				['radio', 'yes_no'],
+				'key_name',
+				['config_key_name'	=> '1'],
+				'config_key_name',
+				[],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
 							'name'		=> 'config[config_key_name]',
 							'label'		=> 'NO',
 						],

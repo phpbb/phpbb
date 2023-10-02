@@ -195,9 +195,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			'allow_avatar_' . get_class($this->avatar_foobar)	=> [
 				'lang' => 'ALLOW_' . strtoupper(get_class($this->avatar_foobar)),
 				'validate' => 'bool',
-				'type' => 'radio',
-				'function' => 'build_radio',
-				'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']],
+				'type' => 'radio:yes_no',
 				'explain' => true
 			],
 		];
