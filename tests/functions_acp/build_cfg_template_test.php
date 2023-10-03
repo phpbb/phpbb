@@ -81,7 +81,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$language = new phpbb_mock_lang();
 		$user->lang = $language;
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_dimension_data()
@@ -151,7 +151,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_number_data()
@@ -219,7 +219,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_textarea_data()
@@ -254,7 +254,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_radio_data()
@@ -292,7 +292,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				'key_name',
 				['config_key_name'	=> '0'],
 				'config_key_name',
-				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -346,7 +346,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				'key_name',
 				['config_key_name'	=> '1'],
 				'config_key_name',
-				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -400,7 +400,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				'key_name',
 				['config_key_name'	=> '0'],
 				'config_key_name',
-				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -454,7 +454,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				'key_name',
 				['config_key_name'	=> '1'],
 				'config_key_name',
-				['function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -489,7 +489,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new \phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_append_data()
@@ -525,7 +525,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_select_data()
@@ -618,7 +618,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user->module = $this;
 		$module = $user;
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function select_helper()

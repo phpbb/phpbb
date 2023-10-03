@@ -208,14 +208,19 @@ function adm_back_link($u_action)
 }
 
 /**
-* Build select field options in acp pages
-*/
-function build_select($option_ary, $option_default = false): array
+ * Build select field options in acp pages
+ *
+ * @param array				$options_ary Configuration options data
+ * @param int|string|bool	$option_default	Configuration option selected value
+ *
+ * @return array
+ */
+function build_select(array $options_ary, int|string|bool $option_default = false): array
 {
 	global $language;
 
 	$options = [];
-	foreach ($option_ary as $value => $title)
+	foreach ($options_ary as $value => $title)
 	{
 		$options[] = [
 			'value'	=> $value,
@@ -228,21 +233,28 @@ function build_select($option_ary, $option_default = false): array
 }
 
 /**
-* Build radio fields in acp pages
-*/
-function build_radio($value, $key, $options)
+ * Build radio fields in acp pages
+ *
+ * @param int|string	$value	Configuration option value
+ * @param string		$key	Configuration option key name
+ * @param array			$options Configuration options data
+ * 							representing array of [values => language_keys]
+ *
+ * @return array
+ */
+function phpbb_build_radio(int|string $value, string $key, array $options): array
 {
 	global $language;
 
 	$buttons = [];
-	foreach ($options as $val => $option)
+	foreach ($options as $val => $title)
 	{
 		$buttons[] = [
 			'type'		=> 'radio',
 			'value'		=> $val,
 			'name'		=> 'config[' . $key . ']',
 			'checked'	=> $val == $value,
-			'label'		=> $language->lang($option),
+			'label'		=> $language->lang($title),
 		];
 	}
 
@@ -254,15 +266,15 @@ function build_radio($value, $key, $options)
 /**
  * Build configuration data arrays or templates for configuration settings
  *
- * @param array		$tpl_type	Configuration setting type data
- * @param string	$key		Configuration option name
- * @param array		$new_ary	Updated configuration data
- * @param string	$config_key	Configuration option name
- * @param Array		$vars		Configuration setting data
+ * @param array			$tpl_type	Configuration setting type data
+ * @param string		$key		Configuration option name
+ * @param array|object	$new_ary	Updated configuration data
+ * @param string		$config_key	Configuration option name
+ * @param array			$vars		Configuration setting data
  *
  * @return array|string
  */
-function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
+function phpbb_build_cfg_template(array $tpl_type, string $key, array|object &$new_ary, string $config_key, array $vars): array|string
 {
 	global $language, $module, $phpbb_dispatcher;
 
@@ -380,7 +392,7 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 				{
 					$options = array_reverse(explode('_', strtoupper($tpl_type[1])));
 					krsort($options);
-					$tpl_type = array_merge ($tpl_type, build_radio($new_ary[$config_key], $config_key, $options));
+					$tpl_type = array_merge ($tpl_type, phpbb_build_radio($new_ary[$config_key], $config_key, $options));
 				}
 			}
 		case 'button':

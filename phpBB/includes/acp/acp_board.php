@@ -86,8 +86,8 @@ class acp_board
 						'board_timezone'		=> array('lang' => 'SYSTEM_TIMEZONE',		'validate' => 'timezone',	'type' => 'custom', 'method' => 'timezone_select', 'explain' => true),
 
 						'legend2'				=> 'BOARD_STYLE',
-						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
-						'guest_style'			=> array('lang' => 'GUEST_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
+						'default_style'			=> array('lang' => 'DEFAULT_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'phpbb_style_select', 'params' => array('{CONFIG_VALUE}', false), 'explain' => true),
+						'guest_style'			=> array('lang' => 'GUEST_STYLE',			'validate' => 'int',	'type' => 'select', 'method' => 'phpbb_style_select', 'params' => array($this->guest_style_get(), false), 'explain' => true),
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend3'				=> 'WARNINGS',
@@ -432,10 +432,10 @@ class acp_board
 						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_password_reset'	=> array('lang' => 'ALLOW_PASSWORD_RESET',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int:0:99999',	'type' => 'number:0:99999',	'explain' => true,	'append' => ' ' . $user->lang['DAYS']),
-						'ip_check'				=> array('lang' => 'IP_VALID',				'validate' => 'int',	'type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NO_IP_VALIDATION']], 'explain' => true),
+						'ip_check'				=> array('lang' => 'IP_VALID',				'validate' => 'int',	'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [4 => 'ALL', 3 => 'CLASS_C', 2 => 'CLASS_B', 0 => 'NO_IP_VALIDATION']], 'explain' => true),
 						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'forwarded_for_check'	=> array('lang' => 'FORWARDED_FOR_VALID',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'referer_validation'	=> array('lang' => 'REFERRER_VALID',		'validate' => 'int:0:3','type' => 'radio', 'function' => 'build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [REFERER_VALIDATE_PATH => 'REF_PATH', REFERER_VALIDATE_HOST => 'REF_HOST', REFERER_VALIDATE_NONE => 'NO_REF_VALIDATION']], 'explain' => true),
+						'referer_validation'	=> array('lang' => 'REFERRER_VALID',		'validate' => 'int:0:3','type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [REFERER_VALIDATE_PATH => 'REF_PATH', REFERER_VALIDATE_HOST => 'REF_HOST', REFERER_VALIDATE_NONE => 'NO_REF_VALIDATION']], 'explain' => true),
 						'check_dnsbl'			=> array('lang' => 'CHECK_DNSBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'email_check_mx'		=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'min_pass_chars'		=> array('lang' => 'PASSWORD_LENGTH',	'validate' => 'int:1',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
@@ -798,7 +798,7 @@ class acp_board
 				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 			}
 
-			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+			$content = phpbb_build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 
 			if (empty($content))
 			{
@@ -1110,12 +1110,12 @@ class acp_board
 	/**
 	 * Wrapper function for style_select()
 	 *
-	 * @param string $default	Style ID to be selected in the dropdown list
-	 * @param bool $all			Flag indicating if all styles data including inactive should be fetched
+	 * @param int|string $default	Style ID to be selected in the dropdown list
+	 * @param bool $all				Flag indicating if all styles data including inactive should be fetched
 	 *
 	 * @return array
 	 */
-	public function style_select($default, $all): array
+	public function phpbb_style_select(int|string $default, bool $all): array
 	{
 		global $db;
 
@@ -1127,7 +1127,7 @@ class acp_board
 	*/
 	function board_disable($value, $key)
 	{
-		$options = build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
+		$options = phpbb_build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
 
 		return [
 			array_merge(['tag'	=> 'radio'], $options),
@@ -1178,7 +1178,7 @@ class acp_board
 	{
 		global $language;
 
-		$options = build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
+		$options = phpbb_build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
 
 		return [
 			array_merge(['tag'	=> 'radio', 'append' => '<br><br>'], $options),
@@ -1436,7 +1436,7 @@ class acp_board
 		$value = ($mod_rewrite === false) ? 0 : $value;
 		$message = $mod_rewrite === null ? 'MOD_REWRITE_INFORMATION_UNAVAILABLE' : ($mod_rewrite === false ? 'MOD_REWRITE_DISABLED' : false);
 
-		$options = build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
+		$options = phpbb_build_radio($value, $key, [1 => 'YES', 0 => 'NO']);
 		foreach ($options['buttons'] as $i => $button)
 		{
 			$options['buttons'][$i]['disabled'] = $message === 'MOD_REWRITE_DISABLED';
