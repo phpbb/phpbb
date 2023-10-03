@@ -179,7 +179,7 @@ class ucp_prefs
 
 				$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
 
-				$template->assign_vars(array(
+				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
@@ -215,9 +215,9 @@ class ucp_prefs
 						'name'		=> 'tz',
 						'options'	=> $timezone_select,
 					],
-					'S_CAN_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'	=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
-				);
+					'S_CAN_HIDE_ONLINE'	=> (bool) $auth->acl_get('u_hideonline'),
+					'S_SELECT_NOTIFY'	=> (bool) ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')),
+				]);
 
 			break;
 
