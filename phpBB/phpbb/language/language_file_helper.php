@@ -29,21 +29,14 @@ class language_file_helper
 	protected $phpbb_root_path;
 
 	/**
-	 * @var config
-	 */
-	protected $config;
-
-	/**
 	 * Constructor
 	 *
 	 * @param string $phpbb_root_path 		Path to phpBB's root
-	 * @param config $config 				The config
 	 *
 	 */
-	public function __construct(string $phpbb_root_path, config $config)
+	public function __construct(string $phpbb_root_path)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->config = $config;
 	}
 
 	/**
@@ -74,26 +67,6 @@ class language_file_helper
 		}
 
 		return $available_languages;
-	}
-
-	/**
-	 * Return by given lang key its composer.json value
-	 *
-	 * @return string
-	 *
-	 */
-	public function get_lang_key_value($lang_key, $user_lang_db) : string
-	{
-		$available_languages = $this->get_available_languages();
-
-		foreach ($available_languages as $key => $value)
-		{
-			$available_languages[$value['iso']] = $value;
-			unset($available_languages[$key]);
-		}
-		$board_default_lang = $this->config['default_lang'];
-		$user_lang_db = $user_lang_db ?? $board_default_lang;
-		return $available_languages[$user_lang_db][$lang_key];
 	}
 
 	/**

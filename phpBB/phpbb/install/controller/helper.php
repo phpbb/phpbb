@@ -253,16 +253,11 @@ class helper
 	 */
 	protected function page_header($page_title, $selected_language = false)
 	{
-		global $user;
-
 		// Path to templates
 		$paths = array($this->phpbb_root_path . 'install/update/new/adm/', $this->phpbb_admin_path);
 		$paths = array_filter($paths, 'is_dir');
 		$path = array_shift($paths);
 		$path = substr($path, strlen($this->phpbb_root_path));
-
-		// Grab the users lang direction and store it for later use
-		$direction = $this->lang_helper->get_lang_key_value('direction', $user->data['user_lang']);
 
 		$this->template->assign_vars(array(
 			'L_CHANGE'				=> $this->language->lang('CHANGE'),
@@ -276,13 +271,13 @@ class helper
 			'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . $path . 'style',
 			'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . $path . '../assets',
 
-			'S_CONTENT_DIRECTION' 	=> $direction,
-			'S_CONTENT_FLOW_BEGIN'	=> ($direction === 'ltr') ? 'left' : 'right',
-			'S_CONTENT_FLOW_END'	=> ($direction === 'ltr') ? 'right' : 'left',
+			'S_CONTENT_DIRECTION' 	=> $this->language->lang('DIRECTION'),
+			'S_CONTENT_FLOW_BEGIN'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> ($this->language->lang('DIRECTION') === 'ltr') ? 'right' : 'left',
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 			'S_LANG_SELECT'			=> $selected_language,
 
-			'S_USER_LANG'			=> $this->lang_helper->get_lang_key_value('user_lang', $user->data['user_lang']),
+			'S_USER_LANG'			=> $this->language->lang('USER_LANG'),
 		));
 
 		$this->render_navigation();

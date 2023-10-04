@@ -14,7 +14,6 @@ services:
             - '@event_dispatcher'
             - '@language'
             - '%core.php_ext%'
-            - '@language.helper.language_file'
 
     feed.helper:
         class: phpbb\feed\helper

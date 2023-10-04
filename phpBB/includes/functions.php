@@ -3824,15 +3824,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 	$web_path = $phpbb_path_helper->get_web_root_path();
 
 	// Send a proper content-language to the output
-	// Get the language helper
-	/* @var $language_helper \phpbb\language\language_file_helper */
-	$language_file_helper = $phpbb_container->get('language.helper.language_file');
-
-	// Grab the users lang direction and store it for later use
-	$direction = $language_file_helper->get_lang_key_value('direction', $user->data['user_lang']);
-
-	// Get the user_lang string
-	$user_lang = $language_file_helper->get_lang_key_value('user_lang', $user->data['user_lang']);
+	$user_lang = $user->lang('USER_LANG');
 	if (strpos($user_lang, '-x-') !== false)
 	{
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
@@ -3938,7 +3930,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
 		'L_SITE_HOME'		=> ($config['site_home_text'] !== '') ? $config['site_home_text'] : $user->lang['HOME'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
-		'L_RECAPTCHA_LANG'	=> $language_file_helper->get_lang_key_value('recaptcha_lang', $user->data['user_lang']),
+		'L_RECAPTCHA_LANG'	=> $user->lang('RECAPTCHA_LANG'),
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
@@ -3979,9 +3971,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
-		'S_CONTENT_DIRECTION'	=> $direction,
-		'S_CONTENT_FLOW_BEGIN'	=> ($direction  == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($direction  == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_DIRECTION'	=> $user->lang('DIRECTION'),
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang('DIRECTION')  == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang('DIRECTION')  == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_TIMEZONE'			=> sprintf($user->lang['ALL_TIMES'], $timezone_offset, $timezone_name),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
