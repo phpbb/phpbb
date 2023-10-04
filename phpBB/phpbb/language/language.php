@@ -13,7 +13,6 @@
 
 namespace phpbb\language;
 
-use phpbb\config\config;
 use phpbb\language\exception\invalid_plural_rule_exception;
 
 /**

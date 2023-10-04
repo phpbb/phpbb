@@ -16,7 +16,6 @@ namespace phpbb\language;
 use DomainException;
 use phpbb\json\sanitizer as json_sanitizer;
 use Symfony\Component\Finder\Finder;
-use phpbb\config\config;
 
 /**
  * Helper class for language file related functions
