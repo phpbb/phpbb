@@ -645,8 +645,8 @@ class ucp_register
 			'EMAIL'				=> $data['email'],
 
 			'L_REG_COND'				=> $l_reg_cond,
-			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_name_chars']), $user->lang('CHARACTERS', (int) $config['max_name_chars'])),
-			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS', (int) $config['min_pass_chars'])),
+			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS_XY', (int) $config['min_name_chars']), $user->lang('CHARACTERS_XY', (int) $config['max_name_chars'])),
+			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS_XY', (int) $config['min_pass_chars'])),
 
 			'LANG_OPTIONS'		=> [
 				'id'		=> 'lang',
