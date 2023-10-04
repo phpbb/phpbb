@@ -37,9 +37,9 @@ class file extends \phpbb\cache\driver\base
 		$this->cache_dir = !is_null($cache_dir) ? $cache_dir : $phpbb_container->getParameter('core.cache_dir');
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 
-		if (!is_dir($this->cache_dir))
+		if ($this->filesystem->is_writable(dirname($this->cache_dir)) && !is_dir($this->cache_dir))
 		{
-			@mkdir($this->cache_dir, 0777, true);
+			mkdir($this->cache_dir, 0777, true);
 		}
 	}
 

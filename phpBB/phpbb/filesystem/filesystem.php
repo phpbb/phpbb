@@ -380,13 +380,13 @@ class filesystem implements filesystem_interface
 					$file_gid = @filegroup($current_file);
 
 					// Change owner
-					if ($file_uid !== $this->chmod_info['common_owner'])
+					if (is_writable($file) && $file_uid !== $this->chmod_info['common_owner'])
 					{
 						$this->chown($current_file, $this->chmod_info['common_owner'], $recursive);
 					}
 
 					// Change group
-					if ($file_gid !== $this->chmod_info['common_group'])
+					if (is_writable($file) && $file_gid !== $this->chmod_info['common_group'])
 					{
 						$this->chgrp($current_file, $this->chmod_info['common_group'], $recursive);
 					}
