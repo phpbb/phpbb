@@ -20,43 +20,86 @@ class phpbb_type_cast_helper_test extends phpbb_test_case
 		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 	}
 
-	public function test_simple_recursive_set_var()
+	public function type_cast_helper_test_data()
 	{
-		$data = 'eviL<3';
-		$expected = 'eviL&lt;3';
+		return [
+			[
+				'eviL<3',
+				'eviL&lt;3',
+				'',
+				true,
+			],
+			[
+				['eviL<3'],
+				['eviL&lt;3'],
+				[0 => ''],
+				true,
+			],
+			[
+				" eviL<3\t\t",
+				" eviL&lt;3\t\t",
+				'',
+				true,
+				false,
+			],
+			[
+				[" eviL<3\t\t"],
+				[" eviL&lt;3\t\t"],
+				[0 => ''],
+				true,
+				false,
+			],
+			// Test multiline unicode vars
+			[
+				"  
 
-		$this->type_cast_helper->recursive_set_var($data, '', true);
+Тест ",
+				"  
 
-		$this->assertEquals($expected, $data);
+Тест ",
+				'',
+				true,
+				false,
+			],
+			[
+				"  
+
+Тест ",
+				"Тест",
+				'',
+				true,
+				true,
+			],
+			[
+				["  
+
+Тест "],
+				["  
+
+Тест "],
+				[0 => ''],
+				true,
+				false,
+			],
+			[
+				["  
+
+Тест "],
+				["Тест"],
+				[0 => ''],
+				true,
+				true,
+			],
+		];
 	}
 
-	public function test_nested_recursive_set_var()
+	/**
+	 * @dataProvider type_cast_helper_test_data
+	 */
+	public function test_recursive_set_var($var, $expected, $default, $multibyte, $trim = true)
 	{
-		$data = array('eviL<3');
-		$expected = array('eviL&lt;3');
+		$this->type_cast_helper->recursive_set_var($var, $default, $multibyte, $trim);
 
-		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true);
-
-		$this->assertEquals($expected, $data);
-	}
-
-	public function test_simple_untrimmed_recursive_set_var()
-	{
-		$data = " eviL<3\t\t";
-		$expected = " eviL&lt;3\t\t";
-
-		$this->type_cast_helper->recursive_set_var($data, '', true, false);
-
-		$this->assertEquals($expected, $data);
-	}
-
-	public function test_nested_untrimmed_recursive_set_var()
-	{
-		$data = array(" eviL<3\t\t");
-		$expected = array(" eviL&lt;3\t\t");
-
-		$this->type_cast_helper->recursive_set_var($data, array(0 => ''), true, false);
-
-		$this->assertEquals($expected, $data);
+		$this->assertEquals($expected, $var);
 	}
 }

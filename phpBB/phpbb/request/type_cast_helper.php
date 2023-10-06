@@ -55,7 +55,7 @@ class type_cast_helper implements \phpbb\request\type_cast_helper_interface
 				// Make sure multibyte characters are wellformed
 				if ($multibyte)
 				{
-					if (!preg_match('/^./u', $result))
+					if (!preg_match('//u', $result))
 					{
 						$result = '';
 					}
