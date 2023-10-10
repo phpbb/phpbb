@@ -99,7 +99,7 @@ class check_server_environment extends \phpbb\install\task_base
 	 */
 	protected function check_php_version()
 	{
-		if (version_compare(PHP_VERSION, '7.1.3', '<'))
+		if (version_compare(PHP_VERSION, '7.2.0', '<'))
 		{
 			$this->response_helper->add_error_message('PHP_VERSION_REQD', 'PHP_VERSION_REQD_EXPLAIN');
 
