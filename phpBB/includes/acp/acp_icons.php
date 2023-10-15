@@ -550,7 +550,7 @@ class acp_icons
 						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . $pak)))
+					if (!($pak_ary = @file($phpbb_root_path . $img_path . '/' . utf8_basename($pak))))
 					{
 						trigger_error($user->lang['PAK_FILE_NOT_READABLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -654,7 +654,7 @@ class acp_icons
 							{
 								$replace_sql = ($mode == 'smilies') ? $code : $img;
 								$sql = array(
-									$fields . '_url'		=> $img,
+									$fields . '_url'		=> utf8_substr(rawurlencode($img), 0, 50),
 									$fields . '_height'		=> (int) $height,
 									$fields . '_width'		=> (int) $width,
 									'display_on_posting'	=> (int) $display_on_posting,
@@ -676,7 +676,7 @@ class acp_icons
 								++$order;
 
 								$sql = array(
-									$fields . '_url'	=> $img,
+									$fields . '_url'	=> utf8_substr(rawurlencode($img), 0, 50),
 									$fields . '_height'	=> (int) $height,
 									$fields . '_width'	=> (int) $width,
 									$fields . '_order'	=> (int) $order,

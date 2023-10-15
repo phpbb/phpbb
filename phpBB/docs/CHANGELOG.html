@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v3310">Changes since 3.3.10</a></li>
 		<li><a href="#v3310rc1">Changes since 3.3.10-RC1</a></li>
 		<li><a href="#v339">Changes since 3.3.9</a></li>
 		<li><a href="#v339rc1">Changes since 3.3.9-RC1</a></li>
@@ -166,6 +167,73 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v3310"></a><h3>Changes since 3.3.10</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-8777">PHPBB3-8777</a>] - Users can be removed from all groups leaving no default group</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-11184">PHPBB3-11184</a>] - ACP purports to allow editing of Founder admin permissions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-12785">PHPBB3-12785</a>] - Redirection of URI are calculated using PHP_SELF</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13276">PHPBB3-13276</a>] - INCLUDEJS and INCLUDECSS do not obey PHPBB_USE_BOARD_URL_PATH</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13364">PHPBB3-13364</a>] - Index Subject not updated after moderation</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15129">PHPBB3-15129</a>] - Wrong Installation guide link</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16796">PHPBB3-16796</a>] - misalignment on index and viewforum for topics and posts titles</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16877">PHPBB3-16877</a>] - OAuth account linking throws a PHP error - PHP 8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17004">PHPBB3-17004</a>] - Pagination doesn't not show up in UCP &gt; Front Page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17040">PHPBB3-17040</a>] - bidi.css is loaded when viewing LTR print view pages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17041">PHPBB3-17041</a>] - RTL Pagination Dropdown Arrow Faces The Wrong Way</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17042">PHPBB3-17042</a>] - Group Description With BBCode List Breaks Layout</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17043">PHPBB3-17043</a>] - Remove Duplicate CP Rule From bidi.css</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17045">PHPBB3-17045</a>] - UCP attachments list page top and bottom pagination counts language strings and font size are different</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17046">PHPBB3-17046</a>] - IE tweaks in simple_header should be included the same as in overall_header</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17053">PHPBB3-17053</a>] - sql_freeresult not working for mysqli &amp; PHP 8</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17076">PHPBB3-17076</a>] - Signature length limit bug</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17086">PHPBB3-17086</a>] - phpBB / Codespaces support</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17089">PHPBB3-17089</a>] - Warning users without post causes PHP warning</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17097">PHPBB3-17097</a>] - PHP 8.2 Deprecations</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17098">PHPBB3-17098</a>] - body class {S_CONTENT_DIRECTION} is missing in ucp_pm_viewmessage_print.html</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17107">PHPBB3-17107</a>] - Who is online incorectly reports Forum location when replying/quoting </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17115">PHPBB3-17115</a>] - PHP warning with native search backend if query ends with a space followed by hyphen</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17126">PHPBB3-17126</a>] - Filename in instructions about running all tests does not exist</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17127">PHPBB3-17127</a>] - Guest users stats got purged when resetting password</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17129">PHPBB3-17129</a>] - Youtube profile field not up to date in new installations</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17132">PHPBB3-17132</a>] - Missing language variable leads to PHP error in convertor</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17137">PHPBB3-17137</a>] - Attachments can be deleted after end of post editing or deletion time</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17139">PHPBB3-17139</a>] - PHP fatal error while updating with advanced update package</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17140">PHPBB3-17140</a>] - Required parameter phpbb_root_path missing in local_url_bbcode migration</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17141">PHPBB3-17141</a>] - Empty referrer may result in PHP error in get_web_root_path()</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17142">PHPBB3-17142</a>] - Installation errors when using MSSQL+ IIS + PHP 8.2 </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17145">PHPBB3-17145</a>] - Field 'pf_phpbb_occupation' doesn't have a default value</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17146">PHPBB3-17146</a>] - Undefined array key in notifications code</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17148">PHPBB3-17148</a>] - phpBB3.3.10 Setup does not support PostgreSQL 8.3 </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17150">PHPBB3-17150</a>] - Forum Image Breaks Layout If Big Image Used - (Forum List Forum Image)</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17160">PHPBB3-17160</a>] - Missing 'Mark' Column Header On MCP Front Page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17171">PHPBB3-17171</a>] - Remove non functional responsive placeholder text rules in responsive.css</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17172">PHPBB3-17172</a>] - Hovering over a forum link / subforum link shows 'No unread posts' on the tooltip</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17189">PHPBB3-17189</a>] - Installer permission handling on PHP 8.2</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17194">PHPBB3-17194</a>] - Php version in vagrant configuration is not set correctly</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17198">PHPBB3-17198</a>] - Gravatar requires https by default</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-8071">PHPBB3-8071</a>] - DBAL function &quot;sql_nextid&quot; - name is misleading</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-11765">PHPBB3-11765</a>] - short_ipv6() doesn't expect IPv4 embedded IPv6 addresses</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-12904">PHPBB3-12904</a>] - Required custom profile fields and asterisk</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-13399">PHPBB3-13399</a>] - Problem with plurals - 'CHARACTERS'</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15973">PHPBB3-15973</a>] - Canonical for the index page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16913">PHPBB3-16913</a>] - Add Search Index Progress Bar with Stats</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17025">PHPBB3-17025</a>] - Move post destination topic field should not be populated with a zero</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17125">PHPBB3-17125</a>] - Message Editor layout Broken in Latest Safari</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17128">PHPBB3-17128</a>] - Link to PHP date() function</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17152">PHPBB3-17152</a>] - Add template event to viewtopic_body.html</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17188">PHPBB3-17188</a>] - Condition to check if a utf8 string is malformed is wrong</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17116">PHPBB3-17116</a>] - Useless duplicate conditions in ucp_pm_history.html</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17149">PHPBB3-17149</a>] - Update authors and pull request template</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17154">PHPBB3-17154</a>] - Update composer and dependencies to latest versions</li>
+			</ul>
+
 			<a name="v3310rc1"></a><h3>Changes since 3.3.10-RC1</h3>
 			<h4>Bug</h4>
 			<ul>
