@@ -299,7 +299,7 @@ class ucp_register
 
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
 				{
-					$error[] = $user->lang['TOO_MANY_REGISTERS'];
+					trigger_error('TOO_MANY_REGISTERS');
 				}
 			}
 
