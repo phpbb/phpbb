@@ -57,8 +57,6 @@ $lang = array_merge($lang, array(
 	// Local adapter
 	'STORAGE_ADAPTER_LOCAL_NAME'						=> 'Local',
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'					=> 'Path',
-	'STORAGE_ADAPTER_LOCAL_OPTION_SUBFOLDERS'			=> 'Organize in subfolders',
-	'STORAGE_ADAPTER_LOCAL_OPTION_SUBFOLDERS_EXPLAIN'	=> 'Some web servers may have problems storing large number of files in a single directory. Enable this option to distribute files in different directories.',
 
 	// Form validation
 	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storage types were successfully updated.',
