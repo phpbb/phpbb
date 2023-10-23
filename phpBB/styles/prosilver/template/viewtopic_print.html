@@ -8,7 +8,9 @@
 <title>{SITENAME} &bull; {PAGE_TITLE}</title>
 
 <link href="{T_THEME_PATH}/print.css" rel="stylesheet">
-<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet">
+{% if S_CONTENT_DIRECTION eq 'rtl' %}
+	<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet">
+{% endif %}
 <!-- EVENT viewtopic_print_head_append -->
 </head>
 <body id="phpbb" class="{S_CONTENT_DIRECTION}">
