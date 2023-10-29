@@ -1829,6 +1829,7 @@ function phpbb_get_install_redirect(string $phpbb_root_path, string $phpEx): str
 		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
 	}
 
+	// Add trailing dot to prevent dirname() from returning parent directory if $script_name is a directory
 	$script_name = substr($script_name, -1) === '/' ? $script_name . '.' : $script_name;
 
 	// $phpbb_root_path accounts for redirects from e.g. /adm
