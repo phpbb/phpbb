@@ -54,6 +54,7 @@ function mcp_topic_view($id, $mode, $action)
 	$sort			= isset($_POST['sort']) ? true : false;
 	$submitted_id_list	= $request->variable('post_ids', array(0));
 	$checked_ids = $post_id_list = $request->variable('post_id_list', array(0));
+	$view		= $request->variable('view', '');
 
 	add_form_key('mcp_topic');
 
@@ -186,6 +187,7 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$rowset[] = $row;
 		$post_id_list[] = $row['post_id'];
+		$rowset_posttime['post_time'] = $row['post_time'];
 	}
 	$db->sql_freeresult($result);
 
@@ -199,6 +201,16 @@ function mcp_topic_view($id, $mode, $action)
 	else
 	{
 		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
+	}
+
+	$first_unread = $post_unread = false;
+
+	$post_unread = (isset($topic_tracking_info[$topic_id]) && $rowset_posttime['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
+
+	$s_first_unread = false;
+	if (!$first_unread && $post_unread)
+	{
+		$s_first_unread = $first_unread = true;
 	}
 
 	$has_unapproved_posts = $has_deleted_posts = false;
@@ -294,10 +306,13 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_DELETED'	=> ($row['post_visibility'] == ITEM_DELETED && $auth->acl_get('m_approve', $topic_info['forum_id'])),
 			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
+			'S_FIRST_UNREAD'	=> $s_first_unread,
+			'S_UNREAD_VIEW'		=> $view == 'unread',
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $row['post_id']) : '',
+			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 		);
 
 		/**
