@@ -344,6 +344,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			}
 			$topic_row = array_merge($topic_row, array(
 				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row_ary['topic_id']}&amp;mode=topic_view"),
+				'U_NEWEST_POST' 	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row_ary['topic_id']}&amp;mode=topic_view&amp;view=unread#unread"),
 
 				'S_SELECT_TOPIC'	=> ($merge_select && !in_array($row_ary['topic_id'], $source_topic_ids)) ? true : false,
 				'U_SELECT_TOPIC'	=> $u_select_topic,
