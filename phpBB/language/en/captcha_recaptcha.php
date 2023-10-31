@@ -37,10 +37,6 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, [
-	// Find the language/country code on https://developers.google.com/recaptcha/docs/language
-	// If no code exists for your language you can use "en" or leave the string empty
-	'RECAPTCHA_LANG'				=> 'en-GB',
-
 	'CAPTCHA_RECAPTCHA'				=> 'reCaptcha v2',
 	'CAPTCHA_RECAPTCHA_V3'			=> 'reCaptcha v3',
 

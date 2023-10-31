@@ -387,7 +387,7 @@ class feed
 			'FEED_TITLE'			=> $this->config['sitename'],
 			'FEED_SUBTITLE'			=> $this->config['site_desc'],
 			'FEED_UPDATED'			=> $this->feed_helper->format_date($feed_updated_time),
-			'FEED_LANG'				=> $this->user->lang['USER_LANG'],
+			'FEED_LANG'				=> $this->language->lang('USER_LANG'),
 			'FEED_AUTHOR'			=> $this->config['sitename'],
 
 			// Feed entries
