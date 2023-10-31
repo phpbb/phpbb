@@ -112,7 +112,7 @@
 		"gulp-postcss": "^9.0.1",
 		"gulp-rename": "^2.0.0",
 		"gulp-sourcemaps": "^3.0.0",
-		"postcss": "^8.4.12",
+		"postcss": "^8.4.31",
 		"postcss-sorting": "^7.0.1",
 		"stylelint": "^14.7.0",
 		"stylelint-order": "^5.0.0"
