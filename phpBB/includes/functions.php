@@ -1815,6 +1815,31 @@ function redirect($url, $return = false, $disable_cd_check = false)
 }
 
 /**
+ * Returns the install redirect path for phpBB.
+ *
+ * @param string $phpbb_root_path The root path of the phpBB installation.
+ * @param string $phpEx The file extension of php files, e.g., "php".
+ * @return string The install redirect path.
+ */
+function phpbb_get_install_redirect(string $phpbb_root_path, string $phpEx): string
+{
+	$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+	if (!$script_name)
+	{
+		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+	}
+
+	// Add trailing dot to prevent dirname() from returning parent directory if $script_name is a directory
+	$script_name = substr($script_name, -1) === '/' ? $script_name . '.' : $script_name;
+
+	// $phpbb_root_path accounts for redirects from e.g. /adm
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/app.' . $phpEx;
+	// Replace any number of consecutive backslashes and/or slashes with a single slash
+	// (could happen on some proxy setups and/or Windows servers)
+	return preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+}
+
+/**
 * Re-Apply session id after page reloads
 */
 function reapply_sid($url, $is_route = false)
