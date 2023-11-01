@@ -1799,23 +1799,17 @@ class session
 
 	/**
 	 * Update user last visit time
-	 *
-	 * @return bool
 	 */
-	public function update_user_lastvisit(): bool
+	public function update_user_lastvisit()
 	{
 		global $db;
 
-		if (!isset($this->data['session_time'], $this->data['user_id']))
+		if (isset($this->data['session_time'], $this->data['user_id']))
 		{
-			return false;
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
+			$db->sql_query($sql);
 		}
-
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-			WHERE user_id = ' . (int) $this->data['user_id'];
-		$db->sql_query($sql);
-
-		return (bool) $db->sql_affectedrows();
 	}
 }
