@@ -949,6 +949,7 @@ table.fixed-width-table {
 
 /* Memberlist
 ---------------------------------------- */
-.group-description ol, .group-description ul {
+.group-description ol,
+.group-description ul {
 	list-style-position: inside;
 }
