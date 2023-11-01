@@ -71,6 +71,12 @@ class profilefield_youtube_update extends \phpbb\db\migration\migration
 				. $this->db->get_any_char()
 		);
 
+		// We're done if the profile field doesn't exist
+		if (!$this->db_tools->sql_column_exists($profile_fields_data, $yt_profile_field))
+		{
+			return;
+		}
+
 		$this->db->sql_query(
 			"UPDATE $profile_fields_data SET
 				$yt_profile_field = $prepend_legacy_youtube_url
