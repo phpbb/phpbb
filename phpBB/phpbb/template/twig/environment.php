@@ -69,7 +69,6 @@ class environment extends \Twig\Environment
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
-		$this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 
 		$this->assets_bag = new assets_bag();
 
@@ -132,7 +131,7 @@ class environment extends \Twig\Environment
 	*/
 	public function get_web_root_path()
 	{
-		return $this->web_root_path;
+		return $this->web_root_path ?? $this->web_root_path = $this->phpbb_path_helper->get_web_root_path();
 	}
 
 	/**
