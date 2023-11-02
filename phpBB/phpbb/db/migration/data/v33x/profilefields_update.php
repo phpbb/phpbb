@@ -87,6 +87,12 @@ class profilefields_update extends \phpbb\db\migration\migration
 		$yt_profile_field = 'pf_phpbb_youtube';
 		$has_youtube_url = $this->db->sql_like_expression($this->db->get_any_char() . 'youtube.com/' . $this->db->get_any_char());
 
+		// We're done if the profile field doesn't exist
+		if (!$this->db_tools->sql_column_exists($profile_fields_data, $yt_profile_field))
+		{
+			return true;
+		}
+
 		$update_aborted = false;
 
 		$sql = 'SELECT user_id, pf_phpbb_youtube
@@ -153,6 +159,13 @@ class profilefields_update extends \phpbb\db\migration\migration
 		$this->db->sql_query($sql);
 
 		$yt_profile_field = 'pf_phpbb_youtube';
+
+		// We're done if the profile field doesn't exist
+		if (!$this->db_tools->sql_column_exists($profile_fields_data, $yt_profile_field))
+		{
+			return;
+		}
+
 		$prepend_legacy_youtube_url = $this->db->sql_concatenate(
 			"'https://youtube.com/'", $yt_profile_field
 		);
