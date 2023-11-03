@@ -11,7 +11,7 @@
 *
 */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
 class add_mention_settings extends \phpbb\db\migration\migration
 {
