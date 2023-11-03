@@ -256,6 +256,18 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		$role_id = (int) $this->db->sql_fetchfield('role_id');
 		$this->db->sql_freeresult($result);
 
+		// Try falling back to searching by role description for standard role titles
+		if (!$role_id && preg_match('/ROLE_(?<title>([A-Z]+_?)+)/', $role_name, $matches))
+		{
+			$role_description = 'ROLE_DESCRIPTION_' . $matches['title'];
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_description = '" . $this->db->sql_escape($role_description) . "'";
+			$result = $this->db->sql_query($sql);
+			$role_id = (int) $this->db->sql_fetchfield('role_id');
+			$this->db->sql_freeresult($result);
+		}
+
 		return $role_id;
 	}
 
