@@ -15,29 +15,74 @@ namespace phpbb\db\migration\data\v330;
 
 class add_mention_settings extends \phpbb\db\migration\migration
 {
+	public static function depends_on()
+	{
+		return ['\phpbb\db\migration\data\v400\dev'];
+	}
+
+	public function effectively_installed(): bool
+	{
+		return $this->config->offsetExists('allow_mentions')
+			&& $this->config->offsetExists('mention_batch_size')
+			&& $this->config->offsetExists('mention_names_limit');
+	}
+
 	public function update_data()
 	{
-		return array(
-			array('config.add', array('allow_mentions', true)),
-			array('config.add', array('mention_batch_size', 50)),
-			array('config.add', array('mention_names_limit', 10)),
+		return [
+			['config.add', ['allow_mentions', true]],
+			['config.add', ['mention_batch_size', 50]],
+			['config.add', ['mention_names_limit', 10]],
 
 			// Set up user permissions
-			array('permission.add', array('u_mention', true)),
-			array('permission.permission_set', array('ROLE_USER_FULL', 'u_mention')),
-			array('permission.permission_set', array('ROLE_USER_STANDARD', 'u_mention')),
-			array('permission.permission_set', array('ROLE_USER_LIMITED', 'u_mention')),
-			array('permission.permission_set', array('ROLE_USER_NOPM', 'u_mention')),
-			array('permission.permission_set', array('ROLE_USER_NOAVATAR', 'u_mention')),
+			['permission.add', ['u_mention', true]],
+			['if', [
+				['permission.role_exists', ['ROLE_USER_FULL']],
+				['permission.permission_set', ['ROLE_USER_FULL', 'u_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_USER_STANDARD']],
+				['permission.permission_set', ['ROLE_USER_STANDARD', 'u_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_USER_LIMITED']],
+				['permission.permission_set', ['ROLE_USER_LIMITED', 'u_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_USER_NOPM']],
+				['permission.permission_set', ['ROLE_USER_NOPM', 'u_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_USER_NOAVATAR']],
+				['permission.permission_set', ['ROLE_USER_NOAVATAR', 'u_mention']],
+			]],
 
 			// Set up forum permissions
-			array('permission.add', array('f_mention', false)),
-			array('permission.permission_set', array('ROLE_FORUM_FULL', 'f_mention')),
-			array('permission.permission_set', array('ROLE_FORUM_STANDARD', 'f_mention')),
-			array('permission.permission_set', array('ROLE_FORUM_LIMITED', 'f_mention')),
-			array('permission.permission_set', array('ROLE_FORUM_ONQUEUE', 'f_mention')),
-			array('permission.permission_set', array('ROLE_FORUM_POLLS', 'f_mention')),
-			array('permission.permission_set', array('ROLE_FORUM_LIMITED_POLLS', 'f_mention')),
-		);
+			['permission.add', ['f_mention', false]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_FULL']],
+				['permission.permission_set', ['ROLE_FORUM_FULL', 'f_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_STANDARD']],
+				['permission.permission_set', ['ROLE_FORUM_STANDARD', 'f_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_LIMITED']],
+				['permission.permission_set', ['ROLE_FORUM_LIMITED', 'f_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_ONQUEUE']],
+				['permission.permission_set', ['ROLE_FORUM_ONQUEUE', 'f_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_POLLS']],
+				['permission.permission_set', ['ROLE_FORUM_POLLS', 'f_mention']],
+			]],
+			['if', [
+				['permission.role_exists', ['ROLE_FORUM_LIMITED_POLLS']],
+				['permission.permission_set', ['ROLE_FORUM_LIMITED_POLLS', 'f_mention']],
+			]],
+		];
 	}
 }
