@@ -43,7 +43,10 @@ class add_storage_permission extends migration
 			['permission.add', ['a_storage']],
 
 			// Set permissions
-			['permission.permission_set', ['ROLE_ADMIN_FULL', 'a_storage']],
+			['if', [
+				['permission.role_exists', ['ROLE_ADMIN_FULL']],
+				['permission.permission_set', ['ROLE_ADMIN_FULL', 'a_storage']],
+			]],
 		];
 	}
 }
