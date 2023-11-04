@@ -440,6 +440,12 @@ class session
 						// Is user banned? Are they excluded? Won't return on ban, exists within method
 						$this->check_ban_for_current_session($config);
 
+						// Update user last visit time accordingly, but in a minute or so
+						if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60)
+						{
+							$this->update_user_lastvisit();
+						}
+
 						return true;
 					}
 				}
@@ -684,14 +690,11 @@ class session
 			{
 				$this->session_id = $this->data['session_id'];
 
-				// Only update session DB a minute or so after last update or if page changes
-				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				// Only sync user last visit time in a minute or so after last session data update or if the page changes
+				if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
 					// Update the last visit time
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-						WHERE user_id = ' . (int) $this->data['user_id'];
-					$db->sql_query($sql);
+					$this->update_user_lastvisit();
 				}
 
 				$SID = '?sid=';
@@ -824,15 +827,12 @@ class session
 		{
 			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
 
-			// Update the last visit time
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
-				WHERE user_id = ' . (int) $this->data['user_id'];
-			$db->sql_query($sql);
-
 			$SID = '?sid=';
 			$_SID = '';
 		}
+
+		// Update the last visit time
+		$this->update_user_lastvisit();
 
 		$session_data = $sql_ary;
 		/**
@@ -960,8 +960,8 @@ class session
 		}
 
 		/**
-		 * Get expired sessions for registered users, only most recent for each user
-		 * Inner SELECT gets most recent expired sessions for unique session_user_id
+		 * Get most recent session for each registered user to sync user last visit with it
+		 * Inner SELECT gets most recent sessions for each unique session_user_id
 		 * Outer SELECT gets data for them
 		 */
 		$sql_select = 'SELECT s1.session_page, s1.session_user_id, s1.session_time AS recent_time
@@ -969,8 +969,7 @@ class session
 			INNER JOIN (
 				SELECT session_user_id, MAX(session_time) AS recent_time
 				FROM ' . SESSIONS_TABLE . '
-				WHERE session_time < ' . ($this->time_now - (int) $config['session_length']) . '
-					AND session_user_id <> ' . ANONYMOUS . '
+				WHERE session_user_id <> ' . ANONYMOUS . '
 				GROUP BY session_user_id
 			) AS s2
 			ON s1.session_user_id = s2.session_user_id
@@ -1796,5 +1795,21 @@ class session
 	public function id() : int
 	{
 		return isset($this->data['user_id']) ? (int) $this->data['user_id'] : ANONYMOUS;
+	}
+
+	/**
+	 * Update user last visit time
+	 */
+	public function update_user_lastvisit()
+	{
+		global $db;
+
+		if (isset($this->data['session_time'], $this->data['user_id']))
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
+			$db->sql_query($sql);
+		}
 	}
 }
