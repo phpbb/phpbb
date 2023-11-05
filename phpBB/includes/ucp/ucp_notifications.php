@@ -14,6 +14,11 @@
 /**
 * @ignore
 */
+
+use phpbb\controller\helper;
+use phpbb\form\form_helper;
+use phpbb\notification\method\extended_method_interface;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -23,16 +28,28 @@ class ucp_notifications
 {
 	public $u_action;
 
+	private const FORM_TOKEN_NAME = 'ucp_notification';
+
+	/** @var helper */
+	private helper $controller_helper;
+
+	/** @var form_helper */
+	private form_helper $form_helper;
+
 	public function main($id, $mode)
 	{
 		global $config, $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpbb_root_path, $phpEx;
 
-		add_form_key('ucp_notification');
+		add_form_key(self::FORM_TOKEN_NAME);
 
 		$start = $request->variable('start', 0);
 		$form_time = $request->variable('form_time', 0);
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
+
+
+		$this->controller_helper = $phpbb_container->get('controller.helper');
+		$this->form_helper = $phpbb_container->get('form_helper');
 
 		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
@@ -48,7 +65,7 @@ class ucp_notifications
 				// Add/remove subscriptions
 				if ($request->is_set_post('submit'))
 				{
-					if (!check_form_key('ucp_notification'))
+					if (!check_form_key(self::FORM_TOKEN_NAME))
 					{
 						trigger_error('FORM_INVALID');
 					}
@@ -103,15 +120,12 @@ class ucp_notifications
 					trigger_error($message);
 				}
 
-				$this->output_notification_methods($phpbb_notifications, $template, $user, 'notification_methods');
+				$this->output_notification_methods($phpbb_notifications, $template, $user);
 
 				$this->output_notification_types($subscriptions, $phpbb_notifications, $template, $user, $phpbb_dispatcher, 'notification_types');
 
-				/** @var \phpbb\controller\helper $controller_helper */
-				$controller_helper = $phpbb_container->get('controller.helper');
-
 				$template->assign_vars([
-					'T_WEBPUSH_JS_PATH'		=> $controller_helper->route('phpbb_ucp_push_js_controller'),
+					'FORM_TOKENS'			=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_NAME),
 				]);
 
 				$this->tpl_name = 'ucp_notifications_options';
@@ -145,7 +159,7 @@ class ucp_notifications
 				// Mark specific notifications read
 				if ($request->is_set_post('submit'))
 				{
-					if (!check_form_key('ucp_notification'))
+					if (!check_form_key(self::FORM_TOKEN_NAME))
 					{
 						trigger_error('FORM_INVALID');
 					}
@@ -273,35 +287,18 @@ class ucp_notifications
 	{
 		$notification_methods = $phpbb_notifications->get_subscription_methods();
 
-		if (isset($notification_methods['notification.method.webpush']))
+		foreach ($notification_methods as $method_data)
 		{
-			$this->output_webpush_data($template);
-		}
+			if ($method_data['method'] instanceof extended_method_interface)
+			{
+				$ucp_template_data = $method_data['method']->get_ucp_template_data($this->controller_helper, $this->form_helper);
+				$template->assign_vars($ucp_template_data);
+			}
 
-		foreach ($notification_methods as $method => $method_data)
-		{
 			$template->assign_block_vars($block, array(
 				'METHOD'			=> $method_data['id'],
-
 				'NAME'				=> $user->lang($method_data['lang']),
 			));
 		}
-	}
-
-	/**
-	 * Output data for webpush
-	 *
-	 * @param \phpbb\template\template $template
-	 *
-	 * @return void
-	 */
-	protected function output_webpush_data(\phpbb\template\template $template): void
-	{
-		global $config;
-
-		$template->assign_vars([
-			'NOTIFICATIONS_WEBPUSH_ENABLE'			=> true, // already checked, otherwise we wouldn't be here
-			'NOTIFICATIONS_WEBPUSH_VAPID_PUBLIC'	=> $config['webpush_vapid_public'],
-		]);
 	}
 }

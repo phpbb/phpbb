@@ -33,7 +33,7 @@ use Twig\Error\SyntaxError;
 class webpush
 {
 	/** @var string UCP form token name */
-	private const FORM_TOKEN_UCP = 'ucp_webpush';
+	public const FORM_TOKEN_UCP = 'ucp_webpush';
 
 	/** @var config */
 	protected $config;

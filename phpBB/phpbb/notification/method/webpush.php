@@ -15,7 +15,9 @@ namespace phpbb\notification\method;
 
 use Minishlink\WebPush\Subscription;
 use phpbb\config\config;
+use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
+use phpbb\form\form_helper;
 use phpbb\log\log_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
@@ -26,7 +28,7 @@ use phpbb\user_loader;
 * This class handles sending push messages for notifications
 */
 
-class webpush extends messenger_base
+class webpush extends messenger_base implements extended_method_interface
 {
 	/** @var config */
 	protected $config;
@@ -320,6 +322,33 @@ class webpush extends messenger_base
 		return array_intersect_key($data, $row);
 	}
 
+	public function get_ucp_template_data(helper $controller_helper, form_helper $form_helper): array
+	{
+		$subscription_map = $this->get_user_subscription_map([$this->user->id()]);
+		$subscriptions = [];
+
+		if (isset($subscription_map[$this->user->id()]))
+		{
+			foreach ($subscription_map[$this->user->id()] as $subscription)
+			{
+				$subscriptions[] = [
+					'endpoint'			=> $subscription['endpoint'],
+					'expirationTime'	=> $subscription['expiration_time'],
+				];
+			}
+		}
+
+		return [
+			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> true,
+			'U_WEBPUSH_SUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_subscribe_controller'),
+			'U_WEBPUSH_UNSUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_unsubscribe_controller'),
+			'VAPID_PUBLIC_KEY'				=> $this->config['webpush_vapid_public'],
+			'U_WEBPUSH_WORKER_URL'			=> $controller_helper->route('phpbb_ucp_push_worker_controller'),
+			'SUBSCRIPTIONS'					=> $subscriptions,
+			'WEBPUSH_FORM_TOKENS'			=> $form_helper->get_form_tokens(\phpbb\ucp\controller\webpush::FORM_TOKEN_UCP),
+		];
+	}
+
 	/**
 	 * Get subscriptions for notify users
 	 *
@@ -332,7 +361,7 @@ class webpush extends messenger_base
 		// Get subscriptions for users
 		$user_subscription_map = [];
 
-		$sql = 'SELECT subscription_id, user_id, endpoint, p256dh, auth
+		$sql = 'SELECT subscription_id, user_id, endpoint, p256dh, auth, expiration_time
 			FROM ' . $this->push_subscriptions_table . '
 			WHERE ' . $this->db->sql_in_set('user_id', $notify_users);
 		$result = $this->db->sql_query($sql);
