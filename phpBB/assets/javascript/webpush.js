@@ -4,37 +4,48 @@
 
 function PhpbbWebpush() {
 	/** @type {string} URL to service worker */
-	const serviceWorkerUrl = '{{ U_WEBPUSH_WORKER_URL }}';
+	let serviceWorkerUrl = '';
 
 	/** @type {string} URL to subscribe to push */
-	const subscribeUrl = '{{ U_WEBPUSH_SUBSCRIBE }}';
+	let subscribeUrl = '';
 
 	/** @type {string} URL to unsubscribe from push */
-	const unsubscribeUrl = '{{ U_WEBPUSH_UNSUBSCRIBE }}';
+	let unsubscribeUrl = '';
 
 	/** @type { {creationTime: number, formToken: string} } Form tokens */
 	this.formTokens = {
-		creationTime: {{ FORM_TOKENS.creation_time }},
-		formToken: '{{ FORM_TOKENS.form_token }}'
+		creationTime: 0,
+		formToken: '',
 	};
 
-	/** @type [{endpoint: string, expiration: string}[]] Subscriptions */
-	let subscriptions = [
-		{% for sub in SUBSCRIPTIONS %}
-			{endpoint: '{{ sub.endpoint }}', expiration: '{{ sub.expiration }}' },
-		{% endfor %}
-	];
+	/** @type {{endpoint: string, expiration: string}[]} Subscriptions */
+	let subscriptions;
+
+	/** @type {string} Title of error message */
+	let ajaxErrorTitle = '';
 
 	/** @type {string} VAPID public key */
-	const VAPID_PUBLIC_KEY = '{{ VAPID_PUBLIC_KEY }}';
+	let vapidPublicKey = '';
 
-	let subscribeButton,
-		unsubscribeButton;
+	/** @type {HTMLElement} Subscribe button */
+	let subscribeButton;
+
+	/** @type {HTMLElement} Unsubscribe button */
+	let unsubscribeButton;
 
 	/**
-	 * Init function for phpBB webpush
+	 * Init function for phpBB Web Push
+	 * @type {array} options
 	 */
-	this.init = function() {
+	this.init = function(options) {
+		serviceWorkerUrl = options.serviceWorkerUrl;
+		subscribeUrl = options.subscribeUrl;
+		unsubscribeUrl = options.unsubscribeUrl;
+		this.formTokens = options.formTokens;
+		subscriptions = options.subscriptions;
+		ajaxErrorTitle = options.ajaxErrorTitle;
+		vapidPublicKey = options.vapidPublicKey;
+
 		subscribeButton = document.querySelector('#subscribe_webpush');
 		unsubscribeButton = document.querySelector('#unsubscribe_webpush');
 
@@ -70,17 +81,17 @@ function PhpbbWebpush() {
 	function updateButtonState() {
 		if (Notification.permission === 'granted') {
 			navigator.serviceWorker.getRegistration(serviceWorkerUrl)
-				.then((registration) => {
+				.then(registration => {
 					if (typeof registration === 'undefined') {
 						return;
 					}
 
 					registration.pushManager.getSubscription()
-						.then((subscribed) => {
+						.then(subscribed => {
 							if (isValidSubscription(subscribed)) {
 								setSubscriptionState(true);
 							}
-						})
+						});
 				});
 		}
 	}
@@ -91,7 +102,7 @@ function PhpbbWebpush() {
 	 * @param {PushSubscription} subscription
 	 * @returns {boolean}
 	 */
-	const isValidSubscription = (subscription) => {
+	const isValidSubscription = subscription => {
 		if (!subscription) {
 			return false;
 		}
@@ -153,27 +164,27 @@ function PhpbbWebpush() {
 			}
 		}
 
-		let newSubscription = await registration.pushManager.subscribe({
+		const newSubscription = await registration.pushManager.subscribe({
 			userVisibleOnly: true,
-			applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY),
+			applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
 		});
 
 		const loadingIndicator = phpbb.loadingIndicator();
 		fetch(subscribeUrl, {
-				method: 'POST',
-				headers: {
-					'X-Requested-With': 'XMLHttpRequest'
-				},
-				body: getFormData(newSubscription)
-			})
-			.then((response) => {
+			method: 'POST',
+			headers: {
+				'X-Requested-With': 'XMLHttpRequest',
+			},
+			body: getFormData(newSubscription),
+		})
+			.then(response => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
 				return response.json();
 			})
 			.then(handleSubscribe)
-			.catch((error) => {
+			.catch(error => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
-				phpbb.alert('{{ lang('AJAX_ERROR_TITLE') }}', error);
+				phpbb.alert(ajaxErrorTitle, error);
 			});
 	}
 
@@ -196,22 +207,22 @@ function PhpbbWebpush() {
 		fetch(unsubscribeUrl, {
 			method: 'POST',
 			headers: {
-				'X-Requested-With': 'XMLHttpRequest'
+				'X-Requested-With': 'XMLHttpRequest',
 			},
-			body: getFormData({endpoint: subscription.endpoint})
+			body: getFormData({ endpoint: subscription.endpoint }),
 		})
 			.then(() => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
 				return subscription.unsubscribe();
 			})
-			.then((unsubscribed) => {
+			.then(unsubscribed => {
 				if (unsubscribed) {
 					setSubscriptionState(false);
 				}
 			})
-			.catch((error) => {
+			.catch(error => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
-				phpbb.alert('{{ lang('AJAX_ERROR_TITLE') }}', error);
+				phpbb.alert(ajaxErrorTitle, error);
 			});
 	}
 
@@ -223,7 +234,7 @@ function PhpbbWebpush() {
 	function handleSubscribe(response) {
 		if (response.success) {
 			setSubscriptionState(true);
-			if (response.hasOwnProperty('form_tokens')) {
+			if ('form_tokens' in response) {
 				updateFormTokens(response.form_tokens);
 			}
 		}
@@ -236,7 +247,7 @@ function PhpbbWebpush() {
 	 * @returns {FormData} Form data
 	 */
 	function getFormData(data) {
-		let formData = new FormData();
+		const formData = new FormData();
 		formData.append('form_token', phpbb.webpush.formTokens.formToken);
 		formData.append('creation_time', phpbb.webpush.formTokens.creationTime.toString());
 		formData.append('data', JSON.stringify(data));
@@ -261,13 +272,14 @@ function PhpbbWebpush() {
 	 * @returns {Uint8Array}
 	 */
 	function urlB64ToUint8Array(base64String) {
-		const padding = '='.repeat((4 - base64String.length % 4) % 4);
+		const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
 		const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 		const rawData = window.atob(base64);
 		const outputArray = new Uint8Array(rawData.length);
 		for (let i = 0; i < rawData.length; ++i) {
 			outputArray[i] = rawData.charCodeAt(i);
 		}
+
 		return outputArray;
 	}
 }
@@ -283,5 +295,6 @@ function domReady(callBack) {
 phpbb.webpush = new PhpbbWebpush();
 
 domReady(() => {
-	phpbb.webpush.init();
+	/* global phpbbWebpushOptions */
+	phpbb.webpush.init(phpbbWebpushOptions);
 });
