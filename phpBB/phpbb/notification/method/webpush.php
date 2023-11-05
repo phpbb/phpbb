@@ -24,7 +24,7 @@ use phpbb\user;
 use phpbb\user_loader;
 
 /**
-* Web push notification method class
+* Web Push notification method class
 * This class handles sending push messages for notifications
 */
 
@@ -42,14 +42,14 @@ class webpush extends messenger_base implements extended_method_interface
 	/** @var user */
 	protected $user;
 
-	/** @var string Notification web push table */
+	/** @var string Notification Web Push table */
 	protected $notification_webpush_table;
 
 	/** @var string Notification push subscriptions table */
 	protected $push_subscriptions_table;
 
 	/**
-	 * Notification Method web push constructor
+	 * Notification Method Web Push constructor
 	 *
 	 * @param config $config
 	 * @param driver_interface $db
@@ -147,7 +147,7 @@ class webpush extends messenger_base implements extended_method_interface
 	}
 
 	/**
-	 * Notify using web push
+	 * Notify using Web Push
 	 *
 	 * @return void
 	 */
@@ -206,7 +206,7 @@ class webpush extends messenger_base implements extended_method_interface
 				continue;
 			}
 
-			// add actual web push data
+			// Add actual Web Push data
 			$data = [
 				'item_id'	=> $notification->item_id,
 				'type_id'	=> $notification->notification_type_id,

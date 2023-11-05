@@ -600,9 +600,9 @@ $lang = array_merge($lang, array(
 ));
 
 $lang = array_merge($lang, [
-	'ACP_WEBPUSH_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Webpush for board notifications. Webpush is a simple protocol for the delivery of real-time events to user agents, more commonly known as push messages. It is supported by most modern browsers on desktop and mobile devices.',
-	'WEBPUSH_ENABLE'				=> 'Enable Webpush',
-	'WEBPUSH_ENABLE_EXPLAIN'		=> 'Allow receiving notifications via Webpush. It is required to enter or generate valid VAPID identification keys to be able to use Webpush.',
+	'ACP_WEBPUSH_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Web Push for board notifications. Web Push is a simple protocol for the delivery of real-time events to user agents, more commonly known as push messages. It is supported by most modern browsers on desktop and mobile devices.',
+	'WEBPUSH_ENABLE'				=> 'Enable Web Push',
+	'WEBPUSH_ENABLE_EXPLAIN'		=> 'Allow receiving notifications via Web Push. It is required to enter or generate valid VAPID identification keys to be able to use Web Push.',
 	'WEBPUSH_GENERATE_VAPID_KEYS'	=> 'Generate Identification keys',
 	'WEBPUSH_VAPID_PUBLIC'			=> 'Server identification public key',
 	'WEBPUSH_VAPID_PUBLIC_EXPLAIN'	=> 'The Voluntary Application Server Identification (VAPID) public key will be shared to authenticate push messages sent by your site.<br><em><strong>Warning:</strong> Changing the VAPID public key will automatically invalidate all Webpush subscriptions.</em>',
