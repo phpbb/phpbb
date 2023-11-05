@@ -21,7 +21,3 @@ phpbb_ucp_push_subscribe_controller:
 phpbb_ucp_push_unsubscribe_controller:
     path: /push/unsubscribe
     defaults: { _controller: phpbb.ucp.controller.webpush:unsubscribe }
-
-phpbb_ucp_push_js_controller:
-    path: /push/js
-    defaults: { _controller: phpbb.ucp.controller.webpush:js }

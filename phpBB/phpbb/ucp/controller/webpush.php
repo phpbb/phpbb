@@ -188,39 +188,6 @@ class webpush
 	}
 
 	/**
-	 * Handle request to web push javascript
-	 *
-	 * @return Response
-	 * @throws LoaderError
-	 * @throws RuntimeError
-	 * @throws SyntaxError
-	 */
-	public function js(): Response
-	{
-		// @todo: return forbidden for guest & bot
-
-		$template_data = $this->get_subscribe_vars();
-		$template_data += [
-			'VAPID_PUBLIC_KEY'		=> $this->config['webpush_vapid_public'],
-			'U_WEBPUSH_WORKER_URL'	=> $this->controller_helper->route('phpbb_ucp_push_worker_controller'),
-			'SUBSCRIPTIONS'			=> $this->get_subscriptions(),
-		];
-
-		$content = $this->template->render('webpush.js.twig', $template_data);
-
-		$response = new Response($content);
-		$response->headers->set('Content-Type', 'text/javascript; charset=UTF-8');
-
-		if (!empty($this->user->data['is_bot']))
-		{
-			// Let reverse proxies know we detected a bot.
-			$response->headers->set('X-PHPBB-IS-BOT', 'yes');
-		}
-
-		return $response;
-	}
-
-	/**
 	 * Handle subscribe requests
 	 *
 	 * @param symfony_request $symfony_request
