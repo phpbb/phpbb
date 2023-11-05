@@ -47,7 +47,6 @@ class ucp_notifications
 		$form_time = $request->variable('form_time', 0);
 		$form_time = ($form_time <= 0 || $form_time > time()) ? time() : $form_time;
 
-
 		$this->controller_helper = $phpbb_container->get('controller.helper');
 		$this->form_helper = $phpbb_container->get('form_helper');
 
