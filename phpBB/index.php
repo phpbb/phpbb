@@ -112,7 +112,14 @@ if ($show_birthdays)
 		'FROM' => array(
 			USERS_TABLE => 'u',
 		),
-		'WHERE' => 'u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+		'LEFT_JOIN' => array(
+			array(
+				'FROM' => array(BANS_TABLE => 'b'),
+				'ON' => 'u.user_id = b.ban_userid',
+			),
+		),
+		'WHERE' => 'b.ban_id IS NULL
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
 			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)",
 	);
 
