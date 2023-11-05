@@ -51,6 +51,9 @@ class jabber
 
 	var $features = array();
 
+	/** @var string Stream close handshake */
+	private const STREAM_CLOSE_HANDSHAKE = '</stream:stream>';
+
 	/**
 	* Constructor
 	*
@@ -58,7 +61,7 @@ class jabber
 	* @param int $port Jabber server port
 	* @param string $username Jabber username or JID
 	* @param string $password Jabber password
-	* @param boold $use_ssl Use ssl
+	* @param bool $use_ssl Use ssl
 	* @param bool $verify_peer Verify SSL certificate
 	* @param bool $verify_peer_name Verify Jabber peer name
 	* @param bool $allow_self_signed Allow self signed certificates
@@ -183,7 +186,15 @@ class jabber
 				$this->send_presence('offline', '', true);
 			}
 
-			$this->send('</stream:stream>');
+			$this->send(self::STREAM_CLOSE_HANDSHAKE);
+			// Check stream close handshake reply
+			$stream_close_reply = $this->listen();
+
+			if ($stream_close_reply != self::STREAM_CLOSE_HANDSHAKE)
+			{
+				$this->add_to_log("Error: Unexpected stream close handshake reply ”{$stream_close_reply}”");
+			}
+
 			$this->session = array();
 			return fclose($this->connection);
 		}
