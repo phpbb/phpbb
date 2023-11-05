@@ -113,9 +113,9 @@ class webpush
 
 		$sql = 'SELECT push_data
 			FROM ' . $this->notification_webpush_table . '
-			WHERE user_id = ' . $this->user->id() . '
-				AND notification_type_id = ' . $type_id . '
-				AND item_id = ' . $item_id;
+			WHERE user_id = ' . (int) $this->user->id() . '
+				AND notification_type_id = ' . (int) $type_id . '
+				AND item_id = ' . (int) $item_id;
 		$result = $this->db->sql_query($sql);
 		$notification_data = $this->db->sql_fetchfield('push_data');
 		$this->db->sql_freeresult($result);
@@ -229,35 +229,13 @@ class webpush
 		$endpoint = $data['endpoint'];
 
 		$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
-			WHERE user_id = ' . $this->user->id() . "
-				AND endpoint = '" . $this->db->sql_escape($endpoint) . "'";
+			WHERE user_id = ' . (int) $this->user->id() . "
+				AND endpoint = '" . (int) $this->db->sql_escape($endpoint) . "'";
 		$this->db->sql_query($sql);
 
 		return new JsonResponse([
 			'success'		=> true,
 			'form_tokens'	=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
 		]);
-	}
-
-	/**
-	 * Get subscriptions for current user
-	 *
-	 * @return array Subscriptions for user
-	 */
-	protected function get_subscriptions(): array
-	{
-		$subscriptions = [];
-
-		$sql = 'SELECT endpoint, expiration_time
-			FROM ' . $this->push_subscriptions_table . '
-			WHERE user_id = ' . $this->user->id();
-		$result = $this->db->sql_query($sql);
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$subscriptions[] = $row;
-		}
-		$this->db->sql_freeresult($result);
-
-		return $subscriptions;
 	}
 }
