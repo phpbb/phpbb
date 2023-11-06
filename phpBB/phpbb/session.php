@@ -1136,119 +1136,23 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $db, $phpbb_dispatcher;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
 			return false;
 		}
 
-		$banned = false;
-		$cache_ttl = 3600;
-		$where_sql = array();
-
-		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
-			FROM ' . BANLIST_TABLE . '
-			WHERE ';
-
-		// Determine which entries to check, only return those
-		if ($user_email === false)
+		/** @var \phpbb\ban\manager $ban_manager */
+		$ban_manager = $phpbb_container->get('ban.manager');
+		$ban_row = $ban_manager->check(['user_id' => $user_id, 'user_email' => $user_email]);
+		if (empty($ban_row))
 		{
-			$where_sql[] = "ban_email = ''";
+			return false;
 		}
 
-		if ($user_ips === false)
-		{
-			$where_sql[] = "(ban_ip = '' OR ban_exclude = 1)";
-		}
-
-		if ($user_id === false)
-		{
-			$where_sql[] = '(ban_userid = 0 OR ban_exclude = 1)';
-		}
-		else
-		{
-			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
-			$_sql = '(ban_userid = ' . $user_id;
-
-			if ($user_email !== false)
-			{
-				$_sql .= " OR ban_email <> ''";
-			}
-
-			if ($user_ips !== false)
-			{
-				$_sql .= " OR ban_ip <> ''";
-			}
-
-			$_sql .= ')';
-
-			$where_sql[] = $_sql;
-		}
-
-		$sql .= (count($where_sql)) ? implode(' AND ', $where_sql) : '';
-		$result = $db->sql_query($sql, $cache_ttl);
-
-		$ban_triggered_by = 'user';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['ban_end'] && $row['ban_end'] < time())
-			{
-				continue;
-			}
-
-			$ip_banned = false;
-			if (!empty($row['ban_ip']))
-			{
-				if (!is_array($user_ips))
-				{
-					$ip_banned = preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips);
-				}
-				else
-				{
-					foreach ($user_ips as $user_ip)
-					{
-						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip))
-						{
-							$ip_banned = true;
-							break;
-						}
-					}
-				}
-			}
-
-			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-				$ip_banned ||
-				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email)))
-			{
-				if (!empty($row['ban_exclude']))
-				{
-					$banned = false;
-					break;
-				}
-				else
-				{
-					$banned = true;
-					$ban_row = $row;
-
-					if (!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id)
-					{
-						$ban_triggered_by = 'user';
-					}
-					else if ($ip_banned)
-					{
-						$ban_triggered_by = 'ip';
-					}
-					else
-					{
-						$ban_triggered_by = 'email';
-					}
-
-					// Don't break. Check if there is an exclude rule for this user
-				}
-			}
-		}
-		$db->sql_freeresult($result);
+		$banned = true;
+		$ban_triggered_by = $ban_row['mode'];
 
 		/**
 		* Event to set custom ban type
@@ -1266,7 +1170,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $phpEx;
+			global $config, $phpbb_root_path, $phpEx;
 
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
@@ -1300,7 +1204,8 @@ class session
 			}
 
 			// Determine which message to output
-			$message = $this->get_ban_message($ban_row, $ban_triggered_by);
+			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
+			$message = $ban_manager->get_ban_message($ban_row, $ban_triggered_by, $contact_link);
 
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
@@ -1342,19 +1247,6 @@ class session
 				$this->check_ban($this->data['user_id'], $ips);
 			}
 		}
-	}
-
-	/**
-	 * Get ban info message
-	 *
-	 * @param array $ban_row Ban data row from database
-	 * @param string $ban_triggered_by Ban triggered by; allowed 'user', 'ip', 'email'
-	 *
-	 * @return string
-	 */
-	protected function get_ban_message(array $ban_row, string $ban_triggered_by): string
-	{
-		return ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
 	}
 
 	/**

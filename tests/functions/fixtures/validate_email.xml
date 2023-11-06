@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
-	<table name="phpbb_banlist">
+	<table name="phpbb_bans">
 		<column>ban_id</column>
-		<column>ban_userid</column>
-		<column>ban_exclude</column>
+		<column>ban_mode</column>
+		<column>ban_item</column>
+		<column>ban_start</column>
 		<column>ban_end</column>
-		<column>ban_email</column>
-		<column>ban_give_reason</column>
+		<column>ban_reason</column>
+		<column>ban_reason_display</column>
 		<row>
 			<value>1</value>
-			<value>0</value>
-			<value>0</value>
-			<value>0</value>
+			<value>email</value>
 			<value>banned@example.com</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
 			<value></value>
 		</row>
 		<row>
 			<value>2</value>
-			<value>0</value>
-			<value>0</value>
-			<value>0</value>
+			<value>email</value>
 			<value>banned2@example.com</value>
+			<value>0</value>
+			<value>0</value>
+			<value>just because</value>
 			<value>just because</value>
 		</row>
 	</table>

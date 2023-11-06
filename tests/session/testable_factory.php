@@ -38,7 +38,7 @@ class phpbb_session_testable_factory
 	public function __construct()
 	{
 		// default configuration values
-		$this->config_data = array(
+		$this->config_data = [
 			'allow_autologin' => false,
 			'auth_method' => 'db',
 			'forwarded_for_check' => true,
@@ -53,13 +53,14 @@ class phpbb_session_testable_factory
 			'limit_search_load' => 0,
 			'ip_check' => 3,
 			'browser_check' => 1,
-		);
+		];
 
-		$this->cache_data = array(
-			'_bots' => array(),
-		);
+		$this->cache_data = [
+			'_bots'	=> [],
+			'_ban_info'	=> [],
+		];
 
-		$this->cookies = array();
+		$this->cookies = [];
 
 		$this->server_data = $_SERVER;
 	}
@@ -73,7 +74,8 @@ class phpbb_session_testable_factory
 	public function get_session(\phpbb\db\driver\driver_interface $dbal)
 	{
 		// set up all the global variables used by session
-		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container, $phpbb_root_path;
+		global $SID, $_SID, $db, $config, $cache, $request, $phpbb_container, $phpbb_dispatcher;
+		global $user, $phpbb_root_path, $phpEx;
 
 		$request = $this->request = new phpbb_mock_request(
 			array(),
@@ -88,6 +90,8 @@ class phpbb_session_testable_factory
 
 		$cache = $this->cache = new phpbb_mock_cache($this->get_cache_data());
 		$SID = $_SID = null;
+		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$user = new \phpbb\user($language, '\phpbb\datetime');
 
 		$phpbb_container = $this->container = new phpbb_mock_container_builder();
 		$phpbb_container->set(
@@ -102,6 +106,24 @@ class phpbb_session_testable_factory
 			'auth.provider_collection',
 			$provider_collection
 		);
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
+		$ban_type_email = new \phpbb\ban\type\email($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_ip = new \phpbb\ban\type\ip($db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$phpbb_container->set('ban.type.email', $ban_type_email);
+		$phpbb_container->set('ban.type.user', $ban_type_user);
+		$phpbb_container->set('ban.type.ip', $ban_type_ip);
+
+		$collection = new \phpbb\di\service_collection($phpbb_container);
+		$collection->add('ban.type.email');
+		$collection->add('ban.type.user');
+		$collection->add('ban.type.ip');
+		$phpbb_log = new \phpbb\log\dummy();
+
+		$ban_manager = new \phpbb\ban\manager($collection, $cache, $db, $language, $phpbb_log, $user,'phpbb_bans', 'phpbb_users');
+		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$session = new phpbb_mock_session_testable;
 		return $session;

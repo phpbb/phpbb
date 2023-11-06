@@ -68,7 +68,6 @@ class mcp_ban
 			$ban				= $request->variable('ban', '', $mode === 'user');
 			$ban_length			= $request->variable('banlength', 0);
 			$ban_length_other	= $request->variable('banlengthother', '');
-			$ban_exclude		= $request->variable('banexclude', 0);
 			$ban_reason			= $request->variable('banreason', '', true);
 			$ban_give_reason	= $request->variable('bangivereason', '', true);
 
@@ -85,7 +84,6 @@ class mcp_ban
 					* @var	string	ban					Either string or array with usernames, ips or email addresses
 					* @var	int		ban_length			Ban length in minutes
 					* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
-					* @var	bool	ban_exclude			Are we banning or excluding from another ban
 					* @var	string	ban_reason			Ban reason displayed to moderators
 					* @var	string	ban_give_reason		Ban reason displayed to the banned user
 					* @var	mixed	abort_ban			Either false, or an error message that is displayed to the user.
@@ -97,7 +95,6 @@ class mcp_ban
 						'ban',
 						'ban_length',
 						'ban_length_other',
-						'ban_exclude',
 						'ban_reason',
 						'ban_give_reason',
 						'abort_ban',
@@ -108,7 +105,7 @@ class mcp_ban
 					{
 						trigger_error($abort_ban);
 					}
-					user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_exclude, $ban_reason, $ban_give_reason);
+					user_ban($mode, $ban, $ban_length, $ban_length_other, $ban_reason, $ban_give_reason);
 
 					/**
 					* Use this event to perform actions after the ban has been performed
@@ -118,7 +115,6 @@ class mcp_ban
 					* @var	string	ban					Either string or array with usernames, ips or email addresses
 					* @var	int		ban_length			Ban length in minutes
 					* @var	string	ban_length_other	Ban length as a date (YYYY-MM-DD)
-					* @var	bool	ban_exclude			Are we banning or excluding from another ban
 					* @var	string	ban_reason			Ban reason displayed to moderators
 					* @var	string	ban_give_reason		Ban reason displayed to the banned user
 					* @since 3.1.0-RC5
@@ -128,7 +124,6 @@ class mcp_ban
 						'ban',
 						'ban_length',
 						'ban_length_other',
-						'ban_exclude',
 						'ban_reason',
 						'ban_give_reason',
 					);
@@ -144,7 +139,6 @@ class mcp_ban
 						'bansubmit'			=> true,
 						'banlength'			=> $ban_length,
 						'banlengthother'	=> $ban_length_other,
-						'banexclude'		=> $ban_exclude,
 						'banreason'			=> $ban_reason,
 						'bangivereason'		=> $ban_give_reason,
 					);
@@ -189,7 +183,6 @@ class mcp_ban
 		$this->page_title = $user->lang[strtoupper($mode) . '_BAN'];
 
 		$l_ban_explain = $user->lang[strtoupper($mode) . '_BAN_EXPLAIN'];
-		$l_ban_exclude_explain = $user->lang[strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'];
 		$l_unban_title = $user->lang[strtoupper($mode) . '_UNBAN'];
 		$l_unban_explain = $user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
 		$l_no_ban_cell = $user->lang[strtoupper($mode) . '_NO_BANNED'];
@@ -218,7 +211,6 @@ class mcp_ban
 			'L_UNBAN_TITLE'			=> $l_unban_title,
 			'L_UNBAN_EXPLAIN'		=> $l_unban_explain,
 			'L_BAN_CELL'			=> $l_ban_cell,
-			'L_BAN_EXCLUDE_EXPLAIN'	=> $l_ban_exclude_explain,
 			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
 
 			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,

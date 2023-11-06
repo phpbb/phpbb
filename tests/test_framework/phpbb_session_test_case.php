@@ -29,7 +29,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $symfony_request, $phpbb_path_helper, $request, $phpbb_root_path, $phpEx;
+		global $symfony_request, $phpbb_path_helper, $phpbb_root_path, $phpEx;
 		$symfony_request = new \phpbb\symfony_request(
 			new phpbb_mock_request()
 		);

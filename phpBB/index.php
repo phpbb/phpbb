@@ -114,13 +114,13 @@ if ($show_birthdays)
 		),
 		'LEFT_JOIN' => array(
 			array(
-				'FROM' => array(BANLIST_TABLE => 'b'),
+				'FROM' => array(BANS_TABLE => 'b'),
 				'ON' => 'u.user_id = b.ban_userid',
 			),
 		),
-		'WHERE' => "(b.ban_id IS NULL OR b.ban_exclude = 1)
-			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)
-			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+		'WHERE' => 'b.ban_id IS NULL
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)",
 	);
 
 	/**

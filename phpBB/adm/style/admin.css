@@ -288,6 +288,10 @@ li {
 	padding-right: 10px;
 }
 
+.w-50 {
+	width: 50%;
+}
+
 @media only screen and (max-width: 700px), only screen and (max-device-width: 700px) {
 	#wrap,
 	#page-body,

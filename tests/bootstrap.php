@@ -34,6 +34,8 @@ $phpbb_class_loader_ext = new \phpbb\class_loader('\\', $phpbb_root_path . 'ext/
 $phpbb_class_loader_ext->register();
 $phpbb_class_loader = new \phpbb\class_loader('phpbb\\', $phpbb_root_path . 'phpbb/', "php");
 $phpbb_class_loader->register();
+$phpbb_class_loader_tests = new \phpbb\class_loader('phpbb\\tests\\', $phpbb_root_path . '../tests/', 'php');
+$phpbb_class_loader_tests->register();
 
 require_once 'test_framework/phpbb_test_case_helpers.php';
 require_once 'test_framework/phpbb_test_case.php';

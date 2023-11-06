@@ -445,29 +445,42 @@ if (!$get_info)
 			),
 
 			array(
-				'target'		=> BANLIST_TABLE,
-				'execute_first'	=> 'phpbb_check_username_collisions();',
-				'query_first'	=> array('target', $convert->truncate_statement . BANLIST_TABLE),
+				'target'		=> BANS_TABLE,
+				'execute_first' => 'phpbb_check_username_collisions();',
+				'query_first'	=> array('target', $convert->truncate_statement . BANS_TABLE),
 
-				array('ban_ip',					'banlist.ban_ip',					'decode_ban_ip'),
-				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
-				array('ban_email',				'banlist.ban_email',				''),
-				array('ban_reason',				'',									''),
-				array('ban_give_reason',		'',									''),
+				array('ban_mode',				'user',					''),
+				array('ban_item',				'banlist.ban_userid',	'phpbb_user_id'),
+				array('ban_userid',			'banlist.ban_userid',	'phpbb_user_id'),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%'",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_userid <> 0",
 			),
 
 			array(
-				'target'		=> BANLIST_TABLE,
+				'target'		=> BANS_TABLE,
 
-				array('ban_ip',					'banlist.ban_ip',	''),
-				array('ban_userid',				0,					''),
-				array('ban_email',				'',					''),
-				array('ban_reason',				'',					''),
-				array('ban_give_reason',		'',					''),
+				array('ban_mode',				'email',				''),
+				array('ban_item',				'banlist.ban_email',	''),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip LIKE '%.%'",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_email <> ''",
+			),
+
+			array(
+				'target'		=> BANS_TABLE,
+
+				array('ban_mode',				'ip',				''),
+				array('ban_item',				'banlist.ban_ip',	'decode_ban_ip'),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
+
+				'where'			=> "banlist.ban_userid = 0
+										AND banlist.ban_ip <> ''",
 			),
 
 			array(
