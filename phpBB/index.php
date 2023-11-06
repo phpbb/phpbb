@@ -140,17 +140,8 @@ if ($show_birthdays)
 	$rows = $db->sql_fetchrowset($result);
 	$db->sql_freeresult($result);
 
-	/** @var \phpbb\ban\manager $ban_manager */
-	$ban_manager = $phpbb_container->get('ban.manager');
-	$banned_users = $ban_manager->get_banned_users();
-
 	foreach ($rows as $row)
 	{
-		if (isset($banned_users[(int) $row['user_id']]))
-		{
-			continue;
-		}
-
 		$birthday_username	= get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		$birthday_year		= (int) substr($row['user_birthday'], -4);
 		$birthday_age		= ($birthday_year) ? max(0, $now['year'] - $birthday_year) : '';
