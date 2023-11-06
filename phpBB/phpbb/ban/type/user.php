@@ -79,7 +79,7 @@ class user extends base
 			WHERE (b.ban_end >= ' . time() . "
 					OR b.ban_end = 0)
 				AND b.ban_userid = u.user_id
-				AND b.ban_mode = '{$this->get_type()}'
+				AND b.ban_mode = '{$this->db->sql_escape($this->get_type())}'
 			ORDER BY u.username_clean ASC";
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))

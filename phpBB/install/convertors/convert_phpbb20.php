@@ -455,7 +455,8 @@ if (!$get_info)
 				array('ban_reason',				'',						''),
 				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AND banlist.ban_userid <> 0",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_userid <> 0",
 			),
 
 			array(
@@ -466,7 +467,8 @@ if (!$get_info)
 				array('ban_reason',				'',						''),
 				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%' AND banlist.ban_email <> ''",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_email <> ''",
 			),
 
 			array(
@@ -477,7 +479,8 @@ if (!$get_info)
 				array('ban_reason',				'',						''),
 				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_userid = 0 AND banlist.ban_ip <> ''",
+				'where'			=> "banlist.ban_userid = 0
+										AND banlist.ban_ip <> ''",
 			),
 
 			array(

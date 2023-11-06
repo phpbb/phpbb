@@ -112,7 +112,7 @@ abstract class base implements type_interface
 			FROM ' . $this->bans_table . '
 			WHERE (ban_end >= ' . time() . "
 					OR ban_end = 0)
-				AND ban_mode = '{$this->get_type()}'
+				AND ban_mode = '{$this->db->sql_escape($this->get_type())}'
 			ORDER BY ban_item";
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
@@ -143,7 +143,7 @@ abstract class base implements type_interface
 			$this->excluded[$this->user->id()] = $this->user->data[$user_column];
 		}
 
-		$sql = "SELECT user_id, {$user_column}
+		$sql = "SELECT user_id, {$this->db->sql_escape($user_column)}
 			FROM {$this->users_table}
 			WHERE user_type = " . USER_FOUNDER;
 		$result = $this->db->sql_query($sql);
