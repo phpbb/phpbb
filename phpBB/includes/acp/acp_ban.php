@@ -186,7 +186,7 @@ class acp_ban
 			'L_BAN_CELL'			=> $l_ban_cell,
 			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
 
-			'S_USERNAME_BAN'	=> $mode == 'user',
+			'S_USERNAME_BAN'	=> $mode == 'user' ? true : false,
 
 			'U_ACTION'			=> $this->u_action,
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),

@@ -117,7 +117,7 @@ class manager
 		// Prevent duplicate bans
 		$sql = 'DELETE FROM ' . $this->bans_table . "
 			WHERE ban_mode = '" . $this->db->sql_escape($mode) . "'
-			AND " . $this->db->sql_in_set('ban_item', $ban_items, false, true);
+				AND " . $this->db->sql_in_set('ban_item', $ban_items, false, true);
 		$this->db->sql_query($sql);
 
 		$insert_array = [];
@@ -468,7 +468,8 @@ class manager
 	{
 		// Delete stale bans
 		$sql = 'DELETE FROM ' . $this->bans_table . '
-			WHERE ban_end > 0 AND ban_end < ' . (int) time();
+			WHERE ban_end > 0
+				AND ban_end < ' . (int) time();
 		$this->db->sql_query($sql);
 
 		/** @var type_interface $type */
