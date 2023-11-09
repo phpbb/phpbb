@@ -15,6 +15,7 @@ namespace phpbb\db\tools;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
@@ -361,6 +362,24 @@ class doctrine implements tools_interface
 				$this->schema_create_primary_key($schema, $column, $table_name);
 			}
 		);
+	}
+
+	/**
+	 * Truncate the table
+	 *
+	 * @param string $table_name
+	 * @return void
+	 */
+	public function sql_truncate_table(string $table_name)
+	{
+		try
+		{
+			$this->connection->executeQuery($this->get_schema_manager()->getDatabasePlatform()->getTruncateTableSQL($table_name));
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
 	}
 
 	/**
