@@ -104,6 +104,7 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
+		// Need to update session forum_id to valid value for proper viewonline information
 		if (!$forum_id)
 		{
 			$user->page['forum'] = (int) $topic_forum['forum_id'];
