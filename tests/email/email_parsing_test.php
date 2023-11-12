@@ -69,6 +69,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$log = new \phpbb\log\dummy();
 		$iconify_bundler = new \phpbb\assets\iconify_bundler($log);
 		$assets_bag = new \phpbb\template\assets_bag($iconify_bundler);
+		$phpbb_container->set('assets.bag', $assets_bag);
 
 		$context = new \phpbb\template\context();
 		$twig = new \phpbb\template\twig\environment(

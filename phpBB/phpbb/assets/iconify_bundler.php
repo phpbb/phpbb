@@ -14,10 +14,11 @@
 namespace phpbb\assets;
 
 use Iconify\JSONTools\Collection;
+use phpbb\log\log_interface;
 
 class iconify_bundler
 {
-	/** @var \phpbb\log\log_interface */
+	/** @var log_interface */
 	protected $log;
 
 	/** @var string[] Icons list */
@@ -26,9 +27,9 @@ class iconify_bundler
 	/**
 	 * Constructor for iconify bundler
 	 *
-	 * @param \phpbb\log\log_interface $log Logger
+	 * @param log_interface|null $log Logger
 	 */
-	public function __construct(\phpbb\log\log_interface $log)
+	public function __construct(?log_interface $log)
 	{
 		$this->log = $log;
 	}
@@ -113,7 +114,10 @@ class iconify_bundler
 			if ($icon === null || $icon['provider'] !== '')
 			{
 				// Invalid name or icon name does not have provider
-				$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$icon_name]);
+				if ($this->log)
+				{
+					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$icon_name]);
+				}
 				continue;
 			}
 
@@ -214,7 +218,11 @@ class iconify_bundler
 			$collection = new Collection($prefix);
 			if (!$collection->loadIconifyCollection($prefix))
 			{
-				$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);
+				if ($this->log)
+				{
+					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);
+				}
+				continue;
 			}
 
 			// Make sure all icons exist
@@ -222,7 +230,10 @@ class iconify_bundler
 			{
 				if (!$collection->iconExists($name))
 				{
-					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix . ':' . $name]);
+					if ($this->log)
+					{
+						$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix . ':' . $name]);
+					}
 				}
 			}
 
