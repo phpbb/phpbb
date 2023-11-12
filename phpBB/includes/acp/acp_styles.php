@@ -367,9 +367,6 @@ class acp_styles
 		// Clear cache
 		$this->cache->purge();
 
-		// Force rebuild of iconify bundle
-		//$this->iconify_bundler->get_bundle(true);
-
 		// Show message
 		trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_NOTICE);
 	}

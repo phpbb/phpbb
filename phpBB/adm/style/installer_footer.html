@@ -26,6 +26,8 @@ installLang = {
 <!-- IF S_ALLOW_CDN --><script>window.jQuery || document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery-3.6.0.min.js">\x3C/script>');</script><!-- ENDIF -->
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS admin.js -->
+{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify.min.js' %}
+
 {$ICONIFY_ICONS}
 {$SCRIPTS}
 
