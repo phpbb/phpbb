@@ -65,9 +65,6 @@ class acp_styles
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
 
-	/** @var \phpbb\assets\iconify_bundler */
-	protected $iconify_bundler;
-
 	public function main($id, $mode)
 	{
 		global $db, $phpbb_admin_path, $phpbb_root_path, $phpEx, $template, $request, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_container;
@@ -83,7 +80,6 @@ class acp_styles
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 		$this->dispatcher = $phpbb_dispatcher;
-		$this->iconify_bundler = $phpbb_container->get('assets.iconify_bundler');
 
 		$this->default_style = $config['default_style'];
 		$this->styles_path = $this->phpbb_root_path . $this->styles_path_absolute . '/';
@@ -244,9 +240,6 @@ class acp_styles
 			$this->text_formatter_cache->invalidate();
 		}
 
-		// Force rebuild of iconify bundle
-		$this->iconify_bundler->get_bundle(true);
-
 		// Show message
 		if (!count($messages))
 		{
@@ -375,7 +368,7 @@ class acp_styles
 		$this->cache->purge();
 
 		// Force rebuild of iconify bundle
-		$this->iconify_bundler->get_bundle(true);
+		//$this->iconify_bundler->get_bundle(true);
 
 		// Show message
 		trigger_error(implode('<br />', $messages) . adm_back_link($this->u_action), E_USER_NOTICE);

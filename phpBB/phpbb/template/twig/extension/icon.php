@@ -89,6 +89,8 @@ class icon extends AbstractExtension
 			case 'iconify':
 				$source = explode(':', $icon);
 				$source = $source[0];
+				$environment->get_assets_bag()->add_iconify_icon($icon);
+
 			break;
 
 			case 'png':

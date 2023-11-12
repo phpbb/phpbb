@@ -5,6 +5,7 @@ services:
     template.twig.environment:
         class: phpbb\template\twig\environment
         arguments:
+            - '@assets.bag'
             - '@config'
             - '@filesystem'
             - '@path_helper'

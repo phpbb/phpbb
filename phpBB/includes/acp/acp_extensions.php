@@ -270,10 +270,6 @@ class acp_extensions
 					), array($this->phpbb_root_path . 'adm/style'));
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
-
-					// Force rebuild of iconify bundle
-					$iconify_bundler = new \phpbb\assets\iconify_bundler($this->db, $this->ext_manager, $this->log, $this->phpbb_root_path);
-					$iconify_bundler->get_bundle(true);
 				}
 				catch (\phpbb\db\migration\exception $e)
 				{
@@ -319,10 +315,6 @@ class acp_extensions
 					}
 				}
 				$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_DISABLE', time(), array($ext_name));
-
-				// Force rebuild of iconify bundle
-				$iconify_bundler = new \phpbb\assets\iconify_bundler($this->db, $this->ext_manager, $this->log, $this->phpbb_root_path);
-				$iconify_bundler->get_bundle(true);
 
 				$this->tpl_name = 'acp_ext_disable';
 

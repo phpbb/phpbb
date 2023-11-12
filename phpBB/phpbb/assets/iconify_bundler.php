@@ -13,41 +13,32 @@
 
 namespace phpbb\assets;
 
-use phpbb\exception\runtime_exception;
 use Iconify\JSONTools\Collection;
-use Symfony\Component\Finder\Finder;
 
 class iconify_bundler
 {
-	protected const BUNDLE_PATH = 'assets/iconify/iconify-bundle.js';
-
-	protected $db;
-
-	protected $ext_manager;
-
 	/** @var \phpbb\log\log_interface */
 	protected $log;
 
-	/** @var \phpbb\filesystem\filesystem_interface */
-	protected $filesystem;
-
-	protected $root_path = '';
-
-	protected $bundle_path = '';
+	/** @var string[] Icons list */
 	protected $icons_list = [];
 
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\extension\manager $ext_manager, \phpbb\log\log_interface $log, string $root_path)
+	/**
+	 * Constructor for iconify bundler
+	 *
+	 * @param \phpbb\log\log_interface $log Logger
+	 */
+	public function __construct(\phpbb\log\log_interface $log)
 	{
-		$this->db = $db;
-		$this->ext_manager = $ext_manager;
-		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->log = $log;
-		$this->root_path = $root_path;
-
-		$this->bundle_path = $root_path . self::BUNDLE_PATH;
 	}
 
-	protected function run()
+	/**
+	 * Run iconify bundler
+	 *
+	 * @return string Iconify bundle
+	 */
+	public function run()
 	{
 		// Sort icons first
 		sort($this->icons_list, SORT_NATURAL);
@@ -76,132 +67,31 @@ class iconify_bundler
 		return $output;
 	}
 
-	public function get_bundle(bool $force_rebuild = false): string
-	{
-		if (!$force_rebuild && $this->is_dumped())
-		{
-			return file_get_contents($this->bundle_path);
-		}
-
-		return $this->create_bundle();
-	}
-
-	public function create_bundle(): string
-	{
-		$iconify_bundle = $this->with_extensions()
-			->with_styles()
-			->run();
-
-		$this->filesystem->dump_file($this->bundle_path, $iconify_bundle);
-
-		return $iconify_bundle;
-	}
-
 	/**
-	 * @param array $paths Icon paths
+	 * Add icon to icons list
 	 *
+	 * @param string $icon_name
 	 * @return void
 	 */
-	public function find_icons(array $paths): void
-	{
-		if (!count($paths))
-		{
-			return;
-		}
-
-		$finder = new Finder();
-		$finder->files();
-
-		foreach ($paths as $cur_path)
-		{
-			$finder->in($cur_path);
-		}
-
-		$finder->name('*.html')
-			->name('*.twig')
-			->contains("Icon('iconify',");
-
-		foreach ($finder as $file)
-		{
-			$contents = $file->getContents();
-			$matches = [];
-			preg_match_all("/Icon\('iconify', *(?:'(?<text>[^']+(?<content_flow>' ~ S_CONTENT_FLOW_(?:BEGIN|END))?)|(?<json>{[^}]+}))/m", $contents, $matches, PREG_SET_ORDER);
-			foreach ($matches as $match_data)
-			{
-				if (!empty($match_data['content_flow']))
-				{
-					$base_icon_name = str_replace($match_data['content_flow'], '', $match_data['text']);
-					$this->add_icon($base_icon_name . 'left');
-					$this->add_icon($base_icon_name . 'right');
-				}
-				else if (!empty($match_data['json']))
-				{
-					preg_match_all("/\s'(?<text>[^']+)'/", $match_data['json'], $icons_array, PREG_SET_ORDER);
-					foreach ($icons_array as $icon)
-					{
-						$this->add_icon($icon['text']);
-					}
-				}
-				else if (!empty($match_data['text']))
-				{
-					$this->add_icon($match_data['text']);
-				}
-				else
-				{
-					throw new runtime_exception('Found unexpected icon name `%1$s` in `%2$s`', [$match_data[0], $file->getPath()]);
-				}
-			}
-		}
-	}
-
-	public function with_extensions(): iconify_bundler
-	{
-		$extensions = $this->ext_manager->all_enabled();
-
-		$search_paths = [];
-
-		foreach ($extensions as $path)
-		{
-			if (file_exists($path))
-			{
-				$search_paths[] = $path;
-			}
-		}
-
-		$this->find_icons($search_paths);
-
-		return $this;
-	}
-
-	public function with_styles(): iconify_bundler
-	{
-		$sql = 'SELECT *
-			FROM ' . STYLES_TABLE;
-		$result = $this->db->sql_query($sql);
-
-		$style_paths = [];
-
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$style_paths[] = $this->root_path . 'styles/' . $row['style_path'];
-		}
-		$this->db->sql_freeresult($result);
-
-		$this->find_icons($style_paths);
-
-		return $this;
-	}
-
-	public function is_dumped(): bool
-	{
-		return $this->filesystem->exists($this->bundle_path) && $this->filesystem->is_readable($this->bundle_path);
-	}
-
 	protected function add_icon(string $icon_name): void
 	{
 		if (!in_array($icon_name, $this->icons_list))
 		{
 			$this->icons_list[] = $icon_name;
+		}
+	}
+
+	/**
+	 * Add multiple icons to icons list
+	 *
+	 * @param array $icons
+	 * @return void
+	 */
+	public function add_icons(array $icons): void
+	{
+		foreach ($icons as $icon)
+		{
+			$this->add_icon($icon);
 		}
 	}
 
@@ -222,9 +112,9 @@ class iconify_bundler
 			$icon = $this->name_to_icon($icon_name);
 			if ($icon === null || $icon['provider'] !== '')
 			{
-				// Invalid name or icon name has provider.
-				// All icons in this example are from Iconify, so providers are not supported.
-				throw new \Error('Invalid icon name: ' . $icon_name);
+				// Invalid name or icon name does not have provider
+				$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$icon_name]);
+				continue;
 			}
 
 			$prefix = $icon['prefix'];
@@ -308,7 +198,13 @@ class iconify_bundler
 		return null;
 	}
 
-	protected function load_icons_data($icons): string
+	/**
+	 * Load icons date for supplied icons array
+	 *
+	 * @param array $icons
+	 * @return string
+	 */
+	protected function load_icons_data(array $icons): string
 	{
 		// Load icons data
 		$output = '';
@@ -322,10 +218,11 @@ class iconify_bundler
 			}
 
 			// Make sure all icons exist
-			foreach ($iconsList as $name) {
+			foreach ($iconsList as $name)
+			{
 				if (!$collection->iconExists($name))
 				{
-					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix, $name]);
+					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix . ':' . $name]);
 				}
 			}
 
