@@ -47,22 +47,26 @@ class iconify_bundler
 		$organized_icons = $this->organize_icons_list();
 
 		$output = $this->load_icons_data($organized_icons);
+		if (!$output)
+		{
+			return '';
+		}
 
 		$output = '(function() {
-   function add(data) {
-       try {
-           if (typeof self.Iconify === \'object\' && self.Iconify.addCollection) {
-               self.Iconify.addCollection(data);
-               return;
-           }
-           if (typeof self.IconifyPreload === \'undefined\') {
-               self.IconifyPreload = [];
-           }
-           self.IconifyPreload.push(data);
-       } catch (err) {
-       }
-   }
-   ' . $output . '
+    function add(data) {
+        try {
+            if (typeof self.Iconify === \'object\' && self.Iconify.addCollection) {
+                self.Iconify.addCollection(data);
+                return;
+            }
+            if (typeof self.IconifyPreload === \'undefined\') {
+                self.IconifyPreload = [];
+            }
+            self.IconifyPreload.push(data);
+        } catch (err) {
+        }
+    }
+    ' . $output . '
 })();' . "\n";
 
 		return $output;
@@ -111,7 +115,7 @@ class iconify_bundler
 		{
 			// Split icon to prefix and name
 			$icon = $this->name_to_icon($icon_name);
-			if ($icon === null || $icon['provider'] !== '')
+			if ($icon === null)
 			{
 				// Invalid name or icon name does not have provider
 				if ($this->log)
@@ -216,24 +220,20 @@ class iconify_bundler
 		{
 			// Load icon set
 			$collection = new Collection($prefix);
-			if (!$collection->loadIconifyCollection($prefix))
+			$collection_file = Collection::findIconifyCollection($prefix);
+			if (!file_exists($collection_file) || !$collection->loadFromFile($collection_file))
 			{
-				if ($this->log)
-				{
-					$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);
-				}
+				$this->log?->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);
 				continue;
 			}
 
 			// Make sure all icons exist
-			foreach ($iconsList as $name)
+			foreach ($iconsList as $key => $name)
 			{
 				if (!$collection->iconExists($name))
 				{
-					if ($this->log)
-					{
-						$this->log->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix . ':' . $name]);
-					}
+					$this->log?->add('critical', ANONYMOUS, '', 'LOG_ICON_INVALID', false, [$prefix . ':' . $name]);
+					unset($iconsList[$key]);
 				}
 			}
 
