@@ -13,7 +13,7 @@
 
 namespace phpbb\tests\unit\assets;
 
-class iconify_bundler_tests extends \phpbb_test_case
+class iconify_bundler_test extends \phpbb_test_case
 {
 	/** @var array Log content */
 	protected $log_content = [];
