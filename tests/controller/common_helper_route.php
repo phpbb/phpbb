@@ -119,6 +119,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$assets_bag = new \phpbb\template\assets_bag();
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader('');
+		$this->dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$this->config,
@@ -127,7 +128,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$this->dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -135,7 +136,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $this->config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user, $this->dispatcher)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->extension_manager = new phpbb_mock_extension_manager(
