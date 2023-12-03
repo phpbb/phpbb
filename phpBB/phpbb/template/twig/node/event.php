@@ -24,9 +24,13 @@ class event extends \Twig\Node\Node
 	/** @var \phpbb\template\twig\environment */
 	protected $environment;
 
-	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	/** @var array */
+	protected $template_event_priority_array;
+
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null, $template_event_priority_array = [])
 	{
 		$this->environment = $environment;
+		$this->template_event_priority_array = $template_event_priority_array;
 
 		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
 	}
@@ -42,9 +46,18 @@ class event extends \Twig\Node\Node
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
 
+		$compiler_steps = [];
+
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
+
+			if (isset($this->template_event_priority_array[$ext_namespace][$location]))
+			{
+				$priority_key = $this->template_event_priority_array[$ext_namespace][$location];
+			}
+
+			$compiler_calls = [];
 
 			if ($this->environment->isDebug())
 			{
@@ -52,7 +65,7 @@ class event extends \Twig\Node\Node
 				//  templates on page load rather than at compile. This is
 				//  slower, but makes developing extensions easier (no need to
 				//  purge the cache when a new event template file is added)
-				$compiler
+				$compiler_calls[] = fn() => $compiler
 					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
 					->indent()
 				;
@@ -60,7 +73,7 @@ class event extends \Twig\Node\Node
 
 			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
 			{
-				$compiler
+				$compiler_calls[] = fn() => $compiler
 					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
 					// We set the namespace lookup order to be this extension first, then the main path
@@ -72,10 +85,38 @@ class event extends \Twig\Node\Node
 
 			if ($this->environment->isDebug())
 			{
-				$compiler
+				$compiler_calls[] = fn() => $compiler
 					->outdent()
 					->write("}\n\n")
 				;
+			}
+
+			if (!empty($compiler_calls))
+			{
+				if (isset($priority_key))
+				{
+					if (array_key_exists($priority_key, $compiler_steps))
+					{
+						array_splice($compiler_steps, $priority_key, 0, [$compiler_calls]);
+					}
+					else
+					{
+						$compiler_steps[$priority_key] = $compiler_calls;
+					}
+				}
+				else
+				{
+					array_unshift($compiler_steps, $compiler_calls);
+				}
+			}
+		}
+
+		krsort($compiler_steps);
+		foreach ($compiler_steps as $ext_namespace_steps)
+		{
+			foreach ($ext_namespace_steps as $step)
+			{
+				$step();
 			}
 		}
 	}
