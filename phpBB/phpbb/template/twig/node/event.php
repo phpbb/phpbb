@@ -46,77 +46,49 @@ class event extends \Twig\Node\Node
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
 
-		$compiler_steps = [];
+		$template_events = [];
 
+		// Group and sort extension template events in according to their priority (0 by default if not set)
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
-
-			if (isset($this->template_event_priority_array[$ext_namespace][$location]))
-			{
-				$priority_key = $this->template_event_priority_array[$ext_namespace][$location];
-			}
-
-			$compiler_calls = [];
-
-			if ($this->environment->isDebug())
-			{
-				// If debug mode is enabled, lets check for new/removed EVENT
-				//  templates on page load rather than at compile. This is
-				//  slower, but makes developing extensions easier (no need to
-				//  purge the cache when a new event template file is added)
-				$compiler_calls[] = fn() => $compiler
-					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
-					->indent()
-				;
-			}
-
 			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
 			{
-				$compiler_calls[] = fn() => $compiler
+				$priority_key = $this->template_event_priority_array[$ext_namespace][$location] ?? 0;
+				$template_events[$priority_key][] = $ext_namespace;
+			}
+		}
+		krsort($template_events);
+
+		foreach ($template_events as $events)
+		{
+			foreach ($events as $ext_namespace)
+			{
+				if ($this->environment->isDebug())
+				{
+					// If debug mode is enabled, lets check for new/removed EVENT
+					//  templates on page load rather than at compile. This is
+					//  slower, but makes developing extensions easier (no need to
+					//  purge the cache when a new event template file is added)
+					$compiler
+						->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
+						->indent();
+				}
+
+				$compiler
 					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
 					// We set the namespace lookup order to be this extension first, then the main path
 					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
 					->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
-					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
-				;
-			}
+					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
 
-			if ($this->environment->isDebug())
-			{
-				$compiler_calls[] = fn() => $compiler
-					->outdent()
-					->write("}\n\n")
-				;
-			}
-
-			if (!empty($compiler_calls))
-			{
-				if (isset($priority_key))
+				if ($this->environment->isDebug())
 				{
-					if (array_key_exists($priority_key, $compiler_steps))
-					{
-						array_splice($compiler_steps, $priority_key, 0, [$compiler_calls]);
-					}
-					else
-					{
-						$compiler_steps[$priority_key] = $compiler_calls;
-					}
+					$compiler
+						->outdent()
+						->write("}\n\n");
 				}
-				else
-				{
-					array_unshift($compiler_steps, $compiler_calls);
-				}
-			}
-		}
-
-		krsort($compiler_steps);
-		foreach ($compiler_steps as $ext_namespace_steps)
-		{
-			foreach ($ext_namespace_steps as $step)
-			{
-				$step();
 			}
 		}
 	}
