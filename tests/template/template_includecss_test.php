@@ -46,6 +46,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$loader = new \phpbb\template\twig\loader('');
 		$log = new \phpbb\log\dummy();
 		$assets_bag = new \phpbb\template\assets_bag();
+		$dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,
@@ -54,7 +55,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -69,7 +70,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 			$twig,
 			$cache_path,
 			$this->user,
-			array(new \phpbb\template\twig\extension($context, $twig, $this->user)),
+			array(new \phpbb\template\twig\extension($context, $twig, $this->user, $dispatcher)),
 			new phpbb_mock_extension_manager(
 				__DIR__ . '/',
 				array(

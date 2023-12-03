@@ -102,6 +102,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$loader = new \phpbb\template\twig\loader([]);
 		$log = new \phpbb\log\dummy();
 		$assets_bag = new \phpbb\template\assets_bag();
+		$dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,
@@ -110,7 +111,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$dispatcher,
 			[
 				'cache'			=> false,
 				'debug'			=> false,
@@ -126,7 +127,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$cache_path,
 			$this->user,
 			[
-				new \phpbb\template\twig\extension($context, $twig, $this->lang),
+				new \phpbb\template\twig\extension($context, $twig, $this->lang, $dispatcher),
 				new \phpbb\template\twig\extension\avatar($avatar_helper),
 				new \phpbb\template\twig\extension\config($config),
 				new \phpbb\template\twig\extension\icon($this->user),
