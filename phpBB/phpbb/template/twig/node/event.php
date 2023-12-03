@@ -65,30 +65,36 @@ class event extends \Twig\Node\Node
 				//  templates on page load rather than at compile. This is
 				//  slower, but makes developing extensions easier (no need to
 				//  purge the cache when a new event template file is added)
-				$compiler_calls[] = fn() => $compiler
-					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
-					->indent()
-				;
+				$compiler_calls[] = function() use($compiler, $ext_namespace, $location) {
+					$compiler
+						->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
+						->indent()
+					;
+				};
 			}
 
 			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
 			{
-				$compiler_calls[] = fn() => $compiler
-					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
+				$compiler_calls[] = function() use($compiler, $ext_namespace, $location) {
+					$compiler
+						->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
-					// We set the namespace lookup order to be this extension first, then the main path
-					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
-					->write("\$this->env->loadTemplate('@{$ext_namespace}/{$location}.html')->display(\$context);\n")
-					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
-				;
+						// We set the namespace lookup order to be this extension first, then the main path
+						->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
+						->write("\$this->env->loadTemplate('@{$ext_namespace}/{$location}.html')->display(\$context);\n")
+						->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
+					;
+				};
 			}
 
 			if ($this->environment->isDebug())
 			{
-				$compiler_calls[] = fn() => $compiler
-					->outdent()
-					->write("}\n\n")
-				;
+				$compiler_calls[] = function() use($compiler) {
+					$compiler
+						->outdent()
+						->write("}\n\n")
+					;
+				};
 			}
 
 			if (!empty($compiler_calls))
