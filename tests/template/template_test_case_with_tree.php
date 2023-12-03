@@ -41,6 +41,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$dispatcher = new \phpbb\event\dispatcher($container);
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -48,7 +49,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			$dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -56,7 +57,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
+		$this->template = new phpbb\template\twig\twig($this->phpbb_path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user, $dispatcher)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
