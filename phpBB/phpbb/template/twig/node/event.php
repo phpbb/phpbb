@@ -52,11 +52,6 @@ class event extends \Twig\Node\Node
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
 
-			if (isset($this->template_event_priority_array[$ext_namespace][$location]))
-			{
-				$priority_key = $this->template_event_priority_array[$ext_namespace][$location];
-			}
-
 			$compiler_calls = [];
 
 			if ($this->environment->isDebug())
@@ -99,8 +94,10 @@ class event extends \Twig\Node\Node
 
 			if (!empty($compiler_calls))
 			{
-				if (isset($priority_key))
+				if (isset($this->template_event_priority_array[$ext_namespace][$location]))
 				{
+					$priority_key = $this->template_event_priority_array[$ext_namespace][$location];
+
 					if (array_key_exists($priority_key, $compiler_steps))
 					{
 						array_splice($compiler_steps, $priority_key, 0, [$compiler_calls]);
