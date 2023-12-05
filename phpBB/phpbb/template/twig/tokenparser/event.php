@@ -40,7 +40,15 @@ class event extends \Twig\TokenParser\AbstractTokenParser
 		* Allow assigning priority to template events
 		*
 		* @event core.twig_tokenparser_constructor
-		* @var	array	template_event_priority_array	Array with template event priority assignments per extension namespace
+		* @var	array	template_event_priority_array	Array with template event priority assignments per extension namespace, usage:
+		*		'<author>_<extension_name>' => array(
+		*			'event/<template_event_name>'		=> priority_number,
+		*		),
+		*		Example:
+		*		'phpbb_viglink' => array(
+		*			'event/acp_help_phpbb_stats_after'	=> 80,
+		*			'event/overall_footer_after'		=> 100,
+		*		),
 		* @since 3.3.12-RC1
 		*/
 		if ($this->phpbb_dispatcher)
