@@ -30,7 +30,7 @@ class template_event_order implements EventSubscriberInterface
 	public function set_template_event_priority($event)
 	{
 		$template_event_priority_array = $event['template_event_priority_array'];
-		$template_event_priority_array['foo_bar'] = [
+		$template_event_priority_array['foo_foo'] = [
 			'event/navbar_header_quick_links_after' => 1,
 		];
 		$event['template_event_priority_array'] = $template_event_priority_array;
