@@ -51,9 +51,9 @@ class event extends \Twig\Node\Node
 		// Group and sort extension template events in according to their priority (0 by default if not set)
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{
+			$ext_namespace = str_replace('/', '_', $ext_namespace);
 			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
 			{
-				$ext_namespace = str_replace('/', '_', $ext_namespace);
 				$priority_key = $this->template_event_priority_array[$ext_namespace][$location] ?? 0;
 				$template_events[$priority_key][] = $ext_namespace;
 			}
