@@ -43,7 +43,6 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 	protected function tearDown(): void
 	{
 		$this->phpbb_extension_manager->purge('foo/bar');
-		$this->purge_cache();
 
 		parent::tearDown();
 	}

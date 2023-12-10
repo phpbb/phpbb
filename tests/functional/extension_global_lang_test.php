@@ -52,13 +52,6 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
-	protected function tearDown(): void
-	{
-		$this->purge_cache();
-
-		parent::tearDown();
-	}
-
 	public function test_load_extension_lang_globally()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');

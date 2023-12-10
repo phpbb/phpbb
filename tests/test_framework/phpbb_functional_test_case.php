@@ -123,6 +123,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 			// Close the database connections again this test
 			$this->db->sql_close();
 		}
+
+		$this->purge_cache();
+		sleep(3); // Give it some time to delete all the files correctly
 	}
 
 	/**

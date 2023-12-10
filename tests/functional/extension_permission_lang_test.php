@@ -41,13 +41,6 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 		self::$helper->restore_original_ext_dir();
 	}
 
-	protected function tearDown(): void
-	{
-		$this->purge_cache();
-
-		parent::tearDown();
-	}
-
 	protected function setUp(): void
 	{
 		parent::setUp();
