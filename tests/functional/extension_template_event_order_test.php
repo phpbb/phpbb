@@ -39,6 +39,13 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 		self::$helper->restore_original_ext_dir();
 	}
 
+	protected function tearDown(): void
+	{
+		$this->purge_cache();
+
+		parent::tearDown();
+	}
+
 	protected function setUp(): void
 	{
 		parent::setUp();
