@@ -40,6 +40,14 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		self::$helper->restore_original_ext_dir();
 	}
 
+	protected function tearDown(): void
+	{
+		$this->phpbb_extension_manager->purge('foo/bar');
+		$this->purge_cache();
+
+		parent::tearDown();
+	}
+
 	protected function setUp(): void
 	{
 		global $db;
@@ -131,7 +139,5 @@ class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 		$link = $crawler->selectLink('UCP_FOOBAR_TITLE')->link()->getUri();
 		$crawler = self::request('GET', substr($link, strpos($link, 'ucp.')));
 		$this->assertStringContainsString('UCP Extension Template Test Passed!', $crawler->filter('#content')->text());
-
-		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 }

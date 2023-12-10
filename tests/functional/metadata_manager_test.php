@@ -26,6 +26,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	protected function tearDown(): void
 	{
+		$this->phpbb_extension_manager->purge('foo/bar');
 		$this->purge_cache();
 
 		parent::tearDown();

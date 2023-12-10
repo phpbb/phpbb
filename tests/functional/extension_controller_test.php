@@ -55,6 +55,13 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->purge_cache();
 	}
 
+	protected function tearDown(): void
+	{
+		$this->purge_cache();
+
+		parent::tearDown();
+	}
+
 	/**
 	* Check a controller for extension foo/bar.
 	*/
