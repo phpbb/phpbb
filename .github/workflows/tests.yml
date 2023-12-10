@@ -545,9 +545,7 @@ jobs:
                   New-WebHandler -Name "PHP-FastCGI" -Path "*.php" -Modules FastCgiModule -ScriptProcessor "C:\tools\php\php-cgi.exe" -Verb '*' -ResourceType Either
                   iisreset
                   NET START W3SVC
-                  mkdir "${env:GITHUB_WORKSPACE}\phpBB\cache\test"
-                  mkdir "${env:GITHUB_WORKSPACE}\phpBB\cache\installer"
-                  icacls "${env:GITHUB_WORKSPACE}\phpBB\cache" /grant Users:F /T
+                  icacls "${env:GITHUB_WORKSPACE}\phpBB\cache" /grant "Users:(OI)(CI)F" /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\files" /grant Users:F /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\store" /grant Users:F /T
                   icacls "${env:GITHUB_WORKSPACE}\phpBB\ext" /grant Users:F /T
