@@ -331,7 +331,7 @@ class acp_styles
 		$rows = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		// Uinstall each style
+		// Uninstall each style
 		$uninstalled = array();
 		foreach ($rows as $style)
 		{

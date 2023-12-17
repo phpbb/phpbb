@@ -162,6 +162,7 @@ class bbcode
 				$phpbb_container->get('config'),
 				new \phpbb\template\context(),
 				new \phpbb\template\twig\environment(
+					$phpbb_container->get('assets.bag'),
 					$phpbb_container->get('config'),
 					$phpbb_container->get('filesystem'),
 					$phpbb_container->get('path_helper'),

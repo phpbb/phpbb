@@ -76,7 +76,7 @@
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS forum_fn.js -->
 <!-- INCLUDEJS ajax.js -->
-<script src="https://code.iconify.design/1/1.0.6/iconify.min.js"></script>
+{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify.min.js' %}
 
 <!-- IF S_COOKIE_NOTICE -->
 	<script src="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.js?assets_version={T_ASSETS_VERSION}"></script>
@@ -108,6 +108,7 @@
 <!-- EVENT overall_footer_after -->
 
 <!-- IF S_PLUPLOAD --><!-- INCLUDE plupload.html --><!-- ENDIF -->
+{$ICONIFY_ICONS}
 {$SCRIPTS}
 
 <!-- EVENT overall_footer_body_after -->

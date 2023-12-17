@@ -45,8 +45,10 @@
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS ajax.js -->
 <!-- INCLUDEJS admin.js -->
+{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify.min.js' %}
 
 <!-- EVENT acp_overall_footer_after -->
+{$ICONIFY_ICONS}
 {$SCRIPTS}
 
 {% EVENT acp_overall_footer_body_after %}

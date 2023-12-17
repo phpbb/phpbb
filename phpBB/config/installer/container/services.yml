@@ -9,6 +9,18 @@ imports:
     - { resource: ../../default/container/services_twig.yml }
 
 services:
+    assets.bag:
+        class: phpbb\template\assets_bag
+        shared: false
+        arguments:
+            - '@assets.iconify_bundler'
+
+    assets.iconify_bundler:
+        class: phpbb\assets\iconify_bundler
+        shared: false
+        arguments:
+            - ~
+
     cache.driver:
         class: '%cache.driver.class%'
         arguments:
@@ -76,6 +88,7 @@ services:
     template.twig.environment:
         class: phpbb\template\twig\environment
         arguments:
+            - '@assets.bag'
             - '@config'
             - '@filesystem'
             - '@path_helper'

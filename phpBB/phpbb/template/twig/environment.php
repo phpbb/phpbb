@@ -13,26 +13,32 @@
 
 namespace phpbb\template\twig;
 
+use phpbb\config\config;
+use phpbb\event\dispatcher_interface;
+use phpbb\extension\manager;
+use phpbb\filesystem\filesystem;
+use phpbb\path_helper;
 use phpbb\template\assets_bag;
+use Twig\Loader\LoaderInterface;
 
 class environment extends \Twig\Environment
 {
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $phpbb_config;
 
-	/** @var \phpbb\filesystem\filesystem */
+	/** @var filesystem */
 	protected $filesystem;
 
-	/** @var \phpbb\path_helper */
+	/** @var path_helper */
 	protected $phpbb_path_helper;
 
 	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
 	protected $container;
 
-	/** @var \phpbb\extension\manager */
+	/** @var manager */
 	protected $extension_manager;
 
-	/** @var \phpbb\event\dispatcher_interface */
+	/** @var dispatcher_interface */
 	protected $phpbb_dispatcher;
 
 	/** @var string */
@@ -50,16 +56,17 @@ class environment extends \Twig\Environment
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $phpbb_config The phpBB configuration
-	* @param \phpbb\filesystem\filesystem $filesystem
-	* @param \phpbb\path_helper $path_helper phpBB path helper
+	* @param assets_bag $assets_bag Assets bag
+	* @param config $phpbb_config The phpBB configuration
+	* @param filesystem $filesystem
+	* @param path_helper $path_helper phpBB path helper
 	* @param string $cache_path The path to the cache directory
-	* @param \phpbb\extension\manager|null $extension_manager phpBB extension manager
-	* @param \Twig\Loader\LoaderInterface|null $loader Twig loader interface
-	* @param \phpbb\event\dispatcher_interface|null	$phpbb_dispatcher	Event dispatcher object
+	* @param manager|null $extension_manager phpBB extension manager
+	* @param LoaderInterface|null $loader Twig loader interface
+	* @param dispatcher_interface|null	$phpbb_dispatcher	Event dispatcher object
 	* @param array $options Array of options to pass to Twig
 	*/
-	public function __construct(\phpbb\config\config $phpbb_config, \phpbb\filesystem\filesystem $filesystem, \phpbb\path_helper $path_helper, $cache_path, \phpbb\extension\manager $extension_manager = null, \Twig\Loader\LoaderInterface $loader = null, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null, $options = array())
+	public function __construct(assets_bag $assets_bag, config $phpbb_config, filesystem $filesystem, path_helper $path_helper, $cache_path, manager $extension_manager = null, LoaderInterface $loader = null, dispatcher_interface $phpbb_dispatcher = null, $options = array())
 	{
 		$this->phpbb_config = $phpbb_config;
 
@@ -70,7 +77,7 @@ class environment extends \Twig\Environment
 
 		$this->phpbb_root_path = $this->phpbb_path_helper->get_phpbb_root_path();
 
-		$this->assets_bag = new assets_bag();
+		$this->assets_bag = $assets_bag;
 
 		$options = array_merge(array(
 			'cache'			=> (defined('IN_INSTALL')) ? false : $cache_path,
@@ -97,7 +104,7 @@ class environment extends \Twig\Environment
 	/**
 	* Get phpBB config
 	*
-	* @return \phpbb\config\config
+	* @return config
 	*/
 	public function get_phpbb_config()
 	{
@@ -117,7 +124,7 @@ class environment extends \Twig\Environment
 	/**
 	* Get the filesystem object
 	*
-	* @return \phpbb\filesystem\filesystem
+	* @return filesystem
 	*/
 	public function get_filesystem()
 	{
@@ -137,7 +144,7 @@ class environment extends \Twig\Environment
 	/**
 	* Get the phpbb path helper object
 	*
-	* @return \phpbb\path_helper
+	* @return path_helper
 	*/
 	public function get_path_helper()
 	{
@@ -204,6 +211,7 @@ class environment extends \Twig\Environment
 		{
 			$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
 			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
+			$context['definition']->set('ICONIFY_ICONS', '__ICONIFY_ICONS_' . $placeholder_salt . '__');
 		}
 
 		/**
@@ -251,6 +259,7 @@ class environment extends \Twig\Environment
 	{
 		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
 		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
+		$output = $this->assets_bag->inject_iconify_icons($output, '__ICONIFY_ICONS_' . $placeholder_salt . '__', $this->phpbb_config['allow_cdn']);
 
 		return $output;
 	}
