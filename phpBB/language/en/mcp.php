@@ -259,7 +259,7 @@ $lang = array_merge($lang, array(
 	'ONLY_TOPIC'			=> 'Only topic “%s”',
 	'OTHER_USERS'			=> 'Other users posting from this IP',
 
-	'QUICKMOD_ACTION_NOT_ALLOWED' => "%s not allowed as quickmod",
+	'QUICKMOD_ACTION_NOT_ALLOWED' => '%s not allowed as quickmod',
 
 	'PM_REPORT_CLOSED_SUCCESS'	=> 'The selected PM report has been closed successfully.',
 	'PM_REPORT_DELETED_SUCCESS'	=> 'The selected PM report has been deleted successfully.',
