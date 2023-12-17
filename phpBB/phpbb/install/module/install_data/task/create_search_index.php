@@ -16,6 +16,7 @@ namespace phpbb\install\module\install_data\task;
 use Doctrine\DBAL\Exception;
 use phpbb\auth\auth;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher;
 use phpbb\install\database_task;
 use phpbb\install\helper\config;
@@ -49,6 +50,11 @@ class create_search_index extends database_task
 	 * @var driver_interface
 	 */
 	protected $db;
+
+	/**
+	 * @var tools_interface
+	 */
+	protected $db_tools;
 
 	/**
 	 * @var config
@@ -118,6 +124,7 @@ class create_search_index extends database_task
 		$this->auth				= $container->get('auth');
 		$this->config			= $container->get('config');
 		$this->db				= $container->get('dbal.conn');
+		$this->db_tools			= $container->get('dbal.tools');
 		$this->iohandler		= $iohandler;
 		$this->installer_config	= $config;
 		$this->phpbb_dispatcher = $container->get('event_dispatcher');
@@ -130,6 +137,7 @@ class create_search_index extends database_task
 		$this->search_indexer = new fulltext_native(
 			$this->config,
 			$this->db,
+			$this->db_tools,
 			$this->phpbb_dispatcher,
 			$container->get('language'),
 			$this->user,

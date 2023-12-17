@@ -207,4 +207,12 @@ interface tools_interface
 	 * @return bool|string[]    True if the statements have been executed
 	 */
 	public function sql_create_primary_key(string $table_name, $column);
+
+	/**
+	 * Truncate the table
+	 *
+	 * @param string $table_name
+	 * @return void
+	 */
+	public function sql_truncate_table(string $table_name): void;
 }

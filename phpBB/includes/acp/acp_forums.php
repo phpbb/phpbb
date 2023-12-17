@@ -27,7 +27,7 @@ class acp_forums
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $request, $phpbb_dispatcher;
-		global $phpbb_admin_path, $phpbb_root_path, $phpEx, $phpbb_log;
+		global $phpbb_admin_path, $phpbb_container, $phpbb_root_path, $phpEx, $phpbb_log;
 
 		$user->add_lang('acp/forums');
 		$this->tpl_name = 'acp_forums';
@@ -210,7 +210,7 @@ class acp_forums
 							($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
-							phpbb_cache_moderators($db, $cache, $auth);
+							phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 							$copied_permissions = true;
 						}
 /* Commented out because of questionable UI workflow - re-visit for 3.0.7
@@ -789,7 +789,7 @@ class acp_forums
 				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
 				{
 					copy_forum_permissions($forum_perm_from, $forum_id, true);
-					phpbb_cache_moderators($db, $cache, $auth);
+					phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);
 

@@ -1022,7 +1022,7 @@ class convertor
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
 		@unlink($phpbb_container->getParameter('core.cache_dir') . 'data_global.' . $phpEx);
-		phpbb_cache_moderators($db, $cache, $auth);
+		phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 		// And finally, add a note to the log
 		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_INSTALL_CONVERTED', false, array($convert->convertor_data['forum_name'], $config['version']));

@@ -364,12 +364,9 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * Truncate the table
-	 *
-	 * @param string $table_name
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function sql_truncate_table(string $table_name)
+	public function sql_truncate_table(string $table_name): void
 	{
 		try
 		{

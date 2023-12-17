@@ -126,8 +126,8 @@ function tz_select($default = '', $truncate = false)
 */
 function cache_moderators()
 {
-	global $db, $cache, $auth;
-	phpbb_cache_moderators($db, $cache, $auth);
+	global $db, $cache, $auth, $phpbb_container;
+	phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 }
 
 /**

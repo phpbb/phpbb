@@ -68,9 +68,10 @@ switch ($mode)
 
 		if (!$start)
 		{
-			$db->sql_query('TRUNCATE TABLE ' . POSTS_TABLE);
-			$db->sql_query('TRUNCATE TABLE ' . TOPICS_TABLE);
-//			$db->sql_query('TRUNCATE TABLE ' . TOPICS_TABLE . '_prefetch');
+			$db_tools = $phpbb_container->get('dbal.tools');
+
+			$db_tools->sql_truncate_table(POSTS_TABLE);
+			$db_tools->sql_truncate_table(TOPICS_TABLE);
 		}
 
 		$db->sql_query('LOCK TABLES ' . POSTS_TABLE . ' WRITE, ' . TOPICS_TABLE . ' WRITE');

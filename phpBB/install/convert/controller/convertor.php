@@ -416,18 +416,11 @@ class convertor
 
 		$this->db->sql_freeresult($result);
 
-		switch ($this->db->get_sql_layer())
-		{
-			case 'sqlite3':
-				$this->db->sql_query('DELETE FROM ' . $this->session_keys_table);
-				$this->db->sql_query('DELETE FROM ' . $this->session_table);
-			break;
+		$tools_factory = new \phpbb\db\tools\factory();
+		$db_tools = $tools_factory->get($this->db_doctrine);
 
-			default:
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->session_keys_table);
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->session_table);
-			break;
-		}
+		$db_tools->sql_truncate_table($this->session_keys_table);
+		$db_tools->sql_truncate_table($this->session_table);
 
 		return $this->controller_helper->render('installer_convert.html', 'CONVERT_COMPLETE');
 	}

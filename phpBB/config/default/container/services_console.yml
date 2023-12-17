@@ -19,6 +19,7 @@ services:
             - '@user'
             - '@cache.driver'
             - '@dbal.conn'
+            - '@dbal.tools'
             - '@auth'
             - '@log'
             - '@config'

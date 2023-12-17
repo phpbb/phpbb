@@ -16,6 +16,7 @@ require_once __DIR__ . '/../test_framework/phpbb_search_test_case.php';
 class phpbb_search_native_test extends phpbb_search_test_case
 {
 	protected $db;
+	protected $db_tools;
 
 	public function getDataSet()
 	{
@@ -34,11 +35,13 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$user = $this->createMock('\phpbb\user');
 
 		$this->db = $this->new_dbal();
+		$tools_factory = new \phpbb\db\tools\factory();
+		$this->db_tools = $tools_factory->get($this->new_doctrine_dbal());
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_native');
 		$config['fulltext_native_min_chars'] = 2;
 		$config['fulltext_native_max_chars'] = 14;
-		$this->search = new $class($config, $this->db, $phpbb_dispatcher, $language, $user, SEARCH_RESULTS_TABLE, SEARCH_WORDLIST_TABLE, SEARCH_WORDMATCH_TABLE, $phpbb_root_path, $phpEx);
+		$this->search = new $class($config, $this->db, $this->db_tools, $phpbb_dispatcher, $language, $user, SEARCH_RESULTS_TABLE, SEARCH_WORDLIST_TABLE, SEARCH_WORDMATCH_TABLE, $phpbb_root_path, $phpEx);
 	}
 
 	public function keywords()

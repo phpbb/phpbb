@@ -679,7 +679,7 @@ class acp_permissions
 	function set_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
 		global $db, $cache, $user, $auth;
-		global $request;
+		global $request, $phpbb_container;
 
 		$psubmit = $request->variable('psubmit', array(0 => array(0 => 0)));
 
@@ -747,7 +747,7 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			phpbb_cache_moderators($db, $cache, $auth);
+			phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
@@ -768,7 +768,7 @@ class acp_permissions
 	function set_all_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
 	{
 		global $db, $cache, $user, $auth;
-		global $request;
+		global $request, $phpbb_container;
 
 		// User or group to be set?
 		$ug_type = (count($user_id)) ? 'user' : 'group';
@@ -817,7 +817,7 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			phpbb_cache_moderators($db, $cache, $auth);
+			phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 		}
 
 		// Remove users who are now moderators or admins from everyones foes list
@@ -883,7 +883,7 @@ class acp_permissions
 	*/
 	function remove_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db, $cache, $auth;
+		global $user, $db, $cache, $auth, $phpbb_container;
 
 		// User or group to be set?
 		$ug_type = (count($user_id)) ? 'user' : 'group';
@@ -900,7 +900,7 @@ class acp_permissions
 		// Do we need to recache the moderator lists?
 		if ($permission_type == 'm_')
 		{
-			phpbb_cache_moderators($db, $cache, $auth);
+			phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 		}
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (count($forum_id) ? $forum_id : array(0 => 0)));
@@ -1202,7 +1202,7 @@ class acp_permissions
 	*/
 	function copy_forum_permissions()
 	{
-		global $db, $auth, $cache, $template, $user, $request;
+		global $db, $auth, $cache, $phpbb_container, $template, $user, $request;
 
 		$user->add_lang('acp/forums');
 
@@ -1217,7 +1217,7 @@ class acp_permissions
 			{
 				if (copy_forum_permissions($src, $dest))
 				{
-					phpbb_cache_moderators($db, $cache, $auth);
+					phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 					$auth->acl_clear_prefetch();
 					$cache->destroy('sql', FORUMS_TABLE);

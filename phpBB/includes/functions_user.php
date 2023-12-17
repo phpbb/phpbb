@@ -2255,7 +2255,7 @@ function group_delete($group_id, $group_name = false)
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 	}
 
-	phpbb_cache_moderators($db, $cache, $auth);
+	phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_GROUP_DELETE', false, array($group_name));
 
@@ -3167,7 +3167,10 @@ function group_update_listings($group_id)
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		phpbb_cache_moderators($db, $cache, $auth);
+
+		global $phpbb_container;
+
+		phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 	}
 
 	if ($mod_permissions || $admin_permissions)

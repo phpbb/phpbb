@@ -26,6 +26,7 @@ services:
         arguments:
             - '@config'
             - '@dbal.conn'
+            - '@dbal.tools'
             - '@event_dispatcher'
             - '@language'
             - '@user'

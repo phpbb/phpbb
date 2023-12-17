@@ -105,7 +105,10 @@ function add_bots($bots)
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 	$db->sql_freeresult($result);
-	$db->sql_query('TRUNCATE TABLE ' . BOTS_TABLE);
+
+	// Truncate bots table
+	$db_tools = $phpbb_container->get('dbal.tools');
+	$db_tools->sql_truncate_table(BOTS_TABLE);
 
 	if (!$group_id)
 	{
@@ -117,9 +120,6 @@ function add_bots($bots)
 		$db->sql_freeresult($result);
 
 	}
-
-
-
 
 	foreach ($bots as $bot_name => $bot_ary)
 	{

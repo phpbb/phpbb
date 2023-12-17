@@ -25,6 +25,9 @@ class purge extends \phpbb\console\command\command
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\db\tools\tools_interface */
+	protected $db_tools;
+
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
@@ -40,14 +43,17 @@ class purge extends \phpbb\console\command\command
 	* @param \phpbb\user							$user	User instance
 	* @param \phpbb\cache\driver\driver_interface	$cache	Cache instance
 	* @param \phpbb\db\driver\driver_interface		$db		Database connection
+	* @param \phpbb\db\tools\tools_interface		$db_tools Database tools
 	* @param \phpbb\auth\auth						$auth	Auth instance
 	* @param \phpbb\log\log_interface				$log	Logger instance
 	* @param \phpbb\config\config					$config	Config instance
 	*/
-	public function __construct(\phpbb\user $user, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\config\config $config)
+	public function __construct(\phpbb\user $user, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db,
+								\phpbb\db\tools\tools_interface $db_tools, \phpbb\auth\auth $auth, \phpbb\log\log_interface $log, \phpbb\config\config $config)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
+		$this->db_tools = $db_tools;
 		$this->auth = $auth;
 		$this->log = $log;
 		$this->config = $config;
@@ -82,7 +88,7 @@ class purge extends \phpbb\console\command\command
 
 		// Clear permissions
 		$this->auth->acl_clear_prefetch();
-		phpbb_cache_moderators($this->db, $this->cache, $this->auth);
+		phpbb_cache_moderators($this->db, $this->db_tools, $this->cache, $this->auth);
 
 		$this->log->add('admin', ANONYMOUS, '', 'LOG_PURGE_CACHE', time(), array());
 
