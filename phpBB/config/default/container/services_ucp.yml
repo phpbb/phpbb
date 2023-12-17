@@ -15,3 +15,4 @@ services:
             - '%tables.users%'
             - '%core.root_path%'
             - '%core.php_ext%'
+            - '@messenger.method_collection'

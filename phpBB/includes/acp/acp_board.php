@@ -472,7 +472,6 @@ class acp_board
 						'smtp_delivery'			=> array('lang' => 'USE_SMTP',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'smtp_host'				=> array('lang' => 'SMTP_SERVER',			'validate' => 'string',	'type' => 'text:25:50', 'explain' => true),
 						'smtp_port'				=> array('lang' => 'SMTP_PORT',				'validate' => 'int:0:99999',	'type' => 'number:0:99999', 'explain' => true),
-						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'validate' => 'string',	'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
 						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'validate' => 'string',	'type' => 'text:25:255', 'explain' => true),
 						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true),
 						'smtp_verify_peer'		=> array('lang' => 'SMTP_VERIFY_PEER',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -703,17 +702,17 @@ class acp_board
 		{
 			if ($config['email_enable'])
 			{
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
-				$messenger = new messenger(false);
-				$messenger->template('test');
-				$messenger->set_addresses($user->data);
-				$messenger->anti_abuse_headers($config, $user);
-				$messenger->assign_vars(array(
+				$messenger = $phpbb_container->get('messenger.method_collection');
+				$email = $messenger->offsetGet('messenger.method.email');
+				$email->set_use_queue(false);
+				$email->template('test');
+				$email->set_addresses($user->data);
+				$email->anti_abuse_headers($config, $user);
+				$email->assign_vars([
 					'USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
 					'MESSAGE'	=> html_entity_decode($request->variable('send_test_email_text', '', true), ENT_COMPAT),
-				));
-				$messenger->send(NOTIFY_EMAIL);
+				]);
+				$email->send();
 
 				trigger_error($user->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
 			}
@@ -856,24 +855,6 @@ class acp_board
 		}
 
 		return $auth_select;
-	}
-
-	/**
-	* Select mail authentication method
-	*/
-	function mail_auth_select($selected_method, $key = '')
-	{
-		global $user;
-
-		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
-		$s_smtp_auth_options = '';
-
-		foreach ($auth_methods as $method)
-		{
-			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
-		}
-
-		return $s_smtp_auth_options;
 	}
 
 	/**

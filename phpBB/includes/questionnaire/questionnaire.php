@@ -439,7 +439,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'secure_downloads' => true,
 			'session_gc' => true,
 			'session_length' => true,
-			'smtp_auth_method' => true,
 			'smtp_delivery' => true,
 			'topics_per_page' => true,
 			'version' => true,

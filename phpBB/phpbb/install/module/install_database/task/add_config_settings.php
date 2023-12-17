@@ -149,7 +149,6 @@ class add_config_settings extends database_task
 			'smtp_delivery'		=> $this->install_config->get('smtp_delivery'),
 			'smtp_host'			=> $this->install_config->get('smtp_host'),
 			'smtp_port'			=> $this->install_config->get('smtp_port'),
-			'smtp_auth_method'	=> $this->install_config->get('smtp_auth'),
 			'smtp_username'		=> $this->install_config->get('smtp_user'),
 			'smtp_password'		=> $this->install_config->get('smtp_pass'),
 
