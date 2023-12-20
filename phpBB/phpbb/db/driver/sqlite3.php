@@ -131,7 +131,16 @@ class sqlite3 extends \phpbb\db\driver\driver
 					$query = preg_replace('/^INSERT INTO/', 'INSERT OR ROLLBACK INTO', $query);
 				}
 
-				if (($this->query_result = @$this->dbo->query($query)) === false)
+				try
+				{
+					$this->query_result = @$this->dbo->query($query);
+				}
+				catch (\Error $e)
+				{
+					// Do nothing as SQL driver will report the error
+				}
+
+				if ($this->query_result === false)
 				{
 					// Try to recover a lost database connection
 					if ($this->dbo && !@$this->dbo->lastErrorMsg())

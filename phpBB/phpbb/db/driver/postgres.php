@@ -183,7 +183,16 @@ class postgres extends \phpbb\db\driver\driver
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @pg_query($this->db_connect_id, $query)) === false)
+				try
+				{
+					$this->query_result = @pg_query($this->db_connect_id, $query);
+				}
+				catch (\Error $e)
+				{
+					// Do nothing as SQL driver will report the error
+				}
+
+				if ($this->query_result === false)
 				{
 					$this->sql_error($query);
 				}
