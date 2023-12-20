@@ -33,6 +33,10 @@ class factory
 		{
 			return new \phpbb\db\tools\postgres($db_driver, $return_statements);
 		}
+		else if ($db_driver instanceof \phpbb\db\driver\sqlite3)
+		{
+			return new \phpbb\db\tools\sqlite3($db_driver, $return_statements);
+		}
 		else if ($db_driver instanceof \phpbb\db\driver\driver_interface)
 		{
 			return new \phpbb\db\tools\tools($db_driver, $return_statements);
