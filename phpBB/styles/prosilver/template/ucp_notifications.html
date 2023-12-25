@@ -1,8 +1,13 @@
 <!-- INCLUDE ucp_header.html -->
 
+{% EVENT ucp_notifications_form_before %}
+
 <form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
 
 <h2>{TITLE}</h2>
+
+{% EVENT ucp_notifications_content_before %}
+
 <div class="panel">
 	<div class="inner">
 
@@ -105,6 +110,8 @@
 	</div>
 </div>
 
+{% EVENT ucp_notifications_content_after %}
+
 <!-- IF .notification_types or .notification_list -->
 <fieldset class="display-actions">
 	<input type="hidden" name="form_time" value="{FORM_TIME}" />
@@ -116,5 +123,7 @@
 <!-- ENDIF -->
 
 </form>
+
+{% EVENT ucp_notifications_form_after %}
 
 <!-- INCLUDE ucp_footer.html -->
