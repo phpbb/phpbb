@@ -117,7 +117,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$log = new \phpbb\log\dummy();
-		$iconify_bundler = new \phpbb\assets\iconify_bundler($log);
+		$iconify_bundler = new \phpbb\assets\iconify_bundler($log, $phpbb_root_path);
 		$assets_bag = new \phpbb\template\assets_bag($iconify_bundler);
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader('');
