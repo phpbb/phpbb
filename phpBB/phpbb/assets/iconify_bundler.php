@@ -18,8 +18,8 @@ use phpbb\log\log_interface;
 
 class iconify_bundler
 {
-	/** @var log_interface */
-	protected $log;
+	/** @var string Icons path  */
+	protected string $icons_path;
 
 	/** @var string[] Icons list */
 	protected $icons_list = [];
@@ -28,10 +28,11 @@ class iconify_bundler
 	 * Constructor for iconify bundler
 	 *
 	 * @param log_interface|null $log Logger
+	 * @param string $root_path phpBB root path
 	 */
-	public function __construct(?log_interface $log)
+	public function __construct(protected ?log_interface $log, string $root_path)
 	{
-		$this->log = $log;
+		$this->icons_path = $root_path . 'assets/iconify/';
 	}
 
 	/**
@@ -207,6 +208,17 @@ class iconify_bundler
 	}
 
 	/**
+	 * Get collection path for prefix
+	 *
+	 * @param string $prefix Icon collection prefix
+	 * @return string Icon collection path
+	 */
+	protected function get_collection_path(string $prefix): string
+	{
+		return $this->icons_path . $prefix . '.json';
+	}
+
+	/**
 	 * Load icons date for supplied icons array
 	 *
 	 * @param array $icons
@@ -220,7 +232,7 @@ class iconify_bundler
 		{
 			// Load icon set
 			$collection = new Collection($prefix);
-			$collection_file = Collection::findIconifyCollection($prefix);
+			$collection_file = $this->get_collection_path($prefix);
 			if (!file_exists($collection_file) || !$collection->loadFromFile($collection_file))
 			{
 				$this->log?->add('critical', ANONYMOUS, '', 'LOG_ICON_COLLECTION_INVALID', false, [$prefix]);

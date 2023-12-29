@@ -10,3 +10,4 @@ services:
         shared: false
         arguments:
             - '@log'
+            - '%core.root_path%'
