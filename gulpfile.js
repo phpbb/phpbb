@@ -67,8 +67,26 @@ function watch() {
 	gulp.watch(paths.styles.src, styles);
 }
 
+function copyIconifyIcons() {
+	return gulp.src([
+		'node_modules/@iconify/json/json/fa.json',
+		'node_modules/@iconify/json/json/ic.json',
+		'node_modules/@iconify/json/json/mdi.json',
+	])
+		.pipe(gulp.dest('phpBB/assets/iconify'));
+}
+
+function copyIconifyJs() {
+	return gulp.src([
+		'node_modules/@iconify/iconify/dist/iconify.without-api.min.js',
+	])
+		.pipe(rename('iconify.min.js'))
+		.pipe(gulp.dest('phpBB/assets/iconify'));
+}
+
 exports.style = styles;
 exports.minify = minify;
 exports.watch = watch;
+exports.copyIconify = gulp.parallel(copyIconifyJs, copyIconifyIcons);
 
 exports.default = gulp.series(styles, minify, watch);
