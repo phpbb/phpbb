@@ -20,6 +20,7 @@ services:
         shared: false
         arguments:
             - ~
+            - '%core.root_path%'
 
     cache.driver:
         class: '%cache.driver.class%'

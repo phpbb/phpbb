@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "063704733ec296bc16753ef1e07b9c8f",
+    "content-hash": "214f00dfc71ef3bf2c81d6e3f7b579e5",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1780,38 +1780,6 @@
                 }
             ],
             "time": "2023-04-17T16:00:37+00:00"
-        },
-        {
-            "name": "iconify/json",
-            "version": "2.2.140",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/iconify/icon-sets.git",
-                "reference": "9815726deffc97bcfebc19acc697ef93bd8cbaf4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/iconify/icon-sets/zipball/9815726deffc97bcfebc19acc697ef93bd8cbaf4",
-                "reference": "9815726deffc97bcfebc19acc697ef93bd8cbaf4",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Iconify\\IconsJSON\\": "lib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Iconify icons collection in JSON format",
-            "homepage": "https://iconify.design/icon-sets/",
-            "support": {
-                "issues": "https://github.com/iconify/icon-sets/issues",
-                "source": "https://github.com/iconify/icon-sets/tree/2.2.140"
-            },
-            "time": "2023-11-10T07:05:40+00:00"
         },
         {
             "name": "iconify/json-tools",

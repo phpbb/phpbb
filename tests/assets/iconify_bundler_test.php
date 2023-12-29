@@ -23,6 +23,8 @@ class iconify_bundler_test extends \phpbb_test_case
 
 	public function setUp(): void
 	{
+		global $phpbb_root_path;
+
 		$log = $this->getMockBuilder('\phpbb\log\dummy')
 			->onlyMethods(['add'])
 			->getMock();
@@ -31,7 +33,7 @@ class iconify_bundler_test extends \phpbb_test_case
 				$this->log_content[] = $log_operation;
 			});
 
-		$this->bundler = new \phpbb\assets\iconify_bundler($log);
+		$this->bundler = new \phpbb\assets\iconify_bundler($log, $phpbb_root_path);
 	}
 
 	public function data_test_generate_bundle()
@@ -42,8 +44,8 @@ class iconify_bundler_test extends \phpbb_test_case
 				['"prefix":"fa"', '"address-card-o"'],
 			],
 			[
-				['fa:address-card-o', 'fa-regular:credit-card'],
-				['"prefix":"fa"', '"address-card-o"', '"prefix":"fa-regular"', '"credit-card"'],
+				['fa:address-card-o', 'ic:baseline-credit-card'],
+				['"prefix":"fa"', '"address-card-o"', '"prefix":"ic"', '"baseline-credit-card"'],
 			],
 			[
 				['fa:address-card-o', 'fa:foo-bar'],
@@ -51,16 +53,16 @@ class iconify_bundler_test extends \phpbb_test_case
 				['LOG_ICON_INVALID'],
 			],
 			[
-				['fa:address-card-o', 'fa-regular:credit-card', 'fa-regular:credit-card'],
-				['"prefix":"fa"', '"address-card-o"', '"prefix":"fa-regular"', '"credit-card"'],
+				['fa:address-card-o', 'ic:baseline-credit-card', 'ic:baseline-credit-card'],
+				['"prefix":"fa"', '"address-card-o"', '"prefix":"ic"', '"baseline-credit-card"'],
 			],
 			[
-				['fa:address-card-o', 'fa-regular:credit-card', 'fa-regular:angry'],
-				['"prefix":"fa"', '"address-card-o"', '"prefix":"fa-regular"', '"credit-card"', '"angry"'],
+				['fa:address-card-o', 'ic:baseline-credit-card', 'ic:baseline-add-ic-call'],
+				['"prefix":"fa"', '"address-card-o"', '"prefix":"ic"', '"baseline-credit-card"', '"baseline-add-ic-call"'],
 			],
 			[
-				['fa:address-card-o', 'fa:bell', 'fa-regular:credit-card', 'fa-regular:angry'],
-				['"prefix":"fa"', '"address-card-o"', '"bell"', '"prefix":"fa-regular"', '"credit-card"', '"angry"'],
+				['fa:address-card-o', 'fa:bell', 'ic:baseline-credit-card', 'ic:baseline-add-ic-call'],
+				['"prefix":"fa"', '"address-card-o"', '"bell"', '"prefix":"ic"', '"baseline-credit-card"', '"baseline-add-ic-call"'],
 			],
 			[
 				['@test'],
