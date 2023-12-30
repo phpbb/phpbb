@@ -149,7 +149,7 @@ class create_schema_file extends \phpbb\install\task_base
 			$tables = [];
 			foreach ($tables_data['parameters'] as $parameter => $table)
 			{
-				$tables[str_replace('tables.', '', $parameter)] = str_replace('%core.table_prefix%', $table_prefix, $table);
+				$tables[str_replace('tables.', '', (string) $parameter)] = str_replace('%core.table_prefix%', $table_prefix, $table);
 			}
 
 			$schema_generator = new \phpbb\db\migration\schema_generator(

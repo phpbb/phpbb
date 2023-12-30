@@ -28,6 +28,7 @@ class container_configuration implements ConfigurationInterface
 	{
 		$treeBuilder = new TreeBuilder('core');
 		$rootNode = $treeBuilder->getRootNode();
+		/** @psalm-suppress UndefinedMethod */
 		$rootNode
 			->children()
 				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()

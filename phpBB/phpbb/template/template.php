@@ -103,10 +103,10 @@ interface template
 	* Value can be a string, an integer or a boolean.
 	*
 	* @param string $varname Variable name
-	* @param string $varval Value to assign to variable
+	* @param bool|int|string $varval Value to assign to variable
 	* @return \phpbb\template\template $this
 	*/
-	public function assign_var($varname, $varval);
+	public function assign_var(string $varname, bool|int|string $varval);
 
 	/**
 	* Append text to the string value stored in a key.

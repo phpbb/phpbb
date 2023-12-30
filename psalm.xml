@@ -20,6 +20,8 @@
                 <referencedClass name="UnitEnum" />
             </errorLevel>
         </UndefinedDocblockClass>
+        <UnsupportedPropertyReferenceUsage errorLevel="suppress" />
+        <MissingTemplateParam errorLevel="suppress" />
     </issueHandlers>
 
     <stubs>

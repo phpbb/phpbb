@@ -44,7 +44,7 @@ class exception extends \Exception
 	*
 	* @return string
 	*/
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->message . ': ' . var_export($this->parameters, true);
 	}

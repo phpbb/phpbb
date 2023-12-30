@@ -587,7 +587,7 @@ class container_builder
 					$this->config_php_file->get('dbname'),
 					$this->config_php_file->get('dbport'),
 					false,
-					defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
+					defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false
 				);
 			}
 			$this->container->set('dbal.conn.driver', $this->dbal_connection);

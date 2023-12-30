@@ -190,7 +190,7 @@ class manager
 	* @param array	$row			User data or group data
 	* @param string $prefix			Prefix of data keys (e.g. user), should not include the trailing underscore
 	*
-	* @return array	User or group data with keys that have been
+	* @return array{string, string}	User or group data with keys that have been
 	*			stripped from the preceding "user_" or "group_"
 	*			Also the group id is prefixed with g, when the prefix group is removed.
 	*/
@@ -202,7 +202,7 @@ class manager
 			return self::$default_row;
 		}
 
-		$output = array();
+		$output = [];
 		foreach ($row as $key => $value)
 		{
 			$key = preg_replace("#^(?:{$prefix}_)#", '', $key);

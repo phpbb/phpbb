@@ -78,6 +78,7 @@ class non_gd
 
 				for ($j = 0; $j < $code_len; $j++)
 				{
+					/** @psalm-suppress InvalidArrayOffset */
 					$image .= $this->randomise(substr($hold_chars[$code[$j]][$i - $offset_y - 1], 1), $char_widths[$j]);
 				}
 

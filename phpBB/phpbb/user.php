@@ -765,11 +765,11 @@ class user extends \phpbb\session
 	/**
 	* Get option bit field from user options.
 	*
-	* @param int $key option key, as defined in $keyoptions property.
+	* @param string $key option key, as defined in $keyoptions property.
 	* @param int|false $data bit field value to use, or false to use $this->data['user_options']
 	* @return bool true if the option is set in the bit field, false otherwise
 	*/
-	function optionget($key, $data = false)
+	function optionget(string $key, $data = false)
 	{
 		$var = ($data !== false) ? $data : $this->data['user_options'];
 		return phpbb_optionget($this->keyoptions[$key], $var);

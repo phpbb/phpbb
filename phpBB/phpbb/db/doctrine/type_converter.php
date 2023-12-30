@@ -74,7 +74,7 @@ class type_converter
 	 * @param string	$type	Legacy type name.
 	 * @param int		$length	Type length.
 	 *
-	 * @return array{string, array} Pair of type name and options.
+	 * @return array{string, array{string, ...}} Pair of type name and options.
 	 */
 	private static function mapWithLength(string $type, int $length): array
 	{

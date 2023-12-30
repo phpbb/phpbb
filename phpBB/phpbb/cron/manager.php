@@ -86,7 +86,7 @@ class manager
 	* Loads tasks given by name, wraps them
 	* and puts them into $this->tasks.
 	*
-	* @param array|\Traversable $tasks		Array of instances of \phpbb\cron\task\task
+	* @param array|\ArrayObject $tasks		Array of instances of \phpbb\cron\task\task
 	*/
 	public function load_tasks($tasks)
 	{
@@ -106,6 +106,7 @@ class manager
 		{
 			$this->is_initialised_from_container = true;
 
+			/** @var array|\phpbb\di\service_collection $tasks */
 			$tasks = $this->phpbb_container->get('cron.task_collection');
 
 			$this->load_tasks($tasks);

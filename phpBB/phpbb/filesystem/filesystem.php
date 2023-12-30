@@ -632,7 +632,7 @@ class filesystem implements filesystem_interface
 				else if (function_exists('debug_backtrace'))
 				{
 					$call_stack = debug_backtrace(0);
-					$this->working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[count($call_stack) - 1]['file']));
+					$this->working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[max(0, count($call_stack) - 1)]['file']));
 				}
 				else
 				{
@@ -685,6 +685,8 @@ class filesystem implements filesystem_interface
 		{
 			return false;
 		}
+
+		$resolved_path = (string) $resolved_path;
 
 		if (!@file_exists($resolved_path) || (!@is_dir($resolved_path . '/') && !is_file($resolved_path)))
 		{

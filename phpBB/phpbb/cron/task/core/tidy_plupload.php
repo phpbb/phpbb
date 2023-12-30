@@ -105,7 +105,7 @@ class tidy_plupload extends \phpbb\cron\task\base
 			));
 		}
 
-		$this->config->set('plupload_last_gc', time(), true);
+		$this->config->set('plupload_last_gc', time());
 	}
 
 	/**

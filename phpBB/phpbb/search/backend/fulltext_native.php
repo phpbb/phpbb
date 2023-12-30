@@ -1718,7 +1718,7 @@ class fulltext_native extends base implements search_backend_interface
 		/**
 		 * Clean up the string, remove HTML tags, remove BBCodes
 		 */
-		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), -1), ' ');
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '-1'), ' ');
 
 		while (strlen($word))
 		{

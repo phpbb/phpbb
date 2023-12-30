@@ -97,7 +97,7 @@ class helper
 			else if (function_exists('debug_backtrace'))
 			{
 				$call_stack = debug_backtrace(0);
-				$working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[count($call_stack) - 1]['file']));
+				$working_directory = str_replace(DIRECTORY_SEPARATOR, '/', dirname($call_stack[max(0, count($call_stack) - 1)]['file']));
 			}
 			else
 			{
@@ -156,7 +156,7 @@ class helper
 		}
 
 		// Return OS specific directory separators
-		$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved_path);
+		$resolved = str_replace('/', DIRECTORY_SEPARATOR, (string) $resolved_path);
 
 		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
 		if (substr($resolved, -1) === DIRECTORY_SEPARATOR)

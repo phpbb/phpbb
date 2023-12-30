@@ -127,10 +127,10 @@ class db extends config
 	/**
 	* Sets a configuration option's value
 	*
-	* @param string $key       The configuration option's name
-	* @param string $value     New configuration value
-	* @param bool   $use_cache Whether this variable should be cached or if it
-	*                          changes too frequently to be efficiently cached.
+	* @param	string		$key		The configuration option's name
+	* @param	int|string	$value		New configuration value
+	* @param	bool		$use_cache	Whether this variable should be cached or if it
+	*									changes too frequently to be efficiently cached.
 	*/
 	public function set($key, $value, $use_cache = true)
 	{
@@ -141,13 +141,13 @@ class db extends config
 	* Sets a configuration option's value only if the old_value matches the
 	* current configuration value or the configuration value does not exist yet.
 	*
-	* @param  string $key       The configuration option's name
-	* @param  mixed  $old_value Current configuration value or false to ignore
-	*                           the old value
-	* @param  string $new_value New configuration value
-	* @param  bool   $use_cache Whether this variable should be cached or if it
-	*                           changes too frequently to be efficiently cached
-	* @return bool              True if the value was changed, false otherwise
+	* @param	string			$key		The configuration option's name
+	* @param	false|int|string	$old_value	Current configuration value or false to ignore
+	*										the old value
+	* @param	int|string		$new_value	New configuration value
+	* @param	bool			$use_cache	Whether this variable should be cached or if it
+	*										changes too frequently to be efficiently cached
+	* @return	bool						True if the value was changed, false otherwise
 	*/
 	public function set_atomic($key, $old_value, $new_value, $use_cache = true)
 	{

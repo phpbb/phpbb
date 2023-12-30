@@ -60,10 +60,10 @@ class context
 	* Value can be a string, an integer or a boolean.
 	*
 	* @param string $varname Variable name
-	* @param string $varval Value to assign to variable
+	* @param bool|int|string $varval Value to assign to variable
 	* @return true
 	*/
-	public function assign_var($varname, $varval)
+	public function assign_var(string $varname, bool|int|string $varval)
 	{
 		$this->rootref[$varname] = $varval;
 

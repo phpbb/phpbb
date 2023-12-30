@@ -58,7 +58,7 @@ class icon extends AbstractExtension
 	 *
 	 * @param environment	$environment	Twig environment object
 	 * @param string		$type			Icon type (font|iconify|png|svg)
-	 * @param string		$icon			Icon name (eg. "bold")
+	 * @param array|string	$icon			Icon name (eg. "bold")
 	 * @param string		$title			Icon title
 	 * @param bool			$hidden			Hide the icon title from view
 	 * @param string		$classes		Additional classes (eg. "fa-fw")
