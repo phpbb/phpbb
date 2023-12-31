@@ -161,7 +161,16 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @odbc_exec($this->db_connect_id, $query)) === false)
+				try
+				{
+					$this->query_result = @odbc_exec($this->db_connect_id, $query);
+				}
+				catch (\Error $e)
+				{
+					// Do nothing as SQL driver will report the error
+				}
+
+				if ($this->query_result === false)
 				{
 					$this->sql_error($query);
 				}

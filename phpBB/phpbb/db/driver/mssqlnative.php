@@ -136,12 +136,22 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @sqlsrv_query($this->db_connect_id, $query, array(), $this->query_options)) === false)
+				try
+				{
+					$this->query_result = @sqlsrv_query($this->db_connect_id, $query, array(), $this->query_options);
+				}
+				catch (\Error $e)
+				{
+					// Do nothing as SQL driver will report the error
+				}
+
+				if ($this->query_result === false)
 				{
 					$this->sql_error($query);
 				}
-				// reset options for next query
-				$this->query_options = array();
+
+				// Reset options for the next query
+				$this->query_options = [];
 
 				if ($this->debug_sql_explain)
 				{
