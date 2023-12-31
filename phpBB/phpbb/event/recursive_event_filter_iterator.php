@@ -17,8 +17,6 @@ namespace phpbb\event;
 * This filter ignores directories and files starting with a dot.
 * It also skips some directories that do not contain events anyway,
 * such as e.g. files/, store/ and vendor/
-*
-* @psalm-suppress MissingTemplateParam
 */
 class recursive_event_filter_iterator extends \RecursiveFilterIterator
 {

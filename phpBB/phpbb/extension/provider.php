@@ -23,8 +23,6 @@ namespace phpbb\extension;
 *
 * Items could be anything, for example template paths or cron task names.
 * Derived classes completely define what the items are.
-*
-* @psalm-suppress MissingTemplateParam
 */
 abstract class provider implements \IteratorAggregate
 {

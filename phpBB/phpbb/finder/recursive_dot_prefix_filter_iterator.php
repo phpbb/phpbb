@@ -19,8 +19,6 @@ namespace phpbb\finder;
 * This filter ignores directories starting with a dot.
 * When searching for php classes and template files of extensions
 * we don't need to look inside these directories.
-*
-* @psalm-suppress MissingTemplateParam
 */
 class recursive_dot_prefix_filter_iterator extends \RecursiveFilterIterator
 {

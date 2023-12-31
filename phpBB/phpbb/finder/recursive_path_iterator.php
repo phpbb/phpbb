@@ -15,9 +15,6 @@ declare(strict_types=1);
 
 namespace phpbb\finder;
 
-/**
- * @psalm-suppress MissingTemplateParam
- */
 class recursive_path_iterator extends \RecursiveIteratorIterator
 {
 	/**
