@@ -34,6 +34,12 @@ then
 	ticket_id=$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\3/gm;t;d' <<< "$branch");
 	branch_title=$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\1\2\3/gm;t;d' <<< "$branch");
 
+	# Fall back to branch name if no ticket ID
+	if [ -z "$branch_title" ];
+	then
+		branch_title="$branch";
+	fi
+
 	if [ "security/" = "$(sed -E 's/(ticket\/)(security\/)?([0-9]+)(.+$)?/\2/gm;t;d' <<< "$branch")" ];
 	then
 		tail="$(printf '\n\nSECURITY-%s' "$ticket_id")";
