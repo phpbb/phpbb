@@ -197,7 +197,16 @@ class mysqli extends \phpbb\db\driver\mysql_base
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @mysqli_query($this->db_connect_id, $query)) === false)
+				try
+				{
+					$this->query_result = @mysqli_query($this->db_connect_id, $query);
+				}
+				catch (\Error $e)
+				{
+					// Do nothing as SQL driver will report the error
+				}
+
+				if ($this->query_result === false)
 				{
 					$this->sql_error($query);
 				}
@@ -345,24 +354,24 @@ class mysqli extends \phpbb\db\driver\mysql_base
 	{
 		if ($this->db_connect_id)
 		{
-			$error = array(
-				'message'	=> @mysqli_error($this->db_connect_id),
-				'code'		=> @mysqli_errno($this->db_connect_id)
-			);
+			$error = [
+				'message'	=> $this->db_connect_id->error,
+				'code'		=> $this->db_connect_id->errno,
+			];
 		}
 		else if (function_exists('mysqli_connect_error'))
 		{
-			$error = array(
-				'message'	=> @mysqli_connect_error(),
-				'code'		=> @mysqli_connect_errno(),
-			);
+			$error = [
+				'message'	=> $this->db_connect_id->connect_error,
+				'code'		=> $this->db_connect_id->connect_errno,
+			];
 		}
 		else
 		{
-			$error = array(
+			$error = [
 				'message'	=> $this->connect_error,
 				'code'		=> '',
-			);
+			];
 		}
 
 		return $error;
