@@ -16,32 +16,32 @@
 							{% if S_REGISTERED_USER %}
 								<li>
 									<a href="{{ U_SEARCH_SELF }}" role="menuitem">
-										{{ Icon('iconify', 'mdi:file-account-outline', lang('SEARCH_SELF'), false) }}
+										{{ Icon('font', 'file', 'SEARCH_SELF', false, 'far icon icon-gray') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if S_USER_LOGGED_IN %}
 								<li>
 									<a href="{{ U_SEARCH_NEW }}" role="menuitem">
-										{{ Icon('iconify', 'mdi:file-hidden', lang('SEARCH_NEW'), false) }}
+										{{ Icon('font', 'file', 'SEARCH_NEW', false, 'far icon icon-red') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if S_LOAD_UNREADS %}
 								<li>
 									<a href="{{ U_SEARCH_UNREAD }}" role="menuitem">
-										{{ Icon('iconify', 'mdi:file', lang('SEARCH_UNREAD'), false) }}
+										{{ Icon('font', 'file', 'SEARCH_UNREAD', false, 'far icon icon-red') }}
 									</a>
 								</li>
 							{% endif %}
 							<li>
 								<a href="{{ U_SEARCH_UNANSWERED }}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-question-outline', lang('SEARCH_UNANSWERED'), false) }}
+									{{ Icon('font', 'file', 'SEARCH_UNANSWERED', false, 'far icon icon-gray') }}
 								</a>
 							</li>
 							<li>
 								<a href="{{ U_SEARCH_ACTIVE_TOPICS }}" role="menuitem">
-									{{ Icon('iconify', 'mdi:file-upload-outline', lang('SEARCH_ACTIVE_TOPICS'), false) }}
+									{{ Icon('font', 'file-lines', 'SEARCH_ACTIVE_TOPICS', false, 'far icon icon-blue') }}
 								</a>
 							</li>
 							<li class="separator"></li>
@@ -64,7 +64,7 @@
 							{% if U_TEAM %}
 								<li>
 									<a href="{{ U_TEAM }}" role="menuitem">
-										{{ Icon('font', 'shield', lang('THE_TEAM'), false) }}
+										{{ Icon('font', 'shield-halved', lang('THE_TEAM'), false) }}
 									</a>
 								</li>
 							{% endif %}
@@ -78,7 +78,7 @@
 							{% EVENT overall_header_navigation_prepend %}
 							<li class="in-menu">
 								<a href="{{ U_FAQ }}" rel="help" title="{{ lang('FAQ_EXPLAIN') }}" role="menuitem">
-									{{ Icon('iconify', 'fa:question-circle', lang('FAQ'), false) }}
+									{{ Icon('font', 'question-circle', lang('FAQ'), false) }}
 								</a>
 							</li>
 							{% EVENT overall_header_navigation_append %}
@@ -91,14 +91,14 @@
 			{% if U_ACP %}
 				<li>
 					<a href="{{ U_ACP }}" title="{{ lang('ACP') }}" role="menuitem">
-						{{ Icon('iconify', 'fa:cogs', lang('ACP_SHORT'), false) }}
+						{{ Icon('font', 'gears', 'ACP_SHORT', false) }}
 					</a>
 				</li>
 			{% endif %}
 			{% if U_MCP %}
 				<li>
 					<a href="{{ U_MCP }}" title="{{ lang('MCP') }}" role="menuitem">
-						{{ Icon('iconify', 'fa:gavel', lang('MCP_SHORT'), false) }}
+						{{ Icon('font', 'gavel', 'MCP_SHORT', false) }}
 					</a>
 				</li>
 			{% endif %}
@@ -115,7 +115,7 @@
 						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
 							{% if CURRENT_USER_AVATAR_HTML %}{{ CURRENT_USER_AVATAR_HTML }} {% endif %}
 							{{ CURRENT_USERNAME_SIMPLE }}
-							{{ Icon('iconify', 'fa:caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
+							{{ Icon('font', 'caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
 						</a>
 						<div class="dropdown">
 							<div class="pointer"><div class="pointer-inner"></div></div>
@@ -123,7 +123,7 @@
 								{% if U_RESTORE_PERMISSIONS %}
 									<li>
 										<a href="{{ U_RESTORE_PERMISSIONS }}">
-											{{ Icon('iconify', 'fa:refresh', lang('RESTORE_PERMISSIONS'), false) }}
+											{{ Icon('font', 'rotate', lang('RESTORE_PERMISSIONS'), false) }}
 										</a>
 									</li>
 								{% endif %}
@@ -132,13 +132,13 @@
 
 								<li>
 									<a href="{{ U_PROFILE }}" title="{{ lang('PROFILE') }}" role="menuitem">
-										{{ Icon('iconify', 'fa:sliders', lang('PROFILE'), false) }}
+										{{ Icon('font', 'sliders', lang('PROFILE'), false) }}
 									</a>
 								</li>
 								{% if U_USER_PROFILE %}
 									<li>
 										<a href="{{ U_USER_PROFILE }}" title="{{ lang('READ_PROFILE') }}" role="menuitem">
-											{{ Icon('iconify', 'fa:user', lang('READ_PROFILE'), false) }}
+											{{ Icon('font', 'user', lang('READ_PROFILE'), false) }}
 										</a>
 									</li>
 								{% endif %}
@@ -148,7 +148,7 @@
 								<li class="separator"></li>
 								<li>
 									<a href="{{ U_LOGIN_LOGOUT }}" title="{{ lang('LOGIN_LOGOUT') }}" accesskey="x" role="menuitem">
-										{{ Icon('iconify', 'fa:power-off', lang('LOGIN_LOGOUT'), false) }}
+										{{ Icon('font', 'power-off', lang('LOGIN_LOGOUT'), false) }}
 									</a>
 								</li>
 							</ul>
@@ -161,7 +161,7 @@
 				{% if S_DISPLAY_PM %}
 					<li class="rightside">
 						<a href="{{ U_PRIVATEMSGS }}" role="menuitem">
-							{{ Icon('iconify', 'fa:inbox', lang('PRIVATE_MESSAGES'), false) }}<strong class="badge{% if not PRIVATE_MESSAGE_COUNT %} hidden{% endif %}"> {PRIVATE_MESSAGE_COUNT}</strong>
+							{{ Icon('font', 'inbox', lang('PRIVATE_MESSAGES'), false) }}<strong class="badge{% if not PRIVATE_MESSAGE_COUNT %} hidden{% endif %}"> {PRIVATE_MESSAGE_COUNT}</strong>
 						</a>
 					</li>
 				{% endif %}
@@ -169,7 +169,7 @@
 				{% if S_NOTIFICATIONS_DISPLAY %}
 					<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside">
 						<a href="{{ U_VIEW_ALL_NOTIFICATIONS }}" id="notification-button" class="dropdown-trigger">
-							{{ Icon('iconify', 'fa:bell', lang('NOTIFICATIONS'), false) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
+							{{ Icon('font', 'bell', lang('NOTIFICATIONS'), false) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
 						</a>
 
 						{% include 'notification_dropdown.html' %}
@@ -182,13 +182,13 @@
 			{% elseif not S_IS_BOT %}
 				<li class="rightside" >
 					<a href="{{ U_LOGIN_LOGOUT }}" title="{{ lang('LOGIN_LOGOUT') }}" accesskey="x" role="menuitem">
-						{{ Icon('iconify', 'fa:power-off', lang('LOGIN_LOGOUT'), false) }}
+						{{ Icon('font', 'power-off', lang('LOGIN_LOGOUT'), false) }}
 					</a>
 				</li>
 				{% if S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) %}
 					<li class="rightside">
 						<a href="{{ U_REGISTER }}" role="menuitem">
-							{{ Icon('iconify', 'fa:pencil-square-o', lang('REGISTER'), false) }}
+							{{ Icon('font', 'pen-to-square', lang('REGISTER'), false) }}
 						</a>
 					</li>
 				{% endif %}
@@ -209,7 +209,7 @@
 					<span class="crumb" {{ MICRODATA }}>
 						{% apply spaceless %}
 						<a itemprop="item" href="{{ U_SITE_HOME }}" data-navbar-reference="home">
-							{{ Icon('iconify', 'fa:home', '', true) }}
+							{{ Icon('font', 'home', '', true) }}
 							<span itemprop="name">{{ L_SITE_HOME }}</span>
 						</a>
 						{% endapply %}
@@ -222,7 +222,7 @@
 				<span class="crumb" {{ MICRODATA }}>
 					{% apply spaceless %}
 					<a itemprop="item" href="{{ U_INDEX }}" accesskey="h" data-navbar-reference="index">
-						{% if not U_SITE_HOME %}{{ Icon('iconify', 'fa:home', '', true) }}{% endif %}
+						{% if not U_SITE_HOME %}{{ Icon('font', 'home', '', true) }}{% endif %}
 						<span itemprop="name">{{ L_INDEX }}</span>
 					</a>
 					{% endapply %}
@@ -254,7 +254,7 @@
 			{% if S_DISPLAY_SEARCH and not S_IN_SEARCH %}
 				<li class="rightside responsive-search">
 					<a href="{{ U_SEARCH }}" title="{{ lang('SEARCH_ADV_EXPLAIN') }}" role="menuitem">
-						{{ Icon('iconify', 'fa:search', lang('SEARCH'), true) }}
+						{{ Icon('font', 'search', lang('SEARCH'), true) }}
 					</a>
 				</li>
 			{% endif %}
