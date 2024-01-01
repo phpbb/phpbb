@@ -104,8 +104,17 @@ switch ($mode)
 			trigger_error('NO_POST');
 		}
 
+		// Need to update session forum_id to valid value for proper viewonline information
+		if (!$forum_id)
+		{
+			$user->page['forum'] = (int) $topic_forum['forum_id'];
+			$user->update_session_page = true;
+			$user->update_session_infos();
+		}
+
 		$topic_id = (int) $topic_forum['topic_id'];
 		$forum_id = (int) $topic_forum['forum_id'];
+
 	break;
 }
 

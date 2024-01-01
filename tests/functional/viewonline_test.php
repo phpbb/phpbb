@@ -38,7 +38,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 
 		// Forum info
 		$sql =  'SELECT forum_name
-			FROM ' . FORUMS_TABLE . ' 
+			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
 		$result = $db->sql_query($sql);
 		$forum_name = $db->sql_fetchfield('forum_name');
@@ -71,6 +71,22 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login('viewonline-test-user1');
 		$crawler = self::request('GET', 'posting.php?mode=post&f=2&sid=' . $this->sid);
 		$this->assertContainsLang('POST_TOPIC', $crawler->text());
+		// Log in as another user
+		self::$client->restart();
+		$this->login();
+		// PHP goes faster than DBMS, make sure session data got written to the database
+		sleep(1);
+		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		// Make sure posting message page is in the list
+		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
+		$this->assertStringContainsString($this->lang('POSTING_MESSAGE', $this->get_forum_name_by_forum_id(2)), $crawler->text());
+
+		// Log in as test user
+		self::$client->restart();
+		$this->login('viewonline-test-user1');
+		$test_post_data = $this->create_post(2, 1, 'Viewonline test post #1', 'Viewonline test post message');
+		$crawler = self::request('GET', 'posting.php?mode=edit&p=' . $test_post_data['post_id'] .  '&sid=' . $this->sid);
+		$this->assertContainsLang('EDIT_POST', $crawler->text());
 		// Log in as another user
 		self::$client->restart();
 		$this->login();
