@@ -4,7 +4,7 @@
 		<ul id="nav-main" class="nav-main linklist" role="menubar">
 			<li id="quick-links" class="quick-links dropdown-container responsive-menu{% if not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH %} hidden{% endif %}">
 				<a href="#" class="dropdown-trigger">
-					{{ Icon('iconify', 'fa:bars', lang('QUICK_LINKS'), false) }}
+					{{ Icon('font', 'bars', lang('QUICK_LINKS'), false) }}
 				</a>
 				<div class="dropdown">
 					<div class="pointer"><div class="pointer-inner"></div></div>
@@ -47,7 +47,7 @@
 							<li class="separator"></li>
 							<li>
 								<a href="{{ U_SEARCH }}" role="menuitem">
-									{{ Icon('iconify', 'fa:search', lang('SEARCH'), false) }}
+									{{ Icon('font', 'search', lang('SEARCH'), false) }}
 								</a>
 							</li>
 						{% endif %}
@@ -57,14 +57,14 @@
 							{% if S_DISPLAY_MEMBERLIST %}
 								<li>
 									<a href="{{ U_MEMBERLIST }}" role="menuitem">
-										{{ Icon('iconify', 'fa:group', lang('MEMBERLIST'), false) }}
+										{{ Icon('font', 'users', lang('MEMBERLIST'), false) }}
 									</a>
 								</li>
 							{% endif %}
 							{% if U_TEAM %}
 								<li>
 									<a href="{{ U_TEAM }}" role="menuitem">
-										{{ Icon('iconify', 'fa:shield', lang('THE_TEAM'), false) }}
+										{{ Icon('font', 'shield', lang('THE_TEAM'), false) }}
 									</a>
 								</li>
 							{% endif %}

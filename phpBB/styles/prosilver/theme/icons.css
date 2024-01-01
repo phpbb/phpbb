@@ -14,7 +14,6 @@ svg {
 	vertical-align: middle !important;
 	width: 14px;
 	height: 14px;
-	margin-top: -4px;
 }
 
 .o-icon-src-mdi,
@@ -40,6 +39,7 @@ svg {
 	/* stylelint-disable order/properties-order */
 	-moz-osx-font-smoothing: grayscale;
 	/* stylelint-enable order/properties-order */
+	padding: 2px;
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
