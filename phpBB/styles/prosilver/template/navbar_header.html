@@ -16,32 +16,32 @@
 							{% if S_REGISTERED_USER %}
 								<li>
 									<a href="{{ U_SEARCH_SELF }}" role="menuitem">
-										{{ Icon('font', 'file', 'SEARCH_SELF', false, 'far icon icon-gray') }}
+										{{ Icon('font', 'file', lang('SEARCH_SELF'), false, 'far icon icon-gray') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if S_USER_LOGGED_IN %}
 								<li>
 									<a href="{{ U_SEARCH_NEW }}" role="menuitem">
-										{{ Icon('font', 'file', 'SEARCH_NEW', false, 'far icon icon-red') }}
+										{{ Icon('font', 'file', lang('SEARCH_NEW'), false, 'far icon icon-red') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if S_LOAD_UNREADS %}
 								<li>
 									<a href="{{ U_SEARCH_UNREAD }}" role="menuitem">
-										{{ Icon('font', 'file', 'SEARCH_UNREAD', false, 'far icon icon-red') }}
+										{{ Icon('font', 'file', lang('SEARCH_UNREAD'), false, 'far icon icon-red') }}
 									</a>
 								</li>
 							{% endif %}
 							<li>
 								<a href="{{ U_SEARCH_UNANSWERED }}" role="menuitem">
-									{{ Icon('font', 'file', 'SEARCH_UNANSWERED', false, 'far icon icon-gray') }}
+									{{ Icon('font', 'file', lang('SEARCH_UNANSWERED'), false, 'far icon icon-gray') }}
 								</a>
 							</li>
 							<li>
 								<a href="{{ U_SEARCH_ACTIVE_TOPICS }}" role="menuitem">
-									{{ Icon('font', 'file-lines', 'SEARCH_ACTIVE_TOPICS', false, 'far icon icon-blue') }}
+									{{ Icon('font', 'file-lines', lang('SEARCH_ACTIVE_TOPICS'), false, 'far icon icon-blue') }}
 								</a>
 							</li>
 							<li class="separator"></li>
@@ -91,14 +91,14 @@
 			{% if U_ACP %}
 				<li>
 					<a href="{{ U_ACP }}" title="{{ lang('ACP') }}" role="menuitem">
-						{{ Icon('font', 'gears', 'ACP_SHORT', false) }}
+						{{ Icon('font', 'gears', lang('ACP_SHORT'), false) }}
 					</a>
 				</li>
 			{% endif %}
 			{% if U_MCP %}
 				<li>
 					<a href="{{ U_MCP }}" title="{{ lang('MCP') }}" role="menuitem">
-						{{ Icon('font', 'gavel', 'MCP_SHORT', false) }}
+						{{ Icon('font', 'gavel', lang('MCP_SHORT'), false) }}
 					</a>
 				</li>
 			{% endif %}

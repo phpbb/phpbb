@@ -42,6 +42,10 @@ svg {
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
 }
 
+.o-icon-baseline {
+	vertical-align: baseline !important;
+}
+
 .o-icon + span,
 span + .o-icon {
 	padding-left: 4px;

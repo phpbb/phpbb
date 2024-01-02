@@ -45,7 +45,7 @@
 						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
 							<!--
 								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">
-									{{ Icon('iconify', 'fa:rss-square', '', true, 'c-feed-icon') }}<span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
+									{{ Icon('font', 'square-rss', '', true, 'fas c-feed-icon') }}<span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
 								</a>
 							-->
 						<!-- ENDIF -->
@@ -66,10 +66,11 @@
 							<!-- BEGIN subforum -->
 								<!-- EVENT forumlist_body_subforum_link_prepend -->
 								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="{% if forumrow.subforum.IS_LINK %}{{ lang('FORUM_LINK') }}{% elseif forumrow.subforum.S_UNREAD %}{{ lang('UNREAD_POSTS') }}{% else %}{{ lang('NO_UNREAD_POSTS') }}{% endif %}">
-									{{ Icon('iconify', {
-										'fa:external-link' : forumrow.subforum.IS_LINK,
-										'fa:file-o' : true,
-									}, forumrow.subforum.SUBFORUM_NAME, false, 'c-subforum-icon') }}
+									{% if forumrow.subforum.IS_LINK %}
+										{{ Icon('font', 'arrow-up-right-from-square', forumrow.subforum.SUBFORUM_NAME, false, 'fas c-subforum-icon') }}
+									{% else %}
+										{{ Icon('font', 'file', forumrow.subforum.SUBFORUM_NAME, false, 'far c-subforum-icon') }}
+									{% endif %}
 								</a>{% if not forumrow.subforum.S_LAST_ROW %}{L_COMMA_SEPARATOR}{% endif %}
 								<!-- EVENT forumlist_body_subforum_link_append -->
 							<!-- END subforum -->
@@ -113,7 +114,7 @@
 									{L_POST_BY_AUTHOR} <!-- EVENT forumlist_body_last_poster_username_prepend -->{forumrow.LAST_POSTER_FULL}<!-- EVENT forumlist_body_last_poster_username_append -->
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
-										{{ Icon('iconify', 'fa:external-link-square', lang('VIEW_LATEST_POST'), true, 'c-last-post-icon') }}
+										{{ Icon('font', 'arrow-up-right-from-square', lang('VIEW_LATEST_POST'), true, 'fas c-last-post-icon') }}
 									</a>
 								<!-- ENDIF -->
 								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>
