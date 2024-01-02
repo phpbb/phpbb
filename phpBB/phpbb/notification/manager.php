@@ -411,12 +411,17 @@ class manager
 
 			foreach ($methods as $method)
 			{
-				// setup the notification methods and add the notification to the queue
+				// Do not load non-existent notification methods
+				if (!isset($this->notification_methods[$method]))
+				{
+					continue;
+				}
+
+				// Setup the notification methods and add the notification to the queue
 				if (!isset($notification_methods[$method]))
 				{
 					$notification_methods[$method] = $this->get_method_class($method);
 				}
-
 				$notification_methods[$method]->add_to_queue($notification);
 			}
 		}
