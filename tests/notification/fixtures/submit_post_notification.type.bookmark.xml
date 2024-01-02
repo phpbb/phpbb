@@ -159,5 +159,12 @@
 			<value>notification.method.board</value>
 			<value>0</value>
 		</row>
+		<row>
+			<value>notification.type.bookmark</value>
+			<value>0</value>
+			<value>3</value>
+			<value>notification.method.nonexistent</value>
+			<value>1</value>
+		</row>
 	</table>
 </dataset>
