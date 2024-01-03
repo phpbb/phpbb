@@ -105,7 +105,7 @@
 				<ul class="post-buttons">
 					<li>
 						<a href="{postrow.U_POST_DETAILS}" title="{L_POST_DETAILS}" class="button button-icon-only">
-							{{ Icon('iconify', 'fa:info', lang('POST_DETAILS'), true, 'c-button-icon') }}
+							{{ Icon('font', 'info', lang('POST_DETAILS'), true, 'fas c-button-icon') }}
 						</a>
 					</li>
 					<li>
@@ -122,14 +122,14 @@
 				<!-- EVENT mcp_topic_postrow_post_details_before -->
 				<p class="author">
 					<a href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
-						{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true) }}
+						{{ Icon('font', 'file', postrow.MINI_POST, true) }}
 					</a> {L_POSTED} {postrow.POST_DATE} {L_POST_BY_AUTHOR} {% EVENT mcp_topic_post_author_full_prepend %}<strong>{postrow.POST_AUTHOR_FULL}</strong>{% EVENT mcp_topic_post_author_full_append %}<!-- IF postrow.U_MCP_DETAILS --> [ <a href="{postrow.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF -->
 				</p>
 				<!-- EVENT mcp_topic_postrow_post_details_after -->
 
 				<!-- IF postrow.S_POST_UNAPPROVED -->
 				<p class="post-notice unapproved">
-					<a href="{postrow.U_MCP_APPROVE}">{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<strong>{L_POST_UNAPPROVED}</strong></a>
+					<a href="{postrow.U_MCP_APPROVE}">{{ Icon('font', 'exclamation', '', true, 'fas c-topic-reported-icon') }}<strong>{L_POST_UNAPPROVED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 
@@ -141,7 +141,7 @@
 
 				<!-- IF postrow.S_POST_REPORTED -->
 				<p class="post-notice reported">
-					<a href="{postrow.U_MCP_REPORT}">{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<strong>{L_POST_REPORTED}</strong></a>
+					<a href="{postrow.U_MCP_REPORT}">{{ Icon('font', 'exclamation', '', true, 'fas c-topic-reported-icon') }}<strong>{L_POST_REPORTED}</strong></a>
 				</p>
 				<!-- ENDIF -->
 

@@ -23,7 +23,7 @@
 				<!-- EVENT ucp_pm_history_post_buttons_before -->
 				<li>
 					<a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}', '{LA_WROTE}', {time:{history_row.MESSAGE_TIME},user_id:{history_row.USER_ID}});"<!-- ENDIF --> title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}" class="button button-icon-only">
-						{{ Icon('iconify', 'fa:quote-left', '', true, 'c-button-icon') }}<span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
+						{{ Icon('font', 'quote-left', '', true, 'fas c-button-icon') }}<span class="sr-only">{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span>
 					</a>
 				</li>
 				<!-- EVENT ucp_pm_history_post_buttons_after -->
@@ -32,7 +32,7 @@
 			<!-- EVENT ucp_pm_history_post_buttons_list_after -->
 
 			<p class="author">
-				{{ Icon('iconify', 'fa:file', history_row.MINI_POST, true, 'c-topic-icon') }} {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
+				{{ Icon('font', 'file', history_row.MINI_POST, true, 'fas c-topic-icon') }} {L_SENT_AT}{L_COLON} <strong>{history_row.SENT_DATE}</strong>
 				<br />
 				{L_MESSAGE_BY_AUTHOR} <!-- EVENT ucp_pm_history_row_message_author_username_prepend -->{history_row.MESSAGE_AUTHOR_FULL}<!-- EVENT ucp_pm_history_row_message_author_username_append -->
 			</p>
@@ -49,6 +49,6 @@
 <hr />
 <p>
 	<a href="#cp-main" class="top">
-		{{ Icon('iconify', 'fa:chevron-circle-up', lang('BACK_TO_TOP'), false, 'c-top-icon') }}
+		{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), false, 'c-top-icon') }}
 	</a>
 </p>

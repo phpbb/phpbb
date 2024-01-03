@@ -33,9 +33,9 @@
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->
-				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('iconify', 'fa:lock', '', true, 'c-button-icon') }}
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('font', 'lock', '', true, 'fas c-button-icon') }}
 			<!-- ELSE -->
-				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('iconify', 'fa:reply', '', true, 'c-button-icon') }}
+				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('font', 'reply', '', true, 'fas c-button-icon') }}
 			<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
@@ -50,10 +50,10 @@
 			<fieldset>
 				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
 				<button class="button button-search" type="submit" title="{L_SEARCH}">
-					{{ Icon('iconify', 'fa:search', lang('SEARCH'), true, 'c-button-icon') }}
+					{{ Icon('font', 'search', lang('SEARCH'), true, 'fas c-button-icon') }}
 				</button>
 				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-					{{ Icon('iconify', 'fa:cog', lang('SEARCH_ADV'), true, 'c-button-icon') }}
+					{{ Icon('font', 'gear', lang('SEARCH_ADV'), true, 'fas c-button-icon') }}
 				</a>
 				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
 			</fieldset>
@@ -149,7 +149,7 @@
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
 				<!-- EVENT viewtopic_body_post_author_before -->
-				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('iconify', 'fa:circle', lang('ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
+				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('font', 'circle', lang('ONLINE'), true, 'fas c-online-icon') }}<!-- ENDIF -->
 				<!-- EVENT viewtopic_body_post_author_after -->
 			</dt>
 
@@ -261,42 +261,42 @@
 							{% if postrow.U_EDIT %}
 								<li>
 									<a href="{{ postrow.U_EDIT }}" title="{{ lang('EDIT_POST') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:pencil', lang('BUTTON_EDIT'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'pencil', lang('BUTTON_EDIT'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if postrow.U_DELETE %}
 								<li>
 									<a href="{{ postrow.U_DELETE }}" title="{{ lang('DELETE_POST') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:times', lang('BUTTON_DELETE'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'xmark', lang('BUTTON_DELETE'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if postrow.U_REPORT %}
 								<li>
 									<a href="{{ postrow.U_REPORT }}" title="{{ lang('REPORT_POST') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:exclamation', lang('BUTTON_REPORT'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'exclamation', lang('BUTTON_REPORT'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if postrow.U_WARN %}
 								<li>
 									<a href="{{ postrow.U_WARN }}" title="{{ lang('WARN_USER') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:exclamation-triangle', lang('BUTTON_WARN'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'triangle-exclamation', lang('BUTTON_WARN'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if postrow.U_INFO %}
 								<li>
 									<a href="{{ postrow.U_INFO }}" title="{{ lang('INFORMATION') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:info', lang('BUTTON_INFORMATION'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'info', lang('BUTTON_INFORMATION'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
 							{% if postrow.U_QUOTE %}
 								<li>
 									<a href="{{ postrow.U_QUOTE }}" title="{{ lang('REPLY_WITH_QUOTE') }}" class="button button-icon-only">
-										{{ Icon('iconify', 'fa:quote-left', lang('BUTTON_QUOTE'), post_buttons_hide_text, 'c-button-icon') }}
+										{{ Icon('font', 'quote-left', lang('BUTTON_QUOTE'), post_buttons_hide_text, 'fas c-button-icon') }}
 									</a>
 								</li>
 							{% endif %}
@@ -307,7 +307,7 @@
 
 					<li class="post-buttons-responsive-menu dropdown-container">
 						<a href="javascript:void(0);" class="button button-icon-only post-button-responsive dropdown-toggle">
-							{{ Icon('iconify', 'fa:bars', '', true, 'c-button-icon') }}
+							{{ Icon('font', 'bars', '', true, 'fas c-button-icon') }}
 						</a>
 						<div class="dropdown">
 							<div class="pointer">
@@ -330,9 +330,9 @@
 			<p class="author">
 				<a class="unread" href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
 					{% if postrow.S_UNREAD_POST %}
-						<span>{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-unread-icon') }}</span>
+						<span>{{ Icon('font', 'file', postrow.MINI_POST, true, 'fas c-topic-unread-icon') }}</span>
 					{% else %}
-						<span>{{ Icon('iconify', 'fa:file', postrow.MINI_POST, true, 'c-topic-icon') }}</span>
+						<span>{{ Icon('font', 'file', postrow.MINI_POST, true, 'fas c-topic-icon') }}</span>
 					{% endif %}
 				</a>
 				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span><time datetime="{postrow.POST_DATE_RFC3339}">{postrow.POST_DATE}</time>
@@ -343,7 +343,7 @@
 			<!-- IF postrow.S_CAN_APPROVE -->
 			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
 				<p class="post-notice unapproved">
-					<span>{{ Icon('iconify', 'fa:question', '', true, 'c-reported-icon') }}</span>
+					<span>{{ Icon('font', 'circle-question', '', true, 'fas c-unapproved-icon') }}</span>
 					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
 					<input class="button1 button button-form-bold" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 					<input class="button1 button button-form" type="submit" value="{L_APPROVE}" name="action[approve]" />
@@ -353,7 +353,7 @@
 			</form>
 			<!-- ELSE -->
 				<p class="post-notice unapproved">
-					<span>{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}</span>
+					<span>{{ Icon('font', 'triangle-exclamation', '', true, 'fas c-topic-reported-icon') }}</span>
 					<strong>{L_POST_UNAPPROVED_EXPLAIN}</strong>
 				</p>
 			<!-- ENDIF -->
@@ -373,7 +373,7 @@
 
 			<!-- IF postrow.S_POST_REPORTED -->
 			<p class="post-notice reported">
-				<a href="{postrow.U_MCP_REPORT}">{{ Icon('iconify', 'fa:exclamation', '', true, 'c-topic-reported-icon') }}<strong>{L_POST_REPORTED}</strong></a>
+				<a href="{postrow.U_MCP_REPORT}">{{ Icon('font', 'triangle-exclamation', '', true, 'fas c-topic-reported-icon') }}<strong>{L_POST_REPORTED}</strong></a>
 			</p>
 			<!-- ENDIF -->
 
@@ -424,7 +424,7 @@
 		<div class="back2top">
 			<!-- EVENT viewtopic_body_postrow_back2top_prepend -->
 			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
-				{{ Icon('iconify', 'fa:chevron-circle-up', lang('BACK_TO_TOP'), false, 'c-top-icon') }}
+				{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), false, 'fas c-top-icon') }}
 			</a>
 			<!-- EVENT viewtopic_body_postrow_back2top_append -->
 		</div>
@@ -448,9 +448,9 @@
 	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
 		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
 			<!-- IF S_IS_LOCKED -->
-				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('iconify', 'fa:lock', '', true, 'c-button-icon') }}
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('font', 'lock', '', true, 'fas c-button-icon') }}
 			<!-- ELSE -->
-				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('iconify', 'fa:reply', '', true, 'c-button-icon') }}
+				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('font', 'reply', '', true, 'fas c-button-icon') }}
 			<!-- ENDIF -->
 		</a>
 	<!-- ENDIF -->
@@ -467,8 +467,8 @@
 	<!-- IF .quickmod -->
 	<div class="quickmod dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
 		<span title="{L_QUICK_MOD}" class="button button-secondary dropdown-trigger dropdown-select">
-			{{ Icon('iconify', 'fa:gavel', lang('QUICK_MOD'), true, 'c-button-icon') }}
-			<span class="caret">{{ Icon('iconify', 'fa:caret-down', '', true, 'c-button-icon') }}</span>
+			{{ Icon('font', 'gavel', lang('QUICK_MOD'), true, 'fas c-button-icon') }}
+			<span class="caret">{{ Icon('font', 'caret-down', '', true, 'fas c-button-icon') }}</span>
 		</span>
 		<div class="dropdown">
 				<div class="pointer"><div class="pointer-inner"></div></div>

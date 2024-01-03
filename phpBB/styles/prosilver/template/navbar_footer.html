@@ -7,7 +7,7 @@
 					{% apply spaceless %}
 						<span class="crumb">
 							<a href="{{ U_SITE_HOME }}" data-navbar-reference="home">
-								{{ Icon('iconify', 'fa:home', lang('SITE_HOME'), false) }}
+								{{ Icon('font', 'home', lang('SITE_HOME'), false) }}
 							</a>
 						</span>
 					{% endapply %}
@@ -21,7 +21,7 @@
 							{% if U_SITE_HOME %}
 								<span>{{ lang('INDEX') }}</span>
 							{% else %}
-								{{ Icon('iconify', 'fa:home', lang('INDEX'), false) }}
+								{{ Icon('font', 'home', lang('INDEX'), false) }}
 							{% endif %}
 						</a>
 					</span>
@@ -59,14 +59,14 @@
 				{% if not S_IS_BOT %}
 					<li class="rightside in-menu">
 						<a href="{{ U_DELETE_COOKIES }}" data-ajax="true" data-refresh="true" role="menuitem">
-							{{ Icon('iconify', 'fa:trash', lang('DELETE_COOKIES'), false) }}
+							{{ Icon('font', 'trash', lang('DELETE_COOKIES'), false) }}
 						</a>
 					</li>
 
 					{% if S_DISPLAY_MEMBERLIST %}
 						<li class="rightside in-menu">
 							<a href="{{ U_MEMBERLIST }}" title="{{ lang('MEMBERLIST_EXPLAIN') }}" role="menuitem">
-								{{ Icon('iconify', 'fa:group', lang('MEMBERLIST'), false) }}
+								{{ Icon('font', 'users', lang('MEMBERLIST'), false) }}
 							</a>
 						</li>
 					{% endif %}
@@ -77,7 +77,7 @@
 				{% if U_TEAM %}
 					<li class="rightside in-menu">
 						<a href="{{ U_TEAM }}" role="menuitem">
-							{{ Icon('iconify', 'fa:shield', lang('THE_TEAM'), false) }}
+							{{ Icon('font', 'shield-halved', lang('THE_TEAM'), false) }}
 						</a>
 					</li>
 				{% endif %}
@@ -87,7 +87,7 @@
 				{% if U_CONTACT_US %}
 					<li class="rightside in-menu">
 						<a href="{{ U_CONTACT_US }}" role="menuitem">
-							{{ Icon('iconify', 'fa:envelope', lang('CONTACT_US'), false) }}
+							{{ Icon('font', 'envelope', lang('CONTACT_US'), false) }}
 						</a>
 					</li>
 				{% endif %}
@@ -97,7 +97,7 @@
 
 			<li class="rightside dropdown-container responsive-menu">
 				<a class="dropdown-toggle" href="">
-					{{ Icon('iconify', 'fa:bars', '', true) }}
+					{{ Icon('font', 'bars', '', true) }}
 				</a>
 				<div class="dropdown">
 					<div class="pointer">

@@ -186,12 +186,12 @@
 						{% endif %}
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="<!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF -->">
-								{{ Icon('font', 'circle-question', '', true, 'fas icon icon-blue c-unapproved-icon o-icon-baseline') }}<span class="sr-only"><!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF --></span>
+								{{ Icon('font', 'circle-question', '', true, 'fas c-unapproved-icon o-icon-baseline') }}<span class="sr-only"><!-- IF topicrow.S_TOPIC_UNAPPROVED -->{L_TOPIC_UNAPPROVED}<!-- ELSE -->{L_POSTS_UNAPPROVED}<!-- ENDIF --></span>
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_DELETED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-								{{ Icon('font', 'recycle', lang('TOPIC_DELETED'), true, 'c-topic-deleted-icon') }}
+								{{ Icon('font', 'recycle', lang('TOPIC_DELETED'), true, 'fas c-topic-deleted-icon o-icon-baseline') }}
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->

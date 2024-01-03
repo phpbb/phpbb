@@ -504,6 +504,7 @@ dd .signature {
 
 /* Jump to post link for now */
 ul.searchresults {
+	font-size: 12px;
 	text-align: right;
 	clear: both;
 	list-style: none;

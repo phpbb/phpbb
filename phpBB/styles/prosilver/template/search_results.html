@@ -10,13 +10,13 @@
 <!-- IF SEARCH_TOPIC -->
 	<p class="return-link">
 		<a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">
-			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN, lang('RETURN_TO_TOPIC'), false, 'c-return-arrow-icon') }}
+			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('RETURN_TO_TOPIC'), false, 'fas c-return-arrow-icon') }}
 		</a>
 	</p>
 <!-- ELSE -->
 	<p class="advanced-search-link">
 		<a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">
-			{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_BEGIN, lang('GO_TO_SEARCH_ADV'), false, 'c-return-arrow-icon') }}
+			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('GO_TO_SEARCH_ADV'), false, 'fas c-return-arrow-icon') }}
 		</a>
 	</p>
 <!-- ENDIF -->
@@ -32,10 +32,10 @@
 			<fieldset>
 				<input class="inputbox search tiny" type="search" name="add_keywords" id="add_keywords" value="" placeholder="{L_SEARCH_IN_RESULTS}" />
 				<button class="button button-search" type="submit" title="{L_SEARCH}">
-					{{ Icon('iconify', 'fa:search', lang('SEARCH'), true, 'c-button-icon') }}
+					{{ Icon('font', 'search', lang('SEARCH'), true, 'fas c-button-icon') }}
 				</button>
 				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-					{{ Icon('iconify', 'fa:cog', lang('SEARCH_ADV'), true, 'c-button-icon') }}
+					{{ Icon('font', 'gear', lang('SEARCH_ADV'), true, 'fas c-button-icon') }}
 				</a>
 			</fieldset>
 			</form>
@@ -106,17 +106,17 @@
 							{% endif %}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-									{{ Icon('iconify', 'fa:question', lang('TOPIC_UNAPPROVED'), true, 'c-uapproved-icon') }}
+									{{ Icon('font', 'circle-question', lang('TOPIC_UNAPPROVED'), true, 'fas c-unapproved-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_DELETED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-									{{ Icon('iconify', 'fa:recycle', lang('TOPIC_DELETED'), true, 'c-topic-deleted-icon') }}
+									{{ Icon('font', 'recycle', lang('TOPIC_DELETED'), true, 'fas c-topic-deleted-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<!-- IF searchresults.S_TOPIC_REPORTED -->
 								<a href="{searchresults.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-									{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
+									{{ Icon('font', 'triangle-exclamation', lang('TOPIC_REPORTED'), true, 'fas c-topic-reported-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<br />
@@ -131,8 +131,8 @@
 							<!-- ENDIF -->
 
 							<div class="responsive-hide left-box">
-								<!-- IF searchresults.S_HAS_POLL -->{{ Icon('iconify', 'fa:bar-chart', '', true) }}<!-- ENDIF -->
-								<!-- IF searchresults.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }}<!-- ENDIF -->
+								<!-- IF searchresults.S_HAS_POLL -->{{ Icon('font', 'chart-bar', '', true) }}<!-- ENDIF -->
+								<!-- IF searchresults.ATTACH_ICON_IMG -->{{ Icon('font', 'paperclip', '', true) }}<!-- ENDIF -->
 								{% EVENT topiclist_row_topic_by_author_before %}
 								{L_POST_BY_AUTHOR} <!-- EVENT search_results_topic_author_username_prepend -->{searchresults.TOPIC_AUTHOR_FULL}<!-- EVENT search_results_topic_author_username_append --> &raquo; <time datetime="{searchresults.FIRST_POST_TIME_RFC3339}">{searchresults.FIRST_POST_TIME}</time> &raquo; {L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a>
 								{% EVENT topiclist_row_topic_by_author_after %}
@@ -140,7 +140,7 @@
 
 							<!-- IF .searchresults.pagination -->
 							<div class="pagination">
-								<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>
+								<span>{{ Icon('font', 'clone', '', true, 'far') }}</span>
 								<ul>
 								<!-- BEGIN pagination -->
 									<!-- IF searchresults.pagination.S_IS_PREV -->
@@ -163,7 +163,7 @@
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT search_results_last_post_author_username_prepend -->{searchresults.LAST_POST_AUTHOR_FULL}<!-- EVENT search_results_last_post_author_username_append -->
 							<!-- IF not S_IS_BOT -->
 								<a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-									{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
+									{{ Icon('font', 'arrow-up-right-from-square', VIEW_LATEST_POST, true, 'fas c-last-post-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<br /><time datetime="{searchresults.LAST_POST_TIME_RFC3339}">{searchresults.LAST_POST_TIME}</time>
@@ -222,7 +222,7 @@
 		<ul class="searchresults">
 			<li>
 				<a href="{searchresults.U_VIEW_POST}" class="arrow-{S_CONTENT_FLOW_END}">
-					{{ Icon('iconify', 'fa:angle-' ~ S_CONTENT_FLOW_END, lang('JUMP_TO_POST'), false, 'c-return-arrow-icon') }}
+					{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_END, lang('JUMP_TO_POST'), false, 'fas c-return-arrow-icon') }}
 				</a>
 			</li>
 		</ul>

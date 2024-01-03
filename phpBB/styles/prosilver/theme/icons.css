@@ -46,6 +46,10 @@ svg {
 	vertical-align: baseline !important;
 }
 
+.format-buttons .fa-fw {
+	width: 125%;
+}
+
 .o-icon + span,
 span + .o-icon {
 	padding-left: 4px;
@@ -68,6 +72,7 @@ blockquote cite:before,
 
 .c-forum-row-icon,
 .c-notification-check-icon {
+	font-size: 20px;
 	width: 20px;
 	height: 20px;
 	margin-top: 0;
