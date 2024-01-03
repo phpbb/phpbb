@@ -621,7 +621,7 @@ a.header-avatar img {
 .breadcrumbs .crumb:before {
 	font-weight: bold;
 	padding: 0 0.5em;
-	content: "\2039";
+	content: "\203A";
 }
 
 .breadcrumbs .crumb:first-child:before {
