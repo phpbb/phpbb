@@ -211,7 +211,6 @@ class environment extends \Twig\Environment
 		{
 			$context['definition']->set('SCRIPTS', '__SCRIPTS_' . $placeholder_salt . '__');
 			$context['definition']->set('STYLESHEETS', '__STYLESHEETS_' . $placeholder_salt . '__');
-			$context['definition']->set('ICONIFY_ICONS', '__ICONIFY_ICONS_' . $placeholder_salt . '__');
 		}
 
 		/**
@@ -259,7 +258,6 @@ class environment extends \Twig\Environment
 	{
 		$output = str_replace('__STYLESHEETS_' . $placeholder_salt . '__', $this->assets_bag->get_stylesheets_content(), $output);
 		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
-		$output = $this->assets_bag->inject_iconify_icons($output, '__ICONIFY_ICONS_' . $placeholder_salt . '__', $this->phpbb_config['allow_cdn']);
 
 		return $output;
 	}

@@ -67,8 +67,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('ext.manager', $extension_manager);
 
 		$log = new \phpbb\log\dummy();
-		$iconify_bundler = new \phpbb\assets\iconify_bundler($log, $phpbb_root_path);
-		$assets_bag = new \phpbb\template\assets_bag($iconify_bundler);
+		$assets_bag = new \phpbb\template\assets_bag();
 		$phpbb_container->set('assets.bag', $assets_bag);
 
 		$context = new \phpbb\template\context();
