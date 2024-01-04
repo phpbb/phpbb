@@ -964,8 +964,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a i {
-	font-size: 21px;
-	line-height: 21px;
+	font-size: 16px;
 }
 
 .pagination .arrow a {

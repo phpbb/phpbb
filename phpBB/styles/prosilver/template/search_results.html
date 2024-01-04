@@ -81,14 +81,14 @@
 				<dl class="row-item">
 					<dt>
 						<a class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{searchresults.U_NEWEST_POST}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-							{{ Icon('iconify', {
-								'mdi:info-variant' : searchresults.S_POST_GLOBAL,
-								'mdi:info-variant' : searchresults.S_POST_ANNOUNCE,
-								'mdi:star' : searchresults.S_POST_STICKY,
-								'mdi:lock' : searchresults.S_TOPIC_LOCKED,
-								'mdi:arrow-right-bold' : searchresults.S_TOPIC_MOVED,
-								'mdi:fire' : searchresults.S_TOPIC_HOT,
-								'mdi:file-document-outline' : true,
+							{{ Icon('svg', {
+								'info-variant' : searchresults.S_POST_GLOBAL,
+								'info-variant' : searchresults.S_POST_ANNOUNCE,
+								'star' : searchresults.S_POST_STICKY,
+								'lock' : searchresults.S_TOPIC_LOCKED,
+								'arrow-right-bold' : searchresults.S_TOPIC_MOVED,
+								'fire' : searchresults.S_TOPIC_HOT,
+								'file-document-outline' : true,
 							}, '', true, 'c-forum-row-icon') }}
 						</a>
 						{% if lang(searchresults.TOPIC_AUTHOR) == S_USERNAME %}

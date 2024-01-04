@@ -7,7 +7,7 @@
 					{% apply spaceless %}
 						<span class="crumb">
 							<a href="{{ U_SITE_HOME }}" data-navbar-reference="home">
-								{{ Icon('font', 'home', lang('SITE_HOME'), false) }}
+								{{ Icon('font', 'home', lang('SITE_HOME'), false, 'fas o-icon-baseline') }}
 							</a>
 						</span>
 					{% endapply %}
@@ -21,7 +21,7 @@
 							{% if U_SITE_HOME %}
 								<span>{{ lang('INDEX') }}</span>
 							{% else %}
-								{{ Icon('font', 'home', lang('INDEX'), false) }}
+								{{ Icon('font', 'home', lang('INDEX'), false, 'fas o-icon-baseline') }}
 							{% endif %}
 						</a>
 					</span>
@@ -35,11 +35,11 @@
 					<li class="in-menu">
 						<a href="{{ U_WATCH_FORUM_LINK }}" title="{{ S_WATCH_FORUM_TITLE }}" data-ajax="toggle_link" data-toggle-text="{{ S_WATCH_FORUM_TOGGLE }}" data-toggle-url="{{ U_WATCH_FORUM_TOGGLE }}">
 							{% if S_WATCHING_FORUM %}
-								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-watch-icon is-active') }}
-								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-watch-icon') }}
+								{{ Icon('font', 'bell-slash', '', true, 'far c-watch-icon is-active') }}
+								{{ Icon('font', 'bell', '', true, 'far c-watch-icon') }}
 							{% else %}
-								{{ Icon('iconify', 'mdi:eye-plus-outline', '', true, 'c-watch-icon is-active') }}
-								{{ Icon('iconify', 'mdi:eye-minus-outline', '', true, 'c-watch-icon') }}
+								{{ Icon('font', 'bell', '', true, 'far c-watch-icon is-active') }}
+								{{ Icon('font', 'bell-slash', '', true, 'far c-watch-icon') }}
 							{% endif %}
 							<span>{{ S_WATCH_FORUM_TITLE }}</span>
 						</a>

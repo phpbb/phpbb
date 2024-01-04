@@ -25,11 +25,11 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if forumrow.S_UNREAD_FORUM %} unread{% else %} read{% endif %}" href="{forumrow.U_VIEWFORUM}">
-						{{ Icon('iconify', {
-							'mdi:link-variant' : forumrow.S_IS_LINK,
-							'mdi:lock' : forumrow.S_LOCKED_FORUM,
-							'mdi:file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
-							'mdi:file-document-box-outline' : true,
+						{{ Icon('svg', {
+							'link-variant' : forumrow.S_IS_LINK,
+							'lock' : forumrow.S_LOCKED_FORUM,
+							'file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
+							'file-document-box-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					<div class="list-inner">
@@ -87,14 +87,14 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-						{{ Icon('iconify', {
-							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
-							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
-							'mdi:star' : topicrow.S_POST_STICKY,
-							'mdi:lock' : topicrow.S_TOPIC_LOCKED,
-							'mdi:arrow-right-bold' : topicrow.S_TOPIC_MOVED,
-							'mdi:fire' : topicrow.S_TOPIC_HOT,
-							'mdi:file-document-outline' : true,
+						{{ Icon('svg', {
+							'info-variant' : topicrow.S_POST_GLOBAL,
+							'info-variant' : topicrow.S_POST_ANNOUNCE,
+							'star' : topicrow.S_POST_STICKY,
+							'lock' : topicrow.S_TOPIC_LOCKED,
+							'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+							'fire' : topicrow.S_TOPIC_HOT,
+							'file-document-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}

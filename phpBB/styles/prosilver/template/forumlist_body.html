@@ -34,11 +34,11 @@
 			<dl class="row-item">
 				<dt title="{% if forumrow.S_IS_LINK %}{{ lang('FORUM_LINK') }}{% else %}{{ forumrow.FORUM_FOLDER_IMG_ALT }}{% endif %}">
 					<a class="row-item-link{% if forumrow.S_UNREAD_FORUM %} unread{% else %} read{% endif %}" href="{forumrow.U_VIEWFORUM}">
-						{{ Icon('iconify', {
-							'mdi:link-variant' : forumrow.S_IS_LINK,
-							'mdi:lock' : forumrow.S_LOCKED_FORUM,
-							'mdi:file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
-							'mdi:file-document-box-outline' : true,
+						{{ Icon('svg', {
+							'link-variant' : forumrow.S_IS_LINK,
+							'lock' : forumrow.S_LOCKED_FORUM,
+							'file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
+							'file-document-box-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					<div class="list-inner">

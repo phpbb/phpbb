@@ -180,7 +180,7 @@
 				<strong>{L_CONTACT}{L_COLON}</strong>
 				<div class="dropdown-container dropdown-left">
 					<a href="#" class="dropdown-trigger" title="{postrow.CONTACT_USER}">
-						{{ Icon('iconify', 'mdi:comment-processing-outline', postrow.CONTACT_USER, true) }}
+						{{ Icon('font', 'comment-dots', postrow.CONTACT_USER, true, 'far') }}
 					</a>
 					<div class="dropdown">
 						<div class="pointer"><div class="pointer-inner"></div></div>
@@ -194,19 +194,19 @@
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
 										{% EVENT viewtopic_body_contact_icon_prepend %}
 										{% if postrow.contact.ID == 'pm' %}
-											{{ Icon('iconify', 'mdi:comment-account-outline', '', true, 'contact-icon') }}
+											{{ Icon('font', 'message', '', true, 'far contact-icon') }}
 										{% elseif postrow.contact.ID == 'email' %}
-											{{ Icon('iconify', 'mdi:at', '', true, 'contact-icon') }}
+											{{ Icon('font', 'at', '', true, 'fas contact-icon') }}
 										{% elseif postrow.contact.ID == 'phpbb_website' %}
-											{{ Icon('iconify', 'mdi:earth', '', true, 'contact-icon') }}
+											{{ Icon('font', 'earth-americas', '', true, 'fas contact-icon') }}
 										{% elseif postrow.contact.ID == 'phpbb_facebook' %}
-											{{ Icon('iconify', 'mdi:facebook-box', '', true, 'contact-icon c-facebook-icon') }}
+											{{ Icon('font', 'square-facebook', '', true, 'fab contact-icon c-facebook-icon') }}
 										{% elseif postrow.contact.ID == 'phpbb_twitter' %}
-											{{ Icon('iconify', 'mdi:twitter', '', true, 'contact-icon c-twitter-icon') }}
+											{{ Icon('font', 'square-x-twitter', '', true, 'fab contact-icon c-twitter-icon') }}
 										{% elseif postrow.contact.ID == 'phpbb_skype' %}
-											{{ Icon('iconify', 'mdi:skype', '', true, 'contact-icon c-skype-icon') }}
+											{{ Icon('font', 'skype', '', true, 'fab contact-icon c-skype-icon') }}
 										{% elseif postrow.contact.ID == 'phpbb_youtube' %}
-											{{ Icon('iconify', 'mdi:youtube', '', true, 'contact-icon c-youtube-icon') }}
+											{{ Icon('font', 'youtube', '', true, 'fab contact-icon c-youtube-icon') }}
 										{% else %}
 											{{ Icon('svg', contact.ID, '', true, 'contact-icon') }}
 										{% endif %}

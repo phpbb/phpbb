@@ -39,14 +39,14 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_VIEW_TOPIC}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-						{{ Icon('iconify', {
-							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
-							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
-							'mdi:star' : topicrow.S_POST_STICKY,
-							'mdi:lock' : topicrow.S_TOPIC_LOCKED,
-							'mdi:arrow-right-bold' : topicrow.S_TOPIC_MOVED,
-							'mdi:fire' : topicrow.S_TOPIC_HOT,
-							'mdi:file-document-outline' : true,
+						{{ Icon('svg', {
+							'info-variant' : topicrow.S_POST_GLOBAL,
+							'info-variant' : topicrow.S_POST_ANNOUNCE,
+							'star' : topicrow.S_POST_STICKY,
+							'lock' : topicrow.S_TOPIC_LOCKED,
+							'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+							'fire' : topicrow.S_TOPIC_HOT,
+							'file-document-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}

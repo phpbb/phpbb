@@ -127,9 +127,7 @@ blockquote cite:before,
 ---------------------------------------- */
 .contact-icon {
 	background-repeat: no-repeat;
-	display: block;
-	width: 24px;
-	height: 24px;
+	display: inline-block;
 }
 
 .c-button-icon {
