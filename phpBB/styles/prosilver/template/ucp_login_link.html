@@ -32,11 +32,11 @@
 				<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
 				<dl>
 					<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}{L_COLON}</label></dt>
-					<dd><input type="text" tabindex="2" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" /></dd>
+					<dd><input type="text" tabindex="2" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{LOGIN_USERNAME}" class="inputbox autowidth" autocomplete="username" /></dd>
 				</dl>
 				<dl>
 					<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}{L_COLON}</label></dt>
-					<dd><input type="password" tabindex="3" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" autocomplete="off" /></dd>
+					<dd><input type="password" tabindex="3" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" autocomplete="current-password" /></dd>
 				</dl>
 				<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_CODE -->
 					<!-- DEFINE $CAPTCHA_TAB_INDEX = 4 -->
