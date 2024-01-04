@@ -99,8 +99,6 @@
 	},
 	"homepage": "https://www.phpbb.com",
 	"devDependencies": {
-		"@iconify/iconify": "^3.1.1",
-		"@iconify/json": "^2.2.163",
 		"autoprefixer": "^10.4.4",
 		"cssnano": "^5.1.7",
 		"eslint": "^8.13.0",
