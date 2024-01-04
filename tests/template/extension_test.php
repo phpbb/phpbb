@@ -294,7 +294,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PHONE'	=> 'Phone icon',
 				],
-				'<i class="o-icon o-icon-font fa-phone"></i><span>Phone icon</span>',
+				'<i class="o-icon o-icon-font fa-fw fa-phone fas"></i><span>Phone icon</span>',
 
 			],
 			/** Font: all options */
@@ -313,7 +313,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<i class="o-icon o-icon-font fa-pencil a-class another-class" title="Pencil icon" aria-hidden="true" data-attr-1="true" data-attr-2="two"></i>
+				'<i class="o-icon o-icon-font fa-fw fa-pencil a-class another-class" title="Pencil icon" aria-hidden="true" data-attr-1="true" data-attr-2="two"></i>
 				<span class="sr-only">Pencil icon</span>'
 			],
 			/** Font: icons array */
@@ -335,7 +335,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_TOPIC'	=> 'Topic icon',
 				],
-				'<i class="o-icon o-icon-font fa-lock"></i>
+				'<i class="o-icon o-icon-font fa-fw fa-lock fas"></i>
 				<span>Topic icon</span>',
 			],
 			/** Font: icons array with no key for the default */
@@ -357,39 +357,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_TOPIC'	=> 'Topic icon',
 				],
-				'<i class="o-icon o-icon-font fa-file"></i>
+				'<i class="o-icon o-icon-font fa-fw fa-file fas"></i>
 				<span>Topic icon</span>',
-			],
-			/** Iconify: default */
-			[
-				[
-					'type'			=> 'iconify',
-					'icon'			=> 'fa:phone',
-					'title'			=> '',
-					'hidden'		=> false,
-					'classes'		=> '',
-					'attributes'	=> [],
-				],
-				[],
-				'<i class="iconify o-icon-src-fa o-icon" data-icon="fa:phone" data-inline="true"></i>',
-			],
-			/** Iconify: all options */
-			[
-				[
-					'type'			=> 'iconify',
-					'icon'			=> 'mdi:pencil',
-					'title'			=> 'ICON_PENCIL',
-					'hidden'		=> true,
-					'classes'		=> 'icon-lg',
-					'attributes'	=> [
-						'style'			=> 'color: #12a3eb;',
-					],
-				],
-				[
-					'ICON_PENCIL'	=> 'Pencil icon',
-				],
-				'<i class="iconify o-icon-src-mdi o-icon icon-lg" title="Pencil icon" aria-hidden="true" data-icon="mdi:pencil" data-inline="true" style="color: #12a3eb;"></i>
-				<span class="sr-only">Pencil icon</span>',
 			],
 			/** PNG: default */
 			[
