@@ -70,8 +70,8 @@
 		"symfony/css-selector": "^6.3",
 		"symfony/dom-crawler": "^6.3",
 		"symfony/http-client": "^6.3",
-		"vimeo/psalm": "^4.14",
-		"psalm/plugin-symfony": "^3.1"
+		"vimeo/psalm": "^5.18.0",
+		"psalm/plugin-symfony": "^v5.1.0"
 	},
 	"suggest": {
 		"ext-mbstring": "Better performance in search"

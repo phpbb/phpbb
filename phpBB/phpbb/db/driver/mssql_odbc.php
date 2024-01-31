@@ -288,7 +288,7 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 			{
 				$id = odbc_result($result_id, 1);
 				odbc_free_result($result_id);
-				return $id;
+				return $id ? (int) $id : false;
 			}
 			odbc_free_result($result_id);
 		}

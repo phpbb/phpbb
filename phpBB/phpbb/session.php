@@ -61,12 +61,12 @@ class session
 		$script_name = str_replace(array('\\', '//'), '/', $script_name);
 
 		// Now, remove the sid and let us get a clean query string...
-		$use_args = array();
+		$use_args = [];
 
 		// Since some browser do not encode correctly we need to do this with some "special" characters...
 		// " -> %22, ' => %27, < -> %3C, > -> %3E
-		$find = array('"', "'", '<', '>', '&quot;', '&lt;', '&gt;');
-		$replace = array('%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E');
+		$find = ['"', "'", '<', '>', '&quot;', '&lt;', '&gt;'];
+		$replace = ['%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E'];
 
 		foreach ($args as $argument)
 		{
@@ -75,7 +75,7 @@ class session
 				continue;
 			}
 
-			$use_args[] = str_replace($find, $replace, $argument);
+			$use_args[] = (string) str_replace($find, $replace, $argument);
 		}
 		unset($args);
 
@@ -530,7 +530,7 @@ class session
 		{
 			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
 			{
-				$bot = $row['user_id'];
+				$bot = (int) $row['user_id'];
 			}
 
 			// If ip is supplied, we will make sure the ip is matching too...

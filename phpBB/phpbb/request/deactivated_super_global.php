@@ -25,23 +25,23 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	private $name;
 
 	/**
-	* @var string (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)	Super global constant.
+	* @var int (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)	Super global constant.
 	*/
 	private $super_global;
 
 	/**
-	* @var	\phpbb\request\request_interface	The request class instance holding the actual request data.
+	* @var    request_interface    The request class instance holding the actual request data.
 	*/
 	private $request;
 
 	/**
 	* Constructor generates an error message fitting the super global to be used within the other functions.
 	*
-	* @param	\phpbb\request\request_interface	$request	A request class instance holding the real super global data.
-	* @param	string					$name		Name of the super global this is a replacement for - e.g. '_GET'.
-	* @param	string	$super_global	The variable's super global constant (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE).
+	* @param request_interface	$request		A request class instance holding the real super global data.
+	* @param string				$name			Name of the super global this is a replacement for - e.g. '_GET'.
+	* @param int				$super_global	The variable's super global constant (\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE).
 	*/
-	public function __construct(\phpbb\request\request_interface $request, $name, $super_global)
+	public function __construct(request_interface $request, string $name, int $super_global)
 	{
 		$this->request = $request;
 		$this->name = $name;
@@ -82,7 +82,7 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**#@+
 	* Part of the \ArrayAccess implementation, will always result in a FATAL error.
 	*/
-	public function offsetGet($offset): mixed
+	public function offsetGet($offset): void
 	{
 		$this->error();
 	}

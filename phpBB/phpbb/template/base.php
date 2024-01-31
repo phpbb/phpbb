@@ -87,7 +87,7 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function assign_var($varname, $varval)
+	public function assign_var(string $varname, mixed $varval)
 	{
 		$this->context->assign_var($varname, $varval);
 

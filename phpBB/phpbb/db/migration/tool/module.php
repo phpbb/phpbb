@@ -103,6 +103,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 		foreach ($parent_sqls as $parent_sql)
 		{
+			/** @psalm-suppress NoValue */
 			$sql = 'SELECT module_id
 				FROM ' . $this->modules_table . "
 				WHERE module_class = '" . $this->db->sql_escape($class) . "'

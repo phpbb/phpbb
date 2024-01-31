@@ -27,7 +27,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	/**
 	* Creates a configuration container with a default set of values
 	*
-	* @param array<string,string> $config The configuration data.
+	* @param array<string,int|string> $config The configuration data.
 	*/
 	public function __construct(array $config)
 	{
@@ -74,22 +74,22 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* The configuration change will not persist. It will be lost
 	* after the request.
 	*
-	* @param string $key   The configuration option's name.
-	* @param string $value The temporary value.
+	* @param string $offset   The configuration option's name.
+	* @param int|string $value The temporary value.
 	*/
 	#[\ReturnTypeWillChange]
-	public function offsetSet($key, $value)
+	public function offsetSet($offset, $value)
 	{
-		$this->config[$key] = $value;
+		$this->config[$offset] = $value;
 	}
 
 	/**
 	* Called when deleting a configuration value directly, triggers an error.
 	*
-	* @param string $key The configuration option's name.
+	* @param string $offset The configuration option's name.
 	*/
 	#[\ReturnTypeWillChange]
-	public function offsetUnset($key)
+	public function offsetUnset($offset): never
 	{
 		trigger_error('Config values have to be deleted explicitly with the \phpbb\config\config::delete($key) method.', E_USER_ERROR);
 	}
@@ -121,7 +121,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* Sets a configuration option's value
 	*
 	* @param string $key       The configuration option's name
-	* @param string $value     New configuration value
+	* @param int|string $value     New configuration value
 	* @param bool   $use_cache Whether this variable should be cached or if it
 	*                          changes too frequently to be efficiently cached.
 	*/
@@ -135,8 +135,8 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* current configuration value or the configuration value does not exist yet.
 	*
 	* @param  string $key       The configuration option's name
-	* @param  string $old_value Current configuration value
-	* @param  string $new_value New configuration value
+	* @param  int|string $old_value Current configuration value
+	* @param  int|string $new_value New configuration value
 	* @param  bool   $use_cache Whether this variable should be cached or if it
 	*                           changes too frequently to be efficiently cached.
 	* @return bool              True if the value was changed, false otherwise.
@@ -157,7 +157,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* only after set_atomic has been called.
 	*
 	* @param  string $key       The configuration option's name
-	* @param  string $new_value New configuration value
+	* @param  int|string $new_value New configuration value
 	* @throws \phpbb\exception\http_exception when config value is set and not equal to new_value.
 	* @return bool              True if the value was changed, false otherwise.
 	*/

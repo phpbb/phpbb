@@ -554,6 +554,8 @@ function strip_bbcode(&$text, $uid = '')
 /**
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
+*
+* @return string Generated text
 */
 function generate_text_for_display($text, $uid, $bitfield, $flags, $censor_text = true)
 {

@@ -250,7 +250,7 @@ class report
 	/**
 	 * Assigns template variables
 	 *
-	 * @param	int		$mode
+	 * @param	string	$mode
 	 * @param	int		$id
 	 * @param	int		$reason_id
 	 * @param	string	$report_text

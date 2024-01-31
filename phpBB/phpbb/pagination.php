@@ -49,7 +49,7 @@ class pagination
 	* @param string|array $base_url is url prepended to all links generated within the function
 	*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 	*							for the page. Also be sure to specify the pagination path information into the start_name argument
-	* @param string $on_page is the page for which we want to generate the link
+	* @param int $on_page is the page for which we want to generate the link
 	* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
 	*							If you use page numbers inside your controller route, start name should be the string
 	*							that should be removed for the first page (example: /page/%d)
@@ -72,7 +72,7 @@ class pagination
 		* @var string|array base_url is url prepended to all links generated within the function
 		*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 		*							for the page. Also be sure to specify the pagination path information into the start_name argument
-		* @var string on_page is the page for which we want to generate the link
+		* @var int on_page is the page for which we want to generate the link
 		* @var string start_name is the name of the parameter containing the first item of the given page (example: start=20)
 		*							If you use page numbers inside your controller route, start name should be the string
 		*							that should be removed for the first page (example: /page/%d)

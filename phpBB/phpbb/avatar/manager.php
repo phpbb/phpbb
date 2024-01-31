@@ -202,10 +202,10 @@ class manager
 			return self::$default_row;
 		}
 
-		$output = array();
+		$output = [];
 		foreach ($row as $key => $value)
 		{
-			$key = preg_replace("#^(?:{$prefix}_)#", '', $key);
+			$key = preg_replace("#^(?:{$prefix}_)#", '', (string) $key);
 			$output[$key] = $value;
 		}
 

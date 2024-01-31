@@ -221,11 +221,11 @@ class plupload
 	 * appropriate for use in configuring plupload with
 	 *
 	 * @param \phpbb\cache\service	$cache		Cache service object
-	 * @param string				$forum_id	The forum identifier
+	 * @param int					$forum_id	The forum identifier
 	 *
 	 * @return string
 	 */
-	public function generate_filter_string(\phpbb\cache\service $cache, $forum_id)
+	public function generate_filter_string(\phpbb\cache\service $cache, int $forum_id)
 	{
 		$groups = [];
 		$filters = [];

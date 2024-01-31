@@ -219,6 +219,7 @@ class upload
 				$this->storage->delete($thumbnail_file);
 			}
 
+			/** @psalm-suppress NoValue */
 			$this->file_data['error'] = array_merge($this->file_data['error'], $this->file->error);
 			$this->file_data['post_attach'] = false;
 
