@@ -59,7 +59,7 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*
 	* @param \phpbb\template\template	$template	Template object
 	* @param \phpbb\language\language	$language	Language object
-	* @param \phpbb\User				$user		User object
+	* @param \phpbb\user				$user		User object
 	* @param bool						$debug		Set to true to show full exception messages
 	*/
 	public function __construct(\phpbb\template\template $template, \phpbb\language\language $language, \phpbb\user $user, $debug = false)

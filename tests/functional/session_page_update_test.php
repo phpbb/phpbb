@@ -40,7 +40,6 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 		self::request('GET', 'index.php');
 		$this->assertEquals(200, self::$client->getResponse()->getStatus());
 
-		sleep(3); // Let SQL do its job
 		$sql = 'SELECT session_page FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = ' . $user_id . ' ORDER BY session_time DESC';
 		$db->sql_query_limit($sql, 1);
 		$this->assertEquals('index.php', $db->sql_fetchfield('session_page'));
@@ -49,7 +48,6 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 		self::request('GET', 'nonexistent.jpg');
 		$this->assertEquals(404, self::$client->getResponse()->getStatus());
 
-		sleep(3); // Let SQL do its job
 		$db->sql_query_limit($sql, 1);
 		// User page should not be updated to non-existent one
 		$this->assertEquals('index.php', $db->sql_fetchfield('session_page'));
