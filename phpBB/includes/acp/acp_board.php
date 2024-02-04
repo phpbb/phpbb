@@ -1059,19 +1059,19 @@ class acp_board
 			[
 				'tag' 		=> 'select',
 				'value'		=> 0,
-				'selected'	=> ($value == 0) ? ' selected="selected"' : '',
+				'selected'	=> $value == 0,
 				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN'],
 			],
 			[
 				'tag'		=> 'select',
 				'value'		=> 1,
-				'selected'	=> ($value == 1) ? ' selected="selected"' : '',
+				'selected'	=> $value == 1,
 				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'],
 			],
 			[
 				'tag'		=> 'select',
 				'value'		=> 2,
-				'selected'	=> ($value == 2) ? ' selected="selected"' : '',
+				'selected'	=> $value == 2,
 				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'],
 			]
 		];
