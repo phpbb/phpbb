@@ -1051,11 +1051,30 @@ class acp_board
 	/**
 	 * Board disable access for which group: admins: 0; plus global moderators: 1 and plus all moderators: 2
 	 */
-	function board_disable_access($value, $key = '')
+	public function board_disable_access($value, $key = '') : array
 	{
 		global $user;
 
-		return '<option value="0"' . (($value == 0) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN'] . '</option><option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'] . '</option>';
+		return [
+			[
+				'tag' 		=> 'select',
+				'value'		=> 0,
+				'selected'	=> ($value == 0) ? ' selected="selected"' : '',
+				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN'],
+			],
+			[
+				'tag'		=> 'select',
+				'value'		=> 1,
+				'selected'	=> ($value == 1) ? ' selected="selected"' : '',
+				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'],
+			],
+			[
+				'tag'		=> 'select',
+				'value'		=> 2,
+				'selected'	=> ($value == 2) ? ' selected="selected"' : '',
+				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'],
+			]
+		];
 	}
 
 	/**

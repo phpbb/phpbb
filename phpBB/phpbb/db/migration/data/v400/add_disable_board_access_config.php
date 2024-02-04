@@ -11,14 +11,14 @@
 *
 */
 
-namespace phpbb\db\migration\data\v33x;
+namespace phpbb\db\migration\data\v400;
 
 class add_disable_board_access_config extends \phpbb\db\migration\migration
 {
 	static public function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\v3310',
+			'\phpbb\db\migration\data\v400\dev',
 		];
 	}
 
