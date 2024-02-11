@@ -26,7 +26,11 @@ use phpbb\filesystem\helper as filesystem_helper;
 */
 class core extends Extension
 {
-	const TWIG_OPTIONS_POSITION = 7;
+	/**
+	 * Index of array in service template.twig.environment inside services_twig.yml
+	 * @var int
+	 */
+	const TWIG_OPTIONS_POSITION = 8;
 
 	/**
 	 * Config path
@@ -86,7 +90,7 @@ class core extends Extension
 			$twig_environment_options['auto_reload'] = true;
 		}
 
-		// Replace the 7th argument, the options passed to the environment
+		// Replace the 8th argument, the options passed to the environment
 		$definition->replaceArgument(static::TWIG_OPTIONS_POSITION, $twig_environment_options);
 
 		if ($config['twig']['enable_debug_extension'])
