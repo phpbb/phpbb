@@ -28,7 +28,7 @@ class font_awesome_6_upgrade extends migration
 	public function update_data(): array
 	{
 		return [
-			['config.update', ['load_font_awesome_url', 'https://use.fontawesome.com/releases/v6.5.1/css/all.css']],
+			['config.update', ['load_font_awesome_url', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css']],
 		];
 	}
 }
