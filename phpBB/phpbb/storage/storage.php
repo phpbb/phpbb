@@ -15,6 +15,7 @@ namespace phpbb\storage;
 
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\db\driver\driver_interface as db;
+use phpbb\storage\adapter\adapter_interface;
 use phpbb\storage\exception\storage_exception;
 
 /**
@@ -23,7 +24,7 @@ use phpbb\storage\exception\storage_exception;
 class storage
 {
 	/**
-	 * @var \phpbb\storage\adapter\adapter_interface
+	 * @var adapter_interface
 	 */
 	protected $adapter;
 
@@ -39,7 +40,7 @@ class storage
 	protected $cache;
 
 	/**
-	 * @var \phpbb\storage\adapter_factory
+	 * @var adapter_factory
 	 */
 	protected $factory;
 
@@ -58,7 +59,7 @@ class storage
 	 *
 	 * @param db								$db
 	 * @param cache								$cache
-	 * @param \phpbb\storage\adapter_factory	$factory
+	 * @param adapter_factory $factory
 	 * @param string							$storage_name
 	 * @param string							$storage_table
 	 */
@@ -84,7 +85,7 @@ class storage
 	/**
 	 * Returns an adapter instance
 	 *
-	 * @return \phpbb\storage\adapter\adapter_interface
+	 * @return adapter_interface
 	 */
 	protected function get_adapter()
 	{

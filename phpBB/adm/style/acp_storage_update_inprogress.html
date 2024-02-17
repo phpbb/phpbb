@@ -4,27 +4,27 @@
 
 <h1>{{ lang('STORAGE_TITLE') }}</h1>
 
-<script>
-	// <![CDATA[
-	/**
-	 * Popup storage update progress bar
-	 */
-	function popup_progress_bar()
-	{
-		close_waitscreen = 0;
-		// no scrollbars
-		popup('{{ UA_PROGRESS_BAR }}', 400, 240, '_storage');
-	}
-	// ]]>
-</script>
+<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
 
-<p>{{ lang('CONTINUE_EXPLAIN') }}</p>
-
-<form id="acp_storage_continue" method="post" action="{{ U_CONTINUE_UPDATING }}">
-	<fieldset class="submit-buttons">
+<form id="acp_storage_continue" method="post" action="{{ U_ACTION }}">
+	<fieldset>
 		<legend>{{ lang('SUBMIT') }}</legend>
-		<input class="button1" type="submit" id="continue" name="continue" value="{{ lang('CONTINUE') }}" onclick="popup_progress_bar();" />&nbsp;
-		<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+
+		{% if CONTINUE_PROGRESS %}
+		<div class="centered-text">
+			<br>
+			<progress
+				value="{{ CONTINUE_PROGRESS.VALUE }}"
+				max="{{ CONTINUE_PROGRESS.TOTAL }}"
+				style="height: 2em; width: 20em;"></progress><br>
+			{{ CONTINUE_PROGRESS.PERCENTAGE|number_format(2) ~ ' %' }}
+		</div>
+		{% endif %}
+
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="continue" name="continue" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+		</p>
 		{{ S_FORM_TOKEN }}
 	</fieldset>
 </form>

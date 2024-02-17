@@ -16,6 +16,7 @@ use phpbb\di\service_collection;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\request\request;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\helper;
 use phpbb\storage\state_helper;
 use phpbb\storage\update_type;
@@ -77,6 +78,9 @@ class acp_storage
 	/** @var helper */
 	private $storage_helper;
 
+	/** @var string */
+	private $storage_table;
+
 	/**
 	 * @param string $id
 	 * @param string $mode
@@ -97,6 +101,7 @@ class acp_storage
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->state_helper = $phpbb_container->get('storage.state_helper');
 		$this->storage_helper = $phpbb_container->get('storage.helper');
+		$this->storage_table = $phpbb_container->getParameter('tables.storage');
 
 		// Add necessary language files
 		$this->lang->add_lang(['acp/storage']);
@@ -128,10 +133,6 @@ class acp_storage
 		{
 			switch ($action)
 			{
-				case 'progress_bar':
-					$this->display_progress_bar();
-				break;
-
 				case 'update':
 					$this->update_action();
 				break;
@@ -151,7 +152,7 @@ class acp_storage
 			// There is an updating in progress, show the form to continue or cancel
 			if ($this->state_helper->is_action_in_progress())
 			{
-				$this->update_inprogress($id, $mode);
+				$this->update_inprogress();
 			}
 			else
 			{
@@ -162,8 +163,6 @@ class acp_storage
 
 	private function update_action(): void
 	{
-		// Probably it has sense to disable the forum while this is in progress
-
 		if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
 		{
 			trigger_error($this->lang->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
@@ -182,7 +181,7 @@ class acp_storage
 				}
 
 				$sql = 'SELECT file_id, file_path
-						FROM ' . STORAGE_TABLE . "
+						FROM ' . $this->storage_table . "
 						WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
 							AND file_id > " . $this->state_helper->file_index();
 				$result = $this->db->sql_query($sql);
@@ -192,9 +191,8 @@ class acp_storage
 					if (!still_on_time())
 					{
 						$this->db->sql_freeresult($result);
-						meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-						// Here could be included the current file compared with the number of total files too
-						trigger_error($this->lang->lang('STORAGE_UPDATE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state_helper->storages())));
+						$this->display_progress_page();
+						return;
 					}
 
 					// Copy file from old adapter to the new one
@@ -223,7 +221,7 @@ class acp_storage
 					}
 
 					$sql = 'SELECT file_id, file_path
-							FROM ' . STORAGE_TABLE . "
+							FROM ' . $this->storage_table . "
 							WHERE  storage = '" . $this->db->sql_escape($storage_name) . "'
 								AND file_id > " . $this->state_helper->file_index();
 					$result = $this->db->sql_query($sql);
@@ -233,8 +231,8 @@ class acp_storage
 						if (!still_on_time())
 						{
 							$this->db->sql_freeresult($result);
-							meta_refresh(1, append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage')));
-							trigger_error($this->lang->lang('STORAGE_UPDATE_REMOVE_REDIRECT', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'), $i + 1, count($this->state_helper->storages())));
+							$this->display_progress_page();
+							return;
 						}
 
 						// remove file from old (current) adapter
@@ -262,10 +260,10 @@ class acp_storage
 		$storages = $this->state_helper->storages();
 		$this->state_helper->clear_state();
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_UPDATE', false, [implode(', ', $storages)]);
-		trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action) . $this->close_popup_js());
+		trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 	}
 
-	private function update_inprogress(string $id, string $mode): void
+	private function update_inprogress(): void
 	{
 		// Template from adm/style
 		$this->tpl_name = 'acp_storage_update_inprogress';
@@ -274,10 +272,8 @@ class acp_storage
 		$this->page_title = 'STORAGE_TITLE';
 
 		$this->template->assign_vars(array(
-			'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->u_action, "action=progress_bar")),
-			'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-			'L_CONTINUE'			=> $this->lang->lang('CONTINUE_UPDATING'),
-			'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('CONTINUE_UPDATING_EXPLAIN'),
+			'U_ACTION'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
+			'CONTINUE_PROGRESS' => $this->get_storage_update_progress(),
 		));
 	}
 
@@ -308,27 +304,14 @@ class acp_storage
 				trigger_error(implode('<br>', $messages) . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// Start process and show form
+			// Start process and show progress
 			if (!empty($modified_storages))
 			{
 				// Create state
 				$this->state_helper->init(update_type::from((int) $this->request->variable('update_type', update_type::CONFIG->value)), $modified_storages, $this->request);
 
-				// Show the confirmation form to start the process
-				$this->template->assign_vars(array(
-					'UA_PROGRESS_BAR'		=> addslashes(append_sid($this->u_action, "action=progress_bar")),
-					'S_CONTINUE_UPDATING'	=> true,
-					'U_CONTINUE_UPDATING'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
-					'L_CONTINUE'			=> $this->lang->lang('START_UPDATING'),
-					'L_CONTINUE_EXPLAIN'	=> $this->lang->lang('START_UPDATING_EXPLAIN'),
-				));
-
-				// Template from adm/style
-				$this->tpl_name = 'acp_storage_update_inprogress';
-
-				// Set page title
-				$this->page_title = 'STORAGE_TITLE';
-
+				// Start displaying progress on first submit
+				$this->display_progress_page();
 				return;
 			}
 
@@ -413,7 +396,7 @@ class acp_storage
 			{
 				$free_space = get_formatted_filesize($storage->free_space());
 			}
-			catch (\phpbb\storage\exception\storage_exception $e)
+			catch (storage_exception $e)
 			{
 				$free_space = $this->lang->lang('STORAGE_UNKNOWN');
 			}
@@ -432,33 +415,60 @@ class acp_storage
 	}
 
 	/**
-	 * Display progress bar
+	 * Display progress page
 	 */
-	protected function display_progress_bar() : void
+	protected function display_progress_page() : void
 	{
+		$u_action = append_sid($this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'));
+		meta_refresh(1, $u_action);
+
 		adm_page_header($this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'));
-		$this->template->set_filenames(array(
-				'body'	=> 'progress_bar.html')
-		);
-		$this->template->assign_vars(array(
-				'L_PROGRESS'			=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'),
-				'L_PROGRESS_EXPLAIN'	=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'))
-		);
+		$this->template->set_filenames([
+				'body'	=> 'acp_storage_update_progress.html'
+		]);
+
+		$this->template->assign_vars([
+				'INDEXING_TITLE'		=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS'),
+				'INDEXING_EXPLAIN'		=> $this->lang->lang('STORAGE_UPDATE_IN_PROGRESS_EXPLAIN'),
+				'INDEXING_PROGRESS_BAR'	=> $this->get_storage_update_progress(),
+		]);
 		adm_page_footer();
 	}
 
-	/**
-	 * Get JS code for closing popup
-	 *
-	 * @return string Popup JS code
-	 */
-	function close_popup_js() : string
+	protected function get_storage_update_progress(): array
 	{
-		return "<script type=\"text/javascript\">\n" .
-			"// <![CDATA[\n" .
-			"	close_waitscreen = 1;\n" .
-			"// ]]>\n" .
-			"</script>\n";
+		$file_index = $this->state_helper->file_index();
+		$stage_is_copy = $this->state_helper->storage_index() < count($this->state_helper->storages());
+		$storage_name = $this->state_helper->storages()[$stage_is_copy ? $this->state_helper->storage_index() : $this->state_helper->remove_storage_index()];
+
+		$sql = 'SELECT COUNT(file_id) as done_count
+			FROM ' . $this->storage_table . '
+			WHERE file_id <= ' . $file_index . "
+				AND storage = '" . $this->db->sql_escape($storage_name) . "'";
+		$result = $this->db->sql_query($sql);
+		$done_count = (int) $this->db->sql_fetchfield('done_count');
+		$this->db->sql_freeresult($result);
+
+		$sql = 'SELECT COUNT(file_id) as remain_count
+			FROM ' . $this->storage_table . "
+			WHERE file_id > ' . $file_index . '
+				AND storage = '" . $this->db->sql_escape($storage_name) . "'";
+		$result = $this->db->sql_query($sql);
+		$remain_count = (int) $this->db->sql_fetchfield('remain_count');
+		$this->db->sql_freeresult($result);
+
+		$total_count = $done_count + $remain_count;
+		$percent = $done_count / $total_count;
+
+		$steps = $this->state_helper->storage_index() + $this->state_helper->remove_storage_index() + $percent;
+		$multiplier = $this->state_helper->update_type() === update_type::MOVE ? 2 : 1;
+		$steps_total = count($this->state_helper->storages()) * $multiplier;
+
+		return [
+			'VALUE'			=> $steps,
+			'TOTAL'			=> $steps_total,
+			'PERCENTAGE'	=> $steps / $steps_total * 100,
+		];
 	}
 
 	/**

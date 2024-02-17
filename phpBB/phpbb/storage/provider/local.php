@@ -37,7 +37,10 @@ class local implements provider_interface
 	public function get_options()
 	{
 		return [
-			'path' => ['type' => 'text'],
+			'path' => [
+				'tag' => 'input',
+				'type' => 'text',
+			],
 		];
 	}
 
