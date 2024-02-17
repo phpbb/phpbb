@@ -163,6 +163,7 @@ class state_helper
 
 			foreach (array_keys($options) as $definition)
 			{
+				/** @psalm-suppress InvalidArrayOffset */
 				$state['storages'][$storage_name]['config'][$definition] = $request->variable([$storage_name, $definition], '');
 			}
 		}

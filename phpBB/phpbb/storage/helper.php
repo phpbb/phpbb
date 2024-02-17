@@ -45,12 +45,12 @@ class helper
 	/**
 	 * Get adapter definitions from a provider
 	 *
-	 * @param string $provider Provider class
+	 * @param string $provider_class Provider class
 	 * @return array Adapter definitions
 	 */
-	public function get_provider_options(string $provider) : array
+	public function get_provider_options(string $provider_class) : array
 	{
-		return $this->provider_collection->get_by_class($provider)->get_options();
+		return $this->provider_collection->get_by_class($provider_class)->get_options();
 	}
 
 	/**
@@ -108,21 +108,16 @@ class helper
 
 		if (!isset($adapters[$storage_name]))
 		{
-			$provider = $this->state_helper->new_provider($storage_name);
-			$provider_class = $this->provider_collection->get_by_class($provider);
-
-			$adapter = $this->adapter_collection->get_by_class($provider_class->get_adapter_class());
-			$definitions = $this->get_provider_options($provider);
+			$provider_class = $this->state_helper->new_provider($storage_name);
+			$definitions = array_keys($this->get_provider_options($provider_class));
 
 			$options = [];
-			foreach (array_keys($definitions) as $definition)
+			foreach ($definitions as $definition)
 			{
 				$options[$definition] = $this->state_helper->new_definition_value($storage_name, $definition);
 			}
 
-			$adapter->configure($options);
-
-			$adapters[$storage_name] = $adapter;
+			$adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $options);
 		}
 
 		return $adapters[$storage_name];

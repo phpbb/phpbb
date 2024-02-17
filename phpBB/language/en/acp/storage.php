@@ -36,7 +36,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
-$lang = array_merge($lang, array(
+$lang = array_merge($lang, [
 
 	// Template
 	'STORAGE_TITLE'							=> 'Storage Settings',
@@ -52,12 +52,6 @@ $lang = array_merge($lang, array(
 	'STORAGE_UPDATE_TYPE_CONFIG'			=> 'Update configuration only',
 	'STORAGE_UPDATE_TYPE_COPY'				=> 'Update configuration and copy files',
 	'STORAGE_UPDATE_TYPE_MOVE'				=> 'Update configuration and move files',
-	'START_UPDATING'						=> 'Start update process',
-	'START_UPDATING_EXPLAIN'				=> 'Start the storage update process',
-	'CONTINUE_UPDATING'						=> 'Continue previous update process',
-	'CONTINUE_UPDATING_EXPLAIN'				=> 'An update process has been started. In order to access the storage settings page you will have to complete it or cancel it.',
-	'STORAGE_UPDATE_REDIRECT'				=> 'Files of %1$s (%2$d/%3$d) are being moved.<br>',
-	'STORAGE_UPDATE_REMOVE_REDIRECT'		=> 'Files of old %1$s (%2$d/%3$d) are being removed.<br>',
 
 	// Template progress bar
 	'STORAGE_UPDATE_IN_PROGRESS'			=> 'Storage update in progress',
@@ -83,4 +77,4 @@ $lang = array_merge($lang, array(
 
 	'STORAGE_PATH_NOT_EXISTS'		=> '“%1$s” path does not exist or is not writable.',
 	'STORAGE_PATH_NOT_SET'			=> '“%1$s” path is not set.',
-));
+]);
