@@ -211,6 +211,4 @@ class state_helper
 		$this->config_text->set('storage_update_state', json_encode($state, JSON_THROW_ON_ERROR));
 	}
 
-
-
 }

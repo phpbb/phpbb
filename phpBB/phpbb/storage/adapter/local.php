@@ -299,10 +299,8 @@ class local implements adapter_interface, stream_interface
 	 * @param string	$path	The file
 	 *
 	 * @return array Properties
-	 * @throws storage_exception		When cannot get size
 	 *
 	 * @throws storage_exception		When cannot get size
-	 *
 	 */
 	public function file_size(string $path): array
 	{

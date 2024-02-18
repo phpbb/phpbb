@@ -33,13 +33,13 @@ if (!defined('IN_PHPBB'))
 
 class acp_storage
 {
-	/** @var driver_interface $db */
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var language $log */
+	/** @var language */
 	protected $lang;
 
-	/** @var log_interface $log */
+	/** @var log_interface */
 	protected $log;
 
 	/** @var request */
