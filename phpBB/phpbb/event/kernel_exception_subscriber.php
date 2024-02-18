@@ -44,6 +44,13 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*/
 	protected $language;
 
+	/**
+	* User object
+	*
+	* @var \phpbb\user
+	*/
+	protected $user;
+
 	/** @var \phpbb\request\type_cast_helper */
 	protected $type_caster;
 
@@ -52,13 +59,15 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 	*
 	* @param \phpbb\template\template	$template	Template object
 	* @param \phpbb\language\language	$language	Language object
+	* @param \phpbb\user				$user		User object
 	* @param bool						$debug		Set to true to show full exception messages
 	*/
-	public function __construct(\phpbb\template\template $template, \phpbb\language\language $language, $debug = false)
+	public function __construct(\phpbb\template\template $template, \phpbb\language\language $language, \phpbb\user $user, $debug = false)
 	{
 		$this->debug = $debug || defined('DEBUG');
 		$this->template = $template;
 		$this->language = $language;
+		$this->user = $user;
 		$this->type_caster = new \phpbb\request\type_cast_helper();
 	}
 
@@ -81,6 +90,9 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		}
 		else if (!$this->debug && $exception instanceof NotFoundHttpException)
 		{
+			// Do not update user session page if it does not exist
+			$this->user->update_session_page = false;
+
 			$message = $this->language->lang('PAGE_NOT_FOUND');
 		}
 
