@@ -124,7 +124,7 @@ class storage
 	 *
 	 * @return string    Returns file contents
 	 *
-	 *@throws storage_exception	When the file doesn't exist
+	 * @throws storage_exception	When the file doesn't exist
 	 * 						When cannot read file contents
 	 *
 	 */
@@ -228,7 +228,7 @@ class storage
 	 * @param string	$path	File to read
 	 *
 	 * @return resource    Returns a file pointer
-	 *@throws storage_exception	When the file doesn't exist
+	 * @throws storage_exception	When the file doesn't exist
 	 *						When unable to open file
 	 *
 	 */
@@ -405,7 +405,7 @@ class storage
 	 * @param string	$path	The file
 	 *
 	 * @return \phpbb\storage\file_info	Returns file_info object
-	 *@throws storage_exception    When the adapter doesn't implement the method
+	 * @throws storage_exception    When the adapter doesn't implement the method
 	 *													When the file doesn't exist
 	 *
 	 */
@@ -486,7 +486,7 @@ class storage
 	 * Get space available in bytes
 	 *
 	 * @return float    Returns available space
-	 *@throws storage_exception		When unable to retrieve available storage space
+	 * @throws storage_exception		When unable to retrieve available storage space
 	 *
 	 */
 	public function free_space()
