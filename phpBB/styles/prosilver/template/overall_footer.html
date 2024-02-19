@@ -76,6 +76,19 @@
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS forum_fn.js -->
 <!-- INCLUDEJS ajax.js -->
+{% if S_ALLOW_CDN %}
+<script>
+	(function($){
+		const $fa_cdn = $('head').find('link[rel="stylesheet"]').first(),
+			$span = $('<span class="fa" style="display:none"></span>').appendTo('body');
+		if ($span.css('fontFamily') !== '"Font Awesome 6 Free"') {
+			$fa_cdn.after('<link href="{{ T_ASSETS_PATH ~ '/css/font-awesome.min.css' }}" rel="stylesheet">');
+			$fa_cdn.remove();
+		}
+		$span.remove();
+	})(jQuery);
+</script>
+{% endif %}
 
 <!-- IF S_COOKIE_NOTICE -->
 	<script src="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.js?assets_version={T_ASSETS_VERSION}"></script>

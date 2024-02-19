@@ -19,6 +19,19 @@
 <script src="{T_JQUERY_LINK}"></script>
 <!-- IF S_ALLOW_CDN --><script>window.jQuery || document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery-3.6.0.min.js?assets_version={T_ASSETS_VERSION}">\x3C/script>');</script><!-- ENDIF -->
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
+{% if S_ALLOW_CDN %}
+<script>
+	(function($){
+		const $fa_cdn = $('head').find('link[rel="stylesheet"]').first(),
+			$span = $('<span class="fa" style="display:none"></span>').appendTo('body');
+		if ($span.css('fontFamily') !== '"Font Awesome 6 Free"') {
+			$fa_cdn.after('<link href="{{ T_ASSETS_PATH ~ '/css/font-awesome.min.css' }}" rel="stylesheet">');
+			$fa_cdn.remove();
+		}
+		$span.remove();
+	})(jQuery);
+</script>
+{% endif %}
 
 <!-- EVENT acp_simple_footer_after -->
 {$SCRIPTS}
