@@ -1050,26 +1050,28 @@ class acp_board
 
 	/**
 	 * Board disable access for which group: admins: 0; plus global moderators: 1 and plus all moderators: 2
+	 *
+	 * @param int $value Value from config
+	 *
+	 * @return array Options array for select
 	 */
-	public function board_disable_access($value, $key = '') : array
+	public function board_disable_access(int $value) : array
 	{
-		global $user;
-
 		return [
 			[
 				'value'		=> 0,
 				'selected'	=> $value == 0,
-				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN'],
+				'label'		=> $this->language->lang('DISABLE_BOARD_ACCESS_ADMIN'),
 			],
 			[
 				'value'		=> 1,
 				'selected'	=> $value == 1,
-				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'],
+				'label'		=> $this->language->lang('DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'),
 			],
 			[
 				'value'		=> 2,
 				'selected'	=> $value == 2,
-				'label'		=> $user->lang['DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'],
+				'label'		=> $this->language->lang('DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'),
 			],
 		];
 	}
