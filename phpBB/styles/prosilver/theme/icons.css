@@ -14,7 +14,6 @@ svg {
 	vertical-align: middle !important;
 	width: 14px;
 	height: 14px;
-	margin-top: -4px;
 }
 
 .o-icon-src-mdi,
@@ -28,9 +27,8 @@ svg {
 }
 
 .o-icon-font {
-	font-family: "Font Awesome 5 Free", "Font Awesome 5 Brands";
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
 	font-size: 14px;
-	font-weight: normal;
 	font-style: normal;
 	font-variant: normal;
 	-webkit-font-smoothing: antialiased;
@@ -40,7 +38,16 @@ svg {
 	/* stylelint-disable order/properties-order */
 	-moz-osx-font-smoothing: grayscale;
 	/* stylelint-enable order/properties-order */
+	padding: 2px;
 	text-rendering: auto; /* optimizelegibility throws things off #1094 */
+}
+
+.o-icon-baseline {
+	vertical-align: baseline !important;
+}
+
+.format-buttons .fa-fw {
+	width: 125%;
 }
 
 .o-icon + span,
@@ -65,6 +72,7 @@ blockquote cite:before,
 
 .c-forum-row-icon,
 .c-notification-check-icon {
+	font-size: 20px;
 	width: 20px;
 	height: 20px;
 	margin-top: 0;
@@ -119,9 +127,7 @@ blockquote cite:before,
 ---------------------------------------- */
 .contact-icon {
 	background-repeat: no-repeat;
-	display: block;
-	width: 24px;
-	height: 24px;
+	display: inline-block;
 }
 
 .c-button-icon {

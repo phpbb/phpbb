@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "92873eaf73cacda45801dcd603c021f2",
+    "content-hash": "75425a269d37301eb11d494437c2f5ff",
     "packages": [
         {
             "name": "bantu/ini-get-wrapper",
@@ -1780,45 +1780,6 @@
                 }
             ],
             "time": "2023-04-17T16:00:37+00:00"
-        },
-        {
-            "name": "iconify/json-tools",
-            "version": "1.0.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/iconify/json-tools.php.git",
-                "reference": "3d24f282b309cb17e3cb80192ae071dd47bce9e0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/iconify/json-tools.php/zipball/3d24f282b309cb17e3cb80192ae071dd47bce9e0",
-                "reference": "3d24f282b309cb17e3cb80192ae071dd47bce9e0",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.6"
-            },
-            "require-dev": {
-                "iconify/json": "1.*",
-                "phpunit/phpunit": "9.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Iconify\\JSONTools\\": "lib"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Functions for manipulating Iconify JSON SVG collections.",
-            "homepage": "https://iconify.design/",
-            "support": {
-                "issues": "https://github.com/iconify/json-tools.php/issues",
-                "source": "https://github.com/iconify/json-tools.php/tree/1.0.10"
-            },
-            "time": "2020-12-16T13:04:11+00:00"
         },
         {
             "name": "justinrainbow/json-schema",

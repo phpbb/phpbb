@@ -621,7 +621,7 @@ a.header-avatar img {
 .breadcrumbs .crumb:before {
 	font-weight: bold;
 	padding: 0 0.5em;
-	content: "\2039";
+	content: "\203A";
 }
 
 .breadcrumbs .crumb:first-child:before {
@@ -964,8 +964,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a i {
-	font-size: 21px;
-	line-height: 21px;
+	font-size: 16px;
 }
 
 .pagination .arrow a {

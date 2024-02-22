@@ -163,6 +163,12 @@
 	float: right;
 }
 
+.rtl .breadcrumbs .crumb:before {
+	font-weight: bold;
+	padding: 0 0.5em;
+	content: "\2039";
+}
+
 /* Table styles
 ---------------------------------------- */
 .rtl table.table1 thead th {

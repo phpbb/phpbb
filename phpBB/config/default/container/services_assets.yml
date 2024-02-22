@@ -2,12 +2,3 @@ services:
     assets.bag:
         class: phpbb\template\assets_bag
         shared: false
-        arguments:
-            - '@assets.iconify_bundler'
-
-    assets.iconify_bundler:
-        class: phpbb\assets\iconify_bundler
-        shared: false
-        arguments:
-            - '@log'
-            - '%core.root_path%'

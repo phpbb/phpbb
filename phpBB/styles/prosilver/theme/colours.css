@@ -199,7 +199,8 @@ dl.details dd {
 /* icon styles */
 .icon.icon-blue, /* DEPRECATED 4.0 */
 a:hover .icon.icon-blue, /* DEPRECATED 4.0 */
-.read {
+.read,
+.c-unapproved-icon {
 	color: #0059b3;
 }
 
@@ -219,8 +220,7 @@ a:hover .icon.icon-green, /* DEPRECATED 4.0 */
 a:hover .icon.icon-red, /* DEPRECATED 4.0 */
 .c-topic-reported-icon,
 .c-topic-unread-icon,
-.c-warning-icon,
-.c-unapproved-icon {
+.c-warning-icon {
 	color: #d41142;
 }
 
@@ -283,7 +283,7 @@ a:hover .icon.icon-black, /* DEPRECATED 4.0 */
 }
 
 .c-twitter-icon {
-	color: #1da1f2;
+	color: #000000;
 }
 
 .c-skype-icon {

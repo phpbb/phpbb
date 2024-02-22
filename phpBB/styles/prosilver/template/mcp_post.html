@@ -14,7 +14,7 @@
 			<h3>{L_REPORT_REASON}{L_COLON} {REPORT_REASON_TITLE}</h3>
 			<p class="author">{L_REPORTED} {L_POST_BY_AUTHOR} {REPORTER_FULL} &laquo; {REPORT_DATE}</p>
 		<!-- IF S_REPORT_CLOSED -->
-			<p class="post-notice reported">{{ Icon('iconify', 'fa:exclamation', '', true,  'c-topic-reported-icon') }}{L_REPORT_CLOSED}</p>
+			<p class="post-notice reported">{{ Icon('font', 'exclamation', '', true,  'fas c-topic-reported-icon') }}{L_REPORT_CLOSED}</p>
 		<!-- ENDIF -->
 			<div class="content">
 			<!-- IF REPORT_TEXT -->
@@ -61,7 +61,7 @@
 			<!-- IF U_EDIT -->
 				<li>
 					<a href="{U_EDIT}" title="{L_EDIT_POST}" class="button">
-						{{ Icon('iconify', 'fa:pencil', lang('EDIT_POST'), true, 'c-button-icon') }}
+						{{ Icon('font', 'pencil', lang('EDIT_POST'), true, 'fas c-button-icon') }}
 					</a>
 				</li>
 			<!-- ENDIF -->
@@ -75,7 +75,7 @@
 			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:{bcc_recipient.COLOUR};"<!-- ENDIF -->><strong>{bcc_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
 		</p>
 		<!-- ELSE -->
-		<p class="author"><span>{{ Icon('iconify', 'fa:file', MINI_POST, true,  'c-topic-icon') }}</span> {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
+		<p class="author"><span>{{ Icon('font', 'file', MINI_POST, true, 'fas c-topic-icon') }}</span> {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
 		<!-- ENDIF -->
 
 		<!-- IF S_POST_UNAPPROVED -->
@@ -104,7 +104,7 @@
 
 		{% if S_POST_REPORTED and not S_MCP_REPORT %}
 			<p class="post-notice reported">
-				{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
+				{{ Icon('font', 'exclamation', lang('TOPIC_REPORTED'), true, 'fas c-topic-reported-icon') }}
 				<a href="{U_MCP_REPORT}"><strong>{{ lang('POST_REPORTED') }}</strong></a>
 			</p>
 		{% endif %}
@@ -340,13 +340,13 @@
 				<ul>
 				<!-- BEGIN pagination_ips -->
 					<!-- IF pagination_ips.S_IS_PREV -->
-					<li class="arrow previous"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="prev" role="button">{{ Icon('iconify', 'fa:chevron-' ~ S_CONTENT_FLOW_BEGIN, lang('PREVIOUS'), true, 'c-button-icon') }}</a></li>
+					<li class="arrow previous"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="prev" role="button">{{ Icon('font', 'chevron-' ~ S_CONTENT_FLOW_BEGIN, lang('PREVIOUS'), true, 'fas c-button-icon') }}</a></li>
 					<!-- ELSEIF pagination_ips.S_IS_CURRENT -->
 					<li class="active"><span>{pagination_ips.PAGE_NUMBER}</span></li>
 					<!-- ELSEIF pagination_ips.S_IS_ELLIPSIS -->
 					<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
 					<!-- ELSEIF pagination_ips.S_IS_NEXT -->
-					<li class="arrow next"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="next" role="button">{{ Icon('iconify', 'fa:chevron-' ~ S_CONTENT_FLOW_END, lang('NEXT'), true, 'c-button-icon') }}</a></li>
+					<li class="arrow next"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="next" role="button">{{ Icon('font', 'chevron-' ~ S_CONTENT_FLOW_END, lang('NEXT'), true, 'fas c-button-icon') }}</a></li>
 					<!-- ELSE -->
 					<li><a class="button" href="{pagination_ips.PAGE_URL}" role="button">{pagination_ips.PAGE_NUMBER}</a></li>
 					<!-- ENDIF -->

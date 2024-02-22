@@ -39,14 +39,14 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_VIEW_TOPIC}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-						{{ Icon('iconify', {
-							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
-							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
-							'mdi:star' : topicrow.S_POST_STICKY,
-							'mdi:lock' : topicrow.S_TOPIC_LOCKED,
-							'mdi:arrow-right-bold' : topicrow.S_TOPIC_MOVED,
-							'mdi:fire' : topicrow.S_TOPIC_HOT,
-							'mdi:file-document-outline' : true,
+						{{ Icon('svg', {
+							'info-variant' : topicrow.S_POST_GLOBAL,
+							'info-variant' : topicrow.S_POST_ANNOUNCE,
+							'star' : topicrow.S_POST_STICKY,
+							'lock' : topicrow.S_TOPIC_LOCKED,
+							'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+							'fire' : topicrow.S_TOPIC_HOT,
+							'file-document-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}
@@ -63,24 +63,24 @@
 					<!-- EVENT mcp_forum_topic_title_after -->
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-							{{ Icon('iconify', 'fa:question', lang('TOPIC_UNAPPROVED'), true, 'c-unapproved-icon') }}
+							{{ Icon('font', 'circle-question', lang('TOPIC_UNAPPROVED'), true, 'fas c-unapproved-icon o-icon-baseline') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_DELETED or topicrow.S_POSTS_DELETED -->
 						<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_DELETED}">
-							{{ Icon('iconify', 'fa:recycle', lang('TOPIC_DELETED'), true, 'c-topic-deleted-icon') }}
+							{{ Icon('font', 'recycle', lang('TOPIC_DELETED'), true, 'fas c-topic-deleted-icon o-icon-baseline') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED -->
 						<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-							{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
+							{{ Icon('font', 'triangle-exclamation', lang('TOPIC_REPORTED'), true, 'fas c-topic-reported-icon o-icon-baseline') }}
 						</a>
 					<!-- ENDIF -->
 					<!-- IF topicrow.S_MOVED_TOPIC and S_CAN_DELETE -->&nbsp;<a href="{topicrow.U_DELETE_TOPIC}" class="topictitle">[ {L_DELETE_SHADOW_TOPIC} ]</a><!-- ENDIF -->
 					<br />
 					<!-- EVENT topiclist_row_topic_title_after -->
 					<div class="responsive-show" style="display: none;">
-						{% if topicrow.ATTACH_ICON_IMG %}{{ Icon('iconify', 'fa:paperclip', '', true) }} {% endif %}
+						{% if topicrow.ATTACH_ICON_IMG %}{{ Icon('font', 'paperclip', '', true) }} {% endif %}
 						{L_LAST_POST} {L_POST_BY_AUTHOR} {% EVENT mcp_forum_last_post_author_username_prepend %}{topicrow.LAST_POST_AUTHOR_FULL}{% EVENT mcp_forum_last_post_author_username_append %} &laquo; {topicrow.LAST_POST_TIME}<br />
 					</div>
 					<span class="responsive-show left-box" style="display: none;">{L_REPLIES}{L_COLON} <strong>{topicrow.REPLIES}</strong></span>
@@ -104,7 +104,7 @@
 					<!-- ENDIF -->
 
 					<div class="responsive-hide">
-						{% if topicrow.ATTACH_ICON_IMG %}{{ Icon('iconify', 'fa:paperclip', '', true) }} {% endif %}
+						{% if topicrow.ATTACH_ICON_IMG %}{{ Icon('font', 'paperclip', '', true) }} {% endif %}
 						{% EVENT topiclist_row_topic_by_author_before %}
 						{L_POST_BY_AUTHOR} {% EVENT mcp_forum_topic_author_username_prepend %}{topicrow.TOPIC_AUTHOR_FULL}{% EVENT mcp_forum_topic_author_username_append %} &raquo; {topicrow.FIRST_POST_TIME}
 						{% EVENT topiclist_row_topic_by_author_after %}

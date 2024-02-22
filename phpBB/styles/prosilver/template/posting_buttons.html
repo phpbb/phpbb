@@ -43,43 +43,43 @@
 <!-- EVENT posting_editor_buttons_before -->
 <div id="format-buttons" class="format-buttons"<!-- IF S_ALLOW_MENTIONS --> data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-topic-id="{S_TOPIC_ID}" data-user-id="{S_USER_ID}"<!-- ENDIF -->>
 	<button type="button" class="button button-icon-only bbcode-b" accesskey="b" name="addbbcode0" value=" B " onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}">
-		{{ Icon('iconify', 'mdi:format-bold', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'bold', '', true, 'fas c-button-icon') }}
 	</button>
 	<button type="button" class="button button-icon-only bbcode-i" accesskey="i" name="addbbcode2" value=" i " onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}">
-		{{ Icon('iconify', 'mdi:format-italic', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'italic', '', true, 'fas c-button-icon') }}
 	</button>
 	<button type="button" class="button button-icon-only bbcode-u" accesskey="u" name="addbbcode4" value=" u " onclick="bbstyle(4)" title="{L_BBCODE_U_HELP}">
-		{{ Icon('iconify', 'mdi:format-underline', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'underline', '', true, 'fas c-button-icon') }}
 	</button>
 	<!-- IF S_BBCODE_QUOTE -->
 	<button type="button" class="button button-icon-only bbcode-quote" accesskey="q" name="addbbcode6" value="Quote" onclick="bbstyle(6)" title="{L_BBCODE_Q_HELP}">
-		{{ Icon('iconify', 'mdi:format-quote-open', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'quote-left', '', true, 'fas c-button-icon') }}
 	</button>
 	<!-- ENDIF -->
 	<button type="button" class="button button-icon-only bbcode-code" accesskey="c" name="addbbcode8" value="Code" onclick="bbstyle(8)" title="{L_BBCODE_C_HELP}">
-		{{ Icon('iconify', 'fa:code', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'code', '', true, 'fas c-button-icon') }}
 	</button>
 	<button type="button" class="button button-icon-only bbcode-list" accesskey="l" name="addbbcode10" value="List" onclick="bbstyle(10)" title="{L_BBCODE_L_HELP}">
-		{{ Icon('iconify', 'mdi:format-list-bulleted', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'list-ul', '', true, 'fas c-button-icon') }}
 	</button>
 	<button type="button" class="button button-icon-only bbcode-list-" accesskey="o" name="addbbcode12" value="List=" onclick="bbstyle(12)" title="{L_BBCODE_O_HELP}">
-		{{ Icon('iconify', 'mdi:format-list-numbered', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'list-ol', '', true, 'fas c-button-icon') }}
 	</button>
 	<button type="button" class="button button-icon-only bbcode-asterisk" accesskey="y" name="addlistitem" value="[*]" onclick="bbstyle(-1)" title="{L_BBCODE_LISTITEM_HELP}">
-		{{ Icon('iconify', 'mdi:playlist-add', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'asterisk', '', true, 'fas c-button-icon') }}
 	</button>
 	<!-- IF S_BBCODE_IMG -->
 	<button type="button" class="button button-icon-only bbcode-img" accesskey="p" name="addbbcode14" value="Img" onclick="bbstyle(14)" title="{L_BBCODE_P_HELP}">
-		{{ Icon('iconify', 'mdi:image-outline', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'image', '', true, 'far c-button-icon') }}
 	</button>
 	<!-- ENDIF -->
 	<!-- IF S_LINKS_ALLOWED -->
 	<button type="button" class="button button-icon-only bbcode-url" accesskey="w" name="addbbcode16" value="URL" onclick="bbstyle(16)" title="{L_BBCODE_W_HELP}">
-		{{ Icon('iconify', 'mdi:link-variant', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'link', '', true, 'fas c-button-icon') }}
 	</button>
 	<!-- ENDIF -->
 	<button type="button" class="button button-icon-only bbcode-color" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{L_BBCODE_S_HELP}">
-		{{ Icon('iconify', 'fa:tint', '', true, 'c-button-icon') }}
+		{{ Icon('font', 'droplet', '', true, 'fas c-button-icon') }}
 	</button>
 	<select name="addbbcode20" class="bbcode-size" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" title="{L_BBCODE_F_HELP}">
 		<option value="50">{L_FONT_TINY}</option>

@@ -96,6 +96,7 @@ function adm_page_header($page_title)
 		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$phpbb_root_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
+		'T_ASSETS_PATH'			=> "{$phpbb_root_path}assets",
 
 		'ICON_MOVE_UP'				=> '<i class="icon acp-icon acp-icon-move-up fa-arrow-circle-up fa-fw" title="' . $user->lang('MOVE_UP') . '"></i>',
 		'ICON_MOVE_UP_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-arrow-circle-up fa-fw" title="' . $user->lang('MOVE_UP') . '"></i>',

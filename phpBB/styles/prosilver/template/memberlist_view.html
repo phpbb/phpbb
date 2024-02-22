@@ -22,7 +22,7 @@
 			{L_USERNAME}{L_COLON}
 		</dt>
 		<dd>
-			<!-- EVENT memberlist_view_username_prepend --><!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span><!-- EVENT memberlist_view_username_append --> <!-- IF S_ONLINE -->  {{ Icon('iconify', 'fa:circle', lang('ONLINE'), true, 'c-online-icon') }}<!-- ENDIF -->
+			<!-- EVENT memberlist_view_username_prepend --><!-- IF USER_COLOR --><span style="color: {USER_COLOR}; font-weight: bold;"><!-- ELSE --><span><!-- ENDIF -->{USERNAME}</span><!-- EVENT memberlist_view_username_append --> <!-- IF S_ONLINE -->  {{ Icon('font', 'circle', lang('ONLINE'), true, 'fas c-online-icon') }}<!-- ENDIF -->
 			<!-- IF U_EDIT_SELF --> [ <a href="{U_EDIT_SELF}">{L_EDIT_PROFILE}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_ADMIN --> [ <a href="{U_USER_ADMIN}">{L_USER_ADMIN}</a> ]<!-- ENDIF -->
 			<!-- IF U_USER_BAN --> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]<!-- ENDIF -->

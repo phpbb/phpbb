@@ -25,11 +25,11 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if forumrow.S_UNREAD_FORUM %} unread{% else %} read{% endif %}" href="{forumrow.U_VIEWFORUM}">
-						{{ Icon('iconify', {
-							'mdi:link-variant' : forumrow.S_IS_LINK,
-							'mdi:lock' : forumrow.S_LOCKED_FORUM,
-							'mdi:file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
-							'mdi:file-document-box-outline' : true,
+						{{ Icon('svg', {
+							'link-variant' : forumrow.S_IS_LINK,
+							'lock' : forumrow.S_LOCKED_FORUM,
+							'file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
+							'file-document-box-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					<div class="list-inner">
@@ -46,7 +46,7 @@
 					<!-- IF forumrow.LAST_POST_TIME_RFC3339 -->
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
 							<a href="{forumrow.U_LAST_POST}">
-								{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
+								{{ Icon('font', 'arrow-up-right-from-square', VIEW_LATEST_POST, true, 'fas c-last-post-icon') }}
 							</a>
 							<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time></span>
 					<!-- ELSE -->
@@ -87,14 +87,14 @@
 			<dl class="row-item">
 				<dt>
 					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-						{{ Icon('iconify', {
-							'mdi:info-variant' : topicrow.S_POST_GLOBAL,
-							'mdi:info-variant' : topicrow.S_POST_ANNOUNCE,
-							'mdi:star' : topicrow.S_POST_STICKY,
-							'mdi:lock' : topicrow.S_TOPIC_LOCKED,
-							'mdi:arrow-right-bold' : topicrow.S_TOPIC_MOVED,
-							'mdi:fire' : topicrow.S_TOPIC_HOT,
-							'mdi:file-document-outline' : true,
+						{{ Icon('svg', {
+							'info-variant' : topicrow.S_POST_GLOBAL,
+							'info-variant' : topicrow.S_POST_ANNOUNCE,
+							'star' : topicrow.S_POST_STICKY,
+							'lock' : topicrow.S_TOPIC_LOCKED,
+							'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+							'fire' : topicrow.S_TOPIC_HOT,
+							'file-document-outline' : true,
 						}, '', true, 'c-forum-row-icon') }}
 					</a>
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}
@@ -111,19 +111,19 @@
 						{% endif %}
 						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
 							<a href="{topicrow.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
-								{{ Icon('iconify', 'fa:question', lang('TOPIC_UNAPPROVED'), true, 'c-unapproved-icon') }}
+								{{ Icon('font', 'circle-question', lang('TOPIC_UNAPPROVED'), true, 'fas c-unapproved-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<!-- IF topicrow.S_TOPIC_REPORTED -->
 							<a href="{topicrow.U_MCP_REPORT}" title="{L_TOPIC_REPORTED}">
-								{{ Icon('iconify', 'fa:exclamation', lang('TOPIC_REPORTED'), true, 'c-topic-reported-icon') }}
+								{{ Icon('font', 'triangle-exclamation', lang('TOPIC_REPORTED'), true, 'fas c-topic-reported-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<br />
 						{% EVENT ucp_main_subscribed_topic_title_after %}
 						<!-- IF .topicrow.pagination -->
 						<div class="pagination">
-							<span>{{ Icon('iconify', 'fa:clone', '', true) }}</span>
+							<span>{{ Icon('font', 'clone', '', true, 'far') }}</span>
 							<ul>
 							<!-- BEGIN pagination -->
 								<!-- IF topicrow.pagination.S_IS_PREV -->
@@ -140,18 +140,18 @@
 						</div>
 						<!-- ENDIF -->
 						<div class="responsive-hide">
-							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }} <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('font', 'paperclip', '', true) }} <!-- ENDIF -->
 							{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 						</div>
 						<div class="responsive-show" style="display: none;">
-							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('iconify', 'fa:paperclip', '', true) }} <!-- ENDIF -->
+							<!-- IF topicrow.ATTACH_ICON_IMG -->{{ Icon('font', 'paperclip', '', true) }} <!-- ENDIF -->
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo; <a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 						</div>
 					</div>
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-						{{ Icon('iconify', 'fa:external-link-square', VIEW_LATEST_POST, true, 'c-last-post-icon') }}
+						{{ Icon('font', 'arrow-up-right-from-square', VIEW_LATEST_POST, true, 'fas c-last-post-icon') }}
 					</a>
 					<br />{topicrow.LAST_POST_TIME}</span>
 				</dd>

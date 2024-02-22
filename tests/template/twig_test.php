@@ -64,8 +64,7 @@ class twig_test extends \phpbb_test_case
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader('');
 		$log = new \phpbb\log\dummy();
-		$iconify_bundler = new \phpbb\assets\iconify_bundler($log, $phpbb_root_path);
-		$assets_bag = new \phpbb\template\assets_bag($iconify_bundler);
+		$assets_bag = new \phpbb\template\assets_bag();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,

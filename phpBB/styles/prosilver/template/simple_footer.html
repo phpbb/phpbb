@@ -29,13 +29,13 @@
 	</div>
 	<div id="phpbb_alert" class="phpbb_alert" data-l-err="{L_ERROR}" data-l-timeout-processing-req="{L_TIMEOUT_PROCESSING_REQ}">
 		<a href="#" class="alert_close">
-			{{ Icon('iconify', 'fa:times-circle', '', true) }}
+			{{ Icon('font', 'circle-xmark', '', true) }}
 		</a>
 		<h3 class="alert_title">&nbsp;</h3><p class="alert_text"></p>
 	</div>
 	<div id="phpbb_confirm" class="phpbb_confirm phpbb_alert">
 		<a href="#" class="alert_close">
-			{{ Icon('iconify', 'fa:times-circle', '', true) }}
+			{{ Icon('font', 'circle-xmark', '', true) }}
 		</a>
 		<div class="alert_text"></div>
 	</div>
@@ -46,10 +46,21 @@
 <script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
 <!-- INCLUDEJS forum_fn.js -->
 <!-- INCLUDEJS ajax.js -->
-{% INCLUDEJS T_ASSETS_PATH ~ '/iconify/iconify.min.js' %}
+{% if S_ALLOW_CDN %}
+<script>
+	(function($){
+		const $fa_cdn = $('head').find('link[rel="stylesheet"]').first(),
+			$span = $('<span class="fa" style="display:none"></span>').appendTo('body');
+		if ($span.css('fontFamily') !== '"Font Awesome 6 Free"') {
+			$fa_cdn.after('<link href="{{ T_ASSETS_PATH ~ '/css/font-awesome.min.css' }}" rel="stylesheet">');
+			$fa_cdn.remove();
+		}
+		$span.remove();
+	})(jQuery);
+</script>
+{% endif %}
 
 <!-- EVENT simple_footer_after -->
-{$ICONIFY_ICONS}
 {$SCRIPTS}
 
 {% EVENT simple_footer_body_after %}
