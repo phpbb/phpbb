@@ -851,8 +851,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php');
-		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+		$crawler = self::request('GET', 'ucp.php?mode=login');
+		$button = $crawler->selectButton($this->lang('LOGIN'));
+		$this->assertGreaterThan(0, $button->count(), 'No login button found');
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		if ($autologin)
