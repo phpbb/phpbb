@@ -132,7 +132,13 @@
 		<tbody>
 		<!-- BEGIN modules -->
 			<tr>
-				<td style="width: 5%; text-align: center;">{modules.MODULE_IMAGE}</td>
+				<td style="width: 5%; text-align: center;">
+					{{ Icon('svg', {
+						'lock' : not modules.MODULE_ENABLED,
+						'file-document-box-multiple-outline' : modules.S_SUB_MODULE,
+						'file-document-box-outline' : true,
+					}, '', true, 'c-forum-row-icon', {'style' : 'width: 27px; height: 27px;'}) }}
+				</td>
 				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
 				<td class="actions">
