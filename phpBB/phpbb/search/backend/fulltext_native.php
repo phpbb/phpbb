@@ -15,6 +15,7 @@ namespace phpbb\search\backend;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
 use phpbb\user;
@@ -88,6 +89,12 @@ class fulltext_native extends base implements search_backend_interface
 	protected $php_ext;
 
 	/**
+	 * DBAL tools
+	 * @var tools_interface
+	 */
+	protected $db_tools;
+
+	/**
 	 * phpBB event dispatcher object
 	 * @var dispatcher_interface
 	 */
@@ -107,6 +114,7 @@ class fulltext_native extends base implements search_backend_interface
 	 *
 	 * @param config				$config				Config object
 	 * @param driver_interface		$db					Database object
+	 * @param tools_interface		$db_tools			Database tools
 	 * @param dispatcher_interface	$phpbb_dispatcher	Event dispatcher object
 	 * @param language				$language
 	 * @param user					$user				User object
@@ -116,13 +124,14 @@ class fulltext_native extends base implements search_backend_interface
 	 * @param string				$phpbb_root_path	phpBB root path
 	 * @param string				$phpEx				PHP file extension
 	 */
-	public function __construct(config $config, driver_interface $db, dispatcher_interface $phpbb_dispatcher,
+	public function __construct(config $config, driver_interface $db, tools_interface $db_tools, dispatcher_interface $phpbb_dispatcher,
 								language $language, user $user, string $search_results_table, string $search_wordlist_table,
 								string $search_wordmatch_table, string $phpbb_root_path, string $phpEx)
 	{
 		global $cache;
 
 		parent::__construct($cache, $config, $db, $user, $search_results_table);
+		$this->db_tools = $db_tools;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->language = $language;
 
@@ -1610,22 +1619,11 @@ class fulltext_native extends base implements search_backend_interface
 	 */
 	public function delete_index(int &$post_counter = null): ?array
 	{
-		$sql_queries = [];
-
-		switch ($this->db->get_sql_layer())
-		{
-			case 'sqlite3':
-				$sql_queries[] = 'DELETE FROM ' . $this->search_wordlist_table;
-				$sql_queries[] = 'DELETE FROM ' . $this->search_wordmatch_table;
-				$sql_queries[] = 'DELETE FROM ' . $this->search_results_table;
-			break;
-
-			default:
-				$sql_queries[] = 'TRUNCATE TABLE ' . $this->search_wordlist_table;
-				$sql_queries[] = 'TRUNCATE TABLE ' . $this->search_wordmatch_table;
-				$sql_queries[] = 'TRUNCATE TABLE ' . $this->search_results_table;
-			break;
-		}
+		$truncate_tables = [
+			$this->search_wordlist_table,
+			$this->search_wordmatch_table,
+			$this->search_results_table,
+		];
 
 		$stats = $this->stats;
 
@@ -1633,19 +1631,22 @@ class fulltext_native extends base implements search_backend_interface
 		* Event to modify SQL queries before the native search index is deleted
 		*
 		* @event core.search_native_delete_index_before
-		* @var array	sql_queries			Array with queries for deleting the search index
+		*
 		* @var array	stats				Array with statistics of the current index (read only)
+		* @var array truncate_tables		Array with tables that will be truncated
+		*
 		* @since 3.2.3-RC1
+		* @changed 4.0.0-a1 Removed sql_queries, only add/remove tables to truncate to truncate_tables
 		*/
 		$vars = array(
-			'sql_queries',
 			'stats',
+			'truncate_tables',
 		);
 		extract($this->phpbb_dispatcher->trigger_event('core.search_native_delete_index_before', compact($vars)));
 
-		foreach ($sql_queries as $sql_query)
+		foreach ($truncate_tables as $table)
 		{
-			$this->db->sql_query($sql_query);
+			$this->db_tools->sql_truncate_table($table);
 		}
 
 		return null;

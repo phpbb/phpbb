@@ -281,16 +281,8 @@ class acp_main
 					break;
 
 					case 'db_track':
-						switch ($db->get_sql_layer())
-						{
-							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-							break;
-						}
+						$db_tools = $phpbb_container->get('dbal.tools');
+						$db_tools->sql_truncate_table(TOPICS_POSTED_TABLE);
 
 						// This can get really nasty... therefore we only do the last six months
 						$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -370,7 +362,7 @@ class acp_main
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
-						phpbb_cache_moderators($db, $cache, $auth);
+						phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
 
@@ -388,19 +380,11 @@ class acp_main
 						}
 
 						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
+						$db_tools = $phpbb_container->get('dbal.tools');
 
 						foreach ($tables as $table)
 						{
-							switch ($db->get_sql_layer())
-							{
-								case 'sqlite3':
-									$db->sql_query("DELETE FROM $table");
-								break;
-
-								default:
-									$db->sql_query("TRUNCATE TABLE $table");
-								break;
-							}
+							$db_tools->sql_truncate_table($table);
 						}
 
 						// let's restore the admin session

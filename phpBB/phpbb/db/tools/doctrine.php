@@ -364,6 +364,21 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function sql_truncate_table(string $table_name): void
+	{
+		try
+		{
+			$this->connection->executeQuery($this->get_schema_manager()->getDatabasePlatform()->getTruncateTableSQL($table_name));
+		}
+		catch (Exception $e)
+		{
+			return;
+		}
+	}
+
+	/**
 	 * Returns an array of indices for either unique and primary keys, or simple indices.
 	 *
 	 * @param string $table_name    The name of the table.

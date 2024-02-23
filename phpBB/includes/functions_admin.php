@@ -2490,26 +2490,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * must be carried through for the moderators table.
 *
 * @param \phpbb\db\driver\driver_interface $db Database connection
+* @param \phpbb\db\tools\tools_interface $db_tools Database tools
 * @param \phpbb\cache\driver\driver_interface $cache Cache driver
 * @param \phpbb\auth\auth $auth Authentication object
 * @return void
 */
-function phpbb_cache_moderators($db, $cache, $auth)
+function phpbb_cache_moderators($db, $db_tools, $cache, $auth)
 {
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
-	// Clear table
-	switch ($db->get_sql_layer())
-	{
-		case 'sqlite3':
-			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
-		break;
-
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
-		break;
-	}
+	$db_tools->sql_truncate_table(MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$sql_ary = array();

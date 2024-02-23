@@ -357,6 +357,34 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		$this->assertFalse($this->tools->sql_table_exists('prefix_test_table'));
 	}
 
+	public function test_truncate_table()
+	{
+		$this->tools->sql_create_table('truncate_test_table',
+			['COLUMNS' => [
+				'foo' => ['UINT', 42],
+			]]
+		);
+
+		$this->assertTrue($this->tools->sql_table_exists('truncate_test_table'));
+
+		$sql = 'INSERT INTO truncate_test_table(foo) VALUES(19)';
+		$this->db->sql_query($sql);
+
+		$sql = 'SELECT * FROM truncate_test_table';
+		$result = $this->db->sql_query($sql);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$this->assertGreaterThan(0, count($rowset), 'Failed asserting that data exists in truncate_test_table.');
+
+		$this->tools->sql_truncate_table('truncate_test_table');
+
+		$result = $this->db->sql_query($sql);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+		$this->assertEquals(0, count($rowset), 'Failed asserting that truncate was successful for table.');
+	}
+
 	public function test_perform_schema_changes_drop_tables()
 	{
 		$db_tools = $this->getMockBuilder('\phpbb\db\tools\doctrine')
