@@ -1378,12 +1378,12 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'sbl.spamhaus.org'	=> ['http://www.spamhaus.org/query/bl?ip=', 'check_dnsbl_spamhaus'],
+			'sbl.spamhaus.org'	=> ['https://check.spamhaus.org/listed/?searchterm=', 'check_dnsbl_spamhaus'],
 		);
 
 		if ($mode == 'register')
 		{
-			$dnsbl_check['bl.spamcop.net'] = ['http://spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
+			$dnsbl_check['bl.spamcop.net'] = ['https://www.spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
 		}
 
 		if ($ip)

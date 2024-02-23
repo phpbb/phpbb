@@ -122,7 +122,6 @@ class phpbb_functional_browse_disabled_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=setting_user_local&user_id[0]=$user_id&forum_id[0]=2&type=m_&sid={$this->sid}");
-		var_export($crawler->text());
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		$data = array("setting[$user_id][2][m_edit]" => ACL_YES);
 		$form->setValues($data);
