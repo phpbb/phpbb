@@ -1479,7 +1479,7 @@ class session
 
 		if ($mode == 'register')
 		{
-			$dnsbl_check['bl.spamcop.net'] = ['https://spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
+			$dnsbl_check['bl.spamcop.net'] = ['https://www.spamcop.net/bl.shtml?', 'check_dnsbl_ipv4_generic'];
 		}
 
 		if ($ip)
