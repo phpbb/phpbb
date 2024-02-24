@@ -2960,7 +2960,12 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
-.table1 .o-icon {
+.icon {
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
+	font-style: normal;
+}
+
+.acp-icon-large {
 	font-size: 20px;
 	padding: 10px 0;
 }
