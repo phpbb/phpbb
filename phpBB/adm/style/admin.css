@@ -2809,7 +2809,7 @@ fieldset.permissions .permissions-switch {
 }
 
 .roles-options > span {
-	background: url("../images/arrow_down.gif") no-repeat 245px 0.7em;
+	background: url("../images/arrow_down.gif") no-repeat 235px 0.7em;
 	border: 1px solid #dedede;
 	border-radius: 3px;
 	display: none;
@@ -2960,11 +2960,6 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
-.icon {
-	font-family: FontAwesome;
-	font-style: normal;
-}
-
 .table1 .o-icon {
 	font-size: 20px;
 	padding: 10px 0;
@@ -3018,12 +3013,14 @@ fieldset.permissions .permissions-switch {
 }
 
 .send-stats-settings input[type="checkbox"] + label:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
 	font-size: 1.5em;
-	content: "\f096";
+	font-weight: 400;
+	content: "\f0c8";
 }
 
 .send-stats-settings input[type="checkbox"]:checked + label:before {
+	font-weight: 900;
 	color: #3c763d;
 	content: "\f14a";
 }
