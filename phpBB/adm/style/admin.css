@@ -2965,11 +2965,6 @@ fieldset.permissions .permissions-switch {
 	font-style: normal;
 }
 
-.acp-icon-large {
-	font-size: 20px;
-	padding: 10px 0;
-}
-
 .send-stats-data-row {
 	background: #f9f9f9;
 	border: #dedede 1px solid;

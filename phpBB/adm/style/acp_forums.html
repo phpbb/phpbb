@@ -473,12 +473,15 @@
 		<!-- BEGIN forums -->
 			<tr>
 				<td class="folder">
+					<span class="fa-stack fa-2x">
+					{{ Icon('font', 'circle', '', true, 'fas fa-stack-2x') }}
 					{{ Icon('font', {
 						'link' : forums.S_FORUM_LINK,
 						'lock' : forums.S_FORUM_LOCKED,
 						'comments' : forums.S_SUBFORUMS,
 						'comment' : true,
-					}, '', true, 'fas acp-icon-large') }}
+					}, '', true, 'fas fa-inverse fa-stack-1x') }}
+					</span>
 				</td>
 				<td class="forum-desc">
 					<!-- IF forums.FORUM_IMAGE --><div style="float: {S_CONTENT_FLOW_BEGIN}; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
