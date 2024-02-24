@@ -473,12 +473,12 @@
 		<!-- BEGIN forums -->
 			<tr>
 				<td class="folder">
-					{{ Icon('svg', {
-						'link-variant' : forums.S_FORUM_LINK,
+					{{ Icon('font', {
+						'link' : forums.S_FORUM_LINK,
 						'lock' : forums.S_FORUM_LOCKED,
-						'file-document-box-multiple-outline' : forums.S_SUBFORUMS,
-						'file-document-box-outline' : true,
-					}, '', true, 'c-forum-row-icon') }}
+						'comments' : forums.S_SUBFORUMS,
+						'comment' : true,
+					}, '', true) }}
 				</td>
 				<td class="forum-desc">
 					<!-- IF forums.FORUM_IMAGE --><div style="float: {S_CONTENT_FLOW_BEGIN}; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->

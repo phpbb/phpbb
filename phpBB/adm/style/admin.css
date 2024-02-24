@@ -2965,6 +2965,11 @@ fieldset.permissions .permissions-switch {
 	font-style: normal;
 }
 
+.table1 .o-icon {
+	font-size: 20px;
+	padding: 10px 0;
+}
+
 .send-stats-data-row {
 	background: #f9f9f9;
 	border: #dedede 1px solid;
