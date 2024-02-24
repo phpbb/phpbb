@@ -2960,6 +2960,7 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
+/* this class loads Free and Brand icons, for use when .fas and .fab are needed at same time */
 .icon {
 	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
 	font-style: normal;

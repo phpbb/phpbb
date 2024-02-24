@@ -4,7 +4,7 @@
 <p>{L_FILES_DELETED_EXPLAIN}</p>
 
 <fieldset id="deleted">
-	<legend>{{ Icon('font', 'circle-xmark', lang('STATUS_DELETED'), true, '', {'style' : 'color:red;"'}) }}</legend>
+	<legend>{{ Icon('font', 'circle-xmark', lang('STATUS_DELETED'), true, '', {'style' : 'color:red;'}) }}</legend>
 	<!-- BEGIN deleted -->
 	<dl>
 		<dt style="width: 100%;"><!-- IF deleted.DIR_PART -->{deleted.DIR_PART}<!-- ENDIF --><strong>{deleted.FILE_PART}</strong></dt>
@@ -20,7 +20,7 @@
 <p>{L_FILES_CONFLICT_EXPLAIN}</p>
 
 <fieldset id="conflict">
-	<legend>{{ Icon('font', 'circle-exclamation', lang('STATUS_CONFLICT'), true, '', {'style' : 'color:red;"'}) }}</legend>
+	<legend>{{ Icon('font', 'circle-exclamation', lang('STATUS_CONFLICT'), true, '', {'style' : 'color:red;'}) }}</legend>
 	<!-- BEGIN conflict -->
 	<dl>
 		<dt style="width: 100%;"><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<!-- ENDIF --><strong>{conflict.FILE_PART}</strong></dt>
@@ -36,7 +36,7 @@
 <p>{L_FILES_MODIFIED_EXPLAIN}</p>
 
 <fieldset id="modified">
-	<legend>{{ Icon('font', 'circle-arrow-left', lang('STATUS_MODIFIED'), true, '', {'style' : 'color:#ffd43b;"'}) }}</legend>
+	<legend>{{ Icon('font', 'circle-arrow-left', lang('STATUS_MODIFIED'), true, '', {'style' : 'color:#ffd43b;'}) }}</legend>
 	<!-- BEGIN modified -->
 	<dl>
 		<dt style="width: 100%;"><!-- IF modified.DIR_PART -->{modified.DIR_PART}<!-- ENDIF --><strong>{modified.FILE_PART}</strong></dt>
@@ -52,7 +52,7 @@
 <p>{L_FILES_NEW_EXPLAIN}</p>
 
 <fieldset id="new_files" style="display: none;">
-	<legend>{{ Icon('font', 'circle-plus', lang('STATUS_NEW'), true, '', {'style' : 'color:#ffd43b;"'}) }}</legend>
+	<legend>{{ Icon('font', 'circle-plus', lang('STATUS_NEW'), true, '', {'style' : 'color:#ffd43b;'}) }}</legend>
 	<!-- BEGIN new -->
 	<dl>
 		<dt style="width: 100%;"><!-- IF new.DIR_PART -->{new.DIR_PART}<!-- ENDIF --><strong>{new.FILE_PART}</strong>
@@ -69,7 +69,7 @@
 <p>{L_FILES_NOT_MODIFIED_EXPLAIN}</p>
 
 <fieldset id="not_modified" style="display: none;">
-	<legend>{{ Icon('font', 'lock', lang('STATUS_NOT_MODIFIED'), true, '', {'style' : 'color:#1180b7;"'}) }}</legend>
+	<legend>{{ Icon('font', 'lock', lang('STATUS_NOT_MODIFIED'), true, '', {'style' : 'color:#1180b7;'}) }}</legend>
 	<!-- BEGIN not_modified -->
 	<dl>
 		<dt style="width: 100%;"><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<!-- ENDIF --><strong>{not_modified.FILE_PART}</strong></dt>
