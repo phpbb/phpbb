@@ -97,8 +97,8 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			'webpush_vapid_private'	=> self::VAPID_KEYS['privateKey'],
 		]);
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$language = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($language, '\phpbb\datetime');
 		$this->user = $user;
 		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
@@ -113,19 +113,20 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$phpbb_root_path,
 			$phpEx
 		);
+		$phpbb_log = new \phpbb\log\dummy();
 
 		$phpbb_container = $this->container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_notification.yml');
 		$phpbb_container->set('user_loader', $this->user_loader);
 		$phpbb_container->set('user', $user);
-		$phpbb_container->set('language', $lang);
+		$phpbb_container->set('language', $language);
 		$phpbb_container->set('config', $this->config);
 		$phpbb_container->set('dbal.conn', $this->db);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
-		$phpbb_container->set('log', new \phpbb\log\dummy());
+		$phpbb_container->set('log', $phpbb_log);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
@@ -146,6 +147,19 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 				$phpEx
 			)
 		);
+
+		$ban_type_email = new \phpbb\ban\type\email($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_user = new \phpbb\ban\type\user($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$ban_type_ip = new \phpbb\ban\type\ip($this->db, 'phpbb_bans', 'phpbb_users', 'phpbb_sessions', 'phpbb_sessions_keys');
+		$phpbb_container->set('ban.type.email', $ban_type_email);
+		$phpbb_container->set('ban.type.user', $ban_type_user);
+		$phpbb_container->set('ban.type.ip', $ban_type_ip);
+		$collection = new \phpbb\di\service_collection($phpbb_container);
+		$collection->add('ban.type.email');
+		$collection->add('ban.type.user');
+		$collection->add('ban.type.ip');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
+		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$this->notification_method_webpush = new \phpbb\notification\method\webpush(
 			$phpbb_container->get('config'),
@@ -169,7 +183,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$this->phpbb_dispatcher,
 			$this->db,
 			$this->cache,
-			$lang,
+			$language,
 			$this->user,
 			'phpbb_notification_types',
 			'phpbb_user_notifications'
