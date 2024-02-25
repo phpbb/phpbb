@@ -95,7 +95,7 @@ class auth_admin extends \phpbb\auth\auth
 			}
 			else
 			{
-				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%', ($scope == 'global') ? 0 : false) : $this->$acl_user_function($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
+				$hold_ary = ($group_id !== false) ? $this->acl_group_raw_data($group_id, $auth_option . '%') : $this->$acl_user_function($user_id, $auth_option . '%', ($scope == 'global') ? 0 : false);
 			}
 		}
 
