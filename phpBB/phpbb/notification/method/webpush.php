@@ -239,12 +239,10 @@ class webpush extends messenger_base implements extended_method_interface
 		}
 
 		// Remove any subscriptions that couldn't be queued, i.e. that have invalid data
-		if (count($remove_subscriptions))
-		{
-			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
-				WHERE ' . $this->db->sql_in_set('subscription_id', $remove_subscriptions);
-			$this->db->sql_query($sql);
-		}
+		$this->remove_subscriptions($remove_subscriptions);
+
+		// List to fill with expired subscriptions based on return
+		$expired_endpoints = [];
 
 		try
 		{
@@ -252,8 +250,16 @@ class webpush extends messenger_base implements extended_method_interface
 			{
 				if (!$report->isSuccess())
 				{
-					$report_data = \phpbb\json\sanitizer::sanitize($report->jsonSerialize());
-					$this->log->add('admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$report_data['reason']]);
+					// Fill array of endpoints to remove if subscription has expired
+					if ($report->isSubscriptionExpired())
+					{
+						$expired_endpoints = $report->getEndpoint();
+					}
+					else
+					{
+						$report_data = \phpbb\json\sanitizer::sanitize($report->jsonSerialize());
+						$this->log->add('admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$report_data['reason']]);
+					}
 				}
 			}
 		}
@@ -261,6 +267,8 @@ class webpush extends messenger_base implements extended_method_interface
 		{
 			$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
 		}
+
+		$this->clean_expired_subscriptions($user_subscription_map, $expired_endpoints);
 
 		// We're done, empty the queue
 		$this->empty_queue();
@@ -372,5 +380,50 @@ class webpush extends messenger_base implements extended_method_interface
 		$this->db->sql_freeresult($result);
 
 		return $user_subscription_map;
+	}
+
+	/**
+	 * Remove subscriptions
+	 *
+	 * @param array $subscription_ids Subscription ids to remove
+	 * @return void
+	 */
+	public function remove_subscriptions(array $subscription_ids): void
+	{
+		if (count($subscription_ids))
+		{
+			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+					WHERE ' . $this->db->sql_in_set('subscription_id', $subscription_ids);
+			$this->db->sql_query($sql);
+		}
+	}
+
+	/**
+	 * Clean expired subscriptions from the database
+	 *
+	 * @param array $user_subscription_map User subscription map
+	 * @param array $expired_endpoints Expired endpoints
+	 * @return void
+	 */
+	protected function clean_expired_subscriptions(array $user_subscription_map, array $expired_endpoints): void
+	{
+		if (!count($expired_endpoints))
+		{
+			return;
+		}
+
+		$remove_subscriptions = [];
+		foreach ($expired_endpoints as $endpoint)
+		{
+			foreach ($user_subscription_map as $user_id => $subscriptions)
+			{
+				if (isset($subscriptions['endpoint']) && $subscriptions['endpoint'] == $endpoint)
+				{
+					$remove_subscriptions[] = $subscriptions[$endpoint]['subscription_id'];
+				}
+			}
+		}
+
+		$this->remove_subscriptions($remove_subscriptions);
 	}
 }

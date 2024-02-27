@@ -32,6 +32,12 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 	/** @var webpush */
 	protected $notification_method_webpush;
 
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\log\log_interface */
+	protected $log;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/webpush_notification.type.post.xml');
@@ -97,9 +103,11 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			'webpush_vapid_private'	=> self::VAPID_KEYS['privateKey'],
 		]);
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-		$language = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($language, '\phpbb\datetime');
+		$this->language = new \phpbb\language\language($lang_loader);
+		$this->language->add_lang('acp/common');
+		$user = new \phpbb\user($this->language, '\phpbb\datetime');
 		$this->user = $user;
+		$this->user->data['user_options'] = 230271;
 		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
@@ -113,20 +121,22 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$phpbb_root_path,
 			$phpEx
 		);
-		$phpbb_log = new \phpbb\log\dummy();
+
+		$log_table = 'phpbb_log';
+		$this->log = new \phpbb\log\log($this->db, $user, $auth, $this->phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, $log_table);
 
 		$phpbb_container = $this->container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_notification.yml');
 		$phpbb_container->set('user_loader', $this->user_loader);
 		$phpbb_container->set('user', $user);
-		$phpbb_container->set('language', $language);
+		$phpbb_container->set('language', $this->language);
 		$phpbb_container->set('config', $this->config);
 		$phpbb_container->set('dbal.conn', $this->db);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
-		$phpbb_container->set('log', $phpbb_log);
+		$phpbb_container->set('log', $this->log);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
@@ -158,7 +168,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$collection->add('ban.type.email');
 		$collection->add('ban.type.user');
 		$collection->add('ban.type.ip');
-		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
+		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $this->language, $this->log, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 
 		$this->notification_method_webpush = new \phpbb\notification\method\webpush(
@@ -183,7 +193,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$this->phpbb_dispatcher,
 			$this->db,
 			$this->cache,
-			$language,
+			$this->language,
 			$this->user,
 			'phpbb_notification_types',
 			'phpbb_user_notifications'
@@ -400,7 +410,122 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		}
 	}
 
-	protected function create_subscription_for_user($user_id): array
+	/**
+	 * @dataProvider data_notification_webpush
+	 */
+	public function test_notify_empty_queue($notification_type, $post_data, $expected_users): void
+	{
+		foreach ($expected_users as $user_id => $user_data)
+		{
+			$this->create_subscription_for_user($user_id);
+		}
+
+		$post_data = array_merge([
+			'post_time' => 1349413322,
+			'poster_id' => 1,
+			'topic_title' => '',
+			'post_subject' => '',
+			'post_username' => '',
+			'forum_name' => '',
+		],
+
+			$post_data);
+		$notification_options = [
+			'item_id'			=> $post_data['post_id'],
+			'item_parent_id'	=> $post_data['topic_id'],
+		];
+
+		$notified_users = $this->notification_method_webpush->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
+		$this->assertEquals(0, count($notified_users), 'Assert no user has been notified yet');
+
+		$this->notifications->add_notifications($notification_type, $post_data);
+
+		$notified_users = $this->notification_method_webpush->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
+		$this->assertEquals($expected_users, $notified_users, 'Assert that expected users have been notified');
+
+		$post_data['post_id']++;
+		$notification_options['item_id'] = $post_data['post_id'];
+		$post_data['post_time'] = 1349413323;
+
+		$this->notifications->add_notifications($notification_type, $post_data);
+
+		$notified_users2 = $this->notification_method_webpush->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
+		$this->assertEquals($expected_users, $notified_users2, 'Assert that expected users stay the same after replying to same topic');
+	}
+
+	/**
+	 * @dataProvider data_notification_webpush
+	 */
+	public function test_notify_invalid_endpoint($notification_type, $post_data, $expected_users): void
+	{
+		$subscription_info = [];
+		foreach ($expected_users as $user_id => $user_data)
+		{
+			$subscription_info[$user_id][] = $this->create_subscription_for_user($user_id);
+		}
+
+		// Create second subscription for first user ID passed
+		if (count($expected_users))
+		{
+			$first_user_id = array_key_first($expected_users);
+			$first_user_sub = $this->create_subscription_for_user($first_user_id, true);
+			$subscription_info[$first_user_id][] = $first_user_sub;
+		}
+
+		$post_data = array_merge([
+			'post_time' => 1349413322,
+			'poster_id' => 1,
+			'topic_title' => '',
+			'post_subject' => '',
+			'post_username' => '',
+			'forum_name' => '',
+		],
+
+			$post_data);
+		$notification_options = [
+			'item_id'			=> $post_data['post_id'],
+			'item_parent_id'	=> $post_data['topic_id'],
+		];
+
+		$notified_users = $this->notification_method_webpush->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
+		$this->assertEquals(0, count($notified_users), 'Assert no user has been notified yet');
+
+		foreach ($expected_users as $user_id => $data)
+		{
+			$messages = $this->get_messages_for_subscription($subscription_info[$user_id][0]['clientHash']);
+			$this->assertEmpty($messages);
+		}
+
+		$this->notifications->add_notifications($notification_type, $post_data);
+
+		$notified_users = $this->notification_method_webpush->get_notified_users($this->notifications->get_notification_type_id($notification_type), $notification_options);
+		$this->assertEquals($expected_users, $notified_users, 'Assert that expected users have been notified');
+
+		foreach ($expected_users as $user_id => $data)
+		{
+			$messages = $this->get_messages_for_subscription($subscription_info[$user_id][0]['clientHash']);
+			$this->assertNotEmpty($messages);
+		}
+
+		if (isset($first_user_sub))
+		{
+			$admin_logs = $this->log->get_logs('admin');
+			$this->db->sql_query('DELETE FROM phpbb_log'); // Clear logs
+			$this->assertCount(1, $admin_logs, 'Assert that an admin log was created for invalid endpoint');
+
+			$log_entry = $admin_logs[0];
+
+			$this->assertStringStartsWith('<strong>Web Push message could not be sent:</strong>', $log_entry['action']);
+			$this->assertStringContainsString('400', $log_entry['action']);
+		}
+	}
+
+	public function test_get_type(): void
+	{
+		$this->assertEquals('notification.method.webpush', $this->notification_method_webpush->get_type());
+	}
+
+	protected function create_subscription_for_user($user_id, bool $invalidate_endpoint = false): array
 	{
 		$client = new \GuzzleHttp\Client();
 		try
@@ -420,8 +545,10 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertStringStartsWith('http://localhost:9012/notify/', $subscription_data['endpoint']);
 		$this->assertIsArray($subscription_data['keys']);
 
-		// Add subscription data to admin user (user id 2)
-
+		if ($invalidate_endpoint)
+		{
+			$subscription_data['endpoint'] .= 'invalid';
+		}
 
 		$push_subscriptions_table = $this->container->getParameter('tables.push_subscriptions');
 
