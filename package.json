@@ -112,6 +112,6 @@
 		"postcss-sorting": "^7.0.1",
 		"stylelint": "^14.7.0",
 		"stylelint-order": "^5.0.0",
-		"web-push-testing": "^1.0.0"
+		"web-push-testing": "^1.1.0"
 	}
 }
