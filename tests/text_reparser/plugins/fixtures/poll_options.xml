@@ -46,6 +46,16 @@
 		</row>
 		<row>
 			<value>1</value>
+			<value>100</value>
+			<value>Matches LIKE foo123</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>100</value>
+			<value>Does not match LIKE</value>
+		</row>
+		<row>
+			<value>1</value>
 			<value>123</value>
 			<value>This row should be [b]ignored[/b]</value>
 		</row>
@@ -123,6 +133,11 @@
 			<value>13</value>
 			<value>13</value>
 			<value>Magic URLs</value>
+		</row>
+		<row>
+			<value>100</value>
+			<value>1</value>
+			<value>Topic #100</value>
 		</row>
 		<row>
 			<value>123</value>

@@ -23,4 +23,27 @@ class phpbb_textreparser_poll_title_test extends phpbb_textreparser_test_row_bas
 	{
 		return new \phpbb\textreparser\plugins\poll_title($this->db, TOPICS_TABLE);
 	}
+
+	public function test_filter_like()
+	{
+		$reparser = $this->get_reparser();
+		$reparser->reparse([
+			'range-min'        => 100,
+			'range-max'        => 101,
+			'filter-text-like' => '%foo123%'
+		]);
+
+		$expected = [
+			[
+				'id'   => '100',
+				'text' => '<t>Matches LIKE foo123</t>'
+			],
+			[
+				'id'   => '101',
+				'text' => 'Does not match LIKE'
+			]
+		];
+
+		$this->assertEquals($expected, $this->get_rows([100, 101]));
+	}
 }

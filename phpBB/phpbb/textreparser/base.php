@@ -31,13 +31,17 @@ abstract class base implements reparser_interface
 	abstract public function get_max_id();
 
 	/**
-	* Return all records in given range
+	* Return all records that match given criteria
 	*
-	* @param  integer $min_id Lower bound
-	* @param  integer $max_id Upper bound
-	* @return array           Array of records
+	* The concrete implementation does not have to handle filter-callback or filter-text-regexp
+	* which are already handled in reparse() via record_matches_filter()
+	*
+	* @see reparser_interface::reparse()
+	*
+	* @param  array $config Criteria used to select records
+	* @return array         Array of records
 	*/
-	abstract protected function get_records_by_range($min_id, $max_id);
+	abstract protected function get_records(array $config): array;
 
 	/**
 	 * Save record
@@ -219,12 +223,46 @@ abstract class base implements reparser_interface
 	/**
 	* {@inheritdoc}
 	*/
+	public function reparse(array $config = []): void
+	{
+		foreach ($this->get_records($config) as $record)
+		{
+			if ($this->record_matches_filter($record, $config))
+			{
+				$this->reparse_record($record);
+			}
+		}
+	}
+
+	/**
+	* {@inheritdoc}
+	*
+	* @deprecated 4.0.0
+	*/
 	public function reparse_range($min_id, $max_id)
 	{
-		foreach ($this->get_records_by_range($min_id, $max_id) as $record)
+		$this->reparse(['range-min' => $min_id, 'range-max' => $max_id]);
+	}
+
+	/**
+	* Test whether a record matches given filter
+	*
+	* @param  array $record
+	* @param  array $config
+	* @return bool
+	*/
+	protected function record_matches_filter(array $record, array $config): bool
+	{
+		if (isset($config['filter-text-regexp']) && !preg_match($config['filter-text-regexp'], $record['text']))
 		{
-			$this->reparse_record($record);
+			return false;
 		}
+		if (isset($config['filter-callback']) && !$config['filter-callback']($record))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
