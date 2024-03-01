@@ -267,6 +267,7 @@ class helper
 			'L_SKIP'				=> $this->language->lang('SKIP'),
 			'PAGE_TITLE'			=> $this->language->lang($page_title),
 			'T_JQUERY_LINK'			=> $this->path_helper->get_web_root_path() . $path . '../assets/javascript/jquery-3.6.0.min.js',
+			'T_FONT_AWESOME_LINK'	=> $this->path_helper->get_web_root_path() . $path . '../assets/css/font-awesome.min.css',
 			'T_TEMPLATE_PATH'		=> $this->path_helper->get_web_root_path() . $path . 'style',
 			'T_ASSETS_PATH'			=> $this->path_helper->get_web_root_path() . $path . '../assets',
 
