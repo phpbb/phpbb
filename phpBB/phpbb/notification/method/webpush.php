@@ -253,7 +253,7 @@ class webpush extends messenger_base implements extended_method_interface
 					// Fill array of endpoints to remove if subscription has expired
 					if ($report->isSubscriptionExpired())
 					{
-						$expired_endpoints = $report->getEndpoint();
+						$expired_endpoints[] = $report->getEndpoint();
 					}
 					else
 					{
@@ -415,11 +415,14 @@ class webpush extends messenger_base implements extended_method_interface
 		$remove_subscriptions = [];
 		foreach ($expired_endpoints as $endpoint)
 		{
-			foreach ($user_subscription_map as $user_id => $subscriptions)
+			foreach ($user_subscription_map as $subscriptions)
 			{
-				if (isset($subscriptions['endpoint']) && $subscriptions['endpoint'] == $endpoint)
+				foreach ($subscriptions as $subscription)
 				{
-					$remove_subscriptions[] = $subscriptions[$endpoint]['subscription_id'];
+					if (isset($subscription['endpoint']) && $subscription['endpoint'] == $endpoint)
+					{
+						$remove_subscriptions[] = $subscription['subscription_id'];
+					}
 				}
 			}
 		}
