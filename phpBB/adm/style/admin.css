@@ -607,25 +607,47 @@ li {
 #menu li#activemenu a span {
 	font-weight: bold;
 	text-decoration: none;
-	background: transparent url("../images/arrow_right.gif") 0% 50% no-repeat;
 	color: #1180b7;
 }
 
-.rtl #menu li#activemenu a span {
-	background: transparent url("../images/arrow_left.gif") 100% 50% no-repeat;
-}
 
 #menu li#activemenu a:hover span,
 #menu li#activemenu span {
 	font-weight: bold;
 	text-decoration: none;
-	background: #ffffff url("../images/arrow_right.gif") 1% 50% no-repeat;
 	color: #bc2a4d;
 }
 
-.rtl #menu li#activemenu a:hover span,
-.rtl #menu li#activemenu span {
-	background: #ffffff url("../images/arrow_left.gif") 99% 50% no-repeat;
+#menu li#activemenu a span:before,
+#menu li#activemenu a:hover span:before,
+#menu li#activemenu span:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: 3px;
+	margin-left: -10px;
+	content: "\f105";
+}
+
+#menu li#activemenu a:hover span:before,
+#menu li#activemenu span:before {
+	margin-right: 1px;
+	margin-left: -8px;
+}
+
+.rtl #menu li#activemenu a span:before,
+.rtl #menu li#activemenu a:hover span:before,
+.rtl #menu li#activemenu span:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: -10px;
+	margin-left: 3px;
+	content: "\f104";
+}
+
+.rtl #menu li#activemenu a:hover span:before,
+.rtl #menu li#activemenu span:before {
+	margin-right: -8px;
+	margin-left: 1px;
 }
 
 #menu li a:active,
@@ -636,14 +658,28 @@ li {
 
 #menu li span.completed {
 	text-decoration: none;
-	background: url("../images/arrow_down.gif") 1% 50% no-repeat;
 	padding: 3px 3px 3px 12px;
+}
+
+#menu li span.completed:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: 1px;
+	margin-left: -8px;
+	content: "\f107";
 }
 
 .rtl #menu li span.completed {
 	text-decoration: none;
-	background: url("../images/arrow_down.gif") 99% 50% no-repeat;
 	padding: 3px 12px 3px 3px;
+}
+
+.rtl #menu li span.completed:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: -8px;
+	margin-left: 1px;
+	content: "\f107";
 }
 
 #menu .header {
