@@ -1866,18 +1866,14 @@ input.button2:focus {
 	display: none;
 	width: 620px;
 	margin: 0 auto;
-	padding: 25px;
 	padding: 0 25px 20px;
 }
 
 .phpbb_alert .alert_close {
-	font-size: 16px;
-	text-decoration: none !important;
-	display: block;
+	font-size: 14px;
 	float: right;
-	overflow: hidden;
-	margin-top: -7px;
-	margin-right: -31px;
+	margin-top: 2px;
+	margin-right: -22px;
 }
 
 .phpbb_alert .alert_close:hover {
