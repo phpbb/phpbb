@@ -467,25 +467,17 @@ class acp_modules
 			{
 				$langname = $user->lang($row['module_langname']);
 
-				if (!$row['module_enabled'])
-				{
-					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
-				}
-				else
-				{
-					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['MODULE'] . '" />';
-				}
-
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
 
 				$template->assign_block_vars('modules', array(
-					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
 					'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
 
 					'S_ACP_CAT_SYSTEM'			=> ($this->module_class == 'acp' && $row['module_langname'] == 'ACP_CAT_SYSTEM') ? true : false,
 					'S_ACP_MODULE_MANAGEMENT'	=> ($this->module_class == 'acp' && ($row['module_basename'] == 'modules' || $row['module_langname'] == 'ACP_MODULE_MANAGEMENT')) ? true : false,
+
+					'S_SUB_MODULE'		=> (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? true : false,
 
 					'U_MODULE'			=> $this->u_action . '&amp;parent_id=' . $row['module_id'],
 					'U_MOVE_UP'			=> $url . '&amp;action=move_up&amp;hash=' . generate_link_hash('acp_modules'),

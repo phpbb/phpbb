@@ -52,7 +52,7 @@
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
 				<strong class="<!-- IF enabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{enabled.META_VERSION}</strong>
-				<!-- IF not enabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not enabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
 				<!-- ELSE -->
 				{enabled.META_VERSION}
 				<!-- ENDIF -->
@@ -78,7 +78,7 @@
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
 				<strong class="<!-- IF disabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{disabled.META_VERSION}</strong>
-				<!-- IF not disabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not disabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
 				<!-- ELSE -->
 				{disabled.META_VERSION}
 				<!-- ENDIF -->

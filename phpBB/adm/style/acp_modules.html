@@ -132,7 +132,16 @@
 		<tbody>
 		<!-- BEGIN modules -->
 			<tr>
-				<td style="width: 5%; text-align: center;">{modules.MODULE_IMAGE}</td>
+				<td style="width: 5%; text-align: center;">
+					<span class="fa-stack fa-2x">
+					{{ Icon('font', 'circle', '', true, 'fas fa-stack-2x') }}
+					{{ Icon('font', {
+						'lock' : not modules.MODULE_ENABLED,
+						'folder-tree' : modules.S_SUB_MODULE,
+						'folder' : true,
+					}, '', true, 'fas fa-inverse fa-stack-1x') }}
+					</span>
+				</td>
 				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
 				<td class="actions">

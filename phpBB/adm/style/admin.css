@@ -334,7 +334,8 @@ li {
 	}
 
 	#content {
-		background: #f3f3f3 url("../images/innerbox_bg.gif") repeat-x top;
+		background: #f3f3f3;
+		background: linear-gradient(to bottom, #dbdee2 0%, #e0e2e5 27%, #ecedee 65%, #f3f3f3 100%);
 		padding: 5px;
 	}
 
@@ -501,7 +502,8 @@ li {
 /* Main Panel
 ---------------------------------------- */
 #acp {
-	background: #f3f3f3 url("../images/innerbox_bg.gif") repeat-x top;
+	background: #f3f3f3;
+	background: linear-gradient(to bottom, #dbdee2 0%, #e0e2e5 27%, #ecedee 65%, #f3f3f3 100%);
 	border: 1px #999999 solid;
 	border-radius: 5px;
 	box-shadow: #ffffff 0 0 0 1px inset;
@@ -517,7 +519,8 @@ li {
 }
 
 .panel {
-	background: #f3f3f3 url("../images/innerbox_bg.gif") repeat-x top;
+	background: #f3f3f3;
+	background: linear-gradient(to bottom, #dbdee2 0%, #e0e2e5 27%, #ecedee 65%, #f3f3f3 100%);
 	border-radius: 5px;
 	overflow: hidden;
 	padding: 5px 0;
@@ -604,25 +607,47 @@ li {
 #menu li#activemenu a span {
 	font-weight: bold;
 	text-decoration: none;
-	background: transparent url("../images/arrow_right.gif") 0% 50% no-repeat;
 	color: #1180b7;
 }
 
-.rtl #menu li#activemenu a span {
-	background: transparent url("../images/arrow_left.gif") 100% 50% no-repeat;
-}
 
 #menu li#activemenu a:hover span,
 #menu li#activemenu span {
 	font-weight: bold;
 	text-decoration: none;
-	background: #ffffff url("../images/arrow_right.gif") 1% 50% no-repeat;
 	color: #bc2a4d;
 }
 
-.rtl #menu li#activemenu a:hover span,
-.rtl #menu li#activemenu span {
-	background: #ffffff url("../images/arrow_left.gif") 99% 50% no-repeat;
+#menu li#activemenu a span:before,
+#menu li#activemenu a:hover span:before,
+#menu li#activemenu span:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: 3px;
+	margin-left: -10px;
+	content: "\f105";
+}
+
+#menu li#activemenu a:hover span:before,
+#menu li#activemenu span:before {
+	margin-right: 1px;
+	margin-left: -8px;
+}
+
+.rtl #menu li#activemenu a span:before,
+.rtl #menu li#activemenu a:hover span:before,
+.rtl #menu li#activemenu span:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: -10px;
+	margin-left: 3px;
+	content: "\f104";
+}
+
+.rtl #menu li#activemenu a:hover span:before,
+.rtl #menu li#activemenu span:before {
+	margin-right: -8px;
+	margin-left: 1px;
 }
 
 #menu li a:active,
@@ -633,14 +658,28 @@ li {
 
 #menu li span.completed {
 	text-decoration: none;
-	background: url("../images/arrow_down.gif") 1% 50% no-repeat;
 	padding: 3px 3px 3px 12px;
+}
+
+#menu li span.completed:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: 1px;
+	margin-left: -8px;
+	content: "\f107";
 }
 
 .rtl #menu li span.completed {
 	text-decoration: none;
-	background: url("../images/arrow_down.gif") 99% 50% no-repeat;
 	padding: 3px 12px 3px 3px;
+}
+
+.rtl #menu li span.completed:before {
+	font-family: "Font Awesome 6 Free";
+	color: #515f77;
+	margin-right: -8px;
+	margin-left: 1px;
+	content: "\f107";
 }
 
 #menu .header {
@@ -734,7 +773,8 @@ th {
 	font-size: 0.75em;
 	text-align: left;
 	text-transform: uppercase;
-	background: #70aed3 url("../images/gradient2b.gif") bottom left repeat-x;
+	background: #70aed3;
+	background: linear-gradient(to bottom, #70aed3 0%, #5ba0c9 100%);
 	border-top: 1px solid #6dacd2;
 	border-bottom: 1px solid #327aa5;
 	color: #ffffff;
@@ -1019,7 +1059,8 @@ table.fixed-width-table {
 		font-weight: bold;
 		text-align: left;
 		text-transform: uppercase;
-		background: #70aed3 url("../images/gradient2b.gif") bottom left repeat-x;
+		background: #70aed3;
+		background: linear-gradient(to bottom, #70aed3 0%, #5ba0c9 100%);
 		border-top: 1px solid #6dacd2;
 		border-bottom: 1px solid #327aa5;
 		color: #ffffff;
@@ -1719,7 +1760,8 @@ a.button2,
 input.button2 {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.85em;
-	background: #efefef url("../images/bg_button.gif") repeat-x top;
+	background: #efefef;
+	background: linear-gradient(to bottom, #ffffff 0%, #d2d2d2 4%, #dfdfdf 26%, #efefef 65%, #efefef 100%);
 	color: #000000;
 	width: auto !important;
 	padding: 1px 3px 0;
@@ -1763,7 +1805,8 @@ a.button1:hover,
 input.button1:hover,
 a.button2:hover,
 input.button2:hover {
-	background: #efefef url("../images/bg_button.gif") repeat bottom;
+	background: #efefef;
+	background: linear-gradient(to bottom, #ffffff 0%, #d2d2d2 4%, #dfdfdf 26%, #efefef 65%, #efefef 100%);
 	border: 1px solid #bc2a4d;
 	color: #bc2a4d;
 }
@@ -1823,24 +1866,18 @@ input.button2:focus {
 	display: none;
 	width: 620px;
 	margin: 0 auto;
-	padding: 25px;
 	padding: 0 25px 20px;
 }
 
 .phpbb_alert .alert_close {
-	text-decoration: none !important;
-	background: transparent url("../images/alert_close.png") 0 0 no-repeat;
-	display: block;
+	font-size: 14px;
 	float: right;
-	overflow: hidden;
-	width: 16px;
-	height: 16px;
-	margin-top: -7px;
-	margin-right: -31px;
+	margin-top: 2px;
+	margin-right: -22px;
 }
 
 .phpbb_alert .alert_close:hover {
-	background-position: 0 -16px;
+	color: #bc2a4d;
 }
 
 .phpbb_alert p {
@@ -2351,11 +2388,11 @@ fieldset.permissions .permissions-switch {
 	font-size: 0.85em;
 	line-height: normal;
 	min-width: 570px;
-	margin: 0 0 -1px 7px;
+	margin: 0 0 0 7px;
 }
 
 .rtl .permissions-category {
-	margin: 0 7px -1px 0;
+	margin: 0 7px 0 0;
 }
 
 .permissions-category ul {
@@ -2376,7 +2413,9 @@ fieldset.permissions .permissions-switch {
 
 .permissions-category a {
 	text-decoration: none;
-	background: url("../images/bg_tabs_alt1.gif") no-repeat 0% -35px;
+	background: #bcccd8;
+	border: 1px solid transparent;
+	border-radius: 4px 4px 0 0;
 	position: relative;
 	float: left;
 	margin: 0 1px 0 0;
@@ -2389,7 +2428,6 @@ fieldset.permissions .permissions-switch {
 
 .permissions-category a span.tabbg {
 	white-space: nowrap;
-	background: url("../images/bg_tabs_alt2.gif") no-repeat 100% -35px;
 	color: #536482;
 	display: block;
 	float: left;
@@ -2400,39 +2438,32 @@ fieldset.permissions .permissions-switch {
 	float: right;
 }
 
-/* Commented Backslash Hack hides rule from IE5-Mac \ */
 .permissions-category a span.tabbg,
 .rtl .permissions-category a span.tabbg {
 	float: none;
 }
 
-/* End hack */
+.permissions-category a:hover,
 .permissions-category a:hover span.tabbg {
-	background-position: 100% -70px;
+	background: #dfedfa;
 	color: #dd6900;
 }
 
+.permissions-category .activetab a,
+.permissions-category .activetab a:hover,
+.permissions-category .activetab a span.tabbg {
+	background: #ccdcea;
+	background: linear-gradient(to bottom, #eaf2f9 0%, #ccdcea 100%);
+	color: #333333;
+}
+
 .permissions-category .activetab a {
-	background-position: 0 0;
+	border-color: #cadceb;
+	box-shadow: 0 1px 1px #f2f9ff inset;
 }
 
 .permissions-category .activetab a span.tabbg {
-	background-position: 100% 0;
-	color: #333333;
 	padding-bottom: 7px;
-}
-
-.permissions-category a:hover {
-	background-position: 0 -70px;
-}
-
-.permissions-category .activetab a:hover span.tabbg {
-	background-position: 100% 0;
-	color: #333333;
-}
-
-.permissions-category .activetab a:hover {
-	background-position: 0 0;
 }
 
 .permissions-category a span.colour {
@@ -2808,8 +2839,16 @@ fieldset.permissions .permissions-switch {
 	user-select: none;
 }
 
+.roles-options > .button:hover {
+	background: transparent;
+}
+
+.roles-options > .button:active {
+	padding: 4px;
+}
+
 .roles-options > span {
-	background: url("../images/arrow_down.gif") no-repeat 245px 0.7em;
+	background: transparent;
 	border: 1px solid #dedede;
 	border-radius: 3px;
 	display: none;
@@ -2817,8 +2856,16 @@ fieldset.permissions .permissions-switch {
 	padding: 4px;
 }
 
-.rtl .roles-options > span {
-	background: url("../images/arrow_down.gif") no-repeat 7px 0.7em;
+.roles-options > span:after {
+	font-family: "Font Awesome 6 Free";
+	float: right;
+	content: "\f107";
+}
+
+.rtl .roles-options > span:after {
+	font-family: "Font Awesome 6 Free";
+	float: left;
+	content: "\f107";
 }
 
 .roles-options li {
@@ -2960,11 +3007,6 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
-.icon {
-	font-family: FontAwesome;
-	font-style: normal;
-}
-
 .send-stats-data-row {
 	background: #f9f9f9;
 	border: #dedede 1px solid;
@@ -3013,12 +3055,14 @@ fieldset.permissions .permissions-switch {
 }
 
 .send-stats-settings input[type="checkbox"] + label:before {
-	font-family: FontAwesome;
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
 	font-size: 1.5em;
-	content: "\f096";
+	font-weight: 400;
+	content: "\f0c8";
 }
 
 .send-stats-settings input[type="checkbox"]:checked + label:before {
+	font-weight: 900;
 	color: #3c763d;
 	content: "\f14a";
 }
@@ -3054,6 +3098,28 @@ fieldset.permissions .permissions-switch {
 	background-color: #2a2a2a;
 	color: #f1f1f1;
 	overflow-x: scroll;
+}
+
+.o-icon {
+	vertical-align: middle !important;
+}
+
+.o-icon-font {
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
+	font-style: normal;
+	font-variant: normal;
+	-webkit-font-smoothing: antialiased;
+	vertical-align: baseline;
+	display: inline-block;
+	/* stylelint-disable order/properties-order */
+	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-enable order/properties-order */
+	text-rendering: auto; /* optimizelegibility throws things off #1094 */
+}
+
+.o-icon + span,
+span + .o-icon {
+	padding-left: 4px;
 }
 
 .acp-icon {
