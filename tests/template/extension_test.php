@@ -313,7 +313,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				[
 					'ICON_PENCIL'	=> 'Pencil icon',
 				],
-				'<i class="o-icon o-icon-font fa-fw fa-pencil a-class another-class" title="Pencil icon" aria-hidden="true" data-attr-1="true" data-attr-2="two"></i>
+				'<i class="o-icon o-icon-font fa-fw fa-pencil fas a-class another-class" title="Pencil icon" aria-hidden="true" data-attr-1="true" data-attr-2="two"></i>
 				<span class="sr-only">Pencil icon</span>'
 			],
 			/** Font: icons array */
