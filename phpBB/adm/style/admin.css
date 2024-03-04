@@ -3007,12 +3007,6 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
-/* this class loads Free and Brand icons, for use when .fas and .fab are needed at same time */
-.icon {
-	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
-	font-style: normal;
-}
-
 .send-stats-data-row {
 	background: #f9f9f9;
 	border: #dedede 1px solid;
@@ -3104,6 +3098,28 @@ fieldset.permissions .permissions-switch {
 	background-color: #2a2a2a;
 	color: #f1f1f1;
 	overflow-x: scroll;
+}
+
+.o-icon {
+	vertical-align: middle !important;
+}
+
+.o-icon-font {
+	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
+	font-style: normal;
+	font-variant: normal;
+	-webkit-font-smoothing: antialiased;
+	vertical-align: baseline;
+	display: inline-block;
+	/* stylelint-disable order/properties-order */
+	-moz-osx-font-smoothing: grayscale;
+	/* stylelint-enable order/properties-order */
+	text-rendering: auto; /* optimizelegibility throws things off #1094 */
+}
+
+.o-icon + span,
+span + .o-icon {
+	padding-left: 4px;
 }
 
 .acp-icon {
