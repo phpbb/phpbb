@@ -39,6 +39,9 @@ class path_helper
 	/** @var string */
 	protected $web_root_path;
 
+	/** @var bool Flag whether we're in adm path */
+	protected $in_adm_path = false;
+
 	/**
 	* Constructor
 	*
@@ -117,7 +120,13 @@ class path_helper
 				$path = substr($path, 8);
 			}
 
-			return $this->filesystem->clean_path($web_root_path . $path);
+			$path = $this->filesystem->clean_path($web_root_path . $path);
+
+			// Further clean path if we're in adm
+			if ($this->in_adm_path && strpos($path, $this->phpbb_root_path . $this->adm_relative_path) === 0)
+			{
+				$path = substr($path, strlen($this->phpbb_root_path . $this->adm_relative_path));
+			}
 		}
 
 		return $path;
@@ -179,6 +188,11 @@ class path_helper
 		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
 		{
 			return $this->web_root_path = $this->filesystem->clean_path('./../' . $this->phpbb_root_path);
+		}
+
+		if ($path_info === '/' && defined('ADMIN_START') && preg_match('/\/' . preg_quote($this->adm_relative_path, '/') . 'index\.' . $this->php_ext . '$/', $script_name))
+		{
+			$this->in_adm_path = true;
 		}
 
 		/*
