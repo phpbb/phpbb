@@ -17,7 +17,16 @@
 
 class phpbb_functional_session_page_update_test extends phpbb_functional_test_case
 {
-	protected function test_session_page_update()
+	public function setUp(): void
+	{
+		parent::setUp();
+
+		global $db;
+
+		$db = $this->db;
+	}
+
+	public function test_session_page_update()
 	{
 		$this->login();
 		$db = $this->get_db();
@@ -32,7 +41,7 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 		}
 
 		$user_ids = [];
-		$username = [$this->get_logged_in_user()];
+		$username = ['admin'];
 		user_get_id_name($user_ids, $username);
 		$user_id = (int) $user_ids[0];
 
@@ -45,7 +54,7 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 		$this->assertEquals('index.php', $db->sql_fetchfield('session_page'));
 
 		// Request non-existent url
-		self::request('GET', 'nonexistent.jpg');
+		self::request('GET', 'nonexistent.jpg', [], false);
 		$this->assertEquals(404, self::$client->getResponse()->getStatus());
 
 		$db->sql_query_limit($sql, 1);
