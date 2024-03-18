@@ -68,8 +68,8 @@ $template->set_custom_style(
 	],
 );
 
-$template->assign_var('T_ASSETS_PATH', $phpbb_root_path . 'assets');
-$template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+$template->assign_var('T_ASSETS_PATH', $phpbb_path_helper->update_web_root_path($phpbb_root_path . 'assets'));
+$template->assign_var('T_TEMPLATE_PATH', $phpbb_path_helper->update_web_root_path($phpbb_root_path . 'style'));
 
 // Instantiate new module
 $module = new p_master();
