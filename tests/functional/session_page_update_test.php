@@ -25,15 +25,16 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 
 		$db = $this->db;
 
+		// Delete previous session info for admin user
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = 2';
+		$db->sql_query($sql);
+
 		$this->login();
 	}
 
 	public function test_session_page_update()
 	{
 		$db = $this->get_db();
-
-		// Sleep for 2 seconds to ensure we don't have session time race condition
-		sleep(2);
 
 		// Request index page
 		self::request('GET', 'index.php');
