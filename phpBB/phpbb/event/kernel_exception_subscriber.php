@@ -90,10 +90,13 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 		}
 		else if (!$this->debug && $exception instanceof NotFoundHttpException)
 		{
-			// Do not update user session page if it does not exist
-			$this->user->update_session_page = false;
-
 			$message = $this->language->lang('PAGE_NOT_FOUND');
+		}
+
+		// Do not update user session page if it does not exist
+		if ($exception instanceof NotFoundHttpException)
+		{
+			$this->user->update_session_page = false;
 		}
 
 		// Show <strong> text in bold
