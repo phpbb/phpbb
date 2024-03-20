@@ -2009,16 +2009,14 @@ function check_link_hash($token, $link_name)
 */
 function add_form_key($form_name, $template_variable_suffix = '')
 {
-	global $config, $template, $user, $phpbb_dispatcher;
+	global $phpbb_container, $phpbb_dispatcher, $template;
 
-	$now = time();
-	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-	$token = sha1($now . $user->data['user_form_salt'] . $form_name . $token_sid);
+	/** @var \phpbb\form\form_helper $form_helper */
+	$form_helper = $phpbb_container->get('form_helper');
 
-	$s_fields = build_hidden_fields(array(
-		'creation_time' => $now,
-		'form_token'	=> $token,
-	));
+	$form_tokens = $form_helper->get_form_tokens($form_name, $now, $token_sid, $token);
+
+	$s_fields = build_hidden_fields($form_tokens);
 
 	/**
 	* Perform additional actions on creation of the form token
@@ -2058,35 +2056,12 @@ function add_form_key($form_name, $template_variable_suffix = '')
  */
 function check_form_key($form_name, $timespan = false)
 {
-	global $config, $request, $user;
+	global $phpbb_container;
 
-	if ($timespan === false)
-	{
-		// we enforce a minimum value of half a minute here.
-		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
-	}
+	/** @var \phpbb\form\form_helper $form_helper */
+	$form_helper = $phpbb_container->get('form_helper');
 
-	if ($request->is_set_post('creation_time') && $request->is_set_post('form_token'))
-	{
-		$creation_time	= abs($request->variable('creation_time', 0));
-		$token = $request->variable('form_token', '');
-
-		$diff = time() - $creation_time;
-
-		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
-		if (defined('DEBUG_TEST') || $diff && ($diff <= $timespan || $timespan === -1))
-		{
-			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
-
-			if ($key === $token)
-			{
-				return true;
-			}
-		}
-	}
-
-	return false;
+	return $form_helper->check_form_tokens($form_name, $timespan !== false ? $timespan : null);
 }
 
 // Message/Login boxes

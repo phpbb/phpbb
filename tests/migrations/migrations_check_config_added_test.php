@@ -142,7 +142,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 					continue;
 				}
 
-				// Fill error entries for configuration options which were not added to shema_data.sql
+				// Fill error entries for configuration options which were not added to schema_data.sql
 				if (!isset($config_names[$config_name]))
 				{
 					$config_names[$config_name] = [$config_name, $class];
@@ -160,7 +160,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 	*/
 	public function test_config_option_exists_in_schema_data($config_name, $class)
 	{
-		$message = 'Migration: %1$s, config_name: %2$s; not added to shema_data.sql';
+		$message = 'Migration: %1$s, config_name: %2$s; not added to schema_data.sql';
 
 		$this->assertNotFalse(strpos($this->schema_data, $config_name),
 			sprintf($message, $class, $config_name)

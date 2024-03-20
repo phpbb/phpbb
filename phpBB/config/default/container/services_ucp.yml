@@ -15,3 +15,17 @@ services:
             - '%tables.users%'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    phpbb.ucp.controller.webpush:
+        class: phpbb\ucp\controller\webpush
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@dbal.conn'
+            - '@form_helper'
+            - '@path_helper'
+            - '@request'
+            - '@user'
+            - '@template.twig.environment'
+            - '%tables.notification_push%'
+            - '%tables.push_subscriptions%'

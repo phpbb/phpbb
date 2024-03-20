@@ -12,38 +12,6 @@
 	<div class="inner">
 
 		<p class="cp-desc">{TITLE_EXPLAIN}</p>
-
-		<!-- IF MODE == 'notification_options' -->
-			<table class="table1">
-				<thead>
-					<tr>
-						<th>{L_NOTIFICATION_TYPE}</th>
-						<!-- BEGIN notification_methods -->
-							<th class="mark">{notification_methods.NAME}</th>
-						<!-- END notification_methods -->
-					</tr>
-				</thead>
-				<tbody>
-				<!-- BEGIN notification_types -->
-					<!-- IF notification_types.GROUP_NAME -->
-						<tr class="bg3">
-							<td colspan="{NOTIFICATION_TYPES_COLS}">{notification_types.GROUP_NAME}</td>
-						</tr>
-					<!-- ELSE -->
-						<tr class="<!-- IF notification_types.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-							<td>
-								{notification_types.NAME}
-								<!-- IF notification_types.EXPLAIN --><br />&nbsp; &nbsp;{notification_types.EXPLAIN}<!-- ENDIF -->
-							</td>
-							<!-- BEGIN notification_methods -->
-								<td class="mark"><input type="checkbox" name="{notification_types.TYPE}_{notification_types.notification_methods.METHOD}"<!-- IF notification_types.notification_methods.SUBSCRIBED --> checked="checked"<!-- ENDIF --><!-- IF not notification_types.notification_methods.AVAILABLE --> disabled="disabled"<!-- ENDIF --> /></td>
-							<!-- END notification_methods -->
-						</tr>
-					<!-- ENDIF -->
-				<!-- END notification_types -->
-				</tbody>
-			</table>
-		<!-- ELSE -->
 			<!-- IF .notification_list -->
 				<div class="action-bar bar-top">
 					<div class="pagination">
@@ -105,8 +73,6 @@
 			<!-- ELSE -->
 				<p><strong>{L_NO_NOTIFICATIONS}</strong></p>
 			<!-- ENDIF -->
-
-		<!-- ENDIF -->
 	</div>
 </div>
 

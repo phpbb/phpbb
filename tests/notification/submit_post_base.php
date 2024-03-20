@@ -135,6 +135,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('log', new \phpbb\log\dummy());
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set(
 			'text_formatter.s9e.mention_helper',
@@ -154,6 +155,8 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 		$phpbb_container->setParameter('tables.notification_types', 'phpbb_notification_types');
 		$phpbb_container->setParameter('tables.notification_emails', 'phpbb_notification_emails');
+		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
+		$phpbb_container->setParameter('tables.push_subscriptions', 'phpbb_push_subscriptions');
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
 		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
 		$phpbb_container->compile();

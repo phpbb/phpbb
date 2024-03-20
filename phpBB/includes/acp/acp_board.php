@@ -19,6 +19,7 @@
 * @ignore
 */
 
+use Minishlink\WebPush\VAPID;
 use phpbb\config\config;
 use phpbb\language\language;
 use phpbb\user;
@@ -483,6 +484,20 @@ class acp_board
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
+			break;
+
+			case 'webpush':
+				$display_vars = [
+					'title'		=> 'ACP_WEBPUSH_SETTINGS',
+					'vars' 		=> [
+						'legend1'					=> 'GENERAL_SETTINGS',
+						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'method' => 'webpush_enable', 'explain' => true],
+						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
+						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
+
+						'legend3'				=> 'ACP_SUBMIT_CHANGES',
+					],
+				];
 			break;
 
 			default:
@@ -1346,5 +1361,50 @@ class acp_board
 
 		return '<input class="button2" type="submit" id="' . $key . '" name="' . $key . '" value="' . $user->lang('SEND_TEST_EMAIL') . '" />
 				<textarea id="' . $key . '_text" name="' . $key . '_text" placeholder="' . $user->lang('MESSAGE') . '"></textarea>';
+	}
+
+	/**
+	 * Generate form data for web push enable
+	 *
+	 * @param string $value Webpush enable value
+	 * @param string $key Webpush enable config key
+	 *
+	 * @return array[] Form data
+	 */
+	public function webpush_enable($value, $key): array
+	{
+		return [
+			[
+				'tag'		=> 'radio',
+				'buttons'	=> [
+					[
+						'name'		=> "config[$key]",
+						'label'		=> $this->language->lang('YES'),
+						'type'		=> 'radio',
+						'class'		=> 'radio',
+						'value'		=> 1,
+						'checked'	=> $value,
+					],
+					[
+						'name'		=> "config[$key]",
+						'label'		=> $this->language->lang('NO'),
+						'type'		=> 'radio',
+						'class'		=> 'radio',
+						'value'		=> 0,
+						'checked'	=> !$value,
+					],
+				],
+			],
+			[
+				'tag'		=> 'input',
+				'class'		=> 'button2',
+				'name'		=> "config[$key]",
+				'type'		=> 'button',
+				'value'		=> $this->language->lang('WEBPUSH_GENERATE_VAPID_KEYS'),
+				'data'		=> [
+					'ajax'	=> 'generate_vapid_keys',
+				]
+			],
+		];
 	}
 }

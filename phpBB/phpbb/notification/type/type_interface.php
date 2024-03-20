@@ -139,7 +139,7 @@ interface type_interface
 	/**
 	* Get the user's avatar (the user who caused the notification typically)
 	*
-	* @return string
+	* @return array
 	*/
 	public function get_avatar();
 
