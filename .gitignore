@@ -41,6 +41,7 @@
 
 # Excludes test / dev files
 /phpunit.xml
+/.phpunit.result.cache
 /phpBB/composer.phar
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php

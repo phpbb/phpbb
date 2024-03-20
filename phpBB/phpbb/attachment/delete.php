@@ -464,7 +464,7 @@ class delete
 				return true;
 			}
 		}
-		catch (\phpbb\storage\exception\exception $exception)
+		catch (\phpbb\storage\exception\storage_exception $exception)
 		{
 			// Fail is covered by return statement below
 		}

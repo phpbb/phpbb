@@ -15,7 +15,7 @@ namespace phpbb\storage\exception;
 
 use phpbb\exception\runtime_exception;
 
-class exception extends runtime_exception
+class storage_exception extends runtime_exception
 {
 	/**
 	 * Constructor

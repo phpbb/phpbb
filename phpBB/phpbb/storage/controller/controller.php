@@ -16,7 +16,7 @@ namespace phpbb\storage\controller;
 use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,7 +63,7 @@ class controller
 	 * @return Response a Symfony response object
 	 *
 	 * @throws http_exception when can't access $file
-	 * @throws exception when there is an error reading the file
+	 * @throws storage_exception when there is an error reading the file
 	 */
 	public function handle(string $file): Response
 	{
@@ -120,7 +120,7 @@ class controller
 	 * @param string $file File path
 	 *
 	 * @return void
-	 * @throws exception when there is an error reading the file
+	 * @throws storage_exception when there is an error reading the file
 	 */
 	protected function prepare(StreamedResponse $response, string $file): void
 	{
@@ -133,7 +133,7 @@ class controller
 			{
 				$content_type = $file_info->get('mimetype');
 			}
-			catch (exception $e)
+			catch (storage_exception $e)
 			{
 				$content_type = 'application/octet-stream';
 			}
@@ -148,7 +148,7 @@ class controller
 			{
 				$response->headers->set('Content-Length', $file_info->get('size'));
 			}
-			catch (exception $e)
+			catch (storage_exception $e)
 			{
 				// Just don't send this header
 			}
