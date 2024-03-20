@@ -3200,6 +3200,13 @@ viewtopic_body_footer_before
 * Purpose: Add content to the bottom of the View topic screen below the posts
 and quick reply, directly before the jumpbox in Prosilver.
 
+viewtopic_body_online_list_after
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.3.12-RC1
+* Purpose: Add content after the online users list
+
 viewtopic_body_online_list_before
 ===
 * Locations:
