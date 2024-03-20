@@ -74,6 +74,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
 		$loader = new \phpbb\template\twig\loader($filesystem);
+		$dispatcher = new \phpbb\event\dispatcher($phpbb_container);
 		$twig = new \phpbb\template\twig\environment(
 			$config,
 			$filesystem,
@@ -81,7 +82,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($phpbb_container),
+			$dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -97,7 +98,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$cache_path,
 			$this->user,
 			[
-				new \phpbb\template\twig\extension($context, $twig, $this->lang),
+				new \phpbb\template\twig\extension($context, $twig, $this->lang, $dispatcher),
 				new \phpbb\template\twig\extension\avatar(),
 				new \phpbb\template\twig\extension\config($config),
 				new \phpbb\template\twig\extension\username(),
