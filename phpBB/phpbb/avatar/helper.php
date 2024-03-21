@@ -252,7 +252,7 @@ class helper
 	{
 		if ($data['lazy'])
 		{
-			$data['src'] = $this->get_no_avatar_source() . ' data-src="' . $data['src'];
+			$data['src'] = $this->get_no_avatar_source() . '" data-src="' . $data['src'];
 		}
 
 		$src = ' src="' . $data['src'] . '"';
