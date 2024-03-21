@@ -828,7 +828,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 		$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
-		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
+		$enable_urls 		= (!$url_status || isset($_POST['disable_magic_url'])) ? 0 : 1;
 		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
 
 		/**
