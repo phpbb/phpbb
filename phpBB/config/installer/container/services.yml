@@ -1,5 +1,6 @@
 imports:
     - { resource: services_installer.yml }
+    - { resource: services_avatar.yml }
     - { resource: ../../default/container/services_event.yml }
     - { resource: ../../default/container/services_filesystem.yml }
     - { resource: ../../default/container/services_http.yml }

@@ -45,6 +45,8 @@ services:
 
     template.twig.extensions.avatar:
         class: phpbb\template\twig\extension\avatar
+        arguments:
+            - '@avatar.helper'
         tags:
             - { name: twig.extension }
 

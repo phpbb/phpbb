@@ -15,10 +15,10 @@ namespace phpbb\avatar\driver;
 
 use bantu\IniGetWrapper\IniGetWrapper;
 use phpbb\config\config;
-use phpbb\controller\helper;
 use phpbb\event\dispatcher_interface;
 use phpbb\files\factory;
 use phpbb\path_helper;
+use phpbb\routing\helper;
 use phpbb\storage\exception\exception as storage_exception;
 use phpbb\storage\storage;
 
@@ -30,7 +30,7 @@ class upload extends \phpbb\avatar\driver\driver
 	/**
 	 * @var helper
 	 */
-	private $controller_helper;
+	private $routing_helper;
 
 	/**
 	 * @var storage
@@ -56,23 +56,23 @@ class upload extends \phpbb\avatar\driver\driver
 	 * Construct a driver object
 	 *
 	 * @param config $config phpBB configuration
-	 * @param helper $controller_helper
 	 * @param string $phpbb_root_path Path to the phpBB root
 	 * @param string $php_ext PHP file extension
 	 * @param storage $storage phpBB avatar storage
 	 * @param path_helper $path_helper phpBB path helper
+	 * @param helper $routing_helper phpBB routing helper
 	 * @param dispatcher_interface $dispatcher phpBB Event dispatcher object
 	 * @param factory $files_factory File classes factory
 	 * @param IniGetWrapper $php_ini ini_get() wrapper
 	 */
-	public function __construct(config $config, helper $controller_helper, string $phpbb_root_path, string $php_ext, storage $storage, path_helper $path_helper, dispatcher_interface $dispatcher, factory $files_factory, IniGetWrapper $php_ini)
+	public function __construct(config $config, string $phpbb_root_path, string $php_ext, storage $storage, path_helper $path_helper, helper $routing_helper, dispatcher_interface $dispatcher, factory $files_factory, IniGetWrapper $php_ini)
 	{
 		$this->config = $config;
-		$this->controller_helper = $controller_helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 		$this->storage = $storage;
 		$this->path_helper = $path_helper;
+		$this->routing_helper = $routing_helper;
 		$this->dispatcher = $dispatcher;
 		$this->files_factory = $files_factory;
 		$this->php_ini = $php_ini;
@@ -84,7 +84,7 @@ class upload extends \phpbb\avatar\driver\driver
 	public function get_data($row)
 	{
 		return array(
-			'src' => $this->controller_helper->route('phpbb_storage_avatar', ['file' => $row['avatar']]),
+			'src' => $this->routing_helper->route('phpbb_storage_avatar', ['file' => $row['avatar']]),
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
