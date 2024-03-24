@@ -179,7 +179,7 @@ class ucp_prefs
 
 				$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
 
-				$template->assign_vars(array(
+				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
@@ -205,15 +205,19 @@ class ucp_prefs
 						'name'		=> 'lang',
 						'options'	=> $lang_options,
 					],
-					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style'], false, $styles_row),
+					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : [
+						'id'		=> 'user_style',
+						'name'		=> 'user_style',
+						'options'	=> style_select($data['user_style'], false, $styles_row)
+					],
 					'TIMEZONE_OPTIONS'	=> [
 						'tag'		=> 'select',
 						'name'		=> 'tz',
 						'options'	=> $timezone_select,
 					],
-					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
-				);
+					'S_CAN_HIDE_ONLINE'	=> (bool) $auth->acl_get('u_hideonline'),
+					'S_SELECT_NOTIFY'	=> (bool) ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')),
+				]);
 
 			break;
 

@@ -41,18 +41,39 @@ class main_module
 				'setting_0_height'	=> ['lang' => 'SETTING_0',	'validate' => 'int:0',	'type' => false, 'method' => false, 'explain' => false],
 				'setting_0'	=> ['lang' => 'SETTING_0',	'validate' => 'int:0:16',	'type' => 'dimension:0:999', 'explain' => true, 'append' => ' ' . $language->lang('PIXEL')],
 				'setting_1'	=> ['lang' => 'SETTING_1',	'validate' => 'bool',		'type' => 'custom', 'method' => 'submit_button', 'lang_explain' => 'CUSTOM_LANG_EXPLAIN', 'explain' => true],
-				'setting_2'	=> ['lang' => 'SETTING_2',	'validate' => 'bool',		'type' => 'radio:yes_no'],
+				'setting_2'	=> ['lang' => 'SETTING_2',	'validate' => 'bool',		'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
 				'setting_3'	=> ['lang' => 'SETTING_3',	'validate' => 'int:0:99999','type' => 'number:0:99999', 'explain' => true],
 				'setting_4'	=> ['lang' => 'SETTING_4',	'validate' => 'string',		'type' => 'select', 'method' => 'create_select', 'explain' => true],
 				'setting_5'	=> ['lang' => 'SETTING_5',	'validate' => 'string',		'type' => 'text:25:255', 'explain' => true],
 				'setting_6'	=> ['lang' => 'SETTING_6',	'validate' => 'string',		'type' => 'password:25:255', 'explain' => true],
 				'setting_7'	=> ['lang' => 'SETTING_7',	'validate' => 'email',		'type' => 'email:0:100', 'explain' => true],
 				'setting_8'	=> ['lang' => 'SETTING_8',	'validate' => 'string',		'type' => 'textarea:5:30', 'explain' => true],
-				'setting_9'	=> ['lang' => 'SETTING_9',	'validate' => 'bool',		'type' => 'radio:enabled_disabled', 'explain' => true],
+				'setting_9'	=> ['lang' => 'SETTING_9',	'validate' => 'bool',		'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']], 'explain' => true],
+				'setting_10'=> ['lang' => 'SETTING_10',	'validate' => 'int',		'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'LABEL_1', 3 => 'LABEL_3', 2 => 'LABEL_2']], 'explain' => true],
+				'setting_11'=> ['lang' => 'SETTING_11',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true],
+				'setting_12'=> ['lang' => 'SETTING_12',	'validate' => 'bool',		'type' => 'radio:enabled_disabled', 'explain' => true],
 			]
 		];
 
-		$this->new_config = $cfg_array = $error = [];
+		$config = new \phpbb\config\config([
+			'setting_0_width' => '1',
+			'setting_0_height' => '17',
+			'setting_0' => '10',
+			'setting_2' => '1',
+			'setting_3' => '15',
+			'setting_4' => '2',
+			'setting_5' => 'Setting 5',
+			'setting_6' => 'password',
+			'setting_7' => 'test@example.dom',
+			'setting_8' => 'Textarea',
+			'setting_9' => '1',
+			'setting_10' => '3',
+			'setting_11' => '0',
+			'setting_12' => '0',
+		]);
+		$this->new_config = clone $config;
+		$cfg_array = (isset($_REQUEST['config'])) ? $request->variable('config', ['' => ''], true) : $this->new_config;
+		$error = [];
 
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
@@ -104,7 +125,7 @@ class main_module
 				$l_explain = $language->lang($vars['lang_explain'] ?: $vars['lang'] . '_EXPLAIN');
 			}
 
-			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+			$content = phpbb_build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 
 			if (empty($content))
 			{
@@ -123,13 +144,15 @@ class main_module
 		}
 	}
 
-	function create_select()
+	function create_select($value)
 	{
-		return '
-			<option value="1" selected="selected">Option 1</option>
-			<option value="2">Option 2</option>
-			<option value="3">Option 3</option>
-		';
+		$options = [
+			1 => 'Option 1',
+			2 => 'Option 2',
+			3 => 'Option 3',
+		];
+
+		return ['options' => build_select($options, $value)];
 	}
 
 	function submit_button()

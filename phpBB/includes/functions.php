@@ -319,11 +319,14 @@ function style_select($default = '', $all = false, array $styledata = [])
 		$db->sql_freeresult($result);
 	}
 
-	$style_options = '';
+	$style_options = [];
 	foreach ($styledata as $row)
 	{
-		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
-		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
+		$style_options[] = [
+			'value' 	=> $row['style_id'],
+			'selected'	=> $row['style_id'] == $default,
+			'label'		=> $row['style_name'],
+		];
 	}
 
 	return $style_options;

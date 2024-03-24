@@ -129,6 +129,7 @@ class forms extends AbstractExtension
 				'MAX'		=> (int) ($form_data['max'] ?? 0),
 				'STEP'		=> (int) ($form_data['step'] ?? 0),
 				'CHECKED'	=> (bool) ($form_data['checked'] ?? false),
+				'DISABLED'	=> (bool) ($form_data['disabled'] ?? false),
 				'VALUE'		=> (string) ($form_data['value']),
 			]);
 		}
@@ -151,10 +152,7 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/radio_buttons.twig', [
-				'FIRST_BUTTON'			=> $form_data['buttons'][0],
-				'FIRST_BUTTON_LABEL'	=> $form_data['buttons'][0]['label'],
-				'SECOND_BUTTON'			=> $form_data['buttons'][1],
-				'SECOND_BUTTON_LABEL'	=> $form_data['buttons'][1]['label'],
+				'BUTTONS'	=>	$form_data['buttons'],
 			]);
 		}
 		catch (\Twig\Error\Error $e)
@@ -179,7 +177,7 @@ class forms extends AbstractExtension
 				'CLASS'			=> (string) ($form_data['class'] ?? ''),
 				'ID'			=> (string) ($form_data['id'] ?? ''),
 				'DATA'			=> $form_data['data'] ?? [],
-				'NAME'			=> (string) $form_data['name'],
+				'NAME'			=> (string) ($form_data['name'] ?? ''),
 				'TOGGLEABLE'	=> (bool) ($form_data['toggleable'] ?? false),
 				'OPTIONS'		=> $form_data['options'] ?? [],
 				'GROUP_ONLY'	=> (bool) ($form_data['group_only'] ?? false),
@@ -206,13 +204,14 @@ class forms extends AbstractExtension
 		try
 		{
 			return $environment->render('macros/forms/textarea.twig', [
-				'CLASS'			=> (string) ($form_data['class'] ?? ''),
+				'CLASS'		=> (string) ($form_data['class'] ?? ''),
 				'ID'		=> (string) $form_data['id'],
-				'DATA'			=> $form_data['data'] ?? [],
+				'DATA'		=> $form_data['data'] ?? [],
 				'NAME'		=> (string) $form_data['name'],
-				'ROWS'		=> (int) $form_data['rows'],
-				'COLS'		=> (int) $form_data['cols'],
-				'CONTENT'	=> (string) $form_data['content'],
+				'ROWS'		=> (int) ($form_data['rows'] ?? ''),
+				'COLS'		=> (int) ($form_data['cols'] ?? ''),
+				'CONTENT'	=> (string) ($form_data['content'] ?? ''),
+				'PLACEHOLDER'	=> (string) ($form_data['placeholder'] ?? ''),
 			]);
 		}
 		catch (\Twig\Error\Error $e)

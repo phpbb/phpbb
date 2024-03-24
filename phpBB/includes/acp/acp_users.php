@@ -1838,7 +1838,11 @@ class acp_users
 						'name'		=> 'lang',
 						'options'	=> $lang_options,
 					],
-					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'S_STYLE_OPTIONS'	=> [
+						'id'		=> 'style',
+						'name'		=> 'style',
+						'options' => style_select($data['style'])
+					],
 					'TIMEZONE_OPTIONS'	=> [
 						'tag'		=> 'select',
 						'name'		=> 'tz',

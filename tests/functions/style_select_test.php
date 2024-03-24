@@ -20,14 +20,119 @@ class phpbb_functions_style_select_test extends phpbb_database_test_case
 
 	static public function style_select_data()
 	{
-		return array(
-			array('', false, '<option value="1">prosilver</option><option value="2">subsilver2</option>'),
-			array('', true, '<option value="1">prosilver</option><option value="2">subsilver2</option><option value="3">zoo</option>'),
-			array('1', false, '<option value="1" selected="selected">prosilver</option><option value="2">subsilver2</option>'),
-			array('1', true, '<option value="1" selected="selected">prosilver</option><option value="2">subsilver2</option><option value="3">zoo</option>'),
-			array('3', false, '<option value="1">prosilver</option><option value="2">subsilver2</option>'),
-			array('3', true, '<option value="1">prosilver</option><option value="2">subsilver2</option><option value="3" selected="selected">zoo</option>'),
-		);
+		return [
+			[
+				'',
+				false,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> false,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+				]
+			],
+			[
+				'',
+				true,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> false,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+					[
+						'value'	=>	'3',
+						'selected'	=> false,
+						'label'		=> 'zoo',
+					],
+				]
+			],
+			[
+				'1',
+				false,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> true,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+				]
+			],
+			[
+				'1',
+				true,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> true,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+					[
+						'value'	=>	'3',
+						'selected'	=> false,
+						'label'		=> 'zoo',
+					],
+				]
+			],
+			[
+				'3',
+				false,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> false,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+				]
+			],
+			[
+				'3',
+				true,
+				[
+					[
+						'value'	=>	'1',
+						'selected'	=> false,
+						'label'		=> 'prosilver',
+					],
+					[
+						'value'	=>	'2',
+						'selected'	=> false,
+						'label'		=> 'subsilver2',
+					],
+					[
+						'value'	=>	'3',
+						'selected'	=> true,
+						'label'		=> 'zoo',
+					],
+				]
+			],
+		];
 	}
 
 	/**

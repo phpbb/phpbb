@@ -81,7 +81,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$language = new phpbb_mock_lang();
 		$user->lang = $language;
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_dimension_data()
@@ -151,7 +151,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_number_data()
@@ -219,7 +219,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_textarea_data()
@@ -254,18 +254,18 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_radio_data()
 	{
-		return array(
-			array(
-				array('radio', 'enabled_disabled'),
+		return [
+			[
+				['radio', 'enabled_disabled'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array(),
+				[],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -286,13 +286,40 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'enabled_disabled'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array(),
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
+			],
+			[
+				['radio', 'enabled_disabled'],
+				'key_name',
+				['config_key_name'	=> '1'],
+				'config_key_name',
+				[],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -313,13 +340,40 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'yes_no'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '0'),
+				['config_key_name'	=> '1'],
 				'config_key_name',
-				array(),
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ENABLED', 0 => 'DISABLED']]],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'ENABLED',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'DISABLED',
+						],
+					],
+				],
+			],
+			[
+				['radio', 'yes_no'],
+				'key_name',
+				['config_key_name'	=> '0'],
+				'config_key_name',
+				[],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -340,13 +394,40 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-			array(
-				array('radio', 'yes_no'),
+			],
+			[
+				['radio'],
 				'key_name',
-				array('config_key_name'	=> '1'),
+				['config_key_name'	=> '0'],
 				'config_key_name',
-				array(),
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> false,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> true,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
+			],
+			[
+				['radio', 'yes_no'],
+				'key_name',
+				['config_key_name'	=> '1'],
+				'config_key_name',
+				[],
 				[
 					'tag'		=> 'radio',
 					'buttons'	=> [
@@ -367,8 +448,35 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 						],
 					],
 				],
-			),
-		);
+			],
+			[
+				['radio'],
+				'key_name',
+				['config_key_name'	=> '1'],
+				'config_key_name',
+				['function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'YES', 0 => 'NO']]],
+				[
+					'tag'		=> 'radio',
+					'buttons'	=> [
+						[
+							'id'		=> 'key_name',
+							'type'		=> 'radio',
+							'value'		=> 1,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'YES',
+							'checked'	=> true,
+						],
+						[
+							'type'		=> 'radio',
+							'value'		=> 0,
+							'checked'	=> false,
+							'name'		=> 'config[config_key_name]',
+							'label'		=> 'NO',
+						],
+					],
+				],
+			],
+		];
 	}
 
 	/**
@@ -381,7 +489,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new \phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_append_data()
@@ -417,7 +525,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user = new phpbb_mock_user();
 		$user->lang = new phpbb_mock_lang();
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function build_cfg_template_select_data()
@@ -431,8 +539,11 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				['method' => 'select_helper'],
 				[
 					'tag'		=> 'select',
+					'class'		=> false,
 					'id'		=> 'key_name',
+					'data'		=> [],
 					'name'		=> 'config[config_key_name]',
+					'toggleable' => false,
 					'options'	=> [
 						[
 							'value'		=> 1,
@@ -450,7 +561,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'selected'	=> false,
 						]
 					],
-					'toggleable' => false,
+					'group_only'	=> false,
+					'size'			=> 1,
+					'multiple'		=> false,
 				],
 			],
 			[
@@ -461,9 +574,11 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 				['method' => 'select_helper'],
 				[
 					'tag'		=> 'select',
+					'class'		=> false,
 					'id'		=> 'key_name',
+					'data'		=> [],
 					'name'		=> 'config[config_key_name]',
-					'size'		=> 8,
+					'toggleable' => false,
 					'options'	=> [
 						[
 							'value'		=> 1,
@@ -481,7 +596,9 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 							'selected'	=> false,
 						]
 					],
-					'toggleable' => false,
+					'group_only'	=> false,
+					'size'			=> 8,
+					'multiple'		=> false,
 				],
 			],
 		];
@@ -501,18 +618,19 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$user->module = $this;
 		$module = $user;
 
-		$this->assertEquals($expected, build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
+		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
 	public function select_helper()
 	{
-		return build_select(
-			array(
-				'1'	=> 'First_Option',
-				'2'	=> 'Second_Option',
-				'3'	=> 'Third_Option',
-			),
-			'2'
-		);
+		return [
+			'options' => build_select(
+				[
+					'1'	=> 'First_Option',
+					'2'	=> 'Second_Option',
+					'3'	=> 'Third_Option',
+				],
+				'2'),
+		];
 	}
 }
