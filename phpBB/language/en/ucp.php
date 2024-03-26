@@ -136,6 +136,7 @@ $lang = array_merge($lang, array(
 	'CONFIRMATION'				=> 'Confirmation of registration',
 	'CONFIRM_CHANGES'			=> 'Confirm changes',
 	'CONFIRM_EXPLAIN'			=> 'To prevent automated registrations the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
+	'CONFIRM_INCOMPLETE'		=> 'To prevent automated registrations the board requires you to enter a confirmation code. This has not been configured yet and hence cannot be used. Please try again later or contact the %sBoard Administrator%s.',
 	'VC_REFRESH'				=> 'Refresh confirmation code',
 	'VC_REFRESH_EXPLAIN'		=> 'If you cannot read the code you can request a new one by clicking the button.',
 

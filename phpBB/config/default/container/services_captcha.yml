@@ -17,6 +17,11 @@ services:
     core.captcha.plugins.incomplete:
         class: phpbb\captcha\plugins\incomplete
         shared: false
+        arguments:
+            - '@config'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
         calls:
             - [ set_name, [ core.captcha.plugins.incomplete ] ]
         tags:
