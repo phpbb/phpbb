@@ -157,7 +157,8 @@ abstract class captcha_abstract
 			FROM ' . CONFIRM_TABLE . ' c
 			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
 			WHERE s.session_id IS NULL' .
-				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+				((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type)
+			. ' LIMIT 100000';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
