@@ -230,7 +230,7 @@ class webpush
 
 		$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
 			WHERE user_id = ' . (int) $this->user->id() . "
-				AND endpoint = '" . (int) $this->db->sql_escape($endpoint) . "'";
+				AND endpoint = '" . $this->db->sql_escape($endpoint) . "'";
 		$this->db->sql_query($sql);
 
 		return new JsonResponse([
