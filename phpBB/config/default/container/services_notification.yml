@@ -243,3 +243,19 @@ services:
             - '%core.php_ext%'
         tags:
             - { name: notification.method }
+
+    notification.method.webpush:
+        class: phpbb\notification\method\webpush
+        shared: false
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@log'
+            - '@user_loader'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.notification_push%'
+            - '%tables.push_subscriptions%'
+        tags:
+            - { name: notification.method }

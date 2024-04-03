@@ -217,6 +217,13 @@ jobs:
               run: |
                   .github/setup-ldap.sh
 
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+            - name: Setup node dependencies
+              run: npm ci
+
             - name: Setup SPHINX
               run: |
                   .github/setup-sphinx.sh
@@ -342,6 +349,13 @@ jobs:
               run: |
                   .github/setup-database.sh $DB $MYISAM
 
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+            - name: Setup node dependencies
+              run: npm ci
+
             - name: Run unit tests
               env:
                   DB: ${{steps.database-type.outputs.db}}
@@ -446,6 +460,13 @@ jobs:
                   MYISAM: '0'
               run: |
                   .github/setup-database.sh $DB $MYISAM
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+            - name: Setup node dependencies
+              run: npm ci
 
             - name: Run unit tests
               env:
@@ -555,6 +576,14 @@ jobs:
                   psql -c 'create database phpbb_tests;' -U postgres
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
                   Set-MpPreference -DisableRealtimeMonitoring $true
+
+            - name: Setup node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+            - name: Setup node dependencies
+              run: npm ci
+
             - name: Run unit tests
               if: ${{ matrix.type == 'unit' }}
               run: |

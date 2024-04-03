@@ -219,6 +219,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
 
+	'ACP_WEBPUSH_SETTINGS'		=> 'Web Push settings',
 	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',
@@ -592,6 +593,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_SETTINGS'		=> '<strong>Altered board settings</strong>',
 	'LOG_CONFIG_SIGNATURE'		=> '<strong>Altered signature settings</strong>',
 	'LOG_CONFIG_VISUAL'			=> '<strong>Altered anti-spambot settings</strong>',
+	'LOG_CONFIG_WEBPUSH'		=> '<strong>Altered Web Push settings</strong>',
 
 	'LOG_APPROVE_TOPIC'			=> '<strong>Approved topic</strong><br />» %s',
 	'LOG_BUMP_TOPIC'			=> '<strong>User bumped topic</strong><br />» %s',
@@ -811,6 +813,9 @@ $lang = array_merge($lang, array(
 		2 => '<strong>Deleted %2$d user warnings</strong><br />» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br />» username'
 	),
 	'LOG_WARNINGS_DELETED_ALL'	=> '<strong>Deleted all user warnings</strong><br />» %s',
+
+	'LOG_WEBPUSH_MESSAGE_FAIL'			=> '<strong>Web Push message could not be sent:</strong> %s',
+	'LOG_WEBPUSH_SUBSCRIPTION_REMOVED'	=> '<strong>Removed Web Push subscription:</strong>» %s',
 
 	'LOG_WORD_ADD'			=> '<strong>Added word censor</strong><br />» %s',
 	'LOG_WORD_DELETE'		=> '<strong>Deleted word censor</strong><br />» %s',

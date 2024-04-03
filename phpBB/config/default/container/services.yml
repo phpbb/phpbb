@@ -126,6 +126,13 @@ services:
         arguments:
             - '%core.root_path%'
 
+    form_helper:
+        class: phpbb\form\form_helper
+        arguments:
+            - '@config'
+            - '@request'
+            - '@user'
+
     group_helper:
         class: phpbb\group\helper
         arguments:
