@@ -67,6 +67,14 @@ services:
             - '@controller.helper'
             - '@dispatcher'
 
+    posting.lock:
+        class: phpbb\lock\posting
+        shared: false
+        arguments:
+            - '@cache.driver'
+            - '@config'
+            - '@request'
+
     viewonline_helper:
         class: phpbb\viewonline_helper
         arguments:

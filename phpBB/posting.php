@@ -1429,7 +1429,10 @@ if ($submit || $preview || $refresh)
 	// Store message, sync counters
 	if (!count($error) && $submit)
 	{
-		if ($submit)
+		/** @var \phpbb\lock\posting $posting_lock */
+		$posting_lock = $phpbb_container->get('posting.lock');
+
+		if ($posting_lock->acquire())
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $post_data['topic_status'];
@@ -1619,6 +1622,11 @@ if ($submit || $preview || $refresh)
 			}
 
 			redirect($redirect_url);
+		}
+		else
+		{
+			// Posting was already locked before, hence form submission was already attempted once and is now invalid
+			$error[] = $language->lang('FORM_INVALID');
 		}
 	}
 }
