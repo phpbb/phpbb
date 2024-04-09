@@ -1432,7 +1432,11 @@ if ($submit || $preview || $refresh)
 		/** @var \phpbb\lock\posting $posting_lock */
 		$posting_lock = $phpbb_container->get('posting.lock');
 
-		if ($posting_lock->acquire())
+		// Get creation time and form token, must be already checked at this point
+		$creation_time	= abs($request->variable('creation_time', 0));
+		$form_token = $request->variable('form_token', '');
+
+		if ($posting_lock->acquire($creation_time, $form_token))
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $post_data['topic_status'];
@@ -1560,6 +1564,9 @@ if ($submit || $preview || $refresh)
 
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
+
+			// Release lock after submitting post
+			$posting_lock->release();
 
 			/**
 			* This event allows you to define errors after the post action is performed

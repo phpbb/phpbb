@@ -15,7 +15,6 @@ namespace phpbb\lock;
 
 use phpbb\cache\driver\driver_interface as cache_interface;
 use phpbb\config\config;
-use phpbb\request\request_interface;
 
 class posting
 {
@@ -25,58 +24,72 @@ class posting
 	/** @var config */
 	private $config;
 
-	/** @var request_interface */
-	private $request;
-
 	/** @var string */
 	private $lock_name = '';
+
+	/** @var bool Lock state */
+	private $locked = false;
 
 	/**
 	 * Constructor for posting lock
 	 *
 	 * @param cache_interface $cache
 	 * @param config $config
-	 * @param request_interface $request
 	 */
-	public function __construct(cache_interface $cache, config $config, request_interface $request)
+	public function __construct(cache_interface $cache, config $config)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
-		$this->request = $request;
 	}
 
 	/**
-	 * Get lock name
-	 * @return string Lock name
+	 * Set lock name
+	 *
+	 * @param int $creation_time Creation time of form, must be checked already
+	 * @param string $form_token Form token used for form, must be checked already
+	 *
+	 * @return void
 	 */
-	private function lock_name(): string
+	private function set_lock_name(int $creation_time, string $form_token): void
 	{
-		if ($this->lock_name)
-		{
-			return $this->lock_name;
-		}
-
-		$creation_time	= abs($this->request->variable('creation_time', 0));
-		$token = $this->request->variable('form_token', '');
-
-		return sha1(((string) $creation_time) . $token) . '_posting_lock';
+		$this->lock_name = sha1(((string) $creation_time) . $form_token) . '_posting_lock';
 	}
 
 	/**
 	 * Acquire lock for current posting form submission
 	 *
+	 * @param int $creation_time Creation time of form, must be checked already
+	 * @param string $form_token Form token used for form, must be checked already
+	 *
 	 * @return bool True if lock could be acquired, false if not
 	 */
-	public function acquire(): bool
+	public function acquire(int $creation_time, string $form_token): bool
 	{
+		$this->set_lock_name($creation_time, $form_token);
+
 		// Lock is held for session, cannot acquire it
-		if ($this->cache->_exists($this->lock_name()))
+		if ($this->cache->_exists($this->lock_name))
 		{
 			return false;
 		}
 
-		$this->cache->put($this->lock_name(), true, $this->config['flood_interval']);
+		$this->locked = true;
+
+		$this->cache->put($this->lock_name, true, $this->config['flood_interval']);
 
 		return true;
+	}
+
+	/**
+	 * Release lock
+	 *
+	 * @return void
+	 */
+	public function release(): void
+	{
+		if ($this->locked)
+		{
+			$this->cache->destroy($this->lock_name);
+		}
 	}
 }
