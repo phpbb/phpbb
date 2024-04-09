@@ -407,6 +407,7 @@ class reset_password
 			{
 				$sql_ary = [
 					'user_password'				=> $this->passwords_manager->hash($data['new_password']),
+					'user_passchg'				=> time(),
 					'user_login_attempts'		=> 0,
 					'reset_token'				=> '',
 					'reset_token_expiration'	=> 0,
