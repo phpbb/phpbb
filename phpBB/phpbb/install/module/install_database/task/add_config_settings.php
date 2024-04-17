@@ -166,12 +166,6 @@ class add_config_settings extends database_task
 			'site_desc'	=> $this->install_config->get('board_description'),
 		];
 
-		if (@extension_loaded('gd'))
-		{
-			$updates['captcha_plugin'] = 'core.captcha.plugins.gd';
-			$updates['captcha_gd'] = '1';
-		}
-
 		$ref = substr($referer, strpos($referer, '://') + 3);
 		if (!(stripos($ref, $server_name) === 0))
 		{
