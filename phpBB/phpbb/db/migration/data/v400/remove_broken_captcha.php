@@ -17,7 +17,8 @@ use phpbb\db\migration\migration;
 
 class remove_broken_captcha extends migration
 {
-	private $removed_captchas = [
+	/** @var array List of broken captcha that have been removed  */
+	private array $removed_captchas = [
 		'core.captcha.plugins.gd',
 		'core.captcha.plugins.gd_wave',
 		'core.captcha.plugins.nogd'
