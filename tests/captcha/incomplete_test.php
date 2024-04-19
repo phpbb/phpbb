@@ -81,6 +81,6 @@ class phpbb_captcha_incomplete_test extends phpbb_test_case
 
 		$this->incomplete_captcha->init(CONFIRM_POST);
 		$this->assertSame('captcha_incomplete.html', $this->incomplete_captcha->get_template());
-		$this->assertEquals('POST_CONFIRM_INCOMPLETE', $this->assigned_vars['CONFIRM_LANG']);
+		$this->assertEquals('CONFIRM_INCOMPLETE', $this->assigned_vars['CONFIRM_LANG']);
 	}
 }

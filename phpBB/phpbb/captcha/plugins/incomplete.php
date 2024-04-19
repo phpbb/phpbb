@@ -68,7 +68,6 @@ class incomplete extends captcha_abstract
 	 */
 	public function init($type)
 	{
-		$this->type = (int) $type;
 	}
 
 	/**
@@ -111,7 +110,7 @@ class incomplete extends captcha_abstract
 		$contact_link = phpbb_get_board_contact_link($this->config, $this->phpbb_root_path, $this->phpEx);
 
 		$this->template->assign_vars([
-			'CONFIRM_LANG'	=> $this->type != CONFIRM_POST ? 'CONFIRM_INCOMPLETE' : 'POST_CONFIRM_INCOMPLETE',
+			'CONFIRM_LANG'	=> 'CONFIRM_INCOMPLETE',
 			'CONTACT_LINK'	=> $contact_link,
 		]);
 
