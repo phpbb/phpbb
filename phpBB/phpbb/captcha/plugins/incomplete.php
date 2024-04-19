@@ -14,6 +14,7 @@
 namespace phpbb\captcha\plugins;
 
 use phpbb\config\config;
+use phpbb\exception\runtime_exception;
 use phpbb\template\template;
 
 class incomplete extends captcha_abstract
@@ -39,12 +40,14 @@ class incomplete extends captcha_abstract
 	}
 
 	/**
-	 * Dummy implementation
+	 * Dummy implementation, not supported by this captcha
 	 *
+	 * @throws runtime_exception
 	 * @return void
 	 */
-	public function get_generator_class()
+	public function get_generator_class(): void
 	{
+		throw new runtime_exception('NO_GENERATOR_CLASS');
 	}
 
 	/**
@@ -65,6 +68,7 @@ class incomplete extends captcha_abstract
 	 */
 	public function init($type)
 	{
+		$this->type = (int) $type;
 	}
 
 	/**

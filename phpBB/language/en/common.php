@@ -525,6 +525,7 @@ $lang = array_merge($lang, array(
 	'NO_EMAIL_SUBJECT'			=> 'No email subject specified.',
 	'NO_FORUM'					=> 'The forum you selected does not exist.',
 	'NO_FORUMS'					=> 'This board has no forums.',
+	'NO_GENERATOR_CLASS'		=> 'No generator class given.',
 	'NO_GROUP'					=> 'The requested usergroup does not exist.',
 	'NO_GROUP_MEMBERS'			=> 'This group currently has no members.',
 	'NO_IPS_DEFINED'			=> 'No IP addresses or hostnames defined',
