@@ -423,7 +423,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				if ($sort_key == 'a')
 				{
 					$sort_join = USERS_TABLE . ' u, ';
-					$sql_sort = ' AND u.user_id = ' . ($show_results == 'posts' ? 'p.poster_id' : 't.topic_last_poster_id ') . $sql_sort;
+					$sql_sort = ' AND u.user_id = ' . ($show_results == 'posts' ? 'p.poster_id ' : 't.topic_last_poster_id ') . $sql_sort;
 				}
 				if ($show_results == 'posts')
 				{
