@@ -45,7 +45,7 @@ class ucp_resend
 				trigger_error('FORM_INVALID');
 			}
 
-			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
+			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_actkey_expiration, user_inactive_reason
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
