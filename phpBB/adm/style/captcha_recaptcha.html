@@ -1,4 +1,3 @@
-<!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
 	<dd>
 	<noscript>
@@ -7,9 +6,6 @@
 
 		{L_RECAPTCHA_INVISIBLE}
 		<script src="{RECAPTCHA_SERVER}.js?hl={LA_RECAPTCHA_LANG}" async defer></script>
-		<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-size="invisible"></div>
+		<div class="g-recaptcha" data-sitekey="{% if RECAPTCHA_PUBKEY %}{{ RECAPTCHA_PUBKEY }}{% else %}6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI{% endif %}" data-size="invisible"></div>
 	</dd>
 	</dl>
-<!-- ELSE -->
-{L_RECAPTCHA_NOT_AVAILABLE}
-<!-- ENDIF -->

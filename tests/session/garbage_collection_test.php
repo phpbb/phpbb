@@ -30,14 +30,14 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		global $phpbb_container;
 
 		$plugins = new \phpbb\di\service_collection($phpbb_container);
-		$plugins->add('core.captcha.plugins.nogd');
+		$plugins->add('core.captcha.plugins.recaptcha');
 		$phpbb_container->set(
 			'captcha.factory',
 			new \phpbb\captcha\factory($phpbb_container, $plugins)
 		);
 		$phpbb_container->set(
-			'core.captcha.plugins.nogd',
-			new \phpbb\captcha\plugins\nogd()
+			'core.captcha.plugins.recaptcha',
+			new \phpbb\captcha\plugins\recaptcha()
 		);
 	}
 
@@ -77,7 +77,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		);
 
 		// There is an error unless the captcha plugin is set
-		$config['captcha_plugin'] = 'core.captcha.plugins.nogd';
+		$config['captcha_plugin'] = 'core.captcha.plugins.recaptcha';
 		$this->session->session_gc();
 		$this->check_expired_sessions_recent(
 			[],
@@ -132,7 +132,7 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 		global $config;
 		$config['session_length'] = 0;
 		// There is an error unless the captcha plugin is set
-		$config['captcha_plugin'] = 'core.captcha.plugins.nogd';
+		$config['captcha_plugin'] = 'core.captcha.plugins.recaptcha';
 		$this->session->session_gc();
 		$this->check_sessions_equals(
 			[],

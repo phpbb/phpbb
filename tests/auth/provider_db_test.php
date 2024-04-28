@@ -45,14 +45,14 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$plugins = new \phpbb\di\service_collection($phpbb_container);
-		$plugins->add('core.captcha.plugins.nogd');
+		$plugins->add('core.captcha.plugins.qa');
 		$phpbb_container->set(
 			'captcha.factory',
 			new \phpbb\captcha\factory($phpbb_container, $plugins)
 		);
 		$phpbb_container->set(
-			'core.captcha.plugins.nogd',
-			new \phpbb\captcha\plugins\nogd()
+			'core.captcha.plugins.qa',
+			new \phpbb\captcha\plugins\qa('', '', '')
 		);
 		/** @var \phpbb\captcha\factory $captcha_factory */
 		$captcha_factory = $phpbb_container->get('captcha.factory');

@@ -235,6 +235,9 @@ $lang = array_merge($lang, array(
 
 	'BACK'					=> 'Back',
 
+	'CAPTCHA_UNSAFE_WARNING'		=> 'Your board is currently vulnerable to spam submissions because the Spambot countermeasures are either disabled or not configured correctly.',
+	'CAPTCHA_INCOMPLETE_WARNING'	=> '“Incomplete Captcha“ is currently enabled. This placeholder CAPTCHA will prevent all form submissions requiring CAPTCHA verification, e.g. user registration. Please configure a proper CAPTCHA solution like Q&amp;A or reCaptcha to ensure intended functionality.',
+
 	'CONTAINER_EXCEPTION' => 'phpBB encountered an error building the container due to an installed extension. For this reason, all extensions have been temporarily disabled. Please try purging your forum cache. All extensions will automatically be re-enabled once the container error is resolved. If this error continues, please visit <a href="https://www.phpbb.com/support">phpBB.com</a> for support.',
 	'EXCEPTION' => 'Exception',
 
