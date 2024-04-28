@@ -76,7 +76,7 @@ class ucp_resend
 			// Do not resend activation email if valid one still exists
 			if (!empty($user_row['user_actkey']) && (int) $user_row['user_actkey_expiration'] >= time())
 			{
-				trigger_error('ACTIVATION_EMAIL_ALREADY_SENT');
+				trigger_error('ACTIVATION_ALREADY_SENT');
 			}
 
 			// Determine coppa status on group (REGISTERED(_COPPA))
