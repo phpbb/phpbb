@@ -27,9 +27,6 @@ class posting
 	/** @var string */
 	private $lock_name = '';
 
-	/** @var bool Lock state */
-	private $locked = false;
-
 	/**
 	 * Constructor for posting lock
 	 *
@@ -67,29 +64,14 @@ class posting
 	{
 		$this->set_lock_name($creation_time, $form_token);
 
-		// Lock is held for session, cannot acquire it
-		if ($this->cache->_exists($this->lock_name))
+		// Lock is held for session, cannot acquire it unless special flag for testing is set
+		if ($this->cache->_exists($this->lock_name) && !$this->config->offsetExists('ci_tests_no_lock_posting'))
 		{
 			return false;
 		}
 
-		$this->locked = true;
-
 		$this->cache->put($this->lock_name, true, $this->config['flood_interval']);
 
 		return true;
-	}
-
-	/**
-	 * Release lock
-	 *
-	 * @return void
-	 */
-	public function release(): void
-	{
-		if ($this->locked)
-		{
-			$this->cache->destroy($this->lock_name);
-		}
 	}
 }

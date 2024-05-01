@@ -42,13 +42,15 @@ class phpbb_lock_posting_test extends phpbb_test_case
 		$this->assertFalse($this->lock->acquire(100, 'foo'));
 
 		$this->assertTrue($this->cache->_exists(sha1('100foo') . '_posting_lock'));
-		$this->lock->release();
-		$this->assertFalse($this->cache->_exists(sha1('100foo') . '_posting_lock'));
+		$this->assertFalse($this->lock->acquire(100, 'foo'));
+		$this->cache->put(sha1('100foo') . '_posting_lock', 'foo', -30);
 
 		$this->assertTrue($this->lock->acquire(100, 'foo'));
 		$this->assertTrue($this->cache->_exists(sha1('100foo') . '_posting_lock'));
-		$this->lock->release();
-		$this->lock->release(); // double release has no effect
-		$this->assertFalse($this->cache->_exists(sha1('100foo') . '_posting_lock'));
+		$this->config->offsetSet('ci_tests_no_lock_posting', true);
+		$this->assertTrue($this->lock->acquire(100, 'foo'));
+		$this->assertTrue($this->cache->_exists(sha1('100foo') . '_posting_lock'));
+		// Multiple acquires possible due to special ci test flag
+		$this->assertTrue($this->lock->acquire(100, 'foo'));
 	}
 }

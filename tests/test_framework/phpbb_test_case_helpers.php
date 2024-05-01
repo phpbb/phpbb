@@ -123,7 +123,6 @@ class phpbb_test_case_helpers
 	{
 		$config = array();
 
-
 		if (extension_loaded('sqlite3'))
 		{
 			$config = array_merge($config, array(

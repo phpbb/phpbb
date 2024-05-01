@@ -1565,9 +1565,6 @@ if ($submit || $preview || $refresh)
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_author_name, $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
-			// Release lock after submitting post
-			$posting_lock->release();
-
 			/**
 			* This event allows you to define errors after the post action is performed
 			*
