@@ -15,6 +15,7 @@ require_once __DIR__ . '/../../test_framework/phpbb_database_test_case.php';
 
 abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_test_case
 {
+	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	abstract protected function get_reparser();
