@@ -106,6 +106,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 
+		// Special flag for testing without possibility to run into lock scenario.
+		// Unset entry and add it back if lock behavior for posting should be tested.
+		// Unset ci_tests_no_lock_posting from config
+		$db->sql_return_on_error(true);
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
+		$this->db->sql_query($sql);
+		$db->sql_return_on_error(false);
+
 		foreach (static::setup_extensions() as $extension)
 		{
 			$this->purge_cache();
@@ -130,6 +138,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		if ($this->db instanceof \phpbb\db\driver\driver_interface)
 		{
+			// Unset ci_tests_no_lock_posting from config
+			$sql = 'DELETE FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'ci_tests_no_lock_posting'";
+			$this->db->sql_query($sql);
+
 			// Close the database connections again this test
 			$this->db->sql_close();
 		}
@@ -212,6 +225,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		];
 	}
 
+	/**
+	 * @return \phpbb\db\driver\driver_interface
+	 */
 	protected function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
