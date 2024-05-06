@@ -776,7 +776,7 @@ class auth
 
 		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? 'group_id = ' . (int) $group_id : $db->sql_in_set('group_id', array_map('intval', $group_id))) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
-		$is_local = $forum_id !== false ? 'AND ao.is_local <> 0' : '';
+		$sql_is_local = $forum_id !== false ? 'AND ao.is_local <> 0' : '';
 
 		$sql_opts = '';
 		$hold_ary = $sql_ary = array();
@@ -791,7 +791,7 @@ class auth
 			FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " ao
 			WHERE a.auth_role_id = 0
 				AND a.auth_option_id = ao.auth_option_id
-				$is_local " .
+				$sql_is_local " .
 				(($sql_group) ? 'AND a.' . $sql_group : '') . "
 				$sql_forum
 				$sql_opts
@@ -801,7 +801,7 @@ class auth
 		$sql_ary[] = 'SELECT a.group_id, a.forum_id, r.auth_setting, r.auth_option_id, ao.auth_option
 			FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . " ao
 			WHERE a.auth_role_id = r.role_id
-				$is_local
+				$sql_is_local
 				AND r.auth_option_id = ao.auth_option_id " .
 				(($sql_group) ? 'AND a.' . $sql_group : '') . "
 				$sql_forum
