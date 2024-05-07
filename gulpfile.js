@@ -2,8 +2,7 @@
 
 const gulp = require('gulp');
 const rename = require('gulp-rename');
-const sourcemaps = require('gulp-sourcemaps');
-const concat = require('gulp-concat-css');
+const concat = require('gulp-concat');
 const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
@@ -19,16 +18,14 @@ const paths = {
 };
 
 function styles() {
-	return gulp.src(paths.styles.src)
-		.pipe(sourcemaps.init())
+	return gulp.src(paths.styles.src, { sourcemaps: true })
 		.pipe(
 			postcss([
 				autoprefixer(),
 				sorting(sortOrder),
 			]),
 		)
-		.pipe(sourcemaps.write('./'))
-		.pipe(gulp.dest(paths.styles.css));
+		.pipe(gulp.dest(paths.styles.css, { sourcemaps: './' }));
 }
 
 function minify() {
@@ -47,8 +44,7 @@ function minify() {
 		paths.styles.css + 'colours.css',
 		paths.styles.css + 'responsive.css',
 		paths.styles.css + 'bidi.css',
-	])
-		.pipe(sourcemaps.init())
+	], { sourcemaps: true })
 		.pipe(concat('stylesheet.css'))
 		.pipe(
 			postcss([
@@ -59,8 +55,7 @@ function minify() {
 			suffix: '.min',
 			extname: '.css',
 		}))
-		.pipe(sourcemaps.write('./'))
-		.pipe(gulp.dest(paths.styles.css));
+		.pipe(gulp.dest(paths.styles.css, { sourcemaps: './' }));
 }
 
 function watch() {
