@@ -52,13 +52,6 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
-	protected function tearDown(): void
-	{
-		parent::tearDown();
-
-		$this->purge_cache();
-	}
-
 	public function test_load_extension_lang_globally()
 	{
 		$this->phpbb_extension_manager->enable('foo/bar');
@@ -71,5 +64,7 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 
 		// language from ext/foo/bar/language/en/foo_global.php
 		$this->assertStringContainsString('Overwritten by foo', $crawler->filter('.skiplink')->text());
+
+		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 }

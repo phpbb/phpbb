@@ -28,6 +28,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		'foo/bar/styles/prosilver/template/',
 		'foo/foo/config/',
 		'foo/foo/controller/',
+		'foo/foo/event/',
 	);
 
 	static public function setUpBeforeClass(): void

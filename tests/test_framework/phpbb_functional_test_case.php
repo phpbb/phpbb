@@ -136,6 +136,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 			// Close the database connections again this test
 			$this->db->sql_close();
 		}
+
+		$this->purge_cache();
+		sleep(3); // Give it some time to delete all the files correctly
 	}
 
 	/**
@@ -996,7 +999,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10000)), 'Output found before DOCTYPE specification.');
 
 		if ($status_code !== false)
 		{
