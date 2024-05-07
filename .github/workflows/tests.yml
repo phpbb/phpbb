@@ -218,9 +218,9 @@ jobs:
                   .github/setup-ldap.sh
 
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 20
             - name: Setup node dependencies
               run: npm ci
 
@@ -350,9 +350,9 @@ jobs:
                   .github/setup-database.sh $DB $MYISAM
 
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 20
             - name: Setup node dependencies
               run: npm ci
 
@@ -462,9 +462,9 @@ jobs:
                   .github/setup-database.sh $DB $MYISAM
 
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 20
             - name: Setup node dependencies
               run: npm ci
 
@@ -578,9 +578,9 @@ jobs:
                   Set-MpPreference -DisableRealtimeMonitoring $true
 
             - name: Setup node
-              uses: actions/setup-node@v3
+              uses: actions/setup-node@v4
               with:
-                  node-version: 16
+                  node-version: 20
             - name: Setup node dependencies
               run: npm ci
 
