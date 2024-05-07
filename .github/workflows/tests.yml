@@ -17,7 +17,7 @@ on:
 jobs:
     # Basic checks, e.g. parse errors, commit messages, etc.
     basic-checks:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -29,7 +29,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
               with:
                   fetch-depth: 100
 
@@ -51,7 +51,7 @@ jobs:
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -88,7 +88,7 @@ jobs:
 
     # Tests for MySQL and MariaDB
     mysql-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -157,7 +157,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - id: database-type
               env:
@@ -184,7 +184,7 @@ jobs:
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -229,7 +229,7 @@ jobs:
 
     # Tests for PostgreSQL
     postgres-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -292,7 +292,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - id: database-type
               env:
@@ -319,7 +319,7 @@ jobs:
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -347,7 +347,7 @@ jobs:
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
-        runs-on: ubuntu-20.04
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 include:
@@ -390,7 +390,7 @@ jobs:
 
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - id: database-type
               env:
@@ -422,7 +422,7 @@ jobs:
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
@@ -493,7 +493,7 @@ jobs:
                   git config --system core.autocrlf false
                   git config --system core.eol lf
             - name: Checkout repository
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
@@ -513,7 +513,7 @@ jobs:
                   cd ..
 
             - name: Cache Composer dependencies
-              uses: actions/cache@v3
+              uses: actions/cache@v4
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
