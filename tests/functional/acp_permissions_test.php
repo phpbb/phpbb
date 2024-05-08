@@ -124,4 +124,29 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$auth->acl($user_data);
 		$this->assertEquals(0, $auth->acl_get($permission));
 	}
+
+	public function test_forum_permissions_misc()
+	{
+		// Open forum moderators permissions page
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=setting_mod_local&sid=" . $this->sid);
+
+		// Select "Your first forum"
+		$form = $crawler->filter('#select_victim')->form(['forum_id' => [2]]);
+		$crawler = self::submit($form);
+
+		// Select "Global moderators"
+		$form = $crawler->filter('#add_groups')->form(['group_id' => [4]]);
+		$crawler = self::submit($form);
+
+		// Check that global permissions are not displayed
+		$this->add_lang('acp/permissions_phpbb');
+		$page_text = $crawler->text();
+		$this->assertNotContainsLang('ACL_M_BAN', $page_text);
+		$this->assertNotContainsLang('ACL_M_PM_REPORT', $page_text);
+		$this->assertNotContainsLang('ACL_M_WARN', $page_text);
+
+		// Check that other permissions exist
+		$this->assertContainsLang('ACL_M_EDIT', $page_text);
+		$this->assertContainsLang('ACL_M_MOVE', $page_text);
+	}
 }
