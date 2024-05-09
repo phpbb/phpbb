@@ -179,7 +179,7 @@ class ucp_resend
 		global $db, $user;
 
 		$sql_ary = [
-			'user_actkey_expiration'	=> strtotime('+1 day'),
+			'user_actkey_expiration'	=> $user::get_token_expiration(),
 		];
 
 		$sql = 'UPDATE ' . USERS_TABLE . '

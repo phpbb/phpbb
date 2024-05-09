@@ -389,7 +389,7 @@ class ucp_register
 					'user_lang'					=> $data['lang'],
 					'user_type'					=> $user_type,
 					'user_actkey'				=> $user_actkey,
-					'user_actkey_expiration'	=> strtotime('+1 day'), // 24 hours until activation can be resent
+					'user_actkey_expiration'	=> $user::get_token_expiration(),
 					'user_ip'					=> $user->ip,
 					'user_regdate'				=> time(),
 					'user_inactive_reason'		=> $user_inactive_reason,

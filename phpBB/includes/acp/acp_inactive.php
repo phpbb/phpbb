@@ -242,7 +242,7 @@ class acp_inactive
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_reminded = user_reminded + 1,
 								user_reminded_time = ' . time() . ',
-								user_actkey_expiration = ' . (int) strtotime('+1 day') . '
+								user_actkey_expiration = ' . (int) $user::get_token_expiration() . '
 							WHERE ' . $db->sql_in_set('user_id', $user_ids);
 						$db->sql_query($sql);
 

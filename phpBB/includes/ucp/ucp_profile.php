@@ -198,7 +198,7 @@ class ucp_profile
 								$notifications_manager->add_notifications('notification.type.admin_activate_user', array(
 									'user_id'					=> $user->data['user_id'],
 									'user_actkey'				=> $user_actkey,
-									'user_actkey_expiration'	=> strtotime('+1 day'), // 24 hours until activation can be resent
+									'user_actkey_expiration'	=> $user::get_token_expiration(),
 									'user_regdate'				=> time(), // Notification time
 								));
 							}

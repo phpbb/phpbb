@@ -57,7 +57,7 @@ class user extends \phpbb\session
 	* @param \phpbb\language\language	$lang			phpBB's Language loader
 	* @param string						$datetime_class	Class name of datetime class
 	*/
-	function __construct(\phpbb\language\language $lang, $datetime_class)
+	public function __construct(\phpbb\language\language $lang, $datetime_class)
 	{
 		global $phpbb_root_path;
 
@@ -76,6 +76,16 @@ class user extends \phpbb\session
 	public function is_setup()
 	{
 		return $this->is_setup_flag;
+	}
+
+	/**
+	 * Get expiration time for user tokens, e.g. activation or reset password tokens
+	 *
+	 * @return int Expiration for user tokens
+	 */
+	public static function get_token_expiration(): int
+	{
+		return strtotime('+1 day') ?: 0;
 	}
 
 	/**

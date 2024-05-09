@@ -388,12 +388,12 @@ class acp_users
 								// Always update actkey even if same and also update actkey expiration to 24 hours from now
 								$sql_ary = [
 									'user_actkey'				=> $user_actkey,
-									'user_actkey_expiration'	=> strtotime('+1 day'),
+									'user_actkey_expiration'	=> $user::get_token_expiration(),
 								];
 
 								$sql = 'UPDATE ' . USERS_TABLE . '
 									SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-									WHERE user_id = ' . $user_id;
+									WHERE user_id = ' . (int) $user_id;
 								$db->sql_query($sql);
 
 								// Start sending email

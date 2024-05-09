@@ -337,12 +337,12 @@ class add extends command
 
 			$sql_ary = [
 				'user_actkey'				=> $user_actkey,
-				'user_actkey_expiration'	=> strtotime('+1 day'),
+				'user_actkey_expiration'	=> \phpbb\user::get_token_expiration(),
 			];
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE user_id = ' . $user_id;
+				WHERE user_id = ' . (int) $user_id;
 			$this->db->sql_query($sql);
 		}
 
