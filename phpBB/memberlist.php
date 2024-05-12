@@ -941,10 +941,19 @@ switch ($mode)
 		}
 		else if ($topic_id)
 		{
-			$sql = 'SELECT f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, f.forum_options, t.topic_title
-					FROM ' . FORUMS_TABLE . ' as f,
-						' . TOPICS_TABLE . ' as t
-					WHERE t.forum_id = f.forum_id';
+			// Generate the navlinks based on the selected topic
+			$navlinks_sql_array = [
+				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, 
+					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, 
+					f.forum_options, t.topic_title',
+				'FROM'      => [
+					FORUMS_TABLE  => 'f',
+					TOPICS_TABLE  => 't',
+				],
+				'WHERE'     => 't.forum_id = f.forum_id AND t.topic_id = ' . (int) $topic_id,
+			];
+
+			$sql = $db->sql_build_query('SELECT', $navlinks_sql_array);
 			$result = $db->sql_query($sql);
 			$topic_data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
