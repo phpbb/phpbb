@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v3311">Changes since 3.3.11</a></li>
 		<li><a href="#v3310">Changes since 3.3.10</a></li>
 		<li><a href="#v3310rc1">Changes since 3.3.10-RC1</a></li>
 		<li><a href="#v339">Changes since 3.3.9</a></li>
@@ -167,6 +168,51 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v3311"></a><h3>Changes since 3.3.11</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-14047">PHPBB3-14047</a>] - Jabber discards messages when stream gets closed without waiting for acknowledgement</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-15325">PHPBB3-15325</a>] - Global moderator permissions shown in forum moderator permissions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-16470">PHPBB3-16470</a>] - Memberlist bug - sorting by Last active date is incorrect</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17077">PHPBB3-17077</a>] - Multiple posts at once, even if the user shouldn't ignore the flood interval</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17117">PHPBB3-17117</a>] - Deactivated notification method leads to crash</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17130">PHPBB3-17130</a>] - Text reparser changes magic URL state in posts</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17187">PHPBB3-17187</a>] - Unread Topic URL Link Not Working On MCP View Forum Topic List</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17200">PHPBB3-17200</a>] - Color Parse Error In viewonline.php Legend</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17201">PHPBB3-17201</a>] - Redirect to installer might be invalid when accessing subfolder</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17202">PHPBB3-17202</a>] - The bidi.css File Is Loaded When Viewing LTR Topic Print View Page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17203">PHPBB3-17203</a>] - Group Description With BBCode Ordered List Breaks Layout</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17207">PHPBB3-17207</a>] - Extensions are unable to use PHPBB_USE_BOARD_URL_PATH</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17208">PHPBB3-17208</a>] - Update Error YouTube Profilfeld</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17212">PHPBB3-17212</a>] - Who is online incorrectly reports page when posting with only post URL parameter</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17237">PHPBB3-17237</a>] - QUICKMOD_ACTION_NOT_ALLOWED uses &quot; instead of ' </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17286">PHPBB3-17286</a>] - Non-existent urls to be written down to session_page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17292">PHPBB3-17292</a>] - Link to spamhaus.org no longer valid</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17296">PHPBB3-17296</a>] - mod_security false positive denies access to ACP</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17302">PHPBB3-17302</a>] - Password reset function does not update all necessary data</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17306">PHPBB3-17306</a>] - Wrong declaration of function input values</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17230">PHPBB3-17230</a>] - Update doctum for PHP 8.1 support</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17232">PHPBB3-17232</a>] - Improve MySQL error messages in PHP 8.1+</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17233">PHPBB3-17233</a>] - Add PHP 8.3 tests to the 3.3.x branch</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17235">PHPBB3-17235</a>] - Missing autocomplete for username &amp; password</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17236">PHPBB3-17236</a>] - Update symfony dependencies to improve PHP 8.3 compatibility</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17277">PHPBB3-17277</a>] - Add template events to UCP</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17284">PHPBB3-17284</a>] - Add event to add content after the online users list in viewtopic</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17293">PHPBB3-17293</a>] - Update composer and dependencies to latest versions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17299">PHPBB3-17299</a>] - Allow core event to modify variables while sending email</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17303">PHPBB3-17303</a>] - Update jQuery to 3.7+</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17305">PHPBB3-17305</a>] - Improve queries for unanswered topics and posts</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17310">PHPBB3-17310</a>] - Update GitHub actions workflows to Node.js 20</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17204">PHPBB3-17204</a>] - Update composer and node dependencies</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB3-17280">PHPBB3-17280</a>] - Fallback to branch name on branches without ticket ID</li>
+			</ul>
+
 			<a name="v3310"></a><h3>Changes since 3.3.10</h3>
 			<h4>Bug</h4>
 			<ul>
