@@ -77,7 +77,7 @@ class add_webpush extends migration
 			['config.add', ['webpush_vapid_private', '']],
 			['module.add', [
 				'acp',
-				'ACP_BOARD_CONFIGURATION',
+				'ACP_CLIENT_COMMUNICATION',
 				[
 					'module_basename'	=> 'acp_board',
 					'module_langname'	=> 'ACP_WEBPUSH_SETTINGS',
@@ -95,7 +95,7 @@ class add_webpush extends migration
 			['config.remove', ['webpush_enable']],
 			['config.remove', ['webpush_vapid_public']],
 			['config.remove', ['webpush_vapid_private']],
-			['module.remove', ['acp', 'ACP_BOARD_CONFIGURATION', 'ACP_WEBPUSH_SETTINGS']]
+			['module.remove', ['acp', 'ACP_CLIENT_COMMUNICATION', 'ACP_WEBPUSH_SETTINGS']]
 		];
 	}
 }
