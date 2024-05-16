@@ -29,7 +29,7 @@ class add_user_last_active extends migration
 		return [
 			'add_columns'	=> [
 				$this->table_prefix . 'users'	=> [
-					'user_last_active'		=> ['TIMESTAMP', 0],
+					'user_last_active'		=> ['TIMESTAMP', 0, 'after' => 'user_lastvisit'],
 				],
 			],
 		];
@@ -39,10 +39,41 @@ class add_user_last_active extends migration
 	{
 		return [
 			'drop_columns'	=> [
-				$this->table_prefix . 'users'	=> [
-					'user_last_active'		=> ['TIMESTAMP', 0],
-				],
+				$this->table_prefix . 'users'	=> ['user_last_active'],
 			],
 		];
+	}
+
+	public function update_data()
+	{
+		return [
+			['custom', [[$this, 'set_user_last_active']]],
+		];
+	}
+
+	public function set_user_last_active($start = 0)
+	{
+		// Get maximum user id from database
+		$sql = "SELECT MAX(user_id) AS max_user_id
+			FROM {$this->table_prefix}users";
+		$result = $this->db->sql_query($sql);
+		$max_id = (int) $this->db->sql_fetchfield('max_user_id');
+		$this->db->sql_freeresult($result);
+
+		if ($start > $max_id)
+		{
+			return;
+		}
+
+		// Keep setting user_last_active time
+		$next_start = $start + 10000;
+
+		$sql = 'UPDATE ' . $this->table_prefix . 'users
+			SET user_last_active = user_lastvisit
+			WHERE user_id > ' . (int) $start . '
+				AND user_id <= ' . (int) ($next_start);
+		$this->db->sql_query($sql);
+
+		return $next_start;
 	}
 }
