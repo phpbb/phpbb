@@ -488,6 +488,8 @@ class ucp_prefs
 				}
 
 				$template->assign_vars(array(
+					'S_SIG_ALLOWED'	=> $config['allow_sig'] && $auth->acl_get('u_sig'),
+
 					'S_BBCODE'	=> $data['bbcode'],
 					'S_SMILIES'	=> $data['smilies'],
 					'S_SIG'		=> $data['sig'],
