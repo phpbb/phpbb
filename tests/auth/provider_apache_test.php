@@ -115,6 +115,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_email' => 'example@example.com',
 			'user_birthday' => '',
 			'user_lastvisit' => 0,
+			'user_last_active' => 0,
 			'user_lastmark' => 0,
 			'user_lastpost_time' => 0,
 			'user_lastpage' => '',
