@@ -122,6 +122,18 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$phpEx
 		);
 
+		$request = new \phpbb_mock_request;
+		$symfony_request = new \phpbb\symfony_request(
+			$request
+		);
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_path_helper = new \phpbb\path_helper(
+			$symfony_request,
+			$request,
+			$phpbb_root_path,
+			$phpEx
+		);
+
 		$log_table = 'phpbb_log';
 		$this->log = new \phpbb\log\log($this->db, $user, $auth, $this->phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, $log_table);
 
@@ -139,6 +151,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$phpbb_container->set('log', $this->log);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
+		$phpbb_container->set('path_helper', $phpbb_path_helper);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
@@ -177,6 +190,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$phpbb_container->get('log'),
 			$phpbb_container->get('user_loader'),
 			$phpbb_container->get('user'),
+			$phpbb_container->get('path_helper'),
 			$phpbb_root_path,
 			$phpEx,
 			$phpbb_container->getParameter('tables.notification_push'),

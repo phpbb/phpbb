@@ -36,7 +36,7 @@ self.addEventListener('push', event => {
 			const options = {
 				body: responseBody,
 				data: response,
-				icon: response.avatar.src,
+				icon: response.avatar,
 			};
 			self.registration.showNotification(response.heading, options);
 		});
