@@ -901,6 +901,7 @@ if (!$get_info)
 				array('user_email',				'users.user_email',					'strtolower'),
 				array('user_birthday',			((defined('MOD_BIRTHDAY')) ? 'users.user_birthday' : ''),	'phpbb_get_birthday'),
 				array('user_lastvisit',			'users.user_lastvisit',				'intval'),
+				array('user_last_active',		'users.user_lastvisit',				'intval'),
 				array('user_lastmark',			'users.user_lastvisit',				'intval'),
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
