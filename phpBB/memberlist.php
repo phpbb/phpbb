@@ -1035,7 +1035,7 @@ switch ($mode)
 		if ($auth->acl_get('u_viewonline'))
 		{
 			$sort_key_text['l'] = $user->lang['SORT_LAST_ACTIVE'];
-			$sort_key_sql['l'] = 'u.user_lastvisit';
+			$sort_key_sql['l'] = 'u.user_last_active';
 		}
 
 		$sort_key_text['m'] = $user->lang['SORT_RANK'];
@@ -1137,15 +1137,15 @@ switch ($mode)
 				{
 					if ($active_select === 'lt' && (int) $active[0] == 0 && (int) $active[1] == 0 && (int) $active[2] == 0)
 					{
-						$sql_where .= ' AND u.user_lastvisit = 0';
+						$sql_where .= ' AND u.user_last_active = 0';
 					}
 					else if ($active_select === 'gt')
 					{
-						$sql_where .= ' AND u.user_lastvisit ' . $find_key_match[$active_select] . ' ' . $active_time;
+						$sql_where .= ' AND u.user_last_active ' . $find_key_match[$active_select] . ' ' . $active_time;
 					}
 					else
 					{
-						$sql_where .= ' AND (u.user_lastvisit > 0 AND u.user_lastvisit < ' . $active_time . ')';
+						$sql_where .= ' AND (u.user_last_active > 0 AND u.user_last_active < ' . $active_time . ')';
 					}
 				}
 			}
@@ -1715,7 +1715,7 @@ switch ($mode)
 			{
 				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
 				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
-				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
+				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_last_active'];
 
 				$id_cache[$row['user_id']] = $row;
 			}

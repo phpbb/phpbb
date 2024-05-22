@@ -1595,7 +1595,7 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 
 	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
 	{
-		$last_active = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
+		$last_active = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_last_active'];
 	}
 	else
 	{

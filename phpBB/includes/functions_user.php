@@ -227,6 +227,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 		'user_inactive_time'	=> 0,
 		'user_lastmark'			=> time(),
 		'user_lastvisit'		=> 0,
+		'user_last_active'		=> 0,
 		'user_lastpost_time'	=> 0,
 		'user_lastpage'			=> '',
 		'user_posts'			=> 0,

@@ -450,10 +450,10 @@ class session
 						// Is user banned? Are they excluded? Won't return on ban, exists within method
 						$this->check_ban_for_current_session($config);
 
-						// Update user last visit time accordingly, but in a minute or so
-						if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60)
+						// Update user last active time accordingly, but in a minute or so
+						if ((int) $this->data['session_time'] - (int) $this->data['user_last_active'] > 60)
 						{
-							$this->update_user_lastvisit();
+							$this->update_last_active_time();
 						}
 
 						return true;
@@ -700,8 +700,8 @@ class session
 			{
 				$this->session_id = $this->data['session_id'];
 
-				// Only sync user last visit time in a minute or so after last session data update or if the page changes
-				if ((int) $this->data['session_time'] - (int) $this->data['user_lastvisit'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
+				// Only update session DB a minute or so after last update or if page changes
+				if ($this->time_now - $this->data['session_time'] > 60 || ($this->update_session_page && $this->data['session_page'] != $this->page['page']))
 				{
 					// Update the last visit time
 					$this->update_user_lastvisit();
@@ -831,14 +831,21 @@ class session
 				$this->data['user_form_salt'] = unique_id();
 				// Update the form key
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\'
+					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\',
+						user_last_active = ' . (int) $this->data['session_time'] . '
 					WHERE user_id = ' . (int) $this->data['user_id'];
 				$db->sql_query($sql);
+			}
+			else
+			{
+				$this->update_last_active_time();
 			}
 		}
 		else
 		{
 			$this->data['session_time'] = $this->data['session_last_visit'] = $this->time_now;
+
+			$this->update_user_lastvisit();
 
 			if ($phpbb_container->getParameter('session.force_sid'))
 			{
@@ -846,9 +853,6 @@ class session
 				$_SID = '';
 			}
 		}
-
-		// Update the last visit time
-		$this->update_user_lastvisit();
 
 		$session_data = $sql_ary;
 		/**
@@ -1713,7 +1717,26 @@ class session
 		if (isset($this->data['session_time'], $this->data['user_id']))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . ',
+					user_last_active = ' . (int) $this->data['session_time'] . '
+				WHERE user_id = ' . (int) $this->data['user_id'];
+			$db->sql_query($sql);
+		}
+	}
+
+	/**
+	 * Update user's last active time
+	 *
+	 * @return void
+	 */
+	public function update_last_active_time()
+	{
+		global $db;
+
+		if (isset($this->data['session_time'], $this->data['user_id']))
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_last_active = ' . (int) $this->data['session_time'] . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 		}
