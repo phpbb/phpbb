@@ -23,6 +23,7 @@
 			<label for="smilies0"><input type="radio" name="smilies" id="smilies0" value="0"<!-- IF not S_SMILIES --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 		</dd>
 	</dl>
+	{% if S_SIG_ALLOWED %}
 	<dl>
 		<dt><label for="sig1">{L_DEFAULT_ADD_SIG}{L_COLON}</label></dt>
 		<dd>
@@ -30,6 +31,7 @@
 			<label for="sig0"><input type="radio" name="sig" id="sig0" value="0"<!-- IF not S_SIG --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 		</dd>
 	</dl>
+	{% endif %}
 	<dl>
 		<dt><label for="notify1">{L_DEFAULT_NOTIFY}{L_COLON}</label></dt>
 		<dd>
