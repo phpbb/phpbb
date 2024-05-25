@@ -1152,7 +1152,7 @@ class acp_board
 	 */
 	public function board_disable_access(int $value) : array
 	{
-		return [
+		return ['options' => [
 			[
 				'value'		=> 0,
 				'selected'	=> $value == 0,
@@ -1168,7 +1168,7 @@ class acp_board
 				'selected'	=> $value == 2,
 				'label'		=> $this->language->lang('DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'),
 			],
-		];
+		]];
 	}
 
 	/**
