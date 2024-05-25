@@ -1,4 +1,4 @@
-{% apply  replace({"\n\t": ' ', "\t": '', "\n": ''}) %}
+{% apply replace({"\n\t": ' ', "\t": '', "\n": ''}) %}
 	<input
 		{% if CLASS %}class="{{ CLASS }}" {% endif %}
 		{% if ID %}id="{{ ID }}" {% endif %}

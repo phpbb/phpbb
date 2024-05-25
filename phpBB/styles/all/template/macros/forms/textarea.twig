@@ -1,7 +1,7 @@
-{% apply  replace({"\n": ' ', '\t': ''}) %}
+{% apply replace({"\n": ' ', '\t': ''}) %}
 	<textarea
 		{% if CLASS %}class="{{ CLASS }}" {% endif %}
-		id="{{ ID }}"
+		{% if ID %}id="{{ ID }}" {% endif %}
 		{% for attribute, attribute_value in DATA %}
 			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
 		{% endfor %}
