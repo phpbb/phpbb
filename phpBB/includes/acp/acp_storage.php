@@ -458,7 +458,7 @@ class acp_storage
 		$this->db->sql_freeresult($result);
 
 		$total_count = $done_count + $remain_count;
-		$percent = $done_count / $total_count;
+		$percent = $total_count > 0 ? $done_count / $total_count : 0;
 
 		$steps = $this->state_helper->storage_index() + $this->state_helper->remove_storage_index() + $percent;
 		$multiplier = $this->state_helper->update_type() === update_type::MOVE ? 2 : 1;
@@ -509,18 +509,15 @@ class acp_storage
 
 			$value = $this->request->variable([$storage_name, $definition_key], '');
 
-			switch ($definition_value['type'])
+			switch ($definition_value['tag'])
 			{
-				case 'email':
-					if (!filter_var($value, FILTER_VALIDATE_EMAIL))
+				case 'text':
+					if ($definition_value['type'] == 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
-					// no break
 
-				case 'text':
-				case 'password':
-					$maxlength = isset($definition_value['maxlength']) ? $definition_value['maxlength'] : 255;
+					$maxlength = isset($definition_value['max']) ? $definition_value['max'] : 255;
 					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
@@ -542,8 +539,34 @@ class acp_storage
 				break;
 
 				case 'radio':
+					$found = false;
+					foreach ($definition_value['buttons'] as $button)
+					{
+						if ($button['value'] == $value)
+						{
+							$found = true;
+							break;
+						}
+					}
+
+					if (!$found)
+					{
+						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
+					}
+				break;
+
 				case 'select':
-					if (!in_array($value, array_values($definition_value['options'])))
+					$found = false;
+					foreach ($definition_value['options'] as $option)
+					{
+						if ($option['value'] == $value)
+						{
+							$found = true;
+							break;
+						}
+					}
+
+					if (!$found)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_SELECT_NOT_AVAILABLE', $definition_title, $storage_title);
 					}

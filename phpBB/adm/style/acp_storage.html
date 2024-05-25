@@ -74,10 +74,30 @@
 								{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
 								{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
 
-								{% if options['type'] in ['text', 'password', 'email'] %}
-									{{ FormsBuildTemplate(options | merge({"name": input_name, "value": input_value})) }}
-								{% elseif options['type'] == 'textarea' %}
-									{{ FormsBuildTemplate(options | merge({"name": input_name, "content": input_value})) }}
+								{% if options.tag == 'input' %}
+									{{ FormsInput(options | merge({"name": input_name, "value": input_value})) }}
+								{% elseif options.tag == 'textarea' %}
+									{{ FormsTextarea(options | merge({"name": input_name, "content": input_value})) }}
+								{% elseif options.tag == 'radio' %}
+									{% set buttons = [] %}
+
+									{% for button in options.buttons %}
+										{% set checked = button.value == input_value %}
+										{% set new_button = button | merge({"name": input_name, "checked": checked}) %}
+										{% set buttons = buttons | merge([new_button]) %}
+									{% endfor %}
+
+									{{ FormsRadioButtons(options | merge({"buttons": buttons})) }}
+								{% elseif options.tag == 'select' %}
+									{% set select_options = [] %}
+
+									{% for option in options.options %}
+										{% set selected = option.value == input_value %}
+										{% set new_option = option | merge({"selected": selected}) %}
+										{% set select_options = select_options | merge([new_option]) %}
+									{% endfor %}
+
+									{{ FormsSelect(options | merge({"name": input_name, "options": select_options})) }}
 								{% endif %}
 							</dd>
 						</dl>
