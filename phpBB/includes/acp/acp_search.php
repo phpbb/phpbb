@@ -516,7 +516,7 @@ class acp_search
 		$this->db->sql_freeresult($result);
 
 		$total_count = $done_count + $remain_count;
-		$percent = ($done_count / $total_count) * 100;
+		$percent = $total_count > 0 ? ($done_count / $total_count) * 100 : 100;
 
 		return [
 			'VALUE'			=> $done_count,
