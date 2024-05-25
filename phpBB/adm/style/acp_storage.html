@@ -41,7 +41,7 @@
 		<fieldset>
 			<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
 			<dl>
-				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') }}{{ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
+				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') ~ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
 				<dd>
 					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
 						{% for provider in PROVIDERS %}
@@ -65,7 +65,7 @@
 							<dt>
 								{% set title = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
 								{% set description = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper ~ '_EXPLAIN' %}
-								<label>{{ lang(title) }}{{ lang('COLON') }}</label>
+								<label>{{ lang(title) ~ lang('COLON') }}</label>
 								{% if lang_defined(description) %}
 									<br /><span>{{ lang(description) }}</span>
 								{% endif %}
@@ -82,8 +82,7 @@
 									{% set buttons = [] %}
 
 									{% for button in options.buttons %}
-										{% set checked = button.value == input_value %}
-										{% set new_button = button | merge({"name": input_name, "checked": checked}) %}
+										{% set new_button = button | merge({"name": input_name, "checked": button.value == input_value}) %}
 										{% set buttons = buttons | merge([new_button]) %}
 									{% endfor %}
 
@@ -92,8 +91,7 @@
 									{% set select_options = [] %}
 
 									{% for option in options.options %}
-										{% set selected = option.value == input_value %}
-										{% set new_option = option | merge({"selected": selected}) %}
+										{% set new_option = option | merge({"selected": option.value == input_value}) %}
 										{% set select_options = select_options | merge([new_option]) %}
 									{% endfor %}
 
@@ -109,7 +107,7 @@
 
 	<fieldset>
 		<dl>
-			<dt><label for="update_type">{{ lang('STORAGE_UPDATE_TYPE') }}{{ lang('COLON') }}</label></dt>
+			<dt><label for="update_type">{{ lang('STORAGE_UPDATE_TYPE') ~ lang('COLON') }}</label></dt>
 			<dd>
 				<label><input id="update_type" class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_CONFIG }}" checked="checked" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_CONFIG') }}</label>
 				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_COPY }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_COPY') }}</label>

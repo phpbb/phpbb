@@ -31,6 +31,11 @@ class state_helper
 	/** @var service_collection */
 	protected $provider_collection;
 
+	/**
+	 * @param config $config
+	 * @param db_text $config_text
+	 * @param service_collection $provider_collection
+	 */
 	public function __construct(config $config, db_text $config_text, service_collection $provider_collection)
 	{
 		$this->config = $config;
@@ -48,6 +53,13 @@ class state_helper
 		return !empty(json_decode($this->config_text->get('storage_update_state'), true));
 	}
 
+	/**
+	 * Get new provider for the specified storage
+	 *
+	 * @param string $storage_name
+	 *
+	 * @return string
+	 */
 	public function new_provider(string $storage_name): string
 	{
 		$state = $this->load_state();
@@ -55,6 +67,14 @@ class state_helper
 		return $state['storages'][$storage_name]['provider'];
 	}
 
+	/**
+	 * Get new definition value for the specified storage
+	 *
+	 * @param string $storage_name
+	 * @param string $definition
+	 *
+	 * @return string
+	 */
 	public function new_definition_value(string $storage_name, string $definition): string
 	{
 		$state = $this->load_state();
@@ -62,6 +82,11 @@ class state_helper
 		return $state['storages'][$storage_name]['config'][$definition];
 	}
 
+	/**
+	 * Get the update type
+	 *
+	 * @return update_type
+	 */
 	public function update_type(): update_type
 	{
 		$state = $this->load_state();
@@ -69,6 +94,11 @@ class state_helper
 		return update_type::from($state['update_type']);
 	}
 
+	/**
+	 * Get the current storage index
+	 *
+	 * @return int
+	 */
 	public function storage_index(): int
 	{
 		$state = $this->load_state();
@@ -76,6 +106,13 @@ class state_helper
 		return $state['storage_index'];
 	}
 
+	/**
+	 * Update the storage index
+	 *
+	 * @param int $storage_index
+	 *
+	 * @return void
+	 */
 	public function set_storage_index(int $storage_index): void
 	{
 		$state = $this->load_state();
@@ -85,6 +122,11 @@ class state_helper
 		$this->save_state($state);
 	}
 
+	/**
+	 * Get the current remove storage index
+	 *
+	 * @return int
+	 */
 	public function remove_storage_index(): int
 	{
 		$state = $this->load_state();
@@ -92,6 +134,13 @@ class state_helper
 		return $state['remove_storage_index'];
 	}
 
+	/**
+	 * Update the remove storage index
+	 *
+	 * @param int $storage_index
+	 *
+	 * @return void
+	 */
 	public function set_remove_storage_index(int $storage_index): void
 	{
 		$state = $this->load_state();
@@ -101,6 +150,11 @@ class state_helper
 		$this->save_state($state);
 	}
 
+	/**
+	 * Get the file index
+	 *
+	 * @return int
+	 */
 	public function file_index(): int
 	{
 		$state = $this->load_state();
@@ -108,6 +162,12 @@ class state_helper
 		return $state['file_index'];
 	}
 
+	/**
+	 * Set the file index
+	 *
+	 * @param int $file_index
+	 * @return void
+	 */
 	public function set_file_index(int $file_index): void
 	{
 		$state = $this->load_state();
@@ -117,6 +177,11 @@ class state_helper
 		$this->save_state($state);
 	}
 
+	/**
+	 * Get the storage names to be updated
+	 *
+	 * @return array
+	 */
 	public function storages(): array
 	{
 		$state = $this->load_state();
@@ -178,7 +243,7 @@ class state_helper
 	 */
 	public function clear_state(): void
 	{
-		$this->save_state([]);
+		$this->save_state();
 	}
 
 	/**
@@ -210,5 +275,4 @@ class state_helper
 	{
 		$this->config_text->set('storage_update_state', json_encode($state, JSON_THROW_ON_ERROR));
 	}
-
 }

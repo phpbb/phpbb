@@ -123,6 +123,8 @@ class acp_storage
 	}
 
 	/**
+	 * Method to route the request to the correct page
+	 *
 	 * @param string $id
 	 * @param string $mode
 	 */
@@ -156,11 +158,16 @@ class acp_storage
 			}
 			else
 			{
-				$this->settings_form($id, $mode);
+				$this->settings_form();
 			}
 		}
 	}
 
+	/**
+	 * Page to update storage settings and move files
+	 *
+	 * @return void
+	 */
 	private function update_action(): void
 	{
 		if (!check_link_hash($this->request->variable('hash', ''), 'acp_storage'))
@@ -263,6 +270,11 @@ class acp_storage
 		trigger_error($this->lang->lang('STORAGE_UPDATE_SUCCESSFUL') . adm_back_link($this->u_action));
 	}
 
+	/**
+	 * Page that show a form with the progress bar, and a button to continue or cancel
+	 *
+	 * @return void
+	 */
 	private function update_inprogress(): void
 	{
 		// Template from adm/style
@@ -271,13 +283,18 @@ class acp_storage
 		// Set page title
 		$this->page_title = 'STORAGE_TITLE';
 
-		$this->template->assign_vars(array(
+		$this->template->assign_vars([
 			'U_ACTION'	=> $this->u_action . '&amp;action=update&amp;hash=' . generate_link_hash('acp_storage'),
 			'CONTINUE_PROGRESS' => $this->get_storage_update_progress(),
-		));
+		]);
 	}
 
-	private function settings_form(string $id, string $mode): void
+	/**
+	 * Main settings page, shows a form with all the storages and their configuration options
+	 *
+	 * @return void
+	 */
+	private function settings_form(): void
 	{
 		$form_key = 'acp_storage';
 		add_form_key($form_key);
@@ -348,6 +365,12 @@ class acp_storage
 		]);
 	}
 
+	/**
+	 * When submit the settings form, check which storages have been modified
+	 * to update only those.
+	 *
+	 * @return array
+	 */
 	private function get_modified_storages(): array
 	{
 		$modified_storages = [];
@@ -386,7 +409,12 @@ class acp_storage
 		return $modified_storages;
 	}
 
-	protected function storage_stats()
+	/**
+	 * Fill template variables to show storage stats in settings page
+	 *
+	 * @return void
+	 */
+	protected function storage_stats(): void
 	{
 		// Top table with stats of each storage
 		$storage_stats = [];
@@ -435,6 +463,11 @@ class acp_storage
 		adm_page_footer();
 	}
 
+	/**
+	 * Get storage update progress to show progress bar
+	 *
+	 * @return array
+	 */
 	protected function get_storage_update_progress(): array
 	{
 		$file_index = $this->state_helper->file_index();
@@ -477,7 +510,7 @@ class acp_storage
 	 * @param string $storage_name Storage name
 	 * @param array $messages Reference to messages array
 	 */
-	protected function validate_data(string $storage_name, array &$messages)
+	protected function validate_data(string $storage_name, array &$messages): void
 	{
 		$storage_title = $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE');
 
@@ -499,6 +532,8 @@ class acp_storage
 			return;
 		}
 
+		$this->validate_path($storage_name, $messages);
+
 		// Check options
 		$new_options = $this->storage_helper->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
 
@@ -517,7 +552,7 @@ class acp_storage
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 
-					$maxlength = isset($definition_value['max']) ? $definition_value['max'] : 255;
+					$maxlength = $definition_value['max'] ?? 255;
 					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
@@ -589,7 +624,7 @@ class acp_storage
 
 		if ($this->provider_collection->get_by_class($current_provider)->get_name() == 'local' && isset($options['path']))
 		{
-			$path = $this->storage_helper->get_current_definition($storage_name, 'path');
+			$path = $this->request->is_set_post('submit') ? $this->request->variable([$storage_name, 'path'], '') : $this->storage_helper->get_current_definition($storage_name, 'path');
 
 			if (empty($path))
 			{
@@ -601,6 +636,5 @@ class acp_storage
 			}
 		}
 	}
-
 
 }

@@ -15,7 +15,6 @@ namespace phpbb\storage;
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
-use phpbb\storage\adapter\adapter_interface;
 use phpbb\storage\exception\storage_exception;
 
 class adapter_factory
@@ -54,9 +53,9 @@ class adapter_factory
 	 *
 	 * @param string	$storage_name
 	 *
-	 * @return adapter_interface
+	 * @return mixed
 	 */
-	public function get(string $storage_name)
+	public function get(string $storage_name): mixed
 	{
 		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
 		$provider = $this->providers->get_by_class($provider_class);
@@ -71,7 +70,15 @@ class adapter_factory
 		return $this->get_with_options($storage_name, $options);
 	}
 
-	public function get_with_options(string $storage_name, array $options)
+	/**
+	 * Obtains a configured adapters for a given storage with custom options
+	 *
+	 * @param string	$storage_name
+	 * @param array		$options
+	 *
+	 * @return mixed
+	 */
+	public function get_with_options(string $storage_name, array $options): mixed
 	{
 		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
 		$provider = $this->providers->get_by_class($provider_class);
