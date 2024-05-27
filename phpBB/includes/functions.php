@@ -3855,7 +3855,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 	// Output the notifications
 	$notifications = false;
-	if ($config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
+	$notifications_enabled = $config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE;
+	if ($notifications_enabled)
 	{
 		/* @var $phpbb_notifications \phpbb\notification\manager */
 		$phpbb_notifications = $phpbb_container->get('notification_manager');
@@ -4031,6 +4032,20 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 	));
+
+	$webpush_available = $notifications_enabled && $phpbb_notifications->get_method_class('notification.method.webpush')->is_available();
+	if ($webpush_available)
+	{
+		if (!$this->template->retrieve_var('U_WEBPUSH_WORKER_URL'))
+		{
+			$this->template->assign_var('U_WEBPUSH_WORKER_URL', $controller_helper->route('phpbb_ucp_push_worker_controller'));
+		}
+
+		if (!$this->template->retrieve_var('NOTIFICATIONS_WEBPUSH_ENABLE'))
+		{
+			$this->template->assign_var('NOTIFICATIONS_WEBPUSH_ENABLE', true);
+		}
+	}
 
 	$http_headers = array();
 

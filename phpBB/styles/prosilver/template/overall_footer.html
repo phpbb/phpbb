@@ -117,6 +117,13 @@
 	</script>
 <!-- ENDIF -->
 
+{% if NOTIFICATIONS_WEBPUSH_ENABLE %}
+	<script>
+		const serviceWorkerUrl = '{{ U_WEBPUSH_WORKER_URL }}';
+	</script>
+	{% INCLUDEJS(T_ASSETS_PATH ~ '/javascript/update_worker.js') %}
+{% endif %}
+
 <!-- EVENT overall_footer_after -->
 
 <!-- IF S_PLUPLOAD --><!-- INCLUDE plupload.html --><!-- ENDIF -->
