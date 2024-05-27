@@ -3,7 +3,7 @@
 function webpushWorkerUpdate() {
 	if ('serviceWorker' in navigator) {
 		navigator.serviceWorker.getRegistration(serviceWorkerUrl)
-			.then((registration) => {
+			.then(registration => {
 				registration.update();
 			})
 			.catch(error => {
@@ -12,6 +12,7 @@ function webpushWorkerUpdate() {
 			});
 	}
 }
+
 // Do not redeclare function if exist
 if (typeof domReady === 'undefined') {
 	window.domReady = function(callBack) {
@@ -20,9 +21,10 @@ if (typeof domReady === 'undefined') {
 		} else {
 			callBack();
 		}
-	}
+	};
 }
 
+/* global domReady */
 domReady(() => {
 	/* global serviceWorkerUrl */
 	webpushWorkerUpdate();
