@@ -261,7 +261,7 @@ class mcp_reports
 					'S_USER_NOTES'			=> true,
 
 					'U_EDIT'					=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;p={$post_info['post_id']}") : '',
-					'U_APPROVE_ACTION'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=" . $post_id),
+					'U_APPROVE_ACTION'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;p=' . $post_id),
 					'U_MCP_APPROVE'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;p=' . $post_id),
 					'U_MCP_REPORT'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $post_id),
 					'U_MCP_REPORTER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $report['user_id']),
