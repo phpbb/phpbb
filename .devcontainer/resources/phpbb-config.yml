@@ -30,7 +30,7 @@ installer:
     server:
         cookie_secure: false
         server_protocol: http://
-        force_server_vars: false
+        force_server_vars: true
         server_name: localhost
         server_port: 80
         script_path: /
