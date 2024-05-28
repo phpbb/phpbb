@@ -1601,14 +1601,14 @@ notification_dropdown_footer_after
 ===
 * Locations:
     + styles/prosilver/template/notification_dropdown.html
-* Since: prep-release-3.3.12
+* Since: 3.3.12-prep-release
 * Purpose: Add content after notifications list footer.
 
 notification_dropdown_footer_before
 ===
 * Locations:
     + styles/prosilver/template/notification_dropdown.html
-* Since: prep-release-3.3.12
+* Since: 3.3.12-prep-release
 * Purpose: Add content before notifications list footer.
 
 overall_footer_after
