@@ -489,7 +489,7 @@ class md_exporter
 	*/
 	public function validate_version($version)
 	{
-		return preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+|(?:-prep-release))?$#', $version);
+		return preg_match('#^\d+\.\d+\.\d+(?:-(?:a|b|RC|pl)\d+)?$#', $version);
 	}
 
 	/**
