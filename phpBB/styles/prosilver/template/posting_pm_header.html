@@ -34,7 +34,9 @@
 								{% for recipient in to_recipient %}
 									<li>
 										{% if not S_EDIT_POST %}
-											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											<button type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]">
+												{{ Icon('font', 'xmark', lang('REMOVE'), true, 'c-warning-icon') }}
+											</button>
 										{% endif %}
 										{% if recipient.IS_GROUP %}
 											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
@@ -57,7 +59,9 @@
 								{% for recipient in bcc_recipient %}
 									<li>
 										{% if not S_EDIT_POST %}
-											<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
+											<button type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]">
+												{{ Icon('font', 'xmark', lang('REMOVE'), true, 'c-warning-icon') }}
+											</button>
 										{% endif %}
 										{% if recipient.IS_GROUP %}
 											<a href="{{ recipient.U_VIEW }}" style="color: {{ recipient.COLOUR }}"><strong>{{ recipient.NAME }}</strong></a>
@@ -90,13 +94,15 @@
 							<ul class="recipients">
 								{% for recipient in to_recipient %}
 									<li>
+										{% if not S_EDIT_POST %}
+											<button type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]">
+												{{ Icon('font', 'xmark', lang('REMOVE'), true, 'c-warning-icon') }}
+											</button>
+										{% endif %}
 										{% if recipient.IS_GROUP %}
 											<a href="{{ recipient.U_VIEW }}"><strong>{{ recipient.NAME }}</strong></a>
 										{% else %}
 											{{ recipient.NAME_FULL }}
-										{% endif %}
-										{% if not S_EDIT_POST %}
-											&nbsp;<input type="submit" name="remove_{{ recipient.TYPE }}[{{ recipient.UG_ID }}]" value="x" class="button1 button button-form-bold">
 										{% endif %}
 									</li>
 								{% endfor %}
