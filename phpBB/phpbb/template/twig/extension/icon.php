@@ -280,7 +280,7 @@ class icon extends AbstractExtension
 	 *
 	 * {{ Icon('font', {
 	 * 		'bullhorn': topicrow.S_POST_GLOBAL or topicrow.S_POST_ANNOUNCE,
-	 * 		'star': topicrow.S_POST_STICKY,
+	 * 		'thumbtack': topicrow.S_POST_STICKY,
 	 * 		'lock': topicrow.S_TOPIC_LOCKED,
 	 * 		'fire': topicrow.S_TOPIC_HOT,
 	 * 		'file': true,

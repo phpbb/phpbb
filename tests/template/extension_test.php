@@ -322,7 +322,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'type'			=> 'font',
 					'icon'			=> [
 						'bullhorn'		=> false,
-						'star'			=> false,
+						'thumbtack'			=> false,
 						'lock'			=> true,
 						'fire'			=> false,
 						'file'			=> true,
@@ -344,7 +344,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 					'type'			=> 'font',
 					'icon'			=> [
 						'bullhorn'		=> false,
-						'star'			=> false,
+						'thumbtack'			=> false,
 						'lock'			=> false,
 						'fire'			=> false,
 						'file',
