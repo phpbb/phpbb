@@ -54,6 +54,10 @@ $lang = array_merge($lang, array(
 	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_HELPLINE_TOO_LONG'	=> 'The help line you entered is too long.',
 
+	'BBCODE_ICON_NAME'			=> 'Button icon',
+	'BBCODE_ICON_NAME_EXPLAIN'	=> 'Enter the name of a Font Awesome icon to display instead of the BBCode name appearing on the button. Do not include the fa prefix.',
+	'BBCODE_ICON_NAME_TOO_LONG'	=> 'The icon name you have entered is too long.',
+
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_INVALID'			=> 'Your BBCode is constructed in an invalid form.',
 	'BBCODE_INVALID_TEMPLATE'	=> 'Your BBCode’s template is invalid.',
