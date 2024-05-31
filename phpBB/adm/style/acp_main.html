@@ -14,27 +14,31 @@
 
 	<p>{L_ADMIN_INTRO}</p>
 
-	<!-- IF S_UPDATE_INCOMPLETE -->
+	{% if S_UPDATE_INCOMPLETE %}
 		<div class="errorbox">
-			<p>{L_UPDATE_INCOMPLETE} <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+			<p>{{ lang('UPDATE_INCOMPLETE') }} <a href="{{ U_VERSIONCHECK }}">{{ lang('MORE_INFORMATION') }}</a></p>
 		</div>
-	<!-- ELSEIF S_VERSIONCHECK_FAIL -->
+	{% elseif S_VERSIONCHECK_FAIL %}
 		<div class="errorbox notice">
-			<p>{L_VERSIONCHECK_FAIL}</p>
-			<p>{VERSIONCHECK_FAIL_REASON}</p>
-			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+			<p>{{ lang('VERSIONCHECK_FAIL') }}</p>
+			<p>{{ VERSIONCHECK_FAIL_REASON }}</p>
+			<p><a href="{{ U_VERSIONCHECK_FORCE }}">{{ lang('VERSIONCHECK_FORCE_UPDATE') }}</a> &middot; <a href="{{ U_VERSIONCHECK }}">{{ lang('MORE_INFORMATION') }}</a></p>
 		</div>
-	<!-- ELSEIF not S_VERSION_UP_TO_DATE -->
+	{% elseif not S_VERSION_UP_TO_DATE %}
 		<div class="errorbox">
-			<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
-			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+			<p>{{ lang('VERSION_NOT_UP_TO_DATE_TITLE') }}</p>
+			<p><a href="{{ U_VERSIONCHECK_FORCE }}">{{ lang('VERSIONCHECK_FORCE_UPDATE') }}</a> &middot; <a href="{{ U_VERSIONCHECK }}">{{ lang('MORE_INFORMATION') }}</a></p>
 		</div>
-	<!-- ENDIF -->
-	<!-- IF S_VERSION_UPGRADEABLE -->
+	{% elseif S_VERSION_UP_TO_DATE && S_VERSIONCHECK_FORCE %}
+		<div class="successbox">
+			<p>{{ lang('VERSION_UP_TO_DATE_ACP') }}</p>
+		</div>
+	{% endif %}
+	{% if S_VERSION_UPGRADEABLE %}
 		<div class="errorbox notice">
-			<p>{UPGRADE_INSTRUCTIONS}</p>
+			<p>{{ UPGRADE_INSTRUCTIONS }}</p>
 		</div>
-	<!-- ENDIF -->
+	{% endif %}
 
 	<!-- IF S_SEARCH_INDEX_MISSING -->
 		<div class="errorbox">
