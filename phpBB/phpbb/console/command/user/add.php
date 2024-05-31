@@ -296,17 +296,16 @@ class add extends command
 		{
 			case USER_ACTIVATION_SELF:
 				$email_template = 'user_welcome_inactive';
-				$user_actkey = gen_rand_string(mt_rand(6, 10));
 			break;
 			case USER_ACTIVATION_ADMIN:
 				$email_template = 'admin_welcome_inactive';
-				$user_actkey = gen_rand_string(mt_rand(6, 10));
 			break;
 			default:
 				$email_template = 'user_welcome';
-				$user_actkey = '';
 			break;
 		}
+
+		$user_actkey = $this->get_activation_key($user_id);
 
 		if (!class_exists('messenger'))
 		{
@@ -325,6 +324,35 @@ class add extends command
 		);
 
 		$messenger->send(NOTIFY_EMAIL);
+	}
+
+	/**
+	 * Get user activation key
+	 *
+	 * @param int $user_id User ID
+	 *
+	 * @return string User activation key for user
+	 */
+	protected function get_activation_key(int $user_id): string
+	{
+		$user_actkey = '';
+
+		if ($this->config['require_activation'] == USER_ACTIVATION_SELF || $this->config['require_activation'] == USER_ACTIVATION_ADMIN)
+		{
+			$user_actkey = gen_rand_string(mt_rand(6, 10));
+
+			$sql_ary = [
+				'user_actkey'				=> $user_actkey,
+				'user_actkey_expiration'	=> \phpbb\user::get_token_expiration(),
+			];
+
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+				WHERE user_id = ' . (int) $user_id;
+			$this->db->sql_query($sql);
+		}
+
+		return $user_actkey;
 	}
 
 	/**

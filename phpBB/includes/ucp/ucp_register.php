@@ -380,18 +380,19 @@ class ucp_register
 				$passwords_manager = $phpbb_container->get('passwords.manager');
 
 				$user_row = array(
-					'username'				=> $data['username'],
-					'user_password'			=> $passwords_manager->hash($data['new_password']),
-					'user_email'			=> $data['email'],
-					'group_id'				=> (int) $group_id,
-					'user_timezone'			=> $data['tz'],
-					'user_lang'				=> $data['lang'],
-					'user_type'				=> $user_type,
-					'user_actkey'			=> $user_actkey,
-					'user_ip'				=> $user->ip,
-					'user_regdate'			=> time(),
-					'user_inactive_reason'	=> $user_inactive_reason,
-					'user_inactive_time'	=> $user_inactive_time,
+					'username'					=> $data['username'],
+					'user_password'				=> $passwords_manager->hash($data['new_password']),
+					'user_email'				=> $data['email'],
+					'group_id'					=> (int) $group_id,
+					'user_timezone'				=> $data['tz'],
+					'user_lang'					=> $data['lang'],
+					'user_type'					=> $user_type,
+					'user_actkey'				=> $user_actkey,
+					'user_actkey_expiration'	=> $user::get_token_expiration(),
+					'user_ip'					=> $user->ip,
+					'user_regdate'				=> time(),
+					'user_inactive_reason'		=> $user_inactive_reason,
+					'user_inactive_time'		=> $user_inactive_time,
 				);
 
 				if ($config['new_member_post_limit'])

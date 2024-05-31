@@ -238,10 +238,11 @@ class acp_inactive
 
 						$messenger->save_queue();
 
-						// Add the remind state to the database
+						// Add the remind state to the database and increase activation expiration by one day
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_reminded = user_reminded + 1,
-								user_reminded_time = ' . time() . '
+								user_reminded_time = ' . time() . ',
+								user_actkey_expiration = ' . (int) $user::get_token_expiration() . '
 							WHERE ' . $db->sql_in_set('user_id', $user_ids);
 						$db->sql_query($sql);
 

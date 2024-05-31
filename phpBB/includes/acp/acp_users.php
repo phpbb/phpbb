@@ -391,14 +391,18 @@ class acp_users
 									$user_actkey = empty($user_activation_key) ? $user_actkey : $user_activation_key;
 								}
 
-								if ($user_row['user_type'] == USER_NORMAL || empty($user_activation_key))
-								{
-									$sql = 'UPDATE ' . USERS_TABLE . "
-										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
-										WHERE user_id = $user_id";
-									$db->sql_query($sql);
-								}
+								// Always update actkey even if same and also update actkey expiration to 24 hours from now
+								$sql_ary = [
+									'user_actkey'				=> $user_actkey,
+									'user_actkey_expiration'	=> $user::get_token_expiration(),
+								];
 
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+									WHERE user_id = ' . (int) $user_id;
+								$db->sql_query($sql);
+
+								// Start sending email
 								$messenger = new messenger(false);
 
 								$messenger->template($email_template, $user_row['user_lang']);

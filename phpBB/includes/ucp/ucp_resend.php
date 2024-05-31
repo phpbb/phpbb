@@ -45,7 +45,7 @@ class ucp_resend
 				trigger_error('FORM_INVALID');
 			}
 
-			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
+			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_actkey_expiration, user_inactive_reason
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
@@ -71,6 +71,12 @@ class ucp_resend
 			if (!$user_row['user_actkey'] || ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_MANUAL))
 			{
 				trigger_error('ACCOUNT_DEACTIVATED');
+			}
+
+			// Do not resend activation email if valid one still exists
+			if (!empty($user_row['user_actkey']) && (int) $user_row['user_actkey_expiration'] >= time())
+			{
+				trigger_error('ACTIVATION_ALREADY_SENT');
 			}
 
 			// Determine coppa status on group (REGISTERED(_COPPA))
@@ -144,6 +150,8 @@ class ucp_resend
 				$db->sql_freeresult($result);
 			}
 
+			$this->update_activation_expiration();
+
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
 			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACTIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
@@ -159,5 +167,24 @@ class ucp_resend
 
 		$this->tpl_name = 'ucp_resend';
 		$this->page_title = 'UCP_RESEND';
+	}
+
+	/**
+	 * Update activation expiration to 1 day from now
+	 *
+	 * @return void
+	 */
+	protected function update_activation_expiration(): void
+	{
+		global $db, $user;
+
+		$sql_ary = [
+			'user_actkey_expiration'	=> $user::get_token_expiration(),
+		];
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+			WHERE user_id = ' . (int) $user->id();
+		$db->sql_query($sql);
 	}
 }
