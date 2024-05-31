@@ -445,6 +445,7 @@ class acp_main
 				$template->assign_vars(array(
 					'S_VERSION_UP_TO_DATE'		=> empty($updates_available),
 					'S_VERSION_UPGRADEABLE'		=> !empty($upgrades_available),
+					'S_VERSIONCHECK_FORCE'		=> (bool) $recheck,
 					'UPGRADE_INSTRUCTIONS'		=> !empty($upgrades_available) ? $user->lang('UPGRADE_INSTRUCTIONS', $upgrades_available['current'], $upgrades_available['announcement']) : false,
 				));
 			}
