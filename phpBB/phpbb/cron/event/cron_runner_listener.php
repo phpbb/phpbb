@@ -85,9 +85,8 @@ class cron_runner_listener implements EventSubscriberInterface
 				{
 					$task->run();
 				}
-
-				$this->cron_lock->release();
 			}
+			$this->cron_lock->release();
 		}
 	}
 
