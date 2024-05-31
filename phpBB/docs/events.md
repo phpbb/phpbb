@@ -2553,6 +2553,20 @@ ucp_friend_list_before
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
 
+ucp_group_settings_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_groups_manage.html
+* Since: 3.3.13-RC1
+* Purpose: Add content after options for managing a group in the UCP
+
+ucp_group_settings_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_groups_manage.html
+* Since: 3.3.13-RC1
+* Purpose: Add content before options for managing a group in the UCP
+
 ucp_header_content_before
 ===
 * Locations:
