@@ -184,6 +184,24 @@ acp_group_types_prepend
 * Since: 3.2.9-RC1
 * Purpose: Add additional group type options to group settings (prepend the list)
 
+acp_groups_add_user_options_after
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.3.13-RC1
+* Purpose: Add content after options for adding user to group in the ACP
+
+acp_groups_add_user_options_before
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.3.13-RC1
+* Purpose: Add content before options for adding user to group in the ACP
+
+acp_groups_add_user_usernames_before
+===
+* Location: adm/style/acp_groups.html
+* Since: 3.3.13-RC1
+* Purpose: Add content before usernames option for adding user to group in the ACP
+
 acp_groups_find_username_append
 ===
 * Location: adm/style/acp_groups.html

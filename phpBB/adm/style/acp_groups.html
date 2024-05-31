@@ -225,6 +225,7 @@
 
 	<fieldset>
 		<legend>{L_ADD_USERS}</legend>
+	{% EVENT acp_groups_add_user_options_before %}
 	<dl>
 		<dt><label for="leader">{L_USER_GROUP_LEADER}{L_COLON}</label></dt>
 		<dd><label><input name="leader" type="radio" class="radio" value="1" /> {L_YES}</label>
@@ -235,11 +236,13 @@
 		<dd><label><input name="default" type="radio" class="radio" value="1" /> {L_YES}</label>
 			<label><input name="default" type="radio" class="radio" id="default" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
+	{% EVENT acp_groups_add_user_usernames_before %}
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}{L_COLON}</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea></dd>
 		<dd><!-- EVENT acp_groups_find_username_prepend -->[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]<!-- EVENT acp_groups_find_username_append --></dd>
 	</dl>
+	{% EVENT acp_groups_add_user_options_after %}
 
 	<p class="quick">
 		<input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" />
