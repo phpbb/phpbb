@@ -337,7 +337,7 @@ class add extends command
 
 			$sql_ary = [
 				'user_actkey'				=> $user_actkey,
-				'user_actkey_expiration'	=> \phpbb\user::get_token_expiration(),
+				'user_actkey_expiration'	=> user::get_token_expiration(),
 			];
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
