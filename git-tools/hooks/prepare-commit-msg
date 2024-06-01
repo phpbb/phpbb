@@ -47,7 +47,7 @@ then
 		# Branch is prefixed with 'ticket/', append ticket ID to message
 		if [ "$branch" != "${branch##ticket/}" ];
 		then
-			tail="$(printf '\n\nPHPBB3-%s' "$ticket_id")";
+			tail="$(printf '\n\nPHPBB-%s' "$ticket_id")";
 		fi
 	fi
 

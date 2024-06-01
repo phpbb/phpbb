@@ -7,4 +7,4 @@ Checklist:
 
 Tracker ticket:
 
-https://tracker.phpbb.com/browse/PHPBB3-12345
+https://tracker.phpbb.com/browse/PHPBB-12345
