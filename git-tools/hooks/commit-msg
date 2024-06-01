@@ -224,7 +224,7 @@ do
 			"footer")
 				err=$ERR_FOOTER;
 				# Each ticket is on its own line
-				echo "$line" | grep -Eq "^PHPBB3-[0-9]+$";
+				echo "$line" | grep -Eq "^PHPBB3?-[0-9]+$";
 			;;
 			"eof")
 				err=$ERR_EOF;
@@ -356,7 +356,7 @@ echo "$expecting" | grep -q "eof" || (
 	# Check the branch ticket is mentioned, doesn't make sense otherwise
 	if [ $ticket -gt 0 ]
 	then
-		echo "$tickets" | grep -Eq "\bPHPBB3-$ticket\b" || (
+		echo "$tickets" | grep -Eq "\bPHPBB3?-$ticket\b" || (
 			complain "Ticket ID [$ticket] of branch missing from list of tickets:" >&2;
 			complain "$tickets" | sed 's/ /\n/g;s/^/* /g' >&2;
 			quit $ERR_FOOTER;
