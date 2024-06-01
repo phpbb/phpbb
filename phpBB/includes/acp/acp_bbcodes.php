@@ -44,12 +44,12 @@ class acp_bbcodes
 		switch ($action)
 		{
 			case 'add':
-				$bbcode_match = $bbcode_tpl = $bbcode_helpline = '';
+				$bbcode_match = $bbcode_tpl = $bbcode_helpline = $bbcode_icon_name = '';
 				$display_on_posting = 0;
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
+				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline, bbcode_icon_name
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -65,6 +65,7 @@ class acp_bbcodes
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl'], ENT_COMPAT);
 				$display_on_posting = $row['display_on_posting'];
 				$bbcode_helpline = $row['bbcode_helpline'];
+				$bbcode_icon_name = $row['bbcode_icon_name'];
 			break;
 
 			case 'modify':
@@ -88,6 +89,7 @@ class acp_bbcodes
 				$bbcode_match = $request->variable('bbcode_match', '');
 				$bbcode_tpl = html_entity_decode($request->variable('bbcode_tpl', '', true), ENT_COMPAT);
 				$bbcode_helpline = $request->variable('bbcode_helpline', '', true);
+				$bbcode_icon_name = $request->variable('bbcode_icon_name', '');
 			break;
 		}
 
@@ -106,6 +108,7 @@ class acp_bbcodes
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
 					'BBCODE_HELPLINE'		=> $bbcode_helpline,
+					'BBCODE_ICON_NAME'		=> $bbcode_icon_name,
 					'DISPLAY_ON_POSTING'	=> $display_on_posting,
 				);
 
@@ -156,6 +159,7 @@ class acp_bbcodes
 				* @var	string	bbcode_match		The bbcode usage string to match
 				* @var	string	bbcode_tpl			The bbcode HTML replacement string
 				* @var	string	bbcode_helpline		The bbcode help line string
+				* @var	string	bbcode_icon_name	The name of the bbcode FA icon
 				* @var	array	hidden_fields		Array of hidden fields for use when
 				*									submitting form when $warn_unsafe is true
 				* @since 3.1.0-a3
@@ -168,6 +172,7 @@ class acp_bbcodes
 					'bbcode_match',
 					'bbcode_tpl',
 					'bbcode_helpline',
+					'bbcode_icon_name',
 					'hidden_fields',
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_bbcodes_modify_create', compact($vars)));
@@ -240,6 +245,11 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
+					if (strlen($bbcode_icon_name) > 255)
+					{
+						trigger_error($user->lang['BBCODE_ICON_NAME_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					/**
 					 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
 					 * Using their Numeric Character Reference's Hexadecimal notation.
@@ -252,6 +262,7 @@ class acp_bbcodes
 						'bbcode_tpl'				=> $bbcode_tpl,
 						'display_on_posting'		=> $display_on_posting,
 						'bbcode_helpline'			=> $bbcode_helpline,
+						'bbcode_icon_name'			=> $bbcode_icon_name,
 						'first_pass_match'			=> $data['first_pass_match'],
 						'first_pass_replace'		=> $data['first_pass_replace'],
 						'second_pass_match'			=> $data['second_pass_match'],
@@ -336,6 +347,7 @@ class acp_bbcodes
 						'bbcode_match'			=> $bbcode_match,
 						'bbcode_tpl'			=> htmlspecialchars($bbcode_tpl, ENT_COMPAT),
 						'bbcode_helpline'		=> $bbcode_helpline,
+						'bbcode_icon_name'		=> $bbcode_icon_name,
 						'display_on_posting'	=> $display_on_posting,
 						)))
 					, 'confirm_bbcode.html');
