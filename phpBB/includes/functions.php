@@ -3620,6 +3620,16 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 		$avatar_data['src'] = '';
 	}
 
+	// Default avatar display
+	if (!$avatar_data['src'])
+	{
+			$phpbb_path_helper = $phpbb_container->get('path_helper');
+			$web_path = $phpbb_path_helper->get_web_root_path();
+			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
+			$src = 'src="' . $theme . '/images/no_avatar.gif"';
+			$html = '<img class="avatar" ' . $src . ' ' . 'alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	}
+
 	if (empty($html) && !empty($avatar_data['src']))
 	{
 		if ($lazy)
