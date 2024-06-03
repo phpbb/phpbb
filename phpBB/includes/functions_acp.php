@@ -515,6 +515,7 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, array|object &$n
 	* @var	array			vars		Array with the options for the config
 	* @var	array|string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
+	* @changed 4.0.0-a1	The event location's function renamed from build_config_template() to phpbb_build_cfg_template()
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
