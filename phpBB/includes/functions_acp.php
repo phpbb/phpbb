@@ -208,14 +208,19 @@ function adm_back_link($u_action)
 }
 
 /**
-* Build select field options in acp pages
-*/
-function build_select($option_ary, $option_default = false): array
+ * Build select field options in acp pages
+ *
+ * @param array				$options_ary Configuration options data
+ * @param int|string|bool	$option_default	Configuration option selected value
+ *
+ * @return array
+ */
+function build_select(array $options_ary, int|string|bool $option_default = false): array
 {
 	global $language;
 
 	$options = [];
-	foreach ($option_ary as $value => $title)
+	foreach ($options_ary as $value => $title)
 	{
 		$options[] = [
 			'value'	=> $value,
@@ -228,37 +233,50 @@ function build_select($option_ary, $option_default = false): array
 }
 
 /**
-* Build radio fields in acp pages
-*/
-function h_radio($name, $input_ary, $input_default = false, $id = false, $key = false, $separator = '')
+ * Build radio fields in acp pages
+ *
+ * @param int|string	$value	Configuration option value
+ * @param string		$key	Configuration option key name
+ * @param array			$options Configuration options data
+ * 							representing array of [values => language_keys]
+ *
+ * @return array
+ */
+function phpbb_build_radio(int|string $value, string $key, array $options): array
 {
-	global $user;
+	global $language;
 
-	$html = '';
-	$id_assigned = false;
-	foreach ($input_ary as $value => $title)
+	$buttons = [];
+	foreach ($options as $val => $title)
 	{
-		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>' . $separator;
-		$id_assigned = true;
+		$buttons[] = [
+			'type'		=> 'radio',
+			'value'		=> $val,
+			'name'		=> 'config[' . $key . ']',
+			'checked'	=> $val == $value,
+			'label'		=> $language->lang($title),
+		];
 	}
 
-	return $html;
+	return [
+		'buttons' => $buttons,
+	];
 }
 
 /**
- * HTML-less version of build_cfg_template
+ * Build configuration data arrays or templates for configuration settings
  *
- * @param array $tpl_type Template type
- * @param string $key Config key
- * @param $new_ary
- * @param $config_key
- * @param $vars
- * @return array
+ * @param array			$tpl_type	Configuration setting type data
+ * @param string		$key		Configuration option name
+ * @param array|object	$new_ary	Updated configuration data
+ * @param string		$config_key	Configuration option name
+ * @param array			$vars		Configuration setting data
+ *
+ * @return array|string
  */
-function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $config_key, $vars): array
+function phpbb_build_cfg_template(array $tpl_type, string $key, array|object &$new_ary, string $config_key, array $vars): array|string
 {
-	global $language;
+	global $language, $module, $phpbb_dispatcher;
 
 	$tpl = [];
 	$name = 'config[' . $config_key . ']';
@@ -368,154 +386,102 @@ function phpbb_build_cfg_template(array $tpl_type, string $key, &$new_ary, $conf
 		break;
 
 		case 'radio':
-			$tpl_type_cond = explode('_', $tpl_type[1]);
-			$type_no = $tpl_type_cond[0] != 'disabled' && $tpl_type_cond[0] != 'enabled';
-
-			$no_button = [
-				'type'		=> 'radio',
-				'name'		=> $name,
-				'value'		=> 0,
-				'checked'	=> !$new_ary[$config_key],
-				'label'		=> $type_no ? $language->lang('NO') : $language->lang('DISABLED'),
-			];
-
-			$yes_button = [
-				'id'		=> $key,
-				'type'		=> 'radio',
-				'name'		=> $name,
-				'value'		=> 1,
-				'checked'	=> (bool) $new_ary[$config_key],
-				'label'		=> $type_no ? $language->lang('YES') : $language->lang('ENABLED'),
-			];
-
-			$tpl = ['tag' => 'radio'];
-			if ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled')
+			if (!isset($vars['method']) && !isset($vars['function']))
 			{
-				$tpl['buttons'] = [$yes_button, $no_button];
-			}
-			else
-			{
-				$tpl['buttons'] = [$no_button, $yes_button];
-			}
-		break;
-	}
-
-	return $tpl;
-}
-
-/**
-* Build configuration template for acp configuration pages
-*/
-function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
-{
-	global $module, $phpbb_dispatcher;
-
-	$tpl = '';
-	$name = 'config[' . $config_key . ']';
-
-	// Make sure there is no notice printed out for non-existent config options (we simply set them)
-	if (!isset($new_ary[$config_key]))
-	{
-		$new_ary[$config_key] = '';
-	}
-
-	switch ($tpl_type[0])
-	{
-		case 'password':
-		case 'text':
-		case 'url':
-		case 'email':
-		case 'tel':
-		case 'search':
-		case 'color':
-		case 'datetime':
-		case 'datetime-local':
-		case 'month':
-		case 'week':
-		case 'date':
-		case 'time':
-		case 'number':
-		case 'range':
-		case 'dimension':
-		case 'textarea':
-		case 'radio':
-			$tpl = phpbb_build_cfg_template($tpl_type, $key, $new_ary, $config_key, $vars);
-		break;
-
-		case 'select':
-		case 'custom':
-
-			if (isset($vars['method']))
-			{
-				$call = array($module->module, $vars['method']);
-			}
-			else if (isset($vars['function']))
-			{
-				$call = $vars['function'];
-			}
-			else
-			{
-				break;
-			}
-
-			if (isset($vars['params']))
-			{
-				$args = array();
-				foreach ($vars['params'] as $value)
+				if (in_array($tpl_type[1], ['yes_no', 'enabled_disabled']))
 				{
-					switch ($value)
-					{
-						case '{CONFIG_VALUE}':
-							$value = $new_ary[$config_key];
-						break;
-
-						case '{KEY}':
-							$value = $key;
-						break;
-					}
-
-					$args[] = $value;
+					$options = array_reverse(explode('_', strtoupper($tpl_type[1])));
+					krsort($options);
+					$tpl_type = array_merge ($tpl_type, phpbb_build_radio($new_ary[$config_key], $config_key, $options));
 				}
 			}
-			else
+		case 'button':
+		case 'select':
+		case 'custom':
+			$args = [];
+			$call = $vars['function'] ?? (isset($vars['method']) ? [$module->module, $vars['method']] : false);
+
+			if ($call)
 			{
-				$args = array($new_ary[$config_key], $key);
+				if (isset($vars['params']))
+				{
+					foreach ($vars['params'] as $value)
+					{
+						switch ($value)
+						{
+							case '{CONFIG_VALUE}':
+								$value = $new_ary[$config_key];
+							break;
+
+							case '{KEY}':
+								$value = $config_key;
+							break;
+						}
+
+						$args[] = $value;
+					}
+				}
+				else
+				{
+					$args = array($new_ary[$config_key], $config_key);
+				}
 			}
 
-			$return = call_user_func_array($call, $args);
+			$return = $call ? call_user_func_array($call, $args) : [];
 
-			if ($tpl_type[0] == 'select')
+			if (in_array($tpl_type[0], ['select', 'radio', 'button']))
 			{
-				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
+				$tpl_type = array_merge($tpl_type, $return);
 
-				if (is_string($return))
+				if ($tpl_type[0] == 'select')
 				{
-					$data_toggle = (!empty($tpl_type[2])) ? ' data-togglable-settings="true"' : '';
+					$tpl = [
+						'tag'			=> 'select',
+						'class'			=> $tpl_type['class'] ?? false,
+						'id'			=> $key,
+						'data'			=> $tpl_type['data'] ?? [],
+						'name'			=> $name,
+						'toggleable'	=> !empty($tpl_type[2]) || !empty($tpl_type['toggleable']),
+						'options'		=> $tpl_type['options'],
+						'group_only'	=> $tpl_type['group_only'] ?? false,
+						'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
+						'multiple'		=> $tpl_type['multiple'] ?? false,
+					];
+				}
+				else if ($tpl_type[0] == 'radio')
+				{
+					// Only assign id to the one (1st) radio button in the list
+					$id_assigned = false;
+					foreach ($tpl_type['buttons'] as $i => $button)
+					{
+						if (!$id_assigned)
+						{
+							$tpl_type['buttons'][$i]['id'] = $key;
+							$id_assigned = true;
+						}
+					}
 
-					$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . $data_toggle . '>' . $return . '</select>';
+					$tpl = [
+						'tag'		=> 'radio',
+						'buttons'	=> $tpl_type['buttons'],
+					];
 				}
 				else
 				{
 					$tpl = [
-						'tag'			=> 'select',
-						'id'			=> $key,
-						'name'			=> $name,
-						'toggleable'	=> !empty($tpl_type[2]),
-						'options'		=> $return,
+						'tag'		=> 'input',
+						'class'		=> $tpl_type['options']['class'],
+						'id'		=> $key,
+						'type'		=> $tpl_type['options']['type'],
+						'name'		=> $tpl_type['options']['name'] ?? $name,
+						'value'		=> $tpl_type['options']['value'],
 					];
-
-					// Add size if it differs from default value of 1
-					if ($size != 1)
-					{
-						$tpl['size'] = $size;
-					}
 				}
 			}
 			else
 			{
 				$tpl = $return;
 			}
-
 		break;
 
 		default:
@@ -539,16 +505,17 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 	* Overwrite the html code we display for the config value
 	*
 	* @event core.build_config_template
-	* @var	array	tpl_type	Config type array:
-	*						0 => data type
-	*						1 [optional] => string: size, int: minimum
-	*						2 [optional] => string: max. length, int: maximum
-	* @var	string	key			Should be used for the id attribute in html
-	* @var	array	new			Array with the config values we display
-	* @var	string	name		Should be used for the name attribute
-	* @var	array	vars		Array with the options for the config
-	* @var	string	tpl			The resulting html code we display
+	* @var	array			tpl_type	Config type array:
+	*							0 => data type
+	*							1 [optional] => string: size, int: minimum
+	*							2 [optional] => string: max. length, int: maximum
+	* @var	string			key			Should be used for the id attribute in html
+	* @var	array			new			Array with the config values we display
+	* @var	string			name		Should be used for the name attribute
+	* @var	array			vars		Array with the options for the config
+	* @var	array|string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
+	* @changed 4.0.0-a1	The event location's function renamed from build_config_template() to phpbb_build_cfg_template()
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));

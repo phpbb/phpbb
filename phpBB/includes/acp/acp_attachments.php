@@ -180,12 +180,12 @@ class acp_attachments
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'max_attachments'		=> array('lang' => 'MAX_ATTACHMENTS',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => false),
-						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'custom', 'method' => 'display_order', 'explain' => true),
+						'display_order'			=> array('lang' => 'DISPLAY_ORDER',			'validate' => 'bool',	'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', ['DESCENDING', 'ASCENDING']], 'explain' => true),
 						'attachment_quota'		=> array('lang' => 'ATTACH_QUOTA',			'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize'			=> array('lang' => 'ATTACH_MAX_FILESIZE',	'validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'max_filesize_pm'		=> array('lang' => 'ATTACH_MAX_PM_FILESIZE','validate' => 'string',	'type' => 'custom', 'method' => 'max_filesize', 'explain' => true),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
+						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'radio', 'function' => 'phpbb_build_radio', 'params' => ['{CONFIG_VALUE}', '{KEY}', [1 => 'ORDER_ALLOW_DENY', 0 => 'ORDER_DENY_ALLOW']], 'explain' => true),
 						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'check_attachment_content' 		=> array('lang' => 'CHECK_CONTENT', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
@@ -331,7 +331,7 @@ class acp_attachments
 						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
 
-					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+					$content = phpbb_build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 					if (empty($content))
 					{
 						continue;
@@ -1719,16 +1719,6 @@ class acp_attachments
 	}
 
 	/**
-	* Write display_order config field
-	*/
-	function display_order($value, $key = '')
-	{
-		$radio_ary = array(0 => 'DESCENDING', 1 => 'ASCENDING');
-
-		return h_radio('config[display_order]', $radio_ary, $value, $key);
-	}
-
-	/**
 	* Adjust all three max_filesize config vars for display
 	*/
 	function max_filesize($value, $key = '')
@@ -1756,15 +1746,4 @@ class acp_attachments
 			]
 		];
 	}
-
-	/**
-	* Write secure_allow_deny config field
-	*/
-	function select_allow_deny($value, $key = '')
-	{
-		$radio_ary = array(1 => 'ORDER_ALLOW_DENY', 0 => 'ORDER_DENY_ALLOW');
-
-		return h_radio('config[' . $key . ']', $radio_ary, $value, $key);
-	}
-
 }

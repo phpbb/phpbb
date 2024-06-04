@@ -61,7 +61,9 @@
 	<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->
 		<dl>
 			<dt><label for="user_style">{L_BOARD_STYLE}{L_COLON}</label></dt>
-			<dd><select name="user_style" id="user_style">{S_STYLE_OPTIONS}</select></dd>
+			<dd>
+				{{ FormsSelect(S_STYLE_OPTIONS) }}
+			</dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- INCLUDE timezone_option.html -->
