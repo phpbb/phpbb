@@ -590,6 +590,8 @@ $lang = array_merge($lang, [
 	'WEBPUSH_VAPID_PUBLIC_EXPLAIN'	=> 'The Voluntary Application Server Identification (VAPID) public key is shared to authenticate push messages from your site.<br><em><strong>Caution:</strong> Modifying the VAPID public key will automatically render all Web Push subscriptions invalid.</em>',
 	'WEBPUSH_VAPID_PRIVATE'			=> 'Server identification private key',
 	'WEBPUSH_VAPID_PRIVATE_EXPLAIN'	=> 'The Voluntary Application Server Identification (VAPID) private key is used to generate authenticated push messages dispatched from your site. The VAPID private key <strong>must</strong> form a valid public-private key pair alongside the VAPID public key.<br><em><strong>Caution:</strong> Modifying the VAPID private key will automatically render all Web Push subscriptions invalid.</em>',
+	'WEBPUSH_METHOD_ENABLES'		=> 'Enable all user-based web push notification options by default',
+	'WEBPUSH_METHOD_ENABLES_EXPLAIN'=> 'When this setting is enabled, users who subscribe and allow browser notifications will start receiving them automatically. Users only need to visit the UCP Notification settings to disable any unwanted notifications.<br><br>If this setting is disabled, users will not receive any notifications, even if they have subscribed, until they visit the UCP Notification settings to enable the specific notification options they wish to receive.',
 ]);
 
 // Jabber settings

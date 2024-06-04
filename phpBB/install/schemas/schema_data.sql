@@ -329,6 +329,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('storage\backup\con
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('webpush_enable', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('webpush_vapid_public', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('webpush_vapid_private', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('webpush_method_enables', '0');
 
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cache_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('cron_lock', '0', 1);

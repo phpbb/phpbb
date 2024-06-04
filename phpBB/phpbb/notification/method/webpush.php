@@ -92,6 +92,14 @@ class webpush extends messenger_base implements extended_method_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function is_enabled_by_default()
+	{
+		return $this->config['webpush_method_enables'];
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_notified_users($notification_type_id, array $options): array

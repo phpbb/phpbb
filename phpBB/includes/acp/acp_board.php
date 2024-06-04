@@ -494,6 +494,7 @@ class acp_board
 						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'method' => 'webpush_enable', 'explain' => true],
 						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
 						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
+						'webpush_method_enables'	=> ['lang' => 'WEBPUSH_METHOD_ENABLES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					],
