@@ -435,14 +435,13 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 		}
 		$this->db->sql_freeresult($result);
 
-		if (empty($new_auth))
+		$type = (string) $type; // Prevent PHP bug.
+		if (empty($new_auth) || !in_array($type, ['role','group']))
 		{
 			return;
 		}
 
 		$current_auth = array();
-
-		$type = (string) $type; // Prevent PHP bug.
 
 		switch ($type)
 		{
@@ -525,40 +524,32 @@ class permission implements \phpbb\db\migration\tool\tool_interface
 			break;
 		}
 
-		$sql_ary = array();
-		switch ($type)
+		$sql_ary = $auth_update_list = [];
+		$table = $type == 'role' ? ACL_ROLES_DATA_TABLE : ACL_GROUPS_TABLE;
+		foreach ($new_auth as $auth_option_id)
 		{
-			case 'role':
-				foreach ($new_auth as $auth_option_id)
-				{
-					if (!isset($current_auth[$auth_option_id]))
-					{
-						$sql_ary[] = array(
-							'role_id'			=> $role_id,
-							'auth_option_id'	=> $auth_option_id,
-							'auth_setting'		=> $has_permission,
-						);
-					}
-				}
+			if (!isset($current_auth[$auth_option_id]))
+			{
+				$sql_ary[] = [
+					$type . '_id'		=> ${$type . '_id'},
+					'auth_option_id'	=> $auth_option_id,
+					'auth_setting'		=> (int) $has_permission,
+				];
+			}
+			else
+			{
+				$auth_update_list[] = $auth_option_id;
+			}
+		}
+		$this->db->sql_multi_insert($table, $sql_ary);
 
-				$this->db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
-			break;
-
-			case 'group':
-				foreach ($new_auth as $auth_option_id)
-				{
-					if (!isset($current_auth[$auth_option_id]))
-					{
-						$sql_ary[] = array(
-							'group_id'			=> $group_id,
-							'auth_option_id'	=> $auth_option_id,
-							'auth_setting'		=> $has_permission,
-						);
-					}
-				}
-
-				$this->db->sql_multi_insert(ACL_GROUPS_TABLE, $sql_ary);
-			break;
+		if (count($auth_update_list))
+		{
+			$sql = 'UPDATE ' . $table . '
+				SET auth_setting = ' . (int) $has_permission . '
+				WHERE ' . $this->db->sql_in_set('auth_option_id', $auth_update_list) . '
+					AND ' . $type . '_id = ' .  (int) ${$type . '_id'};
+			$this->db->sql_query($sql);
 		}
 
 		$this->auth->acl_clear_prefetch();
