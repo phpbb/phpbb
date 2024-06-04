@@ -32,8 +32,8 @@ class add_webpush_options extends migration
 	public function update_data(): array
 	{
 		return [
-			['config.add', ['webpush_method_enables', false]],
-			['config.add', ['webpush_dropdown_subscribe', false]],
+			['config.add', ['webpush_method_enables', true]],
+			['config.add', ['webpush_dropdown_subscribe', true]],
 		];
 	}
 
