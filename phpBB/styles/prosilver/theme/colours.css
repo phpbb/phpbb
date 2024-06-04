@@ -1179,3 +1179,7 @@ input.disabled {
 	background-color: #d41142;
 	color: #ffffff;
 }
+
+.notification-subscribe_toggle {
+	color: #47536b;
+}
