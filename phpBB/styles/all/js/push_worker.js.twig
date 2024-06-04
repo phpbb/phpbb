@@ -1,4 +1,19 @@
 /**
+ * Event listener for install event
+ */
+self.addEventListener('install', () => {
+	// Call to ensure service worker is correctly updated
+	self.skipWaiting();
+});
+
+/**
+ * Event listener for activate event
+ */
+self.addEventListener('activate', event => {
+	event.waitUntil(self.clients.claim());
+});
+
+/**
  * Event listener for push event
  */
 self.addEventListener('push', event => {
@@ -7,17 +22,25 @@ self.addEventListener('push', event => {
 	}
 
 	let itemId = 0;
-	let	typeId = 0;
+	let typeId = 0;
+	let notificationVersion = 5;
 	try {
 		const notificationData = event.data.json();
 		itemId = notificationData.item_id;
 		typeId = notificationData.type_id;
+		notificationVersion = parseInt(notificationData.version, 10);
 	} catch {
 		self.registration.showNotification(event.data.text());
 		return;
 	}
 
 	const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
+	const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
+
+	// Force update if versions differ
+	if (assetsVersion !== notificationVersion) {
+		self.registration.update();
+	}
 
 	const formData = new FormData();
 	formData.append('item_id', itemId.toString(10));

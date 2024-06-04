@@ -210,6 +210,7 @@ class webpush extends messenger_base implements extended_method_interface
 			$data = [
 				'item_id'	=> $notification->item_id,
 				'type_id'	=> $notification->notification_type_id,
+				'version'	=> $this->config['assets_version'],
 			];
 			$json_data = json_encode($data);
 
