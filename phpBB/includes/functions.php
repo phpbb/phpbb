@@ -3873,15 +3873,17 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 			$template->assign_block_vars('notifications', $notification->prepare_for_display());
 		}
 
-		// Get web push notification data
-		$methods = $phpbb_notifications->get_subscription_methods();
-		if ($config['webpush_dropdown_subscribe'] && array_key_exists('notification.method.webpush', $methods))
+		// Assign notification web push template data (if not done already by ucp_notifications)
+		if ($config['webpush_dropdown_subscribe'] && $template->retrieve_var('NOTIFICATIONS_WEBPUSH_ENABLE') === null)
 		{
-			/** @var \phpbb\form\form_helper $form_helper */
-			$form_helper = $phpbb_container->get('form_helper');
+			$methods = $phpbb_notifications->get_subscription_methods();
+			if (isset($methods['notification.method.webpush']))
+			{
+				$form_helper = $phpbb_container->get('form_helper');
 
-			$template_ary = $methods['notification.method.webpush']['method']->get_ucp_template_data($controller_helper, $form_helper);
-			$template->assign_vars($template_ary);
+				$template_ary = $methods['notification.method.webpush']['method']->get_ucp_template_data($controller_helper, $form_helper);
+				$template->assign_vars($template_ary);
+			}
 		}
 	}
 
