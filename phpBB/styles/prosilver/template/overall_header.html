@@ -63,6 +63,10 @@
 
 <!-- EVENT overall_header_stylesheets_after -->
 
+{% if NOTIFICATIONS_WEBPUSH_ENABLE %}
+	{% include('ucp_notifications_webpush.html') %}
+{% endif %}
+
 </head>
 <body id="phpbb" class="nojs notouch section-{SCRIPT_NAME} {S_CONTENT_DIRECTION} {BODY_CLASS}">
 

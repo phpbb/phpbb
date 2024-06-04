@@ -1340,6 +1340,15 @@ ul.linklist:after,
 	display: block;
 }
 
+.dropdown-extended .notification-dropdown-footer {
+	white-space: nowrap;
+	border-top: solid 1px #b9b9b9;
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: space-between;
+	padding: 5px 10px;
+}
+
 .notification-avatar,
 .notification-menu .notification-list .notification-item .avatar,
 .notification-menu .notification-list .notification-item .gravatar {
