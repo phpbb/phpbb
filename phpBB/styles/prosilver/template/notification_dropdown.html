@@ -47,8 +47,8 @@
 		{% if NOTIFICATIONS_WEBPUSH_ENABLE and notification_types is not defined %}
 			<div class="notification-dropdown-footer">
 				<span class="ellipsis-text">{{ lang('NOTIFY_WEB_PUSH_ENABLE') ~ lang('COLON') }}</span>
-				<button id="subscribe_webpush" name="subscribe_webpush" class="notification-subscribe_toggle">{{ Icon('font', 'toggle-off', lang('NOTIFY_WEB_PUSH_SUBSCRIBE'), false, 'icon-lightgray') }}</button>
-				<button id="unsubscribe_webpush" name="unsubscribe_webpush" class="notification-subscribe_toggle hidden">{{ Icon('font', 'toggle-on', lang('NOTIFY_WEB_PUSH_SUBSCRIBED'), false, 'icon-blue') }}</button>
+				<button id="subscribe_webpush" name="subscribe_webpush" class="notification-subscribe_toggle">{{ Icon('font', 'toggle-off', lang('NOTIFY_WEB_PUSH_SUBSCRIBE'), false, '', {'style' : 'color:#9e9e9e;'}) }}</button>
+				<button id="unsubscribe_webpush" name="unsubscribe_webpush" class="notification-subscribe_toggle hidden">{{ Icon('font', 'toggle-on', lang('NOTIFY_WEB_PUSH_SUBSCRIBED'), false, '', {'style' : 'color:#0059b3;'}) }}</button>
 			</div>
 		{% endif %}
 		{% EVENT notification_dropdown_footer_after %}
