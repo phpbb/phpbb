@@ -13,6 +13,7 @@ services:
         class: phpbb\messenger\method\base
         shared: false
         arguments:
+            - '@assets.bag'
             - '@config'
             - '@dispatcher'
             - '@language'

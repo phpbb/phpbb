@@ -22,6 +22,7 @@ use phpbb\log\log_interface;
 use phpbb\path_helper;
 use phpbb\request\request;
 use phpbb\messenger\queue;
+use phpbb\template\assets_bag;
 use phpbb\template\twig\lexer;
 use phpbb\user;
 
@@ -32,6 +33,9 @@ abstract class base
 {
 	/** @var array */
 	protected $additional_headers = [];
+
+	/** @var assets_bag */
+	protected $assets_bag;
 
 	/** @var config */
 	protected $config;
@@ -87,6 +91,7 @@ abstract class base
 	/**
 	 * Messenger base class constructor
 	 *
+	 * @param assets_bag $assets_bag
 	 * @param config $config
 	 * @param dispatcher $dispatcher
 	 * @param language $language
@@ -102,6 +107,7 @@ abstract class base
 	 * @param string $phpbb_root_path
 	 */
 	function __construct(
+		assets_bag $assets_bag,
 		config $config,
 		dispatcher $dispatcher,
 		language $language,
@@ -117,6 +123,7 @@ abstract class base
 		$phpbb_root_path
 	)
 	{
+		$this->assets_bag = $assets_bag;
 		$this->config = $config;
 		$this->dispatcher = $dispatcher;
 		$this->language = $language;
@@ -472,6 +479,7 @@ abstract class base
 		}
 
 		$template_environment = new \phpbb\template\twig\environment(
+			$this->assets_bag,
 			$this->config,
 			new \phpbb\filesystem\filesystem(),
 			$this->path_helper,
