@@ -28,6 +28,12 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		'ADMINISTRATORS' => 5,
 	];
 
+	public $role_ids = [
+		'ROLE_ADMIN_STANDARD' => 1,
+		'ROLE_USER_FULL' => 5,
+		'ROLE_MOD_FULL' => 10,
+	];
+
 	public $new_roles = [
 		[
 			'ROLE_ADMIN_NEW',
@@ -196,4 +202,32 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		$this->assertFalse($this->db->sql_fetchfield('auth_role_id'));
 		$this->db->sql_freeresult($result);
 	}
+
+	public function test_copied_permission_set()
+	{
+		$sql = 'SELECT rdt.auth_setting
+			FROM ' . ACL_OPTIONS_TABLE. ' ot, ' . ACL_ROLES_DATA_TABLE . ' rdt
+			WHERE rdt.role_id = ' . $this->role_ids['ROLE_ADMIN_STANDARD'] . "
+				AND auth_option = 'u_copied_permission'
+				AND ot.auth_option_id = rdt.auth_option_id";
+
+		// Add new local 'u_copied_permission' copied from 'u_test'
+		// It should be added to the ROLE_ADMIN_STANDARD role automatically similar to 'u_test' permission
+		$this->tool->add('u_copied_permission', false, 'u_test');
+		$this->assertEquals(true, $this->tool->exists('u_copied_permission', false));
+
+		// Copied permission setting should be equal to what it was copied from
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals(0, $this->db->sql_fetchfield('auth_setting')); 
+		$this->db->sql_freeresult($result);
+
+		// Set new permission for copied auth option for the role
+		$this->tool->permission_set('ROLE_ADMIN_STANDARD', 'u_copied_permission', 'role', true);
+
+		// Copied permission setting should be updated
+		$result = $this->db->sql_query($sql);
+		$this->assertEquals(1, $this->db->sql_fetchfield('auth_setting'));
+		$this->db->sql_freeresult($result);
+	}
+
 }
