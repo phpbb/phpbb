@@ -16,8 +16,6 @@
 */
 class phpbb_functional_extension_template_event_order_test extends phpbb_functional_test_case
 {
-	protected $phpbb_extension_manager;
-
 	static private $helper;
 
 	static protected $fixtures = [
@@ -43,9 +41,20 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 	{
 		parent::setUp();
 
-		$this->phpbb_extension_manager = $this->get_extension_manager();
-
 		$this->purge_cache();
+	}
+
+	protected function tearDown(): void
+	{
+		$this->uninstall_ext('foo/bar');
+		$this->uninstall_ext('foo/foo');
+
+		parent::tearDown();
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar', 'foo/foo'];
 	}
 
 	/**
@@ -55,32 +64,28 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 	{
 		global $phpbb_root_path;
 
-		$this->phpbb_extension_manager->enable('foo/bar');
-		$this->phpbb_extension_manager->enable('foo/foo');
 		$crawler = self::request('GET', 'index.php');
 		$quick_links_menu = $crawler->filter('ul[role="menu"]')->eq(0);
 		$quick_links_menu_nodes_count = (int) $quick_links_menu->filter('li')->count();
 		// Ensure foo/foo template event goes before foo/bar one
-		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 2)->filter('span')->text());
-		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 1)->filter('span')->text());
+		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 4)->filter('span')->text());
+		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 3)->filter('span')->text());
 
 		// Change template events order to default, put foo/bar event before foo/foo one
-		$this->phpbb_extension_manager->disable('foo/bar');
-		$this->phpbb_extension_manager->disable('foo/foo');
+		$this->disable_ext('foo/bar');
+		$this->disable_ext('foo/foo');
+
 		$this->assertTrue(copy(__DIR__ . '/fixtures/ext/foo/bar/event/template_event_order_higher.php', $phpbb_root_path . 'ext/foo/bar/event/template_event_order.php'));
 		$this->assertTrue(copy(__DIR__ . '/fixtures/ext/foo/foo/event/template_event_order_lower.php', $phpbb_root_path . 'ext/foo/foo/event/template_event_order.php'));
-		$this->phpbb_extension_manager->enable('foo/bar');
-		$this->phpbb_extension_manager->enable('foo/foo');
-		$this->purge_cache();
-		sleep(3);
+
+		$this->install_ext('foo/bar');
+		$this->install_ext('foo/foo');
+
 		$crawler = self::request('GET', 'index.php');
 		$quick_links_menu = $crawler->filter('ul[role="menu"]')->eq(0);
 		$quick_links_menu_nodes_count = (int) $quick_links_menu->filter('li')->count();
 		// Ensure foo/foo template event goes before foo/bar one
-		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 2)->filter('span')->text());
-		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 1)->filter('span')->text());
-
-		$this->phpbb_extension_manager->purge('foo/bar');
-		$this->phpbb_extension_manager->purge('foo/foo');
+		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 4)->filter('span')->text());
+		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 3)->filter('span')->text());
 	}
 }
