@@ -259,5 +259,6 @@ services:
             - '%core.php_ext%'
             - '%tables.notification_push%'
             - '%tables.push_subscriptions%'
+            - '@messenger.method_collection'
         tags:
             - { name: notification.method }
