@@ -65,6 +65,7 @@ class twig_test extends \phpbb_test_case
 		$loader = new \phpbb\template\twig\loader('');
 		$log = new \phpbb\log\dummy();
 		$assets_bag = new \phpbb\template\assets_bag();
+		$dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,
@@ -73,7 +74,7 @@ class twig_test extends \phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$dispatcher,
 			[
 				'cache'			=> false,
 				'debug'			=> false,
@@ -81,7 +82,7 @@ class twig_test extends \phpbb_test_case
 				'autoescape'	=> false,
 			]
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user, $dispatcher)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 	}
 

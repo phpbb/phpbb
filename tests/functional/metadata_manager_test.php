@@ -16,8 +16,6 @@
 */
 class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 {
-	protected $phpbb_extension_manager;
-
 	private static $helper;
 
 	protected static $fixtures = array(

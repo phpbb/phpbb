@@ -190,7 +190,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 				'autoescape'	=> false,
 			]
 		);
-		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $this->language);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $this->language, $phpbb_dispatcher);
 		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
 
 		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);

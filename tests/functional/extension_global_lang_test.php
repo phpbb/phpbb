@@ -16,8 +16,6 @@
 */
 class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_case
 {
-	protected $phpbb_extension_manager;
-
 	private static $helper;
 
 	protected static $fixtures = array(
@@ -47,10 +45,20 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 		$this->purge_cache();
 	}
 
+	protected function tearDown(): void
+	{
+		$this->uninstall_ext('foo/bar');
+
+		parent::tearDown();
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar'];
+	}
+
 	public function test_load_extension_lang_globally()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
-
 		// The board index, which should contain an overwritten translation
 		$crawler = self::request('GET', 'index.php');
 
@@ -59,7 +67,5 @@ class phpbb_functional_extension_global_lang_test extends phpbb_functional_test_
 
 		// language from ext/foo/bar/language/en/foo_global.php
 		$this->assertStringContainsString('Overwritten by foo', $crawler->filter('.skiplink')->text());
-
-		$this->phpbb_extension_manager->purge('foo/bar');
 	}
 }
