@@ -48,6 +48,9 @@ class webpush extends messenger_base implements extended_method_interface
 	/** @var string Notification push subscriptions table */
 	protected $push_subscriptions_table;
 
+	/** @var int Fallback size for padding if endpoint is mozilla, see https://github.com/web-push-libs/web-push-php/issues/108#issuecomment-2133477054 */
+	const MOZILLA_FALLBACK_PADDING = 2820;
+
 	/**
 	 * Notification Method Web Push constructor
 	 *
@@ -218,6 +221,7 @@ class webpush extends messenger_base implements extended_method_interface
 			{
 				try
 				{
+					$this->set_endpoint_padding($web_push, $subscription['endpoint']);
 					$push_subscription = Subscription::create([
 						'endpoint'			=> $subscription['endpoint'],
 						'keys'				=> [
@@ -429,5 +433,22 @@ class webpush extends messenger_base implements extended_method_interface
 		}
 
 		$this->remove_subscriptions($remove_subscriptions);
+	}
+
+	/**
+	 * Set web push padding for endpoint
+	 *
+	 * @param \Minishlink\WebPush\WebPush $web_push
+	 * @param string $endpoint
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	protected function set_endpoint_padding(\Minishlink\WebPush\WebPush $web_push, string $endpoint): void
+	{
+		if (str_contains($endpoint, 'mozilla.com') || str_contains($endpoint, 'mozaws.net'))
+		{
+			$web_push->setAutomaticPadding(self::MOZILLA_FALLBACK_PADDING);
+		}
 	}
 }
