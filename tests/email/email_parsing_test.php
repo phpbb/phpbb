@@ -124,7 +124,7 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$phpbb_container->set('messenger.queue', $messenger_queue);
 
 		$this->email = new \phpbb\messenger\method\phpbb_email(
-			$config, $dispatcher, $lang, $log, $request, $user, $messenger_queue,
+			$assets_bag, $config, $dispatcher, $lang, $log, $request, $user, $messenger_queue,
 			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
 			$cache_path, $phpbb_root_path
 		);

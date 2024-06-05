@@ -180,7 +180,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 			$phpbb_root_path,
 			$phpEx,
 			$phpbb_container->getParameter('tables.notification_push'),
-			$phpbb_container->getParameter('tables.push_subscriptions')
+			$phpbb_container->getParameter('tables.push_subscriptions'),
 		);
 
 		$phpbb_container->set('notification.method.webpush', $this->notification_method_webpush);
