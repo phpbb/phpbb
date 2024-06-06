@@ -11,8 +11,6 @@
  *
  */
 
-use phpbb\controller\helper;
-
 require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_extension_test extends phpbb_template_template_test_case
@@ -34,7 +32,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$this->user->style['style_parent_id'] = 0;
 
 		global $auth, $request, $symfony_request, $user;
-		$user = new phpbb_mock_user();
+		$user = $this->createMock(\phpbb\user::class);
 		$user->optionset('user_id', 2);
 		$user->style['style_path'] = '';
 		$user->data['user_id'] = 2;
@@ -68,9 +66,8 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$controller_helper = $this->createMock(helper::class);
-		$controller_helper
-			->method('route')
+		$routing_helper = $this->createMock(\phpbb\routing\helper::class);
+		$routing_helper->method('route')
 			->willReturnCallback(function($route, $params) {
 				return 'download/avatar/' . $params['file'];
 			});
@@ -78,7 +75,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$files = new phpbb\files\factory($phpbb_container);
-		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $controller_helper, $phpbb_root_path, $phpEx, $storage, $phpbb_path_helper, $phpbb_dispatcher, $files, new \bantu\IniGetWrapper\IniGetWrapper());
+		$upload_avatar_driver = new phpbb\avatar\driver\upload($config, $phpbb_root_path, $phpEx, $storage, $phpbb_path_helper, $routing_helper, $phpbb_dispatcher, $files, new \bantu\IniGetWrapper\IniGetWrapper());
 		$upload_avatar_driver->set_name('avatar.driver.upload');
 		$phpbb_container->set('avatar.manager', new \phpbb\avatar\manager($config, $phpbb_dispatcher, [
 			$upload_avatar_driver,
@@ -89,6 +86,14 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$enabled_drivers = $class->getProperty('enabled_drivers');
 		$enabled_drivers->setAccessible(true);
 		$enabled_drivers->setValue($class, false);
+		$avatar_helper = new phpbb\avatar\helper(
+			$config,
+			$phpbb_dispatcher,
+			$lang,
+			$phpbb_container->get('avatar.manager'),
+			$phpbb_path_helper,
+			$user
+		);
 
 		$this->template_path = $this->test_path . '/templates';
 
@@ -122,7 +127,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 			$this->user,
 			[
 				new \phpbb\template\twig\extension($context, $twig, $this->lang),
-				new \phpbb\template\twig\extension\avatar(),
+				new \phpbb\template\twig\extension\avatar($avatar_helper),
 				new \phpbb\template\twig\extension\config($config),
 				new \phpbb\template\twig\extension\icon($this->user),
 				new \phpbb\template\twig\extension\username(),
@@ -153,7 +158,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				],
 				[],
 				[],
-				'<img class="avatar" src="download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
+				'<img class="avatar" src="download/avatar/great_avatar.png" width="90" height="90" alt="foo">',
 				[]
 			],
 			[
@@ -171,7 +176,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				],
 				[],
 				[],
-				'<img class="avatar" src="phpBB/styles//theme/images/no_avatar.gif" data-src="download/avatar/great_avatar.png" width="90" height="90" alt="foo" />',
+				'<img class="avatar" src="phpBB/styles//theme/images/no_avatar.gif" data-src="download/avatar/great_avatar.png" width="90" height="90" alt="foo">',
 				[]
 			],
 			[
@@ -182,6 +187,56 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 						'user_avatar_type' => 'avatar.driver.gravatar',
 						'user_avatar_width' => 90,
 						'user_avatar_height' => 90,
+					],
+					'alt' => 'foo'
+				],
+				[],
+				[],
+				'',
+				[]
+			],
+			[
+				'avatar_group.html',
+				[
+					'row' => [
+						'group_avatar' => 'great_avatar.png',
+						'group_avatar_type' => 'avatar.driver.upload',
+						'group_avatar_width' => 90,
+						'group_avatar_height' => 90,
+					],
+					'alt' => 'foo'
+				],
+				[],
+				[],
+				'<img class="avatar" src="download/avatar/great_avatar.png" width="90" height="90" alt="foo">',
+				[]
+			],
+			[
+				'avatar_group.html',
+				[
+					'row' => [
+						'group_avatar' => 'great_avatar.png',
+						'group_avatar_type' => 'avatar.driver.upload',
+						'group_avatar_width' => 90,
+						'group_avatar_height' => 90,
+					],
+					'alt' => 'foo',
+					'ignore_config' => true,
+					'lazy' => true,
+				],
+				[],
+				[],
+				'<img class="avatar" src="phpBB/styles//theme/images/no_avatar.gif" data-src="download/avatar/great_avatar.png" width="90" height="90" alt="foo">',
+				[]
+			],
+			[
+				'avatar_group.html',
+				[
+					'row' => [
+						'group_avatar' => 'foo@bar.com',
+						'group_avatar_type' => 'avatar.driver.gravatar',
+						'group_avatar_width' => 90,
+						'group_avatar_height' => 90,
 					],
 					'alt' => 'foo'
 				],
