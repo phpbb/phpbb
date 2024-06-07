@@ -33,7 +33,7 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 			'config[webpush_enable]'	=> 1,
 			'config[webpush_vapid_public]'	=> 'BDnYSJHVZBxq834LqDGr893IfazEez7q-jYH2QBNlT0ji2C9UwGosiqz8Dp_ZN23lqAngBZyRjXVWF4ZLA8X2zI',
 			'config[webpush_vapid_private]'	=> 'IE5OYlmfWsMbBU1lzvr0bxrxVAXIteSkAnwGlZIhmRk',
-			'config[webpush_method_enables]'	=> 1,
+			'config[webpush_method_default_enable]'	=> 1,
 			'config[webpush_dropdown_subscribe]'	=> 1,
 		];
 		$form = $crawler->selectButton('submit')->form($form_data);
@@ -74,7 +74,7 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		$this->assert_checkbox_is_checked($wp_list, 'notification.type.report_pm_closed_notification.method.webpush');
 		$this->assert_checkbox_is_checked($wp_list, 'notification.type.report_post_closed_notification.method.webpush');
 
-		$this->set_acp_option('webpush_method_enables', 0);
+		$this->set_acp_option('webpush_method_default_enable', 0);
 
 		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
 

@@ -26,13 +26,13 @@ class add_webpush_options extends migration
 
 	public function effectively_installed(): bool
 	{
-		return $this->config->offsetExists('webpush_method_enables') || $this->config->offsetExists('webpush_dropdown_subscribe');
+		return $this->config->offsetExists('webpush_method_default_enable') || $this->config->offsetExists('webpush_dropdown_subscribe');
 	}
 
 	public function update_data(): array
 	{
 		return [
-			['config.add', ['webpush_method_enables', true]],
+			['config.add', ['webpush_method_default_enable', true]],
 			['config.add', ['webpush_dropdown_subscribe', true]],
 		];
 	}
@@ -40,7 +40,7 @@ class add_webpush_options extends migration
 	public function revert_data(): array
 	{
 		return [
-			['config.remove', ['webpush_method_enables']],
+			['config.remove', ['webpush_method_default_enable']],
 			['config.remove', ['webpush_dropdown_subscribe']],
 		];
 	}

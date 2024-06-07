@@ -3874,8 +3874,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 
 		// Assign web push template vars globally (if not done already by ucp_notifications) for the dropdown subscribe button
-		if ($config['webpush_enable']
-			&& $config['webpush_dropdown_subscribe']
+		if ($config['webpush_enable'] && $config['webpush_dropdown_subscribe']
 			&& $template->retrieve_var('NOTIFICATIONS_WEBPUSH_ENABLE') === null)
 		{
 			$methods = $phpbb_notifications->get_subscription_methods();
@@ -3883,9 +3882,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 
 			if ($webpush)
 			{
-				$formHelper = $phpbb_container->get('form_helper');
-				$template_ary = $webpush['method']->get_ucp_template_data($controller_helper, $formHelper);
-				$template->assign_vars($template_ary);
+				$form_helper = $phpbb_container->get('form_helper');
+				$template->assign_vars($webpush['method']->get_ucp_template_data($controller_helper, $form_helper));
 			}
 		}
 	}

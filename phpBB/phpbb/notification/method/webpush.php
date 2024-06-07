@@ -96,7 +96,7 @@ class webpush extends messenger_base implements extended_method_interface
 	 */
 	public function is_enabled_by_default()
 	{
-		return (bool) $this->config['webpush_method_enables'];
+		return (bool) $this->config['webpush_method_default_enable'];
 	}
 
 	/**
