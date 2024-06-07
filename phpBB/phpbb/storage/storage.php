@@ -15,7 +15,8 @@ namespace phpbb\storage;
 
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\db\driver\driver_interface as db;
-use phpbb\storage\exception\exception;
+use phpbb\storage\adapter\adapter_interface;
+use phpbb\storage\exception\storage_exception;
 
 /**
  * Experimental
@@ -23,7 +24,7 @@ use phpbb\storage\exception\exception;
 class storage
 {
 	/**
-	 * @var \phpbb\storage\adapter\adapter_interface
+	 * @var adapter_interface
 	 */
 	protected $adapter;
 
@@ -39,7 +40,7 @@ class storage
 	protected $cache;
 
 	/**
-	 * @var \phpbb\storage\adapter_factory
+	 * @var adapter_factory
 	 */
 	protected $factory;
 
@@ -58,7 +59,7 @@ class storage
 	 *
 	 * @param db								$db
 	 * @param cache								$cache
-	 * @param \phpbb\storage\adapter_factory	$factory
+	 * @param adapter_factory $factory
 	 * @param string							$storage_name
 	 * @param string							$storage_table
 	 */
@@ -84,7 +85,7 @@ class storage
 	/**
 	 * Returns an adapter instance
 	 *
-	 * @return \phpbb\storage\adapter\adapter_interface
+	 * @return adapter_interface
 	 */
 	protected function get_adapter()
 	{
@@ -102,14 +103,14 @@ class storage
 	 * @param string	$path		The file to be written to.
 	 * @param string	$content		The data to write into the file.
 	 *
-	 * @throws exception	When the file already exists
+	 * @throws storage_exception	When the file already exists
 	 * 						When the file cannot be written
 	 */
 	public function put_contents($path, $content)
 	{
 		if ($this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_EXISTS', $path);
+			throw new storage_exception('STORAGE_FILE_EXISTS', $path);
 		}
 
 		$this->get_adapter()->put_contents($path, $content);
@@ -121,17 +122,17 @@ class storage
 	 *
 	 * @param string	$path	The file to read
 	 *
-	 * @throws exception	When the file doesn't exist
-	 * 						When cannot read file contents
+	 * @return string    Returns file contents
 	 *
-	 * @return string	Returns file contents
+	 * @throws storage_exception	When the file doesn't exist
+	 * 						When cannot read file contents
 	 *
 	 */
 	public function get_contents($path)
 	{
 		if (!$this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		return $this->get_adapter()->get_contents($path);
@@ -155,14 +156,14 @@ class storage
 	 *
 	 * @param string	$path	file/directory to remove
 	 *
-	 * @throws exception	When removal fails
+	 * @throws storage_exception    When removal fails
 	 *						When the file doesn't exist
 	 */
 	public function delete($path)
 	{
 		if (!$this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		$this->get_adapter()->delete($path);
@@ -175,7 +176,7 @@ class storage
 	 * @param string	$path_orig	The original file/direcotry
 	 * @param string	$path_dest	The target file/directory
 	 *
-	 * @throws exception	When the file doesn't exist
+	 * @throws storage_exception    When the file doesn't exist
 	 *						When target exists
 	 * 						When file/directory cannot be renamed
 	 */
@@ -183,12 +184,12 @@ class storage
 	{
 		if (!$this->exists($path_orig))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path_orig);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path_orig);
 		}
 
 		if ($this->exists($path_dest))
 		{
-			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
+			throw new storage_exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
 		$this->get_adapter()->rename($path_orig, $path_dest);
@@ -201,7 +202,7 @@ class storage
 	 * @param string	$path_orig	The original filename
 	 * @param string	$path_dest	The target filename
 	 *
-	 * @throws exception	When the file doesn't exist
+	 * @throws storage_exception    When the file doesn't exist
 	 *						When target exists
 	 * 						When the file cannot be copied
 	 */
@@ -209,12 +210,12 @@ class storage
 	{
 		if (!$this->exists($path_orig))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path_orig);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path_orig);
 		}
 
 		if ($this->exists($path_dest))
 		{
-			throw new exception('STORAGE_FILE_EXISTS', $path_dest);
+			throw new storage_exception('STORAGE_FILE_EXISTS', $path_dest);
 		}
 
 		$this->get_adapter()->copy($path_orig, $path_dest);
@@ -226,16 +227,16 @@ class storage
 	 *
 	 * @param string	$path	File to read
 	 *
-	 * @throws exception	When the file doesn't exist
+	 * @return resource    Returns a file pointer
+	 * @throws storage_exception	When the file doesn't exist
 	 *						When unable to open file
 	 *
-	 * @return resource	Returns a file pointer
 	 */
 	public function read_stream($path)
 	{
 		if (!$this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		$stream = null;
@@ -262,19 +263,19 @@ class storage
 	 * @param string	$path		The target file
 	 * @param resource	$resource	The resource
 	 *
-	 * @throws exception	When the file exist
+	 * @throws storage_exception    When the file exist
 	 *						When target file cannot be created
 	 */
 	public function write_stream($path, $resource)
 	{
 		if ($this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_EXISTS', $path);
+			throw new storage_exception('STORAGE_FILE_EXISTS', $path);
 		}
 
 		if (!is_resource($resource))
 		{
-			throw new exception('STORAGE_INVALID_RESOURCE');
+			throw new storage_exception('STORAGE_INVALID_RESOURCE');
 		}
 
 		$adapter = $this->get_adapter();
@@ -301,7 +302,7 @@ class storage
 	{
 		if (!$this->get_adapter()->exists($path))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		$sql_ary = array(
@@ -403,16 +404,16 @@ class storage
 	 *
 	 * @param string	$path	The file
 	 *
-	 * @throws exception    When the adapter doesn't implement the method
+	 * @return \phpbb\storage\file_info	Returns file_info object
+	 * @throws storage_exception    When the adapter doesn't implement the method
 	 *													When the file doesn't exist
 	 *
-	 * @return \phpbb\storage\file_info	Returns file_info object
 	 */
 	public function file_info($path)
 	{
 		if (!$this->exists($path))
 		{
-			throw new exception('STORAGE_FILE_NO_EXIST', $path);
+			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
 		}
 
 		return new file_info($this->get_adapter(), $path);
@@ -484,9 +485,9 @@ class storage
 	/**
 	 * Get space available in bytes
 	 *
-	 * @throws exception		When unable to retrieve available storage space
+	 * @return float    Returns available space
+	 * @throws storage_exception		When unable to retrieve available storage space
 	 *
-	 * @return float	Returns available space
 	 */
 	public function free_space()
 	{

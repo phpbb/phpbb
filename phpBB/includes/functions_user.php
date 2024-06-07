@@ -1789,7 +1789,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 
 		return true;
 	}
-	catch (\phpbb\storage\exception\exception $e)
+	catch (\phpbb\storage\exception\storage_exception $e)
 	{
 		// Fail is covered by return statement below
 	}
@@ -2131,7 +2131,7 @@ function group_correct_avatar($group_id, $old_entry)
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
 	}
-	catch (\phpbb\storage\exception\exception $e)
+	catch (\phpbb\storage\exception\storage_exception $e)
 	{
 		// If rename fail, dont execute the query
 	}

@@ -15,7 +15,7 @@ namespace phpbb\storage;
 
 use phpbb\config\config;
 use phpbb\di\service_collection;
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 
 class adapter_factory
 {
@@ -53,41 +53,44 @@ class adapter_factory
 	 *
 	 * @param string	$storage_name
 	 *
-	 * @return \phpbb\storage\adapter\adapter_interface
+	 * @return mixed
 	 */
-	public function get($storage_name)
+	public function get(string $storage_name): mixed
+	{
+		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
+		$provider = $this->providers->get_by_class($provider_class);
+
+		$options = [];
+		foreach (array_keys($provider->get_options()) as $definition)
+		{
+			/** @psalm-suppress InvalidArrayOffset */
+			$options[$definition] = $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
+		}
+
+		return $this->get_with_options($storage_name, $options);
+	}
+
+	/**
+	 * Obtains a configured adapters for a given storage with custom options
+	 *
+	 * @param string	$storage_name
+	 * @param array		$options
+	 *
+	 * @return mixed
+	 */
+	public function get_with_options(string $storage_name, array $options): mixed
 	{
 		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
 		$provider = $this->providers->get_by_class($provider_class);
 
 		if (!$provider->is_available())
 		{
-			throw new exception('STORAGE_ADAPTER_NOT_AVAILABLE');
+			throw new storage_exception('STORAGE_ADAPTER_NOT_AVAILABLE');
 		}
 
 		$adapter = $this->adapters->get_by_class($provider->get_adapter_class());
-		$adapter->configure($this->build_options($storage_name, $provider->get_options()));
+		$adapter->configure($options);
 
 		return $adapter;
-	}
-
-	/**
-	 * Obtains configuration for a given storage
-	 *
-	 * @param string	$storage_name
-	 * @param array		$definitions
-	 *
-	 * @return array	Returns storage configuration values
-	 */
-	public function build_options($storage_name, array $definitions)
-	{
-		$options = [];
-
-		foreach (array_keys($definitions) as $definition)
-		{
-			$options[$definition] = $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
-		}
-
-		return $options;
 	}
 }

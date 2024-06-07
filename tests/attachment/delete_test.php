@@ -102,7 +102,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		{
 			$this->storage->expects($this->any())
 				->method('delete')
-				->willThrowException(new \phpbb\storage\exception\exception);
+				->willThrowException(new \phpbb\storage\exception\storage_exception);
 		}
 		else
 		{

@@ -19,7 +19,7 @@ use phpbb\event\dispatcher_interface;
 use phpbb\files\factory;
 use phpbb\path_helper;
 use phpbb\routing\helper;
-use phpbb\storage\exception\exception as storage_exception;
+use phpbb\storage\exception\storage_exception;
 use phpbb\storage\storage;
 
 /**

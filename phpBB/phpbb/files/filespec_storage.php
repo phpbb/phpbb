@@ -453,7 +453,7 @@ class filespec_storage
 				fclose($fp);
 			}
 		}
-		catch (\phpbb\storage\exception\exception $e)
+		catch (\phpbb\storage\exception\storage_exception $e)
 		{
 			$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
 			$this->file_moved = false;

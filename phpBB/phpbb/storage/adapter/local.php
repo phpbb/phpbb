@@ -14,7 +14,7 @@
 namespace phpbb\storage\adapter;
 
 use phpbb\storage\stream_interface;
-use phpbb\storage\exception\exception;
+use phpbb\storage\exception\storage_exception;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem;
 use phpbb\filesystem\helper as filesystem_helper;
@@ -117,7 +117,7 @@ class local implements adapter_interface, stream_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('STORAGE_CANNOT_WRITE_FILE', $path, array(), $e);
+			throw new storage_exception('STORAGE_CANNOT_WRITE_FILE', $path, array(), $e);
 		}
 	}
 
@@ -130,7 +130,7 @@ class local implements adapter_interface, stream_interface
 
 		if ($content === false)
 		{
-			throw new exception('STORAGE_CANNOT_READ_FILE', $path);
+			throw new storage_exception('STORAGE_CANNOT_READ_FILE', $path);
 		}
 
 		return $content;
@@ -155,7 +155,7 @@ class local implements adapter_interface, stream_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
+			throw new storage_exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
 		}
 	}
 
@@ -172,7 +172,7 @@ class local implements adapter_interface, stream_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('STORAGE_CANNOT_RENAME', $path_orig, array(), $e);
+			throw new storage_exception('STORAGE_CANNOT_RENAME', $path_orig, array(), $e);
 		}
 	}
 
@@ -189,7 +189,7 @@ class local implements adapter_interface, stream_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('STORAGE_CANNOT_COPY', $path_orig, array(), $e);
+			throw new storage_exception('STORAGE_CANNOT_COPY', $path_orig, array(), $e);
 		}
 	}
 
@@ -198,7 +198,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The directory path
 	 *
-	 * @throws exception	On any directory creation failure
+	 * @throws storage_exception	On any directory creation failure
 	 */
 	protected function create_dir(string $path): void
 	{
@@ -208,7 +208,7 @@ class local implements adapter_interface, stream_interface
 		}
 		catch (filesystem_exception $e)
 		{
-			throw new exception('STORAGE_CANNOT_CREATE_DIR', $path, array(), $e);
+			throw new storage_exception('STORAGE_CANNOT_CREATE_DIR', $path, array(), $e);
 		}
 	}
 
@@ -217,7 +217,7 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The file path
 	 *
-	 * @throws exception	On any directory creation failure
+	 * @throws storage_exception	On any directory creation failure
 	 */
 	protected function ensure_directory_exists(string $path): void
 	{
@@ -264,7 +264,7 @@ class local implements adapter_interface, stream_interface
 
 		if (!$stream)
 		{
-			throw new exception('STORAGE_CANNOT_OPEN_FILE', $path);
+			throw new storage_exception('STORAGE_CANNOT_OPEN_FILE', $path);
 		}
 
 		return $stream;
@@ -281,13 +281,13 @@ class local implements adapter_interface, stream_interface
 
 		if (!$stream)
 		{
-			throw new exception('STORAGE_CANNOT_CREATE_FILE', $path);
+			throw new storage_exception('STORAGE_CANNOT_CREATE_FILE', $path);
 		}
 
 		if (stream_copy_to_stream($resource, $stream) === false)
 		{
 			fclose($stream);
-			throw new exception('STORAGE_CANNOT_COPY_RESOURCE');
+			throw new storage_exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
 
 		fclose($stream);
@@ -298,11 +298,9 @@ class local implements adapter_interface, stream_interface
 	 *
 	 * @param string	$path	The file
 	 *
-	 * @throws exception		When cannot get size
-	 *
 	 * @return array Properties
-	 * @throws exception		When cannot get size
 	 *
+	 * @throws storage_exception		When cannot get size
 	 */
 	public function file_size(string $path): array
 	{
@@ -310,7 +308,7 @@ class local implements adapter_interface, stream_interface
 
 		if ($size === null)
 		{
-			throw new exception('STORAGE_CANNOT_GET_FILESIZE');
+			throw new storage_exception('STORAGE_CANNOT_GET_FILESIZE');
 		}
 
 		return ['size' => $size];
@@ -392,12 +390,12 @@ class local implements adapter_interface, stream_interface
 
 			if ($free_space === false)
 			{
-				throw new exception('STORAGE_CANNOT_GET_FREE_SPACE');
+				throw new storage_exception('STORAGE_CANNOT_GET_FREE_SPACE');
 			}
 		}
 		else
 		{
-			throw new exception('STORAGE_CANNOT_GET_FREE_SPACE');
+			throw new storage_exception('STORAGE_CANNOT_GET_FREE_SPACE');
 		}
 
 		return $free_space;
