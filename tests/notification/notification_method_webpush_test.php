@@ -653,6 +653,47 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertCount(0, $cur_notifications, 'Assert that no notifications have been pruned');
 	}
 
+	public function data_set_endpoint_padding(): array
+	{
+		return [
+			[
+				'foo.mozilla.com',
+				webpush::MOZILLA_FALLBACK_PADDING
+			],
+			[
+				'foo.mozaws.net',
+				webpush::MOZILLA_FALLBACK_PADDING
+			],
+			[
+				'foo.android.googleapis.com',
+				\Minishlink\WebPush\Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider data_set_endpoint_padding
+	 */
+	public function test_set_endpoint_padding($endpoint, $expected_padding): void
+	{
+		$web_push_reflection = new \ReflectionMethod($this->notification_method_webpush, 'set_endpoint_padding');
+		$web_push_reflection->setAccessible(true);
+
+		$auth = [
+			'VAPID' => [
+				'subject' => generate_board_url(),
+				'publicKey' => $this->config['webpush_vapid_public'],
+				'privateKey' => $this->config['webpush_vapid_private'],
+			],
+		];
+
+		$web_push = new \Minishlink\WebPush\WebPush($auth);
+
+		$this->assertEquals(\Minishlink\WebPush\Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH, $web_push->getAutomaticPadding());
+		$web_push_reflection->invoke($this->notification_method_webpush, $web_push, $endpoint);
+		$this->assertEquals($expected_padding, $web_push->getAutomaticPadding());
+	}
+
 	protected function create_subscription_for_user($user_id, bool $invalidate_endpoint = false): array
 	{
 		$client = new \GuzzleHttp\Client();
