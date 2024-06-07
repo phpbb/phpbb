@@ -95,6 +95,14 @@ class webpush extends messenger_base implements extended_method_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function is_enabled_by_default()
+	{
+		return (bool) $this->config['webpush_method_default_enable'];
+	}
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_notified_users($notification_type_id, array $options): array
@@ -352,7 +360,7 @@ class webpush extends messenger_base implements extended_method_interface
 		}
 
 		return [
-			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> true,
+			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> $this->config['webpush_dropdown_subscribe'] || stripos($this->user->page['page'], 'notification_options'),
 			'U_WEBPUSH_SUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_subscribe_controller'),
 			'U_WEBPUSH_UNSUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_unsubscribe_controller'),
 			'VAPID_PUBLIC_KEY'				=> $this->config['webpush_vapid_public'],

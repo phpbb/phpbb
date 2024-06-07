@@ -3735,6 +3735,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		$timezone_name = $user->lang['timezones'][$timezone_name];
 	}
 
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
 	// Output the notifications
 	$notifications = false;
 	if ($config['load_notifications'] && $config['allow_board_notifications'] && $user->data['user_id'] != ANONYMOUS && $user->data['user_type'] != USER_IGNORE)
@@ -3751,10 +3754,22 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		{
 			$template->assign_block_vars('notifications', $notification->prepare_for_display());
 		}
+
+		// Assign web push template vars globally (if not done already by ucp_notifications) for the dropdown subscribe button
+		if ($config['webpush_enable'] && $config['webpush_dropdown_subscribe']
+			&& $template->retrieve_var('NOTIFICATIONS_WEBPUSH_ENABLE') === null)
+		{
+			$methods = $phpbb_notifications->get_subscription_methods();
+			$webpush = $methods['notification.method.webpush'] ?? null;
+
+			if ($webpush)
+			{
+				$form_helper = $phpbb_container->get('form_helper');
+				$template->assign_vars($webpush['method']->get_ucp_template_data($controller_helper, $form_helper));
+			}
+		}
 	}
 
-	/** @var \phpbb\controller\helper $controller_helper */
-	$controller_helper = $phpbb_container->get('controller.helper');
 	$notification_mark_hash = generate_link_hash('mark_all_notifications_read');
 
 	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
