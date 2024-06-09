@@ -84,6 +84,7 @@ $lang = array_merge($lang, array(
 	'ALL_TOPICS'					=> 'All Topics',
 	'ALT_TEXT'						=> 'Alternative text',
 	'AND'							=> 'And',
+	'APPEARANCE'					=> 'Appearance',
 	'ARE_WATCHING_FORUM'			=> 'You have subscribed to be notified of new posts in this forum.',
 	'ARE_WATCHING_TOPIC'			=> 'You have subscribed to be notified of new posts in this topic.',
 	'ASCENDING'						=> 'Ascending',
