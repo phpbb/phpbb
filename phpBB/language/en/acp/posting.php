@@ -54,9 +54,9 @@ $lang = array_merge($lang, array(
 	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_HELPLINE_TOO_LONG'	=> 'The help line you entered is too long.',
 
-	'BBCODE_ICON_NAME'			=> 'Button icon',
-	'BBCODE_ICON_NAME_EXPLAIN'	=> 'Enter the name of a Font Awesome icon (without the fa prefix) to display instead of the BBCode name appearing on the button. <a href="https://fontawesome.com/v4/icons/">Click here</a> to view the list of available icons.',
-	'BBCODE_ICON_NAME_TOO_LONG'	=> 'The icon name you have entered is too long.',
+	'BBCODE_FONT_ICON'			=> 'BBCode icon',
+	'BBCODE_FONT_ICON_EXPLAIN'	=> 'Enter the name of a Font Awesome icon (without the fa prefix) to display instead of the BBCode name appearing on the button. <a href="https://fontawesome.com/v4/icons/" target="_blank">Click here</a> to view the list of available icons.',
+	'BBCODE_FONT_ICON_TOO_LONG'	=> 'The icon name you have entered is too long.',
 
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_INVALID'			=> 'Your BBCode is constructed in an invalid form.',
