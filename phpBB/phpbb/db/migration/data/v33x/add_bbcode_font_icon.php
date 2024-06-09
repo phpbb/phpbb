@@ -13,11 +13,11 @@
 
 namespace phpbb\db\migration\data\v33x;
 
-class add_bbcode_icon_name extends \phpbb\db\migration\migration
+class add_bbcode_font_icon extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
 	{
-		return $this->db_tools->sql_column_exists($this->table_prefix . 'bbcodes', 'bbcode_icon_name');
+		return $this->db_tools->sql_column_exists($this->table_prefix . 'bbcodes', 'bbcode_font_icon');
 	}
 
 	static public function depends_on()
@@ -32,7 +32,7 @@ class add_bbcode_icon_name extends \phpbb\db\migration\migration
 		return [
 			'add_columns'	=> [
 				$this->table_prefix . 'bbcodes'	=> [
-					'bbcode_icon_name'	=> ['VCHAR_UNI:255', ''],
+					'bbcode_font_icon'	=> ['VCHAR_UNI:255', ''],
 				],
 			],
 		];
@@ -43,7 +43,7 @@ class add_bbcode_icon_name extends \phpbb\db\migration\migration
 		return [
 			'drop_columns'	=> [
 				$this->table_prefix . 'bbcodes'	=> [
-					'bbcode_icon_name',
+					'bbcode_font_icon',
 				],
 			],
 		];
