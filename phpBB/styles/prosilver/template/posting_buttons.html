@@ -98,9 +98,9 @@
 	<!-- BEGIN custom_tags -->
 	<button type="button" class="button button-secondary bbcode-{custom_tags.BBCODE_TAG_CLEAN}" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{{ custom_tags.BBCODE_HELPLINE }}">
 		{% if custom_tags.BBCODE_FONT_ICON != '' %}
-			<i class="icon fa-{custom_tags.BBCODE_FONT_ICON} fa-fw" aria-hidden="true"></i>
+			<i class="icon fa-{{ custom_tags.BBCODE_FONT_ICON }} fa-fw" aria-hidden="true"></i>
 		{% else %}
-			{custom_tags.BBCODE_TAG}
+			{{ custom_tags.BBCODE_TAG }}
 		{% endif %}
 	</button>
 	<!-- END custom_tags -->
