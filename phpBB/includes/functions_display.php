@@ -1087,7 +1087,7 @@ function display_custom_bbcodes()
 	$num_predefined_bbcodes = NUM_PREDEFINED_BBCODES;
 
 	$sql_ary = [
-		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline, b.bbcode_icon_name, b.bbcode_match',
+		'SELECT'	=> 'b.bbcode_id, b.bbcode_tag, b.bbcode_helpline, b.bbcode_font_icon, b.bbcode_match',
 		'FROM'		=> [BBCODES_TABLE => 'b'],
 		'WHERE'		=> 'b.display_on_posting = 1',
 		'ORDER_BY'	=> 'b.bbcode_tag',
@@ -1130,7 +1130,7 @@ function display_custom_bbcodes()
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
 			'BBCODE_TAG_CLEAN'	=> str_replace('=', '-', $row['bbcode_tag']),
 			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'],
-			'BBCODE_ICON_NAME'	=> $row['bbcode_icon_name'],
+			'BBCODE_FONT_ICON'	=> $row['bbcode_font_icon'],
 		];
 
 		/**
