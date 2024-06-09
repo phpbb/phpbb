@@ -245,7 +245,7 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (strlen($bbcode_font_icon) > 255)
+					if (strlen($bbcode_font_icon) > 50)
 					{
 						trigger_error($user->lang['BBCODE_FONT_ICON_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
