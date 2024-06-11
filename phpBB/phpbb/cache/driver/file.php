@@ -331,6 +331,27 @@ class file extends \phpbb\cache\driver\base
 	}
 
 	/**
+	 * Cleanup when loading invalid data global file
+	 *
+	 * @param string $file Filename
+	 * @param resource $handle
+	 *
+	 * @return void
+	 */
+	private function cleanup_invalid_data_global(string $file, $handle): void
+	{
+		if (is_resource($handle))
+		{
+			fclose($handle);
+		}
+
+		$this->vars = $this->var_expires = [];
+		$this->is_modified = false;
+
+		$this->remove_file($file);
+	}
+
+	/**
 	* Read cached data from a specified file
 	*
 	* @access private
@@ -372,14 +393,7 @@ class file extends \phpbb\cache\driver\base
 
 				if (!is_numeric($bytes) || ($bytes = (int) $bytes) === 0)
 				{
-					// We cannot process the file without a valid number of bytes
-					// so we discard it
-					fclose($handle);
-
-					$this->vars = $this->var_expires = array();
-					$this->is_modified = false;
-
-					$this->remove_file($file);
+					$this->cleanup_invalid_data_global($file, $handle);
 
 					return false;
 				}
@@ -392,9 +406,17 @@ class file extends \phpbb\cache\driver\base
 				}
 
 				$var_name = substr(fgets($handle), 0, -1);
+				$data_length = $bytes - strlen($var_name);
+
+				if ($data_length <= 0)
+				{
+					$this->cleanup_invalid_data_global($file, $handle);
+
+					return false;
+				}
 
 				// Read the length of bytes that consists of data.
-				$data = fread($handle, $bytes - strlen($var_name));
+				$data = fread($handle, $data_length);
 				$data = @unserialize($data);
 
 				// Don't use the data if it was invalid
