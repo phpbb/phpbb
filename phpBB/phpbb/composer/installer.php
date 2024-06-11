@@ -396,6 +396,11 @@ class installer
 				/** @var CompletePackage $version */
 				foreach ($versions as $version)
 				{
+					if (strpos($version->getVersion(), '9999999') === 0)
+					{
+						continue;
+					}
+
 					if (!$highest_version || version_compare($version->getVersion(), $highest_version->getVersion(), '>'))
 					{
 						$highest_version = $version;
