@@ -420,7 +420,7 @@ class installer
 				$available[$name]['composer_name'] = $highest_version->getName();
 				$available[$name]['version'] = $highest_version->getPrettyVersion();
 
-				if ($version instanceof CompletePackage)
+				if ($highest_version instanceof CompletePackage)
 				{
 					$available[$name]['description'] = $highest_version->getDescription();
 					$available[$name]['url'] = $highest_version->getHomepage();
