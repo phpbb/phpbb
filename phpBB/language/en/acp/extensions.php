@@ -89,25 +89,25 @@ $lang = array_merge($lang, array(
 	'EXTENSION_NAME'			=> 'Extension Name',
 	'EXTENSION_ACTIONS'			=> 'Actions',
 	'EXTENSION_OPTIONS'			=> 'Options',
-	'EXTENSION_INSTALLING_HEADLINE'=> 'Installing an extension',
-	'EXTENSION_INSTALLING_EXPLAIN'	=> '<ol>
-			<li>Download an extension from phpBB’s extensions database</li>
-			<li>Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board</li>
-			<li>Enable the extension, here in the Extensions manager</li>
-		</ol>',
-	'EXTENSION_REMOVING_EXPLAIN'	=> '<ol>
-			<li>Disable the extension</li>
-			<li>Delete the extension’s data</li>
-			<li>Delete the extension’s files from the filesystem</li>
-		</ol>',
-	'EXTENSION_UPDATING_HEADLINE'	=> 'Updating an extension',
-	'EXTENSION_UPDATING_EXPLAIN'	=> '<ol>
-			<li>Disable the extension</li>
-			<li>Delete the extension’s files from the filesystem</li>
-			<li>Upload the new files</li>
-			<li>Enable the extension</li>
-		</ol>',
+	'EXTENSION_INSTALLING_HEADLINE'	=> 'Installing an extension',
+	'EXTENSION_INSTALLING_EXPLAIN'	=> [
+		'step_1' => 'Download an extension from phpBB’s extensions database',
+		'step_2' => 'Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board',
+		'step_3' => 'Enable the extension, here in the Extensions manager',
+	],
 	'EXTENSION_REMOVING_HEADLINE'	=> 'Deleting an extension from your board',
+	'EXTENSION_REMOVING_EXPLAIN'	=> [
+		'step_1' => 'Disable the extension',
+		'step_2' => 'Delete the extension’s data',
+		'step_3' => 'Delete the extension‘s files from the filesystem',
+	],
+	'EXTENSION_UPDATING_HEADLINE'	=> 'Updating an extension',
+	'EXTENSION_UPDATING_EXPLAIN'	=> [
+		'step_1' => 'Disable the extension',
+		'step_2' => 'Delete the extension’s files from the filesystem',
+		'step_3' => 'Upload the new files',
+		'step_4' => 'Enable the extension',
+	],
 
 	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
