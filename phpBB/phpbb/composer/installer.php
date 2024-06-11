@@ -24,7 +24,6 @@ use Composer\Json\JsonValidationException;
 use Composer\Package\BasePackage;
 use Composer\Package\CompleteAliasPackage;
 use Composer\Package\CompletePackage;
-use Composer\Package\Version\VersionParser;
 use Composer\PartialComposer;
 use Composer\Repository\ComposerRepository;
 use Composer\Semver\Constraint\ConstraintInterface;
@@ -395,20 +394,23 @@ class installer
 				/** @var CompletePackage|CompleteAliasPackage $highest_version */
 				$highest_version = null;
 
-				/** @var CompletePackage|CompleteAliasPackage $version */
-				foreach ($versions as $version)
+				// Sort the versions array in descending order
+				usort($versions, function ($a, $b)
 				{
-					if (!$highest_version || version_compare($version->getVersion(), $highest_version->getVersion(), '>'))
-					{
-						$highest_version = $version;
-					}
-				}
+					return version_compare($b->getVersion(), $a->getVersion());
+				});
 
-				// If highest version is DEFAULT_BRANCH_ALIAS (9999999-dev), then it's a non-numeric dev branch handled by
-				// an Alias, so we need to get the actual package being aliased in order to show the true non-numeric version.
-				if ($highest_version->getVersion() === VersionParser::DEFAULT_BRANCH_ALIAS)
+				// The first element in the sorted array is the highest version
+				if (!empty($versions))
 				{
-					$highest_version = $highest_version->getAliasOf();
+					$highest_version = $versions[0];
+
+					// If highest version is a non-numeric dev branch, it's an instance of CompleteAliasPackage,
+					// so we need to get the package being aliased in order to show the true non-numeric version.
+					if ($highest_version instanceof CompleteAliasPackage)
+					{
+						$highest_version = $highest_version->getAliasOf();
+					}
 				}
 
 				// Generates the entry
