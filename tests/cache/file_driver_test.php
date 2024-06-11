@@ -55,6 +55,11 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 
 	public function test_read_not_readable()
 	{
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped('Unable to test unreadable files on Windows');
+		}
+
 		global $phpEx;
 
 		// Create file that is not readable
