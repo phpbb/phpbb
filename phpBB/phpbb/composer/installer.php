@@ -24,9 +24,11 @@ use Composer\Json\JsonValidationException;
 use Composer\Package\BasePackage;
 use Composer\Package\CompleteAliasPackage;
 use Composer\Package\CompletePackage;
+use Composer\Package\PackageInterface;
 use Composer\PartialComposer;
 use Composer\Repository\ComposerRepository;
 use Composer\Semver\Constraint\ConstraintInterface;
+use Composer\Semver\VersionParser;
 use Composer\Util\HttpDownloader;
 use phpbb\composer\io\null_io;
 use phpbb\config\config;
@@ -353,7 +355,7 @@ class installer
 							$downloader = new HttpDownloader($io, $composer_config);
 							$json = $downloader->get($url)->getBody();
 
-							/** @var \Composer\Package\PackageInterface $package */
+							/** @var PackageInterface $package */
 							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
 							{
 								$versions            = $repository->findPackages($package);
@@ -365,7 +367,7 @@ class installer
 					{
 						// Pre-filter repo packages by their type
 						$packages = [];
-						/** @var \Composer\Package\PackageInterface $package */
+						/** @var PackageInterface $package */
 						foreach ($repository->getPackages() as $package)
 						{
 							if ($package->getType() === $type)
@@ -464,11 +466,11 @@ class installer
 	/**
 	 * Updates $compatible_packages with the versions of $versions compatibles with the $core_constraint
 	 *
-	 * @param array						$compatible_packages	List of compatibles versions
-	 * @param ConstraintInterface	$core_constraint		Constraint against the phpBB version
+	 * @param array $compatible_packages List of compatibles versions
+	 * @param ConstraintInterface $core_constraint Constraint against the phpBB version
 	 * @param string $core_stability Core stability
-	 * @param string					$package_name			Considered package
-	 * @param array						$versions				List of available versions
+	 * @param string $package_name Considered package
+	 * @param array $versions List of available versions
 	 *
 	 * @return array
 	 */
@@ -476,21 +478,35 @@ class installer
 	{
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
 
-		/** @var \Composer\Package\PackageInterface $version */
+		/** @var PackageInterface $version */
 		foreach ($versions as $version)
 		{
 			try
 			{
+				// Check stability first to avoid unnecessary operations
 				if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)
 				{
 					continue;
 				}
 
-				if (array_key_exists('phpbb/phpbb', $version->getRequires()))
-				{
-					/** @var ConstraintInterface $package_constraint */
-					$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
+				$requires = $version->getRequires();
+				$extra = $version->getExtra();
 
+				// Check for compatibility with phpBB if 'phpbb/phpbb' exists in 'requires'
+				if (isset($requires['phpbb/phpbb']))
+				{
+					$package_constraint = $requires['phpbb/phpbb']->getConstraint();
+					if (!$package_constraint->matches($core_constraint))
+					{
+						continue;
+					}
+				}
+
+				// Check for compatibility with phpBB if 'phpbb/phpbb' exists in 'soft-require'
+				if (isset($extra['soft-require']['phpbb/phpbb']))
+				{
+					$version_parser = new VersionParser();
+					$package_constraint = $version_parser->parseConstraints($extra['soft-require']['phpbb/phpbb']);
 					if (!$package_constraint->matches($core_constraint))
 					{
 						continue;
