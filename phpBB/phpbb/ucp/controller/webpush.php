@@ -101,9 +101,36 @@ class webpush
 	 */
 	public function notification(): JsonResponse
 	{
+		if (!$this->request->is_ajax() || $this->user->data['is_bot'] || $this->user->data['user_type'] == USER_INACTIVE)
+		{
+			throw new http_exception(Response::HTTP_FORBIDDEN, 'Forbidden');
+		}
+
+		if ($this->user->id() !== ANONYMOUS)
+		{
+			$notification_data = $this->get_user_notifications();
+		}
+		else
+		{
+			$notification_data = $this->get_anonymous_notifications();
+		}
+
+		// Decode and return data if everything is fine
+		$data = json_decode($notification_data, true);
+		$data['url'] = isset($data['url']) ? $this->path_helper->update_web_root_path($data['url']) : '';
+
+		return new JsonResponse($data);
+	}
+
+	/**
+	 * Get notification data for logged in user
+	 *
+	 * @return string Notification data
+	 */
+	private function get_user_notifications(): string
+	{
 		// Subscribe should only be available for logged-in "normal" users
-		if (!$this->request->is_ajax() || $this->user->id() == ANONYMOUS || $this->user->data['is_bot']
-			|| $this->user->data['user_type'] == USER_IGNORE || $this->user->data['user_type'] == USER_INACTIVE)
+		if ($this->user->data['user_type'] == USER_IGNORE)
 		{
 			throw new http_exception(Response::HTTP_FORBIDDEN, 'Forbidden');
 		}
@@ -119,10 +146,53 @@ class webpush
 		$result = $this->db->sql_query($sql);
 		$notification_data = $this->db->sql_fetchfield('push_data');
 		$this->db->sql_freeresult($result);
-		$data = json_decode($notification_data, true);
-		$data['url'] = isset($data['url']) ? $this->path_helper->update_web_root_path($data['url']) : '';
 
-		return new JsonResponse($data);
+		return $notification_data;
+	}
+
+	/**
+	 * Get notification data for not logged in user via token
+	 *
+	 * @return string
+	 */
+	private function get_anonymous_notifications(): string
+	{
+		$token = $this->request->variable('token', '');
+
+		if ($token)
+		{
+			$item_id = $this->request->variable('item_id', 0);
+			$type_id = $this->request->variable('type_id', 0);
+			$user_id = $this->request->variable('user_id', 0);
+
+			$sql = 'SELECT push_data, push_token
+				FROM ' . $this->notification_webpush_table . '
+				WHERE user_id = ' . (int) $user_id . '
+					AND notification_type_id = ' . (int) $type_id . '
+					AND item_id = ' . (int) $item_id;
+			$result = $this->db->sql_query($sql);
+			$notification_row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			$notification_data = $notification_row['push_data'];
+			$push_token = $notification_row['push_token'];
+
+			// Check if passed push token is valid
+			$sql = 'SELECT user_form_salt
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . (int) $user_id;
+			$result = $this->db->sql_query($sql);
+			$user_form_token = $this->db->sql_fetchfield('user_form_salt');
+			$this->db->sql_freeresult($result);
+
+			$expected_push_token = hash('sha256', $user_form_token . $push_token);
+			if ($expected_push_token === $token)
+			{
+				return $notification_data;
+			}
+		}
+
+		throw new http_exception(Response::HTTP_FORBIDDEN, 'Forbidden');
 	}
 
 	/**
