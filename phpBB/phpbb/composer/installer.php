@@ -514,6 +514,17 @@ class installer
 					}
 				}
 
+				// Check for compatibility with php if 'php' exists in 'requires'
+				if (isset($requires['php']))
+				{
+					$php_constraint = $version_parser->parseConstraints(PHP_VERSION);
+					$package_constraint = $requires['php']->getConstraint();
+					if (!$package_constraint->matches($php_constraint))
+					{
+						continue;
+					}
+				}
+
 				$compatible_packages[$package_name][] = $version;
 			}
 			catch (\Exception $e)
