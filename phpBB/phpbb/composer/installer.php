@@ -22,10 +22,13 @@ use Composer\IO\NullIO;
 use Composer\Json\JsonFile;
 use Composer\Json\JsonValidationException;
 use Composer\Package\BasePackage;
+use Composer\Package\CompleteAliasPackage;
 use Composer\Package\CompletePackage;
+use Composer\Package\PackageInterface;
 use Composer\PartialComposer;
 use Composer\Repository\ComposerRepository;
 use Composer\Semver\Constraint\ConstraintInterface;
+use Composer\Semver\VersionParser;
 use Composer\Util\HttpDownloader;
 use phpbb\composer\io\null_io;
 use phpbb\config\config;
@@ -352,7 +355,7 @@ class installer
 							$downloader = new HttpDownloader($io, $composer_config);
 							$json = $downloader->get($url)->getBody();
 
-							/** @var \Composer\Package\PackageInterface $package */
+							/** @var PackageInterface $package */
 							foreach (JsonFile::parseJson($json, $url)['packageNames'] as $package)
 							{
 								$versions            = $repository->findPackages($package);
@@ -364,7 +367,7 @@ class installer
 					{
 						// Pre-filter repo packages by their type
 						$packages = [];
-						/** @var \Composer\Package\PackageInterface $package */
+						/** @var PackageInterface $package */
 						foreach ($repository->getPackages() as $package)
 						{
 							if ($package->getType() === $type)
@@ -390,15 +393,25 @@ class installer
 			foreach ($compatible_packages as $name => $versions)
 			{
 				// Determine the highest version of the package
-				/** @var CompletePackage $highest_version */
+				/** @var CompletePackage|CompleteAliasPackage $highest_version */
 				$highest_version = null;
 
-				/** @var CompletePackage $version */
-				foreach ($versions as $version)
+				// Sort the versions array in descending order
+				usort($versions, function ($a, $b)
 				{
-					if (!$highest_version || version_compare($version->getVersion(), $highest_version->getVersion(), '>'))
+					return version_compare($b->getVersion(), $a->getVersion());
+				});
+
+				// The first element in the sorted array is the highest version
+				if (!empty($versions))
+				{
+					$highest_version = $versions[0];
+
+					// If highest version is a non-numeric dev branch, it's an instance of CompleteAliasPackage,
+					// so we need to get the package being aliased in order to show the true non-numeric version.
+					if ($highest_version instanceof CompleteAliasPackage)
 					{
-						$highest_version = $version;
+						$highest_version = $highest_version->getAliasOf();
 					}
 				}
 
@@ -409,7 +422,7 @@ class installer
 				$available[$name]['composer_name'] = $highest_version->getName();
 				$available[$name]['version'] = $highest_version->getPrettyVersion();
 
-				if ($version instanceof CompletePackage)
+				if ($highest_version instanceof CompletePackage)
 				{
 					$available[$name]['description'] = $highest_version->getDescription();
 					$available[$name]['url'] = $highest_version->getHomepage();
@@ -453,34 +466,60 @@ class installer
 	/**
 	 * Updates $compatible_packages with the versions of $versions compatibles with the $core_constraint
 	 *
-	 * @param array						$compatible_packages	List of compatibles versions
-	 * @param ConstraintInterface	$core_constraint		Constraint against the phpBB version
+	 * @param array $compatible_packages List of compatibles versions
+	 * @param ConstraintInterface $core_constraint Constraint against the phpBB version
 	 * @param string $core_stability Core stability
-	 * @param string					$package_name			Considered package
-	 * @param array						$versions				List of available versions
+	 * @param string $package_name Considered package
+	 * @param array $versions List of available versions
 	 *
 	 * @return array
 	 */
 	private function get_compatible_versions(array $compatible_packages, ConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
 	{
+		$version_parser = new VersionParser();
+
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
 
-		/** @var \Composer\Package\PackageInterface $version */
+		/** @var PackageInterface $version */
 		foreach ($versions as $version)
 		{
 			try
 			{
+				// Check stability first to avoid unnecessary operations
 				if (BasePackage::$stabilities[$version->getStability()] > $core_stability_value)
 				{
 					continue;
 				}
 
-				if (array_key_exists('phpbb/phpbb', $version->getRequires()))
-				{
-					/** @var ConstraintInterface $package_constraint */
-					$package_constraint = $version->getRequires()['phpbb/phpbb']->getConstraint();
+				$requires = $version->getRequires();
+				$extra = $version->getExtra();
 
+				// Check for compatibility with phpBB if 'phpbb/phpbb' exists in 'requires'
+				if (isset($requires['phpbb/phpbb']))
+				{
+					$package_constraint = $requires['phpbb/phpbb']->getConstraint();
 					if (!$package_constraint->matches($core_constraint))
+					{
+						continue;
+					}
+				}
+
+				// Check for compatibility with phpBB if 'phpbb/phpbb' exists in 'soft-require'
+				if (isset($extra['soft-require']['phpbb/phpbb']))
+				{
+					$package_constraint = $version_parser->parseConstraints($extra['soft-require']['phpbb/phpbb']);
+					if (!$package_constraint->matches($core_constraint))
+					{
+						continue;
+					}
+				}
+
+				// Check for compatibility with php if 'php' exists in 'requires'
+				if (isset($requires['php']))
+				{
+					$php_constraint = $version_parser->parseConstraints(PHP_VERSION);
+					$package_constraint = $requires['php']->getConstraint();
+					if (!$package_constraint->matches($php_constraint))
 					{
 						continue;
 					}
