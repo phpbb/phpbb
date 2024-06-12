@@ -476,6 +476,8 @@ class installer
 	 */
 	private function get_compatible_versions(array $compatible_packages, ConstraintInterface $core_constraint, $core_stability, $package_name, array $versions)
 	{
+		$version_parser = new VersionParser();
+
 		$core_stability_value = BasePackage::$stabilities[$core_stability];
 
 		/** @var PackageInterface $version */
@@ -505,7 +507,6 @@ class installer
 				// Check for compatibility with phpBB if 'phpbb/phpbb' exists in 'soft-require'
 				if (isset($extra['soft-require']['phpbb/phpbb']))
 				{
-					$version_parser = new VersionParser();
 					$package_constraint = $version_parser->parseConstraints($extra['soft-require']['phpbb/phpbb']);
 					if (!$package_constraint->matches($core_constraint))
 					{
