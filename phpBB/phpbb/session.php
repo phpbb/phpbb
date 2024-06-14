@@ -903,7 +903,8 @@ class session
 			}
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $this->data['session_time'] . '
+				SET user_lastvisit = ' . (int) $this->data['session_time'] . ',
+					user_last_active = ' . (int) $this->data['session_time'] . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 
@@ -1652,7 +1653,9 @@ class session
 		if ($row)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+				SET user_lastvisit = ' . (int) $row['session_time'] . ',
+					user_last_active = ' . (int) $row['session_time'] . ",
+					user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
 				WHERE user_id = " . (int) $user_id;
 			$db->sql_query($sql);
 		}
