@@ -58,7 +58,7 @@
 		"symfony/routing": "^6.3",
 		"symfony/twig-bridge": "^6.3",
 		"symfony/yaml": "^6.3",
-		"twig/twig": "^3.0"
+		"twig/twig": "3.8.0"
 	},
 	"require-dev": {
 		"laravel/homestead": "~14.4",
