@@ -106,9 +106,9 @@
 			<tr>
 				<td class="row3">
 					<ol>
-						<li>{{ lang(['EXTENSION_INSTALLING_EXPLAIN', 'step_1']) }}</li>
-						<li>{{ lang(['EXTENSION_INSTALLING_EXPLAIN', 'step_2']) }}</li>
-						<li>{{ lang(['EXTENSION_INSTALLING_EXPLAIN', 'step_3']) }}</li>
+						{% for step in lang_raw('EXTENSION_INSTALLING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
 					</ol>
 				</td>
 			</tr>
@@ -118,10 +118,9 @@
 			<tr>
 				<td class="row3">
 					<ol>
-						<li>{{ lang(['EXTENSION_UPDATING_EXPLAIN', 'step_1']) }}</li>
-						<li>{{ lang(['EXTENSION_UPDATING_EXPLAIN', 'step_2']) }}</li>
-						<li>{{ lang(['EXTENSION_UPDATING_EXPLAIN', 'step_3']) }}</li>
-						<li>{{ lang(['EXTENSION_UPDATING_EXPLAIN', 'step_4']) }}</li>
+						{% for step in lang_raw('EXTENSION_UPDATING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
 					</ol>
 				</td>
 			</tr>
@@ -131,9 +130,9 @@
 			<tr>
 				<td class="row3">
 					<ol>
-						<li>{{ lang(['EXTENSION_REMOVING_EXPLAIN', 'step_1']) }}</li>
-						<li>{{ lang(['EXTENSION_REMOVING_EXPLAIN', 'step_2']) }}</li>
-						<li>{{ lang(['EXTENSION_REMOVING_EXPLAIN', 'step_3']) }}</li>
+						{% for step in lang_raw('EXTENSION_REMOVING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
 					</ol>
 				</td>
 			</tr>
