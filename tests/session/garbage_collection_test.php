@@ -65,11 +65,13 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 				[
 					'username_clean' => 'bar',
 					'user_lastvisit' => 1400000000,
+					'user_last_active' => 1300000999,
 					'user_lastpage' => 'oldpage_user_bar.php',
 				],
 				[
 					'username_clean' => 'foo',
 					'user_lastvisit' => 1400000000,
+					'user_last_active' => 1300000998,
 					'user_lastpage' => 'oldpage_user_foo.php',
 				],
 			],
@@ -89,11 +91,13 @@ class phpbb_session_garbage_collection_test extends phpbb_session_test_case
 				[
 					'username_clean' => 'bar',
 					'user_lastvisit' => '1500000000',
+					'user_last_active' => '1500000000',
 					'user_lastpage' => 'newpage_user_bar.php',
 				],
 				[
 					'username_clean' => 'foo',
 					'user_lastvisit' => '1500000000',
+					'user_last_active' => '1500000000',
 					'user_lastpage' => 'newpage_user_foo.php',
 				],
 			],

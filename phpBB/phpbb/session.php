@@ -987,7 +987,7 @@ class session
 					// For SQLite versions 3.8.3+ which support Common Table Expressions (CTE)
 					$sql = "WITH s3 (session_page, session_user_id, session_time) AS ($sql_select)
 						UPDATE " . USERS_TABLE . '
-						SET (user_lastpage, user_lastvisit) = (SELECT session_page, session_time FROM s3 WHERE session_user_id = user_id)
+						SET (user_lastpage, user_lastvisit, user_last_active) = (SELECT session_page, session_time, session_time FROM s3 WHERE session_user_id = user_id)
 						WHERE EXISTS (SELECT session_user_id FROM s3 WHERE session_user_id = user_id)';
 					$db->sql_query($sql);
 
@@ -1000,7 +1000,9 @@ class session
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+						SET user_lastvisit = ' . (int) $row['recent_time'] . ',
+							user_last_active = ' .  (int) $row['recent_time'] . ",
+							user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
 						WHERE user_id = " . (int) $row['session_user_id'];
 					$db->sql_query($sql);
 				}
@@ -1010,14 +1012,14 @@ class session
 			case 'mysqli':
 				$sql = 'UPDATE ' . USERS_TABLE . " u,
 					($sql_select) s3
-					SET u.user_lastvisit = s3.recent_time, u.user_lastpage = s3.session_page
+					SET u.user_lastvisit = s3.recent_time, u.user_last_active = s3.recent_time, u.user_lastpage = s3.session_page
 					WHERE u.user_id = s3.session_user_id";
 				$db->sql_query($sql);
 			break;
 
 			default:
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lastvisit = s3.recent_time, user_lastpage = s3.session_page
+					SET user_lastvisit = s3.recent_time, user_last_active = s3.recent_time, user_lastpage = s3.session_page
 					FROM ($sql_select) s3
 					WHERE user_id = s3.session_user_id";
 				$db->sql_query($sql);

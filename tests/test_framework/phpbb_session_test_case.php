@@ -50,7 +50,7 @@ abstract class phpbb_session_test_case extends phpbb_database_test_case
 
 	protected function check_user_session_data($expected_session_data, $message)
 	{
-		$sql= 'SELECT username_clean, user_lastvisit, user_lastpage
+		$sql= 'SELECT username_clean, user_lastvisit, user_last_active, user_lastpage
 			FROM ' . USERS_TABLE . '
 			ORDER BY user_id';
 
