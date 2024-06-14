@@ -93,6 +93,7 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \Twig\TwigFunction('lang', array($this, 'lang')),
 			new \Twig\TwigFunction('lang_defined', array($this, 'lang_defined')),
 			new \Twig\TwigFunction('lang_js', [$this, 'lang_js']),
+			new \Twig\TwigFunction('lang_raw', [$this, 'lang_raw']),
 			new \Twig\TwigFunction('get_class', 'get_class'),
 		);
 	}
@@ -213,5 +214,17 @@ class extension extends \Twig\Extension\AbstractExtension
 		$args = func_get_args();
 
 		return twig_escape_filter($this->environment, call_user_func_array([$this, 'lang'], $args), 'js');
+	}
+
+	/**
+	 * Get raw value associated with lang key
+	 *
+	 * @param string $key
+	 *
+	 * @return array|string Raw value associated with lang key
+	 */
+	public function lang_raw(string $key): array|string
+	{
+		return call_user_func_array(array($this->language, 'lang_raw'), [$key]);
 	}
 }
