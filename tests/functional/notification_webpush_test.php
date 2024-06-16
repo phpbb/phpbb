@@ -99,19 +99,19 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 
 		// Assert subscribe dropdown is present
 		$crawler = self::request('GET', 'index.php');
-		$this->assertCount(1, $crawler->filter('.notification-dropdown-footer'));
-		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBE', $crawler->filter('.notification-dropdown-footer #subscribe_webpush')->text());
-		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBED', $crawler->filter('.notification-dropdown-footer #unsubscribe_webpush')->text());
+		$this->assertCount(1, $crawler->filter('.webpush-subscribe'));
+		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBE', $crawler->filter('.webpush-subscribe #subscribe_webpush')->text());
+		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBED', $crawler->filter('.webpush-subscribe #unsubscribe_webpush')->text());
 
 		// Assert subscribe button is not displayed in UCP when dropdown subscribe is present
 		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
-		$this->assertCount(0, $crawler->filter('.notification-dropdown-footer'));
+		$this->assertCount(0, $crawler->filter('.webpush-subscribe'));
 
 		$this->set_acp_option('webpush_dropdown_subscribe', 0);
 
 		// Assert subscribe dropdown is not present by default
 		$crawler = self::request('GET', 'index.php');
-		$this->assertCount(0, $crawler->filter('.notification-dropdown-footer'));
+		$this->assertCount(0, $crawler->filter('.webpush-subscribe'));
 	}
 
 	protected function set_acp_option($option, $value)

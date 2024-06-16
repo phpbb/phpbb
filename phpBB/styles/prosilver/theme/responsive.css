@@ -18,15 +18,9 @@
 	.dropdown-extended .dropdown-contents {
 		width: auto;
 	}
-}
 
-@media (max-width: 550px) {
-	.dropdown-extended .notification-dropdown-footer .notification-subscribe_toggle > span {
+	.dropdown-extended .dropdown-contents .webpush-subscribe .notification-subscribe-toggle > span {
 		display: none;
-	}
-
-	.dropdown-extended .notification-dropdown-footer .notification-subscribe_toggle > .icon {
-		font-size: 24px;
 	}
 }
 
