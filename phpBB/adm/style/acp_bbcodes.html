@@ -51,7 +51,10 @@
 		<legend>{{ lang('APPEARANCE') }}</legend>
 	<dl>
 		<dt><label for="bbcode_font_icon">{{ lang('BBCODE_FONT_ICON') }}</label><br /><span>{{ lang('BBCODE_FONT_EXPLAIN') }}</span></dt>
-		<dd><input type="text" name="bbcode_font_icon" id="bbcode_font_icon" value="{{ BBCODE_FONT_ICON }}" /></dd>
+		<dd>
+			<input type="text" name="bbcode_font_icon" id="bbcode_font_icon" value="{{ BBCODE_FONT_ICON }}" />
+			<i id="bbcode_icon_preview" class="icon fa-{{ BBCODE_FONT_ICON }}" aria-hidden="true"></i>
+		</dd>
 	</dl>
 	</fieldset>
 
