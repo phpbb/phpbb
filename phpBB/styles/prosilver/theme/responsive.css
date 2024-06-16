@@ -20,6 +20,16 @@
 	}
 }
 
+@media (max-width: 550px) {
+	.dropdown-extended .notification-dropdown-footer .notification-subscribe_toggle > span {
+		display: none;
+	}
+
+	.dropdown-extended .notification-dropdown-footer .notification-subscribe_toggle > .icon {
+		font-size: 24px;
+	}
+}
+
 @media (max-width: 430px) {
 	.action-bar .search-box .inputbox {
 		width: 120px;

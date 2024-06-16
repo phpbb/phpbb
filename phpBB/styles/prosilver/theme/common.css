@@ -1347,6 +1347,7 @@ ul.linklist:after,
 	flex-wrap: nowrap;
 	justify-content: space-between;
 	padding: 5px 10px;
+	gap: 20px;
 }
 
 .notification-avatar,
