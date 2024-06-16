@@ -150,6 +150,7 @@ function PhpbbWebpush() {
 		// Prevent the user from clicking the subscribe button multiple times.
 		const result = await Notification.requestPermission();
 		if (result === 'denied') {
+			phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-l-msg'));
 			return;
 		}
 

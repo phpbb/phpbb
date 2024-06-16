@@ -515,6 +515,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY_WEB_PUSH_ENABLE'	=> 'Enable Web Push notifications',
 	'NOTIFY_WEB_PUSH_SUBSCRIBE'	=> 'Subscribe',
 	'NOTIFY_WEB_PUSH_SUBSCRIBED'=> 'Subscribed',
+	'NOTIFY_WEB_PUSH_DENIED'	=> 'You have denied notifications from this site. To subscribe, please allow notifications in your browser settings.',
 	'NO_ACCESS_ATTACHMENT'		=> 'You are not allowed to access this file.',
 	'NO_ACTION'					=> 'No action specified.',
 	'NO_ADMINISTRATORS'			=> 'There are no administrators.',
