@@ -7,7 +7,6 @@
 		<column>user_sig</column>
 		<column>user_lastpage</column>
 		<column>user_lastvisit</column>
-		<column>user_last_active</column>
 		<row>
 			<value>4</value>
 			<value>bar</value>
@@ -15,7 +14,6 @@
 			<value></value>
 			<value>oldpage_user_bar.php</value>
 			<value>1400000000</value>
-			<value>1300000999</value>
 		</row>
 		<row>
 			<value>5</value>
@@ -24,7 +22,6 @@
 			<value></value>
 			<value>oldpage_user_foo.php</value>
 			<value>1400000000</value>
-			<value>1300000998</value>
 		</row>
 	</table>
 	<table name="phpbb_sessions">
