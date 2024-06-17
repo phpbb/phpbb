@@ -264,7 +264,7 @@ function parse_document(container)
 
 		// Live update BBCode font icon preview
 		$('#bbcode_font_icon').on('keyup', function(e) {
-			$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $('#bbcode_font_icon').val());
+			$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $(this).val());
 		});
 	});
 })(jQuery);
