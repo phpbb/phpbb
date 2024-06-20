@@ -155,10 +155,13 @@ $lang = array_merge($lang, array(
 	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
 
-	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
-	'CLI_USER_DELETE_CONFIRM'	=> 'Are you sure you want to delete ‘%s’? [y/N]',
-	'CLI_USER_RECLEAN_START'	=> 'Re-cleaning usernames',
-	'CLI_USER_RECLEAN_DONE'		=> [
+	'CLI_USER_ADD_SUCCESS'			=> 'Successfully added user %s.',
+	'CLI_USER_DELETE_CONFIRM'		=> 'Are you sure you want to delete ‘%s’? [y/N]',
+	'CLI_USER_DELETE_IDS_CONFIRM'	=> 'Are you sure you want to delete the user IDs ‘%s’? [y/N]',
+	'CLI_USER_DELETE_IDS_SUCCESS'	=> 'Successfully deleted user IDs.',
+	'CLI_USER_DELETE_IDS_NOT_FOUND'	=> 'No users were deleted by user ID.',
+	'CLI_USER_RECLEAN_START'		=> 'Re-cleaning usernames',
+	'CLI_USER_RECLEAN_DONE'			=> [
 		0	=> 'Re-cleaning complete. No usernames needed to be cleaned.',
 		1	=> 'Re-cleaning complete. %d username was cleaned.',
 		2	=> 'Re-cleaning complete. %d usernames were cleaned.',
