@@ -81,4 +81,83 @@ class phpbb_textreparser_base_test extends phpbb_database_test_case
 			$this->get_rows([2])
 		);
 	}
+
+	public function test_reparse_filter_like()
+	{
+		$this->get_reparser()->reparse([
+			'range-min'        => 3,
+			'range-max'        => 4,
+			'filter-text-like' => '%foo123%'
+		]);
+
+		$this->assertEquals(
+			[
+				[
+					'id'   => '3',
+					'text' => '<r><B><s>[b]</s>foo123<e>[/b]</e></B></r>'
+				],
+				[
+					'id'   => '4',
+					'text' => '[b]bar456[/b]'
+				]
+			],
+			$this->get_rows([3, 4])
+		);
+	}
+
+	public function test_reparse_filter_regexp()
+	{
+		$this->get_reparser()->reparse([
+			'range-min'          => 3,
+			'range-max'          => 4,
+			'filter-text-regexp' => '(bar456)'
+		]);
+
+		$this->assertEquals(
+			[
+				[
+					'id'   => '4',
+					'text' => '<r><B><s>[b]</s>bar456<e>[/b]</e></B></r>'
+				],
+				[
+					'id'   => '5',
+					'text' => '[b]baz789[/b]'
+				]
+			],
+			$this->get_rows([4, 5])
+		);
+	}
+
+	public function test_reparse_filter_callback()
+	{
+		$record = [
+			'id'               => '5',
+			'enable_bbcode'    => '1',
+			'enable_smilies'   => '1',
+			'enable_magic_url' => '1',
+			'text'             => '[b]baz789[/b]',
+			'bbcode_uid'       => ''
+		];
+
+		$mock = $this->getMockBuilder('stdClass')->setMethods(['foo'])->getMock();
+		$mock->expects($this->once())
+		     ->method('foo')
+		     ->with($record)
+		     ->will($this->returnValue(false));
+
+		$this->get_reparser()->reparse([
+			'range-min'       => 5,
+			'range-max'       => 5,
+			'filter-callback' => [$mock, 'foo']
+		]);
+		$this->assertEquals(
+			[
+				[
+					'id'   => '5',
+					'text' => '[b]baz789[/b]'
+				]
+			],
+			$this->get_rows([5, 5])
+		);
+	}
 }
