@@ -108,6 +108,8 @@ class delete_ids extends command
 
 		if (count($user_ids) > 0)
 		{
+			$this->user_loader->load_users($user_ids);
+
 			foreach ($user_ids as $user_id)
 			{
 				$user_row = $this->user_loader->get_user($user_id);
@@ -126,6 +128,7 @@ class delete_ids extends command
 				user_delete($mode, $user_row['user_id'], $user_row['username']);
 
 				$this->log->add('admin', ANONYMOUS, '', 'LOG_USER_DELETED', false, array($user_row['username']));
+				$deleted_users++;
 			}
 
 			if ($deleted_users > 0)
