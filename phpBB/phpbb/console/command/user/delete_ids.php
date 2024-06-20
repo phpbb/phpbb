@@ -14,7 +14,6 @@
 namespace phpbb\console\command\user;
 
 use phpbb\console\command\command;
-use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
@@ -28,9 +27,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete_ids extends command
 {
-	/** @var driver_interface */
-	protected $db;
-
 	/** @var language */
 	protected $language;
 
@@ -40,18 +36,10 @@ class delete_ids extends command
 	/** @var user_loader */
 	protected $user_loader;
 
-	/**
-	 * phpBB root path
-	 *
-	 * @var string
-	 */
+	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	/**
-	 * PHP extension.
-	 *
-	 * @var string
-	 */
+	/** @var string PHP extension */
 	protected $php_ext;
 
 	/**
@@ -122,7 +110,7 @@ class delete_ids extends command
 		{
 			foreach ($user_ids as $user_id)
 			{
-				$user_row = $this->user_loader->get_user((int) $user_id);
+				$user_row = $this->user_loader->get_user($user_id);
 
 				// Skip anonymous user
 				if ($user_row['user_id'] == ANONYMOUS)
@@ -148,7 +136,7 @@ class delete_ids extends command
 
 		if (!$deleted_users)
 		{
-			$io->caution($this->language->lang('CLI_USER_DELETE_IDS_NOT_FOUND'));
+			$io->note($this->language->lang('CLI_USER_DELETE_NONE'));
 		}
 
 		return 0;
