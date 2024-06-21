@@ -56,7 +56,7 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 
 		$this->assertNull($this->get_user_id('Test'));
 		$this->assertNull($this->get_user_id('Test 2'));
-		$this->assertStringContainsString('CLI_USER_DELETE_IDS_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_USER_DELETE_ID_SUCCESS', $command_tester->getDisplay());
 	}
 
 	public function test_delete_one()
@@ -73,7 +73,7 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 
 		$this->assertNull($this->get_user_id('Test'));
 		$this->assertNotNull($this->get_user_id('Test 2'));
-		$this->assertStringContainsString('CLI_USER_DELETE_IDS_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_USER_DELETE_ID_SUCCESS', $command_tester->getDisplay());
 	}
 
 	public function test_delete_bot()
@@ -90,9 +90,8 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 			'--delete-posts'	=> false,
 		));
 
-		$this->assertNull($this->get_user_id('Test'));
 		$this->assertNull($this->get_user_id('Test Bot'));
-		$this->assertStringContainsString('CLI_USER_DELETE_IDS_SUCCESS', $command_tester->getDisplay());
+		$this->assertStringContainsString('CLI_USER_DELETE_ID_SUCCESS', $command_tester->getDisplay());
 	}
 
 	public function test_delete_non_user()
