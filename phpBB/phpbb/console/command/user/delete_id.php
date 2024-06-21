@@ -94,7 +94,7 @@ class delete_id extends command
 	protected function configure(): void
 	{
 		$this
-			->setName('user:delete_ids')
+			->setName('user:delete_id')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_DELETE_ID'))
 			->addArgument(
 				'user_ids',

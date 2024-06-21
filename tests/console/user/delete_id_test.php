@@ -35,7 +35,7 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 			$this->php_ext
 		));
 
-		$command = $application->find('user:delete_ids');
+		$command = $application->find('user:delete_id');
 		$this->command_name = $command->getName();
 		$this->question = $command->getHelper('question');
 
