@@ -132,6 +132,10 @@ class delete_id extends command
 		{
 			$this->user_loader->load_users($user_ids);
 
+			$progress = $this->create_progress_bar(count($user_ids), $io, $output);
+			$progress->setMessage($this->language->lang('CLI_USER_DELETE_ID_START'));
+			$progress->start();
+
 			foreach ($user_ids as $user_id)
 			{
 				$user_row = $this->user_loader->get_user($user_id);
@@ -139,28 +143,34 @@ class delete_id extends command
 				// Skip anonymous user
 				if ($user_row['user_id'] == ANONYMOUS)
 				{
+					$progress->advance();
 					continue;
 				}
 				else if ($user_row['user_type'] == USER_IGNORE)
 				{
 					$this->delete_bot_user($user_row);
-					continue;
 				}
-
-				if (!function_exists('user_delete'))
+				else
 				{
-					require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+					if (!function_exists('user_delete'))
+					{
+						require($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
+					}
+
+					user_delete($mode, $user_row['user_id'], $user_row['username']);
+
+					$this->log->add('admin', ANONYMOUS, '', 'LOG_USER_DELETED', false, array($user_row['username']));
 				}
 
-				user_delete($mode, $user_row['user_id'], $user_row['username']);
-
-				$this->log->add('admin', ANONYMOUS, '', 'LOG_USER_DELETED', false, array($user_row['username']));
+				$progress->advance();
 				$deleted_users++;
 			}
 
+			$progress->finish();
+
 			if ($deleted_users > 0)
 			{
-				$io->success($this->language->lang('CLI_USER_DELETE_IDS_SUCCESS'));
+				$io->success($this->language->lang('CLI_USER_DELETE_ID_SUCCESS'));
 			}
 		}
 
@@ -187,7 +197,7 @@ class delete_id extends command
 		if (count($user_ids) > 0)
 		{
 			$question = new ConfirmationQuestion(
-				$this->language->lang('CLI_USER_DELETE_IDS_CONFIRM', implode(',', $user_ids)),
+				$this->language->lang('CLI_USER_DELETE_ID_CONFIRM', implode(',', $user_ids)),
 				false
 			);
 

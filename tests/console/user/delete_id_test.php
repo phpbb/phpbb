@@ -86,7 +86,7 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 
 		$command_tester->execute(array(
 			'command'			=> $this->command_name,
-			'user_ids'			=> [3, 6],
+			'user_ids'			=> [6],
 			'--delete-posts'	=> false,
 		));
 

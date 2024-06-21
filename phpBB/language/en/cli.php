@@ -159,8 +159,9 @@ $lang = array_merge($lang, array(
 
 	'CLI_USER_ADD_SUCCESS'			=> 'Successfully added user %s.',
 	'CLI_USER_DELETE_CONFIRM'		=> 'Are you sure you want to delete ‘%s’? [y/N]',
-	'CLI_USER_DELETE_IDS_CONFIRM'	=> 'Are you sure you want to delete the user IDs ‘%s’? [y/N]',
-	'CLI_USER_DELETE_IDS_SUCCESS'	=> 'Successfully deleted user IDs.',
+	'CLI_USER_DELETE_ID_CONFIRM'	=> 'Are you sure you want to delete the user IDs ‘%s’? [y/N]',
+	'CLI_USER_DELETE_ID_SUCCESS'	=> 'Successfully deleted user IDs.',
+	'CLI_USER_DELETE_ID_START'		=> 'Deleting users by ID',
 	'CLI_USER_DELETE_NONE'			=> 'No users were deleted by user ID.',
 	'CLI_USER_RECLEAN_START'		=> 'Re-cleaning usernames',
 	'CLI_USER_RECLEAN_DONE'			=> [
