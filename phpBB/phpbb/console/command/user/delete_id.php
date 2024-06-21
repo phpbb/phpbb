@@ -14,6 +14,7 @@
 namespace phpbb\console\command\user;
 
 use phpbb\console\command\command;
+use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
@@ -25,8 +26,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-class delete_ids extends command
+class delete_id extends command
 {
+	/** @var driver_interface */
+	protected $db;
+
 	/** @var language */
 	protected $language;
 
@@ -35,6 +39,15 @@ class delete_ids extends command
 
 	/** @var user_loader */
 	protected $user_loader;
+
+	/** @var string Bots table */
+	protected $bots_table;
+
+	/** @var string User group table */
+	protected $user_group_table;
+
+	/** @var string Users table */
+	protected $users_table;
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
@@ -45,18 +58,27 @@ class delete_ids extends command
 	/**
 	 * Construct method
 	 *
+	 * @param driver_interface $db
 	 * @param language         $language
 	 * @param log_interface    $log
 	 * @param user             $user
 	 * @param user_loader      $user_loader
+	 * @param string           $bots_table
+	 * @param string           $user_group_table
+	 * @param string           $users_table
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(language $language, log_interface $log, user $user, user_loader $user_loader, string $phpbb_root_path, string $php_ext)
+	public function __construct(driver_interface $db, language $language, log_interface $log, user $user, user_loader $user_loader,
+								string $bots_table, string $user_group_table, string $users_table, string $phpbb_root_path, string $php_ext)
 	{
+		$this->db = $db;
 		$this->language = $language;
 		$this->log = $log;
 		$this->user_loader = $user_loader;
+		$this->bots_table = $bots_table;
+		$this->user_group_table = $user_group_table;
+		$this->users_table = $users_table;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -73,11 +95,11 @@ class delete_ids extends command
 	{
 		$this
 			->setName('user:delete_ids')
-			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_DELETE_IDS'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_USER_DELETE_ID'))
 			->addArgument(
 				'user_ids',
 				InputArgument::REQUIRED | InputArgument::IS_ARRAY,
-				$this->language->lang('CLI_DESCRIPTION_USER_DELETE_IDS_LIST')
+				$this->language->lang('CLI_DESCRIPTION_USER_DELETE_ID_OPTION_ID')
 			)
 			->addOption(
 				'delete-posts',
@@ -117,6 +139,11 @@ class delete_ids extends command
 				// Skip anonymous user
 				if ($user_row['user_id'] == ANONYMOUS)
 				{
+					continue;
+				}
+				else if ($user_row['user_type'] == USER_IGNORE)
+				{
+					$this->delete_bot_user($user_row);
 					continue;
 				}
 
@@ -168,6 +195,27 @@ class delete_ids extends command
 			{
 				$input->setArgument('user_ids', []);
 			}
+		}
+	}
+
+	/**
+	 * Deletes a bot user
+	 *
+	 * @param array $user_row
+	 * @return void
+	 */
+	protected function delete_bot_user(array $user_row): void
+	{
+		$sql = 'DELETE FROM ' . $this->bots_table . '
+					WHERE user_id = ' . (int) $user_row['user_id'];
+		$this->db->sql_query($sql);
+
+		$delete_tables = [$this->user_group_table, $this->users_table];
+		foreach ($delete_tables as $table)
+		{
+			$sql = "DELETE FROM $table
+				WHERE user_id = " . (int) $user_row['user_id'];
+			$this->db->sql_query($sql);
 		}
 	}
 }

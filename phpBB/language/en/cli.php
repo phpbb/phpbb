@@ -108,6 +108,8 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_USER_ADD_OPTION_NOTIFY'	=> 'Send account activation email to the new user (not sent by default)',
 	'CLI_DESCRIPTION_USER_DELETE'				=> 'Delete a user account.',
 	'CLI_DESCRIPTION_USER_DELETE_USERNAME'		=> 'Username of the user to delete',
+	'CLI_DESCRIPTION_USER_DELETE_ID'			=> 'Delete user accounts by ID.',
+	'CLI_DESCRIPTION_USER_DELETE_ID_OPTION_ID'	=> 'User IDs of the users to delete',
 	'CLI_DESCRIPTION_USER_DELETE_OPTION_POSTS'	=> 'Delete all posts by the user. Without this option, the user’s posts will be retained.',
 	'CLI_DESCRIPTION_USER_RECLEAN'				=> 'Re-clean usernames.',
 
