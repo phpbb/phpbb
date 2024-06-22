@@ -17,6 +17,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 {
 	private $cache_dir;
 
+	/** @var \phpbb\cache\driver\file */
+	private  $cache_file;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/config.xml');
@@ -36,7 +39,8 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		}
 		$this->create_cache_dir();
 
-		$this->driver = new \phpbb\cache\driver\file($this->cache_dir);
+		$this->cache_file = new \phpbb\cache\driver\file($this->cache_dir);
+		$this->driver = $this->cache_file;
 	}
 
 	protected function tearDown(): void
@@ -47,6 +51,145 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		}
 
 		parent::tearDown();
+	}
+
+	public function test_read_not_readable()
+	{
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped('Unable to test unreadable files on Windows');
+		}
+
+		global $phpEx;
+
+		// Create file that is not readable
+		$this->assertTrue($this->cache_file->_write('unreadable', 'foo', time() + 86400));
+
+		$filename = "{$this->cache_dir}unreadable.$phpEx";
+		@chmod($filename, 0000);
+		$this->assertFalse($this->cache_file->_read('unreadable'));
+		@chmod($filename, 0600);
+		$this->assertNotFalse($this->cache_file->_read('unreadable'));
+	}
+
+	public function test_read_data_global_invalid()
+	{
+		global $phpEx;
+
+		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
+		$reflectionCacheVars->setAccessible(true);
+		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
+
+		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
+		$reflectionCacheVarExpires->setAccessible(true);
+		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
+
+		// Create file in invalid format
+		$this->assertTrue($this->cache_file->_write('data_global'));
+		$filename = "{$this->cache_dir}data_global.$phpEx";
+		$cache_data = file_get_contents($filename);
+		// Force negative read when retrieving data_global
+		$cache_data = str_replace("\n13\n", "\n1\n", $cache_data);
+		file_put_contents($filename, $cache_data);
+
+		$this->assertFalse($this->cache_file->_read('data_global'));
+	}
+
+	public function test_read_data_global_zero_bytes()
+	{
+		global $phpEx;
+
+		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
+		$reflectionCacheVars->setAccessible(true);
+		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
+
+		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
+		$reflectionCacheVarExpires->setAccessible(true);
+		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
+
+		// Create file in invalid format
+		$this->assertTrue($this->cache_file->_write('data_global'));
+		$filename = "{$this->cache_dir}data_global.$phpEx";
+		$cache_data = file_get_contents($filename);
+		// Force negative read when retrieving data_global
+		$cache_data = str_replace("\n13\n", "\n0\n", $cache_data);
+		file_put_contents($filename, $cache_data);
+
+		$this->assertFalse($this->cache_file->_read('data_global'));
+	}
+
+	public function test_read_data_global_hex_bytes()
+	{
+		global $phpEx;
+
+		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
+		$reflectionCacheVars->setAccessible(true);
+		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
+
+		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
+		$reflectionCacheVarExpires->setAccessible(true);
+		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
+
+		// Create file in invalid format
+		$this->assertTrue($this->cache_file->_write('data_global'));
+		$filename = "{$this->cache_dir}data_global.$phpEx";
+		$cache_data = file_get_contents($filename);
+		// Force negative read when retrieving data_global
+		$cache_data = str_replace("\n13\n", "\nA\n", $cache_data);
+		file_put_contents($filename, $cache_data);
+
+		$this->assertFalse($this->cache_file->_read('data_global'));
+	}
+
+	public function test_read_data_global_expired()
+	{
+		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
+		$reflectionCacheVars->setAccessible(true);
+		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
+
+		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
+		$reflectionCacheVarExpires->setAccessible(true);
+		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() - 86400]);
+
+		// Create file in invalid format
+		$this->assertTrue($this->cache_file->_write('data_global'));
+
+		// Clear data
+		$reflectionCacheVars->setValue($this->cache_file, []);
+		$reflectionCacheVarExpires->setValue($this->cache_file, []);
+
+		$this->assertTrue($this->cache_file->_read('data_global'));
+
+		// Check data, should be empty
+		$this->assertEquals([], $reflectionCacheVars->getValue($this->cache_file));
+	}
+
+	public function test_read_data_global()
+	{
+		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
+		$reflectionCacheVars->setAccessible(true);
+		$expectedVars = ['foo' => 'bar'];
+		$reflectionCacheVars->setValue($this->cache_file, $expectedVars);
+
+		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
+		$reflectionCacheVarExpires->setAccessible(true);
+		$expectedVarExpires = ['foo' => time() + 86400];
+		$reflectionCacheVarExpires->setValue($this->cache_file, $expectedVarExpires);
+
+		// Create file in invalid format
+		$this->assertTrue($this->cache_file->_write('data_global'));
+
+		// Clear data
+		$reflectionCacheVars->setValue($this->cache_file, []);
+		$reflectionCacheVarExpires->setValue($this->cache_file, []);
+		$this->assertEquals([], $reflectionCacheVars->getValue($this->cache_file));
+		$this->assertEquals([], $reflectionCacheVarExpires->getValue($this->cache_file));
+
+		$this->assertTrue($this->cache_file->_read('data_global'));
+
+		// Check data, should be empty
+		$this->assertEquals($expectedVars, $reflectionCacheVars->getValue($this->cache_file));
+		$this->assertEquals($expectedVarExpires, $reflectionCacheVarExpires->getValue($this->cache_file));
 	}
 
 	private function create_cache_dir()
