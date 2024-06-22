@@ -216,11 +216,7 @@ class delete_id extends command
 	 */
 	protected function delete_bot_user(array $user_row): void
 	{
-		$sql = 'DELETE FROM ' . $this->bots_table . '
-					WHERE user_id = ' . (int) $user_row['user_id'];
-		$this->db->sql_query($sql);
-
-		$delete_tables = [$this->user_group_table, $this->users_table];
+		$delete_tables = [$this->bots_table, $this->user_group_table, $this->users_table];
 		foreach ($delete_tables as $table)
 		{
 			$sql = "DELETE FROM $table
