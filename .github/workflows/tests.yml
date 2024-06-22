@@ -128,6 +128,8 @@ jobs:
                       db: "mysql:5.7"
                     - php: '8.3'
                       db: "mysql:5.7"
+                    - php: '8.4'
+                      db: "mysql:5.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -260,6 +262,8 @@ jobs:
                     - php: '8.2'
                       db: "postgres:14"
                     - php: '8.3'
+                      db: "postgres:14"
+                    - php: '8.4'
                       db: "postgres:14"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -469,6 +473,9 @@ jobs:
                     - php: '8.3'
                       db: "postgres"
                       type: 'unit'
+                    - php: '8.4'
+                      db: "postgres"
+                      type: 'unit'
                     - php: '7.4'
                       db: "postgres"
                       type: 'functional'
@@ -482,6 +489,9 @@ jobs:
                       db: "postgres"
                       type: 'functional'
                     - php: '8.3'
+                      db: "postgres"
+                      type: 'functional'
+                    - php: '8.4'
                       db: "postgres"
                       type: 'functional'
 
