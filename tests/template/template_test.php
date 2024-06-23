@@ -365,15 +365,15 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 				array(),
 				array(),
 				array(),
-				"VARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE",
+				"VARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE\nVARIABLE\n1_VARIABLE\nARY_VARIABLE",
 			),
 			array(
 				'lang_twig.html',
 				array(),
 				array(),
 				array(),
-				"Value'\n1 O'Clock\nValue\\u0027\n1\\u0020O\\u0027Clock",
-				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock"),
+				"Value'\n1 O'Clock\nValue\\u0027\n1\\u0020O\\u0027Clock\nValue'\n1 O'Clock\nfoo|bar",
+				array('VARIABLE' => "Value'", '1_VARIABLE' => "1 O'Clock", 'ARY_VARIABLE' => ['foo', 'bar']),
 			),
 			array(
 				'loop_nested_multilevel_ref.html',
