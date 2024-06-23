@@ -17,10 +17,10 @@ use phpbb\config\config;
 use phpbb\console\command\command;
 use phpbb\language\language;
 use phpbb\log\log_interface;
+use phpbb\messenger\method\email;
 use phpbb\notification\manager;
 use phpbb\user;
 use phpbb\user_loader;
-use phpbb\di\service_collection;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,14 +33,14 @@ class activate extends command
 	/** @var config */
 	protected $config;
 
+	/** @var email */
+	protected $email_method;
+
 	/** @var language */
 	protected $language;
 
 	/** @var log_interface */
 	protected $log;
-
-	/** @var service_collection */
-	protected $messenger;
 
 	/** @var manager */
 	protected $notifications;
@@ -69,18 +69,18 @@ class activate extends command
 	 * @param config           $config
 	 * @param language         $language
 	 * @param log_interface    $log
-	 * @param service_collection $messenger
+	 * @param email            $email_method
 	 * @param manager          $notifications
 	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, config $config, language $language, log_interface $log, service_collection $messenger, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, config $config, language $language, log_interface $log, email $email_method, manager $notifications, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
 		$this->config = $config;
+		$this->email_method = $email_method;
 		$this->language = $language;
 		$this->log = $log;
-		$this->messenger = $messenger;
 		$this->notifications = $notifications;
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -200,15 +200,14 @@ class activate extends command
 
 		if ($input->getOption('send-email'))
 		{
-			$email_method = $this->messenger->offsetGet('messenger.method.email');
-			$email_method->set_use_queue(false);
-			$email_method->template('admin_welcome_activated', $user_row['user_lang']);
-			$email_method->set_addresses($user_row);
-			$email_method->anti_abuse_headers($this->config, $this->user);
-			$email_method->assign_vars([
+			$this->email_method->set_use_queue(false);
+			$this->email_method->template('admin_welcome_activated', $user_row['user_lang']);
+			$this->email_method->set_addresses($user_row);
+			$this->email_method->anti_abuse_headers($this->config, $this->user);
+			$this->email_method->assign_vars([
 				'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
 			]);
-			$email_method->send();
+			$this->email_method->send();
 		}
 	}
 }

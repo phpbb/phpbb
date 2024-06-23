@@ -105,10 +105,85 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
 
-		$this->messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
-		$this->messenger_method_collection->add('messenger.method.email');
-		$this->messenger_method_collection->add('messenger.method.jabber');
-		$phpbb_container->set('messenger.method_collection', $this->messenger_method_collection);
+		$assets_bag = new \phpbb\template\assets_bag();
+		$phpbb_container->set('assets.bag', $assets_bag);
+
+		$dispatcher = new \phpbb\event\dispatcher();
+		$phpbb_container->set('dispatcher', $dispatcher);
+
+		$core_cache_dir = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
+		$phpbb_container->setParameter('core.cache_dir', $core_cache_dir);
+
+		$core_messenger_queue_file = $core_cache_dir . 'queue.' . $phpEx;
+		$phpbb_container->setParameter('core.messenger_queue_file', $core_messenger_queue_file);
+
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$messenger_method_collection->add('messenger.method.email');
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
+		$messenger_queue = new \phpbb\messenger\queue($config, $dispatcher, $messenger_method_collection, $core_messenger_queue_file);
+		$phpbb_container->set('messenger.queue', $messenger_queue);
+
+		$request = new phpbb_mock_request;
+		$phpbb_container->set('request', $request);
+
+		$symfony_request = new \phpbb\symfony_request(
+			$request
+		);
+
+		$phpbb_path_helper = new \phpbb\path_helper(
+			$symfony_request,
+			$request,
+			$phpbb_root_path,
+			$phpEx
+		);
+		$phpbb_container->set('path_helper', $phpbb_path_helper);
+
+		$extension_manager = new phpbb_mock_extension_manager(
+			__DIR__ . '/',
+			[]
+		);
+		$phpbb_container->set('ext.manager', $extension_manager);
+
+		$context = new \phpbb\template\context();
+		$cache_path = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/twig';
+		$phpbb_container->setParameter('core.template.cache_path', $cache_path);
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_container->set('filesystem', $filesystem);
+
+		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
+			$this->config,
+			$filesystem,
+			$phpbb_path_helper,
+			$cache_path,
+			null,
+			new \phpbb\template\twig\loader(''),
+			$dispatcher,
+			[
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			]
+		);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
+		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
+
+		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
+		$twig_extensions_collection->add('template.twig.extensions.phpbb');
+		$phpbb_container->set('template.twig.extensions.collection', $twig_extensions_collection);
+
+		$twig->addExtension($twig_extension);
+		$twig_lexer = new \phpbb\template\twig\lexer($twig);
+		$phpbb_container->set('template.twig.lexer', $twig_lexer);
+
+		$this->email = new \phpbb\messenger\method\phpbb_email(
+			$assets_bag, $this->config, $dispatcher, $this->language, $log, $request, $user, $messenger_queue,
+			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
+			$cache_path, $phpbb_root_path
+		);
+		$phpbb_container->set('messenger.method.email', $this->email);
 
 		parent::setUp();
 	}
