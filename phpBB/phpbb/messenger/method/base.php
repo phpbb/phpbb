@@ -94,9 +94,7 @@ abstract class base
 	 * @param assets_bag $assets_bag
 	 * @param config $config
 	 * @param dispatcher $dispatcher
-	 * @param manager $ext_manager
 	 * @param language $language
-	 * @param log_interface $log
 	 * @param queue $queue
 	 * @param path_helper $path_helper
 	 * @param request $request
@@ -105,14 +103,14 @@ abstract class base
 	 * @param user $user
 	 * @param string $phpbb_root_path
 	 * @param string $template_cache_path
+	 * @param manager $ext_manager
+	 * @param log_interface $log
 	 */
 	public function __construct(
 		assets_bag $assets_bag,
 		config $config,
 		dispatcher $dispatcher,
-		manager $ext_manager,
 		language $language,
-		log_interface $log,
 		queue $queue,
 		path_helper $path_helper,
 		request $request,
@@ -120,7 +118,9 @@ abstract class base
 		lexer $twig_lexer,
 		user $user,
 		$phpbb_root_path,
-		$template_cache_path
+		$template_cache_path,
+		?manager $ext_manager = null,
+		?log_interface $log = null
 	)
 	{
 		$this->assets_bag = $assets_bag;
@@ -197,32 +197,6 @@ abstract class base
 	{
 		$this->subject = $subject;
 	}
-
-	/**
-	 * Adds antiabuse headers
-	 *
-	 * @param config	$config		Config object
-	 * @param user		$user		User object
-	 * @return void
-	 */
-	abstract public function anti_abuse_headers(config $config, user $user): void;
-
-	/**
-	 * Set up extra headers
-	 *
-	 * @param string	$header_name	Email header name
-	 * @param string	$header_value	Email header body
-	 * @return void
-	 */
-	abstract public function header(string $header_name, string $header_value): void;
-
-	/**
-	 * Set the reply to address
-	 *
-	 * @param string	$address	Email "Reply to" address
-	 * @return void
-	 */
-	abstract public function reply_to($address): void;
 
 	/**
 	 * Send out messages
@@ -444,7 +418,10 @@ abstract class base
 		$type = strtoupper($this->get_queue_object_name());
 		$calling_page = html_entity_decode($this->request->server('PHP_SELF'), ENT_COMPAT);
 		$message = '<strong>' . $type . '</strong><br><em>' . htmlspecialchars($calling_page, ENT_COMPAT) . '</em><br><br>' . $msg . '<br>';
-		$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_ERROR_' . $type, false, [$message]);
+		if ($this->log)
+		{
+			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_ERROR_' . $type, false, [$message]);
+		}
 	}
 
 	/**
