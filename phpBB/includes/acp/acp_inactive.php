@@ -198,7 +198,9 @@ class acp_inactive
 					{
 						// Send the messages
 						$usernames = $user_ids = array();
-						$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
+
+						/** @var \phpbb\di\service_collection */
+						$messenger = $phpbb_container->get('messenger.method_collection');
 						$messenger_collection_iterator = $messenger->getIterator();
 
 						do
