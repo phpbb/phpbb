@@ -94,18 +94,17 @@ class ucp_resend
 
 			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
-			$messenger = $phpbb_container->get('messenger.method_collection');
-			$email = $messenger->offsetGet('messenger.method.email');
-			$email->set_use_queue(false);
+			$email_method = $phpbb_container->get('messenger.method.email');
+			$email_method->set_use_queue(false);
 
 			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
 			{
-				$email->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
-				$email->set_addresses($user_row);
+				$email_method->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
+				$email_method->set_addresses($user_row);
 
-				$email->anti_abuse_headers($config, $user);
+				$email_method->anti_abuse_headers($config, $user);
 
-				$email->assign_vars([
+				$email_method->assign_vars([
 					'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 					'USERNAME'		=> html_entity_decode($user_row['username'], ENT_COMPAT),
 					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
@@ -113,14 +112,14 @@ class ucp_resend
 
 				if ($coppa)
 				{
-					$email->assign_vars([
+					$email_method->assign_vars([
 						'FAX_INFO'		=> $config['coppa_fax'],
 						'MAIL_INFO'		=> $config['coppa_mail'],
 						'EMAIL_ADDRESS'	=> $user_row['user_email'],
 					]);
 				}
 
-				$email->send();
+				$email_method->send();
 			}
 
 			if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
@@ -136,9 +135,8 @@ class ucp_resend
 				$messenger_collection_iterator = $messenger->getIterator();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					while ($messenger_collection_iterator->valid())
+					foreach ($messenger_collection_iterator as $messenger_method)
 					{
-						$messenger_method = $messenger_collection_iterator->current();
 						$messenger_method->set_use_queue(false);
 						if ($messenger_method->get_id() == $row['user_notify_type'] || $row['user_notify_type'] == NOTIFY_BOTH)
 						{
@@ -156,7 +154,6 @@ class ucp_resend
 							// Save the queue in the messenger method class (has to be called or these messages could be lost)
 							$messenger_method->save_queue();
 						}
-						$messenger_collection_iterator->next();
 					}
 				}
 				$db->sql_freeresult($result);

@@ -114,9 +114,8 @@ abstract class messenger_base extends \phpbb\notification\method\base
 
 			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $this->messenger->getIterator();
-			while ($messenger_collection_iterator->valid())
+			while ($messenger_collection_iterator as $messenger_method)
 			{
-				$messenger_method = $messenger_collection_iterator->current();
 				if ($messenger_method->get_id() == $notify_method || $notify_method == NOTIFY_BOTH)
 				{
 					$messenger_method->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
@@ -131,7 +130,6 @@ abstract class messenger_base extends \phpbb\notification\method\base
 					// Save the queue in the messenger method class (has to be called or these messages could be lost)
 					$messenger_method->save_queue();
 				}
-				$messenger_collection_iterator->next();
 			}
 		}
 

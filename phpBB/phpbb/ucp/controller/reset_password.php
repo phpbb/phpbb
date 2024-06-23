@@ -25,7 +25,7 @@ use phpbb\passwords\manager;
 use phpbb\request\request;
 use phpbb\template\template;
 use phpbb\user;
-use phpbb\di\service_collection;
+use phpbb\messenger\method\email;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -51,6 +51,9 @@ class reset_password
 	/** @var log_interface */
 	protected $log;
 
+	/** @var email */
+	protected $email_method;
+
 	/** @var manager */
 	protected $passwords_manager;
 
@@ -72,9 +75,6 @@ class reset_password
 	/** @var string PHP extension */
 	protected $php_ext;
 
-	/** @var service_collection */
-	protected $messenger;
-
 	/**
 	 * Reset password controller constructor.
 	 *
@@ -84,6 +84,7 @@ class reset_password
 	 * @param helper $helper
 	 * @param language $language
 	 * @param log_interface $log
+	 * @param email $email_method
 	 * @param manager $passwords_manager
 	 * @param request $request
 	 * @param template $template
@@ -91,12 +92,11 @@ class reset_password
 	 * @param string $users_table
 	 * @param string $root_path
 	 * @param string $php_ext
-	 * @param service_collection $messenger
 	 */
 	public function __construct(config $config, driver_interface $db, dispatcher $dispatcher, helper $helper,
-								language $language, log_interface $log, manager $passwords_manager,
+								language $language, log_interface $log, email $email_method, manager $passwords_manager,
 								request $request, template $template, user $user, string $users_table,
-								string $root_path, string $php_ext, service_collection $messenger)
+								string $root_path, string $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
@@ -104,6 +104,7 @@ class reset_password
 		$this->helper = $helper;
 		$this->language = $language;
 		$this->log = $log;
+		$this->email_method = $email_method;
 		$this->passwords_manager = $passwords_manager;
 		$this->request = $request;
 		$this->template = $template;
@@ -111,7 +112,6 @@ class reset_password
 		$this->users_table = $users_table;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
-		$this->messenger = $messenger;
 	}
 
 	/**
@@ -256,19 +256,18 @@ class reset_password
 					WHERE user_id = ' . $user_row['user_id'];
 				$this->db->sql_query($sql);
 
-				$email = $this->messenger->offsetGet('messenger.method.email');
-				$email->set_use_queue(false);
-				$email->template('user_forgot_password', $user_row['user_lang']);
-				$email->set_addresses($user_row);
-				$email->anti_abuse_headers($this->config, $this->user);
-				$email->assign_vars([
+				$this->email_method->set_use_queue(false);
+				$this->email_method->template('user_forgot_password', $user_row['user_lang']);
+				$this->email_method->set_addresses($user_row);
+				$this->email_method->anti_abuse_headers($this->config, $this->user);
+				$this->email_method->assign_vars([
 					'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
 					'U_RESET_PASSWORD'	=> generate_board_url(true) . $this->helper->route('phpbb_ucp_reset_password_controller', [
 						'u'		=> $user_row['user_id'],
 						'token'	=> $reset_token,
 					], false)
 				]);
-				$email->send();
+				$this->email_method->send();
 
 				return $this->helper->message($message);
 			}

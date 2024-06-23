@@ -720,17 +720,16 @@ class acp_board
 		{
 			if ($config['email_enable'])
 			{
-				$messenger = $phpbb_container->get('messenger.method_collection');
-				$email = $messenger->offsetGet('messenger.method.email');
-				$email->set_use_queue(false);
-				$email->template('test');
-				$email->set_addresses($user->data);
-				$email->anti_abuse_headers($config, $user);
-				$email->assign_vars([
+				$email_method = $phpbb_container->get('messenger.method.email');
+				$email_method->set_use_queue(false);
+				$email_method->template('test');
+				$email_method->set_addresses($user->data);
+				$email_method->anti_abuse_headers($config, $user);
+				$email_method->assign_vars([
 					'USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
 					'MESSAGE'	=> html_entity_decode($request->variable('send_test_email_text', '', true), ENT_COMPAT),
 				]);
-				$email->send();
+				$email_method->send();
 
 				trigger_error($user->lang('TEST_EMAIL_SENT') . adm_back_link($this->u_action));
 			}

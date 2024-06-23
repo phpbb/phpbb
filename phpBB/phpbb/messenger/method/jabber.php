@@ -22,9 +22,9 @@ namespace phpbb\messenger\method;
  * @author Florian Schmitz (floele)
  *
  * Slightly modified by Acyd Burn (2006)
- * Refactored to a service (2023)
+ * Refactored to a service (2024)
  */
-class phpbb_jabber extends base
+class jabber extends base
 {
 	/** @var string */
 	protected $connect_server;
@@ -96,7 +96,7 @@ class phpbb_jabber extends base
 	 *
 	 * @return void
 	 */
-	public function init()
+	public function init(): void
 	{
 		$this->username($this->config['jab_username'])
 			->password($this->config['jab_password'])
@@ -113,7 +113,7 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_id()
+	public function get_id(): int
 	{
 		return NOTIFY_IM;
 	}
@@ -121,7 +121,7 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_queue_object_name()
+	public function get_queue_object_name(): string
 	{
 		return 'jabber';
 	}
@@ -129,7 +129,7 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function is_enabled()
+	public function is_enabled(): bool
 	{
 		return
 			!empty($this->config['jab_enable']) &&
@@ -143,9 +143,9 @@ class phpbb_jabber extends base
 	 * See http://php.net/manual/en/context.ssl.php
 	 *
 	 * @param array $options SSL context options array
-	 * @return $this
+	 * @return self
 	 */
-	public function stream_options($options = [])
+	public function stream_options(array $options = []): self
 	{
 		if ($this->use_ssl)
 		{
@@ -160,9 +160,9 @@ class phpbb_jabber extends base
 	 * Set password to connect to server
 	 *
 	 * @param string $password Password to connect to server
-	 * @return $this
+	 * @return self
 	 */
-	public function password($password = '')
+	public function password(string $password = ''): self
 	{
 		$this->password	= html_entity_decode($password, ENT_COMPAT);
 
@@ -173,9 +173,9 @@ class phpbb_jabber extends base
 	 * Set use of ssl to connect to server
 	 *
 	 * @param bool $use_ssl Flag indicating use of ssl to connect to server
-	 * @return $this
+	 * @return self
 	 */
-	public function ssl($use_ssl = false)
+	public function ssl(bool $use_ssl = false): self
 	{
 		$this->use_ssl = $use_ssl && self::can_use_ssl();
 
@@ -187,9 +187,9 @@ class phpbb_jabber extends base
 	 * use_ssl flag should be set first
 	 *
 	 * @param int $port Port to connect to server
-	 * @return $this
+	 * @return self
 	 */
-	public function port($port = 5222)
+	public function port(int $port = 5222): self
 	{
 		$this->port	= ($port) ? $port : 5222;
 
@@ -206,9 +206,9 @@ class phpbb_jabber extends base
 	 * Set username to connect to server
 	 *
 	 * @param string $username Username to connect to server
-	 * @return $this
+	 * @return self
 	 */
-	public function username($username = '')
+	public function username(string $username = ''): self
 	{
 		if (strpos($username, '@') === false)
 		{
@@ -228,9 +228,9 @@ class phpbb_jabber extends base
 	 * Username should be set first
 	 *
 	 * @param string $server Server to connect
-	 * @return $this
+	 * @return self
 	 */
-	public function server($server = '')
+	public function server(string $server = ''): self
 	{
 		$this->connect_server = ($server) ? $server : 'localhost';
 		$this->server = $this->jid[1] ?? $this->connect_server;
@@ -239,17 +239,21 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Able to use the SSL functionality?
+	 * Check if it's possible to use the SSL functionality
+	 *
+	 * @return bool
 	 */
-	public static function can_use_ssl()
+	public static function can_use_ssl(): bool
 	{
 		return @extension_loaded('openssl');
 	}
 
 	/**
-	 * Able to use TLS?
+	 * Check if it's possible to use TLS functionality
+	 *
+	 * @return bool
 	 */
-	public static function can_use_tls()
+	public static function can_use_tls(): bool
 	{
 		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('stream_set_blocking') || !function_exists('stream_get_wrappers'))
 		{
@@ -272,19 +276,22 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Sets the resource which is used. No validation is done here, only escaping.
+	 * Sets the resource which is used. No validation is done here, only escaping
+	 *
 	 * @param string $name
-	 * @access public
+	 * @return void
 	 */
-	public function set_resource($name)
+	public function set_resource(string $name): void
 	{
 		$this->resource = $name;
 	}
 
 	/**
-	 * Connect
+	 * Connect to the server
+	 *
+	 * @return bool
 	 */
-	public function connect()
+	public function connect(): bool
 	{
 /*		if (!$this->check_jid($this->username . '@' . $this->server))
 		{
@@ -311,9 +318,11 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Disconnect
+	 * Disconnect from the server
+	 *
+	 * @return bool
 	 */
-	public function disconnect()
+	public function disconnect(): bool
 	{
 		if ($this->connected())
 		{
@@ -341,9 +350,11 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Connected?
+	 * Check if it's still connected to the server
+	 *
+	 * @return bool
 	 */
-	public function connected()
+	public function connected(): bool
 	{
 		return is_resource($this->connection) && !feof($this->connection);
 	}
@@ -354,7 +365,7 @@ class phpbb_jabber extends base
 	 *
 	 * @return bool|void
 	 */
-	public function login()
+	public function login(): bool|void
 	{
 		if (empty($this->features))
 		{
@@ -368,11 +379,11 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function set_addresses($user)
+	public function set_addresses(array $user_row): void
 	{
-		if (isset($user['user_jabber']) && $user['user_jabber'])
+		if (isset($user_row['user_jabber']) && $user_row['user_jabber'])
 		{
-			$this->to($user['user_jabber'], (isset($user['username']) ? $user['username'] : ''));
+			$this->to($user_row['user_jabber'], (isset($user_row['username']) ? $user_row['username'] : ''));
 		}
 	}
 
@@ -383,7 +394,7 @@ class phpbb_jabber extends base
 	 * @param string	$realname	Jabber "To" recipient name
 	 * @return void
 	 */
-	public function to($address, $realname = '')
+	public function to(string $address, string $realname = ''): void
 	{
 		// IM-Addresses could be empty
 		if (!trim($address))
@@ -399,7 +410,7 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function reset()
+	public function init(): void
 	{
 		$this->subject = $this->msg = '';
 		$this->additional_headers = $this->to = [];
@@ -408,11 +419,9 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Sets the use of messenger queue flag
-	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function set_use_queue($use_queue = true)
+	public function set_use_queue(bool $use_queue = true): void
 	{
 		$this->use_queue = !$this->config['jab_package_size'] ? false : $use_queue;
 	}
@@ -420,7 +429,7 @@ class phpbb_jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function process_queue(&$queue_data)
+	public function process_queue(array &$queue_data): void
 	{
 		$queue_object_name = $this->get_queue_object_name();
 		$messages_count = count($queue_data[$queue_object_name]['data']);
@@ -473,9 +482,9 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	* Send jabber message out
-	*/
-	public function send()
+	 * {@inheritDoc}
+	 */
+	public function send(): void
 	{
 		$this->prepare_message();
 
@@ -537,10 +546,9 @@ class phpbb_jabber extends base
 	 * Send data to the Jabber server
 	 *
 	 * @param string $xml
-	 *
 	 * @return int|bool
 	 */
-	public function send_xml($xml)
+	public function send_xml(string $xml): int|bool
 	{
 		if ($this->connected())
 		{
@@ -555,14 +563,14 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * OpenSocket
+	 * Open socket
 	 *
-	 * @param string $server host to connect to
-	 * @param int $port port number
+	 * @param string $server Host to connect to
+	 * @param int $port Port number
 	 *
 	 * @return bool
 	 */
-	public function open_socket($server, $port)
+	public function open_socket(string $server, int $port): bool
 	{
 		if (@function_exists('dns_get_record'))
 		{
@@ -590,9 +598,11 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * Return log
+	 * Get connection log
+	 *
+	 * @return string
 	 */
-	public function get_log()
+	public function get_log(): string
 	{
 		if ($this->enable_logging && count($this->log_array))
 		{
@@ -604,8 +614,11 @@ class phpbb_jabber extends base
 
 	/**
 	 * Add information to log
+	 *
+	 * @param string $string Log entry
+	 * @return void
 	 */
-	protected function add_to_log($string)
+	protected function add_to_log(string $string): void
 	{
 		if ($this->enable_logging)
 		{
@@ -617,9 +630,11 @@ class phpbb_jabber extends base
 	 * Listens to the connection until it gets data or the timeout is reached.
 	 * Thus, it should only be called if data is expected to be received.
 	 *
-	 * @return mixed either false for timeout or an array with the received data
+	 * @param int $timeout Connection timeout
+	 * @param bool $wait Flag indicating if it should wait for the responce until timeout
+	 * @return bool|array Either false for timeout or an array with the received data
 	 */
-	public function listen($timeout = 10, $wait = false)
+	public function listen(int $timeout = 10, bool $wait = false): bool|array
 	{
 		if (!$this->connected())
 		{
@@ -653,7 +668,7 @@ class phpbb_jabber extends base
 	 *
 	 * @return bool|void
 	 */
-	public function register()
+	public function register(): bool|void
 	{
 		if (!isset($this->session['id']) || isset($this->session['jid']))
 		{
@@ -668,13 +683,12 @@ class phpbb_jabber extends base
 	/**
 	 * Sets account presence. No additional info required (default is "online" status)
 	 *
-	 * @param string	$message		online, offline...
-	 * @param string	$type			dnd, away, chat, xa or nothing
-	 * @param bool		$unavailable	set this to true if you want to become unavailable
-	 *
+	 * @param string	$message		Account status (online, offline)
+	 * @param string	$type			Status type (dnd, away, chat, xa or nothing)
+	 * @param bool		$unavailable	Set to true to make unavailable status
 	 * @return int|bool
 	 */
-	function send_presence($message = '', $type = '', $unavailable = false)
+	function send_presence(string $message = '', string $type = '', bool $unavailable = false): int|bool
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -697,10 +711,9 @@ class phpbb_jabber extends base
 	 * This handles all the different XML elements
 	 *
 	 * @param array $xml
-	 *
 	 * @return bool|void
 	 */
-	function response($xml)
+	function response(array $xml): bool|void
 	{
 		if (!is_array($xml) || !count($xml))
 		{
@@ -1019,7 +1032,7 @@ class phpbb_jabber extends base
 	 *
 	 * @return int|bool
 	 */
-	public function send_message($to, $text, $subject = '', $type = 'normal')
+	public function send_message(string $to, string $text, string $subject = '', string $type = 'normal'): int|bool
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -1042,10 +1055,9 @@ class phpbb_jabber extends base
 	 * Encrypts a password as in RFC 2831
 	 *
 	 * @param array $data Needs data from the client-server connection
-	 *
 	 * @return string
 	 */
-	public function encrypt_password($data)
+	public function encrypt_password(array $data): string
 	{
 		// let's me think about <challenge> again...
 		foreach (array('realm', 'cnonce', 'digest-uri') as $key)
@@ -1074,12 +1086,12 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
-	 * @param string $data
+	 * Parse data string like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
 	 *
+	 * @param string $data
 	 * @return array a => b ...
 	 */
-	public function parse_data($data)
+	public function parse_data(string $data): array
 	{
 		$data = explode(',', $data);
 		$pairs = array();
@@ -1106,13 +1118,12 @@ class phpbb_jabber extends base
 	}
 
 	/**
-	 * opposite of jabber::parse_data()
+	 * The opposite of jabber::parse_data()
 	 *
-	 * @param array $data
-	 *
+	 * @param array $data Data array
 	 * @return string
 	 */
-	public function implode_data($data)
+	public function implode_data(arary $data): string
 	{
 		$return = array();
 		foreach ($data as $key => $value)
@@ -1126,8 +1137,13 @@ class phpbb_jabber extends base
 	 * xmlize()
 	 * @author Hans Anderson
 	 * @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
+	 *
+	 * @param string $data Data string
+	 * @param string|int|bool $skip_white New XML parser option value
+	 * @param string $encoding Encoding value
+	 * @return string
 	 */
-	function xmlize($data, $skip_white = 1, $encoding = 'UTF-8')
+	function xmlize(string $data, string|int|bool $skip_white = 1, string $encoding = 'UTF-8'): array
 	{
 		$data = trim($data);
 
@@ -1162,8 +1178,12 @@ class phpbb_jabber extends base
 	 * _xml_depth()
 	 * @author Hans Anderson
 	 * @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
+	 *
+	 * @param array $vals XML data array
+	 * @param int $i XML tags depth level
+	 * @return array
 	 */
-	function _xml_depth($vals, &$i)
+	function _xml_depth(array $vals, int &$i): array
 	{
 		$children = array();
 

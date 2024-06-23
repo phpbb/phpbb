@@ -174,17 +174,16 @@ class ucp_profile
 
 							$user_actkey = gen_rand_string(mt_rand(6, 10));
 
-							$messenger = $phpbb_container->get('messenger.method_collection');
-							$email = $messenger->offsetGet('messenger.method.email');
+							$email_method = $phpbb_container->get('messenger.method.email');
 							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
-							$email->template($template_file, $user->data['user_lang']);
-							$email->to($data['email'], $data['username']);
-							$email->anti_abuse_headers($config, $user);
-							$email->assign_vars([
+							$email_method->template($template_file, $user->data['user_lang']);
+							$email_method->to($data['email'], $data['username']);
+							$email_method->anti_abuse_headers($config, $user);
+							$email_method->assign_vars([
 								'USERNAME'		=> html_entity_decode($data['username'], ENT_COMPAT),
 								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey",
 							]);
-							$email->send();
+							$email_method->send();
 
 							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{

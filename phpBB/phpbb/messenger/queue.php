@@ -41,9 +41,6 @@ class queue
 	/** @var service_collection */
 	protected $messenger_method_collection;
 
-	/** @var int */
-	protected $package_size = 0;
-
 	/** @var array */
 	protected $queue_data = [];
 
@@ -55,7 +52,7 @@ class queue
 	 * @param service_collection $messenger_method_collection
 	 * @param string $cache_file
 	 */
-	function __construct(config $config, dispatcher $dispatcher, service_collection $messenger_method_collection, $cache_file)
+	public function __construct(config $config, dispatcher $dispatcher, service_collection $messenger_method_collection, $cache_file)
 	{
 		$this->config = $config;
 		$this->dispatcher = $dispatcher;
@@ -71,7 +68,7 @@ class queue
 	 * @param int $package_size Size of the messenger package to send
 	 * @return void
 	 */
-	public function init($object, $package_size)
+	public function init(string $object, int $package_size): void
 	{
 		$this->data[$object] = [];
 		$this->data[$object]['package_size'] = $package_size;
@@ -82,10 +79,10 @@ class queue
 	 * Put message into the messenger file queue
 	 *
 	 * @param string $object 		Queue object type: email/jabber/etc
-	 * @param mixed $message_data	Message data to send
+	 * @param array $message_data	Message data to send
 	 * @return void
 	 */
-	public function put($object, $message_data)
+	public function put(string $object, array $message_data): void
 	{
 		$this->data[$object]['data'][] = $message_data;
 	}
@@ -95,7 +92,7 @@ class queue
 	 *
 	 * @return void
 	 */
-	public function process()
+	public function process(): void
 	{
 		$lock = new \phpbb\lock\flock($this->cache_file);
 		$lock->acquire();
@@ -119,14 +116,12 @@ class queue
 
 		/** @psalm-suppress InvalidTemplateParam */
 		$messenger_collection_iterator = $this->messenger_method_collection->getIterator();
-		while ($messenger_collection_iterator->valid())
+		foreach ($messenger_collection_iterator as $messenger_method)
 		{
-			$messenger_method = $messenger_collection_iterator->current();
 			if (isset($this->queue_data[$messenger_method->get_queue_object_name()]))
 			{
 				$messenger_method->process_queue($this->queue_data);
 			}
-			$messenger_collection_iterator->next();
 		}
 
 		if (!count($this->queue_data))
@@ -164,7 +159,7 @@ class queue
 	 *
 	 * @return void
 	 */
-	public function save()
+	public function save(): void
 	{
 		if (!count($this->data))
 		{

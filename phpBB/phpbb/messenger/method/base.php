@@ -61,11 +61,11 @@ abstract class base
 	/** @var  path_helper */
 	protected $path_helper;
 
-	/** @var string */
-	protected $root_path;
-
 	/** @var  request */
 	protected $request;
+
+	/** @var string */
+	protected $root_path;
 
 	/** @var string */
 	protected $subject = '';
@@ -94,95 +94,98 @@ abstract class base
 	 * @param assets_bag $assets_bag
 	 * @param config $config
 	 * @param dispatcher $dispatcher
+	 * @param manager $ext_manager
 	 * @param language $language
 	 * @param log_interface $log
-	 * @param request $request
-	 * @param user $user
 	 * @param queue $queue
 	 * @param path_helper $path_helper
-	 * @param manager $ext_manager
+	 * @param request $request
 	 * @param service_collection $twig_extensions_collection
 	 * @param lexer $twig_lexer
-	 * @param string $template_cache_path
+	 * @param user $user
 	 * @param string $phpbb_root_path
+	 * @param string $template_cache_path
 	 */
-	function __construct(
+	public function __construct(
 		assets_bag $assets_bag,
 		config $config,
 		dispatcher $dispatcher,
+		manager $ext_manager,
 		language $language,
 		log_interface $log,
-		request $request,
-		user $user,
 		queue $queue,
 		path_helper $path_helper,
-		manager $ext_manager,
+		request $request,
 		service_collection $twig_extensions_collection,
 		lexer $twig_lexer,
-		$template_cache_path,
-		$phpbb_root_path
+		user $user,
+		$phpbb_root_path,
+		$template_cache_path
 	)
 	{
 		$this->assets_bag = $assets_bag;
 		$this->config = $config;
 		$this->dispatcher = $dispatcher;
+		$this->ext_manager = $ext_manager;
 		$this->language = $language;
 		$this->log = $log;
-		$this->request = $request;
-		$this->user = $user;
 		$this->queue = $queue;
 		$this->path_helper = $path_helper;
-		$this->ext_manager = $ext_manager;
+		$this->request = $request;
 		$this->twig_extensions_collection = $twig_extensions_collection;
 		$this->twig_lexer = $twig_lexer;
-		$this->template_cache_path = $template_cache_path;
+		$this->user = $user;
 		$this->root_path = $phpbb_root_path;
+		$this->template_cache_path = $template_cache_path;
 
 		$this->set_use_queue();
 	}
 
 	/**
 	 * Get messenger method id
-	 * @return mixed
+	 *
+	 * @return int
 	 */
-	abstract public function get_id();
+	abstract public function get_id(): int;
 
 	/**
 	 * Check if the messenger method is enabled
+	 *
 	 * @return bool
 	 */
-	abstract public function is_enabled();
+	abstract public function is_enabled(): bool;
 
 	/**
 	 * Sets the use of messenger queue flag
 	 *
 	 * @return void
 	 */
-	public function set_use_queue($use_queue = true)
+	public function set_use_queue(bool $use_queue = true): void
 	{
 		$this->use_queue = $use_queue;
 	}
 
 	/**
-	 * Resets all the data (address, template file, etc etc) to default
+	 * Initializes all the data (address, template file, etc) or resets to default
 	 *
 	 * @return void
 	 */
-	abstract public function reset();
+	abstract public function init(): void;
 
 	/**
 	 * Set addresses for to/im as available
 	 *
-	 * @param array $user User row
+	 * @param array $user_row User row
 	 * @return void
 	 */
-	abstract public function set_addresses($user);
+	abstract public function set_addresses(array $user_row): void;
 
 	/**
 	 * Get messenger method fie queue object name
+	 *
 	 * @return string
 	 */
-	abstract public function get_queue_object_name();
+	abstract public function get_queue_object_name(): string;
 
 	/**
 	 * Set up subject for mail
@@ -190,7 +193,7 @@ abstract class base
 	 * @param string	$subject	Email subject
 	 * @return void
 	 */
-	public function subject($subject = '')
+	public function subject(string $subject = ''): void
 	{
 		$this->subject = $subject;
 	}
@@ -202,9 +205,7 @@ abstract class base
 	 * @param user		$user		User object
 	 * @return void
 	 */
-	public function anti_abuse_headers($config, $user)
-	{
-	}
+	abstract public function anti_abuse_headers(config $config, user $user): void;
 
 	/**
 	 * Set up extra headers
@@ -213,9 +214,7 @@ abstract class base
 	 * @param string	$header_value	Email header body
 	 * @return void
 	 */
-	public function header($header_name, $header_value)
-	{
-	}
+	abstract public function header(string $header_name, string $header_value): void;
 
 	/**
 	 * Set the reply to address
@@ -223,15 +222,14 @@ abstract class base
 	 * @param string	$address	Email "Reply to" address
 	 * @return void
 	 */
-	public function replyto($address)
-	{
-	}
+	abstract public function reply_to($address): void;
 
 	/**
 	 * Send out messages
+	 *
 	 * @return bool
 	 */
-	abstract protected function send();
+	abstract protected function send(): bool;
 
 	/**
 	 * Send messages from the queue
@@ -239,7 +237,7 @@ abstract class base
 	 * @param array $queue_data Queue data array
 	 * @return void
 	 */
-	abstract public function process_queue(&$queue_data);
+	abstract public function process_queue(array &$queue_data): void;
 
 	/**
 	 * Set email template to use
@@ -251,16 +249,11 @@ abstract class base
 	 *
 	 * @return bool
 	 */
-	public function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
+	public function template(string $template_file, string $template_lang = '', string $template_path = '', string $template_dir_prefix = ''): bool
 	{
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
 		$this->setup_template();
-
-		if (!trim($template_file))
-		{
-			trigger_error('No template file for emailing set.', E_USER_ERROR);
-		}
 
 		if (!trim($template_lang))
 		{
@@ -338,7 +331,7 @@ abstract class base
 	 * @param array	$vars	Array of VAR => VALUE to assign to email template
 	 * @return void
 	 */
-	public function assign_vars($vars)
+	public function assign_vars(array $vars): void
 	{
 		$this->setup_template();
 		$this->template->assign_vars($vars);
@@ -351,7 +344,7 @@ abstract class base
 	 * @param array		$vars		Array of VAR => VALUE to assign to email template block
 	 * @return void
 	 */
-	public function assign_block_vars($blockname, $vars)
+	public function assign_block_vars(string $blockname, array $vars): void
 	{
 		$this->setup_template();
 
@@ -363,7 +356,7 @@ abstract class base
 	 *
 	 * @return void
 	 */
-	public function prepare_message()
+	public function prepare_message(): void
 	{
 		// We add some standard variables we always use, no need to specify them always
 		$this->assign_vars([
@@ -440,7 +433,7 @@ abstract class base
 	 * @param string	$msg	Error message text
 	 * @return void
 	 */
-	public function error($msg)
+	public function error(string $msg): void
 	{
 		// Session doesn't exist, create it
 		if (!isset($this->user->session_id) || $this->user->session_id === '')
@@ -458,7 +451,7 @@ abstract class base
 	 * Save message data to the messenger file queue
 	 * @return void
 	 */
-	public function save_queue()
+	public function save_queue(): void
 	{
 		if ($this->use_queue && !empty($this->queue))
 		{
@@ -469,9 +462,10 @@ abstract class base
 
 	/**
 	 * Setup template engine
+	 *
 	 * @return void
 	 */
-	protected function setup_template()
+	protected function setup_template(): void
 	{
 		if (isset($this->template) && $this->template instanceof \phpbb\template\template)
 		{
@@ -510,7 +504,7 @@ abstract class base
 	 * @param string|array $paths		Email template paths
 	 * @return void
 	 */
-	protected function set_template_paths($path_name, $paths)
+	protected function set_template_paths(string|array $path_name, string|array $paths): void
 	{
 		$this->setup_template();
 		$this->template->set_custom_style($path_name, $paths);
