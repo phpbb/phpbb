@@ -885,7 +885,7 @@ switch ($mode)
 
 	case 'contactadmin':
 	case 'email':
-		$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
+		$messenger = $phpbb_container->get('messenger.method_collection');
 
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);

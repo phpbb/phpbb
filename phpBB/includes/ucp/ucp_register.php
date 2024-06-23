@@ -457,6 +457,7 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
+					/** var \phpbb\messenger\method\email */
 					$email_method = $phpbb_container->get('messenger.method.email');
 					$email_method->set_use_queue(false);
 					$email_method->template($email_template, $data['lang']);
@@ -489,8 +490,9 @@ class ucp_register
 					* @var	string		server_url	Server URL
 					* @var	int			user_id		New user ID
 					* @var	string		user_actkey	User activation key
-					* @var	messenger	messenger	phpBB Messenger
+					* @var	\phpbb\messenger\method\email	email_method	phpBB email notification method
 					* @since 3.2.4-RC1
+					* @changed 4.0.0-a1 Added vars: email_method. Removed vars: messenger.
 					*/
 					$vars = array(
 						'user_row',
@@ -500,7 +502,7 @@ class ucp_register
 						'server_url',
 						'user_id',
 						'user_actkey',
-						'messenger',
+						'email_method',
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_register_welcome_email_before', compact($vars)));
 

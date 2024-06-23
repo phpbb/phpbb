@@ -131,7 +131,7 @@ class ucp_activate
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
+			$messenger = $phpbb_container->get('messenger.method_collection');
 			$messenger_collection_iterator = $messenger->getIterator();
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
