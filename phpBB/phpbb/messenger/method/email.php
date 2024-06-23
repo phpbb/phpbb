@@ -17,13 +17,7 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as symfony_email;
-use Symfony\Component\Mime\Header\DateHeader;
 use Symfony\Component\Mime\Header\Headers;
-use Symfony\Component\Mime\Header\IdentificationHeader;
-use Symfony\Component\Mime\Header\MailboxHeader;
-use Symfony\Component\Mime\Header\MailboxListHeader;
-use Symfony\Component\Mime\Header\PathHeader;
-use Symfony\Component\Mime\Header\UnstructuredHeader;
 
 /**
  * Messenger class
@@ -308,7 +302,7 @@ class email extends base
 
 		// Add additional headers
 		$phpbb_headers = array_merge($phpbb_headers, $this->additional_headers);
-		
+
 		foreach ($phpbb_headers as $header => $value)
 		{
 			$this->headers->addHeader($header, $value);
