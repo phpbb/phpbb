@@ -16,9 +16,7 @@ services:
             - '@assets.bag'
             - '@config'
             - '@dispatcher'
-            - '@ext.manager'
             - '@language'
-            - '@log'
             - '@messenger.queue'
             - '@path_helper'
             - '@request'
@@ -27,6 +25,8 @@ services:
             - '@user'
             - '%core.root_path%'
             - '%core.template.cache_path%'
+            - '@?ext.manager'
+            - '@?log'
 
     messenger.method.email:
         class: phpbb\messenger\method\email

@@ -359,13 +359,12 @@ class jabber extends base
 		return is_resource($this->connection) && !feof($this->connection);
 	}
 
-
 	/**
 	 * Initiates login (using data from contructor, after calling connect())
 	 *
-	 * @return bool|void
+	 * @return bool|null
 	 */
-	public function login(): bool|void
+	public function login(): bool|null
 	{
 		if (empty($this->features))
 		{
@@ -410,7 +409,7 @@ class jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(): void
+	public function reset(): void
 	{
 		$this->subject = $this->msg = '';
 		$this->additional_headers = $this->to = [];
@@ -484,7 +483,7 @@ class jabber extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function send(): void
+	public function send(): bool
 	{
 		$this->prepare_message();
 
@@ -666,9 +665,9 @@ class jabber extends base
 	/**
 	 * Initiates account registration (based on data used for contructor)
 	 *
-	 * @return bool|void
+	 * @return bool|null
 	 */
-	public function register(): bool|void
+	public function register(): bool|null
 	{
 		if (!isset($this->session['id']) || isset($this->session['jid']))
 		{
@@ -711,9 +710,9 @@ class jabber extends base
 	 * This handles all the different XML elements
 	 *
 	 * @param array $xml
-	 * @return bool|void
+	 * @return bool|null
 	 */
-	function response(array $xml): bool|void
+	function response(array $xml): bool|null
 	{
 		if (!is_array($xml) || !count($xml))
 		{
@@ -728,20 +727,17 @@ class jabber extends base
 			{
 				$this->response(array($key => $value));
 			}
-			return;
+			return true;
 		}
-		else
+		else if (is_array(reset($xml)) && count(reset($xml)) > 1)
 		{
 			// or even multiple elements of the same type?
 			// array('message' => array(0 => ..., 1 => ...))
-			if (is_array(reset($xml)) && count(reset($xml)) > 1)
+			foreach (reset($xml) as $value)
 			{
-				foreach (reset($xml) as $value)
-				{
-					$this->response(array(key($xml) => array(0 => $value)));
-				}
-				return;
+				$this->response(array(key($xml) => array(0 => $value)));
 			}
+			return true;
 		}
 
 		switch (key($xml))
@@ -1012,6 +1008,7 @@ class jabber extends base
 					$message['subject'] = $xml['message'][0]['#']['subject'][0]['#'];
 				}
 				$this->session['messages'][] = $message;
+				return true;
 			break;
 
 			default:
@@ -1123,7 +1120,7 @@ class jabber extends base
 	 * @param array $data Data array
 	 * @return string
 	 */
-	public function implode_data(arary $data): string
+	public function implode_data(array $data): string
 	{
 		$return = array();
 		foreach ($data as $key => $value)
@@ -1141,7 +1138,7 @@ class jabber extends base
 	 * @param string $data Data string
 	 * @param string|int|bool $skip_white New XML parser option value
 	 * @param string $encoding Encoding value
-	 * @return string
+	 * @return array
 	 */
 	function xmlize(string $data, string|int|bool $skip_white = 1, string $encoding = 'UTF-8'): array
 	{

@@ -26,11 +26,11 @@ class email extends base
 {
 	/** @var array */
 	private const PRIORITY_MAP = [
-		Email::PRIORITY_HIGHEST => 'Highest',
-		Email::PRIORITY_HIGH => 'High',
-		Email::PRIORITY_NORMAL => 'Normal',
-		Email::PRIORITY_LOW => 'Low',
-		Email::PRIORITY_LOWEST => 'Lowest',
+		symfony_email::PRIORITY_HIGHEST => 'Highest',
+		symfony_email::PRIORITY_HIGH => 'High',
+		symfony_email::PRIORITY_NORMAL => 'Normal',
+		symfony_email::PRIORITY_LOW => 'Low',
+		symfony_email::PRIORITY_LOWEST => 'Lowest',
 	];
 
 	/**
@@ -40,7 +40,7 @@ class email extends base
 	 */
 	protected $dsn = '';
 
-	/** @var Email */
+	/** @var symfony_email */
 	protected $email;
 
 	/** @var Address */
@@ -53,13 +53,13 @@ class email extends base
 	 * @var int
 	 *
 	 * Possible values are:
-	 * Email::PRIORITY_HIGHEST
-	 * Email::PRIORITY_HIGH
-	 * Email::PRIORITY_NORMAL
-	 * Email::PRIORITY_LOW
-	 * Email::PRIORITY_LOWEST
+	 * symfony_email::PRIORITY_HIGHEST
+	 * symfony_email::PRIORITY_HIGH
+	 * symfony_email::PRIORITY_NORMAL
+	 * symfony_email::PRIORITY_LOW
+	 * symfony_email::PRIORITY_LOWEST
 	 */
-	protected $mail_priority = Email::PRIORITY_NORMAL;
+	protected $mail_priority = symfony_email::PRIORITY_NORMAL;
 
 	/** @var \phpbb\messenger\queue */
 	protected $queue;
@@ -102,7 +102,7 @@ class email extends base
 		$this->email = new symfony_email();
 		$this->headers = $this->email->getHeaders();
 		$this->subject =  $this->msg = '';
-		$this->mail_priority = Email::PRIORITY_NORMAL;
+		$this->mail_priority = symfony_email::PRIORITY_NORMAL;
 
 		$this->additional_headers = [];
 		$this->use_queue = true;
@@ -254,16 +254,16 @@ class email extends base
 	 * Set the email priority
 	 *
 	 * Possible values are:
-	 * Email::PRIORITY_HIGHEST = 1
-	 * Email::PRIORITY_HIGH = 2
-	 * Email::PRIORITY_NORMAL = 3
-	 * Email::PRIORITY_LOW = 4
-	 * Email::PRIORITY_LOWEST = 5
+	 * symfony_email::PRIORITY_HIGHEST = 1
+	 * symfony_email::PRIORITY_HIGH = 2
+	 * symfony_email::PRIORITY_NORMAL = 3
+	 * symfony_email::PRIORITY_LOW = 4
+	 * symfony_email::PRIORITY_LOWEST = 5
 	 *
 	 * @param int	$priority	Email priority level
 	 * @return void
 	 */
-	public function set_mail_priority(int $priority = Email::PRIORITY_NORMAL): void
+	public function set_mail_priority(int $priority = symfony_email::PRIORITY_NORMAL): void
 	{
 		$this->email->priority($priority);
 	}
@@ -291,7 +291,7 @@ class email extends base
 
 		$this->email->priority($this->mail_priority);
 
-		$phpbb_headers = [
+		$headers = [
 			'Return-Path'		=> new Address($this->config['board_email']),
 			'Sender'			=> new Address($this->config['board_email']),
 			'X-MSMail-Priority'	=> self::PRIORITY_MAP[$this->mail_priority],
@@ -301,25 +301,23 @@ class email extends base
 		];
 
 		// Add additional headers
-		$phpbb_headers = array_merge($phpbb_headers, $this->additional_headers);
+		$headers = array_merge($headers, $this->additional_headers);
 
-		foreach ($phpbb_headers as $header => $value)
-		{
-			$this->headers->addHeader($header, $value);
-		}
-
-		$headers = $this->headers;
 		/**
 		 * Event to modify email header entries
 		 *
 		 * @event core.modify_email_headers
-		 * @var	Headers	headers	Array containing email header entries
+		 * @var	array	headers	Array containing email header entries
 		 * @since 3.1.11-RC1
-		 * @changed 4.0.0-a1 'headers' var type changed from array to \Symfony\Component\Mime\Header\Headers
 		 */
 		$vars = ['headers'];
 		extract($this->dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
-		$this->headers = $headers;
+
+		foreach ($headers as $header => $value)
+		{
+			$this->headers->addHeader($header, $value);
+		}
+
 	}
 
 	/**
@@ -566,7 +564,9 @@ class email extends base
 				'email'	=> $this->email,
 			]);
 		}
-		$this->reset();
+
+		// Reset the object
+		$this->init();
 
 		return true;
 	}

@@ -34,7 +34,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 	{
 		global $auth, $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
-		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_dispatcher = new \phpbb\event\dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->set('cache.driver', new phpbb_mock_cache());
 		$phpbb_container->set('notification_manager', new phpbb_mock_notification_manager());
@@ -108,8 +108,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$assets_bag = new \phpbb\template\assets_bag();
 		$phpbb_container->set('assets.bag', $assets_bag);
 
-		$dispatcher = new \phpbb\event\dispatcher();
-		$phpbb_container->set('dispatcher', $dispatcher);
+		$phpbb_container->set('dispatcher', $phpbb_dispatcher);
 
 		$core_cache_dir = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
 		$phpbb_container->setParameter('core.cache_dir', $core_cache_dir);
@@ -121,7 +120,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$messenger_method_collection->add('messenger.method.email');
 		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
 
-		$messenger_queue = new \phpbb\messenger\queue($config, $dispatcher, $messenger_method_collection, $core_messenger_queue_file);
+		$messenger_queue = new \phpbb\messenger\queue($config, $phpbb_dispatcher, $messenger_method_collection, $core_messenger_queue_file);
 		$phpbb_container->set('messenger.queue', $messenger_queue);
 
 		$request = new phpbb_mock_request;
@@ -139,9 +138,33 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		);
 		$phpbb_container->set('path_helper', $phpbb_path_helper);
 
-		$extension_manager = new phpbb_mock_extension_manager(
+		$factory = new \phpbb\db\tools\factory();
+		$db_doctrine = $this->new_doctrine_dbal();
+		$db_tools = $factory->get($db_doctrine);
+		$migrator = new \phpbb\db\migrator(
+			$phpbb_container,
+			$config,
+			$db,
+			$db_tools,
+			'phpbb_migrations',
+			$phpbb_root_path,
+			$this->php_ext,
+			'phpbb_',
+			self::get_core_tables(),
+			[],
+			new \phpbb\db\migration\helper()
+		);
+		$phpbb_container->set('migrator', $migrator);
+
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $this->php_ext);
+		$extension_manager = new \phpbb\extension\manager(
+			$phpbb_container,
+			$db,
+			$config,
+			$finder_factory,
+			'phpbb_ext',
 			__DIR__ . '/',
-			[]
+			new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_dispatcher, $phpbb_root_path, $this->php_ext)
 		);
 		$phpbb_container->set('ext.manager', $extension_manager);
 
@@ -159,7 +182,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 			$cache_path,
 			null,
 			new \phpbb\template\twig\loader(''),
-			$dispatcher,
+			$phpbb_dispatcher,
 			[
 				'cache'			=> false,
 				'debug'			=> false,
@@ -167,7 +190,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 				'autoescape'	=> false,
 			]
 		);
-		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $this->language);
 		$phpbb_container->set('template.twig.extensions.phpbb', $twig_extension);
 
 		$twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
@@ -178,10 +201,21 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$twig_lexer = new \phpbb\template\twig\lexer($twig);
 		$phpbb_container->set('template.twig.lexer', $twig_lexer);
 
-		$this->email = new \phpbb\messenger\method\phpbb_email(
-			$assets_bag, $this->config, $dispatcher, $this->language, $log, $request, $user, $messenger_queue,
-			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
-			$cache_path, $phpbb_root_path
+		$this->email = new \phpbb\messenger\method\email(
+			$assets_bag,
+			$this->config,
+			$phpbb_dispatcher,
+			$this->language,
+			$messenger_queue,
+			$phpbb_path_helper,
+			$request,
+			$twig_extensions_collection,
+			$twig_lexer,
+			$user,
+			$phpbb_root_path,
+			$cache_path,
+			$extension_manager,
+			$this->log
 		);
 		$phpbb_container->set('messenger.method.email', $this->email);
 

@@ -324,6 +324,123 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $extension_manager;
 	}
 
+	protected static function get_messenger_method_email($container)
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$config = new \phpbb\config\config(
+			[
+				'version' => PHPBB_VERSION,
+				'email_enable' => false,
+				'email_package_size' => 0,
+				'smtp_delivery' => 0,
+				'default_lang' => 'en',
+			]
+		);
+
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
+		$container->set('user', $user);
+		$container->set('language', $lang);
+
+		$assets_bag = new \phpbb\template\assets_bag();
+		$container->set('assets.bag', $assets_bag);
+
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$container->set('dispatcher', $phpbb_dispatcher);
+
+		$core_cache_dir = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/';
+		$container->setParameter('core.cache_dir', $core_cache_dir);
+
+		$core_messenger_queue_file = $core_cache_dir . 'queue.' . $phpEx;
+		$container->setParameter('core.messenger_queue_file', $core_messenger_queue_file);
+
+		$messenger_method_collection = new \phpbb\di\service_collection($container);
+		$messenger_method_collection->add('messenger.method.email');
+		$container->set('messenger.method_collection', $messenger_method_collection);
+
+		$messenger_queue = new \phpbb\messenger\queue($config, $phpbb_dispatcher, $messenger_method_collection, $core_messenger_queue_file);
+		$container->set('messenger.queue', $messenger_queue);
+
+		$request = new phpbb_mock_request;
+		$container->set('request', $request);
+
+		$symfony_request = new \phpbb\symfony_request(
+			$request
+		);
+
+		$phpbb_path_helper = new \phpbb\path_helper(
+			$symfony_request,
+			$request,
+			$phpbb_root_path,
+			$phpEx
+		);
+		$container->set('path_helper', $phpbb_path_helper);
+
+		$dbms = self::$config['dbms'];
+		$db = new $dbms();
+		$db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+
+		$extension_manager = new phpbb_mock_extension_manager($phpbb_root_path, [], $container);
+		$container->set('ext.manager', $extension_manager);
+
+		$context = new \phpbb\template\context();
+		$cache_path = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/twig';
+		$container->setParameter('core.template.cache_path', $cache_path);
+		$filesystem = new \phpbb\filesystem\filesystem();
+		$container->set('filesystem', $filesystem);
+
+		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
+			$config,
+			$filesystem,
+			$phpbb_path_helper,
+			$cache_path,
+			null,
+			new \phpbb\template\twig\loader(''),
+			$phpbb_dispatcher,
+			[
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			]
+		);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
+		$container->set('template.twig.extensions.phpbb', $twig_extension);
+
+		$twig_extensions_collection = new \phpbb\di\service_collection($container);
+		$twig_extensions_collection->add('template.twig.extensions.phpbb');
+		$container->set('template.twig.extensions.collection', $twig_extensions_collection);
+
+		$twig->addExtension($twig_extension);
+		$twig_lexer = new \phpbb\template\twig\lexer($twig);
+		$container->set('template.twig.lexer', $twig_lexer);
+
+		$auth = new \phpbb\auth\auth();
+		$log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
+		$container->set('log', $log);
+
+		$email_method = new \phpbb\messenger\method\email(
+			$assets_bag,
+			$config,
+			$phpbb_dispatcher,
+			$lang,
+			$messenger_queue,
+			$phpbb_path_helper,
+			$request,
+			$twig_extensions_collection,
+			$twig_lexer,
+			$user,
+			$phpbb_root_path,
+			$cache_path,
+			$extension_manager,
+			$log
+		);
+		$container->set('messenger.method.email', $email_method);
+	}
+
 	protected static function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -374,6 +491,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$container->set('installer.install_finish.notify_user', new phpbb_mock_null_installer_task());
 		$container->register('installer.install_finish.install_extensions')->setSynthetic(true);
 		$container->set('installer.install_finish.install_extensions', new phpbb_mock_null_installer_task());
+		self::get_messenger_method_email($container);
 		$container->compile();
 
 		$language = $container->get('language');

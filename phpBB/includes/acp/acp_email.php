@@ -217,7 +217,8 @@ class acp_email
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
-				$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
+				/** @var \phpbb\di\service_collection */
+				$messenger = $phpbb_container->get('messenger.method_collection');
 				$messenger_collection_iterator = $messenger->getIterator();
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{

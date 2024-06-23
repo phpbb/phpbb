@@ -123,10 +123,21 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$messenger_queue = new \phpbb\messenger\queue($config, $dispatcher, $messenger_method_collection, $core_messenger_queue_file);
 		$phpbb_container->set('messenger.queue', $messenger_queue);
 
-		$this->email = new \phpbb\messenger\method\phpbb_email(
-			$assets_bag, $config, $dispatcher, $lang, $log, $request, $user, $messenger_queue,
-			$phpbb_path_helper, $extension_manager, $twig_extensions_collection, $twig_lexer,
-			$cache_path, $phpbb_root_path
+		$this->email = new \phpbb\messenger\method\email(
+			$assets_bag,
+			$config,
+			$dispatcher,
+			$lang,
+			$messenger_queue,
+			$phpbb_path_helper,
+			$request,
+			$twig_extensions_collection,
+			$twig_lexer,
+			$user,
+			$phpbb_root_path,
+			$cache_path,
+			$extension_manager,
+			$log
 		);
 		$phpbb_container->set('messenger.method.email', $this->email);
 
