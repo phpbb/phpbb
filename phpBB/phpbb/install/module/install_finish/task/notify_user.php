@@ -20,7 +20,7 @@ use phpbb\auth\auth;
 use phpbb\log\log_interface;
 use phpbb\user;
 use phpbb\install\helper\container_factory;
-use phpbb\di\service_collection;
+use phpbb\messenger\method\email;
 
 /**
  * Logs installation and sends an email to the admin
@@ -39,6 +39,9 @@ class notify_user extends \phpbb\install\task_base
 	/** @var db */
 	protected $config;
 
+	/** @var email */
+	protected $email_method;
+
 	/** @var log_interface */
 	protected $log;
 
@@ -47,9 +50,6 @@ class notify_user extends \phpbb\install\task_base
 
 	/** @var user */
 	protected $user;
-
-	/** @var service_collection */
-	protected $messenger;
 
 	/**
 	 * Constructor
@@ -67,7 +67,7 @@ class notify_user extends \phpbb\install\task_base
 		$this->auth				= $container->get('auth');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
-		$this->messenger		= $container->get('messenger.method_collection');
+		$this->email_method		= $container->get('messenger.method.email');
 		$this->phpbb_root_path	= $phpbb_root_path;
 
 		// We need to reload config for cases when it doesn't have all values
@@ -97,16 +97,15 @@ class notify_user extends \phpbb\install\task_base
 
 		if ($this->config['email_enable'])
 		{
-			$email_method = $this->messenger->offsetGet('messenger.method.email');
-			$email_method->set_use_queue(false);
-			$email_method->template('installed', $this->install_config->get('user_language', 'en'));
-			$email_method->to($this->config['board_email'], $this->install_config->get('admin_name'));
-			$email_method->anti_abuse_headers($this->config, $this->user);
-			$email_method->assign_vars([
+			$this->email_method->set_use_queue(false);
+			$this->email_method->template('installed', $this->install_config->get('user_language', 'en'));
+			$this->email_method->to($this->config['board_email'], $this->install_config->get('admin_name'));
+			$this->email_method->anti_abuse_headers($this->config, $this->user);
+			$this->email_method->assign_vars([
 				'USERNAME' => html_entity_decode($this->install_config->get('admin_name'), ENT_COMPAT),
 				'PASSWORD' => html_entity_decode($this->install_config->get('admin_passwd'), ENT_COMPAT),
 			]);
-			$email_method->send();
+			$this->email_method->send();
 		}
 
 		// Login admin
