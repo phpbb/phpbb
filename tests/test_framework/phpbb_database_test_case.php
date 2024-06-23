@@ -285,7 +285,7 @@ abstract class phpbb_database_test_case extends TestCase
 		return $this->createDefaultDBConnection($manager->get_pdo(), 'testdb');
 	}
 
-	public function new_dbal()
+	public function new_dbal() : \phpbb\db\driver\driver_interface
 	{
 		$config = $this->get_database_config();
 
