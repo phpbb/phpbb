@@ -16,7 +16,7 @@ namespace phpbb\messenger\method;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Email as symfony_email;
 use Symfony\Component\Mime\Header\DateHeader;
 use Symfony\Component\Mime\Header\Headers;
 use Symfony\Component\Mime\Header\IdentificationHeader;
@@ -28,7 +28,7 @@ use Symfony\Component\Mime\Header\UnstructuredHeader;
 /**
  * Messenger class
  */
-class phpbb_email extends base
+class email extends base
 {
 	/** @var array */
 	private const PRIORITY_MAP = [
@@ -37,21 +37,6 @@ class phpbb_email extends base
 		Email::PRIORITY_NORMAL => 'Normal',
 		Email::PRIORITY_LOW => 'Low',
 		Email::PRIORITY_LOWEST => 'Lowest',
-	];
-
-	/** @var array */
-	private const HEADER_CLASS_MAP = [
-		'date' => DateHeader::class,
-		'from' => MailboxListHeader::class,
-		'sender' => MailboxHeader::class,
-		'reply-to' => MailboxListHeader::class,
-		'to' => MailboxListHeader::class,
-		'cc' => MailboxListHeader::class,
-		'bcc' => MailboxListHeader::class,
-		'message-id' => IdentificationHeader::class,
-		'in-reply-to' => UnstructuredHeader::class,
-		'references' => UnstructuredHeader::class,
-		'return-path' => PathHeader::class,
 	];
 
 	/**
@@ -86,7 +71,7 @@ class phpbb_email extends base
 	protected $queue;
 
 	/** @var Address */
-	protected $replyto;
+	protected $reply_to;
 
 	/** @var \Symfony\Component\Mailer\Transport\AbstractTransport */
 	protected $transport;
@@ -94,7 +79,7 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_id()
+	public function get_id(): int
 	{
 		return NOTIFY_EMAIL;
 	}
@@ -102,7 +87,7 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_queue_object_name()
+	public function get_queue_object_name(): string
 	{
 		return 'email';
 	}
@@ -110,7 +95,7 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function is_enabled()
+	public function is_enabled(): bool
 	{
 		return (bool) $this->config['email_enable'];
 	}
@@ -118,16 +103,16 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function reset()
+	public function init(): void
 	{
-		$this->email = new Email();
+		$this->email = new symfony_email();
 		$this->headers = $this->email->getHeaders();
 		$this->subject =  $this->msg = '';
 		$this->mail_priority = Email::PRIORITY_NORMAL;
 
 		$this->additional_headers = [];
 		$this->use_queue = true;
-		unset($this->template, $this->replyto, $this->from);
+		unset($this->template, $this->reply_to, $this->from);
 	}
 
 	/**
@@ -135,7 +120,7 @@ class phpbb_email extends base
 	 *
 	 * @return void
 	 */
-	public function set_use_queue($use_queue = true)
+	public function set_use_queue(bool $use_queue = true): void
 	{
 		$this->use_queue = !$this->config['email_package_size'] ? false : $use_queue;
 	}
@@ -143,11 +128,11 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function set_addresses($user)
+	public function set_addresses(array $user_row): void
 	{
-		if (isset($user['user_email']) && $user['user_email'])
+		if (isset($user_row['user_email']) && $user_row['user_email'])
 		{
-			$this->to($user['user_email'], $user['username'] ?: '');
+			$this->to($user_row['user_email'], $user_row['username'] ?: '');
 		}
 	}
 
@@ -158,7 +143,7 @@ class phpbb_email extends base
 	 * @param string	$realname	Email "To" recipient name
 	 * @return void
 	 */
-	public function to($address, $realname = '')
+	public function to(string $address, string $realname = ''): void
 	{
 		if (!$address = trim($address))
 		{
@@ -179,7 +164,7 @@ class phpbb_email extends base
 	 * @param string	$realname	Email carbon copy recipient name
 	 * @return void
 	 */
-	public function cc($address, $realname = '')
+	public function cc(string $address, string $realname = ''): void
 	{
 		if (!$address = trim($address))
 		{
@@ -197,7 +182,7 @@ class phpbb_email extends base
 	 * @param string	$realname	Email black carbon copy recipient name
 	 * @return void
 	 */
-	public function bcc($address, $realname = '')
+	public function bcc(string $address, string $realname = ''): void
 	{
 		if (!$address = trim($address))
 		{
@@ -212,23 +197,35 @@ class phpbb_email extends base
 	 * Set the reply to address
 	 *
 	 * @param string	$address	Email "Reply to" address
+	 * @param string	$realname	Email "Reply to" recipient name
 	 * @return void
 	 */
-	public function replyto($address)
+	public function reply_to(string $address, string $realname = ''): void
 	{
-		$this->replyto = new Address(trim($address));
-		$this->email->getReplyTo() ? $this->email->addReplyTo($this->replyto) : $this->email->replyTo($this->replyto);
+		if (!$address = trim($address))
+		{
+			return;
+		}
+
+		$this->reply_to = new Address($address, trim($realname));
+		$this->email->getReplyTo() ? $this->email->addReplyTo($this->reply_to) : $this->email->replyTo($this->reply_to);
 	}
 
 	/**
 	 * Set the from address
 	 *
 	 * @param string	$address	Email "from" address
+	 * @param string	$realname	Email "from" recipient name
 	 * @return void
 	 */
-	public function from($address)
+	public function from(string $address, string $realname = ''): void
 	{
-		$this->from = new Address(trim($address));
+		if (!$address = trim($address))
+		{
+			return;
+		}
+
+		$this->from = new Address($address, trim($realname));
 		$this->email->getFrom() ? $this->email->addFrom($this->from) : $this->email->from($this->from);
 	}
 
@@ -238,30 +235,10 @@ class phpbb_email extends base
 	 * @param string	$subject	Email subject
 	 * @return void
 	 */
-	public function subject($subject = '')
+	public function subject(string $subject = ''): void
 	{
 		parent::subject(trim($subject));
 		$this->email->subject($this->subject);
-	}
-
-	/**
-	 * Set up extra mail headers
-	 *
-	 * @param string	$header_name	Email header name
-	 * @param string	$header_value	Email header body
-	 * @return void
-	 */
-	public function header($header_name, $header_value)
-	{
-		$header_name = $header_name;
-		$header_value = $header_value;
-
-		// addMailboxListHeader() requires value to be array
-		if ($this->get_header_method($header_name) == 'addMailboxListHeader')
-		{
-			$header_value = [$header_value];
-		}
-		$this->headers->addHeader($header_name, $header_value);
 	}
 
 	/**
@@ -271,12 +248,12 @@ class phpbb_email extends base
 	 * @param \phpbb\user			$user		User object
 	 * @return void
 	 */
-	public function anti_abuse_headers($config, $user)
+	public function anti_abuse_headers(\phpbb\config\config $config, \phpbb\user $user): void
 	{
-		$this->header('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
-		$this->header('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
-		$this->header('X-AntiAbuse', 'Username - ' . $user->data['username']);
-		$this->header('X-AntiAbuse', 'User IP - ' . $user->ip);
+		$this->headers->addHeader('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
+		$this->headers->addHeader('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
+		$this->headers->addHeader('X-AntiAbuse', 'Username - ' . $user->data['username']);
+		$this->headers->addHeader('X-AntiAbuse', 'User IP - ' . $user->ip);
 	}
 
 	/**
@@ -292,79 +269,63 @@ class phpbb_email extends base
 	 * @param int	$priority	Email priority level
 	 * @return void
 	 */
-	public function set_mail_priority($priority = Email::PRIORITY_NORMAL)
+	public function set_mail_priority(int $priority = Email::PRIORITY_NORMAL): void
 	{
 		$this->email->priority($priority);
 	}
 
 	/**
-	 * Detect proper Header class method to add header
-	 *
-	 * @param string	$name	Email header name
-	 * @return string
-	 */
-	protected function get_header_method(string $name)
-	{
-		$parts = explode('\\', self::HEADER_CLASS_MAP[strtolower($name)] ?? UnstructuredHeader::class);
-		$method = 'add'.ucfirst(array_pop($parts));
-		if ('addUnstructuredHeader' === $method)
-		{
-			$method = 'addTextHeader';
-		}
-		else if ('addIdentificationHeader' === $method)
-		{
-			$method = 'addIdHeader';
-		}
-
-		return $method;
-	}
-
-	/**
 	 * Set email headers
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	protected function build_header()
+	protected function build_headers(): void
 	{
-		$headers = [];
 
-		$board_contact = $this->config['board_contact'];
+		$board_contact = trim($this->config['board_contact']);
+		$contact_name = html_entity_decode($this->config['board_contact_name'], ENT_COMPAT);
+
 		if (empty($this->email->getReplyTo()))
 		{
-			$this->replyto($board_contact);
-			$headers['Reply-To'] =  $this->replyto;
+			$this->reply_to($board_contact, $contact_name);
 		}
 
 		if (empty($this->email->getFrom()))
 		{
-			$this->from($board_contact);
-			$headers['From'] = $this->from;
+			$this->from($board_contact, $contact_name);
 		}
 
-		$headers['Return-Path'] = new Address($this->config['board_email']);
-		$headers['Sender'] = new Address($this->config['board_email']);
-		$headers['X-Priority'] = sprintf('%d (%s)', $this->mail_priority, self::PRIORITY_MAP[$this->mail_priority]);
-		$headers['X-MSMail-Priority'] = self::PRIORITY_MAP[$this->mail_priority];
-		$headers['X-Mailer'] = 'phpBB3';
-		$headers['X-MimeOLE'] = 'phpBB3';
-		$headers['X-phpBB-Origin'] = 'phpbb://' . str_replace(['http://', 'https://'], ['', ''], generate_board_url());
+		$this->email->priority($this->mail_priority);
 
+		$phpbb_headers = [
+			'Return-Path'		=> new Address($this->config['board_email']),
+			'Sender'			=> new Address($this->config['board_email']),
+			'X-MSMail-Priority'	=> self::PRIORITY_MAP[$this->mail_priority],
+			'X-Mailer'			=> 'phpBB3',
+			'X-MimeOLE'			=> 'phpBB3',
+			'X-phpBB-Origin'	=> 'phpbb://' . str_replace(['http://', 'https://'], ['', ''], generate_board_url()),
+		];
+
+		// Add additional headers
+		$phpbb_headers = array_merge($phpbb_headers, $this->additional_headers);
+		
+		foreach ($phpbb_headers as $header => $value)
+		{
+			$this->headers->addHeader($header, $value);
+		}
+
+		$headers = $this->headers;
 		/**
 		 * Event to modify email header entries
 		 *
 		 * @event core.modify_email_headers
-		 * @var	array	headers	Array containing email header entries
+		 * @var	Headers	headers	Array containing email header entries
 		 * @since 3.1.11-RC1
+		 * @changed 4.0.0-a1 'headers' var type changed from array to \Symfony\Component\Mime\Header\Headers
 		 */
 		$vars = ['headers'];
 		extract($this->dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
-
-		foreach ($headers as $header => $value)
-		{
-			$this->header($header, $value);
-		}
-
-		return true;
+		$this->headers = $headers;
 	}
 
 	/**
@@ -373,7 +334,7 @@ class phpbb_email extends base
 	 * @param string $dsn Symfony Mailer transport DSN
 	 * @return void
 	 */
-	public function set_dsn($dsn = '')
+	public function set_dsn(string $dsn = ''): void
 	{
 		if (!empty($dsn))
 		{
@@ -406,7 +367,7 @@ class phpbb_email extends base
 	 *
 	 * @return string
 	 */
-	public function get_dsn()
+	public function get_dsn(): string
 	{
 		return $this->dsn;
 	}
@@ -416,7 +377,7 @@ class phpbb_email extends base
 	 *
 	 * @return void
 	 */
-	public function set_transport()
+	public function set_transport(): void
 	{
 		if (empty($this->dsn))
 		{
@@ -440,7 +401,7 @@ class phpbb_email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function process_queue(&$queue_data)
+	public function process_queue(array &$queue_data): void
 	{
 		$queue_object_name = $this->get_queue_object_name();
 		$messages_count = count($queue_data[$queue_object_name]['data']);
@@ -504,22 +465,17 @@ class phpbb_email extends base
 	 *
 	 * @return \Symfony\Component\Mailer\Transport\TransportInterface Symfony Mailer transport object
 	 */
-	public function get_transport()
+	public function get_transport(): \Symfony\Component\Mailer\Transport\TransportInterface
 	{
 		return $this->transport;
 	}
 
 	/**
-	 * Send out emails
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function send()
+	public function send(): bool
 	{
 		$this->prepare_message();
-
-		$contact_name = html_entity_decode($this->config['board_contact_name'], ENT_COMPAT);
-		$board_contact = trim($this->config['board_contact']);
 
 		$this->email->subject($this->subject);
 		$this->email->text($this->msg);
@@ -543,23 +499,9 @@ class phpbb_email extends base
 			'email',
 		];
 		extract($this->dispatcher->trigger_event('core.notification_message_email', compact($vars)));
+		$this->email = $email;
 
-		if (empty($this->email->getReplyto()))
-		{
-			$this->replyto($board_contact);
-		}
-
-		if (empty($this->email->getFrom()))
-		{
-			$this->from($board_contact);
-		}
-
-		// Build headers
-		foreach ($this->additional_headers as $header_name => $header_value)
-		{
-			$this->header($header_name, $header_value);
-		}
-		$this->build_header();
+		$this->build_headers();
 
 		// Send message ...
 		if (!$this->use_queue)

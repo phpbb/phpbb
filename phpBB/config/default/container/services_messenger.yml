@@ -16,34 +16,34 @@ services:
             - '@assets.bag'
             - '@config'
             - '@dispatcher'
+            - '@ext.manager'
             - '@language'
             - '@log'
-            - '@request'
-            - '@user'
             - '@messenger.queue'
             - '@path_helper'
-            - '@ext.manager'
+            - '@request'
             - '@template.twig.extensions.collection'
             - '@template.twig.lexer'
+            - '@user'
+            - '%core.root_path%'
             - '%core.template.cache_path%'
-            - '%core.php_ext%'
 
     messenger.method.email:
-        class: phpbb\messenger\method\phpbb_email
+        class: phpbb\messenger\method\email
         shared: false
         parent: messenger.method.base
         calls:
-            - [reset, []]
+            - [init, []]
             - [set_transport, []]
         tags:
             - { name: messenger.method }
 
     messenger.method.jabber:
-        class: phpbb\messenger\method\phpbb_jabber
+        class: phpbb\messenger\method\jabber
         shared: false
         parent: messenger.method.base
         calls:
-            - [reset, []]
+            - [init, []]
         tags:
             - { name: messenger.method }
 
