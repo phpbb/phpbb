@@ -35,4 +35,11 @@ class remove_smtp_auth_method extends migration
 			['config.remove', ['smtp_auth_method']],
 		];
 	}
+
+	public function revert_data()
+	{
+		return [
+			['config.add', ['smtp_auth_method', 'PLAIN']],
+		];
+	}
 }

@@ -217,16 +217,15 @@ class acp_email
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
-				$messenger = $phpbb_container->get('messenger.method_collection');
+				$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
 				$messenger_collection_iterator = $messenger->getIterator();
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{
 					$used_lang = $email_list[$i][0]['lang'];
 					$used_method = $email_list[$i][0]['method'];
 
-					while ($messenger_collection_iterator->valid())
+					foreach ($messenger_collection_iterator as $messenger_method)
 					{
-						$messenger_method = $messenger_collection_iterator->current();
 						if ($messenger_method->get_id() == $used_method || $used_method == NOTIFY_BOTH)
 						{
 							$messenger_method->set_use_queue($use_queue);
@@ -260,7 +259,6 @@ class acp_email
 								$messenger_method->save_queue();
 							}
 						}
-						$messenger_collection_iterator->next();
 					}
 				}
 				unset($email_list);

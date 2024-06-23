@@ -131,11 +131,10 @@ class ucp_activate
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			$messenger = $phpbb_container->get('messenger.method_collection');
+			$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
 			$messenger_collection_iterator = $messenger->getIterator();
-			while ($messenger_collection_iterator->valid())
+			foreach ($messenger_collection_iterator as $messenger_method)
 			{
-				$messenger_method = $messenger_collection_iterator->current();
 				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == NOTIFY_BOTH)
 				{
 					$messenger_method->set_use_queue(false);
@@ -148,7 +147,6 @@ class ucp_activate
 
 					$messenger_method->send();
 				}
-				$messenger_collection_iterator->next();
 			}
 
 			$message = 'ACCOUNT_ACTIVE_ADMIN';

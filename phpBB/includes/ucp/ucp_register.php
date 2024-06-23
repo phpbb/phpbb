@@ -457,13 +457,12 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
-					$messenger = $phpbb_container->get('messenger.method_collection');
-					$email = $messenger->offsetGet('messenger.method.email');
-					$email->set_use_queue(false);
-					$email->template($email_template, $data['lang']);
-					$email->to($data['email'], $data['username']);
-					$email->anti_abuse_headers($config, $user);
-					$email->assign_vars([
+					$email_method = $phpbb_container->get('messenger.method.email');
+					$email_method->set_use_queue(false);
+					$email_method->template($email_template, $data['lang']);
+					$email_method->to($data['email'], $data['username']);
+					$email_method->anti_abuse_headers($config, $user);
+					$email_method->assign_vars([
 						'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 						'USERNAME'		=> html_entity_decode($data['username'], ENT_COMPAT),
 						'PASSWORD'		=> html_entity_decode($data['new_password'], ENT_COMPAT),
@@ -472,7 +471,7 @@ class ucp_register
 
 					if ($coppa)
 					{
-						$email->assign_vars([
+						$email_method->assign_vars([
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
 							'EMAIL_ADDRESS'	=> $data['email'],
@@ -505,7 +504,7 @@ class ucp_register
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_register_welcome_email_before', compact($vars)));
 
-					$email->send();
+					$email_method->send();
 				}
 
 				if ($config['require_activation'] == USER_ACTIVATION_ADMIN)

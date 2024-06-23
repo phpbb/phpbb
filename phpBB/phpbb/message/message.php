@@ -247,15 +247,14 @@ class message
 		{
 			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $messenger->getIterator();
-			while ($messenger_collection_iterator->valid())
+			foreach ($messenger_collection_iterator as $messenger_method)
 			{
-				$messenger_method = $messenger_collection_iterator->current();
 				$messenger_method->set_use_queue(false);
 				if ($messenger_method->get_id() == $recipient['notify_type'] || $recipient['notify_type'] == NOTIFY_BOTH)
 				{
 					$messenger_method->template($this->template, $recipient['lang']);
 					$messenger_method->set_addresses($recipient);
-					$messenger_method->replyto($this->sender_address);
+					$messenger_method->reply_to($this->sender_address);
 
 					$messenger_method->header('X-AntiAbuse', 'Board servername - ' . $this->server_name);
 					$messenger_method->header('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
@@ -284,7 +283,6 @@ class message
 
 					$messenger_method->send();
 				}
-				$messenger_collection_iterator->next();
 			}
 		}
 	}

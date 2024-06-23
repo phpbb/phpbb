@@ -436,8 +436,7 @@ switch ($mode)
 							trigger_error('EMPTY_MESSAGE_IM');
 						}
 
-						$messenger = $phpbb_container->get('messenger.method_collection');
-						$jabber = $messenger->offsetGet('messenger.method.jabber');
+						$jabber = $phpbb_container->get('messenger.method.jabber');
 						$jabber->set_use_queue(false);
 
 						$jabber->template('profile_send_im', $row['user_lang']);
@@ -886,7 +885,7 @@ switch ($mode)
 
 	case 'contactadmin':
 	case 'email':
-		$messenger = $phpbb_container->get('messenger.method_collection');
+		$messenger = (\phpbb\di\service_collection) $phpbb_container->get('messenger.method_collection');
 
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);

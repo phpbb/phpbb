@@ -97,16 +97,16 @@ class notify_user extends \phpbb\install\task_base
 
 		if ($this->config['email_enable'])
 		{
-			$email = $this->messenger->offsetGet('messenger.method.email');
-			$email->set_use_queue(false);
-			$email->template('installed', $this->install_config->get('user_language', 'en'));
-			$email->to($this->config['board_email'], $this->install_config->get('admin_name'));
-			$email->anti_abuse_headers($this->config, $this->user);
-			$email->assign_vars([
+			$email_method = $this->messenger->offsetGet('messenger.method.email');
+			$email_method->set_use_queue(false);
+			$email_method->template('installed', $this->install_config->get('user_language', 'en'));
+			$email_method->to($this->config['board_email'], $this->install_config->get('admin_name'));
+			$email_method->anti_abuse_headers($this->config, $this->user);
+			$email_method->assign_vars([
 				'USERNAME' => html_entity_decode($this->install_config->get('admin_name'), ENT_COMPAT),
 				'PASSWORD' => html_entity_decode($this->install_config->get('admin_passwd'), ENT_COMPAT),
 			]);
-			$email->send();
+			$email_method->send();
 		}
 
 		// Login admin
