@@ -73,6 +73,67 @@ class phpbb_dbal_write_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
+	public function test_delete_rollback()
+	{
+		$db = $this->new_dbal();
+
+		$is_myisam = false;
+		if ($db->get_sql_layer() === 'mysqli')
+		{
+			$table_status = $db->get_table_status('phpbb_config');
+			$is_myisam = isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM';
+		}
+
+		$db->sql_transaction('begin');
+
+		$sql = "DELETE FROM phpbb_config
+			WHERE config_name = 'config1'";
+		$db->sql_query($sql);
+
+		// Rollback and check that nothing was changed
+		$db->sql_transaction('rollback');
+
+		$sql = 'SELECT *
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
+		$rows = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		if (!$is_myisam)
+		{
+			$this->assertEquals(2, count($rows));
+			$this->assertEquals('config1', $rows[0]['config_name']);
+		}
+		else
+		{
+			// Rollback does not work on MyISAM
+			$this->assertEquals(1, count($rows));
+			$this->assertEquals('config2', $rows[0]['config_name']);
+
+			// Restore deleted config value on MyISAM
+			$sql = "INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('config1', 'foo', 0)";
+			$db->sql_query($sql);
+		}
+
+		$db->sql_transaction('begin');
+
+		$sql = "DELETE FROM phpbb_config
+			WHERE config_name = 'config1'";
+		$db->sql_query($sql);
+
+		// Commit and check that data was actually changed
+		$db->sql_transaction('commit');
+
+		$sql = 'SELECT *
+			FROM phpbb_config';
+		$result = $db->sql_query($sql);
+		$rows = $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals(1, count($rows));
+		$this->assertEquals('config2', $rows[0]['config_name']);
+	}
+
 	public function test_multiple_insert()
 	{
 		$db = $this->new_dbal();
