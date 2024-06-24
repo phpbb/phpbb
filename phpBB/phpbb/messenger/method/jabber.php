@@ -362,9 +362,9 @@ class jabber extends base
 	/**
 	 * Initiates login (using data from contructor, after calling connect())
 	 *
-	 * @return bool|null
+	 * @return bool
 	 */
-	public function login(): bool|null
+	public function login(): bool
 	{
 		if (empty($this->features))
 		{
@@ -710,9 +710,9 @@ class jabber extends base
 	 * This handles all the different XML elements
 	 *
 	 * @param array $xml
-	 * @return bool|null
+	 * @return bool
 	 */
-	function response(array $xml): bool|null
+	function response(array $xml): bool
 	{
 		if (!is_array($xml) || !count($xml))
 		{
@@ -769,6 +769,7 @@ class jabber extends base
 				{
 					return $this->response($this->features);
 				}
+				return false;
 			break;
 
 			case 'stream:features':
