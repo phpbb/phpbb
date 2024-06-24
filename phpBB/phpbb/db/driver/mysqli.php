@@ -155,7 +155,9 @@ class mysqli extends \phpbb\db\driver\mysql_base
 		switch ($status)
 		{
 			case 'begin':
-				return @mysqli_autocommit($this->db_connect_id, false);
+				@mysqli_autocommit($this->db_connect_id, false);
+				$result = @mysqli_begin_transaction($this->db_connect_id);
+				return $result;
 			break;
 
 			case 'commit':
