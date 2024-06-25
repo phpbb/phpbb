@@ -1180,6 +1180,10 @@ input.disabled {
 	color: #ffffff;
 }
 
-.notification-subscribe_toggle {
+.dropdown-extended .webpush-subscribe {
+	color: #536482;
+}
+
+.notification-subscribe-toggle {
 	color: #47536b;
 }
