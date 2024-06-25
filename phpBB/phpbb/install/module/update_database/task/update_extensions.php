@@ -174,7 +174,7 @@ class update_extensions extends task_base
 						if (isset($extensions[$ext_name]) && $extensions[$ext_name]['ext_active'])
 						{
 							// Create log
-							$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_UPDATE', time(), array($ext_name));
+							$this->log->add('admin', ANONYMOUS, $this->user->ip, 'LOG_EXT_UPDATE', time(), array($ext_name));
 							$this->iohandler->add_success_message(array('CLI_EXTENSION_UPDATE_SUCCESS', $ext_name));
 						}
 						else
