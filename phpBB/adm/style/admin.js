@@ -277,5 +277,10 @@ function parse_document(container)
 		$('.actions a:has(i.acp-icon)').mouseover(function () {
 			$(this).css("text-decoration", "none");
 		});
+
+		// Live update BBCode font icon preview
+		$('#bbcode_font_icon').on('keyup', function(e) {
+			$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $(this).val());
+		});
 	});
 })(jQuery);

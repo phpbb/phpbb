@@ -47,6 +47,17 @@
 	</dl>
 	</fieldset>
 
+	<fieldset>
+		<legend>{{ lang('APPEARANCE') }}</legend>
+	<dl>
+		<dt><label for="bbcode_font_icon">{{ lang('BBCODE_FONT_ICON') }}</label><br /><span>{{ lang('BBCODE_FONT_ICON_EXPLAIN') }}</span></dt>
+		<dd>
+			<input type="text" name="bbcode_font_icon" id="bbcode_font_icon" value="{{ BBCODE_FONT_ICON }}" />
+			{{ Icon('font', BBCODE_FONT_ICON, '', false, '', {'id':'bbcode_icon_preview'}) }}
+		</dd>
+	</dl>
+	</fieldset>
+
 	<!-- EVENT acp_bbcodes_edit_fieldsets_after -->
 
 	<fieldset class="submit-buttons">
