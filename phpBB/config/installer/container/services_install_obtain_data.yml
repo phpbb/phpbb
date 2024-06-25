@@ -5,16 +5,7 @@ services:
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
         tags:
-            - { name: install_obtain_data, order: 10 }
-
-    installer.obtain_data.obtain_board_data:
-        class: phpbb\install\module\obtain_data\task\obtain_board_data
-        arguments:
-            - '@installer.helper.config'
-            - '@installer.helper.iohandler'
-            - '@language.helper.language_file'
-        tags:
-            - { name: install_obtain_data, order: 50 }
+            - { name: install_obtain_data, order: 1 }
 
     installer.obtain_data.obtain_database_data:
         class: phpbb\install\module\obtain_data\task\obtain_database_data
@@ -23,15 +14,7 @@ services:
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
         tags:
-            - { name: install_obtain_data, order: 20 }
-
-    installer.obtain_data.obtain_email_data:
-        class: phpbb\install\module\obtain_data\task\obtain_email_data
-        arguments:
-            - '@installer.helper.config'
-            - '@installer.helper.iohandler'
-        tags:
-            - { name: install_obtain_data, order: 40 }
+            - { name: install_obtain_data, order: 2 }
 
     installer.obtain_data.obtain_server_data:
         class: phpbb\install\module\obtain_data\task\obtain_server_data
@@ -39,7 +22,24 @@ services:
             - '@installer.helper.config'
             - '@installer.helper.iohandler'
         tags:
-            - { name: install_obtain_data, order: 30 }
+            - { name: install_obtain_data, order: 3 }
+
+    installer.obtain_data.obtain_email_data:
+        class: phpbb\install\module\obtain_data\task\obtain_email_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+        tags:
+            - { name: install_obtain_data, order: 4 }
+
+    installer.obtain_data.obtain_board_data:
+        class: phpbb\install\module\obtain_data\task\obtain_board_data
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@language.helper.language_file'
+        tags:
+            - { name: install_obtain_data, order: 5 }
 
     installer.module.install_obtain_data_collection:
         class: phpbb\di\ordered_service_collection
@@ -56,4 +56,4 @@ services:
             - true
             - false
         tags:
-            - { name: installer_install_module, order: 20 }
+            - { name: installer_install_module, order: 2 }

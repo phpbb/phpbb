@@ -15,6 +15,7 @@ namespace phpbb\extension;
 
 use phpbb\exception\runtime_exception;
 use phpbb\file_downloader;
+use phpbb\finder\factory as finder_factory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,8 +28,8 @@ class manager
 
 	protected $db;
 	protected $config;
+	protected $finder_factory;
 	protected $cache;
-	protected $php_ext;
 	protected $extensions;
 	protected $extension_table;
 	protected $phpbb_root_path;
@@ -40,24 +41,22 @@ class manager
 	* @param ContainerInterface $container A container
 	* @param \phpbb\db\driver\driver_interface $db A database connection
 	* @param \phpbb\config\config $config Config object
-	* @param \phpbb\filesystem\filesystem_interface $filesystem
+	* @param finder_factory $finder_factory Finder factory
 	* @param string $extension_table The name of the table holding extensions
 	* @param string $phpbb_root_path Path to the phpbb includes directory.
-	* @param string $php_ext php file extension, defaults to php
-	* @param \phpbb\cache\service $cache A cache instance or null
+	* @param \phpbb\cache\service|null $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\filesystem\filesystem_interface $filesystem, $extension_table, $phpbb_root_path, $php_ext = 'php', \phpbb\cache\service $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, finder_factory $finder_factory, $extension_table, $phpbb_root_path, \phpbb\cache\service $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;
 		$this->config = $config;
+		$this->finder_factory = $finder_factory;
 		$this->container = $container;
 		$this->db = $db;
 		$this->extension_table = $extension_table;
-		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 
 		$this->extensions = ($this->cache) ? $this->cache->get($this->cache_name) : false;
 
@@ -70,7 +69,7 @@ class manager
 	/**
 	* Loads all extension information from the database
 	*
-	* @return null
+	* @return void
 	*/
 	public function load_extensions()
 	{
@@ -255,7 +254,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function enable($name)
 	{
@@ -303,7 +302,7 @@ class manager
 	* while so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function disable($name)
 	{
@@ -358,7 +357,7 @@ class manager
 	* so never call this in a script that has a max_execution time.
 	*
 	* @param string $name The extension's name
-	* @return null
+	* @return void
 	*/
 	public function purge($name)
 	{
@@ -381,11 +380,10 @@ class manager
 			return $available;
 		}
 
-		$iterator = new \RecursiveIteratorIterator(
-			new \phpbb\recursive_dot_prefix_filter_iterator(
-				new \RecursiveDirectoryIterator($this->phpbb_root_path . 'ext/', \FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS)
-			),
-			\RecursiveIteratorIterator::SELF_FIRST
+		$iterator = new \phpbb\finder\recursive_path_iterator(
+			$this->phpbb_root_path . 'ext/',
+			\RecursiveIteratorIterator::SELF_FIRST,
+			\FilesystemIterator::NEW_CURRENT_AND_KEY | \FilesystemIterator::FOLLOW_SYMLINKS
 		);
 		$iterator->setMaxDepth(2);
 
@@ -570,14 +568,15 @@ class manager
 	}
 
 	/**
-	* Instantiates a \phpbb\finder.
+	* Instantiates a \phpbb\finder\finder.
 	*
 	* @param bool $use_all_available Should we load all extensions, or just enabled ones
-	* @return \phpbb\finder An extension finder instance
+	* @return \phpbb\finder\finder An extension finder instance
 	*/
 	public function get_finder($use_all_available = false)
 	{
-		$finder = new \phpbb\finder($this->filesystem, $this->phpbb_root_path, $this->cache, $this->php_ext, $this->cache_name . '_finder');
+		$finder = $this->finder_factory->get($this->cache_name . '_finder');
+
 		if ($use_all_available)
 		{
 			$finder->set_extensions(array_keys($this->all_available()));
@@ -586,6 +585,7 @@ class manager
 		{
 			$finder->set_extensions(array_keys($this->all_enabled()));
 		}
+
 		return $finder;
 	}
 }

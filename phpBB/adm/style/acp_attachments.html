@@ -49,7 +49,13 @@
 
 			<dl>
 				<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
-				<dd>{options.CONTENT}</dd>
+				<dd>
+					{% if options.CONTENT is iterable %}
+						{{ FormsBuildTemplate(options.CONTENT)}}
+					{% else %}
+						{options.CONTENT}
+					{% endif %}
+				</dd>
 				{% if (options.KEY == 'allow_attachments' and S_EMPTY_POST_GROUPS) or (options.KEY == 'allow_pm_attach' and S_EMPTY_PM_GROUPS) %}
 					<dd><span class="error">{{ lang(options.KEY == 'allow_attachments' ? 'NO_EXT_GROUP_ALLOWED_POST' : 'NO_EXT_GROUP_ALLOWED_PM', U_EXTENSION_GROUPS) }}</span></dd>
 				{% endif %}
@@ -175,8 +181,14 @@
 			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="category">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
-			<dd>{S_CATEGORY_SELECT}</dd>
+			<dt><label for="{{ S_CATEGORY_SELECT.id }}">{L_SPECIAL_CATEGORY}{L_COLON}</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
+			<dd>
+				<select name="{{ S_CATEGORY_SELECT.name }}" id="{{ S_CATEGORY_SELECT.id }}">
+				{% for option in S_CATEGORY_SELECT.options %}
+					<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+				{% endfor %}
+				</select>
+			</dd>
 		</dl>
 		<dl>
 			<dt><label for="allowed">{L_ALLOWED}{L_COLON}</label></dt>
@@ -195,7 +207,10 @@
 		</dl>
 		<dl>
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}{L_COLON}</label></dt>
-			<dd><input type="number" id="extgroup_filesize" min="0" max="999999999999999" step="any" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
+			<dd>
+				<input type="number" id="extgroup_filesize" min="0" max="999999999999999" step="any" name="max_filesize" value="{EXTGROUP_FILESIZE}" />
+				{{ FormsSelect(EXT_GROUP_SIZE_OPTIONS) }}
+			</dd>
 		</dl>
 		<dl>
 			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}{L_COLON}</label></dt>
@@ -275,8 +290,14 @@
 		<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
-		<dd>{GROUP_SELECT_OPTIONS}</dd>
+		<dt><label for="{{ GROUP_SELECT_OPTIONS.id }}">{L_EXTENSION_GROUP}</label></dt>
+		<dd>
+			<select name="{{ GROUP_SELECT_OPTIONS.name }}" id="{{ GROUP_SELECT_OPTIONS.id }}">
+				{% for option in GROUP_SELECT_OPTIONS.options %}
+				<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+				{% endfor %}
+			</select>
+		</dd>
 	</dl>
 
 	<p class="quick">
@@ -309,7 +330,13 @@
 		<!-- ENDIF -->
 		<tr>
 			<td><strong>{extensions.EXTENSION}</strong></td>
-			<td>{extensions.GROUP_OPTIONS}</td>
+			<td>
+				<select name="{{ extensions.GROUP_OPTIONS.name }}" id="{{ extensions.GROUP_OPTIONS.id }}">
+					{% for option in extensions.GROUP_OPTIONS.options %}
+					<option value="{{ option.value }}"{% if option.selected %} selected="selected"{% endif %}>{{ option.label }}</option>
+					{% endfor %}
+				</select>
+			</td>
 			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /><input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" /></td>
 		</tr>
 	<!-- END extensions -->

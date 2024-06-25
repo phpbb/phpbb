@@ -60,8 +60,15 @@ class acp_main
 		{
 			if ($action === 'admlogout')
 			{
-				$user->unset_admin();
-				redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				if (check_link_hash($request->variable('hash', ''), 'acp_logout'))
+				{
+					$user->unset_admin();
+					redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+				}
+				else
+				{
+					redirect(append_sid("{$phpbb_admin_path}index.$phpEx"));
+				}
 			}
 
 			if (!confirm_box(true))
@@ -197,7 +204,6 @@ class acp_main
 						}
 
 						// Resync post counts
-						$start = $max_post_id = 0;
 
 						// Find the maximum post ID, we can only stop the cycle when we've reached it
 						$sql = 'SELECT MAX(forum_last_post_id) as max_post_id
@@ -226,6 +232,7 @@ class acp_main
 						$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
 						$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
 
+						$start = 0;
 						while ($start < $max_post_id)
 						{
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
@@ -274,16 +281,8 @@ class acp_main
 					break;
 
 					case 'db_track':
-						switch ($db->get_sql_layer())
-						{
-							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-							break;
-						}
+						$db_tools = $phpbb_container->get('dbal.tools');
+						$db_tools->sql_truncate_table(TOPICS_POSTED_TABLE);
 
 						// This can get really nasty... therefore we only do the last six months
 						$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -363,7 +362,7 @@ class acp_main
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
-						phpbb_cache_moderators($db, $cache, $auth);
+						phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PURGE_CACHE');
 
@@ -381,19 +380,11 @@ class acp_main
 						}
 
 						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
+						$db_tools = $phpbb_container->get('dbal.tools');
 
 						foreach ($tables as $table)
 						{
-							switch ($db->get_sql_layer())
-							{
-								case 'sqlite3':
-									$db->sql_query("DELETE FROM $table");
-								break;
-
-								default:
-									$db->sql_query("TRUNCATE TABLE $table");
-								break;
-							}
+							$db_tools->sql_truncate_table($table);
 						}
 
 						// let's restore the admin session
@@ -485,7 +476,7 @@ class acp_main
 		* @event core.acp_main_notice
 		* @since 3.1.0-RC3
 		*/
-		$phpbb_dispatcher->dispatch('core.acp_main_notice');
+		$phpbb_dispatcher->trigger_event('core.acp_main_notice');
 
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
@@ -504,26 +495,8 @@ class acp_main
 
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
 
-		$avatar_dir_size = 0;
-
-		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
-		{
-			while (($file = readdir($avatar_dir)) !== false)
-			{
-				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
-				{
-					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
-				}
-			}
-			closedir($avatar_dir);
-
-			$avatar_dir_size = get_formatted_filesize($avatar_dir_size);
-		}
-		else
-		{
-			// Couldn't open Avatar dir.
-			$avatar_dir_size = $user->lang['NOT_AVAILABLE'];
-		}
+		$storage_avatar = $phpbb_container->get('storage.avatar');
+		$avatar_dir_size = get_formatted_filesize($storage_avatar->get_size());
 
 		if ($posts_per_day > $total_posts)
 		{
@@ -638,30 +611,27 @@ class acp_main
 				));
 			}
 
-			$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
-			if ($config['email_enable'])
-			{
-				$option_ary += array('remind' => 'REMIND');
-			}
-
-			$template->assign_vars(array(
-				'S_INACTIVE_USERS'		=> true,
-				'S_INACTIVE_OPTIONS'	=> build_select($option_ary))
-			);
+			$template->assign_var('S_INACTIVE_USERS', true);
 		}
 
 		// Warn if install is still present
-		if (!defined('IN_INSTALL') && !$phpbb_container->getParameter('allow_install_dir') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
+		if (!$phpbb_container->getParameter('allow_install_dir') && file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
 		// Warn if no search index is created
-		if ($config['num_posts'] && class_exists($config['search_type']))
+		if ($config['num_posts'])
 		{
-			$error = false;
-			$search_type = $config['search_type'];
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
+			try
+			{
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (\phpbb\search\exception\no_search_backend_found_exception $e)
+			{
+				trigger_error('NO_SUCH_SEARCH_MODULE');
+			}
 
 			if (!$search->index_created())
 			{
@@ -671,6 +641,9 @@ class acp_main
 				));
 			}
 		}
+
+		// Warn if incomplete captcha is enabled
+		$this->check_captcha_type($config, $template);
 
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK'))
 		{
@@ -701,13 +674,30 @@ class acp_main
 			]);
 		}
 
-		// Fill dbms version if not yet filled
-		if (empty($config['dbms_version']))
-		{
-			$config->set('dbms_version', $db->sql_server_info(true));
-		}
-
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
+	}
+
+	/**
+	 * Check CAPTCHA type and output warning if incomplete type or unsafe config is used
+	 *
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\template\template $template
+	 * @return void
+	 */
+	protected function check_captcha_type(\phpbb\config\config $config, \phpbb\template\template $template): void
+	{
+		$template_vars = [];
+
+		if (!$config['enable_confirm'])
+		{
+			$template_vars['S_CAPTCHA_UNSAFE'] = true;
+		}
+		else if ($config['captcha_plugin'] == 'core.captcha.plugins.incomplete')
+		{
+			$template_vars['S_CAPTCHA_INCOMPLETE'] = true;
+		}
+
+		$template->assign_vars($template_vars);
 	}
 }

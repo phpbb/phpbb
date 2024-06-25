@@ -13,6 +13,12 @@
 
 class phpbb_dbal_migrator_tool_config_test extends phpbb_test_case
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\migration\tool\tool_interface */
+	protected $tool;
+
 	protected function setUp(): void
 	{
 		$this->config = new \phpbb\config\config(array());

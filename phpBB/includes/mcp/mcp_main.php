@@ -594,11 +594,6 @@ function mcp_move_topic($topic_ids)
 		$topic_data = phpbb_get_topic_data($topic_ids);
 		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
 
-		$forum_sync_data = array();
-
-		$forum_sync_data[$forum_id] = current($topic_data);
-		$forum_sync_data[$to_forum_id] = $forum_data;
-
 		$topics_moved = $topics_moved_unapproved = $topics_moved_softdeleted = 0;
 		$posts_moved = $posts_moved_unapproved = $posts_moved_softdeleted = 0;
 
@@ -636,12 +631,8 @@ function mcp_move_topic($topic_ids)
 		}
 
 		$shadow_topics = 0;
-		$forum_ids = array($to_forum_id);
 		foreach ($topic_data as $topic_id => $row)
 		{
-			// Get the list of forums to resync
-			$forum_ids[] = $row['forum_id'];
-
 			// We add the $to_forum_id twice, because 'forum_id' is updated
 			// when the topic is moved again later.
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_MOVE', false, array(
@@ -1202,7 +1193,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 
 		$post_data = phpbb_get_post_data($post_ids);
 
-		foreach ($post_data as $id => $row)
+		foreach ($post_data as $row)
 		{
 			$post_username = ($row['poster_id'] == ANONYMOUS && !empty($row['post_username'])) ? $row['post_username'] : $row['username'];
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_DELETE_POST', false, array(
@@ -1330,7 +1321,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 */
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $config;
+	global $auth, $user, $db, $template, $config, $phpbb_container;
 	global $phpEx, $phpbb_root_path, $phpbb_log, $request, $phpbb_dispatcher;
 
 	if (!phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
@@ -1398,28 +1389,23 @@ function mcp_fork_topic($topic_ids)
 
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
-			if (!isset($search_type) && $topic_row['enable_indexing'])
+			if (!isset($search) && $topic_row['enable_indexing'])
 			{
 				// Select the search method and do some additional checks to ensure it can actually be utilised
-				$search_type = $config['search_type'];
-
-				if (!class_exists($search_type))
+				try
+				{
+					$search_backend_factory = $phpbb_container->get('search.backend_factory');
+					$search = $search_backend_factory->get_active();
+				}
+				catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 				{
 					trigger_error('NO_SUCH_SEARCH_MODULE');
 				}
-
-				$error = false;
-				$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
 				$search_mode = 'post';
-
-				if ($error)
-				{
-					trigger_error($error);
-				}
 			}
-			else if (!isset($search_type) && !$topic_row['enable_indexing'])
+			else if (!isset($search) && !$topic_row['enable_indexing'])
 			{
-				$search_type = false;
+				$search = false;
 			}
 
 			$sql_ary = array(
@@ -1584,7 +1570,7 @@ function mcp_fork_topic($topic_ids)
 				];
 				extract($phpbb_dispatcher->trigger_event('core.mcp_main_modify_fork_post_sql', compact($vars)));
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				$new_post_id = $db->sql_nextid();
+				$new_post_id = (int) $db->sql_nextid();
 
 				/**
 				* Perform actions after forked topic is created.
@@ -1621,9 +1607,9 @@ function mcp_fork_topic($topic_ids)
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
 
-				if (!empty($search_type))
+				if (!empty($search))
 				{
-					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
+					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], (int) $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
 					$search_mode = 'reply'; // After one we index replies
 				}
 
@@ -1739,7 +1725,7 @@ function mcp_fork_topic($topic_ids)
 		$config->increment('num_topics', count($new_topic_id_list), false);
 		$config->increment('num_posts', $total_posts, false);
 
-		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
+		foreach ($new_topic_id_list as $new_topic_id)
 		{
 			$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_FORK', false, array(
 				'forum_id' => $to_forum_id,

@@ -13,6 +13,9 @@
 
 class phpbb_version_helper_test extends phpbb_test_case
 {
+	protected $cache;
+	protected $version_helper;
+
 	protected function setUp(): void
 	{
 		parent::setUp();

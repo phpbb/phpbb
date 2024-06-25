@@ -100,8 +100,8 @@ phpbb.addAjaxCallback('mark_topics_read', function(res, updateTopicLinks) {
 // This callback will mark all notifications read
 phpbb.addAjaxCallback('notification.mark_all_read', function(res) {
 	if (typeof res.success !== 'undefined') {
-		phpbb.markNotifications($('#notification_list li.bg2'), 0);
-		phpbb.toggleDropdown.call($('#notification_list_button'));
+		phpbb.markNotifications($('[data-notification-unread="true"]'), 0);
+		phpbb.toggleDropdown.call($('#notification-button'));
 		phpbb.closeDarkenWrapper(3000);
 	}
 });
@@ -109,8 +109,8 @@ phpbb.addAjaxCallback('notification.mark_all_read', function(res) {
 // This callback will mark a notification read
 phpbb.addAjaxCallback('notification.mark_read', function(res) {
 	if (typeof res.success !== 'undefined') {
-		var unreadCount = Number($('#notification_list_button strong').html()) - 1;
-		phpbb.markNotifications($(this).parent('li.bg2'), unreadCount);
+		var unreadCount = Number($('#notification-button strong').html()) - 1;
+		phpbb.markNotifications($(this).parent('[data-notification-unread="true"]'), unreadCount);
 	}
 });
 
@@ -132,11 +132,11 @@ phpbb.markNotifications = function($popup, unreadCount) {
 	});
 
 	// Update the unread count.
-	$('strong', '#notification_list_button').html(unreadCount);
+	$('strong', '#notification-button').html(unreadCount);
 	// Remove the Mark all read link and hide notification count if there are no unread notifications.
 	if (!unreadCount) {
 		$('#mark_all_notifications').remove();
-		$('#notification_list_button > strong').addClass('hidden');
+		$('#notification-button > strong').addClass('hidden');
 	}
 
 	// Update page title

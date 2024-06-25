@@ -38,12 +38,12 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 			),
 			// Gravatar with incorrect size
 			array(
-				'The submitted avatar is 120 wide and 120 high. Avatars must be at least 20 wide and 20 high, but no larger than 90 wide and 90 high.',
+				'The submitted avatar is 140 wide and 140 high. Avatars must be at least 40 wide and 40 high, but no larger than 120 wide and 120 high.',
 				'avatar_driver_gravatar',
 				array(
 					'avatar_gravatar_email'		=> 'test@example.com',
-					'avatar_gravatar_width'		=> 120,
-					'avatar_gravatar_height'	=> 120,
+					'avatar_gravatar_width'		=> 140,
+					'avatar_gravatar_height'	=> 140,
 				),
 			),
 			// Delete avatar image to reset group settings
@@ -55,12 +55,12 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 				),
 			),
 			array(
-				'The URL you specified is invalid.',
-				'avatar_driver_remote',
+				'EMAIL_INVALID_EMAIL',
+				'avatar_driver_gravatar',
 				array(
-					'avatar_remote_url'	=> 'https://www.phpbb.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg',
-					'avatar_remote_width'	=> 80,
-					'avatar_remote_height'	=> 80,
+					'avatar_gravatar_email'		=> 'foobar123',
+					'avatar_gravatar_width'		=> 120,
+					'avatar_gravatar_height'	=> 120,
 				),
 			),
 		);

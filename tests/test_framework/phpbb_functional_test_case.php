@@ -11,19 +11,27 @@
 *
 */
 use Symfony\Component\BrowserKit\CookieJar;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\NativeHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 require_once __DIR__ . '/mock/phpbb_mock_null_installer_task.php';
 
 class phpbb_functional_test_case extends phpbb_test_case
 {
-	/** @var \Goutte\Client */
-	static protected $client;
-	static protected $cookieJar;
-	static protected $root_url;
-	static protected $install_success = false;
+	/** @var HttpClientInterface */
+	protected static $http_client;
+
+	/** @var HttpBrowser */
+	protected static $client;
+	protected static $cookieJar;
+	protected static $root_url;
+	protected static $install_success = false;
 
 	protected $cache = null;
 	protected $db = null;
+	protected $db_doctrine = null;
 	protected $extension_manager = null;
 
 	/**
@@ -38,16 +46,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected $lang = array();
 
-	static protected $config = array();
-	static protected $already_installed = false;
-	static protected $last_post_timestamp = 0;
+	protected static $config = array();
+	protected static $already_installed = false;
 
 	static public function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
 		self::$config = phpbb_test_case_helpers::get_test_config();
-		self::$root_url = self::$config['phpbb_functional_url'];
 
 		// Important: this is used both for installation and by
 		// test cases for querying the tables.
@@ -60,6 +66,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::markTestSkipped('phpbb_functional_url was not set in test_config and wasn\'t set as PHPBB_FUNCTIONAL_URL environment variable either.');
 		}
 
+		self::$root_url = self::$config['phpbb_functional_url'];
+
 		if (!self::$already_installed)
 		{
 			self::install_board();
@@ -70,7 +78,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* @return array List of extensions that should be set up
 	*/
-	static protected function setup_extensions()
+	protected static function setup_extensions()
 	{
 		return array();
 	}
@@ -87,7 +95,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
+		// Force native client on windows platform
+		self::$http_client = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? new NativeHttpClient() : HttpClient::create();
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -169,6 +179,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
 	{
+		// Remove files from form if no file was submitted
+		// See: https://github.com/symfony/symfony/issues/49014
+		foreach ($form->getFiles() as $field_name => $value)
+		{
+			if (!$value['name'] && !$value['tmp_name'])
+			{
+				$form->remove($field_name);
+			}
+		}
+
 		$crawler = self::$client->submit($form, $values);
 
 		if ($assert_response_html)
@@ -200,10 +220,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$backupStaticAttributesBlacklist = [
+		$this->backupStaticAttributesExcludeList += [
 			'phpbb_functional_test_case' => ['config', 'already_installed'],
 		];
-		$this->excludeBackupStaticAttributes($backupStaticAttributesBlacklist);
 	}
 
 	/**
@@ -220,6 +239,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
 		}
 		return $this->db;
+	}
+
+	protected function get_db_doctrine()
+	{
+		// so we don't reopen an open connection
+		if (!($this->db_doctrine instanceof \Doctrine\DBAL\Connection))
+		{
+			$this->db_doctrine = \phpbb\db\doctrine\connection_factory::get_connection_from_params(self::$config['dbms'], self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+		}
+		return $this->db_doctrine;
 	}
 
 	protected function get_cache_driver()
@@ -253,8 +282,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->get_db();
+		$db_doctrine = $this->get_db_doctrine();
 		$factory = new \phpbb\db\tools\factory();
-		$db_tools = $factory->get($db);
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
+		$db_tools = $factory->get($db_doctrine);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(
@@ -266,12 +297,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$phpbb_root_path,
 			$phpEx,
 			self::$config['table_prefix'],
+			phpbb_database_test_case::get_core_tables(),
 			array(),
 			new \phpbb\db\migration\helper()
 		);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$container->set('migrator', $migrator);
-		$container->set('dispatcher', $phpbb_dispatcher);
+		$container->set('event_dispatcher', $phpbb_dispatcher);
 		$cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setConstructorArgs([$this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx])
 			->setMethods(['deferred_purge'])
@@ -283,17 +315,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$container,
 			$db,
 			$config,
-			new phpbb\filesystem\filesystem(),
+			$finder_factory,
 			self::$config['table_prefix'] . 'ext',
 			__DIR__ . '/',
-			$phpEx,
 			$cache
 		);
 
 		return $extension_manager;
 	}
 
-	static protected function install_board()
+	protected static function install_board()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -444,6 +475,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 
@@ -475,6 +510,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 
@@ -506,6 +545,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('acp/extensions');
 
+		if ($this->get_logged_in_user())
+		{
+			$this->logout();
+		}
 		$this->login();
 		$this->admin_login();
 
@@ -539,7 +582,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->delete_ext_data($extension);
 	}
 
-	static private function recreate_database($config)
+	private static function recreate_database($config)
 	{
 		$db_conn_mgr = new phpbb_database_test_connection_manager($config);
 		$db_conn_mgr->recreate_db();
@@ -548,9 +591,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Creates a new style
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
-	* @param string $parent_style_id Parent style id. Default = 1
+	* @param int $parent_style_id Parent style id. Default = 1
 	* @param string $parent_style_path Parent style directory. Default = 'prosilver'
 	*/
 	protected function add_style($style_id, $style_path, $parent_style_id = 1, $parent_style_path = 'prosilver')
@@ -624,7 +667,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	* Remove temporary style created by add_style()
 	*
-	* @param string $style_id Style ID
+	* @param int $style_id Style ID
 	* @param string $style_path Style directory
 	*/
 	protected function delete_style($style_id, $style_path)
@@ -744,12 +787,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
 		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
 		$user->data['user_id'] = 2; // admin
 		$user->ip = '';
+
 		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -783,12 +828,14 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
 		$user = $this->createMock('\phpbb\user', array(), array(
 			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
 			'\phpbb\datetime'
 		));
 		$user->data['user_id'] = 2; // admin
 		$user->ip = '';
+
 		$auth = $this->createMock('\phpbb\auth\auth');
 
 		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
@@ -820,8 +867,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php');
-		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
+		$crawler = self::request('GET', 'ucp.php?mode=login');
+		$button = $crawler->selectButton($this->lang('LOGIN'));
+		$this->assertGreaterThan(0, $button->count(), 'No login button found');
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
 		if ($autologin)
@@ -834,7 +882,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie);
+		foreach ($cookies as $cookie)
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
@@ -847,10 +895,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		$this->add_lang('ucp');
 
-		$crawler = self::request('GET', 'ucp.php?sid=' . $this->sid . '&mode=logout');
+		$crawler = self::request('GET', 'index.php');
+		$logout_link = $crawler->filter('a[title="' . $this->lang('LOGOUT') . '"]')->attr('href');
+		self::request('GET', $logout_link);
+
+		$crawler = self::request('GET', $logout_link);
 		$this->assertStringContainsString($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
 		unset($this->sid);
-
 	}
 
 	/**
@@ -883,7 +934,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$cookies = self::$cookieJar->all();
 
 				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-				foreach ($cookies as $cookie);
+				foreach ($cookies as $cookie)
 				{
 					if (substr($cookie->getName(), -4) == '_sid')
 					{
@@ -996,7 +1047,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
 		self::assertStringNotContainsString('[phpBB Debug]', $content);
-		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), 'Output found before DOCTYPE specification.');
+		self::assertStringStartsWith('<!DOCTYPE', strtoupper(substr(trim($content), 0, 10)), $content);
 
 		if ($status_code !== false)
 		{
@@ -1036,12 +1087,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	static public function assert_response_status_code($status_code = 200)
 	{
-		if ($status_code != self::$client->getResponse()->getStatus() &&
-			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatus()))
+		if ($status_code != self::$client->getResponse()->getStatusCode() &&
+			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatusCode()))
 		{
 			self::fail("Encountered unexpected server error:\n" . self::$client->getResponse()->getContent());
 		}
-		self::assertEquals($status_code, self::$client->getResponse()->getStatus(), 'HTTP status code does not match');
+		self::assertEquals($status_code, self::$client->getResponse()->getStatusCode(), 'HTTP status code does not match');
 	}
 
 	public function assert_filter($crawler, $expr, $msg = null)
@@ -1266,13 +1317,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*/
 	protected function submit_message($posting_url, $posting_contains, $form_data)
 	{
-		if (time() == self::$last_post_timestamp)
-		{
-			// Travis is too fast, so we have to wait to not mix up the post/topic order
-			sleep(1);
-		}
-		self::$last_post_timestamp = time();
-
 		$crawler = self::request('GET', $posting_url);
 		$this->assertStringContainsString($this->lang($posting_contains), $crawler->filter('html')->text());
 
@@ -1424,7 +1468,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		$link = $crawler->filter('#quickmod')->selectLink($this->lang($action))->link()->getUri();
 
-		return self::request('GET', substr($link, strpos($link, 'mcp.')));
+		return self::request('GET', substr($link, strpos($link, 'mcp.')) . "&sid={$this->sid}");
 	}
 
 	/**

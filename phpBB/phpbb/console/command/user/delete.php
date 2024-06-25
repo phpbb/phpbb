@@ -14,11 +14,12 @@
 namespace phpbb\console\command\user;
 
 use phpbb\console\command\command;
-use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
 use phpbb\user_loader;
+use Symfony\Component\Console\Command\Command as symfony_command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,9 +29,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class delete extends command
 {
-	/** @var driver_interface */
-	protected $db;
-
 	/** @var language */
 	protected $language;
 
@@ -58,16 +56,14 @@ class delete extends command
 	 * Construct method
 	 *
 	 * @param user             $user
-	 * @param driver_interface $db
 	 * @param language         $language
 	 * @param log_interface    $log
 	 * @param user_loader      $user_loader
 	 * @param string           $phpbb_root_path
 	 * @param string           $php_ext
 	 */
-	public function __construct(user $user, driver_interface $db, language $language, log_interface $log, user_loader $user_loader, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, language $language, log_interface $log, user_loader $user_loader, $phpbb_root_path, $php_ext)
 	{
-		$this->db = $db;
 		$this->language = $language;
 		$this->log = $log;
 		$this->user_loader = $user_loader;
@@ -81,7 +77,7 @@ class delete extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -128,7 +124,7 @@ class delete extends command
 			if ($user_row['user_id'] == ANONYMOUS)
 			{
 				$io->error($this->language->lang('NO_USER'));
-				return 1;
+				return symfony_command::FAILURE;
 			}
 
 			if (!function_exists('user_delete'))
@@ -143,7 +139,7 @@ class delete extends command
 			$io->success($this->language->lang('USER_DELETED'));
 		}
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**
@@ -156,6 +152,10 @@ class delete extends command
 	protected function interact(InputInterface $input, OutputInterface $output)
 	{
 		$helper = $this->getHelper('question');
+		if (!$helper instanceof QuestionHelper)
+		{
+			return;
+		}
 
 		$question = new ConfirmationQuestion(
 			$this->language->lang('CLI_USER_DELETE_CONFIRM', $input->getArgument('username')),

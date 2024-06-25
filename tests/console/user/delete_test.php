@@ -24,7 +24,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		$application = new Application();
 		$application->add(new delete(
 			$this->user,
-			$this->db,
 			$this->language,
 			$this->log,
 			$this->user_loader,
@@ -33,7 +32,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		));
 
 		$command = $application->find('user:delete');
-		$this->command_name = $command->getName();
 		$this->question = $command->getHelper('question');
 
 		return new CommandTester($command);
@@ -48,7 +46,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		$command_tester->setInputs(['yes', '']);
 
 		$command_tester->execute(array(
-			'command'			=> $this->command_name,
 			'username'			=> 'Test',
 			'--delete-posts'	=> false,
 		));
@@ -66,7 +63,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		$command_tester->setInputs(['yes', '']);
 
 		$command_tester->execute(array(
-			'command'			=> $this->command_name,
 			'username'			=> 'Foo',
 			'--delete-posts'	=> false,
 		));
@@ -83,7 +79,6 @@ class phpbb_console_user_delete_test extends phpbb_console_user_base
 		$command_tester->setInputs(['no', '']);
 
 		$command_tester->execute(array(
-			'command'			=> $this->command_name,
 			'username'			=> 'Test',
 			'--delete-posts'	=> false,
 		));

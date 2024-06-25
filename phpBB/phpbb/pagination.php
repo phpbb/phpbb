@@ -49,7 +49,7 @@ class pagination
 	* @param string|array $base_url is url prepended to all links generated within the function
 	*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 	*							for the page. Also be sure to specify the pagination path information into the start_name argument
-	* @param string $on_page is the page for which we want to generate the link
+	* @param int $on_page is the page for which we want to generate the link
 	* @param string $start_name is the name of the parameter containing the first item of the given page (example: start=20)
 	*							If you use page numbers inside your controller route, start name should be the string
 	*							that should be removed for the first page (example: /page/%d)
@@ -72,7 +72,7 @@ class pagination
 		* @var string|array base_url is url prepended to all links generated within the function
 		*							If you use page numbers inside your controller route, base_url should contains a placeholder (%d)
 		*							for the page. Also be sure to specify the pagination path information into the start_name argument
-		* @var string on_page is the page for which we want to generate the link
+		* @var int on_page is the page for which we want to generate the link
 		* @var string start_name is the name of the parameter containing the first item of the given page (example: start=20)
 		*							If you use page numbers inside your controller route, start name should be the string
 		*							that should be removed for the first page (example: /page/%d)
@@ -285,11 +285,12 @@ class pagination
 	*
 	* @param int $per_page the number of items, posts, etc. per page
 	* @param int $start the item which should be considered currently active, used to determine the page we're on
+	*
 	* @return int	Current page number
 	*/
-	public function get_on_page($per_page, $start)
+	public function get_on_page(int $per_page, int $start): int
 	{
-		return floor((int) $start / (int) $per_page) + 1;
+		return (int) floor($start / $per_page) + 1;
 	}
 
 	/**
@@ -318,7 +319,7 @@ class pagination
 	{
 		if ($start < 0 || $start >= $num_items)
 		{
-			return ($start < 0 || $num_items <= 0) ? 0 : floor(($num_items - 1) / $per_page) * $per_page;
+			return ($start < 0 || $num_items <= 0) ? 0 : (int) floor(($num_items - 1) / $per_page) * $per_page;
 		}
 
 		return $start;

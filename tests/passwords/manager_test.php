@@ -13,6 +13,15 @@
 
 class phpbb_passwords_manager_test extends \phpbb_test_case
 {
+	/** @var \phpbb\passwords\driver\helper */
+	protected $driver_helper;
+
+	/** @var \phpbb\passwords\helper */
+	protected $helper;
+
+	/** @var \phpbb\passwords\manager */
+	protected $manager;
+
 	protected $passwords_drivers;
 
 	protected $pw_characters = '0123456789abcdefghijklmnopqrstuvwyzABCDEFGHIJKLMNOPQRSTUVXYZ.,_!?/\\';
@@ -301,13 +310,13 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	{
 		if ($use_new_interface)
 		{
-			$test_driver = $this->createMock('\phpbb\passwords\driver\rehashable_driver_interface', array('needs_rehash', 'get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\rehashable_driver_interface');
 			$test_driver->method('needs_rehash')
 				->willReturn($needs_rehash);
 		}
 		else
 		{
-			$test_driver = $this->createMock('\phpbb\passwords\driver\driver_interface', array('get_prefix', 'check', 'is_supported', 'is_legacy', 'hash', 'get_settings_only'));
+			$test_driver = $this->createMock('\phpbb\passwords\driver\driver_interface');
 		}
 		$config = new \phpbb\config\config(array());
 

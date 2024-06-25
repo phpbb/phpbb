@@ -11,7 +11,7 @@ services:
             - '@feed.helper'
             - '@user'
             - '@auth'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '%core.php_ext%'
 
@@ -36,7 +36,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.forums:
@@ -50,7 +50,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.news:
@@ -64,7 +64,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.overall:
@@ -78,7 +78,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.quote_helper:
@@ -96,7 +96,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.topics:
@@ -110,7 +110,7 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'
 
     feed.topics_active:
@@ -124,5 +124,5 @@ services:
             - '@user'
             - '@auth'
             - '@content.visibility'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.php_ext%'

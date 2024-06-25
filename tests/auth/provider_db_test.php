@@ -30,7 +30,6 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 			));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
-		$request = $this->createMock('\phpbb\request\request');
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$driver_helper = new \phpbb\passwords\driver\helper($config);
 		$passwords_drivers = array(
@@ -46,19 +45,19 @@ class phpbb_auth_provider_db_test extends phpbb_database_test_case
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$plugins = new \phpbb\di\service_collection($phpbb_container);
-		$plugins->add('core.captcha.plugins.nogd');
+		$plugins->add('core.captcha.plugins.qa');
 		$phpbb_container->set(
 			'captcha.factory',
 			new \phpbb\captcha\factory($phpbb_container, $plugins)
 		);
 		$phpbb_container->set(
-			'core.captcha.plugins.nogd',
-			new \phpbb\captcha\plugins\nogd()
+			'core.captcha.plugins.qa',
+			new \phpbb\captcha\plugins\qa('', '', '')
 		);
 		/** @var \phpbb\captcha\factory $captcha_factory */
 		$captcha_factory = $phpbb_container->get('captcha.factory');
 
-		$provider = new \phpbb\auth\provider\db($captcha_factory, $config, $db, $passwords_manager, $request, $user, $phpbb_root_path, $phpEx);
+		$provider = new \phpbb\auth\provider\db($captcha_factory, $config, $db, $passwords_manager, $user);
 		$password_hash = '$2y$10$4RmpyVu2y8Yf/lP3.yQBquKvE54TCUuEDEBJYY6FDDFN3LcbCGz9i';
 
 		$expected = array(

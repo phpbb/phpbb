@@ -27,7 +27,7 @@ class flock
 
 	/**
 	* File pointer for the lock file
-	* @var string
+	* @var resource|closed-resource|false
 	*/
 	private $lock_fp;
 
@@ -41,7 +41,7 @@ class flock
 	public function __construct($path)
 	{
 		$this->path = $path;
-		$this->lock_fp = null;
+		$this->lock_fp = false;
 	}
 
 	/**
@@ -130,7 +130,7 @@ class flock
 	* Note: Attempting to release a lock that is already released,
 	* that is, calling release() multiple times, is harmless.
 	*
-	* @return null
+	* @return void
 	*/
 	public function release()
 	{
@@ -138,7 +138,7 @@ class flock
 		{
 			@flock($this->lock_fp, LOCK_UN);
 			fclose($this->lock_fp);
-			$this->lock_fp = null;
+			$this->lock_fp = false;
 		}
 	}
 }

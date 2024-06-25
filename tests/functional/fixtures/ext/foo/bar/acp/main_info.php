@@ -25,12 +25,12 @@ class main_info
 {
 	function module()
 	{
-		return array(
-			'filename'	=> 'foo\bar\acp\main_module',
+		return [
+			'filename'	=> '\foo\bar\acp\main_module',
 			'title'		=> 'ACP_FOOBAR_TITLE',
-			'modes'		=> array(
-				'mode'		=> array('title' => 'ACP_FOOBAR_MODE', 'auth' => '', 'cat' => array('ACP_FOOBAR_TITLE')),
-			),
-		);
+			'modes'		=> [
+				'mode'		=> ['title' => 'ACP_FOOBAR_MODE', 'auth' => '', 'cat' => ['ACP_FOOBAR_TITLE']],
+			],
+		];
 	}
 }

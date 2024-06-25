@@ -1,0 +1,4 @@
+services:
+    assets.bag:
+        class: phpbb\template\assets_bag
+        shared: false

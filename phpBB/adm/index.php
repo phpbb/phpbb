@@ -15,7 +15,6 @@
 */
 define('IN_PHPBB', true);
 define('ADMIN_START', true);
-define('NEED_SID', true);
 
 // Include files
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
@@ -54,12 +53,20 @@ $module_id		= $request->variable('i', '');
 $mode			= $request->variable('mode', '');
 
 // Set custom style for admin area
-$template->set_custom_style(array(
-	array(
-		'name' 		=> 'adm',
-		'ext_path' 	=> 'adm/style/',
-	),
-), $phpbb_admin_path . 'style');
+/** @var \phpbb\template\base $template */
+$template->set_custom_style(
+	[
+		[
+			'name' 		=> 'adm',
+			'ext_path' 	=> 'adm/style/',
+		]
+	],
+	[
+		$phpbb_admin_path . 'style',
+		$phpbb_root_path . 'styles/all/imgs/',
+		$phpbb_root_path . 'styles/all/template/',
+	],
+);
 
 $template->assign_var('T_ASSETS_PATH', $phpbb_path_helper->update_web_root_path($phpbb_root_path . 'assets'));
 $template->assign_var('T_TEMPLATE_PATH', $phpbb_path_helper->update_web_root_path($phpbb_root_path . 'style'));

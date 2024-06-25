@@ -23,7 +23,7 @@ class base implements \phpbb\extension\extension_interface
 	/** @var ContainerInterface */
 	protected $container;
 
-	/** @var \phpbb\finder */
+	/** @var \phpbb\finder\finder */
 	protected $extension_finder;
 
 	/** @var \phpbb\db\migrator */
@@ -35,19 +35,19 @@ class base implements \phpbb\extension\extension_interface
 	/** @var string */
 	protected $extension_path;
 
-	/** @var string[] */
+	/** @var string[]|false */
 	private $migrations = false;
 
 	/**
 	* Constructor
 	*
 	* @param ContainerInterface $container Container object
-	* @param \phpbb\finder $extension_finder
+	* @param \phpbb\finder\finder $extension_finder
 	* @param \phpbb\db\migrator $migrator
 	* @param string $extension_name Name of this extension (from ext.manager)
 	* @param string $extension_path Relative path to this extension
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\finder $extension_finder, \phpbb\db\migrator $migrator, $extension_name, $extension_path)
+	public function __construct(ContainerInterface $container, \phpbb\finder\finder $extension_finder, \phpbb\db\migrator $migrator, $extension_name, $extension_path)
 	{
 		$this->container = $container;
 		$this->extension_finder = $extension_finder;
@@ -69,7 +69,7 @@ class base implements \phpbb\extension\extension_interface
 	* Single enable step that installs any included migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
-	* @return false Indicates no further steps are required
+	* @return bool True if further steps are necessary, otherwise false
 	*/
 	public function enable_step($old_state)
 	{
@@ -95,7 +95,7 @@ class base implements \phpbb\extension\extension_interface
 	* Single purge step that reverts any included and installed migrations
 	*
 	* @param mixed $old_state State returned by previous call of this method
-	* @return false Indicates no further steps are required
+	* @return bool True if further steps are necessary, otherwise false
 	*/
 	public function purge_step($old_state)
 	{
@@ -135,8 +135,6 @@ class base implements \phpbb\extension\extension_interface
 
 		$this->migrator->set_migrations($migrations);
 
-		$migrations = $this->migrator->get_migrations();
-
-		return $migrations;
+		return $this->migrator->get_migrations();
 	}
 }

@@ -18,12 +18,10 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
-		'foo/bar/config/',
-		'foo/bar/event/',
-		'foo/bar/language/en/',
+	protected static $fixtures = array(
+		'./',
 	);
 
 	static public function setUpBeforeClass(): void
@@ -45,29 +43,25 @@ class phpbb_functional_extension_permission_lang_test extends phpbb_functional_t
 	{
 		parent::setUp();
 
-		$this->get_db();
-
-		$acl_ary = array(
-			'auth_option'	=> 'u_foo',
-			'is_global'		=> 1,
-		);
-
-		$sql = 'INSERT INTO phpbb_acl_options ' . $this->db->sql_build_array('INSERT', $acl_ary);
-		$this->db->sql_query($sql);
-
-		$this->phpbb_extension_manager = $this->get_extension_manager();
-
-		$this->purge_cache();
-
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/permissions');
 	}
 
+	protected function tearDown(): void
+	{
+		$this->uninstall_ext('foo/bar');
+
+		parent::tearDown();
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar'];
+	}
+
 	public function test_auto_include_permission_lang_from_extensions()
 	{
-		$this->phpbb_extension_manager->enable('foo/bar');
-
 		// User permissions
 		$crawler = self::request('GET', 'adm/index.php?i=acp_permissions&icat=16&mode=setting_user_global&sid=' . $this->sid);
 

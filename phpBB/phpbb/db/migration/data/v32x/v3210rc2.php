@@ -20,7 +20,7 @@ class v3210rc2 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.2.10-RC2', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v32x\font_awesome_update_cdn_fix_depends_on',

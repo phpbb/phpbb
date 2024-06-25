@@ -13,7 +13,9 @@
 
 namespace phpbb\template\twig\extension;
 
-class username extends \Twig_Extension
+use Twig\Extension\AbstractExtension;
+
+class username extends AbstractExtension
 {
 	/**
 	 * Get the name of this extension
@@ -26,14 +28,12 @@ class username extends \Twig_Extension
 	}
 
 	/**
-	 * Returns a list of global functions to add to the existing list.
-	 *
-	 * @return array An array of global functions
+	 * {@inheritDoc}
 	 */
 	public function getFunctions()
 	{
 		return array(
-			new \Twig\TwigFunction('username', array($this, 'get_username')),
+			new \Twig\TwigFunction('username', [$this, 'get_username']),
 		);
 	}
 

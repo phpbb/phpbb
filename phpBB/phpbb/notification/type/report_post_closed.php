@@ -50,7 +50,7 @@ class report_post_closed extends \phpbb\notification\type\post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = [
+	public static $notification_option = [
 		'id'	=> 'notification.type.report_post_closed',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT_CLOSED',
 		'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
@@ -71,29 +71,27 @@ class report_post_closed extends \phpbb\notification\type\post
 	/**
 	* Find the users who want to receive notifications
 	*
-	* @param array $post Data from submit_post
+	* @param array $type_data Data from submit_post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = [])
+	public function find_users_for_notification($type_data, $options = [])
 	{
 		$options = array_merge([
 			'ignore_users'		=> [],
 		], $options);
 
-		if ($post['reporter'] == $this->user->data['user_id'])
+		if ($type_data['reporter'] == $this->user->data['user_id'])
 		{
 			return [];
 		}
 
-		return $this->check_user_notification_options([$post['reporter']], $options);
+		return $this->check_user_notification_options([$type_data['reporter']], $options);
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{
@@ -187,11 +185,11 @@ class report_post_closed extends \phpbb\notification\type\post
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = [])
+	public function create_insert_array($type_data, $pre_create_data = [])
 	{
-		$this->set_data('closer_id', $post['closer_id']);
+		$this->set_data('closer_id', $type_data['closer_id']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}

@@ -15,7 +15,6 @@ class phpbb_filespec_test extends phpbb_test_case
 {
 	const TEST_COUNT = 100;
 	const PREFIX = 'phpbb_';
-	const MAX_STR_LEN = 50;
 	const UPLOAD_MAX_FILESIZE = 1000;
 
 	private $config;
@@ -27,6 +26,8 @@ class phpbb_filespec_test extends phpbb_test_case
 
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
+
+	protected $mimetype_guesser;
 
 	protected function setUp(): void
 	{
@@ -65,8 +66,8 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 
 		$guessers = array(
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileinfoMimeTypeGuesser(),
-			new \Symfony\Component\HttpFoundation\File\MimeType\FileBinaryMimeTypeGuesser(),
+			new \Symfony\Component\Mime\FileinfoMimeTypeGuesser(),
+			new \Symfony\Component\Mime\FileBinaryMimeTypeGuesser(),
 			new \phpbb\mimetype\content_guesser(),
 			new \phpbb\mimetype\extension_guesser(),
 		);
@@ -229,7 +230,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$name = $filespec->get('realname');
 
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX));
-			$this->assertRegExp('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
+			$this->assertMatchesRegularExpression('#^[A-Za-z0-9]+$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
 		}
@@ -245,7 +246,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			$name = $filespec->get('realname');
 
 			$this->assertEquals(strlen($name), 32 + strlen(self::PREFIX) + strlen('.jpg'));
-			$this->assertRegExp('#^[A-Za-z0-9]+\.jpg$#', substr($name, strlen(self::PREFIX)));
+			$this->assertMatchesRegularExpression('#^[A-Za-z0-9]+\.jpg$#', substr($name, strlen(self::PREFIX)));
 			$this->assertFalse(isset($filenames[$name]));
 			$filenames[$name] = true;
 		}
@@ -374,7 +375,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_move_file($tmp_name, $realname, $mime_type, $extension, $error, $expected)
 	{
 		// Global $phpbb_root_path and $phpEx are required by phpbb_chmod
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path;
 		$this->phpbb_root_path = '';
 
 		$upload = new phpbb_mock_fileupload();

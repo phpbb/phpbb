@@ -20,9 +20,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ParameterNotFoundException;
 use Symfony\Component\DependencyInjection\Exception\RuntimeException;
 use Symfony\Component\Filesystem\Exception\IOException;
-use Symfony\Component\Routing\Generator\Dumper\PhpGeneratorDumper;
+use Symfony\Component\Routing\Generator\Dumper\CompiledUrlGeneratorDumper;
+use Symfony\Component\Routing\Generator\CompiledUrlGenerator;
 use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Matcher\Dumper\PhpMatcherDumper;
+use Symfony\Component\Routing\Matcher\Dumper\CompiledUrlMatcherDumper;
+use Symfony\Component\Routing\Matcher\CompiledUrlMatcher;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
@@ -56,12 +58,12 @@ class router implements RouterInterface
 	protected $php_ext;
 
 	/**
-	 * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface|null
+	 * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
 	 */
 	protected $matcher;
 
 	/**
-	 * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface|null
+	 * @var \Symfony\Component\Routing\Generator\UrlGeneratorInterface
 	 */
 	protected $generator;
 
@@ -81,15 +83,27 @@ class router implements RouterInterface
 	protected $cache_dir;
 
 	/**
+	 * @var string
+	 */
+	protected $debug_url_generator;
+
+	/**
+	 * @var string
+	 */
+	protected $debug_url_matcher;
+
+	/**
 	 * Construct method
 	 *
-	 * @param ContainerInterface			$container			DI container
-	 * @param resources_locator_interface	$resources_locator	Resources locator
-	 * @param LoaderInterface				$loader				Resources loader
-	 * @param string						$php_ext			PHP file extension
-	 * @param string						$cache_dir			phpBB cache directory
+	 * @param ContainerInterface $container DI container
+	 * @param resources_locator_interface $resources_locator Resources locator
+	 * @param LoaderInterface $loader Resources loader
+	 * @param string $php_ext PHP file extension
+	 * @param string $cache_dir phpBB cache directory
+	 * @param string $debug_url_generator Debug url generator
+	 * @param string $debug_url_matcher Debug url matcher
 	 */
-	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, $php_ext, $cache_dir)
+	public function __construct(ContainerInterface $container, resources_locator_interface $resources_locator, LoaderInterface $loader, string $php_ext, string $cache_dir, string $debug_url_generator, string $debug_url_matcher)
 	{
 		$this->container			= $container;
 		$this->resources_locator	= $resources_locator;
@@ -97,6 +111,8 @@ class router implements RouterInterface
 		$this->php_ext				= $php_ext;
 		$this->context				= new RequestContext();
 		$this->cache_dir			= $cache_dir;
+		$this->debug_url_generator	= $debug_url_generator;
+		$this->debug_url_matcher    = $debug_url_matcher;
 	}
 
 	/**
@@ -155,7 +171,7 @@ class router implements RouterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getContext()
+	public function getContext(): RequestContext
 	{
 		return $this->context;
 	}
@@ -163,7 +179,7 @@ class router implements RouterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function generate($name, $parameters = array(), $referenceType = self::ABSOLUTE_PATH)
+	public function generate(string $name, array $parameters = [], int $referenceType = self::ABSOLUTE_PATH): string
 	{
 		return $this->get_generator()->generate($name, $parameters, $referenceType);
 	}
@@ -171,7 +187,7 @@ class router implements RouterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function match($pathinfo)
+	public function match(string $pathinfo): array
 	{
 		return $this->get_matcher()->match($pathinfo);
 	}
@@ -200,22 +216,15 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", defined('DEBUG'));
+			$cache = new ConfigCache("{$this->cache_dir}url_matcher.{$this->php_ext}", $this->debug_url_matcher);
 			if (!$cache->isFresh())
 			{
-				$dumper = new PhpMatcherDumper($this->get_routes());
-
-				$options = array(
-					'class'      => 'phpbb_url_matcher',
-					'base_class' => 'Symfony\\Component\\Routing\\Matcher\\UrlMatcher',
-				);
-
-				$cache->write($dumper->dump($options), $this->get_routes()->getResources());
+				$dumper = new CompiledUrlMatcherDumper($this->get_routes());
+				$cache->write($dumper->dump(), $this->get_routes()->getResources());
 			}
 
-			require_once($cache->getPath());
-
-			$this->matcher = new \phpbb_url_matcher($this->context);
+			$compiled_routes = require_once($cache->getPath());
+			$this->matcher = new CompiledUrlMatcher($compiled_routes, $this->context);
 		}
 		catch (IOException $e)
 		{
@@ -255,22 +264,15 @@ class router implements RouterInterface
 	{
 		try
 		{
-			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", defined('DEBUG'));
+			$cache = new ConfigCache("{$this->cache_dir}url_generator.{$this->php_ext}", $this->debug_url_generator);
 			if (!$cache->isFresh())
 			{
-				$dumper = new PhpGeneratorDumper($this->get_routes());
-
-				$options = array(
-					'class'      => 'phpbb_url_generator',
-					'base_class' => 'Symfony\\Component\\Routing\\Generator\\UrlGenerator',
-				);
-
-				$cache->write($dumper->dump($options), $this->get_routes()->getResources());
+				$dumper = new CompiledUrlGeneratorDumper($this->get_routes());
+				$cache->write($dumper->dump(), $this->get_routes()->getResources());
 			}
 
-			require_once($cache->getPath());
-
-			$this->generator = new \phpbb_url_generator($this->context);
+			$compiled_routes = require_once($cache->getPath());
+			$this->generator = new CompiledUrlGenerator($compiled_routes, $this->context);
 		}
 		catch (IOException $e)
 		{

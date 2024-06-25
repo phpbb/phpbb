@@ -7,6 +7,11 @@ services:
     dbal.conn.driver:
         synthetic: true
 
+    dbal.conn.doctrine:
+        class: Doctrine\DBAL\Connection
+        factory: ['phpbb\db\doctrine\connection_factory', 'get_connection']
+        arguments: ['@config.php']
+
 # ----- DB Tools -----
     dbal.tools.factory:
         class: phpbb\db\tools\factory
@@ -15,7 +20,7 @@ services:
         class: phpbb\db\tools\tools_interface
         factory: ['@dbal.tools.factory', get]
         arguments:
-            - '@dbal.conn.driver'
+            - '@dbal.conn.doctrine'
 
 # ----- DB Extractor -----
     dbal.extractor.factory:
@@ -34,7 +39,7 @@ services:
         class: phpbb\db\extractor\mssql_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
+            - '@filesystem.temp'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -42,7 +47,7 @@ services:
         class: phpbb\db\extractor\mysql_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
+            - '@filesystem.temp'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -50,7 +55,7 @@ services:
         class: phpbb\db\extractor\oracle_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
+            - '@filesystem.temp'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -58,7 +63,7 @@ services:
         class: phpbb\db\extractor\postgres_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
+            - '@filesystem.temp'
             - '@request'
             - '@dbal.conn.driver'
 
@@ -66,6 +71,6 @@ services:
         class: phpbb\db\extractor\sqlite3_extractor
         shared: false
         arguments:
-            - '%core.root_path%'
+            - '@filesystem.temp'
             - '@request'
             - '@dbal.conn.driver'

@@ -19,7 +19,6 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 	protected $language;
 	protected $log;
 	protected $passwords_manager;
-	protected $command_name;
 	/** @var Symfony\Component\Console\Helper\QuestionHelper */
 	protected $question;
 	protected $user_loader;
@@ -62,13 +61,18 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$this->language->expects($this->any())
 			->method('lang')
 			->will($this->returnArgument(0));
+
 		$user = $this->user = $this->createMock('\phpbb\user', array(), array(
 			$this->language,
 			'\phpbb\datetime'
 		));
 		$user->data['user_email'] = '';
 
-		$this->user_loader = new \phpbb\user_loader($db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$this->user_loader = new \phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		$driver_helper = new \phpbb\passwords\driver\helper($this->config);
 		$passwords_drivers = array(
@@ -115,14 +119,5 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 
 		$user_id = $row ? $row['user_id'] : null;
 		return $user_id;
-	}
-
-	public function getInputStream($input)
-	{
-		$stream = fopen('php://memory', 'r+', false);
-		fputs($stream, $input);
-		rewind($stream);
-
-		return $stream;
 	}
 }

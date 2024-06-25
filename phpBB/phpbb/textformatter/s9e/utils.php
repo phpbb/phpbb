@@ -26,15 +26,15 @@ class utils implements \phpbb\textformatter\utils_interface
 	*
 	* NOTE: preserves smilies as text
 	*
-	* @param  string $xml Parsed text
+	* @param  string $text Parsed text
 	* @return string      Plain text
 	*/
-	public function clean_formatting($xml)
+	public function clean_formatting($text)
 	{
 		// Insert a space before <s> and <e> then remove formatting
-		$xml = preg_replace('#<[es]>#', ' $0', $xml);
+		$text = preg_replace('#<[es]>#', ' $0', $text);
 
-		return \s9e\TextFormatter\Utils::removeFormatting($xml);
+		return \s9e\TextFormatter\Utils::removeFormatting($text);
 	}
 
 	/**
@@ -94,19 +94,19 @@ class utils implements \phpbb\textformatter\utils_interface
 	/**
 	* Get a list of quote authors, limited to the outermost quotes
 	*
-	* @param  string   $xml Parsed text
+	* @param  string   $text Parsed text
 	* @return string[]      List of authors
 	*/
-	public function get_outermost_quote_authors($xml)
+	public function get_outermost_quote_authors($text)
 	{
 		$authors = array();
-		if (strpos($xml, '<QUOTE ') === false)
+		if (strpos($text, '<QUOTE ') === false)
 		{
 			return $authors;
 		}
 
 		$dom = new \DOMDocument;
-		$dom->loadXML($xml);
+		$dom->loadXML($text);
 		$xpath = new \DOMXPath($dom);
 		foreach ($xpath->query('//QUOTE[not(ancestor::QUOTE)]/@author') as $author)
 		{
@@ -119,25 +119,25 @@ class utils implements \phpbb\textformatter\utils_interface
 	/**
 	* Remove given BBCode and its content, at given nesting depth
 	*
-	* @param  string  $xml         Parsed text
+	* @param  string  $text         Parsed text
 	* @param  string  $bbcode_name BBCode's name
 	* @param  integer $depth       Minimum nesting depth (number of parents of the same name)
 	* @return string               Parsed text
 	*/
-	public function remove_bbcode($xml, $bbcode_name, $depth = 0)
+	public function remove_bbcode($text, $bbcode_name, $depth = 0)
 	{
-		return \s9e\TextFormatter\Utils::removeTag($xml, strtoupper($bbcode_name), $depth);
+		return \s9e\TextFormatter\Utils::removeTag($text, strtoupper($bbcode_name), $depth);
 	}
 
 	/**
 	* Return a parsed text to its original form
 	*
-	* @param  string $xml Parsed text
+	* @param  string $text Parsed text
 	* @return string      Original plain text
 	*/
-	public function unparse($xml)
+	public function unparse($text)
 	{
-		return \s9e\TextFormatter\Unparser::unparse($xml);
+		return \s9e\TextFormatter\Unparser::unparse($text);
 	}
 
 	/**

@@ -132,9 +132,9 @@ class manager
 	 * If there is no reparser with the specified name, null is returned.
 	 *
 	 * @param string $name Name of the reparser to look up.
-	 * @return string A reparser service name, or null.
+	 * @return string|null A reparser service name, or null.
 	 */
-	public function find_reparser($name)
+	public function find_reparser(string $name)
 	{
 		foreach ($this->reparsers as $service => $reparser)
 		{

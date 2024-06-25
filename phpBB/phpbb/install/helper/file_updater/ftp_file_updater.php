@@ -21,7 +21,7 @@ use phpbb\install\helper\update_helper;
 class ftp_file_updater implements file_updater_interface
 {
 	/**
-	 * @var \transfer
+	 * @var \transfer|null
 	 */
 	protected $transfer;
 

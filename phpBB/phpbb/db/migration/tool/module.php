@@ -20,9 +20,6 @@ use phpbb\module\exception\module_exception;
 */
 class module implements \phpbb\db\migration\tool\tool_interface
 {
-	/** @var \phpbb\cache\service */
-	protected $cache;
-
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -31,12 +28,6 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 	/** @var \phpbb\module\module_manager */
 	protected $module_manager;
-
-	/** @var string */
-	protected $phpbb_root_path;
-
-	/** @var string */
-	protected $php_ext;
 
 	/** @var string */
 	protected $modules_table;
@@ -48,21 +39,15 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface $db
-	* @param \phpbb\cache\service $cache
 	* @param \phpbb\user $user
 	* @param \phpbb\module\module_manager	$module_manager
-	* @param string $phpbb_root_path
-	* @param string $php_ext
 	* @param string $modules_table
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $phpbb_root_path, $php_ext, $modules_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\module\module_manager $module_manager, $modules_table)
 	{
 		$this->db = $db;
-		$this->cache = $cache;
 		$this->user = $user;
 		$this->module_manager = $module_manager;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 		$this->modules_table = $modules_table;
 	}
 
@@ -118,6 +103,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 
 		foreach ($parent_sqls as $parent_sql)
 		{
+			/** @psalm-suppress NoValue */
 			$sql = 'SELECT module_id
 				FROM ' . $this->modules_table . "
 				WHERE module_class = '" . $this->db->sql_escape($class) . "'
@@ -177,7 +163,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 		Optionally you may not send 'modes' and it will insert all of the
 	* 			modules in that info file.
 	* 	path, specify that here
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function add($class, $parent = 0, $data = array())
@@ -354,7 +340,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	* 	Use false to ignore the parent check and check class wide.
 	* @param int|string $module The module id|module_langname
 	* 	specify that here
-	* @return null
+	* @return void
 	* @throws \phpbb\db\migration\exception
 	*/
 	public function remove($class, $parent = 0, $module = '')
@@ -365,7 +351,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 			if (isset($module['module_langname']))
 			{
 				// Manual Method
-				return $this->remove($class, $parent, $module['module_langname']);
+				$this->remove($class, $parent, $module['module_langname']);
+				return;
 			}
 
 			// Failed.
@@ -458,6 +445,8 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		{
 			return call_user_func_array(array(&$this, $call), $arguments);
 		}
+
+		return null;
 	}
 
 	/**
@@ -485,7 +474,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 	*	key - module_id
 	*	value - module_langname
 	*
-	* @return null
+	* @return void
 	*/
 	protected function get_categories_list()
 	{

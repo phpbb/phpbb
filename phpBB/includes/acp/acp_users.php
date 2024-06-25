@@ -14,6 +14,9 @@
 /**
 * @ignore
 */
+
+use phpbb\controller\helper;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -35,6 +38,9 @@ class acp_users
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		global $phpbb_dispatcher, $request;
 		global $phpbb_container, $phpbb_log;
+
+		/** @var helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -1146,7 +1152,7 @@ class acp_users
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
-					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
+					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue') : '',
 					'U_SEARCH_USER'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$user_row['user_id']}&amp;sr=posts") : '',
 
 					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_row['user_id']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_row['user_id']}&amp;hash=" . generate_link_hash('switchperm')) : '',
@@ -1607,7 +1613,6 @@ class acp_users
 					'post_st'			=> $request->variable('post_st', ($user_row['user_post_show_days']) ? $user_row['user_post_show_days'] : 0),
 
 					'view_images'		=> $request->variable('view_images', $this->optionget($user_row, 'viewimg')),
-					'view_flash'		=> $request->variable('view_flash', $this->optionget($user_row, 'viewflash')),
 					'view_smilies'		=> $request->variable('view_smilies', $this->optionget($user_row, 'viewsmilies')),
 					'view_sigs'			=> $request->variable('view_sigs', $this->optionget($user_row, 'viewsigs')),
 					'view_avatars'		=> $request->variable('view_avatars', $this->optionget($user_row, 'viewavatars')),
@@ -1651,7 +1656,6 @@ class acp_users
 					if (!count($error))
 					{
 						$this->optionset($user_row, 'viewimg', $data['view_images']);
-						$this->optionset($user_row, 'viewflash', $data['view_flash']);
 						$this->optionset($user_row, 'viewsmilies', $data['view_smilies']);
 						$this->optionset($user_row, 'viewsigs', $data['view_sigs']);
 						$this->optionset($user_row, 'viewavatars', $data['view_avatars']);
@@ -1795,7 +1799,9 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
+				$lang_options = phpbb_language_select($db, $data['lang']);
+
 				$user_prefs_data = array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
@@ -1813,7 +1819,6 @@ class acp_users
 					'ATTACH_SIG'		=> $data['sig'],
 					'NOTIFY'			=> $data['notify'],
 					'VIEW_IMAGES'		=> $data['view_images'],
-					'VIEW_FLASH'		=> $data['view_flash'],
 					'VIEW_SMILIES'		=> $data['view_smilies'],
 					'VIEW_SIGS'			=> $data['view_sigs'],
 					'VIEW_AVATARS'		=> $data['view_avatars'],
@@ -1832,8 +1837,21 @@ class acp_users
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
 					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
 
-					'S_LANG_OPTIONS'	=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'	=> style_select($data['style']),
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
+					'S_STYLE_OPTIONS'	=> [
+						'id'		=> 'style',
+						'name'		=> 'style',
+						'options' => style_select($data['style'])
+					],
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
 				);
 
 				/**
@@ -1972,18 +1990,21 @@ class acp_users
 					$error = $phpbb_avatar_manager->localize_errors($user, $error);
 				}
 
-				$avatar = phpbb_get_user_avatar($user_row, 'USER_AVATAR', true);
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$avatar = $avatar_helper->get_user_avatar($user_row, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'S_AVATAR'	=> true,
-					'ERROR'			=> (!empty($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> (empty($avatar) ? '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />' : $avatar),
+					'S_AVATAR'			=> true,
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 
 					'L_AVATAR_EXPLAIN'	=> $user->lang(($config['avatar_filesize'] == 0) ? 'AVATAR_EXPLAIN_NO_FILESIZE' : 'AVATAR_EXPLAIN', $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 
-					'S_AVATARS_ENABLED'		=> ($config['allow_avatar'] && $avatars_enabled),
+					'S_AVATARS_ENABLED'	=> ($config['allow_avatar'] && $avatars_enabled),
 				));
 
 			break;
@@ -2068,7 +2089,6 @@ class acp_users
 					$enable_urls,
 					$enable_smilies,
 					$config['allow_sig_img'],
-					$config['allow_sig_flash'],
 					true,
 					$config['allow_sig_links'],
 					'sig'
@@ -2127,9 +2147,6 @@ class acp_users
 					$decoded_message = generate_text_for_edit($signature, $bbcode_uid, $bbcode_flags);
 				}
 
-				/** @var \phpbb\controller\helper $controller_helper */
-				$controller_helper = $phpbb_container->get('controller.helper');
-
 				$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
 
@@ -2143,7 +2160,6 @@ class acp_users
 					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
 					'L_SIGNATURE_EXPLAIN'	=> $user->lang('SIGNATURE_EXPLAIN', (int) $config['max_sig_chars']),
@@ -2151,7 +2167,6 @@ class acp_users
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
 
@@ -2299,7 +2314,13 @@ class acp_users
 
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> $controller_helper->route(
+							'phpbb_storage_attachment',
+							[
+								'id'		=> (int) $row['attach_id'],
+								'filename'	=> $row['real_filename'],
+							]
+						),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

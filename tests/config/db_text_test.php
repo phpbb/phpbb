@@ -16,6 +16,8 @@ class phpbb_config_db_text_test extends phpbb_database_test_case
 	/** @var \phpbb\config\db_text */
 	protected $config_text;
 
+	protected $db;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/config_text.xml');

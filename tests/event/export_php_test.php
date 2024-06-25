@@ -28,7 +28,7 @@ class phpbb_event_export_php_test extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 		$exporter = new \phpbb\event\php_exporter($phpbb_root_path);
-		$files = $exporter->get_recursive_file_list($phpbb_root_path);
+		$files = $exporter->get_recursive_file_list();
 
 		$data_provider = array();
 		foreach ($files as $file)

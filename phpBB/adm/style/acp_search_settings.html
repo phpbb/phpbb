@@ -1,0 +1,78 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('ACP_SEARCH_SETTINGS') }}</h1>
+
+<p>{{ lang('ACP_SEARCH_SETTINGS_EXPLAIN') }}</p>
+
+<form id="acp_search" method="post" action="{{ U_ACTION }}">
+
+<fieldset>
+	<legend>{{ lang('GENERAL_SEARCH_SETTINGS') }}</legend>
+<dl>
+	<dt><label for="load_search">{{ lang('YES_SEARCH') ~ lang('COLON') }}</label><br /><span>{{ lang('YES_SEARCH_EXPLAIN') }}</span></dt>
+	<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"{% if S_YES_SEARCH %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
+		<label><input type="radio" class="radio" name="config[load_search]" value="0"{% if not S_YES_SEARCH %} checked="checked"{% endif %} /> {{ lang('NO') }}</label></dd>
+</dl>
+<dl>
+	<dt><label for="search_interval">{{ lang('SEARCH_INTERVAL') ~ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_INTERVAL_EXPLAIN') }}</span></dt>
+	<dd><input id="search_interval" type="number" min="0" max="9999" name="config[search_interval]" value="{{ SEARCH_INTERVAL }}" /> {{ lang('SECONDS') }}</dd>
+</dl>
+<dl>
+	<dt><label for="search_anonymous_interval">{{ lang('SEARCH_GUEST_INTERVAL') ~ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_GUEST_INTERVAL_EXPLAIN') }}</span></dt>
+	<dd><input id="search_anonymous_interval" type="number" min="0" max="9999" name="config[search_anonymous_interval]" value="{{ SEARCH_GUEST_INTERVAL }}" /> {{ lang('SECONDS') }}</dd>
+</dl>
+<dl>
+	<dt><label for="limit_search_load">{{ lang('LIMIT_SEARCH_LOAD') ~ lang('COLON') }}</label><br /><span>{{ lang('LIMIT_SEARCH_LOAD_EXPLAIN') }}</span></dt>
+	<dd><input id="limit_search_load" type="text" size="4" maxlength="4" name="config[limit_search_load]" value="{{ LIMIT_SEARCH_LOAD }}" /></dd>
+</dl>
+<dl>
+	<dt><label for="min_search_author_chars">{{ lang('MIN_SEARCH_AUTHOR_CHARS') ~ lang('COLON') }}</label><br /><span>{{ lang('MIN_SEARCH_AUTHOR_CHARS_EXPLAIN') }}</span></dt>
+	<dd><input id="min_search_author_chars" type="number" min="0" max="9999" name="config[min_search_author_chars]" value="{{ MIN_SEARCH_AUTHOR_CHARS }}" /></dd>
+</dl>
+<dl>
+	<dt><label for="max_num_search_keywords">{{ lang('MAX_NUM_SEARCH_KEYWORDS') ~ lang('COLON') }}</label><br /><span>{{ lang('MAX_NUM_SEARCH_KEYWORDS_EXPLAIN') }}</span></dt>
+	<dd><input id="max_num_search_keywords" type="number" min="0" max="9999" name="config[max_num_search_keywords]" value="{{ MAX_NUM_SEARCH_KEYWORDS }}" /></dd>
+</dl>
+<dl>
+	<dt>
+		<label for="default_search_return_chars">{{ lang('DEFAULT_SEARCH_RETURN_CHARS') ~ lang('COLON') }}</label>
+		<br><span>{{ lang('DEFAULT_SEARCH_RETURN_CHARS_EXPLAIN') }}</span>
+	</dt>
+	<dd><input id="default_search_return_chars" name="config[default_search_return_chars]" type="number" value="{{ DEFAULT_SEARCH_RETURN_CHARS }}" min="0" max="9999"></dd>
+</dl>
+<dl>
+	<dt><label for="search_store_results">{{ lang('SEARCH_STORE_RESULTS') ~ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_STORE_RESULTS_EXPLAIN') }}</span></dt>
+	<dd><input id="search_store_results" type="number" min="0" max="999999" name="config[search_store_results]" value="{{ SEARCH_STORE_RESULTS }}" /> {{ lang('SECONDS') }}</dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<legend>{{ lang('SEARCH_TYPE') }}</legend>
+<dl>
+	<dt><label for="search_type">{{ lang('SEARCH_TYPE') ~ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_TYPE_EXPLAIN') }}</span></dt>
+	<dd><select id="search_type" name="config[search_type]" data-togglable-settings="true">{{ S_SEARCH_TYPES }}</select></dd>
+</dl>
+</fieldset>
+
+{% for backend in loops.backend %}
+
+	<fieldset id="search_{{ backend.IDENTIFIER }}_settings">
+		<legend>{{ backend.NAME }}</legend>
+	{{ backend.SETTINGS }}
+	</fieldset>
+
+{% endfor %}
+
+<fieldset>
+	<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+	</p>
+	{{ S_FORM_TOKEN }}
+</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

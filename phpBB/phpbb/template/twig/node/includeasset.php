@@ -49,7 +49,7 @@ abstract class includeasset extends \Twig\Node\Node
 			->write("\n")
 			->write("if (\$asset->is_relative()) {\n")
 			->indent()
-			->write("\$asset->add_assets_version(\$this->env->get_phpbb_config()['assets_version']);\n")
+				->write("\$asset->add_assets_version(\$this->env->get_phpbb_config()['assets_version']);\n")
 			->outdent()
 			->write("}\n")
 			->write("\$this->env->get_assets_bag()->add_{$this->get_setters_name()}(\$asset);")

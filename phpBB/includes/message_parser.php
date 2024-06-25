@@ -202,11 +202,6 @@ class bbcode_firstpass extends bbcode
 					return $bbcode_class->validate_email($match[1], $match[2]);
 				}
 			)),
-			'flash'			=> array('bbcode_id' => BBCODE_ID_FLASH,	'regexp' => array('#\[flash=([0-9]+),([0-9]+)\](.*?)\[/flash\]#ui' => function ($match) use($bbcode_class)
-				{
-					return $bbcode_class->bbcode_flash($match[1], $match[2], $match[3]);
-				}
-			))
 		);
 
 		// Zero the parsed items array
@@ -408,60 +403,6 @@ class bbcode_firstpass extends bbcode
 		}
 
 		return '[img:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($in) . '[/img:' . $this->bbcode_uid . ']';
-	}
-
-	/**
-	* Parse flash tag
-	*/
-	function bbcode_flash($width, $height, $in)
-	{
-		global $user, $config;
-
-		if (!$this->check_bbcode('flash', $in))
-		{
-			return $in;
-		}
-
-		$in = trim($in);
-		$error = false;
-
-		// Do not allow 0-sizes generally being entered
-		if ($width <= 0 || $height <= 0)
-		{
-			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
-		}
-
-		$in = str_replace(' ', '%20', $in);
-
-		// Make sure $in is a URL.
-		if (!preg_match('#^' . get_preg_expression('url') . '$#iu', $in) &&
-			!preg_match('#^' . get_preg_expression('www_url') . '$#iu', $in))
-		{
-			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
-		}
-
-		// Apply the same size checks on flash files as on images
-		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
-		{
-			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
-			{
-				$error = true;
-				$this->warn_msg[] = $user->lang('MAX_FLASH_HEIGHT_EXCEEDED', (int) $config['max_' . $this->mode . '_img_height']);
-			}
-
-			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
-			{
-				$error = true;
-				$this->warn_msg[] = $user->lang('MAX_FLASH_WIDTH_EXCEEDED', (int) $config['max_' . $this->mode . '_img_width']);
-			}
-		}
-
-		if ($error || $this->path_in_domain($in))
-		{
-			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
-		}
-
-		return '[flash=' . $width . ',' . $height . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($in) . '[/flash:' . $this->bbcode_uid . ']';
 	}
 
 	/**
@@ -1073,6 +1014,7 @@ class bbcode_firstpass extends bbcode
 			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)
 			{
 				// Ok, actually we allow linking to some files (this may be able to be extended in some way later...)
+				// @deprecated
 				if (strpos($url, '/' . $check_path . '/download/file.' . $phpEx) !== 0)
 				{
 					return false;
@@ -1099,7 +1041,6 @@ class parse_message extends bbcode_firstpass
 	var $message_status = '';
 
 	var $allow_img_bbcode = true;
-	var $allow_flash_bbcode = true;
 	var $allow_quote_bbcode = true;
 	var $allow_url_bbcode = true;
 
@@ -1115,14 +1056,15 @@ class parse_message extends bbcode_firstpass
 	function __construct($message = '')
 	{
 		// Init BBCode UID
-		$this->bbcode_uid = substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
+		$unique_id = preg_replace('/[^0-9a-f]/', '', unique_id());
+		$this->bbcode_uid = substr(base_convert($unique_id, 16, 36), 0, BBCODE_UID_LEN);
 		$this->message = $message;
 	}
 
 	/**
 	* Parse Message
 	*/
-	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
+	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
 		global $config, $user, $phpbb_dispatcher, $phpbb_container;
 
@@ -1137,7 +1079,6 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$this->allow_img_bbcode = $allow_img_bbcode;
-		$this->allow_flash_bbcode = $allow_flash_bbcode;
 		$this->allow_quote_bbcode = $allow_quote_bbcode;
 		$this->allow_url_bbcode = $allow_url_bbcode;
 
@@ -1181,7 +1122,6 @@ class parse_message extends bbcode_firstpass
 		* @var bool		allow_magic_url			Do we allow magic urls
 		* @var bool		allow_smilies			Do we allow smilies
 		* @var bool		allow_img_bbcode		Do we allow image BBCode
-		* @var bool		allow_flash_bbcode		Do we allow flash BBCode
 		* @var bool		allow_quote_bbcode		Do we allow quote BBCode
 		* @var bool		allow_url_bbcode		Do we allow url BBCode
 		* @var bool		update_this_message		Do we alter the parsed message
@@ -1193,6 +1133,7 @@ class parse_message extends bbcode_firstpass
 		* @var array	warn_msg				Array of the warning messages
 		* @since 3.1.2-RC1
 		* @changed 3.1.3-RC1 Added vars $bbcode_bitfield and $bbcode_uid
+		* @changed 4.0.0-a1 Removed $allow_flash_bbcode
 		*/
 		$message = $this->message;
 		$warn_msg = $this->warn_msg;
@@ -1204,7 +1145,6 @@ class parse_message extends bbcode_firstpass
 			'allow_magic_url',
 			'allow_smilies',
 			'allow_img_bbcode',
-			'allow_flash_bbcode',
 			'allow_quote_bbcode',
 			'allow_url_bbcode',
 			'update_this_message',
@@ -1233,7 +1173,6 @@ class parse_message extends bbcode_firstpass
 		($allow_magic_url)    ? $parser->enable_magic_url()     : $parser->disable_magic_url();
 		($allow_smilies)      ? $parser->enable_smilies()       : $parser->disable_smilies();
 		($allow_img_bbcode)   ? $parser->enable_bbcode('img')   : $parser->disable_bbcode('img');
-		($allow_flash_bbcode) ? $parser->enable_bbcode('flash') : $parser->disable_bbcode('flash');
 		($allow_quote_bbcode) ? $parser->enable_bbcode('quote') : $parser->disable_bbcode('quote');
 		($allow_url_bbcode)   ? $parser->enable_bbcode('url')   : $parser->disable_bbcode('url');
 
@@ -1342,7 +1281,7 @@ class parse_message extends bbcode_firstpass
 		if (!preg_match('/^<[rt][ >]/', $this->message))
 		{
 			// Force updating message - of course.
-			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, $this->allow_url_bbcode, true);
+			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_quote_bbcode, $this->allow_url_bbcode, true);
 		}
 
 		// There's a bug when previewing a topic with no poll, because the empty title of the poll
@@ -1533,6 +1472,8 @@ class parse_message extends bbcode_firstpass
 	{
 		global $config, $auth, $user, $phpbb_root_path, $phpEx, $db, $request;
 		global $phpbb_container, $phpbb_dispatcher;
+
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		$error = array();
 
@@ -1776,7 +1717,13 @@ class parse_message extends bbcode_firstpass
 
 						if (isset($this->plupload) && $this->plupload->is_active())
 						{
-							$download_url = append_sid("{$phpbb_root_path}download/file.{$phpEx}", 'mode=view&amp;id=' . $new_entry['attach_id']);
+							$download_url = $controller_helper->route(
+								'phpbb_storage_attachment',
+								[
+									'id'		=> (int) $new_entry['attach_id'],
+									'filename'	=> $new_entry['real_filename'],
+								]
+							);
 
 							// Send the client the attachment data to maintain state
 							$json_response->send(array('data' => $this->attachment_data, 'download_url' => $download_url));
@@ -1916,7 +1863,7 @@ class parse_message extends bbcode_firstpass
 		foreach ($poll['poll_options'] as &$poll_option)
 		{
 			$this->message = $poll_option;
-			$poll_option = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
+			$poll_option = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, $config['allow_post_links'], false, 'poll');
 		}
 		unset($poll_option);
 		$poll['poll_option_text'] = implode("\n", $poll['poll_options']);
@@ -1933,7 +1880,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
 			}
-			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
+			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, $config['allow_post_links'], false, 'poll');
 			if (strlen($poll['poll_title']) > 255)
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
@@ -1962,7 +1909,7 @@ class parse_message extends bbcode_firstpass
 	* Remove nested quotes at given depth in current parsed message
 	*
 	* @param  integer $max_depth Depth limit
-	* @return null
+	* @return void
 	*/
 	public function remove_nested_quotes($max_depth)
 	{

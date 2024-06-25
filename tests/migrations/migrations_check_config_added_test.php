@@ -13,6 +13,36 @@
 
 class migrations_check_config_added_test extends phpbb_test_case
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \Symfony\Component\DependencyInjection\ContainerInterface */
+	protected $container;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \Doctrine\DBAL\Connection */
+	protected $db_doctrine;
+
+	/** @var \phpbb\db\tools\tools_interface */
+	protected $db_tools;
+
+	/** @var \phpbb\extension\manager */
+	protected $extension_manager;
+
+	/** @var \phpbb\db\migrator */
+	protected $migrator;
+
+	/** @var string */
+	protected $table_prefix;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
+
 	protected function setUp(): void
 	{
 		global $phpbb_root_path;
@@ -30,11 +60,16 @@ class migrations_check_config_added_test extends phpbb_test_case
 		]);
 
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
+		$this->db_doctrine = $this->createMock(\Doctrine\DBAL\Connection::class);
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->db_doctrine);
 		$this->table_prefix = 'phpbb_';
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
+
+		$tools = [
+			new \phpbb\db\migration\tool\config($this->config),
+		];
 
 		$this->container = new phpbb_mock_container_builder();
 
@@ -48,6 +83,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 			$this->php_ext,
 			$this->table_prefix,
 			[],
+			$tools,
 			new \phpbb\db\migration\helper()
 		);
 		$this->container->set('migrator', $this->migrator);
@@ -106,7 +142,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 					continue;
 				}
 
-				// Fill error entries for configuration options which were not added to shema_data.sql
+				// Fill error entries for configuration options which were not added to schema_data.sql
 				if (!isset($config_names[$config_name]))
 				{
 					$config_names[$config_name] = [$config_name, $class];
@@ -124,7 +160,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 	*/
 	public function test_config_option_exists_in_schema_data($config_name, $class)
 	{
-		$message = 'Migration: %1$s, config_name: %2$s; not added to shema_data.sql';
+		$message = 'Migration: %1$s, config_name: %2$s; not added to schema_data.sql';
 
 		$this->assertNotFalse(strpos($this->schema_data, $config_name),
 			sprintf($message, $class, $config_name)

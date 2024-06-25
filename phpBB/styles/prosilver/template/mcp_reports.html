@@ -5,7 +5,7 @@
 <!-- IF not S_PM -->
 <fieldset class="forum-selection">
 	<label for="fo">{L_FORUM}{L_COLON} <select name="f" id="fo">{S_FORUM_OPTIONS}</select></label>
-	<input type="submit" name="sort" value="{L_GO}" class="button2" />
+	<input type="submit" name="sort" value="{L_GO}" class="button1 button button-form-bold" />
 	{S_FORM_TOKEN}
 </fieldset>
 <!-- ENDIF -->
@@ -47,7 +47,7 @@
 					<dt>
 						<div class="list-inner">
 							<a href="{{ postrow.U_VIEW_DETAILS }}" class="topictitle">{{ postrow.PM_SUBJECT }}</a>
-							{% if postrow.ATTACH_ICON_IMG %} <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i>{% endif %}
+							{% if postrow.ATTACH_ICON_IMG %}{{ Icon('font', 'paperclip', '', true) }}{% endif %}
 							<br>
 							<span>{L_MESSAGE_BY_AUTHOR} {postrow.PM_AUTHOR_FULL} &raquo; {postrow.PM_TIME}</span><br />
 							<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
@@ -62,8 +62,8 @@
 					<!-- ELSE -->
 					<dt>
 						<div class="list-inner">
-							<a href="{{ postrow.U_VIEW_DETAILS }}" class="topictitle">{{ postrow.POST_SUBJECT }}</a>
-							{% if postrow.ATTACH_ICON_IMG %} <i class="icon fa-paperclip fa-fw" aria-hidden="true"></i>{% endif %}
+							<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a>
+							{% if postrow.ATTACH_ICON_IMG %}{{ Icon('font', 'paperclip', '', true) }} {% endif %}
 							<br>
 							<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 							<div class="responsive-show" style="display: none;">
@@ -112,8 +112,8 @@
 
 <!-- IF .postrow -->
 	<fieldset class="display-actions">
-		<input class="button2" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
-		<!-- IF not S_CLOSED -->&nbsp;<input class="button1" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
+		<input class="button1 button button-form-bold" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
+		<!-- IF not S_CLOSED -->&nbsp;<input class="button1 button button-form" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
 		<div><a href="#" onclick="marklist('mcp', 'report_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'report_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
 	</fieldset>
 <!-- ENDIF -->

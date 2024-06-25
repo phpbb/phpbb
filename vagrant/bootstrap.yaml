@@ -1,5 +1,5 @@
 ---
-ip: "192.168.10.10"
+ip: "192.168.56.56"
 memory: 2048
 cpus: 1
 hostname: phpbb
@@ -18,10 +18,7 @@ sites:
     - map: phpbb.app
       to: "/home/vagrant/phpbb/phpBB"
       type: apache
-      php: "7.2"
-
-databases:
-    - phpbb
+      php: "8.1"
 
 # blackfire:
 #     - id: foo

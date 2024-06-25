@@ -62,14 +62,14 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$passwords_manager = new \phpbb\passwords\manager($config, $passwords_drivers, $passwords_helper, array_keys($passwords_drivers));
 
 		$plugins = new \phpbb\di\service_collection($phpbb_container);
-		$plugins->add('core.captcha.plugins.nogd');
+		$plugins->add('core.captcha.plugins.qa');
 		$phpbb_container->set(
 			'captcha.factory',
 			new \phpbb\captcha\factory($phpbb_container, $plugins)
 		);
 		$phpbb_container->set(
-			'core.captcha.plugins.nogd',
-			new \phpbb\captcha\plugins\nogd()
+			'core.captcha.plugins.qa',
+			new \phpbb\captcha\plugins\qa('', '', '')
 		);
 		// Set up passwords manager
 		$db_auth_provider = new \phpbb\auth\provider\db(
@@ -77,10 +77,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$config,
 			$db,
 			$passwords_manager,
-			$request,
-			$user,
-			$phpbb_root_path,
-			$phpEx
+			$user
 		);
 
 		$oauth_provider = new \phpbb\auth\provider\oauth\oauth(

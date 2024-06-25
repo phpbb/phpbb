@@ -39,6 +39,9 @@ class qa
 	*/
 	protected $service_name;
 
+	/** @var int Question ID */
+	protected $question = -1;
+
 	/**
 	* Constructor
 	*
@@ -177,7 +180,7 @@ class qa
 	/**
 	*  API function
 	*/
-	static public function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
@@ -442,7 +445,7 @@ class qa
 		{
 			return;
 		}
-		$this->confirm_id = md5(unique_id($user->ip));
+		$this->confirm_id = md5(unique_id());
 		$this->question = (int) array_rand($this->question_ids);
 
 		$sql = 'INSERT INTO ' . $this->table_qa_confirm . ' ' . $db->sql_build_array('INSERT', array(
@@ -450,7 +453,7 @@ class qa
 			'session_id'	=> (string) $user->session_id,
 			'lang_iso'		=> (string) $this->question_lang,
 			'confirm_type'	=> (int) $this->type,
-			'question_id'	=> (int) $this->question,
+			'question_id'	=> $this->question,
 		));
 		$db->sql_query($sql);
 
@@ -473,7 +476,7 @@ class qa
 		$this->solved = 0;
 
 		$sql = 'UPDATE ' . $this->table_qa_confirm . '
-			SET question_id = ' . (int) $this->question . "
+			SET question_id = ' . $this->question . "
 			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 		$db->sql_query($sql);
@@ -493,7 +496,7 @@ class qa
 		$this->solved = 0;
 
 		$sql = 'UPDATE ' . $this->table_qa_confirm . '
-			SET question_id = ' . (int) $this->question . ",
+			SET question_id = ' . $this->question . ",
 				attempts = attempts + 1
 			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
@@ -553,7 +556,7 @@ class qa
 
 		if ($row)
 		{
-			$this->question = $row['question_id'];
+			$this->question = (int) $row['question_id'];
 
 			$this->attempts = $row['attempts'];
 			$this->question_strict = $row['strict'];
@@ -576,7 +579,7 @@ class qa
 
 		$sql = 'SELECT answer_text
 			FROM ' . $this->table_captcha_answers . '
-			WHERE question_id = ' . (int) $this->question;
+			WHERE question_id = ' . $this->question;
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1034,7 +1037,8 @@ class qa
 			{
 				return true;
 			}
-			return false;
 		}
+
+		return false;
 	}
 }

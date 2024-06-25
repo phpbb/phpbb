@@ -13,22 +13,25 @@
 
 namespace phpbb;
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 /**
 * Session class
 */
 class session
 {
-	var $cookie_data = array();
-	var $page = array();
-	var $data = array();
-	var $browser = '';
-	var $forwarded_for = '';
-	var $host = '';
-	var $session_id = '';
-	var $ip = '';
-	var $load = 0;
-	var $time_now = 0;
-	var $update_session_page = true;
+	public $cookie_data = array();
+	public $page = array();
+	public $data = array();
+	public $browser = '';
+	public $referer = '';
+	public $forwarded_for = '';
+	public $host = '';
+	public $session_id = '';
+	public $ip = '';
+	public $load = 0;
+	public $time_now = 0;
+	public $update_session_page = true;
 
 	/**
 	 * Extract current session page
@@ -38,13 +41,13 @@ class session
 	 */
 	static function extract_current_page($root_path)
 	{
-		global $request, $symfony_request, $phpbb_filesystem;
+		global $request, $symfony_request;
 
 		$page_array = array();
 
 		// First of all, get the request uri...
 		$script_name = $request->escape($symfony_request->getScriptName(), true);
-		$args = $request->escape(explode('&', $symfony_request->getQueryString()), true);
+		$args = $request->escape(explode('&', $symfony_request->getQueryString() ?? ''), true);
 
 		// If we are unable to get the script name we use REQUEST_URI as a failover and note it within the page array for easier support...
 		if (!$script_name)
@@ -58,21 +61,21 @@ class session
 		$script_name = str_replace(array('\\', '//'), '/', $script_name);
 
 		// Now, remove the sid and let us get a clean query string...
-		$use_args = array();
+		$use_args = [];
 
 		// Since some browser do not encode correctly we need to do this with some "special" characters...
 		// " -> %22, ' => %27, < -> %3C, > -> %3E
-		$find = array('"', "'", '<', '>', '&quot;', '&lt;', '&gt;');
-		$replace = array('%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E');
+		$find = ['"', "'", '<', '>', '&quot;', '&lt;', '&gt;'];
+		$replace = ['%22', '%27', '%3C', '%3E', '%22', '%3C', '%3E'];
 
-		foreach ($args as $key => $argument)
+		foreach ($args as $argument)
 		{
 			if (strpos($argument, 'sid=') === 0)
 			{
 				continue;
 			}
 
-			$use_args[] = str_replace($find, $replace, $argument);
+			$use_args[] = (string) str_replace($find, $replace, $argument);
 		}
 		unset($args);
 
@@ -85,7 +88,7 @@ class session
 		$page_name = (substr($script_name, -1, 1) == '/') ? '' : basename($script_name);
 		$page_name = urlencode(htmlspecialchars($page_name, ENT_COMPAT));
 
-		$symfony_request_path = $phpbb_filesystem->clean_path($symfony_request->getPathInfo());
+		$symfony_request_path = filesystem_helper::clean_path($symfony_request->getPathInfo());
 		if ($symfony_request_path !== '/')
 		{
 			$page_name .= str_replace('%2F', '/', urlencode($symfony_request_path));
@@ -99,8 +102,8 @@ class session
 		else
 		{
 			// current directory within the phpBB root (for example: adm)
-			$root_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath($root_path)));
-			$page_dirs = explode('/', str_replace('\\', '/', $phpbb_filesystem->realpath('./')));
+			$root_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath($root_path)));
+			$page_dirs = explode('/', str_replace('\\', '/', filesystem_helper::realpath('./')));
 		}
 
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
@@ -213,6 +216,21 @@ class session
 	}
 
 	/**
+	 * Setup basic user-specific items (style, language, ...)
+	 *
+	 * @param array|string|false $lang_set Lang set(s) to include, false if none shall be included
+	 * @param int|false $style_id Style ID to load, false to load default style
+	 *
+	 * @throws \RuntimeException When called on session and not user instance
+	 *
+	 * @return void
+	 */
+	public function setup($lang_set = false, $style_id = false)
+	{
+		throw new \RuntimeException('Calling setup on session class is not supported.');
+	}
+
+	/**
 	* Start session management
 	*
 	* This is where all session activity begins. We gather various pieces of
@@ -269,10 +287,10 @@ class session
 			$this->cookie_data['k'] = $request->variable($config['cookie_name'] . '_k', '', false, \phpbb\request\request_interface::COOKIE);
 			$this->session_id 		= $request->variable($config['cookie_name'] . '_sid', '', false, \phpbb\request\request_interface::COOKIE);
 
-			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
-			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
+			$SID = '?sid=';
+			$_SID = '';
 
-			if (empty($this->session_id))
+			if (empty($this->session_id) && $phpbb_container->getParameter('session.force_sid'))
 			{
 				$this->session_id = $_SID = $request->variable('sid', '');
 				$SID = '?sid=' . $this->session_id;
@@ -281,7 +299,7 @@ class session
 		}
 		else
 		{
-			$this->session_id = $_SID = $request->variable('sid', '');
+			$this->session_id = $_SID = $phpbb_container->getParameter('session.force_sid') ? $request->variable('sid', '') : '';
 			$SID = '?sid=' . $this->session_id;
 		}
 
@@ -338,14 +356,6 @@ class session
 				$config->set('limit_load', '0');
 				$config->set('limit_search_load', '0');
 			}
-		}
-
-		// if no session id is set, redirect to index.php
-		$session_id = $request->variable('sid', '');
-		if (defined('NEED_SID') && (empty($session_id) || $this->session_id !== $session_id))
-		{
-			send_status_line(401, 'Unauthorized');
-			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
 		// if session id is set
@@ -520,7 +530,7 @@ class session
 		{
 			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
 			{
-				$bot = $row['user_id'];
+				$bot = (int) $row['user_id'];
 			}
 
 			// If ip is supplied, we will make sure the ip is matching too...
@@ -791,8 +801,11 @@ class session
 		}
 
 		// refresh data
-		$SID = '?sid=' . $this->session_id;
-		$_SID = $this->session_id;
+		if ($phpbb_container->getParameter('session.force_sid'))
+		{
+			$SID = '?sid=' . $this->session_id;
+			$_SID = $this->session_id;
+		}
 		$this->data = array_merge($this->data, $sql_ary);
 
 		if (!$bot)
@@ -834,8 +847,11 @@ class session
 
 			$this->update_user_lastvisit();
 
-			$SID = '?sid=';
-			$_SID = '';
+			if ($phpbb_container->getParameter('session.force_sid'))
+			{
+				$SID = '?sid=';
+				$_SID = '';
+			}
 		}
 
 		$session_data = $sql_ary;
@@ -1054,9 +1070,7 @@ class session
 		* @event core.session_gc_after
 		* @since 3.1.6-RC1
 		*/
-		$phpbb_dispatcher->dispatch('core.session_gc_after');
-
-		return;
+		$phpbb_dispatcher->trigger_event('core.session_gc_after');
 	}
 
 	/**
@@ -1126,119 +1140,23 @@ class session
 	*/
 	function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
 	{
-		global $config, $db, $phpbb_dispatcher;
+		global $phpbb_container, $phpbb_dispatcher;
 
 		if (defined('IN_CHECK_BAN') || defined('SKIP_CHECK_BAN'))
 		{
-			return;
+			return false;
 		}
 
-		$banned = false;
-		$cache_ttl = 3600;
-		$where_sql = array();
-
-		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
-			FROM ' . BANLIST_TABLE . '
-			WHERE ';
-
-		// Determine which entries to check, only return those
-		if ($user_email === false)
+		/** @var \phpbb\ban\manager $ban_manager */
+		$ban_manager = $phpbb_container->get('ban.manager');
+		$ban_row = $ban_manager->check(['user_id' => $user_id, 'user_email' => $user_email]);
+		if (empty($ban_row))
 		{
-			$where_sql[] = "ban_email = ''";
+			return false;
 		}
 
-		if ($user_ips === false)
-		{
-			$where_sql[] = "(ban_ip = '' OR ban_exclude = 1)";
-		}
-
-		if ($user_id === false)
-		{
-			$where_sql[] = '(ban_userid = 0 OR ban_exclude = 1)';
-		}
-		else
-		{
-			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
-			$_sql = '(ban_userid = ' . $user_id;
-
-			if ($user_email !== false)
-			{
-				$_sql .= " OR ban_email <> ''";
-			}
-
-			if ($user_ips !== false)
-			{
-				$_sql .= " OR ban_ip <> ''";
-			}
-
-			$_sql .= ')';
-
-			$where_sql[] = $_sql;
-		}
-
-		$sql .= (count($where_sql)) ? implode(' AND ', $where_sql) : '';
-		$result = $db->sql_query($sql, $cache_ttl);
-
-		$ban_triggered_by = 'user';
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['ban_end'] && $row['ban_end'] < time())
-			{
-				continue;
-			}
-
-			$ip_banned = false;
-			if (!empty($row['ban_ip']))
-			{
-				if (!is_array($user_ips))
-				{
-					$ip_banned = preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips);
-				}
-				else
-				{
-					foreach ($user_ips as $user_ip)
-					{
-						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip))
-						{
-							$ip_banned = true;
-							break;
-						}
-					}
-				}
-			}
-
-			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
-				$ip_banned ||
-				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email)))
-			{
-				if (!empty($row['ban_exclude']))
-				{
-					$banned = false;
-					break;
-				}
-				else
-				{
-					$banned = true;
-					$ban_row = $row;
-
-					if (!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id)
-					{
-						$ban_triggered_by = 'user';
-					}
-					else if ($ip_banned)
-					{
-						$ban_triggered_by = 'ip';
-					}
-					else
-					{
-						$ban_triggered_by = 'email';
-					}
-
-					// Don't break. Check if there is an exclude rule for this user
-				}
-			}
-		}
-		$db->sql_freeresult($result);
+		$banned = true;
+		$ban_triggered_by = $ban_row['mode'];
 
 		/**
 		* Event to set custom ban type
@@ -1256,14 +1174,7 @@ class session
 
 		if ($banned && !$return)
 		{
-			global $phpbb_root_path, $phpEx;
-
-			// If the session is empty we need to create a valid one...
-			if (empty($this->session_id))
-			{
-				// This seems to be no longer needed? - #14971
-//				$this->session_create(ANONYMOUS);
-			}
+			global $config, $phpbb_root_path, $phpEx;
 
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
@@ -1297,13 +1208,8 @@ class session
 			}
 
 			// Determine which message to output
-			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
-			$message = ($ban_row['ban_end']) ? 'BOARD_BAN_TIME' : 'BOARD_BAN_PERM';
-
 			$contact_link = phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx);
-			$message = sprintf($this->lang[$message], $till_date, '<a href="' . $contact_link . '">', '</a>');
-			$message .= ($ban_row['ban_give_reason']) ? '<br /><br />' . sprintf($this->lang['BOARD_BAN_REASON'], $ban_row['ban_give_reason']) : '';
-			$message .= '<br /><br /><em>' . $this->lang['BAN_TRIGGERED_BY_' . strtoupper($ban_triggered_by)] . '</em>';
+			$message = $ban_manager->get_ban_message($ban_row, $ban_triggered_by, $contact_link);
 
 			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
 			if (defined('IN_CRON'))
@@ -1329,8 +1235,6 @@ class session
 
 	/**
 	 * Check the current session for bans
-	 *
-	 * @return true if session user is banned.
 	 */
 	protected function check_ban_for_current_session($config)
 	{
@@ -1462,7 +1366,7 @@ class session
 	* @param string 		$mode	register/post - spamcop for example is omitted for posting
 	* @param string|false	$ip		the IPv4 address to check
 	*
-	* @return false if ip is not blacklisted, else an array([checked server], [lookup])
+	* @return array|false false if ip is not blacklisted, else an array([checked server], [lookup])
 	*/
 	function check_dnsbl($mode, $ip = false)
 	{
@@ -1566,7 +1470,7 @@ class session
 		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
 		$key = ($key === false) ? (($this->cookie_data['k']) ? $this->cookie_data['k'] : false) : $key;
 
-		$key_id = unique_id(hexdec(substr($this->session_id, 0, 8)));
+		$key_id = unique_id();
 
 		$sql_ary = array(
 			'key_id'		=> (string) md5($key_id),
@@ -1784,7 +1688,9 @@ class session
 
 			$this->data = array_merge($this->data, $sql_ary);
 
-			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+			if ($this->data['user_id'] != ANONYMOUS && isset($config['new_member_post_limit'])
+				&& $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts']
+				&& $this instanceof user)
 			{
 				$this->leave_newly_registered();
 			}

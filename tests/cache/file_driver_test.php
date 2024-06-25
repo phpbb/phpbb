@@ -67,9 +67,11 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 
 		$filename = "{$this->cache_dir}unreadable.$phpEx";
 		@chmod($filename, 0000);
-		$this->assertFalse($this->cache_file->_read('unreadable'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertFalse($readReflection->invoke($this->cache_file, 'unreadable'));
 		@chmod($filename, 0600);
-		$this->assertNotFalse($this->cache_file->_read('unreadable'));
+		$this->assertNotFalse($readReflection->invoke($this->cache_file, 'unreadable'));
 	}
 
 	public function test_read_data_global_invalid()
@@ -92,7 +94,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$cache_data = str_replace("\n13\n", "\n1\n", $cache_data);
 		file_put_contents($filename, $cache_data);
 
-		$this->assertFalse($this->cache_file->_read('data_global'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
 	public function test_read_data_global_zero_bytes()
@@ -115,7 +119,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$cache_data = str_replace("\n13\n", "\n0\n", $cache_data);
 		file_put_contents($filename, $cache_data);
 
-		$this->assertFalse($this->cache_file->_read('data_global'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
 	public function test_read_data_global_hex_bytes()
@@ -138,7 +144,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$cache_data = str_replace("\n13\n", "\nA\n", $cache_data);
 		file_put_contents($filename, $cache_data);
 
-		$this->assertFalse($this->cache_file->_read('data_global'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
 	public function test_read_data_global_expired()
@@ -158,7 +166,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$reflectionCacheVars->setValue($this->cache_file, []);
 		$reflectionCacheVarExpires->setValue($this->cache_file, []);
 
-		$this->assertTrue($this->cache_file->_read('data_global'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertTrue($readReflection->invoke($this->cache_file, 'data_global'));
 
 		// Check data, should be empty
 		$this->assertEquals([], $reflectionCacheVars->getValue($this->cache_file));
@@ -185,7 +195,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$this->assertEquals([], $reflectionCacheVars->getValue($this->cache_file));
 		$this->assertEquals([], $reflectionCacheVarExpires->getValue($this->cache_file));
 
-		$this->assertTrue($this->cache_file->_read('data_global'));
+		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
+		$readReflection->setAccessible(true);
+		$this->assertTrue($readReflection->invoke($this->cache_file, 'data_global'));
 
 		// Check data, should be empty
 		$this->assertEquals($expectedVars, $reflectionCacheVars->getValue($this->cache_file));

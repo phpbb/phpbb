@@ -127,7 +127,7 @@
 			<!-- IF styles_list.COMMENT != '' -->
 				<span class="error"><br />{styles_list.COMMENT}</span>
 			<!-- ENDIF -->
-			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' -->
+			<!-- IF not styles_list.STYLE_ID and styles_list.COMMENT == '' and not styles_list.STYLE_INVALID -->
 				<span class="style-path"><br />{L_STYLE_PATH}{L_COLON} {styles_list.STYLE_PATH_FULL}</span>
 			<!-- ENDIF -->
 		</td>

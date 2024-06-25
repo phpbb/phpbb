@@ -352,17 +352,13 @@ class file extends \phpbb\cache\driver\base
 	}
 
 	/**
-	* Read cached data from a specified file
-	*
-	* @access private
-	* @param string $filename Filename to write
-	* @return mixed False if an error was encountered, otherwise the data type of the cached data
-	*/
-	function _read($filename)
+	 * {@inheritDoc}
+	 */
+	protected function _read(string $var)
 	{
 		global $phpEx;
 
-		$filename = $this->clean_varname($filename);
+		$filename = $this->clean_varname($var);
 		$file = "{$this->cache_dir}$filename.$phpEx";
 
 		$type = substr($filename, 0, strpos($filename, '_'));

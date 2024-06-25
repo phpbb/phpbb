@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\filesystem\helper as filesystem_helper;
+
 class phpbb_path_helper_test extends phpbb_test_case
 {
 	/** @var \phpbb\path_helper */
@@ -21,14 +23,12 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$this->set_phpbb_root_path($filesystem);
+		$this->set_phpbb_root_path();
 
 		$this->path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			new \phpbb\filesystem\filesystem(),
 			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php',
@@ -44,9 +44,9 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*	any time we wish to use it in one of these functions (and
 	*	also in general for everything else)
 	*/
-	public function set_phpbb_root_path($filesystem)
+	public function set_phpbb_root_path()
 	{
-		$this->phpbb_root_path = $filesystem->clean_path(__DIR__ . '/../../phpBB/');
+		$this->phpbb_root_path = filesystem_helper::clean_path(__DIR__ . '/../../phpBB/');
 	}
 
 	public function test_get_web_root_path()
@@ -69,8 +69,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function basic_update_web_root_path_data()
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$this->set_phpbb_root_path($filesystem);
+		$this->set_phpbb_root_path();
 
 		return [
 			[
@@ -88,7 +87,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			],
 			[
 				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
-				$filesystem->clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
+				filesystem_helper::clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
 			],
 		];
 	}
@@ -108,7 +107,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
-				new \phpbb\filesystem\filesystem(),
 				$this->createMock('\phpbb\request\request'),
 				$this->phpbb_root_path,
 				'php',
@@ -123,14 +121,14 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 	public function update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path(new \phpbb\filesystem\filesystem());
+		$this->set_phpbb_root_path();
 
 		return array(
 			array(
 				$this->phpbb_root_path . 'test.php',
 				'/',
-				null,
-				null,
+				'',
+				'',
 				'',
 			),
 			array(
@@ -206,9 +204,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_update_web_root_path($input, $getPathInfo, $getRequestUri, $getScriptName, $correction)
 	{
-		$symfony_request = $this->createMock('\phpbb\symfony_request', array(), array(
-			new phpbb_mock_request(),
-		));
+		$symfony_request = $this->createMock('\phpbb\symfony_request');
 		$symfony_request->expects($this->any())
 			->method('getPathInfo')
 			->will($this->returnValue($getPathInfo));
@@ -221,13 +217,12 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			new \phpbb\filesystem\filesystem(),
 			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php'
 		);
 
-		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input, $symfony_request));
+		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input));
 	}
 
 	public function remove_web_root_path_data()
@@ -257,7 +252,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 				new \phpbb\symfony_request(
 					new phpbb_mock_request()
 				),
-				new \phpbb\filesystem\filesystem(),
 				$this->createMock('\phpbb\request\request'),
 				$this->phpbb_root_path,
 				'php',
@@ -489,7 +483,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			new \phpbb\filesystem\filesystem(),
 			$request,
 			$this->phpbb_root_path,
 			'php',
@@ -644,7 +637,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			new \phpbb\filesystem\filesystem(),
 			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			'php',

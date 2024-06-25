@@ -8,7 +8,7 @@
 	<div class="inner">
 
 	<div class="action-bar bar-top">
-		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button2" name="filter" value="{L_SEARCH}" />
+		{L_SEARCH_KEYWORDS}{L_COLON} <input type="search" class="inputbox autowidth" name="keywords" value="{S_KEYWORDS}" />&nbsp;<input type="submit" class="button1 button button-form-bold" name="filter" value="{L_SEARCH}" />
 		<div class="pagination">
 			{TOTAL}
 			<!-- IF .pagination -->
@@ -70,8 +70,8 @@
 
 		<!-- IF S_CLEAR_ALLOWED -->
 			<fieldset class="display-actions">
-				<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
-				&nbsp;<input class="button1" type="submit" value="{L_DELETE_MARKED}" name="action[del_marked]" />
+				<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />
+				&nbsp;<input class="button1 button button-form" type="submit" value="{L_DELETE_MARKED}" name="action[del_marked]" />
 
 				<div><a href="#" onclick="marklist('mcp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'mark', false); return false;">{L_UNMARK_ALL}</a></div>
 			</fieldset>

@@ -41,11 +41,6 @@ class notify_user extends \phpbb\install\task_base
 	protected $config;
 
 	/**
-	 * @var \phpbb\language\language
-	 */
-	protected $language;
-
-	/**
 	 * @var \phpbb\log\log_interface
 	 */
 	protected $log;
@@ -80,7 +75,6 @@ class notify_user extends \phpbb\install\task_base
 		$this->iohandler		= $iohandler;
 
 		$this->auth				= $container->get('auth');
-		$this->language			= $container->get('language');
 		$this->log				= $container->get('log');
 		$this->user				= $container->get('user');
 		$this->phpbb_root_path	= $phpbb_root_path;
@@ -157,7 +151,7 @@ class notify_user extends \phpbb\install\task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}

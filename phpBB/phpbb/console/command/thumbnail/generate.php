@@ -13,6 +13,7 @@
 
 namespace phpbb\console\command\thumbnail;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -50,7 +51,7 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \config\config $config The config
+	* @param \phpbb\config\config $config The config
 	* @param \phpbb\user $user The user object (used to get language information)
 	* @param \phpbb\db\driver\driver_interface $db Database connection
 	* @param \phpbb\cache\service $cache The cache service
@@ -71,7 +72,7 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Sets the command name and description
 	*
-	* @return null
+	* @return void
 	*/
 	protected function configure()
 	{
@@ -107,7 +108,7 @@ class generate extends \phpbb\console\command\command
 		if ($nb_missing_thumbnails === 0)
 		{
 			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE'));
-			return 0;
+			return symfony_command::SUCCESS;
 		}
 
 		$extensions = $this->cache->obtain_attach_extensions(true);
@@ -131,7 +132,7 @@ class generate extends \phpbb\console\command\command
 		$thumbnail_created = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == ATTACHMENT_CATEGORY_IMAGE)
+			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == \phpbb\attachment\attachment_category::IMAGE)
 			{
 				$source = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $row['physical_filename'];
 				$destination = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
@@ -168,7 +169,7 @@ class generate extends \phpbb\console\command\command
 		$io->newLine(2);
 		$io->success($this->user->lang('CLI_THUMBNAIL_GENERATING_DONE'));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**

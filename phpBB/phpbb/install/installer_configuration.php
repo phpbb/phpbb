@@ -26,8 +26,9 @@ class installer_configuration implements ConfigurationInterface
 	 */
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('installer');
+		$treeBuilder = new TreeBuilder('installer');
+		$rootNode = $treeBuilder->getRootNode();
+		/** @psalm-suppress UndefinedMethod */
 		$rootNode
 			->children()
 				->arrayNode('admin')

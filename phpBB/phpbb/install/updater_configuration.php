@@ -26,8 +26,9 @@ class updater_configuration implements ConfigurationInterface
 	 */
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('updater');
+		$treeBuilder = new TreeBuilder('updater');
+		$rootNode = $treeBuilder->getRootNode();
+		/** @psalm-suppress UndefinedMethod */
 		$rootNode
 			->addDefaultsIfNotSet()
 			->children()

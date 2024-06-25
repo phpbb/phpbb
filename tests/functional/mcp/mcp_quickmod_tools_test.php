@@ -34,6 +34,8 @@ class phpbb_functional_mcp_quickmod_tools_test extends phpbb_functional_test_cas
 	 */
 	public function test_handle_quickmod($crawler)
 	{
+		$this->login();
+
 		// Test moving a post
 		return $this->get_quickmod_page(0, 'MERGE_POSTS', $crawler);
 	}
@@ -43,7 +45,8 @@ class phpbb_functional_mcp_quickmod_tools_test extends phpbb_functional_test_cas
 	 */
 	public function test_move_post_to_topic($crawler)
 	{
-		$this->add_lang('common');
+		$this->login();
+		$this->add_lang(['common', 'mcp']);
 
 		// Select the post in MCP
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form(array(
@@ -51,18 +54,9 @@ class phpbb_functional_mcp_quickmod_tools_test extends phpbb_functional_test_cas
 		));
 		$form['post_id_list'][0]->tick();
 		$crawler = self::submit($form);
-		$this->assertStringContainsString($this->lang('MERGE_POSTS'), $crawler->filter('html')->text());
+		$this->assertStringContainsString($this->lang('MERGE_POSTS_CONFIRM'), $crawler->filter('html')->text());
 
-		return $crawler;
-	}
-
-	/**
-	 * @depends test_move_post_to_topic
-	 */
-	public function test_confirm_result($crawler)
-	{
-		$this->add_lang('mcp');
-		$form = $crawler->selectButton('Yes')->form();
+		$form = $crawler->selectButton($this->lang('YES'))->form();
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('POSTS_MERGED_SUCCESS'), $crawler->text());
 	}

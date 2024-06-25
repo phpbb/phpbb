@@ -26,9 +26,9 @@
 		{% EVENT memberlist_body_group_desc_after %}
 
 		<p>
-			<!-- IF AVATAR_IMG -->{AVATAR_IMG}<!-- ENDIF -->
+			<!-- IF AVATAR_HTML -->{AVATAR_HTML}<!-- ENDIF -->
 			{% EVENT memberlist_body_group_rank_before %}
-			{% if RANK_IMG %}{{ RANK_IMG }}{% endif %}
+			{% if RANK_IMG %}<span class="rank-img">{{ RANK_IMG }}</span>{% endif %}
 			{% if GROUP_RANK %}
 				{% if not RANK_IMG %}
 					{{ lang('GROUP_RANK') ~ lang('COLON') }}
@@ -149,7 +149,7 @@
 
 <!-- IF S_IN_SEARCH_POPUP and not S_SELECT_SINGLE -->
 <fieldset class="display-actions">
-	<input type="submit" name="submit" value="{L_SELECT_MARKED}" class="button2" />
+	<input type="submit" name="submit" value="{L_SELECT_MARKED}" class="button1 button button-form-bold" />
 	<div><a href="#" onclick="marklist('results', 'user', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('results', 'user', false); return false;">{L_UNMARK_ALL}</a></div>
 </fieldset>
 <!-- ENDIF -->
@@ -163,7 +163,7 @@
 <fieldset class="display-options">
 	<label for="sk">{L_SELECT_SORT_METHOD}{L_COLON} <select name="sk" id="sk">{S_MODE_SELECT}</select></label>
 	<label for="sd">{L_ORDER} <select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
-	<input type="submit" name="sort" value="{L_SUBMIT}" class="button2" />
+	<input type="submit" name="sort" value="{L_SUBMIT}" class="button1 button button-form-bold" />
 </fieldset>
 <!-- ENDIF -->
 

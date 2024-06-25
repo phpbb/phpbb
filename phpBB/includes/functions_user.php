@@ -180,7 +180,7 @@ function user_update_name($old_name, $new_name)
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param array $cp_data custom profile fields, see custom_profile::build_insert_sql_array
 * @param array $notifications_data The notifications settings for the new user
-* @return the new user's ID.
+* @return int  The new user's ID.
 */
 function user_add($user_row, $cp_data = false, $notifications_data = null)
 {
@@ -749,8 +749,9 @@ function user_delete($mode, $user_ids, $retain_username = true)
 	$db->sql_query($sql);
 
 	// Delete the user_id from the banlist
-	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-		WHERE ' . $db->sql_in_set('ban_userid', $user_ids);
+	$sql = 'DELETE FROM ' . BANS_TABLE . "
+		WHERE ban_mode = 'user'
+			AND " . $db->sql_in_set('ban_userid', $user_ids);
 	$db->sql_query($sql);
 
 	// Delete the user_id from the session table
@@ -915,30 +916,26 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 /**
 * Add a ban or ban exclusion to the banlist. Bans either a user, an IP or an email address
 *
+* @deprecated 4.0.0-a1 (To be removed: 4.1.0)
+*
 * @param string $mode Type of ban. One of the following: user, ip, email
 * @param mixed $ban Banned entity. Either string or array with usernames, ips or email addresses
 * @param int $ban_len Ban length in minutes
 * @param string $ban_len_other Ban length as a date (YYYY-MM-DD)
-* @param boolean $ban_exclude Exclude these entities from banning?
 * @param string $ban_reason String describing the reason for this ban
 * @param string $ban_give_reason
 * @return boolean
 */
-function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
+function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $cache, $phpbb_log;
+	global $phpbb_container, $user;
 
-	// Delete stale bans
-	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-		WHERE ban_end < ' . time() . '
-			AND ban_end <> 0';
-	$db->sql_query($sql);
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
 
-	$ban_list = (!is_array($ban)) ? array_unique(explode("\n", $ban)) : $ban;
-	$ban_list_log = implode(', ', $ban_list);
+	$items = is_array($ban) ? $ban : [$ban];
 
 	$current_time = time();
-
 	// Set $ban_end to the unix time when the ban should end. 0 is a permanent ban.
 	if ($ban_len)
 	{
@@ -953,9 +950,9 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
 			{
 				$ban_end = max($current_time, $user->create_datetime()
-					->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
-					->setTime(0, 0, 0)
-					->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
+						->setDate((int) $ban_other[0], (int) $ban_other[1], (int) $ban_other[2])
+						->setTime(0, 0, 0)
+						->getTimestamp() + $user->timezone->getOffset(new DateTime('UTC')));
 			}
 			else
 			{
@@ -968,482 +965,28 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		$ban_end = 0;
 	}
 
-	$founder = $founder_names = array();
+	$start = new \DateTime();
+	$start->setTimestamp($current_time);
+	$end = new \DateTime();
+	$end->setTimestamp($ban_end);
 
-	if (!$ban_exclude)
-	{
-		// Create a list of founder...
-		$sql = 'SELECT user_id, user_email, username_clean
-			FROM ' . USERS_TABLE . '
-			WHERE user_type = ' . USER_FOUNDER;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$founder[$row['user_id']] = $row['user_email'];
-			$founder_names[$row['user_id']] = $row['username_clean'];
-		}
-		$db->sql_freeresult($result);
-	}
-
-	$banlist_ary = array();
-
-	switch ($mode)
-	{
-		case 'user':
-			$type = 'ban_userid';
-
-			// At the moment we do not support wildcard username banning
-
-			// Select the relevant user_ids.
-			$sql_usernames = array();
-
-			foreach ($ban_list as $username)
-			{
-				$username = trim($username);
-				if ($username != '')
-				{
-					$clean_name = utf8_clean_string($username);
-					if ($clean_name == $user->data['username_clean'])
-					{
-						trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
-					}
-					if (in_array($clean_name, $founder_names))
-					{
-						trigger_error('CANNOT_BAN_FOUNDER', E_USER_WARNING);
-					}
-					$sql_usernames[] = $clean_name;
-				}
-			}
-
-			// Make sure we have been given someone to ban
-			if (!count($sql_usernames))
-			{
-				trigger_error('NO_USER_SPECIFIED', E_USER_WARNING);
-			}
-
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
-
-			// Do not allow banning yourself, the guest account, or founders.
-			$non_bannable = array($user->data['user_id'], ANONYMOUS);
-			if (count($founder))
-			{
-				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), $non_bannable), true);
-			}
-			else
-			{
-				$sql .= ' AND ' . $db->sql_in_set('user_id', $non_bannable, true);
-			}
-
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				do
-				{
-					$banlist_ary[] = (int) $row['user_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-
-				$db->sql_freeresult($result);
-			}
-			else
-			{
-				$db->sql_freeresult($result);
-
-				trigger_error('NO_USERS', E_USER_WARNING);
-			}
-		break;
-
-		case 'ip':
-			$type = 'ban_ip';
-
-			foreach ($ban_list as $ban_item)
-			{
-				if (preg_match('#^([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})[ ]*\-[ ]*([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$#', trim($ban_item), $ip_range_explode))
-				{
-					// This is an IP range
-					// Don't ask about all this, just don't ask ... !
-					$ip_1_counter = $ip_range_explode[1];
-					$ip_1_end = $ip_range_explode[5];
-
-					while ($ip_1_counter <= $ip_1_end)
-					{
-						$ip_2_counter = ($ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[2] : 0;
-						$ip_2_end = ($ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[6];
-
-						if ($ip_2_counter == 0 && $ip_2_end == 254)
-						{
-							$ip_2_counter = 256;
-
-							$banlist_ary[] = "$ip_1_counter.*";
-						}
-
-						while ($ip_2_counter <= $ip_2_end)
-						{
-							$ip_3_counter = ($ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[3] : 0;
-							$ip_3_end = ($ip_2_counter < $ip_2_end || $ip_1_counter < $ip_1_end) ? 254 : $ip_range_explode[7];
-
-							if ($ip_3_counter == 0 && $ip_3_end == 254)
-							{
-								$ip_3_counter = 256;
-
-								$banlist_ary[] = "$ip_1_counter.$ip_2_counter.*";
-							}
-
-							while ($ip_3_counter <= $ip_3_end)
-							{
-								$ip_4_counter = ($ip_3_counter == $ip_range_explode[3] && $ip_2_counter == $ip_range_explode[2] && $ip_1_counter == $ip_range_explode[1]) ? $ip_range_explode[4] : 0;
-								$ip_4_end = ($ip_3_counter < $ip_3_end || $ip_2_counter < $ip_2_end) ? 254 : $ip_range_explode[8];
-
-								if ($ip_4_counter == 0 && $ip_4_end == 254)
-								{
-									$ip_4_counter = 256;
-
-									$banlist_ary[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.*";
-								}
-
-								while ($ip_4_counter <= $ip_4_end)
-								{
-									$banlist_ary[] = "$ip_1_counter.$ip_2_counter.$ip_3_counter.$ip_4_counter";
-									$ip_4_counter++;
-								}
-								$ip_3_counter++;
-							}
-							$ip_2_counter++;
-						}
-						$ip_1_counter++;
-					}
-				}
-				else if (preg_match('#^([0-9]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})\.([0-9\*]{1,3})$#', trim($ban_item)) || preg_match('#^[a-f0-9:]+\*?$#i', trim($ban_item)))
-				{
-					// Normal IP address
-					$banlist_ary[] = trim($ban_item);
-				}
-				else if (preg_match('#^\*$#', trim($ban_item)))
-				{
-					// Ban all IPs
-					$banlist_ary[] = '*';
-				}
-				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
-				{
-					// hostname
-					$ip_ary = gethostbynamel(trim($ban_item));
-
-					if (!empty($ip_ary))
-					{
-						foreach ($ip_ary as $ip)
-						{
-							if ($ip)
-							{
-								if (strlen($ip) > 40)
-								{
-									continue;
-								}
-
-								$banlist_ary[] = $ip;
-							}
-						}
-					}
-				}
-
-				if (empty($banlist_ary))
-				{
-					trigger_error('NO_IPS_DEFINED', E_USER_WARNING);
-				}
-			}
-		break;
-
-		case 'email':
-			$type = 'ban_email';
-
-			foreach ($ban_list as $ban_item)
-			{
-				$ban_item = trim($ban_item);
-
-				if (preg_match('#^.*?@*|(([a-z0-9\-]+\.)+([a-z]{2,3}))$#i', $ban_item))
-				{
-					if (strlen($ban_item) > 100)
-					{
-						continue;
-					}
-
-					if (!count($founder) || !in_array($ban_item, $founder))
-					{
-						$banlist_ary[] = $ban_item;
-					}
-				}
-			}
-
-			if (count($ban_list) == 0)
-			{
-				trigger_error('NO_EMAILS_DEFINED', E_USER_WARNING);
-			}
-		break;
-
-		default:
-			trigger_error('NO_MODE', E_USER_WARNING);
-		break;
-	}
-
-	// Fetch currently set bans of the specified type and exclude state. Prevent duplicate bans.
-	$sql_where = ($type == 'ban_userid') ? 'ban_userid <> 0' : "$type <> ''";
-
-	$sql = "SELECT $type
-		FROM " . BANLIST_TABLE . "
-		WHERE $sql_where
-			AND ban_exclude = " . (int) $ban_exclude;
-	$result = $db->sql_query($sql);
-
-	// Reset $sql_where, because we use it later...
-	$sql_where = '';
-
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$banlist_ary_tmp = array();
-		do
-		{
-			switch ($mode)
-			{
-				case 'user':
-					$banlist_ary_tmp[] = $row['ban_userid'];
-				break;
-
-				case 'ip':
-					$banlist_ary_tmp[] = $row['ban_ip'];
-				break;
-
-				case 'email':
-					$banlist_ary_tmp[] = $row['ban_email'];
-				break;
-			}
-		}
-		while ($row = $db->sql_fetchrow($result));
-
-		$banlist_ary_tmp = array_intersect($banlist_ary, $banlist_ary_tmp);
-
-		if (count($banlist_ary_tmp))
-		{
-			// One or more entities are already banned/excluded, delete the existing bans, so they can be re-inserted with the given new length
-			$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-				WHERE ' . $db->sql_in_set($type, $banlist_ary_tmp) . '
-					AND ban_exclude = ' . (int) $ban_exclude;
-			$db->sql_query($sql);
-		}
-
-		unset($banlist_ary_tmp);
-	}
-	$db->sql_freeresult($result);
-
-	// We have some entities to ban
-	if (count($banlist_ary))
-	{
-		$sql_ary = array();
-
-		foreach ($banlist_ary as $ban_entry)
-		{
-			$sql_ary[] = array(
-				$type				=> $ban_entry,
-				'ban_start'			=> (int) $current_time,
-				'ban_end'			=> (int) $ban_end,
-				'ban_exclude'		=> (int) $ban_exclude,
-				'ban_reason'		=> (string) $ban_reason,
-				'ban_give_reason'	=> (string) $ban_give_reason,
-			);
-		}
-
-		$db->sql_multi_insert(BANLIST_TABLE, $sql_ary);
-
-		// If we are banning we want to logout anyone matching the ban
-		if (!$ban_exclude)
-		{
-			switch ($mode)
-			{
-				case 'user':
-					$sql_where = 'WHERE ' . $db->sql_in_set('session_user_id', $banlist_ary);
-				break;
-
-				case 'ip':
-					$sql_where = 'WHERE ' . $db->sql_in_set('session_ip', $banlist_ary);
-				break;
-
-				case 'email':
-					$banlist_ary_sql = array();
-
-					foreach ($banlist_ary as $ban_entry)
-					{
-						$banlist_ary_sql[] = (string) str_replace('*', '%', $ban_entry);
-					}
-
-					$sql = 'SELECT user_id
-						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_email', $banlist_ary_sql);
-					$result = $db->sql_query($sql);
-
-					$sql_in = array();
-
-					if ($row = $db->sql_fetchrow($result))
-					{
-						do
-						{
-							$sql_in[] = $row['user_id'];
-						}
-						while ($row = $db->sql_fetchrow($result));
-
-						$sql_where = 'WHERE ' . $db->sql_in_set('session_user_id', $sql_in);
-					}
-					$db->sql_freeresult($result);
-				break;
-			}
-
-			if (isset($sql_where) && $sql_where)
-			{
-				$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-					$sql_where";
-				$db->sql_query($sql);
-
-				if ($mode == 'user')
-				{
-					$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . ' ' . ((in_array('*', $banlist_ary)) ? '' : 'WHERE ' . $db->sql_in_set('user_id', $banlist_ary));
-					$db->sql_query($sql);
-				}
-			}
-		}
-
-		// Update log
-		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
-
-		// Add to admin log, moderator log and user notes
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array($ban_reason, $ban_list_log));
-		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
-			'forum_id' => 0,
-			'topic_id' => 0,
-			$ban_reason,
-			$ban_list_log
-		));
-		if ($mode == 'user')
-		{
-			foreach ($banlist_ary as $user_id)
-			{
-				$phpbb_log->add('user', $user->data['user_id'], $user->ip, $log_entry . strtoupper($mode), false, array(
-					'reportee_id' => $user_id,
-					$ban_reason,
-					$ban_list_log
-				));
-			}
-		}
-
-		$cache->destroy('sql', BANLIST_TABLE);
-
-		return true;
-	}
-
-	// There was nothing to ban/exclude. But destroying the cache because of the removal of stale bans.
-	$cache->destroy('sql', BANLIST_TABLE);
-
-	return false;
+	return $ban_manager->ban($mode, $items, $start, $end, $ban_reason, $ban_give_reason);
 }
 
 /**
 * Unban User
+*
+* @deprecated 4.0.0-a1 (To be removed: 4.1.0)
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $cache, $phpbb_log, $phpbb_dispatcher;
+	global $phpbb_container;
 
-	// Delete stale bans
-	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-		WHERE ban_end < ' . time() . '
-			AND ban_end <> 0';
-	$db->sql_query($sql);
+	$items = is_array($ban) ? $ban : [$ban];
 
-	if (!is_array($ban))
-	{
-		$ban = array($ban);
-	}
-
-	$unban_sql = array_map('intval', $ban);
-
-	if (count($unban_sql))
-	{
-		// Grab details of bans for logging information later
-		switch ($mode)
-		{
-			case 'user':
-				$sql = 'SELECT u.username AS unban_info, u.user_id
-					FROM ' . USERS_TABLE . ' u, ' . BANLIST_TABLE . ' b
-					WHERE ' . $db->sql_in_set('b.ban_id', $unban_sql) . '
-						AND u.user_id = b.ban_userid';
-			break;
-
-			case 'email':
-				$sql = 'SELECT ban_email AS unban_info
-					FROM ' . BANLIST_TABLE . '
-					WHERE ' . $db->sql_in_set('ban_id', $unban_sql);
-			break;
-
-			case 'ip':
-				$sql = 'SELECT ban_ip AS unban_info
-					FROM ' . BANLIST_TABLE . '
-					WHERE ' . $db->sql_in_set('ban_id', $unban_sql);
-			break;
-		}
-		$result = $db->sql_query($sql);
-
-		$l_unban_list = '';
-		$user_ids_ary = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
-			if ($mode == 'user')
-			{
-				$user_ids_ary[] = $row['user_id'];
-			}
-		}
-		$db->sql_freeresult($result);
-
-		$sql = 'DELETE FROM ' . BANLIST_TABLE . '
-			WHERE ' . $db->sql_in_set('ban_id', $unban_sql);
-		$db->sql_query($sql);
-
-		// Add to moderator log, admin log and user notes
-		$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array($l_unban_list));
-		$phpbb_log->add('mod', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
-			'forum_id' => 0,
-			'topic_id' => 0,
-			$l_unban_list
-		));
-		if ($mode == 'user')
-		{
-			foreach ($user_ids_ary as $user_id)
-			{
-				$phpbb_log->add('user', $user->data['user_id'], $user->ip, 'LOG_UNBAN_' . strtoupper($mode), false, array(
-					'reportee_id' => $user_id,
-					$l_unban_list
-				));
-			}
-		}
-
-		/**
-		* Use this event to perform actions after the unban has been performed
-		*
-		* @event core.user_unban
-		* @var	string	mode			One of the following: user, ip, email
-		* @var	array	user_ids_ary	Array with user_ids
-		* @since 3.1.11-RC1
-		*/
-		$vars = array(
-			'mode',
-			'user_ids_ary',
-		);
-		extract($phpbb_dispatcher->trigger_event('core.user_unban', compact($vars)));
-	}
-
-	$cache->destroy('sql', BANLIST_TABLE);
-
-	return false;
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
+	$ban_manager->unban($mode, $items);
 }
 
 /**
@@ -1650,7 +1193,6 @@ function validate_date($date_string, $optional = false)
 	return false;
 }
 
-
 /**
 * Validate Match
 *
@@ -1728,7 +1270,7 @@ function phpbb_validate_timezone($timezone)
  * @param string	$username				The username to check
  * @param string	$allowed_username		An allowed username, default being $user->data['username']
  *
- * @return mixed							Either false if validation succeeded or a string which will be
+ * @return string|false						Either false if validation succeeded or a string which will be
  *											used as the error message (with the variable name appended)
  */
 function validate_username($username, $allowed_username = false, $allow_all_names = false)
@@ -1949,7 +1491,7 @@ function validate_user_email($email, $allowed_email = false)
 	$ban = $user->check_ban(false, false, $email, true);
 	if (!empty($ban))
 	{
-		return !empty($ban['ban_give_reason']) ? $ban['ban_give_reason'] : 'EMAIL_BANNED';
+		return !empty($ban['reason']) ? $ban['reason'] : 'EMAIL_BANNED';
 	}
 
 	if (!$config['allow_emailreuse'])
@@ -2222,7 +1764,9 @@ function phpbb_style_is_active($style_id)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $phpbb_root_path, $config;
+	global $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
@@ -2239,10 +1783,15 @@ function avatar_delete($mode, $row, $clean_db = false)
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
 
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
+	try
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
+		$storage->delete($filename);
+
 		return true;
+	}
+	catch (\phpbb\storage\exception\storage_exception $e)
+	{
+		// Fail is covered by return statement below
 	}
 
 	return false;
@@ -2563,7 +2112,9 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_correct_avatar($group_id, $old_entry)
 {
-	global $config, $db, $phpbb_root_path;
+	global $config, $db, $phpbb_container;
+
+	$storage = $phpbb_container->get('storage.avatar');
 
 	$group_id		= (int) $group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
@@ -2571,13 +2122,18 @@ function group_correct_avatar($group_id, $old_entry)
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
 	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
 
-	$avatar_path = $phpbb_root_path . $config['avatar_path'];
-	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
+	try
 	{
+		$storage->rename($old_filename, $new_filename);
+
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
 			WHERE group_id = $group_id";
 		$db->sql_query($sql);
+	}
+	catch (\phpbb\storage\exception\storage_exception $e)
+	{
+		// If rename fail, dont execute the query
 	}
 }
 
@@ -2699,7 +2255,7 @@ function group_delete($group_id, $group_name = false)
 		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 	}
 
-	phpbb_cache_moderators($db, $cache, $auth);
+	phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 
 	$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_GROUP_DELETE', false, array($group_name));
 
@@ -2710,7 +2266,7 @@ function group_delete($group_id, $group_name = false)
 /**
 * Add user(s) to group
 *
-* @return mixed false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
+* @return string|false false if no errors occurred, else the user lang string for the relevant error, for example 'NO_USER'
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
@@ -3060,6 +2616,7 @@ function remove_default_avatar($group_id, $user_ids)
 
 /**
 * Removes the group rank of the default group from the users in user_ids who have that group as default.
+* @return bool true if successful, false if not
 */
 function remove_default_rank($group_id, $user_ids)
 {
@@ -3094,6 +2651,8 @@ function remove_default_rank($group_id, $user_ids)
 			AND user_rank = ' . (int) $row['group_rank'] . '
 			AND ' . $db->sql_in_set('user_id', $user_ids);
 	$db->sql_query($sql);
+
+	return true;
 }
 
 /**
@@ -3608,7 +3167,10 @@ function group_update_listings($group_id)
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		phpbb_cache_moderators($db, $cache, $auth);
+
+		global $phpbb_container;
+
+		phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 	}
 
 	if ($mod_permissions || $admin_permissions)
@@ -3703,45 +3265,43 @@ function remove_newly_registered($user_id, $user_data = false)
 */
 function phpbb_get_banned_user_ids($user_ids = array(), $ban_end = true)
 {
-	global $db;
+	global $phpbb_container;
 
-	$sql_user_ids = (!empty($user_ids)) ? $db->sql_in_set('ban_userid', $user_ids) : 'ban_userid <> 0';
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
+	$banned_users = $ban_manager->get_banned_users();
 
-	// Get banned User ID's
-	// Ignore stale bans which were not wiped yet
-	$banned_ids_list = array();
-	$sql = 'SELECT ban_userid
-		FROM ' . BANLIST_TABLE . "
-		WHERE $sql_user_ids
-			AND ban_exclude <> 1";
-
-	if ($ban_end === true)
+	if ($ban_end === false)
 	{
-		// Banned currently
-		$sql .= " AND (ban_end > " . time() . '
-				OR ban_end = 0)';
+		$banned_users = array_filter($banned_users, function ($end) {
+			return $end <= 0;
+		});
 	}
-	else if ($ban_end === false)
+	else if ($ban_end !== true)
 	{
-		// Permanently banned
-		$sql .= " AND ban_end = 0";
+		$banned_users = array_filter($banned_users, function ($end) use ($ban_end) {
+			return $end <= 0 || $end > (int) $ban_end;
+		});
 	}
 	else
 	{
-		// Banned until a specified time
-		$sql .= " AND (ban_end > " . (int) $ban_end . '
-				OR ban_end = 0)';
+		$banned_users = array_filter($banned_users, function ($end) {
+			return $end <= 0 || $end > time();
+		});
 	}
 
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
+	$result_array = [];
+	foreach ($banned_users as $user_id => $_)
 	{
-		$user_id = (int) $row['ban_userid'];
-		$banned_ids_list[$user_id] = $user_id;
-	}
-	$db->sql_freeresult($result);
+		if (count($user_ids) && !in_array($user_id, $user_ids))
+		{
+			continue;
+		}
 
-	return $banned_ids_list;
+		$result_array[$user_id] = $user_id;
+	}
+
+	return $result_array;
 }
 
 /**

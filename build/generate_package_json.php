@@ -120,6 +120,12 @@ function phpbb_add_package_file(array &$package_list, $name, $file_name, $type, 
 		$filedata->filesize = filesize($file_path);
 		$filedata->checksum = trim(preg_replace('/(^\w+)(.+)/', '$1', file_get_contents($file_path . '.sha256')));
 		$filedata->filetype = $extension;
+
+		if (file_exists($file_path . '.sig'))
+		{
+			$filedata->signature = trim(file_get_contents($file_path . '.sig'));
+		}
+
 		$package_file->files[] = $filedata;
 	}
 

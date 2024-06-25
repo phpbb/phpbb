@@ -60,7 +60,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = array(
+	public static $notification_option = array(
 		'id'	=> 'moderation_queue',
 		'lang'	=> 'NOTIFICATION_TYPE_MODERATION_QUEUE',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
@@ -127,11 +127,11 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = array())
+	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('disapprove_reason', $post['disapprove_reason']);
+		$this->set_data('disapprove_reason', $type_data['disapprove_reason']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 
 		$this->notification_time = time();
 	}
@@ -148,9 +148,7 @@ class disapprove_post extends \phpbb\notification\type\approve_post
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{

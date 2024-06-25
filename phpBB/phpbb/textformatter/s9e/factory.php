@@ -57,7 +57,6 @@ class factory implements \phpbb\textformatter\cache_interface
 	*/
 	protected $custom_tokens = array(
 		'email' => array('{DESCRIPTION}' => '{TEXT}'),
-		'flash' => array('{WIDTH}' => '{NUMBER1}', '{HEIGHT}' => '{NUMBER2}'),
 		'img'   => array('{URL}' => '{IMAGEURL}'),
 		'list'  => array('{LIST_TYPE}' => '{HASHMAP}'),
 		'quote' => array('{USERNAME}' => '{TEXT1}'),
@@ -79,11 +78,16 @@ class factory implements \phpbb\textformatter\cache_interface
 		'code'  => '[CODE lang={IDENTIFIER;optional}]{TEXT}[/CODE]',
 		'color' => '[COLOR={COLOR}]{TEXT}[/COLOR]',
 		'email' => '[EMAIL={EMAIL;useContent} subject={TEXT1;optional;postFilter=rawurlencode} body={TEXT2;optional;postFilter=rawurlencode}]{TEXT}[/EMAIL]',
-		'flash' => '[FLASH={NUMBER1},{NUMBER2} width={NUMBER1;postFilter=#flashwidth} height={NUMBER2;postFilter=#flashheight} url={URL;useContent} /]',
 		'i'     => '[I]{TEXT}[/I]',
 		'img'   => '[IMG src={IMAGEURL;useContent}]',
 		'list'  => '[LIST type={HASHMAP=1:decimal,a:lower-alpha,A:upper-alpha,i:lower-roman,I:upper-roman;optional;postFilter=#simpletext} #createChild=LI]{TEXT}[/LIST]',
 		'li'    => '[* $tagName=LI]{TEXT}[/*]',
+		'mention' =>
+			"[MENTION={PARSE=/^g:(?'group_id'\d+)|u:(?'user_id'\d+)$/}
+				group_id={UINT;optional}
+				profile_url={URL;optional;postFilter=#false}
+				user_id={UINT;optional}
+			]{TEXT}[/MENTION]",
 		'quote' =>
 			"[QUOTE
 				author={TEXT1;optional}
@@ -108,13 +112,13 @@ class factory implements \phpbb\textformatter\cache_interface
 	* @var array Default templates, taken from bbcode::bbcode_tpl()
 	*/
 	protected $default_templates = array(
-		'b'     => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
-		'i'     => '<span style="font-style: italic"><xsl:apply-templates/></span>',
-		'u'     => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
-		'img'   => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
-		'size'	=> '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
-		'color' => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
-		'email' => '<a>
+		'b'       => '<span style="font-weight: bold"><xsl:apply-templates/></span>',
+		'i'       => '<span style="font-style: italic"><xsl:apply-templates/></span>',
+		'u'       => '<span style="text-decoration: underline"><xsl:apply-templates/></span>',
+		'img'     => '<img src="{IMAGEURL}" class="postimage" alt="{L_IMAGE}"/>',
+		'size'	  => '<span><xsl:attribute name="style"><xsl:text>font-size: </xsl:text><xsl:value-of select="substring(@size, 1, 4)"/><xsl:text>%; line-height: normal</xsl:text></xsl:attribute><xsl:apply-templates/></span>',
+		'color'   => '<span style="color: {COLOR}"><xsl:apply-templates/></span>',
+		'email'   => '<a>
 			<xsl:attribute name="href">
 				<xsl:text>mailto:</xsl:text>
 				<xsl:value-of select="@email"/>
@@ -126,6 +130,19 @@ class factory implements \phpbb\textformatter\cache_interface
 			</xsl:attribute>
 			<xsl:apply-templates/>
 		</a>',
+		'mention' => '<xsl:text>@</xsl:text>
+		<xsl:choose>
+			<xsl:when test="@profile_url">
+				<a class="mention" href="{@profile_url}">
+					<xsl:apply-templates/>
+				</a>
+			</xsl:when>
+			<xsl:otherwise>
+				<span class="mention">
+					<xsl:apply-templates/>
+				</span>
+			</xsl:otherwise>
+		</xsl:choose>',
 	);
 
 	/**
@@ -209,8 +226,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_before
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_before', compact($vars)));
 
 		// Reset the list of allowed schemes
@@ -249,18 +267,6 @@ class factory implements \phpbb\textformatter\cache_interface
 		$filter = new RegexpFilter('!^([\p{L}\p{N}\-+,_. ]+)$!Du');
 		$configurator->attributeFilters->add('#inttext', $filter);
 
-		// Create custom filters for Flash restrictions, which use the same values as the image
-		// restrictions but have their own error message
-		$configurator->attributeFilters
-			->add('#flashheight', __NAMESPACE__ . '\\parser::filter_flash_height')
-			->addParameterByName('max_img_height')
-			->addParameterByName('logger');
-
-		$configurator->attributeFilters
-			->add('#flashwidth', __NAMESPACE__ . '\\parser::filter_flash_width')
-			->addParameterByName('max_img_width')
-			->addParameterByName('logger');
-
 		// Create a custom filter for phpBB's per-mode font size limits
 		$configurator->attributeFilters
 			->add('#fontsize', __NAMESPACE__ . '\\parser::filter_font_size')
@@ -287,8 +293,8 @@ class factory implements \phpbb\textformatter\cache_interface
 			$configurator->tags['QUOTE']->nestingLimit = PHP_INT_MAX;
 		}
 
-		// Modify the template to disable images/flash depending on user's settings
-		foreach (array('FLASH', 'IMG') as $name)
+		// Modify the template to disable images/mentions depending on user's settings
+		foreach (['IMG', 'MENTION'] as $name)
 		{
 			$tag = $configurator->tags[$name];
 			$tag->template = '<xsl:choose><xsl:when test="$S_VIEW' . $name . '">' . $tag->template . '</xsl:when><xsl:otherwise><xsl:apply-templates/></xsl:otherwise></xsl:choose>';
@@ -370,8 +376,9 @@ class factory implements \phpbb\textformatter\cache_interface
 		* @event core.text_formatter_s9e_configure_after
 		* @var Configurator configurator Configurator instance
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('configurator');
+		$vars = ['configurator'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_configure_after', compact($vars)));
 
 		return $configurator;
@@ -439,7 +446,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		}
 		catch (\Exception $e)
 		{
-			$this->log->add('critical', null, null, 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_BBCODE_CONFIGURATION_ERROR', false, [$usage, $e->getMessage()]);
 		}
 	}
 

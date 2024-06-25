@@ -48,7 +48,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @var bool|array False if the service should use its default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = false;
+	public static $notification_option = false;
 
 	/**
 	* The notification_type_id, set upon creation of the class
@@ -118,7 +118,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		// The row from the database (unless this is a new notification we're going to add)
 		$this->data = $data;
-		$this->data['notification_data'] = (isset($this->data['notification_data'])) ? unserialize($this->data['notification_data']) : array();
+		$this->data['notification_data'] = !empty($this->data['notification_data']) ? unserialize($this->data['notification_data']) : [];
 	}
 
 	/**
@@ -129,7 +129,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 	public function __get($name)
 	{
-		return (!isset($this->data[$name])) ? null : $this->data[$name];
+		return $this->data[$name] ?? null;
 	}
 
 
@@ -139,13 +139,24 @@ abstract class base implements \phpbb\notification\type\type_interface
 	* @param mixed $name
 	* @param mixed $value
 	*
-	* @return null
+	* @return void
 	*/
 	public function __set($name, $value)
 	{
 		$this->data[$name] = $value;
 	}
 
+	/**
+	 * Magic method check if a variable is defined and is not null
+	 *
+	 * @param mixed $name
+	 *
+	 * @return bool
+	 */
+	public function __isset($name)
+	{
+		return isset($this->data[$name]);
+	}
 
 	/**
 	* Magic method to get a string of this notification
@@ -162,12 +173,12 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* Get special data (only important for the classes that extend this)
 	*
-	* @param string $name Name of the variable to get
+	* @param string|false $name Name of the variable to get, false if all data should be returned
 	* @return mixed
 	*/
 	protected function get_data($name)
 	{
-		return ($name === false) ? $this->data['notification_data'] : ((isset($this->data['notification_data'][$name])) ? $this->data['notification_data'][$name] : null);
+		return ($name === false) ? $this->data['notification_data'] : ($this->data['notification_data'][$name] ?? null);
 	}
 
 	/**
@@ -175,7 +186,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*
 	* @param string $name Name of the variable to set
 	* @param mixed $value Value to set to the variable
-	* @return mixed
 	*/
 	protected function set_data($name, $value)
 	{
@@ -285,10 +295,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash . '&amp;redirect=' . urlencode($redirect));
 		}
 
-		return array(
+		$avatar = $this->get_avatar();
+
+		return [
 			'NOTIFICATION_ID'	=> $this->notification_id,
 			'STYLING'			=> $this->get_style_class(),
-			'AVATAR'			=> $this->get_avatar(),
 			'FORMATTED_TITLE'	=> $this->get_title(),
 			'REFERENCE'			=> $this->get_reference(),
 			'FORUM'				=> $this->get_forum(),
@@ -296,8 +307,19 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'URL'				=> $this->get_url(),
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
 			'UNREAD'			=> !$this->notification_read,
+
+			'AVATAR_SOURCE'		=> $avatar ? $avatar['src'] : '',
+			'AVATAR_TITLE'		=> $avatar ? $avatar['title'] : '',
+			'AVATAR_TYPE'		=> $avatar ? $avatar['type'] : '',
+
+			'AVATAR_WIDTH'		=> $avatar ? $avatar['width'] : 0,
+			'AVATAR_HEIGHT'		=> $avatar ? $avatar['height'] : 0,
+
+			'AVATAR_HTML'		=> $avatar ? $avatar['html'] : '',
+			'AVATAR_LAZY'		=> $avatar ? $avatar['lazy'] : true,
+
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
-		);
+		];
 	}
 
 	/**
@@ -328,11 +350,11 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* Get the user's avatar (fall back)
 	*
-	* @return string
+	* @return array
 	*/
 	public function get_avatar()
 	{
-		return '';
+		return [];
 	}
 
 	/**
@@ -383,7 +405,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 */
 	public function load_special($data, $notifications)
 	{
-		return;
 	}
 
 	/**
@@ -394,6 +415,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	public function is_available()
 	{
 		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_email_template()
+	{
+		return false;
 	}
 
 	/**

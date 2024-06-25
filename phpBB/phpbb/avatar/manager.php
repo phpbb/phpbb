@@ -29,9 +29,9 @@ class manager
 
 	/**
 	* Array that contains a list of enabled drivers
-	* @var array
+	* @var array|false
 	*/
-	static protected $enabled_drivers = false;
+	protected static $enabled_drivers = false;
 
 	/**
 	* Array that contains all available avatar drivers which are passed via the
@@ -44,7 +44,7 @@ class manager
 	* Default avatar data row
 	* @var array
 	*/
-	static protected $default_row = array(
+	protected static $default_row = array(
 		'avatar'		=> '',
 		'avatar_type'	=> '',
 		'avatar_width'	=> 0,
@@ -87,7 +87,7 @@ class manager
 	* @param string $avatar_type Avatar type; by default an avatar's service container name
 	* @param bool $load_enabled Load only enabled avatars
 	*
-	* @return object Avatar driver object
+	* @return object|null Avatar driver object
 	*/
 	public function get_driver($avatar_type, $load_enabled = true)
 	{
@@ -104,11 +104,9 @@ class manager
 			case AVATAR_GALLERY:
 				$avatar_type = 'avatar.driver.local';
 			break;
+
 			case AVATAR_UPLOAD:
 				$avatar_type = 'avatar.driver.upload';
-			break;
-			case AVATAR_REMOTE:
-				$avatar_type = 'avatar.driver.remote';
 			break;
 		}
 
@@ -183,7 +181,7 @@ class manager
 			$this->load_enabled_drivers();
 		}
 
-		return self::$enabled_drivers;
+		return self::$enabled_drivers ?: [];
 	}
 
 	/**
@@ -196,7 +194,7 @@ class manager
 	*			stripped from the preceding "user_" or "group_"
 	*			Also the group id is prefixed with g, when the prefix group is removed.
 	*/
-	static public function clean_row($row, $prefix = '')
+	public static function clean_row($row, $prefix = '')
 	{
 		// Upon creation of a user/group $row might be empty
 		if (empty($row))
@@ -204,10 +202,10 @@ class manager
 			return self::$default_row;
 		}
 
-		$output = array();
+		$output = [];
 		foreach ($row as $key => $value)
 		{
-			$key = preg_replace("#^(?:{$prefix}_)#", '', $key);
+			$key = preg_replace("#^(?:{$prefix}_)#", '', (string) $key);
 			$output[$key] = $value;
 		}
 
@@ -227,7 +225,7 @@ class manager
 	*
 	* @return string Cleaned driver name
 	*/
-	static public function clean_driver_name($name)
+	public static function clean_driver_name($name)
 	{
 		return str_replace(array('\\', '_'), '.', $name);
 	}
@@ -240,7 +238,7 @@ class manager
 	*
 	* @return string Prepared driver name
 	*/
-	static public function prepare_driver_name($name)
+	public static function prepare_driver_name($name)
 	{
 		return str_replace('.', '_', $name);
 	}
@@ -256,7 +254,7 @@ class manager
 	{
 		$config_name = $driver->get_config_name();
 
-		return $this->config["allow_avatar_{$config_name}"];
+		return (bool) $this->config["allow_avatar_{$config_name}"];
 	}
 
 	/**
@@ -313,7 +311,7 @@ class manager
 	*                               avatar data
 	* @param string         $table Database table from which the avatar should be deleted
 	* @param string         $prefix Prefix of user data columns in database
-	* @return null
+	* @return void
 	*/
 	public function handle_avatar_delete(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $avatar_data, $table, $prefix)
 	{

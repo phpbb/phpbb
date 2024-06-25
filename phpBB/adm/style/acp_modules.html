@@ -36,7 +36,7 @@
 
 			var j = 0;
 <!-- BEGIN m_names -->
-		
+
 			if (value == '{m_names.A_NAME}')
 			{
 	<!-- BEGIN modes -->
@@ -59,13 +59,6 @@
 	<h1>{L_TITLE} :: {MODULENAME}</h1>
 
 	<p>{L_EDIT_MODULE_EXPLAIN}</p>
-
-	<!-- IF S_ERROR -->
-		<div class="errorbox">
-			<h3>{L_WARNING}</h3>
-			<p>{ERROR_MSG}</p>
-		</div>
-	<!-- ENDIF -->
 
 	<form id="moduleedit" method="post" action="{U_EDIT_ACTION}">
 
@@ -111,7 +104,7 @@
 	<p class="submit-buttons">
 		<input type="hidden" name="action" value="{ACTION}" />
 		<input type="hidden" name="m" value="{MODULE_ID}" />
-		
+
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</p>
@@ -124,13 +117,6 @@
 	<h1>{L_ACP_MODULE_MANAGEMENT}</h1>
 
 	<p>{L_ACP_MODULE_MANAGEMENT_EXPLAIN}</p>
-
-	<!-- IF S_ERROR -->
-		<div class="errorbox">
-			<h3>{L_WARNING}</h3>
-			<p>{ERROR_MSG}</p>
-		</div>
-	<!-- ENDIF -->
 
 	<table class="table1">
 	<tbody>
@@ -146,7 +132,16 @@
 		<tbody>
 		<!-- BEGIN modules -->
 			<tr>
-				<td style="width: 5%; text-align: center;">{modules.MODULE_IMAGE}</td>
+				<td style="width: 5%; text-align: center;">
+					<span class="fa-stack fa-2x">
+					{{ Icon('font', 'circle', '', true, 'fas fa-stack-2x') }}
+					{{ Icon('font', {
+						'lock' : not modules.MODULE_ENABLED,
+						'folder-tree' : modules.S_SUB_MODULE,
+						'folder' : true,
+					}, '', true, 'fas fa-inverse fa-stack-1x') }}
+					</span>
+				</td>
 				<td><a href="{modules.U_MODULE}">{modules.MODULE_TITLE}</a><!-- IF not modules.MODULE_DISPLAYED --> <span class="small">[{L_HIDDEN_MODULE}]</span><!-- ENDIF --></td>
 				<td style="width: 15%; white-space: nowrap; text-align: center; vertical-align: middle;">&nbsp;<!-- IF modules.MODULE_ENABLED --><a href="{modules.U_DISABLE}">{L_DISABLE}</a><!-- ELSE --><a href="{modules.U_ENABLE}">{L_ENABLE}</a><!-- ENDIF -->&nbsp;</td>
 				<td class="actions">
@@ -154,7 +149,7 @@
 					<span class="up"><a href="{modules.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
 					<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
 					<span class="down"><a href="{modules.U_MOVE_DOWN}" data-ajax="row_down">{ICON_MOVE_DOWN}</a></span>
-					<a href="{modules.U_EDIT}">{ICON_EDIT}</a> 
+					<a href="{modules.U_EDIT}">{ICON_EDIT}</a>
 					<a href="{modules.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
 				</td>
 			</tr>
@@ -173,7 +168,7 @@
 		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
 		<input class="button2" name="quickadd" type="submit" value="{L_ADD_MODULE}" />
 	</fieldset>
-	
+
 	</form>
 
 	<form id="module" method="post" action="{U_ACTION}">
@@ -182,17 +177,17 @@
 		<input type="hidden" name="action" value="add" />
 		<input type="hidden" name="module_parent_id" value="{PARENT_ID}" />
 
-		<input type="text" name="module_langname" maxlength="255" /> 
+		<input type="text" name="module_langname" maxlength="255" />
 		<input class="button2" name="addmodule" type="submit" value="{L_CREATE_MODULE}" />
 	</fieldset>
 
 	</form>
 
 	<div class="clearfix">&nbsp;</div><br style="clear: both;" />
-	
+
 	<form id="mselect" method="post" action="{U_SEL_ACTION}">
 	<fieldset class="quick">
-		{L_SELECT_MODULE}{L_COLON} <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select> 
+		{L_SELECT_MODULE}{L_COLON} <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select>
 
 		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>

@@ -24,17 +24,8 @@ class local extends base
 	/** @var factory Files factory */
 	protected $factory;
 
-	/** @var language */
-	protected $language;
-
-	/** @var IniGetWrapper */
-	protected $php_ini;
-
 	/** @var request_interface */
 	protected $request;
-
-	/** @var \phpbb\files\upload */
-	protected $upload;
 
 	/**
 	 * Construct a form upload type
@@ -74,8 +65,8 @@ class local extends base
 		$upload = $this->get_upload_ary($source_file, $filedata);
 
 		/** @var filespec $file */
-		$file = $this->factory->get('filespec')
-			->set_upload_ary($upload)
+		$file = $this->factory->get('filespec');
+		$file->set_upload_ary($upload)
 			->set_upload_namespace($this->upload);
 
 		if ($file->init_error())
@@ -108,7 +99,7 @@ class local extends base
 	 * Retrieve upload array
 	 *
 	 * @param string $source_file Source file name
-	 * @param array $filedata File data array
+	 * @param array|bool $filedata File data array
 	 *
 	 * @return array Upload array
 	 */

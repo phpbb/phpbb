@@ -60,7 +60,7 @@ class report_pm extends \phpbb\notification\type\pm
 	* @var bool|array False if the service should use it's default data
 	* 					Array of data (including keys 'id', 'lang', and 'group')
 	*/
-	static public $notification_option = [
+	public static $notification_option = [
 		'id'	=> 'notification.type.report_pm',
 		'lang'	=> 'NOTIFICATION_TYPE_REPORT_PM',
 		'group'	=> 'NOTIFICATION_GROUP_MODERATION',
@@ -69,12 +69,13 @@ class report_pm extends \phpbb\notification\type\pm
 	/**
 	* Get the id of the parent
 	*
-	* @param array $pm The data from the pm
+	* @param array $type_data The data from the pm
+	*
 	* @return int The report id
 	*/
-	static public function get_item_parent_id($pm)
+	public static function get_item_parent_id($type_data)
 	{
-		return (int) $pm['report_id'];
+		return (int) $type_data['report_id'];
 	}
 
 	/**
@@ -92,41 +93,39 @@ class report_pm extends \phpbb\notification\type\pm
 	* Find the users who want to receive notifications
 	*  (copied from post_in_queue)
 	*
-	* @param array $post Data from the post
+	* @param array $type_data Data from the post
 	* @param array $options Options for finding users for notification
 	*
 	* @return array
 	*/
-	public function find_users_for_notification($post, $options = [])
+	public function find_users_for_notification($type_data, $options = [])
 	{
 		$options = array_merge([
 			'ignore_users'		=> [],
 		], $options);
 
 		// Global
-		$post['forum_id'] = 0;
+		$type_data['forum_id'] = 0;
 
-		$auth_approve = $this->auth->acl_get_list(false, $this->permission, $post['forum_id']);
+		$auth_approve = $this->auth->acl_get_list(false, $this->permission, $type_data['forum_id']);
 
 		if (empty($auth_approve))
 		{
 			return [];
 		}
 
-		if (($key = array_search($this->user->data['user_id'], $auth_approve[$post['forum_id']][$this->permission])))
+		if (($key = array_search($this->user->data['user_id'], $auth_approve[$type_data['forum_id']][$this->permission])))
 		{
-			unset($auth_approve[$post['forum_id']][$this->permission][$key]);
+			unset($auth_approve[$type_data['forum_id']][$this->permission][$key]);
 		}
 
-		return $this->check_user_notification_options($auth_approve[$post['forum_id']][$this->permission], array_merge($options, [
+		return $this->check_user_notification_options($auth_approve[$type_data['forum_id']][$this->permission], array_merge($options, [
 			'item_type'		=> static::$notification_option['id'],
 		]));
 	}
 
 	/**
-	* Get email template
-	*
-	* @return string|bool
+	* {@inheritdoc}
 	*/
 	public function get_email_template()
 	{
@@ -246,13 +245,13 @@ class report_pm extends \phpbb\notification\type\pm
 	/**
 	* {@inheritdoc}
 	*/
-	public function create_insert_array($post, $pre_create_data = [])
+	public function create_insert_array($type_data, $pre_create_data = [])
 	{
 		$this->set_data('reporter_id', $this->user->data['user_id']);
-		$this->set_data('reason_title', strtoupper($post['reason_title']));
-		$this->set_data('reason_description', $post['reason_description']);
-		$this->set_data('report_text', $post['report_text']);
+		$this->set_data('reason_title', strtoupper($type_data['reason_title']));
+		$this->set_data('reason_description', $type_data['reason_description']);
+		$this->set_data('report_text', $type_data['report_text']);
 
-		parent::create_insert_array($post, $pre_create_data);
+		parent::create_insert_array($type_data, $pre_create_data);
 	}
 }

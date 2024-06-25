@@ -91,7 +91,7 @@ interface method_interface
 	/**
 	* Mark notifications read or unread
 	*
-	* @param bool|string $notification_type_id Type identifier of item types. False to mark read for all item types
+	* @param bool|string|array $notification_type_id Type identifier of item types. False to mark read for all item types
 	* @param bool|int|array $item_id Item id or array of item ids. False to mark read for all item ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
@@ -102,7 +102,7 @@ interface method_interface
 	/**
 	* Mark notifications read or unread from a parent identifier
 	*
-	* @param string $notification_type_id Type identifier of item types
+	* @param string|int|array $notification_type_id Type identifier of item types
 	* @param bool|int|array $item_parent_id Item parent id or array of item parent ids. False to mark read for all item parent ids
 	* @param bool|int|array $user_id User id or array of user ids. False to mark read for all user ids
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
@@ -113,7 +113,7 @@ interface method_interface
 	/**
 	* Mark notifications read or unread
 	*
-	* @param int $notification_id Notification id of notification ids.
+	* @param array|int $notification_id Notification id or array of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
@@ -122,7 +122,7 @@ interface method_interface
 	/**
 	* Delete a notification
 	*
-	* @param string $notification_type_id Type identifier of item types
+	* @param int $notification_type_id Type identifier of item types
 	* @param int|array $item_id Identifier within the type (or array of ids)
 	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
 	* @param mixed $user_id User id (Default: false; not checked)
@@ -143,7 +143,7 @@ interface method_interface
 	* This should be called when an extension which has notification types
 	* is purged so that all those notifications are removed
 	*
-	* @param string $notification_type_id Type identifier of the subscription
+	* @param int $notification_type_id Type identifier of the subscription
 	*/
 	public function purge_notifications($notification_type_id);
 }

@@ -18,6 +18,8 @@ use phpbb\language\language;
 /**
  * Responsible for holding all file relevant information, as well as doing file-specific operations.
  * The {@link fileupload fileupload class} can be used to upload several files, each of them being this object to operate further on.
+ *
+ * @deprecated 4.0.0	Use phpbb\files\filespec_storage instead
  */
 class filespec
 {
@@ -84,10 +86,10 @@ class filespec
 	/** @var string phpBB root path */
 	protected $phpbb_root_path;
 
-	/** @var \phpbb\plupload\plupload The plupload object */
+	/** @var \phpbb\plupload\plupload|null The plupload object */
 	protected $plupload;
 
-	/** @var \phpbb\mimetype\guesser phpBB Mimetype guesser */
+	/** @var \phpbb\mimetype\guesser|null phpBB Mimetype guesser */
 	protected $mimetype_guesser;
 
 	/**
@@ -98,8 +100,8 @@ class filespec
 	 * @param \bantu\IniGetWrapper\IniGetWrapper			$php_ini ini_get() wrapper
 	 * @param \FastImageSize\FastImageSize $imagesize Imagesize class
 	 * @param string					$phpbb_root_path phpBB root path
-	 * @param \phpbb\mimetype\guesser	$mimetype_guesser Mime type guesser
-	 * @param \phpbb\plupload\plupload	$plupload Plupload
+	 * @param \phpbb\mimetype\guesser|null	$mimetype_guesser Mime type guesser
+	 * @param \phpbb\plupload\plupload|null	$plupload Plupload
 	 */
 	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
 	{
@@ -135,7 +137,7 @@ class filespec
 		$this->mimetype = $upload_ary['type'];
 
 		// Opera adds the name to the mime type
-		$this->mimetype	= (strpos($this->mimetype, '; name') !== false) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
+		$this->mimetype	= ($this->mimetype && str_contains($this->mimetype, '; name')) ? str_replace(strstr($this->mimetype, '; name'), '', $this->mimetype) : $this->mimetype;
 
 		if (!$this->mimetype)
 		{
@@ -310,7 +312,7 @@ class filespec
 	 *
 	 * @return string Extension of the supplied filename
 	 */
-	static public function get_extension($filename)
+	public static function get_extension($filename)
 	{
 		$filename = utf8_basename($filename);
 
@@ -327,7 +329,7 @@ class filespec
 	 * Get mime type
 	 *
 	 * @param string $filename Filename that needs to be checked
-	 * @return string Mime type of supplied filename
+	 * @return string Mime type of supplied filename or empty string if mimetype could not be guessed
 	 */
 	public function get_mimetype($filename)
 	{
@@ -341,7 +343,7 @@ class filespec
 			}
 		}
 
-		return $this->mimetype;
+		return $this->mimetype ?: '';
 	}
 
 	/**

@@ -13,7 +13,6 @@
 
 namespace phpbb\di;
 
-use phpbb\filesystem\filesystem;
 use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
@@ -25,6 +24,7 @@ use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\DependencyInjection\MergeExtensionConfigurationPass;
+use phpbb\filesystem\helper as filesystem_helper;
 
 class container_builder
 {
@@ -46,14 +46,9 @@ class container_builder
 	/**
 	 * The container under construction
 	 *
-	 * @var ContainerBuilder
+	 * @var \phpbb_cache_container|ContainerBuilder
 	 */
 	protected $container;
-
-	/**
-	 * @var \phpbb\db\driver\driver_interface
-	 */
-	protected $dbal_connection = null;
 
 	/**
 	 * Indicates whether extensions should be used (default to true).
@@ -122,6 +117,11 @@ class container_builder
 	private $env_parameters = [];
 
 	/**
+	 * @var \phpbb\db\driver\driver_interface
+	 */
+	protected $dbal_connection = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @param string $phpbb_root_path Path to the phpbb includes directory.
@@ -143,6 +143,7 @@ class container_builder
 	 * Build and return a new Container respecting the current configuration
 	 *
 	 * @return \phpbb_cache_container|ContainerBuilder
+	 * @throws \Exception
 	 */
 	public function get_container()
 	{
@@ -201,19 +202,21 @@ class container_builder
 				// Easy collections through tags
 				$this->container->addCompilerPass(new pass\collection_pass());
 
-				// Event listeners "phpBB style"
-				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher', 'event.listener_listener', 'event.listener'));
+				// Mark all services public
+				$this->container->addCompilerPass(new pass\markpublic_pass());
 
-				// Event listeners "Symfony style"
-				$this->container->addCompilerPass(new RegisterListenersPass('dispatcher'));
+				// Convert old event dispatcher syntax
+				$this->container->addCompilerPass(new pass\convert_events());
+
+				// Event listeners
+				$this->container->addCompilerPass(new RegisterListenersPass());
 
 				if ($this->use_extensions)
 				{
 					$this->register_ext_compiler_pass();
 				}
 
-				$filesystem = new filesystem();
-				$loader     = new YamlFileLoader($this->container, new FileLocator($filesystem->realpath($this->get_config_path())));
+				$loader     = new YamlFileLoader($this->container, new FileLocator(filesystem_helper::realpath($this->get_config_path())));
 				$loader->load($this->container->getParameter('core.environment') . '/config.yml');
 
 				$this->inject_custom_parameters();
@@ -447,6 +450,13 @@ class container_builder
 			$ext_container->register('cache.driver', '\\phpbb\\cache\\driver\\dummy');
 			$ext_container->compile();
 
+			/** @var \phpbb\config\config $config */
+			$config = $ext_container->get('config');
+			if (@is_file($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
+			{
+				require_once($this->phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
+			}
+
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
 
 			// Load each extension found
@@ -567,7 +577,7 @@ class container_builder
 		{
 			if ($this->dbal_connection === null)
 			{
-				$dbal_driver_class = $this->config_php_file->convert_30_dbms_to_31($this->config_php_file->get('dbms'));
+				$dbal_driver_class = \phpbb\config_php_file::convert_30_dbms_to_31($this->config_php_file->get('dbms'));
 				/** @var \phpbb\db\driver\driver_interface $dbal_connection */
 				$this->dbal_connection = new $dbal_driver_class();
 				$this->dbal_connection->sql_connect(
@@ -577,7 +587,7 @@ class container_builder
 					$this->config_php_file->get('dbname'),
 					$this->config_php_file->get('dbport'),
 					false,
-					defined('PHPBB_DB_NEW_LINK') && PHPBB_DB_NEW_LINK
+					defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false
 				);
 			}
 			$this->container->set('dbal.conn.driver', $this->dbal_connection);

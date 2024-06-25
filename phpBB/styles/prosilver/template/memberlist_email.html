@@ -71,7 +71,13 @@
 			<dl>
 				<dt><label for="lang">{L_DEST_LANG}{L_COLON}</label><br />
 					<span>{L_DEST_LANG_EXPLAIN}</span></dt>
-				<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
+				<dd>
+					<select name="lang" id="lang">
+						{% for option in lang_options %}
+							<option value="{{ option.LANG_ISO }}"{% if option.SELECTED %} selected="selected"{% endif %}>{{ option.LANG_LOCAL_NAME }}</option>
+						{% endfor %}
+					</select>
+				</dd>
 			</dl>
 		<!-- ENDIF -->
 		<dl>
@@ -95,7 +101,7 @@
 	<div class="inner">
 	<div class="content">
 		<fieldset class="submit-buttons">
-			<input type="submit" tabindex="6" name="submit" class="button1" value="{L_SEND_EMAIL}" />
+			<input type="submit" tabindex="6" name="submit" class="button1 button button-form" value="{L_SEND_EMAIL}" />
 		</fieldset>
 	</div>
 	</div>

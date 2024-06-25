@@ -1,5 +1,5 @@
 services:
-    dispatcher:
+    event_dispatcher:
         class: phpbb\event\dispatcher
         arguments:
             - '@service_container'

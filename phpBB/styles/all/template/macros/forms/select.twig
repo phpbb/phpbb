@@ -1,0 +1,35 @@
+{% apply replace({"\n\t": ' ', "\t": '', "\n": ''}) %}
+	<select
+		{% if CLASS %}class="{{ CLASS }}" {% endif %}
+		{% if ID %}id="{{ ID }}" {% endif %}
+		{% for attribute, attribute_value in DATA %}
+			data-{{ attribute|e }}="{{ attribute_value|e('html_attr') }}"
+		{% endfor %}
+		name="{{ NAME }}"
+		{% if TOGGLEABLE %}data-togglable-settings="true"{% endif %}
+		{% if MULTIPLE %}multiple="multiple"{% endif %}
+		{% if SIZE %}size="{{ SIZE }}"{% endif %}>
+{% for element in OPTIONS %}
+	{% if not GROUP_ONLY and element.options %}
+			<optgroup
+			{% for key, value in element.data %}
+				data-{{ key }}="{{ value }}"
+			{% endfor %}
+			label="{{ element.label }}">
+		{% for option in element.options %}
+			<option
+				value="{{ option.value }}"
+				{% if option.selected %}selected="selected"{% endif %}
+				{% if option.disabled %} disabled="disabled"{% endif %}{% if option.class %} class="{{ option.class }}"{% endif %}>{{ option.label }}</option>
+		{% endfor %}
+		</optgroup>
+	{% else %}
+		<option
+			value="{{ element.value }}"
+			{% if element.selected %} selected="selected"{% endif %}
+			{% if element.disabled %} disabled="disabled"{% endif %}{% if element.class %} class="{{ element.class }}"{% endif %}
+			{% if element.data %}{% for key, value in element.data %} data-{{ key }}="{{ value }}"{% endfor %}{% endif %}>{{ element.label }}</option>
+	{% endif %}
+{% endfor %}
+</select>
+{% endapply %}

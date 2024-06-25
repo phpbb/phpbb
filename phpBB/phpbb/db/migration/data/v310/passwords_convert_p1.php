@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v310;
 
 class passwords_convert_p1 extends \phpbb\db\migration\migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\passwords_p2');
 	}

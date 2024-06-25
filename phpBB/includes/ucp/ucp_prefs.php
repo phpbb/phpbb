@@ -156,7 +156,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				phpbb_timezone_select($template, $user, $data['tz'], true);
+				$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 
 				// check if there are any user-selectable languages
 				$sql = 'SELECT lang_iso, lang_local_name
@@ -177,7 +177,9 @@ class ucp_prefs
 				$db->sql_freeresult($result);
 				$s_more_styles = count($styles_row) > 1;
 
-				$template->assign_vars(array(
+				$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
+
+				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
@@ -198,11 +200,24 @@ class ucp_prefs
 					'S_MORE_LANGUAGES'		=> $s_more_languages,
 					'S_MORE_STYLES'			=> $s_more_styles,
 
-					'S_LANG_OPTIONS'		=> language_select($data['lang'], $lang_row),
-					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['user_style'], false, $styles_row),
-					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
-				);
+					'LANG_OPTIONS'			=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
+					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : [
+						'id'		=> 'user_style',
+						'name'		=> 'user_style',
+						'options'	=> style_select($data['user_style'], false, $styles_row)
+					],
+					'TIMEZONE_OPTIONS'	=> [
+						'tag'		=> 'select',
+						'name'		=> 'tz',
+						'options'	=> $timezone_select,
+					],
+					'S_CAN_HIDE_ONLINE'	=> (bool) $auth->acl_get('u_hideonline'),
+					'S_SELECT_NOTIFY'	=> (bool) ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')),
+				]);
 
 			break;
 
@@ -220,7 +235,6 @@ class ucp_prefs
 					'post_st'		=> $request->variable('post_st', (!empty($user->data['user_post_show_days'])) ? (int) $user->data['user_post_show_days'] : 0),
 
 					'images'		=> $request->variable('images', (bool) $user->optionget('viewimg')),
-					'flash'			=> $request->variable('flash', (bool) $user->optionget('viewflash')),
 					'smilies'		=> $request->variable('smilies', (bool) $user->optionget('viewsmilies')),
 					'sigs'			=> $request->variable('sigs', (bool) $user->optionget('viewsigs')),
 					'avatars'		=> $request->variable('avatars', (bool) $user->optionget('viewavatars')),
@@ -270,7 +284,6 @@ class ucp_prefs
 					if (!count($error))
 					{
 						$user->optionset('viewimg', $data['images']);
-						$user->optionset('viewflash', $data['flash']);
 						$user->optionset('viewsmilies', $data['smilies']);
 						$user->optionset('viewsigs', $data['sigs']);
 						$user->optionset('viewavatars', $data['avatars']);
@@ -405,7 +418,6 @@ class ucp_prefs
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
 					'S_IMAGES'			=> $data['images'],
-					'S_FLASH'			=> $data['flash'],
 					'S_SMILIES'			=> $data['smilies'],
 					'S_SIGS'			=> $data['sigs'],
 					'S_AVATARS'			=> $data['avatars'],

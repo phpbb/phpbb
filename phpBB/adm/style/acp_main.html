@@ -39,6 +39,15 @@
 			<p>{{ UPGRADE_INSTRUCTIONS }}</p>
 		</div>
 	{% endif %}
+	{% if S_CAPTCHA_UNSAFE %}
+		<div class="errorbox">
+			<p>{{ lang('CAPTCHA_UNSAFE_WARNING') }}</p>
+		</div>
+	{% elseif S_CAPTCHA_INCOMPLETE %}
+		<div class="errorbox">
+			<p>{{ lang('CAPTCHA_INCOMPLETE_WARNING') }}</p>
+		</div>
+	{% endif %}
 
 	<!-- IF S_SEARCH_INDEX_MISSING -->
 		<div class="errorbox">

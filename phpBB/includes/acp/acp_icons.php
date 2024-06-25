@@ -40,7 +40,6 @@ class acp_icons
 		$action = (isset($_POST['edit'])) ? 'edit' : $action;
 		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = $request->variable('id', 0);
-		$submit = $request->is_set_post('submit', false);
 
 		$form_key = 'acp_icons';
 		add_form_key($form_key);
@@ -162,7 +161,7 @@ class acp_icons
 			case 'add':
 
 				$smilies = $default_row = array();
-				$smiley_options = $order_list = $add_order_list = '';
+				$smiley_options = '';
 
 				if ($action == 'add' && $mode == 'smilies')
 				{
@@ -575,16 +574,8 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						switch ($db->get_sql_layer())
-						{
-							case 'sqlite3':
-								$db->sql_query('DELETE FROM ' . $table);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . $table);
-							break;
-						}
+						$db_tools = $phpbb_container->get('dbal.tools');
+						$db_tools->sql_truncate_table($table);
 
 						switch ($mode)
 						{

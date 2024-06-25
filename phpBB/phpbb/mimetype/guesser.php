@@ -49,6 +49,7 @@ class guesser
 		{
 			$is_supported = (method_exists($guesser, 'is_supported')) ? 'is_supported' : '';
 			$is_supported = (method_exists($guesser, 'isSupported')) ? 'isSupported' : $is_supported;
+			$is_supported = (method_exists($guesser, 'isGuesserSupported')) ? 'isGuesserSupported' : $is_supported;
 
 			if (empty($is_supported))
 			{
@@ -101,7 +102,7 @@ class guesser
 	* @param string $file Path to file
 	* @param string $file_name The real file name
 	*
-	* @return string Guess for mimetype of file
+	* @return string|false Guess for mimetype of file or false if file can't be opened
 	*/
 	public function guess($file, $file_name = '')
 	{
@@ -117,9 +118,13 @@ class guesser
 
 		$mimetype = 'application/octet-stream';
 
+		$args = (array) func_get_args();
 		foreach ($this->guessers as $guesser)
 		{
-			$mimetype_guess = $guesser->guess($file, $file_name);
+			$guess = (method_exists($guesser, 'guess')) ? 'guess' : '';
+			$guess = (method_exists($guesser, 'guessMimeType')) ? 'guessMimeType' : $guess;
+
+			$mimetype_guess = $guesser->$guess(...$args);
 
 			$mimetype = $this->choose_mime_type($mimetype, $mimetype_guess);
 		}
@@ -135,13 +140,13 @@ class guesser
 	 * will always overwrite the default application/octet-stream.
 	 *
 	 * @param	string	$mime_type	The current mime type
-	 * @param	string	$guess		The current mime type guess
+	 * @param	string|null|false	$guess		The current mime type guess
 	 *
 	 * @return string The best mime type based on current mime type and guess
 	 */
 	public function choose_mime_type($mime_type, $guess)
 	{
-		if ($guess === null || $guess == 'application/octet-stream')
+		if ($guess === false || $guess === null || $guess == 'application/octet-stream')
 		{
 			return $mime_type;
 		}

@@ -4,3 +4,6 @@ imports:
 core:
     require_dev_dependencies: true
     allow_install_dir: true
+
+    session:
+        force_sid: false

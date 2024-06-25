@@ -16,9 +16,9 @@
 */
 class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 {
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
+	protected static $fixtures = array(
 		'./',
 	);
 
@@ -76,7 +76,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->add_lang('acp/extensions');
+		$this->add_lang(['acp/common', 'acp/extensions']);
 	}
 
 	public function test_list()
@@ -241,5 +241,159 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->logout();
 		$this->install_ext('vendor/moo');
 		$this->uninstall_ext('vendor/moo');
+	}
+
+	public function test_extensions_catalog()
+	{
+		// Access extensions catalog main page
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		$this->assertContainsLang('BROWSE_EXTENSIONS_DATABASE', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(0)->text());
+		$this->assertContainsLang('SETTINGS', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(1)->text());
+
+		$form = $crawler->selectButton('Submit')->form();
+		$form['minimum_stability']->select('dev');
+		$form['repositories'] = 'https://satis.phpbb.com/';
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('div[class="successbox"] > p')->text());
+
+		// Revisit extensions catalog main page after configuration change
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+
+		// Ensure catalog has any records in extensions list
+		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
+	}
+
+	public function test_extensions_catalog_installing_extension()
+	{
+		// Let's check the overview, multiple packages should be listed
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+		$this->assertGreaterThan(1, $crawler->filter('tr')->count());
+		$this->assertGreaterThan(1, $crawler->selectLink($this->lang('INSTALL'))->count());
+
+		$pages = (int) $crawler->filter('div.pagination li:nth-last-child(2) a')->first()->text();
+
+		// Get Install links for both extensions
+		$extension_filter = function($crawler, $extension_name, &$install_link)
+		{
+			$extension_filter = $crawler->filter('tr')->reduce(
+				function ($node, $i) use ($extension_name)
+				{
+					return strpos($node->text(), $extension_name) !== false;
+				}
+			);
+
+			if ($extension_filter->count())
+			{
+				$install_link = $extension_filter->selectLink($this->lang('INSTALL'))->link();
+			}
+		};
+
+		for ($i = 0; $i < $pages; $i++)
+		{
+			if ($i != 0)
+			{
+				$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&start=' . $i * 20 . '&mode=catalog&sid=' . $this->sid);
+			}
+
+			$extension_filter($crawler, 'Scroll Page', $scrollpage_install_link);
+			$extension_filter($crawler, 'Scroll To Top', $scrolltotop_install_link);
+		}
+
+		if (!isset($scrolltotop_install_link) || !isset($scrollpage_install_link))
+		{
+			$this->fail('Failed acquiring install links for test extensions');
+		}
+
+		// Attempt to install vse/scrollpage extension
+		$crawler = self::$client->click($scrollpage_install_link);
+		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Locking vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+
+		// Attempt to install vse/scrolltotop extension
+		$crawler = self::$client->click($scrolltotop_install_link);
+		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Locking vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure installed extension appears in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringContainsString('Scroll To Top', $crawler->filter('strong[title="vse/scrolltotop"]')->text());
+		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+	}
+
+	public function test_extensions_catalog_updating_extension()
+	{
+		// Enable 'Scroll Page' extension installed earlier
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$extension_enable_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_ENABLE'))->link();
+		$crawler = self::$client->click($extension_enable_link);
+		$form = $crawler->selectButton($this->lang('EXTENSION_ENABLE'))->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
+
+		// Update 'Scroll Page' enabled extension
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$scrollpage_update_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_UPDATE'))->link();
+		$crawler = self::$client->click($scrollpage_update_link);
+		$this->assertContainsLang('EXTENSIONS_UPDATED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Updating packages', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure installed extension still appears in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+	}
+
+	public function test_extensions_catalog_removing_extension()
+	{
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+
+		// Check if both enabled and disabled extensions have 'Remove' action available
+		$scrollpage_remove_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
+
+		$scrolltotop_remove_link = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return (bool) (strpos($node->text(), 'Scroll To Top') !== false);
+			}
+		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
+
+		// Test extensions removal
+		// Remove 'Scroll Page' enabled extension
+		$crawler = self::$client->click($scrollpage_remove_link);
+		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Removing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
+
+		// Remove 'Scroll To Top' disabled extension
+		$crawler = self::$client->click($scrolltotop_remove_link);
+		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
+		// Assert there's console log output
+		$this->assertStringContainsString('Removing vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+
+		// Ensure removed extensions do not appear in available extensions list
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringNotContainsString('Scroll Page', $this->get_content());
+		$this->assertStringNotContainsString('Scroll To Top', $this->get_content());
 	}
 }

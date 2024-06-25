@@ -21,6 +21,9 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class phpbb_controller_controller_test extends phpbb_test_case
 {
+	/** @var phpbb_mock_extension_manager */
+	protected $extension_manager;
+
 	protected function setUp(): void
 	{
 		$this->extension_manager = new phpbb_mock_extension_manager(
@@ -45,10 +48,10 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
 
 		$loader = new \Symfony\Component\Routing\Loader\YamlFileLoader(
-			new \phpbb\routing\file_locator(new \phpbb\filesystem\filesystem(), __DIR__ . '/')
+			new \phpbb\routing\file_locator(__DIR__ . '/')
 		);
 		$resources_locator = new \phpbb\routing\resources_locator\default_resources_locator(__DIR__ . '/', PHPBB_ENVIRONMENT, $this->extension_manager);
-		$router = new phpbb_mock_router($container, $resources_locator, $loader, __DIR__ . '/', 'php', false);
+		$router = new phpbb_mock_router($container, $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 		$routes = $router->get_routes();
 
 		// This will need to be updated if any new routes are defined

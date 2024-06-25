@@ -52,14 +52,18 @@
 	<!-- ENDIF -->
 	<!-- IF S_MORE_LANGUAGES -->
 		<dl>
-			<dt><label for="lang">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
-			<dd><select name="lang" id="lang">{S_LANG_OPTIONS}</select></dd>
+			<dt><label for="{{ LANG_OPTIONS.id }}">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>
+			<dd>
+				{{ FormsSelect(LANG_OPTIONS) }}
+			</dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_STYLE_OPTIONS and S_MORE_STYLES -->
 		<dl>
 			<dt><label for="user_style">{L_BOARD_STYLE}{L_COLON}</label></dt>
-			<dd><select name="user_style" id="user_style">{S_STYLE_OPTIONS}</select></dd>
+			<dd>
+				{{ FormsSelect(S_STYLE_OPTIONS) }}
+			</dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- INCLUDE timezone_option.html -->
@@ -80,7 +84,7 @@
 
 <fieldset class="submit-buttons">
 	{S_HIDDEN_FIELDS}
-	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+	<input type="submit" name="submit" value="{L_SUBMIT}" class="button1 button button-form" />
 	{S_FORM_TOKEN}
 </fieldset>
 </form>

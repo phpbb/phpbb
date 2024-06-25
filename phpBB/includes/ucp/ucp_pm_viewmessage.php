@@ -223,7 +223,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 		'RANK_TITLE'		=> $user_info['rank_title'],
 		'RANK_IMG'			=> $user_info['rank_image'],
-		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
 		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (int) $user_info['user_posts'],
 		'U_AUTHOR_POSTS'	=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$author_id&amp;sr=posts") : '',
@@ -274,6 +273,15 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'U_PRINT_PM'		=> ($config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
 		'U_FORWARD_PM'		=> ($config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 	);
+
+	if (!empty($user_info['avatar']))
+	{
+		/** @var \phpbb\avatar\helper $avatar_helper */
+		$avatar_helper = $phpbb_container->get('avatar.helper');
+
+		$avatar_data = $avatar_helper->get_template_vars($user_info['avatar'], 'AUTHOR_');
+		$msg_data = array_merge($msg_data, $avatar_data);
+	}
 
 	/**
 	* Modify pm and sender data before it is assigned to the template
@@ -411,7 +419,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user;
+	global $db, $auth, $user, $phpbb_container;
 	global $phpbb_root_path, $phpEx, $config;
 
 	if (!$user_id)
@@ -451,7 +459,10 @@ function get_user_information($user_id, $user_row)
 		}
 	}
 
-	$user_row['avatar'] = ($user->optionget('viewavatars')) ? phpbb_get_user_avatar($user_row) : '';
+	/** @var \phpbb\avatar\helper $avatar_helper */
+	$avatar_helper = $phpbb_container->get('avatar.helper');
+
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? $avatar_helper->get_user_avatar($user_row) : [];
 
 	if (!function_exists('phpbb_get_user_rank'))
 	{

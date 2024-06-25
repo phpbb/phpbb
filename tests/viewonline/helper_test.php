@@ -13,6 +13,8 @@
 
 class phpbb_viewonline_helper_test extends phpbb_test_case
 {
+	protected $viewonline_helper;
+
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -21,7 +23,7 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->viewonline_helper = new \phpbb\viewonline_helper(new \phpbb\filesystem\filesystem(), $db);
+		$this->viewonline_helper = new \phpbb\viewonline_helper($db);
 	}
 
 	public function session_pages_data()

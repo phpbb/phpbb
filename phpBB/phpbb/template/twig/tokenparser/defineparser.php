@@ -21,9 +21,8 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 	*
 	* @param \Twig\Token $token A Twig\Token instance
 	*
-	* @return \Twig\Node\Node A Twig\Node instance
 	* @throws \Twig\Error\SyntaxError
-	* @throws \phpbb\template\twig\node\definenode
+	* @return \Twig\Node\Node A Twig\Node instance
 	*/
 	public function parse(\Twig\Token $token)
 	{
@@ -41,7 +40,7 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 			{
 				// This would happen if someone improperly formed their DEFINE syntax
 				// e.g. <!-- DEFINE $VAR = foo -->
-				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $this->parser->getStream()->getSourceContext()->getPath());
+				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $this->parser->getStream()->getSourceContext());
 			}
 
 			$stream->expect(\Twig\Token::BLOCK_END_TYPE);

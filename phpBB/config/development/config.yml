@@ -11,6 +11,8 @@ core:
         sql_explain: true
         memory: true
         show_errors: true
+        url_generator: true
+        url_matcher: true
         error_handler: true
 
     twig:
@@ -18,5 +20,12 @@ core:
         auto_reload: true
         enable_debug_extension: true
 
+    extensions:
+        composer_debug: true
+        composer_verbose: true
+
     session:
         log_errors: true
+
+    finder:
+        cache: false

@@ -91,6 +91,8 @@ $lang = array_merge($lang, array(
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',
 
+	'INVALID_ACTION'						=> 'Invalid action',
+
 	'INDEX_STATS'							=> 'Index statistics',
 	'INDEXING_IN_PROGRESS'					=> 'Indexing in progress…',
 	'INDEXING_IN_PROGRESS_EXPLAIN'			=> 'The search backend is currently indexing all posts on the board. This can take from a few minutes to a few hours depending on your board’s size.',

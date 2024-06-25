@@ -1,0 +1,43 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>
+	{% if S_ACTION == 'create' %}
+		{{ lang('CONTINUE_INDEXING') }}
+	{% else %}
+		{{ lang('CONTINUE_DELETING_INDEX') }}
+	{% endif %}
+</h1>
+
+<p>
+	{% if S_ACTION == 'create' %}
+		{{ lang('CONTINUE_INDEXING_EXPLAIN') }}
+	{% else %}
+		{{ lang('CONTINUE_DELETING_INDEX_EXPLAIN') }}
+	{% endif %}
+</p>
+
+<form id="acp_search_continue" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('CONTINUE_INDEXING') }}</legend>
+		{% if CONTINUE_PROGRESS %}
+		<div class="centered-text">
+			<br>
+			<progress
+				value="{{ CONTINUE_PROGRESS.VALUE }}"
+				max="{{ CONTINUE_PROGRESS.TOTAL }}"
+				style="height: 2em; width: 20em;"></progress><br>
+			{{ CONTINUE_PROGRESS.PERCENTAGE|number_format(2) ~ ' %' }}<br>
+			{{ lang('SEARCH_INDEX_PROGRESS', CONTINUE_PROGRESS.VALUE, CONTINUE_PROGRESS.REMAINING, CONTINUE_PROGRESS.TOTAL) }}
+		</div>
+		{% endif %}
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="submit" id="cancel" name="cancel" value="{{ lang('CANCEL') }}" />
+		</p>
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

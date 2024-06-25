@@ -86,52 +86,10 @@ if (($mark_notification = $request->variable('mark_notification', 0)))
 
 display_forums('', $config['load_moderators']);
 
-$order_legend = ($config['legend_sort_groupname']) ? 'group_name' : 'group_legend';
-// Grab group details for legend display
-if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-{
-	$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
-		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend > 0
-		ORDER BY ' . $order_legend . ' ASC';
-}
-else
-{
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
-		FROM ' . GROUPS_TABLE . ' g
-		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-			ON (
-				g.group_id = ug.group_id
-				AND ug.user_id = ' . $user->data['user_id'] . '
-				AND ug.user_pending = 0
-			)
-		WHERE g.group_legend > 0
-			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.' . $order_legend . ' ASC';
-}
-$result = $db->sql_query($sql);
-
 /** @var \phpbb\group\helper $group_helper */
 $group_helper = $phpbb_container->get('group_helper');
 
-$legend = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
-	$group_name = $group_helper->get_name($row['group_name']);
-
-	if ($row['group_name'] == 'BOTS' || ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')))
-	{
-		$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
-	}
-	else
-	{
-		$legend[] = '<a' . $colour_text . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
-	}
-}
-$db->sql_freeresult($result);
-
-$legend = implode($user->lang['COMMA_SEPARATOR'], $legend);
+$group_helper->display_legend($db, $template);
 
 // Generate birthday list if required ...
 $show_birthdays = ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
@@ -156,13 +114,13 @@ if ($show_birthdays)
 		),
 		'LEFT_JOIN' => array(
 			array(
-				'FROM' => array(BANLIST_TABLE => 'b'),
+				'FROM' => array(BANS_TABLE => 'b'),
 				'ON' => 'u.user_id = b.ban_userid',
 			),
 		),
-		'WHERE' => "(b.ban_id IS NULL OR b.ban_exclude = 1)
-			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)
-			AND u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')',
+		'WHERE' => 'b.ban_id IS NULL
+			AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
+			AND (u.user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%' $leap_year_birthdays)",
 	);
 
 	/**
@@ -219,7 +177,6 @@ $template->assign_vars(array(
 	'TOTAL_USERS'	=> $user->lang('TOTAL_USERS', (int) $config['num_users']),
 	'NEWEST_USER'	=> $user->lang('NEWEST_USER', get_username_string('full', $config['newest_user_id'], $config['newest_username'], $config['newest_user_colour'])),
 
-	'LEGEND'		=> $legend,
 	'BIRTHDAY_LIST'	=> (empty($birthday_list)) ? '' : implode($user->lang['COMMA_SEPARATOR'], $birthday_list),
 
 	'S_LOGIN_ACTION'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login'),
@@ -229,7 +186,7 @@ $template->assign_vars(array(
 
 	'U_CANONICAL'		=> generate_board_url() . '/',
 	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
-	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front', true, $user->session_id) : '')
+	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front') : '')
 );
 
 $page_title = ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['INDEX'];

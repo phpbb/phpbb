@@ -20,7 +20,7 @@ class v320a1 extends \phpbb\db\migration\container_aware_migration
 		return phpbb_version_compare($this->config['version'], '3.2.0-a1', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v320\dev',

@@ -15,7 +15,7 @@ class phpbb_event_dispatcher_test extends phpbb_test_case
 {
     public function test_trigger_event()
     {
-        $dispatcher = new \phpbb\event\dispatcher(new phpbb_mock_container_builder());
+        $dispatcher = new \phpbb\event\dispatcher();
 
         $dispatcher->addListener('core.test_event', function (\phpbb\event\data $event) {
             $event['foo'] = $event['foo'] . '2';

@@ -16,6 +16,8 @@
 */
 abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 {
+	protected $search_backend;
+
 	protected function assert_search_found($keywords, $posts_found, $words_highlighted, $sort_key = '')
 	{
 		$this->purge_cache();
@@ -107,7 +109,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->create_search_index('\phpbb\search\fulltext_native');
+		$this->create_search_index('phpbb\\search\\backend\\fulltext_native');
 
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 		$topic_multiple_results_count1 = $this->create_topic(2, 'Test Topic for multiple search results', 'This is a test topic posted to test multiple results count.');
@@ -122,21 +124,38 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		if ($values["config[search_type]"] != $this->search_backend)
 		{
 			$values["config[search_type]"] = $this->search_backend;
-			$form->setValues($values);
-			$crawler = self::submit($form);
 
-			$form = $crawler->selectButton($this->lang('YES'))->form();
-			$values = $form->getValues();
-			$crawler = self::submit($form);
-
-			// check if search backend is not supported
-			if ($crawler->filter('.errorbox')->count() > 0)
+			if (strpos($this->search_backend, 'fulltext_sphinx'))
 			{
+				// Set board Sphinx id in according to respective setup-sphinx.sh $ID value
+				$values["config[fulltext_sphinx_id]"] = 'saw9zf2fdhp1goue';
+			}
+
+			try
+			{
+				$form->setValues($values);
+			}
+			catch(\InvalidArgumentException $e)
+			{
+				// Search backed is not supported because don't appear in the select
 				$this->delete_topic($post['topic_id']);
 				$this->delete_topic($topic_by_author['topic_id']);
 				$this->delete_topic($topic_multiple_results_count1['topic_id']);
 				$this->delete_topic($topic_multiple_results_count2['topic_id']);
 				$this->markTestSkipped("Search backend is not supported/running");
+			}
+
+			$crawler = self::submit($form);
+			$this->purge_cache();
+
+			$form = $crawler->selectButton($this->lang('YES'))->form();
+			$values = $form->getValues();
+			$crawler = self::submit($form);
+
+			// Unknown error selecting search backend
+			if ($crawler->filter('.errorbox')->count() > 0)
+			{
+				$this->fail('Error when trying to select available search backend');
 			}
 
 			$this->create_search_index();
@@ -211,7 +230,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually created
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $search_type . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $search_type) . ' td')->eq(1)->text();
 		$this->assertTrue($posts_indexed > 0);
 	}
 
@@ -248,7 +267,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually removed
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . $this->search_backend . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $this->search_backend) . ' td')->eq(1)->text();
 		$this->assertEquals(0, $posts_indexed);
 	}
 }

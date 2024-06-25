@@ -37,6 +37,6 @@ class phpbb_regex_censor_test extends phpbb_test_case
 	{
 		$regex = get_censor_preg_expression($pattern);
 
-		$this->assertRegExp($regex, $subject);
+		$this->assertMatchesRegularExpression($regex, $subject);
 	}
 }

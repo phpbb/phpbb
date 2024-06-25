@@ -65,8 +65,9 @@ class parser implements \phpbb\textformatter\parser_interface
 		* @event core.text_formatter_s9e_parser_setup
 		* @var \phpbb\textformatter\s9e\parser parser This parser service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('parser');
+		$vars = ['parser'];
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_parser_setup', compact($vars)));
 	}
 
@@ -218,7 +219,7 @@ class parser implements \phpbb\textformatter\parser_interface
 			{
 				$errors[] = array($msg, $context['max_size']);
 			}
-			else if (preg_match('/^MAX_(?:FLASH|IMG)_(HEIGHT|WIDTH)_EXCEEDED$/D', $msg, $m))
+			else if (preg_match('/^MAX_IMG_(HEIGHT|WIDTH)_EXCEEDED$/D', $msg, $m))
 			{
 				$errors[] = array($msg, $context['max_' . strtolower($m[1])]);
 			}
@@ -302,50 +303,6 @@ class parser implements \phpbb\textformatter\parser_interface
 	}
 
 	/**
-	* Filter a flash object's height
-	*
-	* @see bbcode_firstpass::bbcode_flash()
-	*
-	* @param  string  $height
-	* @param  integer $max_height
-	* @param  Logger  $logger
-	* @return mixed              Original value if valid, FALSE otherwise
-	*/
-	static public function filter_flash_height($height, $max_height, Logger $logger)
-	{
-		if ($max_height && $height > $max_height)
-		{
-			$logger->err('MAX_FLASH_HEIGHT_EXCEEDED', array('max_height' => $max_height));
-
-			return false;
-		}
-
-		return $height;
-	}
-
-	/**
-	* Filter a flash object's width
-	*
-	* @see bbcode_firstpass::bbcode_flash()
-	*
-	* @param  string  $width
-	* @param  integer $max_width
-	* @param  Logger  $logger
-	* @return mixed              Original value if valid, FALSE otherwise
-	*/
-	static public function filter_flash_width($width, $max_width, Logger $logger)
-	{
-		if ($max_width && $width > $max_width)
-		{
-			$logger->err('MAX_FLASH_WIDTH_EXCEEDED', array('max_width' => $max_width));
-
-			return false;
-		}
-
-		return $width;
-	}
-
-	/**
 	* Filter the value used in a [size] BBCode
 	*
 	* @see bbcode_firstpass::bbcode_size()
@@ -355,7 +312,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	* @param  Logger  $logger
 	* @return mixed             Original value if valid, FALSE otherwise
 	*/
-	static public function filter_font_size($size, $max_size, Logger $logger)
+	public static function filter_font_size($size, $max_size, Logger $logger)
 	{
 		if ($max_size && $size > $max_size)
 		{
@@ -383,7 +340,7 @@ class parser implements \phpbb\textformatter\parser_interface
 	*
 	* @return string|bool         Original value if valid, FALSE otherwise
 	*/
-	static public function filter_img_url($url, array $url_config, Logger $logger)
+	public static function filter_img_url($url, array $url_config, Logger $logger)
 	{
 		// Validate the URL
 		$url = UrlFilter::filter($url, $url_config, $logger);

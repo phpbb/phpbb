@@ -31,7 +31,7 @@ class language_file_loader
 	protected $php_ext;
 
 	/**
-	 * @var \phpbb\extension\manager	Extension manager
+	 * @var \phpbb\extension\manager|null	Extension manager
 	 */
 	protected $extension_manager;
 
@@ -184,6 +184,39 @@ class language_file_loader
 
 		// The language file is not exist
 		throw new language_file_not_found('Language file ' . $language_file_path . ' couldn\'t be opened.');
+	}
+
+	/**
+	 * Get language values from composer.json files
+	 *
+	 * @param array|string $locales
+	 * @return array
+	 */
+	public function get_composer_lang_values(array|string $locales): array
+	{
+		if (!is_array($locales))
+		{
+			$locales = [$locales];
+		}
+
+		$file_helper = new language_file_helper($this->phpbb_root_path);
+		$composer_lang_vars = $file_helper->get_available_languages();
+
+		foreach ($composer_lang_vars as $key => $value)
+		{
+			$composer_lang_vars[$value['iso']] = $value;
+			unset($composer_lang_vars[$key]);
+		}
+
+		foreach ($locales as $locale)
+		{
+			if (isset($composer_lang_vars[$locale]))
+			{
+				return $composer_lang_vars[$locale];
+			}
+		}
+
+		return count($composer_lang_vars) ? array_shift($composer_lang_vars) : [];
 	}
 
 	/**

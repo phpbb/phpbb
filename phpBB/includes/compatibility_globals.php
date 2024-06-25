@@ -24,7 +24,6 @@ if (!defined('IN_PHPBB'))
 define('ATTACHMENT_CATEGORY_WM', 2); // Windows Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_RM', 3); // Real Media Files - Streaming - @deprecated 3.2
 define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files - @deprecated 3.2
-define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files - @deprecated 3.3
 
 /**
  * Sets compatibility globals in the global scope
@@ -46,7 +45,7 @@ function register_compatibility_globals()
 
 	// Instantiate some basic classes
 	/* @var $phpbb_dispatcher \phpbb\event\dispatcher */
-	$phpbb_dispatcher = $phpbb_container->get('dispatcher');
+	$phpbb_dispatcher = $phpbb_container->get('event_dispatcher');
 
 	/* @var $request \phpbb\request\request_interface */
 	$request = $phpbb_container->get('request');

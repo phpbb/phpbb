@@ -32,16 +32,6 @@ class wrapper
 	protected $task;
 
 	/**
-	 * @var string
-	 */
-	protected $phpbb_root_path;
-
-	/**
-	 * @var string
-	 */
-	protected $php_ext;
-
-	/**
 	 * @var \phpbb\template\template
 	 */
 	protected $template;
@@ -53,16 +43,12 @@ class wrapper
 	*
 	* @param task	$task				The cron task to wrap.
 	* @param helper	$routing_helper		Routing helper for route generation
-	* @param string	$phpbb_root_path	Relative path to phpBB root
-	* @param string	$php_ext			PHP file extension
 	* @param \phpbb\template\template	$template
 	*/
-	public function __construct(task $task, helper $routing_helper, $phpbb_root_path, $php_ext, $template)
+	public function __construct(task $task, helper $routing_helper, $template)
 	{
 		$this->task = $task;
 		$this->routing_helper = $routing_helper;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 		$this->template = $template;
 	}
 
@@ -103,8 +89,9 @@ class wrapper
 	*/
 	public function get_url()
 	{
+		$params = [];
 		$params['cron_type'] = $this->get_name();
-		if ($this->is_parametrized())
+		if ($this->task instanceof parametrized)
 		{
 			$params = array_merge($params, $this->task->get_parameters());
 		}
@@ -126,7 +113,7 @@ class wrapper
 
 		$this->template->assign_var('CRON_TASK_URL', $this->get_url());
 
-		return $this->template->assign_display('cron_html_tag');
+		return (string) $this->template->assign_display('cron_html_tag');
 	}
 
 	/**

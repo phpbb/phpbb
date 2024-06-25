@@ -49,7 +49,9 @@ class factory implements driver_interface
 	{
 		if ($this->driver === null)
 		{
-			$this->driver = $this->container->get('dbal.conn.driver');
+			/** @var driver_interface $driver */
+			$driver = $this->container->get('dbal.conn.driver');
+			$this->driver = $driver;
 		}
 
 		return $this->driver;
@@ -238,13 +240,13 @@ class factory implements driver_interface
 	*/
 	public function sql_return_on_error($fail = false)
 	{
-		return $this->get_driver()->sql_return_on_error($fail);
+		$this->get_driver()->sql_return_on_error($fail);
 	}
 
 	/**
 	* {@inheritdoc}
 	*/
-	public function sql_build_array($query, $assoc_ary = array())
+	public function sql_build_array($query, $assoc_ary = [])
 	{
 		return $this->get_driver()->sql_build_array($query, $assoc_ary);
 	}
@@ -292,7 +294,7 @@ class factory implements driver_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function sql_fetchfield($field, $rownum = false, $query_id = false)
+	public function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		return $this->get_driver()->sql_fetchfield($field, $rownum, $query_id);
 	}
@@ -334,7 +336,7 @@ class factory implements driver_interface
 	*/
 	public function sql_add_num_queries($cached = false)
 	{
-		return $this->get_driver()->sql_add_num_queries($cached);
+		$this->get_driver()->sql_add_num_queries($cached);
 	}
 
 	/**
@@ -382,7 +384,7 @@ class factory implements driver_interface
 	*/
 	public function sql_freeresult($query_id = false)
 	{
-		return $this->get_driver()->sql_freeresult($query_id);
+		$this->get_driver()->sql_freeresult($query_id);
 	}
 
 	/**
@@ -476,7 +478,7 @@ class factory implements driver_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function clean_query_id($query_id)
+	public function clean_query_id(mixed $query_id): int|string|null
 	{
 		return $this->get_driver()->clean_query_id($query_id);
 	}

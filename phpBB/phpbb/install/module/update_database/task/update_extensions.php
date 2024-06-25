@@ -45,7 +45,7 @@ class update_extensions extends task_base
 	protected $update_helper;
 
 	/**
-	 * @var \phpbb\config\db
+	 * @var \phpbb\config\config
 	 */
 	protected $config;
 
@@ -75,7 +75,7 @@ class update_extensions extends task_base
 	 * @var array	List of default extensions to update, grouped by version
 	 *				they were added
 	 */
-	static public $default_extensions_update = [
+	public static $default_extensions_update = [
 		'3.2.0-RC2' => ['phpbb/viglink']
 	];
 
@@ -111,9 +111,9 @@ class update_extensions extends task_base
 		// Make sure asset version exists in config. Otherwise we might try to
 		// insert the assets_version setting into the database and cause a
 		// duplicate entry error.
-		if (!isset($this->config['assets_version']))
+		if (!$this->config->offsetExists('assets_version'))
 		{
-			$this->config['assets_version'] = 0;
+			$this->config->offsetSet('assets_version', 0);
 		}
 
 		parent::__construct(true);
@@ -222,7 +222,7 @@ class update_extensions extends task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 1;
 	}

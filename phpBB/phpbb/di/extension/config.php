@@ -21,7 +21,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 */
 class config extends Extension
 {
-	/** @var array */
+	/** @var \phpbb\config_php_file */
 	protected $config_php;
 
 	public function __construct(\phpbb\config_php_file $config_php)
@@ -32,12 +32,12 @@ class config extends Extension
 	/**
 	* Loads a specific configuration.
 	*
-	* @param array            $config    An array of configuration values
+	* @param array            $configs    An array of configuration values
 	* @param ContainerBuilder $container A ContainerBuilder instance
 	*
 	* @throws \InvalidArgumentException When provided tag is not defined in this extension
 	*/
-	public function load(array $config, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container)
 	{
 		$parameters = array(
 			'core.adm_relative_path'	=> $this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/',
@@ -60,7 +60,7 @@ class config extends Extension
 	*
 	* @return string The alias
 	*/
-	public function getAlias()
+	public function getAlias(): string
 	{
 		return 'config';
 	}
@@ -73,7 +73,7 @@ class config extends Extension
 	*/
 	protected function convert_30_acm_type($acm_type)
 	{
-		if (preg_match('#^[a-z]+$#', $acm_type))
+		if (preg_match('#^[a-z]+$#', $acm_type ?? ''))
 		{
 			return 'phpbb\\cache\\driver\\' . $acm_type;
 		}

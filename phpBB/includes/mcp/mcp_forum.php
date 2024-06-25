@@ -50,10 +50,17 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?$url_extra");
 
+	add_form_key('mcp_forum');
+
 	// Resync Topics
 	switch ($action)
 	{
 		case 'resync':
+			if (!check_form_key('mcp_forum'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$topic_ids = $request->variable('topic_id_list', array(0));
 			mcp_resync_topics($topic_ids);
 		break;
@@ -292,11 +299,17 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row_ary['forum_id']) && $row_ary['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_IMG_STYLE'		=> $folder_img,
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
+			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row_ary['icon_id']])) ? $icons[$row_ary['icon_id']]['height'] : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 			'DELETED_IMG'			=> ($topic_deleted) ? $user->img('icon_topic_deleted', 'TOPIC_DELETED') : '',
+			'S_POST_ANNOUNCE'		=> $row_ary['topic_type'] == POST_ANNOUNCE,
+			'S_POST_GLOBAL'			=> $row_ary['topic_type'] == POST_GLOBAL,
+			'S_POST_STICKY'			=> $row_ary['topic_type'] == POST_STICKY,
+			'S_TOPIC_LOCKED'		=> $row_ary['topic_status'] == ITEM_LOCKED,
+			'S_TOPIC_MOVED'			=> $row_ary['topic_status'] == ITEM_MOVED,
 
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),
 			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row_ary['topic_poster'], $row_ary['topic_first_poster_name'], $row_ary['topic_first_poster_colour']),

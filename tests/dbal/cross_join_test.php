@@ -36,9 +36,9 @@ class phpbb_dbal_cross_join_test extends phpbb_database_test_case
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(
-						'phpbb_banlist'	=> 'b',
+						'phpbb_bans'	=> 'b',
 					),
-					'ON'	=> 'u.user_id = b.ban_userid',
+					'ON'	=> 'b.ban_item = ' . $db->cast_expr_to_string('u.user_id'),
 				),
 			),
 			'WHERE'		=> 'ug.group_id = 1

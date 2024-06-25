@@ -22,8 +22,36 @@ class phpbb_acp_board_select_auth_method_test extends phpbb_test_case
 	public static function select_auth_method_data()
 	{
 		return [
-			['acp_board_valid', '<option value="acp_board_valid" selected="selected" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'],
-			['acp_board_invalid', '<option value="acp_board_valid" data-toggle-setting="#auth_acp_board_valid_settings">Acp_board_valid</option>'],
+			[
+				'acp_board_valid',
+				[
+					'options' => [
+						0 => [
+							'value'		=> 'acp_board_valid',
+							'label'		=> 'Acp_board_valid',
+							'selected'	=> true,
+							'data' 		=> [
+								'toggle-setting' => '#auth_acp_board_valid_settings',
+							],
+						]
+					],
+				]
+			],
+			[
+				'acp_board_invalid',
+				[
+					'options' => [
+						0 => [
+							'value'		=> 'acp_board_valid',
+							'label'		=> 'Acp_board_valid',
+							'selected'	=> false,
+							'data' 		=> [
+								'toggle-setting' => '#auth_acp_board_valid_settings',
+							],
+						]	
+					],
+				]
+			],
 		];
 	}
 

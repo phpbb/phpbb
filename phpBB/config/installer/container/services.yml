@@ -1,5 +1,6 @@
 imports:
     - { resource: services_installer.yml }
+    - { resource: services_avatar.yml }
     - { resource: ../../default/container/services_event.yml }
     - { resource: ../../default/container/services_filesystem.yml }
     - { resource: ../../default/container/services_http.yml }
@@ -9,6 +10,10 @@ imports:
     - { resource: ../../default/container/services_twig.yml }
 
 services:
+    assets.bag:
+        class: phpbb\template\assets_bag
+        shared: false
+
     cache.driver:
         class: '%cache.driver.class%'
         arguments:
@@ -31,7 +36,6 @@ services:
     file_locator:
         class: phpbb\routing\file_locator
         arguments:
-            - '@filesystem'
             - '%core.root_path%'
 
     kernel_exception_subscriber:
@@ -50,7 +54,6 @@ services:
         class: phpbb\path_helper
         arguments:
             - '@symfony_request'
-            - '@filesystem'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -78,6 +81,7 @@ services:
     template.twig.environment:
         class: phpbb\template\twig\environment
         arguments:
+            - '@assets.bag'
             - '@config'
             - '@filesystem'
             - '@path_helper'

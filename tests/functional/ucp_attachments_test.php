@@ -115,7 +115,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name > a')->text());
 
 		$attach_link = $crawler->filter('span.file-name > a')->attr('href');
-		$attach_id = $this->get_parameter_from_link($attach_link, 'id');
+		preg_match('#download/attachment/([0-9]+)/valid.jpg#', $attach_link, $match);
+		$attach_id = $match[1];
 
 		// Submit post
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
@@ -132,8 +133,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$attachment_filename = $crawler->filter('.attachment-filename');
 		$this->assertEquals('valid.jpg', $attachment_filename->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_filename->attr('href'));
-		$this->assertEquals('', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertStringContainsString('app.php/download/attachment/' . $attach_id . '/valid.jpg', $attachment_filename->attr('href'));
+		$this->assertFalse($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 	}
 
 	public function test_ucp_delete_expired_attachment()
@@ -152,7 +153,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name > a')->text());
 
 		$attach_link = $crawler->filter('span.file-name > a')->attr('href');
-		$attach_id = $this->get_parameter_from_link($attach_link, 'id');
+		preg_match('#download/attachment/([0-9]+)/valid.jpg#', $attach_link, $match);
+		$attach_id = $match[1];
 
 		// Submit post
 		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
@@ -170,7 +172,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid);
 		$crawler->filter('.attachment-filename')->each(function ($node, $i) use ($attach_id, &$attachment_node)
 		{
-			if (strpos($node->attr('href'), 'file.php?id=' . $attach_id) !== false)
+			if (strpos($node->attr('href'), 'download/attachment/' . $attach_id . '/valid.jpg') !== false)
 			{
 				$attachment_node = $node;
 			}
@@ -178,7 +180,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->assertNotNull($attachment_node);
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_node->attr('href'));
+		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
 
 		$this->logout();
 
@@ -209,15 +211,15 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid);
 		$crawler->filter('.attachment-filename')->each(function ($node, $i) use ($attach_id, &$attachment_node)
 		{
-			if (strpos($node->attr('href'), 'file.php?id=' . $attach_id) !== false)
+			if (strpos($node->attr('href'), 'download/attachment/' . $attach_id . '/valid.jpg') !== false)
 			{
 				$attachment_node = $node;
 			}
 		});
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		// It should not be possible to delete the attachment
 		$crawler = self::request('POST', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid, [
@@ -229,14 +231,14 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$crawler->filter('.attachment-filename')->each(function ($node, $i) use ($attach_id, &$attachment_node)
 		{
-			if (strpos($node->attr('href'), 'file.php?id=' . $attach_id) !== false)
+			if (strpos($node->attr('href'), 'download/attachment/' . $attach_id . '/valid.jpg') !== false)
 			{
 				$attachment_node = $node;
 			}
 		});
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		$this->logout();
 
@@ -292,7 +294,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = $this->upload_file_pm('valid.jpg', 'image/jpeg');
 
 		$attach_link = $crawler->filter('span.file-name > a')->attr('href');
-		$attach_id = $this->get_parameter_from_link($attach_link, 'id');
+		preg_match('#download/attachment/([0-9]+)/valid.jpg#', $attach_link, $match);
+		$attach_id = $match[1];
 
 		$form = $crawler->selectButton($this->lang('ADD'))->form([
 			'username_list'	=> 'admin'
@@ -306,7 +309,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 
 		$this->assertContainsLang('MESSAGE_STORED', $crawler->text());
-		$refresh_data = explode(';', $crawler->filterXpath("//meta[@http-equiv='refresh']")->extract('content')[0]);
+		$refresh_data = explode(';', $crawler->filterXpath("//meta[@http-equiv='refresh']")->attr('content'));
 		$pm_url = trim($refresh_data[1]);
 
 		$pm_id = $this->get_parameter_from_link($pm_url, 'p');
@@ -315,7 +318,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid);
 		$crawler->filter('.attachment-filename')->each(function ($node, $i) use ($attach_id, &$attachment_node)
 		{
-			if (strpos($node->attr('href'), 'file.php?id=' . $attach_id) !== false)
+			if (strpos($node->attr('href'), 'download/attachment/' . $attach_id . '/valid.jpg') !== false)
 			{
 				$attachment_node = $node;
 			}
@@ -323,8 +326,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->assertNotNull($attachment_node);
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_node->attr('href'));
-		$this->assertEquals('', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
+		$this->assertFalse($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		// Update message time to 60 minutes later
 		$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
@@ -335,7 +338,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'ucp.php?i=ucp_attachments&mode=attachments&sid=' . $this->sid);
 		$crawler->filter('.attachment-filename')->each(function ($node, $i) use ($attach_id, &$attachment_node)
 		{
-			if (strpos($node->attr('href'), 'file.php?id=' . $attach_id) !== false)
+			if (strpos($node->attr('href'), 'download/attachment/' . $attach_id . '/valid.jpg') !== false)
 			{
 				$attachment_node = $node;
 			}
@@ -343,8 +346,8 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->assertNotNull($attachment_node);
 
 		$this->assertEquals('valid.jpg', $attachment_node->attr('title'));
-		$this->assertStringContainsString('download/file.php?id=' . $attach_id, $attachment_node->attr('href'));
-		$this->assertEquals('disabled', $crawler->filter('[name="attachment[' . $attach_id . ']"]')->attr('disabled'));
+		$this->assertStringContainsString('download/attachment/' . $attach_id . '/valid.jpg', $attachment_node->attr('href'));
+		$this->assertTrue($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 
 		$this->set_flood_interval(15);
 

@@ -21,7 +21,7 @@ class profilefield_cleanup extends \phpbb\db\migration\migration
 			!$this->db_tools->sql_column_exists($this->table_prefix . 'users', 'user_interests');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\profilefield_interests',

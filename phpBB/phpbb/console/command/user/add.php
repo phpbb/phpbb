@@ -20,6 +20,8 @@ use phpbb\exception\runtime_exception;
 use phpbb\language\language;
 use phpbb\passwords\manager;
 use phpbb\user;
+use Symfony\Component\Console\Command\Command as symfony_command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -84,7 +86,7 @@ class add extends command
 	/**
 	 * Sets the command name and description
 	 *
-	 * @return null
+	 * @return void
 	 */
 	protected function configure()
 	{
@@ -142,7 +144,7 @@ class add extends command
 		catch (runtime_exception $e)
 		{
 			$io->error($e->getMessage());
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		$user_row = array(
@@ -161,7 +163,7 @@ class add extends command
 		if (!$user_id)
 		{
 			$io->error($this->language->lang('AUTH_NO_PROFILE_CREATED'));
-			return 1;
+			return symfony_command::FAILURE;
 		}
 
 		if ($input->getOption('send-email') && $this->config['email_enable'])
@@ -171,7 +173,7 @@ class add extends command
 
 		$io->success($this->language->lang('CLI_USER_ADD_SUCCESS', $this->data['username']));
 
-		return 0;
+		return symfony_command::SUCCESS;
 	}
 
 	/**
@@ -183,6 +185,10 @@ class add extends command
 	protected function interact(InputInterface $input, OutputInterface $output)
 	{
 		$helper = $this->getHelper('question');
+		if (!$helper instanceof QuestionHelper)
+		{
+			return;
+		}
 
 		$this->data = array(
 			'username'     => $input->getOption('username'),
@@ -225,7 +231,7 @@ class add extends command
 	 * Validate the submitted user data
 	 *
 	 * @throws runtime_exception if any data fails validation
-	 * @return null
+	 * @return void
 	 */
 	protected function validate_user_data()
 	{
@@ -282,7 +288,7 @@ class add extends command
 	 * Send account activation email
 	 *
 	 * @param int   $user_id The new user's id
-	 * @return null
+	 * @return void
 	 */
 	protected function send_activation_email($user_id)
 	{

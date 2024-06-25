@@ -36,11 +36,7 @@ $.ajaxPrefilter(function(s) {
  */
 phpbb.loadingIndicator = function() {
 	if (!$loadingIndicator) {
-		$loadingIndicator = $('<div />', {
-			'id': 'loading_indicator',
-			'class': 'loading_indicator'
-		});
-		$loadingIndicator.appendTo('#page-footer');
+		$loadingIndicator = $('#loading_indicator');
 	}
 
 	if (!$loadingIndicator.is(':visible')) {
@@ -1056,11 +1052,11 @@ phpbb.addAjaxCallback('alt_text', function() {
  * and changes the link itself.
  */
 phpbb.addAjaxCallback('toggle_link', function() {
-	var $anchor,
-		updateAll = $(this).data('update-all') ,
-		toggleText,
-		toggleUrl,
-		toggleClass;
+	var $anchor;
+	var updateAll = $(this).data('update-all');
+	var toggleText;
+	var toggleUrl;
+	var toggleIcon;
 
 	if (updateAll !== undefined && updateAll.length) {
 		$anchor = $(updateAll);
@@ -1071,21 +1067,19 @@ phpbb.addAjaxCallback('toggle_link', function() {
 	$anchor.each(function() {
 		var $this = $(this);
 
+		// Toggle link text
+		toggleText = $.trim($this.attr('data-toggle-text'));
+		$this.attr('data-toggle-text', $.trim($this.children('span').text()));
+		$this.attr('title', toggleText);
+		$this.children('span').last().text(toggleText);
+
 		// Toggle link url
 		toggleUrl = $this.attr('data-toggle-url');
 		$this.attr('data-toggle-url', $this.attr('href'));
 		$this.attr('href', toggleUrl);
 
-		// Toggle class of link parent
-		toggleClass = $this.attr('data-toggle-class');
-		$this.attr('data-toggle-class', $this.children().attr('class'));
-		$this.children('.icon').attr('class', toggleClass);
-
-		// Toggle link text
-		toggleText = $this.attr('data-toggle-text');
-		$this.attr('data-toggle-text', $this.children('span').text());
-		$this.attr('title', $.trim(toggleText));
-		$this.children('span').text(toggleText);
+		// Toggle Icon
+		$this.children().first().toggleClass('is-active').next().toggleClass('is-active')
 	});
 });
 
@@ -1385,7 +1379,7 @@ phpbb.dropdownVisibleContainers = '.dropdown-container.dropdown-visible';
 * Dropdown toggle event handler
 * This handler is used by phpBB.registerDropdown() and other functions
 */
-phpbb.toggleDropdown = function() {
+phpbb.toggleDropdown = function(event_) {
 	var $this = $(this),
 		options = $this.data('dropdown-options'),
 		parent = options.parent,
@@ -1393,6 +1387,9 @@ phpbb.toggleDropdown = function() {
 		direction;
 
 	if (!visible) {
+		// Prevent link default action
+		event_.preventDefault();
+		event_.stopPropagation();
 		// Hide other dropdown menus
 		$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 
@@ -1681,6 +1678,33 @@ phpbb.getFunctionByName = function (functionName) {
 };
 
 /**
+ * Convert raw key ArrayBuffer to base64 string.
+ *
+ * @param {ArrayBuffer} rawKey Raw key array buffer as exported by SubtleCrypto exportKey()
+ * @returns {string} Base64 encoded raw key string
+ */
+phpbb.rawKeyToBase64 = (rawKey) => {
+	const keyBuffer = new Uint8Array(rawKey);
+	let keyText = '';
+	const keyLength = keyBuffer.byteLength;
+	for (let i = 0; i < keyLength; i++) {
+		keyText += String.fromCharCode(keyBuffer[i]);
+	}
+
+	return window.btoa(keyText);
+};
+
+/**
+ * Base64URL encode base64 encoded string
+ *
+ * @param {string} base64String Base64 encoded string
+ * @returns {string} Base64URL encoded string
+ */
+phpbb.base64UrlEncode = (base64String) => {
+	return base64String.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+
+/**
 * Register page dropdowns.
 */
 phpbb.registerPageDropdowns = function() {
@@ -1747,6 +1771,31 @@ phpbb.lazyLoadAvatars = function loadAvatars() {
 			.removeAttr('data-src');
 	});
 };
+
+/**
+ * Get editor text area element
+ *
+ * @param {string} formName Name of form
+ * @param {string} textareaName Textarea name
+ *
+ * @return {HTMLElement|null} Text area element or null if textarea couldn't be found
+ */
+phpbb.getEditorTextArea = function(formName, textareaName) {
+	let doc;
+
+	// find textarea, make sure browser supports necessary functions
+	if (document.forms[formName]) {
+		doc = document;
+	} else {
+		doc = opener.document;
+	}
+
+	if (!doc.forms[formName]) {
+		return;
+	}
+
+	return doc.forms[formName].elements[textareaName];
+}
 
 phpbb.recaptcha = {
 	button: null,

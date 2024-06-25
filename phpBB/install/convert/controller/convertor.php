@@ -13,7 +13,9 @@
 
 namespace phpbb\convert\controller;
 
+use Doctrine\DBAL\Connection;
 use phpbb\cache\driver\driver_interface;
+use phpbb\db\doctrine\connection_factory;
 use phpbb\exception\http_exception;
 use phpbb\install\controller\helper;
 use phpbb\install\helper\container_factory;
@@ -75,6 +77,11 @@ class convertor
 	 * @var \phpbb\db\driver\driver_interface
 	 */
 	protected $db;
+
+	/**
+	 * @var Connection
+	 */
+	protected $db_doctrine;
 
 	/**
 	 * @var install_helper
@@ -165,10 +172,11 @@ class convertor
 
 		$this->controller_helper->handle_language_select();
 
-		$this->cache	= $container->get('cache.driver');
-		$this->config	= $container->get('config');
+		$this->cache			= $container->get('cache.driver');
+		$this->config			= $container->get('config');
 		$this->config_php_file	= new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
-		$this->db		= $container->get('dbal.conn.driver');
+		$this->db				= $container->get('dbal.conn.driver');
+		$this->db_doctrine		= $container->get('dbal.conn.doctrine');
 
 		$this->config_table			= $container->get_parameter('tables.config');
 		$this->session_keys_table	= $container->get_parameter('tables.sessions_keys');
@@ -408,18 +416,11 @@ class convertor
 
 		$this->db->sql_freeresult($result);
 
-		switch ($this->db->get_sql_layer())
-		{
-			case 'sqlite3':
-				$this->db->sql_query('DELETE FROM ' . $this->session_keys_table);
-				$this->db->sql_query('DELETE FROM ' . $this->session_table);
-			break;
+		$tools_factory = new \phpbb\db\tools\factory();
+		$db_tools = $tools_factory->get($this->db_doctrine);
 
-			default:
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->session_keys_table);
-				$this->db->sql_query('TRUNCATE TABLE ' . $this->session_table);
-			break;
-		}
+		$db_tools->sql_truncate_table($this->session_keys_table);
+		$db_tools->sql_truncate_table($this->session_table);
 
 		return $this->controller_helper->render('installer_convert.html', 'CONVERT_COMPLETE');
 	}
@@ -493,7 +494,7 @@ class convertor
 			$error[] = $this->language->lang('INST_ERR_DB_CONNECT');
 		}
 
-		$src_dbms = $this->config_php_file->convert_30_dbms_to_31($src_dbms);
+		$src_dbms = \phpbb\config_php_file::convert_30_dbms_to_31($src_dbms);
 
 		// Check table prefix
 		if (empty($error))
@@ -507,11 +508,13 @@ class convertor
 				/** @var \phpbb\db\driver\driver_interface $src_db */
 				$src_db = new $src_dbms();
 				$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd, ENT_COMPAT), $src_dbname, $src_dbport, false, true);
+				$src_db_doctrine = connection_factory::get_connection_from_params($src_dbms, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd, ENT_COMPAT), $src_dbname, $src_dbport);
 				$same_db = false;
 			}
 			else
 			{
 				$src_db = $this->db;
+				$src_db_doctrine = $this->db_doctrine;
 				$same_db = true;
 			}
 
@@ -526,7 +529,7 @@ class convertor
 				$prefixes = array();
 
 				$db_tools_factory = new \phpbb\db\tools\factory();
-				$db_tools = $db_tools_factory->get($src_db);
+				$db_tools = $db_tools_factory->get($src_db_doctrine);
 				$tables_existing = $db_tools->sql_list_tables();
 				$tables_existing = array_map('strtolower', $tables_existing);
 				foreach ($tables_existing as $table_name)

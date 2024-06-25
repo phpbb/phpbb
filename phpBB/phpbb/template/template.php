@@ -15,14 +15,6 @@ namespace phpbb\template;
 
 interface template
 {
-
-	/**
-	* Clear the cache
-	*
-	* @return \phpbb\template\template
-	*/
-	public function clear_cache();
-
 	/**
 	* Sets the template filenames for handles.
 	*
@@ -111,10 +103,10 @@ interface template
 	* Value can be a string, an integer or a boolean.
 	*
 	* @param string $varname Variable name
-	* @param string $varval Value to assign to variable
+	* @param mixed $varval Value to assign to variable
 	* @return \phpbb\template\template $this
 	*/
-	public function assign_var($varname, $varval);
+	public function assign_var(string $varname, mixed $varval);
 
 	/**
 	* Append text to the string value stored in a key.

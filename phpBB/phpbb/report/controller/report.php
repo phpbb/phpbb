@@ -14,6 +14,7 @@
 namespace phpbb\report\controller;
 
 use phpbb\exception\http_exception;
+use phpbb\report\report_handler_interface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class report
@@ -59,8 +60,11 @@ class report
 	protected $php_ext;
 
 	/**
-	 * @var \phpbb\report\report_handler_interface
+	 * @var \phpbb\report\handler_factory
 	 */
+	protected $report_factory;
+
+	/** @var report_handler_interface */
 	protected $report_handler;
 
 	/**
@@ -78,7 +82,7 @@ class report
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 		$this->captcha_factory	= $captcha_factory;
-		$this->report_handler	= $report_factory;
+		$this->report_factory	= $report_factory;
 
 		// User interface factory
 		$this->report_reason_provider = $ui_provider;
@@ -97,7 +101,7 @@ class report
 	public function handle($id, $mode)
 	{
 		// Get report handler
-		$this->report_handler = $this->report_handler->get_instance($mode);
+		$this->report_handler = $this->report_factory->get_instance($mode);
 
 		$this->user->add_lang('mcp');
 
@@ -246,7 +250,7 @@ class report
 	/**
 	 * Assigns template variables
 	 *
-	 * @param	int		$mode
+	 * @param	string	$mode
 	 * @param	int		$id
 	 * @param	int		$reason_id
 	 * @param	string	$report_text
@@ -254,7 +258,7 @@ class report
 	 * @param 	array	$error
 	 * @param	string	$s_hidden_fields
 	 * @param	mixed	$captcha
-	 * @return	null
+	 * @return	void
 	 */
 	protected function assign_template_data($mode, $id, $reason_id, $report_text, $user_notify, $error = array(), $s_hidden_fields = '', $captcha = false)
 	{

@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\attachment\attachment_category;
+
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -1264,7 +1266,7 @@ function phpbb_prepare_message($message)
 	$enable_smilies = (!isset($convert->row['enable_smilies'])) ? true : $convert->row['enable_smilies'];
 	$enable_magic_url = (!isset($convert->row['enable_magic_url'])) ? true : $convert->row['enable_magic_url'];
 
-	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
+	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	$message_parser->parse($enable_bbcode, $enable_magic_url, $enable_smilies);
 
 	if (count($message_parser->warn_msg))
@@ -1315,7 +1317,7 @@ function phpbb_get_files_dir()
 {
 	if (!defined('MOD_ATTACHMENT'))
 	{
-		return;
+		return '';
 	}
 
 	global $src_db, $same_db, $convert, $user;
@@ -1393,7 +1395,7 @@ function phpbb_attachment_category($cat_id)
 	switch ($cat_id)
 	{
 		case 1:
-			return ATTACHMENT_CATEGORY_IMAGE;
+			return attachment_category::IMAGE;
 		break;
 
 		case 2:
@@ -1401,7 +1403,7 @@ function phpbb_attachment_category($cat_id)
 		break;
 	}
 
-	return ATTACHMENT_CATEGORY_NONE;
+	return attachment_category::NONE;
 }
 
 /**
@@ -1508,15 +1510,9 @@ function phpbb_avatar_type($type)
 	{
 		case 1:
 			return AVATAR_UPLOAD;
-		break;
-
-		case 2:
-			return AVATAR_REMOTE;
-		break;
 
 		case 3:
 			return AVATAR_GALLERY;
-		break;
 	}
 
 	return 0;
@@ -1547,11 +1543,6 @@ function phpbb_import_avatar($user_avatar)
 	{
 		// Uploaded avatar
 		return import_avatar($user_avatar, false, $convert_row['user_id']);
-	}
-	else if ($convert_row['user_avatar_type'] == 2)
-	{
-		// Remote avatar
-		return $user_avatar;
 	}
 	else if ($convert_row['user_avatar_type'] == 3)
 	{
@@ -1885,11 +1876,7 @@ function phpbb_check_username_collisions()
 
 function phpbb_convert_timezone($timezone)
 {
-	global $config, $db, $phpbb_root_path, $phpEx, $table_prefix;
-
-	$factory = new \phpbb\db\tools\factory();
-	$timezone_migration = new \phpbb\db\migration\data\v310\timezone($config, $db, $factory->get($db), $phpbb_root_path, $phpEx, $table_prefix);
-	return $timezone_migration->convert_phpbb30_timezone($timezone, 0);
+	return \phpbb\db\migration\data\v310\timezone::convert_phpbb30_timezone($timezone, 0);
 }
 
 function phpbb_add_notification_options($user_notify_pm)

@@ -204,7 +204,7 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 	*
 	* @param string $dir Directory to remove
 	*
-	* @return null
+	* @return void
 	*/
 	protected function remove_dir($dir)
 	{
@@ -236,6 +236,15 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 
 		@rmdir($dir);
 	}
+
+	/**
+	 * Fetch an item from the cache
+	 *
+	 * @param string $var Cache key
+	 *
+	 * @return mixed Cached data
+	 */
+	abstract protected function _read(string $var);
 
 	/**
 	 * {@inheritDoc}

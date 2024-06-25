@@ -119,20 +119,6 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 				)
 			),
 			array(
-				6,
-				7,
-				array(
-					array(
-						'id'   => '6',
-						'text' => '<r><FLASH height="345" url="http://example.org/flash.swf" width="123"><s>[flash=123,345]</s>http://example.org/flash.swf<e>[/flash]</e></FLASH></r>',
-					),
-					array(
-						'id'   => '7',
-						'text' => '<t>[flash=123,345]http://example.org/flash.swf[/flash]</t>',
-					),
-				)
-			),
-			array(
 				8,
 				9,
 				array(

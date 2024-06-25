@@ -13,6 +13,7 @@
 
 namespace phpbb\notification;
 
+use phpbb\exception\runtime_exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -70,8 +71,6 @@ class manager
 	* @param \phpbb\user $user
 	* @param string $notification_types_table
 	* @param string $user_notifications_table
-	*
-	* @return \phpbb\notification\manager
 	*/
 	public function __construct($notification_types, $notification_methods, ContainerInterface $phpbb_container, \phpbb\user_loader $user_loader, \phpbb\event\dispatcher_interface $phpbb_dispatcher, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, \phpbb\language\language $language, \phpbb\user $user, $notification_types_table, $user_notifications_table)
 	{
@@ -224,7 +223,7 @@ class manager
 	* Mark notifications read or unread for a given method
 	*
 	* @param string $method_name
-	* @param int|array $notification_id Notification id or array of notification ids.
+	* @param array $notification_id Notification id or array of notification ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
@@ -480,31 +479,41 @@ class manager
 	}
 
 	/**
-	* Delete a notification
-	*
-	* @param string|array $notification_type_name Type identifier or array of item types (only acceptable if the $item_id is identical for the specified types)
-	* @param int|array $item_id Identifier within the type (or array of ids)
-	* @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
-	* @param mixed $user_id User id (Default: false; not checked)
+	 * Delete notifications of specified type
+	 *
+	 * @param string $notification_type_name Type identifier
+	 * @param int|array $item_id Identifier within the type (or array of ids)
+	 * @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	 * @param mixed $user_id User id (Default: false; not checked)
+	 *
+	 * @return void
 	*/
-	public function delete_notifications($notification_type_name, $item_id, $parent_id = false, $user_id = false)
+	public function delete_notifications(string $notification_type_name, $item_id, $parent_id = false, $user_id = false): void
 	{
-		if (is_array($notification_type_name))
-		{
-			foreach ($notification_type_name as $type)
-			{
-				$this->delete_notifications($type, $item_id, $parent_id, $user_id);
-			}
-
-			return;
-		}
-
 		$notification_type_id = $this->get_notification_type_id($notification_type_name);
 
 		/** @var method\method_interface $method */
 		foreach ($this->get_available_subscription_methods() as $method)
 		{
 			$method->delete_notifications($notification_type_id, $item_id, $parent_id, $user_id);
+		}
+	}
+
+	/**
+	 * Delete notifications specified by multiple types
+	 *
+	 * @param array $notification_type_names Array of item types (only acceptable if the $item_id is identical for the specified types)
+	 * @param int|array $item_id Identifier within the type (or array of ids)
+	 * @param mixed $parent_id Parent identifier within the type (or array of ids), used in combination with item_id if specified (Default: false; not checked)
+	 * @param mixed $user_id User id (Default: false; not checked)
+	 *
+	 * @return void
+	 */
+	public function delete_notifications_by_types(array $notification_type_names, $item_id, $parent_id = false, $user_id = false): void
+	{
+		foreach ($notification_type_names as $type)
+		{
+			$this->delete_notifications($type, $item_id, $parent_id, $user_id);
 		}
 	}
 
@@ -880,9 +889,9 @@ class manager
 	/**
 	 * Helper to get the list of methods enabled by default
 	 *
-	 * @return method\method_interface[]
+	 * @return string[] Default method types
 	 */
-	public function get_default_methods()
+	public function get_default_methods(): array
 	{
 		$default_methods = array();
 
@@ -901,12 +910,19 @@ class manager
 	 * Helper to get the notifications item type class and set it up
 	 *
 	 * @param string $notification_type_name
-	 * @param array  $data
+	 * @param array $data
+	 *
 	 * @return type\type_interface
+	 * @throws runtime_exception When type name is not o notification type
 	 */
 	public function get_item_type_class($notification_type_name, $data = array())
 	{
 		$item = $this->load_object($notification_type_name);
+
+		if (!$item instanceof type\type_interface)
+		{
+			throw new runtime_exception('Supplied type name returned invalid service: ' . $notification_type_name);
+		}
 
 		$item->set_initial_data($data);
 
@@ -917,18 +933,30 @@ class manager
 	 * Helper to get the notifications method class and set it up
 	 *
 	 * @param string $method_name
+	 *
 	 * @return method\method_interface
+	 * @throws runtime_exception When object name is not o notification method
 	 */
 	public function get_method_class($method_name)
 	{
-		return $this->load_object($method_name);
+		$object = $this->load_object($method_name);
+
+		if (!$object instanceof method\method_interface)
+		{
+			throw new runtime_exception('Supplied method name returned invalid service: ' . $method_name);
+		}
+
+		return $object;
 	}
 
 	/**
 	 * Helper to load objects (notification types/methods)
 	 *
 	 * @param string $object_name
+	 *
 	 * @return method\method_interface|type\type_interface
+	 * @psalm-suppress NullableReturnStatement Invalid service will result in exception
+	 * @throws runtime_exception When object name is not o notification method or type
 	 */
 	protected function load_object($object_name)
 	{
@@ -937,6 +965,11 @@ class manager
 		if (method_exists($object, 'set_notification_manager'))
 		{
 			$object->set_notification_manager($this);
+		}
+
+		if (!$object instanceof method\method_interface && !$object instanceof type\type_interface)
+		{
+			throw new runtime_exception('Supplied object name returned invalid service: ' . $object_name);
 		}
 
 		return $object;
@@ -951,6 +984,8 @@ class manager
 	*/
 	public function get_notification_type_id($notification_type_name)
 	{
+		$notification_type_ids = [];
+
 		$sql = 'SELECT notification_type_id, notification_type_name
 			FROM ' . $this->notification_types_table;
 		$result = $this->db->sql_query($sql, 604800); // cache for one week

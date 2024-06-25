@@ -329,9 +329,9 @@ abstract class base implements feed_interface
 	}
 
 	/**
-	 * Returns the SQL query used to retrieve the posts of the feed.
+	 * Sets the SQL query used to retrieve the posts of the feed and returns success state
 	 *
-	 * @return string SQL SELECT query
+	 * @return bool True of SQL query was set, false if not
 	 */
 	protected abstract function get_sql();
 }

@@ -95,8 +95,6 @@ class auth
 			$this->acl_cache($userdata);
 			$this->_fill_acl($userdata['user_permissions']);
 		}
-
-		return;
 	}
 
 	/**
@@ -213,7 +211,7 @@ class auth
 	* @param bool	$clean set to true if only values needs to be returned which are set/unset
 	*
 	* @return array Contains the forum ids with the specified permission set to true.
-					This is a nested array: array => forum_id => permission => true
+	*				This is a nested array: array => forum_id => permission => true
 	*/
 	function acl_getf($opt, $clean = false)
 	{
@@ -562,8 +560,6 @@ class auth
 		*/
 		$vars = array('user_id');
 		extract($phpbb_dispatcher->trigger_event('core.acl_clear_prefetch_after', compact($vars)));
-
-		return;
 	}
 
 	/**

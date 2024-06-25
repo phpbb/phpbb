@@ -28,7 +28,7 @@ interface guesser_interface
 	* @param string $file Path to file
 	* @param string $file_name The real file name
 	*
-	* @return string Guess for mimetype of file
+	* @return string|null Guess for mimetype of file
 	*/
 	public function guess($file, $file_name = '');
 

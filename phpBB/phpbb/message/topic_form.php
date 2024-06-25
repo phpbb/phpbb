@@ -153,10 +153,17 @@ class topic_form extends form
 		parent::render($template);
 
 		$this->user->add_lang('viewtopic');
+
+		$lang_options = phpbb_language_select($this->db, $this->recipient_lang);
+
 		$template->assign_vars(array(
 			'EMAIL'				=> $this->recipient_address,
 			'NAME'				=> $this->recipient_name,
-			'S_LANG_OPTIONS'	=> language_select($this->recipient_lang),
+			'LANG_OPTIONS'		=> [
+				'id'		=> 'lang',
+				'name'		=> 'lang',
+				'options'	=> $lang_options,
+			],
 			'MESSAGE'			=> $this->body,
 
 			'L_EMAIL_BODY_EXPLAIN'	=> $this->user->lang['EMAIL_TOPIC_EXPLAIN'],

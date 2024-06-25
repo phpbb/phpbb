@@ -14,17 +14,23 @@
 namespace phpbb\group;
 
 use phpbb\auth\auth;
+use phpbb\avatar\helper as avatar_helper;
 use phpbb\cache\service as cache;
 use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\event\dispatcher_interface;
 use phpbb\path_helper;
+use phpbb\template\template;
 use phpbb\user;
 
 class helper
 {
 	/** @var auth */
 	protected $auth;
+
+	/** @var avatar_helper */
+	protected $avatar_helper;
 
 	/** @var cache */
 	protected $cache;
@@ -54,6 +60,7 @@ class helper
 	 * Constructor
 	 *
 	 * @param auth					$auth			Authentication object
+	 * @param avatar_helper			$avatar_helper	Avatar helper object
 	 * @param cache					$cache			Cache service object
 	 * @param config				$config			Configuration object
 	 * @param language				$language		Language object
@@ -61,9 +68,10 @@ class helper
 	 * @param path_helper			$path_helper	Path helper object
 	 * @param user					$user			User object
 	 */
-	public function __construct(auth $auth, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
+	public function __construct(auth $auth, avatar_helper $avatar_helper, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
 	{
 		$this->auth = $auth;
+		$this->avatar_helper = $avatar_helper;
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->language = $language;
@@ -113,6 +121,7 @@ class helper
 	public function get_name_string($mode, $group_id, $group_name, $group_colour = '', $custom_profile_url = false)
 	{
 		$s_is_bots = ($group_name === 'BOTS');
+		$group_name_string = null;
 
 		// This switch makes sure we only run code required for the mode
 		switch ($mode)
@@ -278,17 +287,65 @@ class helper
 
 	/**
 	 * Get group avatar.
-	 * Wrapper function for phpbb_get_group_avatar()
+	 * Wrapper function for \phpbb\avatar\helper::get_group_avatar()
 	 *
 	 * @param array		$group_row		Row from the groups table
 	 * @param string	$alt			Optional language string for alt tag within image, can be a language key or text
 	 * @param bool		$ignore_config	Ignores the config-setting, to be still able to view the avatar in the UCP
 	 * @param bool		$lazy			If true, will be lazy loaded (requires JS)
 	 *
-	 * @return string 					Avatar html
+	 * @return array 					Avatar data
 	 */
-	function get_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
+	public function get_avatar($group_row, $alt = 'GROUP_AVATAR', $ignore_config = false, $lazy = false)
 	{
-		return phpbb_get_group_avatar($group_row, $alt, $ignore_config, $lazy);
+		return $this->avatar_helper->get_group_avatar($group_row, $alt, $ignore_config, $lazy);
+	}
+
+	/**
+	 * Display groups legend
+	 *
+	 * @param driver_interface $db
+	 * @param template $template
+	 * @return void
+	 */
+	public function display_legend(driver_interface $db, template $template): void
+	{
+		$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
+
+		// Grab group details for legend display
+		if ($this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+		{
+			$sql = 'SELECT group_id, group_name, group_colour, group_type, group_legend
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_legend > 0
+				ORDER BY ' . $order_legend . ' ASC';
+		}
+		else
+		{
+			$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, g.group_legend
+				FROM ' . GROUPS_TABLE . ' g
+				LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $this->user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+				WHERE g.group_legend > 0
+					AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $this->user->data['user_id'] . ')
+				ORDER BY g.' . $order_legend . ' ASC';
+		}
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$show_group_url = $row['group_name'] != 'BOTS' && $this->auth->acl_get('u_viewprofile');
+
+			$template->assign_block_vars('LEGEND', [
+				'GROUP_COLOR'		=> $row['group_colour'] ?: '',
+				'GROUP_NAME'		=> $this->get_name($row['group_name']),
+				'GROUP_URL'			=> $show_group_url ? append_sid("{$this->path_helper->get_phpbb_root_path()}memberlist.{$this->path_helper->get_php_ext()}", 'mode=group&amp;g=' . $row['group_id']) : '',
+			]);
+		}
+		$db->sql_freeresult($result);
 	}
 }

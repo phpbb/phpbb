@@ -22,7 +22,7 @@ use phpbb\db\migration\container_aware_migration;
  */
 class soft_delete_mod_convert extends container_aware_migration
 {
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\alpha3',
@@ -122,6 +122,8 @@ class soft_delete_mod_convert extends container_aware_migration
 	 */
 	protected function get_content_visibility()
 	{
-		return $this->container->get('content.visibility');
+		/** @var \phpbb\content_visibility $content_visibility */
+		$content_visibility = $this->container->get('content.visibility');
+		return $content_visibility;
 	}
 }

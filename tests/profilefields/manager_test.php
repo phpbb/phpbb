@@ -19,7 +19,10 @@ class manager_test extends phpbb_database_test_case
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools\tools */
+	/** @var \Doctrine\DBAL\Connection */
+	protected $db_doctrine;
+
+	/** @var \phpbb\db\tools\doctrine */
 	protected $db_tools;
 
 	/** @var \phpbb\log\log_interface */
@@ -46,8 +49,9 @@ class manager_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx, $table_prefix;
 
 		$this->db			= $this->new_dbal();
-		$this->db_tools		= $this->getMockBuilder('\phpbb\db\tools\tools')
-			->setConstructorArgs([$this->db])
+		$this->db_doctrine	= $this->new_doctrine_dbal();
+		$this->db_tools		= $this->getMockBuilder('\phpbb\db\tools\doctrine')
+			->setConstructorArgs([$this->db_doctrine])
 			->getMock();
 		$this->config_text	= new \phpbb\config\db_text($this->db, $table_prefix . 'config_text');
 		$this->table_prefix	= $table_prefix;
@@ -55,9 +59,6 @@ class manager_test extends phpbb_database_test_case
 		$container	= new phpbb_mock_container_builder();
 		$dispatcher	= new phpbb_mock_event_dispatcher();
 
-		$request	= $this->getMockBuilder('\phpbb\request\request')
-			->disableOriginalConstructor()
-			->getMock();
 		$template	= $this->getMockBuilder('\phpbb\template\template')
 			->disableOriginalConstructor()
 			->getMock();
@@ -79,7 +80,6 @@ class manager_test extends phpbb_database_test_case
 			$dispatcher,
 			$language,
 			$this->log,
-			$request,
 			$template,
 			$collection,
 			$user,

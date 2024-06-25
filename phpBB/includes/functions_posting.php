@@ -253,6 +253,7 @@ function generate_smilies($mode, $forum_id)
 * @param	string	$type				Can be forum|topic
 * @param	mixed	$ids				topic/forum ids
 * @param	bool	$return_update_sql	true: SQL query shall be returned, false: execute SQL
+* @return	array|null	SQL query, null otherwise
 */
 function update_post_information($type, $ids, $return_update_sql = false)
 {
@@ -327,7 +328,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$empty_forums = array_merge($empty_forums, array_diff($ids, $not_empty_forums));
 
-		foreach ($empty_forums as $void => $forum_id)
+		foreach ($empty_forums as $forum_id)
 		{
 			$update_sql[$forum_id][] = 'forum_last_post_id = 0';
 			$update_sql[$forum_id][] = "forum_last_post_subject = ''";
@@ -412,7 +413,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$db->sql_query($sql);
 	}
 
-	return;
+	return null;
 }
 
 /**
@@ -823,7 +824,7 @@ function posting_gen_inline_attachments(&$attachment_data)
  */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true, $forum_id = false)
 {
-	global $template, $cache, $config, $phpbb_root_path, $phpEx, $user, $phpbb_dispatcher;
+	global $template, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container;
 
 	$allowed_attachments = array_keys($cache->obtain_attach_extensions($forum_id)['_allowed_']);
 
@@ -867,7 +868,14 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				$hidden .= '<input type="hidden" name="attachment_data[' . $count . '][' . $key . ']" value="' . $value . '" />';
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
+			$download_link = $phpbb_container->get('controller.helper')
+				->route(
+					'phpbb_storage_attachment',
+					[
+						'id'		=> (int) $attach_row['attach_id'],
+						'filename'	=> $attach_row['real_filename'],
+					]
+				);
 
 			$attachrow_template_vars[(int) $attach_row['attach_id']] = array(
 				'FILENAME'			=> utf8_basename($attach_row['real_filename']),
@@ -912,7 +920,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $ms
 	global $user, $db, $template, $auth;
 	global $phpbb_root_path, $phpbb_dispatcher, $phpEx;
 
-	$topic_ids = $forum_ids = $draft_rows = array();
+	$topic_ids = $draft_rows = array();
 
 	// Load those drafts not connected to forums/topics
 	// If forum_id == 0 AND topic_id == 0 then this is a PM draft
@@ -1269,7 +1277,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_TIME'			=> $row['post_time'],
 			'USER_ID'			=> $row['user_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
+			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;p=' . $row['post_id']) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
 		);
 
@@ -1623,6 +1631,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 {
 	global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
 
+	$attachment_storage = $phpbb_container->get('storage.attachment');
+
 	$poll = $poll_ary;
 	$data = $data_ary;
 	/**
@@ -1691,8 +1701,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	$data_ary['topic_title'] = truncate_string($data_ary['topic_title'], 120);
 
 	// Collect some basic information about which tables and which rows to update/insert
-	$sql_data = $topic_row = array();
-	$poster_id = ($mode == 'edit') ? $data_ary['poster_id'] : (int) $user->data['user_id'];
+	$sql_data = array();
+	$poster_id = ($mode == 'edit') ? (int) $data_ary['poster_id'] : (int) $user->data['user_id'];
 
 	// Retrieve some additional information if not present
 	if ($mode == 'edit' && (!isset($data_ary['post_visibility']) || !isset($data_ary['topic_visibility']) || $data_ary['post_visibility'] === false || $data_ary['topic_visibility'] === false))
@@ -2170,7 +2180,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		$space_taken = $files_added = 0;
 		$orphan_rows = array();
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			$orphan_rows[(int) $attach_row['attach_id']] = array();
 		}
@@ -2192,7 +2202,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$db->sql_freeresult($result);
 		}
 
-		foreach ($data_ary['attachment_data'] as $pos => $attach_row)
+		foreach ($data_ary['attachment_data'] as $attach_row)
 		{
 			if ($attach_row['is_orphan'] && !isset($orphan_rows[$attach_row['attach_id']]))
 			{
@@ -2216,7 +2226,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!$attachment_storage->exists(utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
@@ -2273,7 +2283,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 
 			// Maybe not only the subject, but also changing anonymous usernames. ;)
-			if ($data_ary['poster_id'] == ANONYMOUS)
+			if ((int) $data_ary['poster_id'] == ANONYMOUS)
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
 			}
@@ -2290,7 +2300,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				$db->sql_freeresult($result);
 
 				// this post is the latest post in the forum, better update
-				if ($row['forum_last_post_id'] == $data_ary['post_id'] && ($row['forum_last_post_subject'] !== $subject || $data_ary['poster_id'] == ANONYMOUS))
+				if ($row['forum_last_post_id'] == $data_ary['post_id'] && ($row['forum_last_post_subject'] !== $subject || (int) $data_ary['poster_id'] == ANONYMOUS))
 				{
 					// the post's subject changed
 					if ($row['forum_last_post_subject'] !== $subject)
@@ -2299,7 +2309,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 					}
 
 					// Update the user name if poster is anonymous... just in case a moderator changed it
-					if ($data_ary['poster_id'] == ANONYMOUS)
+					if ((int) $data_ary['poster_id'] == ANONYMOUS)
 					{
 						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
 					}
@@ -2349,27 +2359,21 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	// Index message contents
 	if ($update_search_index && $data_ary['enable_indexing'])
 	{
-		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = $config['search_type'];
-
-		if (!class_exists($search_type))
+		try
+		{
+			$search_backend_factory = $phpbb_container->get('search.backend_factory');
+			$search = $search_backend_factory->get_active();
+		}
+		catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		$error = false;
-		$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-		if ($error)
-		{
-			trigger_error($error);
-		}
-
-		$search->index($mode, $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, $data_ary['forum_id']);
+		$search->index($mode, (int) $data_ary['post_id'], $data_ary['message'], $subject, $poster_id, (int) $data_ary['forum_id']);
 	}
 
 	// Topic Notification, do not change if moderator is changing other users posts...
-	if ($user->data['user_id'] == $poster_id)
+	if ((int) $user->data['user_id'] == $poster_id)
 	{
 		if (!$data_ary['notify_set'] && $data_ary['notify'])
 		{
@@ -2462,6 +2466,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		{
 			case 'post':
 				$phpbb_notifications->add_notifications(array(
+					'notification.type.mention',
 					'notification.type.quote',
 					'notification.type.topic',
 				), $notification_data);
@@ -2470,6 +2475,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			case 'reply':
 			case 'quote':
 				$phpbb_notifications->add_notifications(array(
+					'notification.type.mention',
 					'notification.type.quote',
 					'notification.type.bookmark',
 					'notification.type.post',
@@ -2484,6 +2490,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				if ($user->data['user_id'] == $poster_id)
 				{
 					$phpbb_notifications->update_notifications(array(
+						'notification.type.mention',
 						'notification.type.quote',
 					), $notification_data);
 				}
@@ -2781,7 +2788,7 @@ function phpbb_upload_popup($forum_style = 0)
 * @param bool		$is_soft		The flag indicating whether it is the soft delete mode
 * @param string		$delete_reason	Description for the post deletion reason
 *
-* @return null
+* @return void
 */
 function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $is_soft = false, $delete_reason = '')
 {

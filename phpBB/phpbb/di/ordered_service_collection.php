@@ -46,7 +46,7 @@ class ordered_service_collection extends service_collection
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		if (!$this->is_ordered)
 		{
@@ -59,39 +59,39 @@ class ordered_service_collection extends service_collection
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetExists($index)
+	public function offsetExists($key): bool
 	{
 		if (!$this->is_ordered)
 		{
 			$this->sort_services();
 		}
 
-		return parent::offsetExists($index);
+		return parent::offsetExists($key);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function offsetGet($index)
+	public function offsetGet($key): mixed
 	{
 		if (!$this->is_ordered)
 		{
 			$this->sort_services();
 		}
 
-		return parent::offsetGet($index);
+		return parent::offsetGet($key);
 	}
 
 	/**
 	 * Adds a service ID to the collection
 	 *
-	 * @param string	$service_id
+	 * @param string	$name
 	 * @param int		$order
 	 */
-	public function add($service_id, $order = 0)
+	public function add($name, $order = 0)
 	{
 		$order = (int) $order;
-		$this->service_ids[$order][] = $service_id;
+		$this->service_ids[$order][] = $name;
 		$this->is_ordered = false;
 	}
 

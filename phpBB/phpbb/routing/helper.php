@@ -15,6 +15,7 @@ namespace phpbb\routing;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
 * Controller helper class, contains methods that do things for controllers
@@ -44,11 +45,6 @@ class helper
 	protected $request;
 
 	/**
-	 * @var \phpbb\filesystem The filesystem object
-	 */
-	protected $filesystem;
-
-	/**
 	 * phpBB root path
 	 * @var string
 	 */
@@ -67,17 +63,15 @@ class helper
 	 * @param \phpbb\routing\router $router phpBB router
 	 * @param \phpbb\symfony_request $symfony_request Symfony Request object
 	 * @param \phpbb\request\request_interface $request phpBB request object
-	 * @param \phpbb\filesystem\filesystem $filesystem The filesystem object
 	 * @param string $phpbb_root_path phpBB root path
 	 * @param string $php_ext PHP file extension
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, \phpbb\filesystem\filesystem $filesystem, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\routing\router $router, \phpbb\symfony_request $symfony_request, \phpbb\request\request_interface $request, $phpbb_root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->router = $router;
 		$this->symfony_request = $symfony_request;
 		$this->request = $request;
-		$this->filesystem = $filesystem;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -89,7 +83,7 @@ class helper
 	 * @param array	$params		String or array of additional url parameters
 	 * @param bool	$is_amp		Is url using &amp; (true) or & (false)
 	 * @param string|bool		$session_id	Possibility to use a custom session id instead of the global one
-	 * @param bool|string		$reference_type The type of reference to be generated (one of the constants)
+	 * @param int		$reference_type The type of reference to be generated (one of the constants)
 	 * @return string The URL already passed through append_sid()
 	 */
 	public function route($route, array $params = array(), $is_amp = true, $session_id = false, $reference_type = UrlGeneratorInterface::ABSOLUTE_PATH)
@@ -140,7 +134,7 @@ class helper
 			}
 		}
 
-		$base_url = $this->request->escape($this->filesystem->clean_path($base_url), true);
+		$base_url = $this->request->escape(filesystem_helper::clean_path($base_url), true);
 
 		$context->setBaseUrl($base_url);
 

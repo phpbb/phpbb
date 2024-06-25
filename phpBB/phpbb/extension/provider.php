@@ -60,7 +60,7 @@ abstract class provider implements \IteratorAggregate
 	*
 	* @return \ArrayIterator An iterator for the array of template paths
 	*/
-	public function getIterator()
+	public function getIterator(): \ArrayIterator
 	{
 		if ($this->items === null)
 		{

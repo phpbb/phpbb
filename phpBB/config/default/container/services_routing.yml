@@ -7,6 +7,8 @@ services:
             - '@routing.delegated_loader'
             - '%core.php_ext%'
             - '%core.cache_dir%'
+            - '%debug.url_generator%'
+            - '%debug.url_matcher%'
 
     router.listener:
         class: Symfony\Component\HttpKernel\EventListener\RouterListener
@@ -23,7 +25,6 @@ services:
             - '@router'
             - '@symfony_request'
             - '@request'
-            - '@filesystem'
             - '%core.root_path%'
             - '%core.php_ext%'
 

@@ -18,7 +18,6 @@ use phpbb\captcha\plugins\captcha_abstract;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\passwords\manager;
-use phpbb\request\request_interface;
 use phpbb\user;
 
 /**
@@ -36,17 +35,8 @@ class db extends base
 	/** @var driver_interface DBAL driver instance */
 	protected $db;
 
-	/** @var request_interface Request object */
-	protected $request;
-
 	/** @var user User object */
 	protected $user;
-
-	/** @var string phpBB root path */
-	protected $phpbb_root_path;
-
-	/** @var string PHP file extension */
-	protected $php_ext;
 
 	/**
 	* phpBB passwords manager
@@ -62,21 +52,15 @@ class db extends base
 	 * @param	config 		$config
 	 * @param	driver_interface		$db
 	 * @param	manager	$passwords_manager
-	 * @param	request_interface		$request
 	 * @param	user			$user
-	 * @param	string				$phpbb_root_path
-	 * @param	string				$php_ext
 	 */
-	public function __construct(factory $captcha_factory, config $config, driver_interface $db, manager $passwords_manager, request_interface $request, user $user, $phpbb_root_path, $php_ext)
+	public function __construct(factory $captcha_factory, config $config, driver_interface $db, manager $passwords_manager, user $user)
 	{
 		$this->captcha_factory = $captcha_factory;
 		$this->config = $config;
 		$this->db = $db;
 		$this->passwords_manager = $passwords_manager;
-		$this->request = $request;
 		$this->user = $user;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
 	}
 
 	/**

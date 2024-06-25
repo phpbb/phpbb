@@ -1,0 +1,127 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('STORAGE_TITLE') }}</h1>
+
+<p>{{ lang('STORAGE_TITLE_EXPLAIN') }}</p>
+
+<table class="table1 zebra-table">
+	<thead>
+		<tr>
+			<th>{{ lang('STORAGE_NAME') }}</th>
+			<th>{{ lang('STORAGE_NUM_FILES') }}</th>
+			<th>{{ lang('STORAGE_SIZE') }}</th>
+			<th>{{ lang('STORAGE_FREE') }}</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for storage in STORAGE_STATS %}
+			<tr>
+				<td>{{ storage.name }}</td>
+				<td>{{ storage.files }}</td>
+				<td>{{ storage.size }}</td>
+				<td>{{ storage.free_space }}</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% if ERROR_MESSAGES is not empty %}
+	<div class="errorbox">
+		<h3>{{ lang('WARNING') }}</h3>
+		{% for ERROR_MESSAGE in ERROR_MESSAGES %}
+			<p>{{ ERROR_MESSAGE }}</p>
+		{% endfor %}
+	</div>
+{% endif %}
+
+<form id="acp_storage" method="post" action="{{ U_ACTION }}">
+	{% for storage in STORAGES %}
+		<fieldset>
+			<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }}</legend>
+			<dl>
+				<dt><label for="{{ storage.get_name }}">{{ lang('STORAGE_SELECT') ~ lang('COLON') }}</label><br /><span>{{ lang('STORAGE_SELECT_DESC') }}</span></dt>
+				<dd>
+					<select id="{{ storage.get_name }}" name="{{ storage.get_name }}[provider]" data-togglable-settings="true">
+						{% for provider in PROVIDERS %}
+							{% if provider.is_available %}
+								<option value="{{ get_class(provider) }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  get_class(provider) ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
+									{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
+								</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</dd>
+			</dl>
+		</fieldset>
+
+		{% for provider in PROVIDERS %}
+			{% if provider.is_available %}
+				<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
+					<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
+					{% for name, options in provider.get_options %}
+						<dl>
+							<dt>
+								{% set title = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
+								{% set description = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper ~ '_EXPLAIN' %}
+								<label>{{ lang(title) ~ lang('COLON') }}</label>
+								{% if lang_defined(description) %}
+									<br /><span>{{ lang(description) }}</span>
+								{% endif %}
+							</dt>
+							<dd>
+								{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
+								{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
+
+								{% if options.tag == 'input' %}
+									{{ FormsInput(options | merge({"name": input_name, "value": input_value})) }}
+								{% elseif options.tag == 'textarea' %}
+									{{ FormsTextarea(options | merge({"name": input_name, "content": input_value})) }}
+								{% elseif options.tag == 'radio' %}
+									{% set buttons = [] %}
+
+									{% for button in options.buttons %}
+										{% set new_button = button | merge({"name": input_name, "checked": button.value == input_value}) %}
+										{% set buttons = buttons | merge([new_button]) %}
+									{% endfor %}
+
+									{{ FormsRadioButtons(options | merge({"buttons": buttons})) }}
+								{% elseif options.tag == 'select' %}
+									{% set select_options = [] %}
+
+									{% for option in options.options %}
+										{% set new_option = option | merge({"selected": option.value == input_value}) %}
+										{% set select_options = select_options | merge([new_option]) %}
+									{% endfor %}
+
+									{{ FormsSelect(options | merge({"name": input_name, "options": select_options})) }}
+								{% endif %}
+							</dd>
+						</dl>
+					{% endfor %}
+				</fieldset>
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+
+	<fieldset>
+		<dl>
+			<dt><label for="update_type">{{ lang('STORAGE_UPDATE_TYPE') ~ lang('COLON') }}</label></dt>
+			<dd>
+				<label><input id="update_type" class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_CONFIG }}" checked="checked" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_CONFIG') }}</label>
+				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_COPY }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_COPY') }}</label>
+				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_MOVE }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_MOVE') }}</label>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{{ lang('SUBMIT') }}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include 'overall_footer.html' %}

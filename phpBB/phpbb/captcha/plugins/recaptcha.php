@@ -13,6 +13,8 @@
 
 namespace phpbb\captcha\plugins;
 
+use phpbb\exception\runtime_exception;
+
 class recaptcha extends captcha_abstract
 {
 	private $response;
@@ -48,17 +50,18 @@ class recaptcha extends captcha_abstract
 		return true;
 	}
 
-	static public function get_name()
+	public static function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}
 
 	/**
 	* This function is implemented because required by the upper class, but is never used for reCaptcha.
+	* @throws runtime_exception
 	*/
 	function get_generator_class()
 	{
-		throw new \Exception('No generator class given.');
+		throw new runtime_exception('NO_GENERATOR_CLASS');
 	}
 
 	function acp_page($id, $module)

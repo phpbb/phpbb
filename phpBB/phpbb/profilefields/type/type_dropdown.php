@@ -68,6 +68,8 @@ class type_dropdown extends type_base
 	*/
 	public function get_options($default_lang_id, $field_data)
 	{
+		$profile_row = [];
+
 		$profile_row[0] = array(
 			'var_name'				=> 'field_default_value',
 			'field_id'				=> 1,
@@ -231,13 +233,16 @@ class type_dropdown extends type_base
 		$this->template->assign_block_vars('dropdown', array_change_key_case($profile_row, CASE_UPPER));
 
 		$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
-		foreach ($options as $option_id => $option_value)
+		if (is_array($options))
 		{
-			$this->template->assign_block_vars('dropdown.options', array(
-				'OPTION_ID'	=> $option_id,
-				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
-				'VALUE'		=> $option_value,
-			));
+			foreach ($options as $option_id => $option_value)
+			{
+				$this->template->assign_block_vars('dropdown.options', array(
+					'OPTION_ID'	=> $option_id,
+					'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
+					'VALUE'		=> $option_value,
+				));
+			}
 		}
 	}
 

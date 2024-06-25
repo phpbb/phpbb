@@ -36,7 +36,7 @@ class forum extends \phpbb\notification\type\post
 	 * @var bool|array False if the service should use its default data
 	 * 					Array of data (including keys 'id', 'lang', and 'group')
 	 */
-	static public $notification_option = [
+	public static $notification_option = [
 		'lang'	=> 'NOTIFICATION_TYPE_FORUM',
 		'group'	=> 'NOTIFICATION_GROUP_POSTING',
 	];
@@ -44,12 +44,12 @@ class forum extends \phpbb\notification\type\post
 	/**
 	 * Find the users who want to receive notifications
 	 *
-	 * @param array $post Data from submit_post
+	 * @param array $type_data Data from submit_post
 	 * @param array $options Options for finding users for notification
 	 *
 	 * @return array
 	 */
-	public function find_users_for_notification($post, $options = [])
+	public function find_users_for_notification($type_data, $options = [])
 	{
 		$options = array_merge([
 			'ignore_users'		=> [],
@@ -59,9 +59,9 @@ class forum extends \phpbb\notification\type\post
 
 		$sql = 'SELECT user_id
 			FROM ' . FORUMS_WATCH_TABLE . '
-			WHERE forum_id = ' . (int) $post['forum_id'] . '
+			WHERE forum_id = ' . (int) $type_data['forum_id'] . '
 				AND notify_status = ' . NOTIFY_YES . '
-				AND user_id <> ' . (int) $post['poster_id'];
+				AND user_id <> ' . (int) $type_data['poster_id'];
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -69,7 +69,7 @@ class forum extends \phpbb\notification\type\post
 		}
 		$this->db->sql_freeresult($result);
 
-		$notify_users = $this->get_authorised_recipients($users, $post['forum_id'], $options, true);
+		$notify_users = $this->get_authorised_recipients($users, $type_data['forum_id'], $options, true);
 
 		if (empty($notify_users))
 		{
@@ -79,7 +79,7 @@ class forum extends \phpbb\notification\type\post
 		// Try to find the users who already have been notified about replies and have not read them
 		// Just update their notifications
 		$notified_users = $this->notification_manager->get_notified_users($this->get_type(), [
-			'item_parent_id'	=> static::get_item_parent_id($post),
+			'item_parent_id'	=> static::get_item_parent_id($type_data),
 			'read'				=> 0,
 		]);
 
@@ -89,11 +89,11 @@ class forum extends \phpbb\notification\type\post
 
 			/** @var post $notification */
 			$notification = $this->notification_manager->get_item_type_class($this->get_type(), $notification_data);
-			$update_responders = $notification->add_responders($post);
+			$update_responders = $notification->add_responders($type_data);
 			if (!empty($update_responders))
 			{
 				$this->notification_manager->update_notification($notification, $update_responders, [
-					'item_parent_id'	=> self::get_item_parent_id($post),
+					'item_parent_id'	=> self::get_item_parent_id($type_data),
 					'read'				=> 0,
 					'user_id'			=> $user,
 				]);
@@ -104,9 +104,7 @@ class forum extends \phpbb\notification\type\post
 	}
 
 	/**
-	 * Get email template
-	 *
-	 * @return string|bool
+	 * {@inheritdoc}
 	 */
 	public function get_email_template()
 	{

@@ -20,7 +20,7 @@ class v321rc1 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.2.1-RC1', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v320\v320',

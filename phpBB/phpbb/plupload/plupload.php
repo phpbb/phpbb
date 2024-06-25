@@ -29,7 +29,7 @@ class plupload
 	protected $config;
 
 	/**
-	* @var \phpbb\request\request_interface
+	* @var \phpbb\request\request
 	*/
 	protected $request;
 
@@ -65,12 +65,12 @@ class plupload
 	*
 	* @param string $phpbb_root_path
 	* @param \phpbb\config\config $config
-	* @param \phpbb\request\request_interface $request
+	* @param \phpbb\request\request $request
 	* @param \phpbb\user $user
 	* @param \bantu\IniGetWrapper\IniGetWrapper $php_ini
 	* @param \phpbb\mimetype\guesser $mimetype_guesser
 	*/
-	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request_interface $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
+	public function __construct($phpbb_root_path, \phpbb\config\config $config, \phpbb\request\request $request, \phpbb\user $user, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \phpbb\mimetype\guesser $mimetype_guesser)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->config = $config;
@@ -100,7 +100,7 @@ class plupload
 		// and handle the file as usual
 		if ($chunks_expected < 2)
 		{
-			return;
+			return null;
 		}
 
 		$file_name = $this->request->variable('name', '');
@@ -138,6 +138,7 @@ class plupload
 				'id' => 'id',
 				'result' => null,
 			));
+			return null;
 		}
 	}
 
@@ -150,7 +151,7 @@ class plupload
 	* @param int						$forum_id The ID of the forum
 	* @param int						$max_files Maximum number of files allowed. 0 for unlimited.
 	*
-	* @return null
+	* @return void
 	*/
 	public function configure(\phpbb\cache\service $cache, \phpbb\template\template $template, $s_action, $forum_id, $max_files)
 	{
@@ -200,7 +201,7 @@ class plupload
 	* @param int $code		The error code
 	* @param string $msg	The translation string of the message to be sent
 	*
-	* @return null
+	* @return void
 	*/
 	public function emit_error($code, $msg)
 	{
@@ -220,11 +221,11 @@ class plupload
 	 * appropriate for use in configuring plupload with
 	 *
 	 * @param \phpbb\cache\service	$cache		Cache service object
-	 * @param string				$forum_id	The forum identifier
+	 * @param int					$forum_id	The forum identifier
 	 *
 	 * @return string
 	 */
-	public function generate_filter_string(\phpbb\cache\service $cache, $forum_id)
+	public function generate_filter_string(\phpbb\cache\service $cache, int $forum_id)
 	{
 		$groups = [];
 		$filters = [];
@@ -308,7 +309,7 @@ class plupload
 			}
 		}
 
-		return floor($max / 2);
+		return (int) floor($max / 2);
 	}
 
 	protected function temporary_filepath($file_name)
@@ -331,7 +332,7 @@ class plupload
 	* @param int $chunk Chunk number
 	* @param string $file_path File path
 	*
-	* @return null
+	* @return void
 	*/
 	protected function integrate_uploaded_file($form_name, $chunk, $file_path)
 	{
@@ -378,7 +379,7 @@ class plupload
 	/**
 	* Creates the temporary directory if it does not already exist.
 	*
-	* @return null
+	* @return void
 	*/
 	protected function prepare_temporary_directory()
 	{
@@ -396,7 +397,7 @@ class plupload
 	/**
 	* Sets the default directories for uploads
 	*
-	* @return null
+	* @return void
 	*/
 	protected function set_default_directories()
 	{
@@ -410,7 +411,7 @@ class plupload
 	* @param string $upload_directory Upload directory
 	* @param string $temporary_directory Temporary directory
 	*
-	* @return null
+	* @return void
 	*/
 	public function set_upload_directories($upload_directory, $temporary_directory)
 	{

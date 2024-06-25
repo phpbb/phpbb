@@ -137,6 +137,7 @@ class check_update extends task_base
 		// Recover version numbers
 		$update_info = array();
 		@include($this->phpbb_root_path . 'install/update/index.' . $this->php_ext);
+		/** @var array|false $info */
 		$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 		$update_version = false;
 
@@ -183,7 +184,7 @@ class check_update extends task_base
 	/**
 	 * {@inheritdoc}
 	 */
-	static public function get_step_count()
+	public static function get_step_count()
 	{
 		return 0;
 	}

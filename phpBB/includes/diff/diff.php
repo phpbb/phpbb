@@ -46,8 +46,8 @@ class diff
 	/**
 	* Computes diffs between sequences of strings.
 	*
-	* @param array	&$from_content	An array of strings. Typically these are lines from a file.
-	* @param array	&$to_content	An array of strings.
+	* @param array|string	&$from_content	An array of strings. Typically these are lines from a file.
+	* @param array|string	&$to_content	An array of strings.
 	* @param bool	$preserve_cr	If true, \r is replaced by a new line in the diff output
 	*/
 	function __construct(&$from_content, &$to_content, $preserve_cr = true)
@@ -340,7 +340,7 @@ class mapped_diff extends diff
 	{
 		if (count($from_lines) != count($mapped_from_lines) || count($to_lines) != count($mapped_to_lines))
 		{
-			return false;
+			return;
 		}
 
 		parent::__construct($mapped_from_lines, $mapped_to_lines);
@@ -498,9 +498,9 @@ class diff3 extends diff
 	/**
 	* Computes diff between 3 sequences of strings.
 	*
-	* @param array &$orig		The original lines to use.
-	* @param array &$final1		The first version to compare to.
-	* @param array &$final2		The second version to compare to.
+	* @param array|string &$orig		The original lines to use.
+	* @param array|string &$final1		The first version to compare to.
+	* @param array|string &$final2		The second version to compare to.
 	* @param bool $preserve_cr	If true, \r\n and bare \r are replaced by a new line
 	*							in the diff output
 	*/
@@ -544,7 +544,7 @@ class diff3 extends diff
 	* @param string $label2 the cvs file version/label from the new set of lines
 	* @param string $label_sep the explanation between label1 and label2 - more of a helper for the user
 	*
-	* @return mixed the merged output
+	* @return array the merged output
 	*/
 	function get_conflicts_content($label1 = 'CURRENT_FILE', $label2 = 'NEW_FILE', $label_sep = 'DIFF_SEP_EXPLAIN')
 	{
@@ -582,7 +582,7 @@ class diff3 extends diff
 	/**
 	* Return merged output (used by the renderer)
 	*
-	* @return mixed the merged output
+	* @return array the merged output
 	*/
 	function merged_output()
 	{
@@ -760,11 +760,31 @@ class diff3 extends diff
 */
 class diff3_op
 {
+	/**
+	 * @var array|mixed
+	 */
+	protected $orig;
+
+	/**
+	 * @var array|mixed
+	 */
+	protected $final1;
+
+	/**
+	 * @var array|mixed
+	 */
+	protected $final2;
+
+	/**
+	 * @var false
+	 */
+	protected $_merged;
+
 	function __construct($orig = false, $final1 = false, $final2 = false)
 	{
-		$this->orig = $orig ? $orig : array();
-		$this->final1 = $final1 ? $final1 : array();
-		$this->final2 = $final2 ? $final2 : array();
+		$this->orig = $orig ?: array();
+		$this->final1 = $final1 ?: array();
+		$this->final2 = $final2 ?: array();
 	}
 
 	function merged()
@@ -1059,8 +1079,6 @@ class diff3_op
 
 			return;
 		}
-
-		return;
 	}
 }
 
@@ -1074,7 +1092,7 @@ class diff3_op_copy extends diff3_op
 {
 	function __construct($lines = false)
 	{
-		$this->orig = $lines ? $lines : array();
+		$this->orig = $lines ?: array();
 		$this->final1 = &$this->orig;
 		$this->final2 = &$this->orig;
 	}
@@ -1098,6 +1116,21 @@ class diff3_op_copy extends diff3_op
 */
 class diff3_block_builder
 {
+	/**
+	 * @var array
+	 */
+	protected $orig;
+
+	/**
+	 * @var array
+	 */
+	protected $final1;
+
+	/**
+	 * @var array
+	 */
+	protected $final2;
+
 	function __construct()
 	{
 		$this->_init();

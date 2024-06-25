@@ -20,7 +20,6 @@ namespace phpbb\db\driver;
 class postgres extends \phpbb\db\driver\driver
 {
 	var $multi_insert = true;
-	var $last_query_text = '';
 	var $connect_error = '';
 
 	/**
@@ -137,28 +136,24 @@ class postgres extends \phpbb\db\driver\driver
 			}
 		}
 
-		return ($raw) ? $this->sql_server_version : 'PostgreSQL ' . $this->sql_server_version;
+		return ($raw) ? (string) $this->sql_server_version : 'PostgreSQL ' . $this->sql_server_version;
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_transaction(string $status = 'begin'): bool
 	{
 		switch ($status)
 		{
 			case 'begin':
-				return @pg_query($this->db_connect_id, 'BEGIN');
-			break;
+				return @pg_query($this->db_connect_id, 'BEGIN') !== false;
 
 			case 'commit':
-				return @pg_query($this->db_connect_id, 'COMMIT');
-			break;
+				return @pg_query($this->db_connect_id, 'COMMIT') !== false;
 
 			case 'rollback':
-				return @pg_query($this->db_connect_id, 'ROLLBACK');
-			break;
+				return @pg_query($this->db_connect_id, 'ROLLBACK') !== false;
 		}
 
 		return true;
@@ -242,18 +237,9 @@ class postgres extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Build db-specific query data
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
-
-	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	protected function _sql_query_limit(string $query, int $total, int $offset = 0, int $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -321,7 +307,7 @@ class postgres extends \phpbb\db\driver\driver
 	/**
 	 * {@inheritDoc}
 	 */
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 
@@ -394,16 +380,13 @@ class postgres extends \phpbb\db\driver\driver
 		$safe_query_id = $this->clean_query_id($query_id);
 		if ($cache && !is_object($query_id) && $cache->sql_exists($safe_query_id))
 		{
-			return $cache->sql_freeresult($safe_query_id);
+			$cache->sql_freeresult($safe_query_id);
 		}
-
-		if (isset($this->open_queries[$safe_query_id]))
+		else if (isset($this->open_queries[$safe_query_id]))
 		{
 			unset($this->open_queries[$safe_query_id]);
-			return pg_free_result($query_id);
+			pg_free_result($query_id);
 		}
-
-		return false;
 	}
 
 	/**
@@ -412,24 +395,6 @@ class postgres extends \phpbb\db\driver\driver
 	function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
-	}
-
-	/**
-	* Build LIKE expression
-	* @access private
-	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* Build NOT LIKE expression
-	* @access private
-	*/
-	function _sql_not_like_expression($expression)
-	{
-		return $expression;
 	}
 
 	/**
@@ -449,10 +414,9 @@ class postgres extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* return sql error array
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_error()
+	protected function _sql_error(): array
 	{
 		// pg_last_error only works when there is an established connection.
 		// Connection errors have to be tracked by us manually.
@@ -472,24 +436,22 @@ class postgres extends \phpbb\db\driver\driver
 	}
 
 	/**
-	* Close sql connection
-	* @access private
-	*/
-	function _sql_close()
+	 * {@inheritDoc}
+	 */
+	protected function _sql_close(): bool
 	{
-		// Released resources are already closed, return true in this case
-		if (!is_resource($this->db_connect_id))
+		// Skip if connection is already closed or not persistent
+		if (!$this->persistency || !$this->db_connect_id instanceof \PgSql\Connection)
 		{
 			return true;
 		}
-		return @pg_close($this->db_connect_id);
+		return pg_close($this->db_connect_id);
 	}
 
 	/**
-	* Build db-specific report
-	* @access private
+	* {@inheritDoc}
 	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report(string $mode, string $query = ''): void
 	{
 		switch ($mode)
 		{

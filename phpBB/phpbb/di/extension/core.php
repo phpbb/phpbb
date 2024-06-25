@@ -15,16 +15,22 @@ namespace phpbb\di\extension;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
 * Container core extension
 */
 class core extends Extension
 {
-	const TWIG_OPTIONS_POSITION = 7;
+	/**
+	 * Index of array in service template.twig.environment inside services_twig.yml
+	 * @var int
+	 */
+	const TWIG_OPTIONS_POSITION = 8;
 
 	/**
 	 * Config path
@@ -52,8 +58,7 @@ class core extends Extension
 	 */
 	public function load(array $configs, ContainerBuilder $container)
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$loader = new YamlFileLoader($container, new FileLocator($filesystem->realpath($this->config_path)));
+		$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->config_path)));
 		$loader->load($container->getParameter('core.environment') . '/container/environment.yml');
 
 		$config = $this->getConfiguration($configs, $container);
@@ -61,7 +66,7 @@ class core extends Extension
 
 		if ($config['require_dev_dependencies'])
 		{
-			if (!class_exists('Goutte\Client', true))
+			if (!class_exists('Symfony\Component\BrowserKit\HttpBrowser'))
 			{
 				trigger_error(
 					'Composer development dependencies have not been set up for the ' . $container->getParameter('core.environment') . ' environment yet, run ' .
@@ -85,7 +90,7 @@ class core extends Extension
 			$twig_environment_options['auto_reload'] = true;
 		}
 
-		// Replace the 7th argument, the options passed to the environment
+		// Replace the 8th argument, the options passed to the environment
 		$definition->replaceArgument(static::TWIG_OPTIONS_POSITION, $twig_environment_options);
 
 		if ($config['twig']['enable_debug_extension'])
@@ -93,6 +98,18 @@ class core extends Extension
 			$definition = $container->getDefinition('template.twig.extensions.debug');
 			$definition->addTag('twig.extension');
 		}
+
+		$composer_output = OutputInterface::VERBOSITY_NORMAL;
+		if ($config['extensions']['composer_verbose'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_VERBOSE;
+		}
+		if ($config['extensions']['composer_debug'])
+		{
+			$composer_output = OutputInterface::VERBOSITY_DEBUG;
+		}
+
+		$container->setParameter('extensions.composer.output', $composer_output);
 
 		// Set the debug options
 		foreach ($config['debug'] as $name => $value)
@@ -104,6 +121,12 @@ class core extends Extension
 		foreach ($config['session'] as $name => $value)
 		{
 			$container->setParameter('session.' . $name, $value);
+		}
+
+		// Set the finder options
+		foreach ($config['finder'] as $name => $value)
+		{
+			$container->setParameter('finder.' . $name, $value);
 		}
 	}
 
@@ -125,7 +148,7 @@ class core extends Extension
 	 *
 	 * @return string The alias
 	 */
-	public function getAlias()
+	public function getAlias(): string
 	{
 		return 'core';
 	}

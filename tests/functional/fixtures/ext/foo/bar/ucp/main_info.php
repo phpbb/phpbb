@@ -17,12 +17,12 @@ class main_info
 {
 	function module()
 	{
-		return array(
+		return [
 			'filename'	=> '\foo\bar\ucp\main_module',
-			'title'		=> 'ACP_FOOBAR_TITLE',
-			'modes'		=> array(
-				'mode'		=> array('title' => 'ACP_FOOBAR_MODE', 'auth' => '', 'cat' => array('ACP_FOOBAR_TITLE')),
-			),
-		);
+			'title'		=> 'UCP_FOOBAR_TITLE',
+			'modes'		=> [
+				'mode'		=> ['title' => 'UCP_FOOBAR_MODE', 'auth' => '', 'cat' => ['UCP_FOOBAR_TITLE']],
+			],
+		];
 	}
 }

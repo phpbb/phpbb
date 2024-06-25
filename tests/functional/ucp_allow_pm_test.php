@@ -16,15 +16,15 @@
 */
 class phpbb_functional_ucp_allow_pm_test extends phpbb_functional_test_case
 {
-	static protected $data = array();
+	protected static $data = array();
 
 	public function __construct()
 	{
 		parent::__construct();
 
-		$this->excludeBackupStaticAttributes([
+		$this->backupStaticAttributesExcludeList += [
 			'phpbb_functional_ucp_allow_pm_test' => ['data'],
-		]);
+		];
 	}
 
 	// user A sends a PM to user B where B accepts PM

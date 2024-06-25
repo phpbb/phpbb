@@ -36,19 +36,26 @@ class handler_factory
 	 * Return a new instance of an appropriate report handler
 	 *
 	 * @param string	$type
-	 * @return \phpbb\report\report_handler_interface
+	 * @return report_handler_interface
 	 * @throws factory_invalid_argument_exception if $type is not valid
 	 */
 	public function get_instance($type)
 	{
+		$report_handler = null;
 		switch ($type)
 		{
 			case 'pm':
-				return $this->container->get('phpbb.report.handlers.report_handler_pm');
+				$report_handler = $this->container->get('phpbb.report.handlers.report_handler_pm');
 			break;
+
 			case 'post':
-				return $this->container->get('phpbb.report.handlers.report_handler_post');
+				$report_handler =  $this->container->get('phpbb.report.handlers.report_handler_post');
 			break;
+		}
+
+		if ($report_handler instanceof report_handler_interface)
+		{
+			return $report_handler;
 		}
 
 		throw new factory_invalid_argument_exception();

@@ -15,7 +15,7 @@ installer:
         dbport: ~
         dbuser: homestead
         dbpasswd: secret
-        dbname: phpbb
+        dbname: homestead
         table_prefix: phpbb_
 #    database:
 #        dbms: postgres
@@ -46,6 +46,6 @@ installer:
         cookie_secure: false
         server_protocol: http://
         force_server_vars: false
-        server_name: 192.168.10.10
+        server_name: 192.168.56.56
         server_port: 80
         script_path: /

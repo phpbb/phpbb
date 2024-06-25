@@ -66,6 +66,9 @@ function adm_page_header($page_title)
 		}
 	}
 
+	$phpbb_version_parts = explode('.', PHPBB_VERSION, 3);
+	$phpbb_major = $phpbb_version_parts[0] . '.' . $phpbb_version_parts[1];
+
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
 		'USERNAME'				=> $user->data['username'],
@@ -75,15 +78,16 @@ function adm_page_header($page_title)
 		'SESSION_ID'			=> $user->session_id,
 		'ROOT_PATH'				=> $phpbb_root_path,
 		'ADMIN_ROOT_PATH'		=> $phpbb_admin_path,
+		'PHPBB_VERSION'			=> PHPBB_VERSION,
+		'PHPBB_MAJOR'			=> $phpbb_major,
 
 		'U_LOGOUT'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout'),
-		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
+		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout&amp;hash=' . generate_link_hash('acp_logout')),
 		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
 		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
 		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
 		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
@@ -92,23 +96,25 @@ function adm_page_header($page_title)
 		'T_FONT_AWESOME_LINK'	=> !empty($config['allow_cdn']) && !empty($config['load_font_awesome_url']) ? $config['load_font_awesome_url'] : "{$phpbb_root_path}assets/css/font-awesome.min.css?assets_version=" . $config['assets_version'],
 
 		'T_ASSETS_VERSION'		=> $config['assets_version'],
+		'T_ASSETS_PATH'			=> "{$phpbb_root_path}assets",
 
-		'ICON_MOVE_UP'				=> '<i class="icon acp-icon acp-icon-move-up fa-arrow-circle-up fa-fw" title="' . $user->lang('MOVE_UP') . '"></i>',
-		'ICON_MOVE_UP_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-arrow-circle-up fa-fw" title="' . $user->lang('MOVE_UP') . '"></i>',
-		'ICON_MOVE_DOWN'			=> '<i class="icon acp-icon acp-icon-move-down fa-arrow-circle-down fa-fw" title="' . $user->lang('MOVE_DOWN') . '"></i>',
-		'ICON_MOVE_DOWN_DISABLED'	=> '<i class="icon acp-icon acp-icon-disabled fa-arrow-circle-down fa-fw" title="' . $user->lang('MOVE_DOWN') . '"></i>',
-		'ICON_EDIT'					=> '<i class="icon acp-icon acp-icon-settings fa-cog fa-fw" title="' . $user->lang('EDIT') . '"></i>',
-		'ICON_EDIT_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-cog fa-fw" title="' . $user->lang('EDIT') . '"></i>',
-		'ICON_DELETE'				=> '<i class="icon acp-icon acp-icon-delete fa-times-circle fa-fw" title="' . $user->lang('DELETE') . '"></i>',
-		'ICON_DELETE_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-times-circle fa-fw" title="' . $user->lang('DELETE') . '"></i>',
-		'ICON_SYNC'					=> '<i class="icon acp-icon acp-icon-resync fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
-		'ICON_SYNC_DISABLED'		=> '<i class="icon acp-icon acp-icon-disabled fa-refresh fa-fw" title="' . $user->lang('RESYNC') . '"></i>',
+		'ICON_MOVE_UP'				=> '<i class="acp-icon acp-icon-move-up fa-arrow-circle-up fa-fw fas" title="' . $user->lang('MOVE_UP') . '"></i>',
+		'ICON_MOVE_UP_DISABLED'		=> '<i class="acp-icon acp-icon-disabled fa-arrow-circle-up fa-fw fas" title="' . $user->lang('MOVE_UP') . '"></i>',
+		'ICON_MOVE_DOWN'			=> '<i class="acp-icon acp-icon-move-down fa-arrow-circle-down fa-fw fas" title="' . $user->lang('MOVE_DOWN') . '"></i>',
+		'ICON_MOVE_DOWN_DISABLED'	=> '<i class="acp-icon acp-icon-disabled fa-arrow-circle-down fa-fw fas" title="' . $user->lang('MOVE_DOWN') . '"></i>',
+		'ICON_EDIT'					=> '<i class="acp-icon acp-icon-settings fa-gear fa-fw fas" title="' . $user->lang('EDIT') . '"></i>',
+		'ICON_EDIT_DISABLED'		=> '<i class="acp-icon acp-icon-disabled fa-gear fa-fw fas" title="' . $user->lang('EDIT') . '"></i>',
+		'ICON_DELETE'				=> '<i class="acp-icon acp-icon-delete fa-xmark-circle fa-fw fas" title="' . $user->lang('DELETE') . '"></i>',
+		'ICON_DELETE_DISABLED'		=> '<i class="acp-icon acp-icon-disabled fa-xmark-circle fa-fw fas" title="' . $user->lang('DELETE') . '"></i>',
+		'ICON_SYNC'					=> '<i class="acp-icon acp-icon-resync fa-arrows-rotate fa-fw fas" title="' . $user->lang('RESYNC') . '"></i>',
+		'ICON_SYNC_DISABLED'		=> '<i class="acp-icon acp-icon-disabled fa-arrows-rotate fa-fw fas" title="' . $user->lang('RESYNC') . '"></i>',
 
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_USER_ID'				=> $user->data['user_id'],
+		'S_USER_LANG'			=> $user->lang('USER_LANG'),
+		'S_CONTENT_DIRECTION'	=> $user->lang('DIRECTION'),
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang('DIRECTION')  == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang('DIRECTION')  == 'ltr') ? 'right' : 'left',
 
 		'CONTAINER_EXCEPTION'	=> $phpbb_container->hasParameter('container_exception') ? $phpbb_container->getParameter('container_exception') : false,
 	));
@@ -148,8 +154,11 @@ function adm_page_header($page_title)
 function adm_page_footer($copyright_html = true)
 {
 	global $db, $config, $template, $user, $auth;
-	global $phpbb_root_path;
-	global $request, $phpbb_dispatcher;
+	global $phpbb_root_path, $phpbb_container;
+	global $phpbb_dispatcher;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
 
 	// A listener can set this variable to `true` when it overrides this function
 	$adm_page_footer_override = false;
@@ -171,7 +180,7 @@ function adm_page_footer($copyright_html = true)
 		return;
 	}
 
-	phpbb_check_and_display_sql_report($request, $auth, $db);
+	$controller_helper->display_sql_report();
 
 	$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> phpbb_generate_debug_output($db, $config, $auth, $user, $phpbb_dispatcher),
@@ -199,49 +208,77 @@ function adm_back_link($u_action)
 }
 
 /**
-* Build select field options in acp pages
-*/
-function build_select($option_ary, $option_default = false)
+ * Build select field options in acp pages
+ *
+ * @param array				$options_ary Configuration options data
+ * @param int|string|bool	$option_default	Configuration option selected value
+ *
+ * @return array
+ */
+function build_select(array $options_ary, int|string|bool $option_default = false): array
 {
-	global $user;
+	global $language;
 
-	$html = '';
-	foreach ($option_ary as $value => $title)
+	$options = [];
+	foreach ($options_ary as $value => $title)
 	{
-		$selected = ($option_default !== false && $value == $option_default) ? ' selected="selected"' : '';
-		$html .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$title] . '</option>';
+		$options[] = [
+			'value'	=> $value,
+			'selected'	=> $option_default !== false && $value == $option_default,
+			'label'	=> $language->lang($title),
+		];
 	}
 
-	return $html;
+	return $options;
 }
 
 /**
-* Build radio fields in acp pages
-*/
-function h_radio($name, $input_ary, $input_default = false, $id = false, $key = false, $separator = '')
+ * Build radio fields in acp pages
+ *
+ * @param int|string	$value	Configuration option value
+ * @param string		$key	Configuration option key name
+ * @param array			$options Configuration options data
+ * 							representing array of [values => language_keys]
+ *
+ * @return array
+ */
+function phpbb_build_radio(int|string $value, string $key, array $options): array
 {
-	global $user;
+	global $language;
 
-	$html = '';
-	$id_assigned = false;
-	foreach ($input_ary as $value => $title)
+	$buttons = [];
+	foreach ($options as $val => $title)
 	{
-		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>' . $separator;
-		$id_assigned = true;
+		$buttons[] = [
+			'type'		=> 'radio',
+			'value'		=> $val,
+			'name'		=> 'config[' . $key . ']',
+			'checked'	=> $val == $value,
+			'label'		=> $language->lang($title),
+		];
 	}
 
-	return $html;
+	return [
+		'buttons' => $buttons,
+	];
 }
 
 /**
-* Build configuration template for acp configuration pages
-*/
-function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
+ * Build configuration data arrays or templates for configuration settings
+ *
+ * @param array			$tpl_type	Configuration setting type data
+ * @param string		$key		Configuration option name
+ * @param array|object	$new_ary	Updated configuration data
+ * @param string		$config_key	Configuration option name
+ * @param array			$vars		Configuration setting data
+ *
+ * @return array|string
+ */
+function phpbb_build_cfg_template(array $tpl_type, string $key, array|object &$new_ary, string $config_key, array $vars): array|string
 {
-	global $user, $module, $phpbb_dispatcher;
+	global $language, $module, $phpbb_dispatcher;
 
-	$tpl = '';
+	$tpl = [];
 	$name = 'config[' . $config_key . ']';
 
 	// Make sure there is no notice printed out for non-existent config options (we simply set them)
@@ -258,6 +295,8 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 				// replace passwords with asterixes
 				$new_ary[$config_key] = '********';
 			}
+			// no break
+
 		case 'text':
 		case 'url':
 		case 'email':
@@ -268,7 +307,15 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			$size = (int) $tpl_type[1];
 			$maxlength = (int) $tpl_type[2];
 
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (($size) ? ' size="' . $size . '"' : '') . ' maxlength="' . (($maxlength) ? $maxlength : 255) . '" name="' . $name . '" value="' . $new_ary[$config_key] . '"' . (($tpl_type[0] === 'password') ?  ' autocomplete="off"' : '') . ' />';
+			$tpl = [
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> $tpl_type[0],
+				'name'		=> $name,
+				'size'		=> $size ?: '',
+				'maxlength'	=> $maxlength ?: 255,
+				'value'		=> $new_ary[$config_key],
+			];
 		break;
 
 		case 'color':
@@ -276,7 +323,13 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 		case 'datetime-local':
 		case 'month':
 		case 'week':
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '" name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+			$tpl = [
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> $tpl_type[0],
+				'name'		=> $name,
+				'value'		=> $new_ary[$config_key],
+			];
 		break;
 
 		case 'date':
@@ -286,90 +339,149 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 			$min = isset($tpl_type[1]) ? (int) $tpl_type[1] : false;
 			$max = isset($tpl_type[2]) ? (int) $tpl_type[2] : false;
 
-			$tpl = '<input id="' . $key . '" type="' . $tpl_type[0] . '"' . (( $min !== false ) ? ' min="' . $min . '"' : '') . (( $max !== false ) ? ' max="' . $max . '"' : '') . ' name="' . $name . '" value="' . $new_ary[$config_key] . '" />';
+			$tpl = [
+				'tag'		=> 'input',
+				'id'		=> $key,
+				'type'		=> $tpl_type[0],
+				'name'		=> $name,
+				'min'		=> $min !== false ? $min : '',
+				'max'		=> $max !== false ? $max : '',
+				'value'		=> $new_ary[$config_key],
+			];
 		break;
 
 		case 'dimension':
 			$min = isset($tpl_type[1]) ? (int) $tpl_type[1] : false;
 			$max = isset($tpl_type[2]) ? (int) $tpl_type[2] : false;
 
-			$tpl = '<input id="' . $key . '" type="number"' . (( $min !== false ) ? ' min="' . $min . '"' : '') . (( $max !== false ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_width]" value="' . $new_ary[$config_key . '_width'] . '" /> x <input type="number"' . (( $min !== '' ) ? ' min="' . $min . '"' : '') . (( $max != '' ) ? ' max="' . $max . '"' : '') . ' name="config[' . $config_key . '_height]" value="' . $new_ary[$config_key . '_height'] . '" />';
+			$tpl = [
+				'tag'		=> 'dimension',
+				'width' => [
+					'id'		=> $key,
+					'type'		=> 'number',
+					'name'		=> 'config[' . $config_key . '_width]',
+					'min'		=> $min !== false ? $min : '',
+					'max'		=> $max !== false ? $max : '',
+					'value'		=> $new_ary[$config_key . '_width'],
+				],
+				'height' => [
+					'type'		=> 'number',
+					'name'		=> 'config[' . $config_key . '_height]',
+					'min'		=> $min !== false ? $min : '',
+					'max'		=> $max !== false ? $max : '',
+					'value'		=> $new_ary[$config_key . '_height'],
+				],
+			];
 		break;
 
 		case 'textarea':
-			$rows = (int) $tpl_type[1];
-			$cols = (int) $tpl_type[2];
-
-			$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $new_ary[$config_key] . '</textarea>';
+			$tpl = [
+				'tag'		=> 'textarea',
+				'id'		=> $key,
+				'name'		=> $name,
+				'rows'		=> (int) $tpl_type[1],
+				'cols'		=> (int) $tpl_type[2],
+				'content'	=> $new_ary[$config_key],
+			];
 		break;
 
 		case 'radio':
-			$key_yes	= ($new_ary[$config_key]) ? ' checked="checked"' : '';
-			$key_no		= (!$new_ary[$config_key]) ? ' checked="checked"' : '';
-
-			$tpl_type_cond = explode('_', $tpl_type[1]);
-			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
-
-			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']) . '</label>';
-			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']) . '</label>';
-
-			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . $tpl_no : $tpl_no . $tpl_yes;
-		break;
-
-		case 'select':
-		case 'custom':
-
-			if (isset($vars['method']))
+			if (!isset($vars['method']) && !isset($vars['function']))
 			{
-				$call = array($module->module, $vars['method']);
-			}
-			else if (isset($vars['function']))
-			{
-				$call = $vars['function'];
-			}
-			else
-			{
-				break;
-			}
-
-			if (isset($vars['params']))
-			{
-				$args = array();
-				foreach ($vars['params'] as $value)
+				if (in_array($tpl_type[1], ['yes_no', 'enabled_disabled']))
 				{
-					switch ($value)
-					{
-						case '{CONFIG_VALUE}':
-							$value = $new_ary[$config_key];
-						break;
-
-						case '{KEY}':
-							$value = $key;
-						break;
-					}
-
-					$args[] = $value;
+					$options = array_reverse(explode('_', strtoupper($tpl_type[1])));
+					krsort($options);
+					$tpl_type = array_merge ($tpl_type, phpbb_build_radio($new_ary[$config_key], $config_key, $options));
 				}
 			}
-			else
+		case 'button':
+		case 'select':
+		case 'custom':
+			$args = [];
+			$call = $vars['function'] ?? (isset($vars['method']) ? [$module->module, $vars['method']] : false);
+
+			if ($call)
 			{
-				$args = array($new_ary[$config_key], $key);
+				if (isset($vars['params']))
+				{
+					foreach ($vars['params'] as $value)
+					{
+						switch ($value)
+						{
+							case '{CONFIG_VALUE}':
+								$value = $new_ary[$config_key];
+							break;
+
+							case '{KEY}':
+								$value = $config_key;
+							break;
+						}
+
+						$args[] = $value;
+					}
+				}
+				else
+				{
+					$args = array($new_ary[$config_key], $config_key);
+				}
 			}
 
-			$return = call_user_func_array($call, $args);
+			$return = $call ? call_user_func_array($call, $args) : [];
 
-			if ($tpl_type[0] == 'select')
+			if (in_array($tpl_type[0], ['select', 'radio', 'button']))
 			{
-				$size = (isset($tpl_type[1])) ? (int) $tpl_type[1] : 1;
-				$data_toggle = (!empty($tpl_type[2])) ? ' data-togglable-settings="true"' : '';
+				$tpl_type = array_merge($tpl_type, $return);
 
-				$tpl = '<select id="' . $key . '" name="' . $name . '"' . (($size > 1) ? ' size="' . $size . '"' : '') . $data_toggle . '>' . $return . '</select>';
+				if ($tpl_type[0] == 'select')
+				{
+					$tpl = [
+						'tag'			=> 'select',
+						'class'			=> $tpl_type['class'] ?? false,
+						'id'			=> $key,
+						'data'			=> $tpl_type['data'] ?? [],
+						'name'			=> $name,
+						'toggleable'	=> !empty($tpl_type[2]) || !empty($tpl_type['toggleable']),
+						'options'		=> $tpl_type['options'],
+						'group_only'	=> $tpl_type['group_only'] ?? false,
+						'size'			=> $tpl_type[1] ?? $tpl_type['size'] ?? 1,
+						'multiple'		=> $tpl_type['multiple'] ?? false,
+					];
+				}
+				else if ($tpl_type[0] == 'radio')
+				{
+					// Only assign id to the one (1st) radio button in the list
+					$id_assigned = false;
+					foreach ($tpl_type['buttons'] as $i => $button)
+					{
+						if (!$id_assigned)
+						{
+							$tpl_type['buttons'][$i]['id'] = $key;
+							$id_assigned = true;
+						}
+					}
+
+					$tpl = [
+						'tag'		=> 'radio',
+						'buttons'	=> $tpl_type['buttons'],
+					];
+				}
+				else
+				{
+					$tpl = [
+						'tag'		=> 'input',
+						'class'		=> $tpl_type['options']['class'],
+						'id'		=> $key,
+						'type'		=> $tpl_type['options']['type'],
+						'name'		=> $tpl_type['options']['name'] ?? $name,
+						'value'		=> $tpl_type['options']['value'],
+					];
+				}
 			}
 			else
 			{
 				$tpl = $return;
 			}
-
 		break;
 
 		default:
@@ -378,7 +490,14 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 
 	if (isset($vars['append']))
 	{
-		$tpl .= $vars['append'];
+		if (is_array($tpl))
+		{
+			$tpl['append'] = $vars['append'];
+		}
+		else
+		{
+			$tpl .= $vars['append'];
+		}
 	}
 
 	$new = $new_ary;
@@ -386,16 +505,17 @@ function build_cfg_template($tpl_type, $key, &$new_ary, $config_key, $vars)
 	* Overwrite the html code we display for the config value
 	*
 	* @event core.build_config_template
-	* @var	array	tpl_type	Config type array:
-	*						0 => data type
-	*						1 [optional] => string: size, int: minimum
-	*						2 [optional] => string: max. length, int: maximum
-	* @var	string	key			Should be used for the id attribute in html
-	* @var	array	new			Array with the config values we display
-	* @var	string	name		Should be used for the name attribute
-	* @var	array	vars		Array with the options for the config
-	* @var	string	tpl			The resulting html code we display
+	* @var	array			tpl_type	Config type array:
+	*							0 => data type
+	*							1 [optional] => string: size, int: minimum
+	*							2 [optional] => string: max. length, int: maximum
+	* @var	string			key			Should be used for the id attribute in html
+	* @var	array			new			Array with the config values we display
+	* @var	string			name		Should be used for the name attribute
+	* @var	array			vars		Array with the options for the config
+	* @var	array|string	tpl			The resulting html code we display
 	* @since 3.1.0-a1
+	* @changed 4.0.0-a1	The event location's function renamed from build_config_template() to phpbb_build_cfg_template()
 	*/
 	$vars = array('tpl_type', 'key', 'new', 'name', 'vars', 'tpl');
 	extract($phpbb_dispatcher->trigger_event('core.build_config_template', compact($vars)));
@@ -707,6 +827,7 @@ function validate_range($value_ary, &$error)
 /**
 * Inserts new config display_vars into an exisiting display_vars array
 * at the given position.
+* Used by extensions.
 *
 * @param array $display_vars An array of existing config display vars
 * @param array $add_config_vars An array of new config display vars

@@ -29,7 +29,7 @@ $phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $phpEx);
 extract($phpbb_config_php_file->get_all());
 unset($dbpasswd);
 
-$dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
+$dbms = \phpbb\config_php_file::convert_30_dbms_to_31($dbms);
 
 /**
 * $convertor_data provides some basic information about this convertor which is
@@ -38,7 +38,7 @@ $dbms = $phpbb_config_php_file->convert_30_dbms_to_31($dbms);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.3.12',
+	'phpbb_version'	=> '4.0.0-a1-dev',
 	'author'		=> '<a href="https://www.phpbb.com/">phpBB Limited</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -115,7 +115,6 @@ $config_schema = array(
 		'allow_sig'				=> 'allow_sig',
 		'allow_namechange'		=> 'allow_namechange',
 		'allow_avatar_local'	=> 'allow_avatar_local',
-		'allow_avatar_remote'	=> 'allow_avatar_remote',
 		'allow_avatar_upload'	=> 'allow_avatar_upload',
 		'board_disable'			=> 'board_disable',
 		'sitename'				=> 'phpbb_set_encoding(sitename)',
@@ -439,7 +438,6 @@ if (!$get_info)
 				array('group_name',				'extension_groups.group_name',			array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_htmlspecialchars')),
 				array('cat_id',					'extension_groups.cat_id',				'phpbb_attachment_category'),
 				array('allow_group',			'extension_groups.allow_group',			''),
-				array('download_mode',			1,										''),
 				array('upload_icon',			'',										''),
 				array('max_filesize',			'extension_groups.max_filesize',		''),
 				array('allowed_forums',			'extension_groups.forum_permissions',	'phpbb_attachment_forum_perms'),
@@ -447,29 +445,42 @@ if (!$get_info)
 			),
 
 			array(
-				'target'		=> BANLIST_TABLE,
-				'execute_first'	=> 'phpbb_check_username_collisions();',
-				'query_first'	=> array('target', $convert->truncate_statement . BANLIST_TABLE),
+				'target'		=> BANS_TABLE,
+				'execute_first' => 'phpbb_check_username_collisions();',
+				'query_first'	=> array('target', $convert->truncate_statement . BANS_TABLE),
 
-				array('ban_ip',					'banlist.ban_ip',					'decode_ban_ip'),
-				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
-				array('ban_email',				'banlist.ban_email',				''),
-				array('ban_reason',				'',									''),
-				array('ban_give_reason',		'',									''),
+				array('ban_mode',				'user',					''),
+				array('ban_item',				'banlist.ban_userid',	'phpbb_user_id'),
+				array('ban_userid',			'banlist.ban_userid',	'phpbb_user_id'),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip NOT LIKE '%.%'",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_userid <> 0",
 			),
 
 			array(
-				'target'		=> BANLIST_TABLE,
+				'target'		=> BANS_TABLE,
 
-				array('ban_ip',					'banlist.ban_ip',	''),
-				array('ban_userid',				0,					''),
-				array('ban_email',				'',					''),
-				array('ban_reason',				'',					''),
-				array('ban_give_reason',		'',					''),
+				array('ban_mode',				'email',				''),
+				array('ban_item',				'banlist.ban_email',	''),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
 
-				'where'			=> "banlist.ban_ip LIKE '%.%'",
+				'where'			=> "banlist.ban_ip NOT LIKE '%.%'
+										AND banlist.ban_email <> ''",
+			),
+
+			array(
+				'target'		=> BANS_TABLE,
+
+				array('ban_mode',				'ip',				''),
+				array('ban_item',				'banlist.ban_ip',	'decode_ban_ip'),
+				array('ban_reason',				'',						''),
+				array('ban_reason_display',		'',						''),
+
+				'where'			=> "banlist.ban_userid = 0
+										AND banlist.ban_ip <> ''",
 			),
 
 			array(

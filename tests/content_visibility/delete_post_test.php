@@ -13,7 +13,6 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions_admin.php';
 require_once __DIR__ . '/../../phpBB/includes/functions_posting.php';
-require_once __DIR__ . '/../mock/search.php';
 
 class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 {
@@ -380,11 +379,13 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$config = new \phpbb\config\config(array(
 			'num_posts' => 3,
 			'num_topics' => 1,
-			'search_type' => 'phpbb_mock_search',
+			'search_type' => 'foo',
 		));
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+
+		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// Create auth mock
 		$auth = $this->createMock('\phpbb\auth\auth');
@@ -399,7 +400,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->data['user_id'] = ANONYMOUS;
 
-		$attachment_delete = new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\filesystem\filesystem(), new \phpbb\attachment\resync($db), $phpbb_root_path);
+		$attachment_delete = new \phpbb\attachment\delete($config, $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage);
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
@@ -409,8 +410,12 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', $attachment_delete);
 
-		$this->assertSame($expected_next_post_id, delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason));
+		$search_backend = $this->createMock(\phpbb\search\backend\search_backend_interface::class);
+		$search_backend_factory = $this->createMock(\phpbb\search\search_backend_factory::class);
+		$search_backend_factory->method('get_active')->willReturn($search_backend);
+		$phpbb_container->set('search.backend_factory', $search_backend_factory);
 
+		$this->assertSame($expected_next_post_id, delete_post($forum_id, $topic_id, $post_id, $data, $is_soft, $reason));
 		$result = $db->sql_query('SELECT post_id, post_visibility, post_delete_reason
 			FROM phpbb_posts
 			WHERE topic_id = ' . $topic_id . '

@@ -1,32 +1,40 @@
 imports:
+    - { resource: services_assets.yml }
     - { resource: services_attachment.yml }
     - { resource: services_auth.yml }
     - { resource: services_avatar.yml }
+    - { resource: services_ban.yml }
     - { resource: services_captcha.yml }
     - { resource: services_console.yml }
     - { resource: services_content.yml }
     - { resource: services_cron.yml }
     - { resource: services_db.yml }
     - { resource: services_event.yml }
+    - { resource: services_extensions.yml }
     - { resource: services_feed.yml }
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
+    - { resource: services_finder.yml }
     - { resource: services_help.yml }
-    - { resource: services_hook.yml }
     - { resource: services_http.yml }
     - { resource: services_language.yml }
+    - { resource: services_mention.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
     - { resource: services_module.yml }
     - { resource: services_notification.yml }
     - { resource: services_password.yml }
     - { resource: services_php.yml }
+    - { resource: services_posting.yml }
     - { resource: services_profilefield.yml }
     - { resource: services_report.yml }
     - { resource: services_routing.yml }
+    - { resource: services_search.yml }
+    - { resource: services_storage.yml }
     - { resource: services_text_formatter.yml }
     - { resource: services_text_reparser.yml }
     - { resource: services_twig.yml }
+    - { resource: services_twig_extensions.yml }
     - { resource: services_ucp.yml }
     - { resource: services_user.yml }
 
@@ -40,7 +48,7 @@ services:
              - '@cache.driver'
              - '@config'
              - '@dbal.conn'
-             - '@dispatcher'
+             - '@event_dispatcher'
              - '%core.root_path%'
              - '%core.php_ext%'
 
@@ -91,7 +99,7 @@ services:
             - '@config'
             - '@cron.manager'
             - '@dbal.conn'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@language'
             - '@request'
             - '@routing.helper'
@@ -110,35 +118,30 @@ services:
             - '%core.root_path%'
             - '@template'
 
-    ext.manager:
-        class: phpbb\extension\manager
-        arguments:
-            - '@service_container'
-            - '@dbal.conn'
-            - '@config'
-            - '@filesystem'
-            - '%tables.ext%'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '@cache'
-
     file_downloader:
         class: phpbb\file_downloader
 
     file_locator:
         class: phpbb\routing\file_locator
         arguments:
-            - '@filesystem'
             - '%core.root_path%'
+
+    form_helper:
+        class: phpbb\form\form_helper
+        arguments:
+            - '@config'
+            - '@request'
+            - '@user'
 
     group_helper:
         class: phpbb\group\helper
         arguments:
             - '@auth'
+            - '@avatar.helper'
             - '@cache'
             - '@config'
             - '@language'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '@path_helper'
             - '@user'
 
@@ -148,7 +151,7 @@ services:
             - '@dbal.conn'
             - '@user'
             - '@auth'
-            - '@dispatcher'
+            - '@event_dispatcher'
             - '%core.root_path%'
             - '%core.adm_relative_path%'
             - '%core.php_ext%'
@@ -158,7 +161,6 @@ services:
         class: phpbb\path_helper
         arguments:
             - '@symfony_request'
-            - '@filesystem'
             - '@request'
             - '%core.root_path%'
             - '%core.php_ext%'

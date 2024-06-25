@@ -13,94 +13,62 @@
 
 namespace phpbb\cron\task\core;
 
+use phpbb\config\config;
+use phpbb\cron\task\base;
+use phpbb\di\exception\di_exception;
+use phpbb\search\backend\search_backend_interface;
+use phpbb\search\search_backend_factory;
+
 /**
 * Tidy search cron task.
 *
 * Will only run when the currently selected search backend supports tidying.
 */
-class tidy_search extends \phpbb\cron\task\base
+class tidy_search extends base
 {
 	/**
-	* phpBB root path
-	* @var string
-	*/
-	protected $phpbb_root_path;
-
-	/**
-	* PHP file extension
-	* @var string
-	*/
-	protected $php_ext;
-
-	/**
-	* Auth object
-	* @var \phpbb\auth\auth
-	*/
-	protected $auth;
-
-	/**
 	* Config object
-	* @var \phpbb\config\config
+	* @var config
 	*/
 	protected $config;
 
 	/**
-	* Database object
-	* @var \phpbb\db\driver\driver_interface
+	* Search backend factory
+	* @var search_backend_factory
 	*/
-	protected $db;
+	protected $search_backend_factory;
 
 	/**
-	* User object
-	* @var \phpbb\user
-	*/
-	protected $user;
+	 * Reference to active search backend to avoid calling the factory multiple times
+	 * @var search_backend_interface
+	 */
+	protected $active_search;
 
 	/**
-	* Event dispatcher object
-	* @var \phpbb\event\dispatcher_interface
-	*/
-	protected $phpbb_dispatcher;
-
-	/**
-	* Constructor.
-	*
-	* @param string $phpbb_root_path The phpBB root path
-	* @param string $php_ext The PHP file extension
-	* @param \phpbb\auth\auth $auth The auth object
-	* @param \phpbb\config\config $config The config object
-	* @param \phpbb\db\driver\driver_interface $db The database object
-	* @param \phpbb\user $user The user object
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher The event dispatcher object
-	*/
-	public function __construct($phpbb_root_path, $php_ext, \phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
+	 * Constructor.
+	 *
+	 * @param config $config The config object
+	 * @param search_backend_factory $search_backend_factory
+	 */
+	public function __construct(config $config, search_backend_factory $search_backend_factory)
 	{
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $php_ext;
-		$this->auth = $auth;
 		$this->config = $config;
-		$this->db = $db;
-		$this->user = $user;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->search_backend_factory = $search_backend_factory;
 	}
 
 	/**
 	* Runs this cron task.
 	*
-	* @return null
+	* @return void
 	*/
 	public function run()
 	{
-		$search_type = $this->config['search_type'];
-
-		// We do some additional checks in the module to ensure it can actually be utilised
-		$error = false;
-		$search = new $search_type($error, $this->phpbb_root_path, $this->php_ext, $this->auth, $this->config, $this->db, $this->user, $this->phpbb_dispatcher);
-
-		if (!$error)
+		if ($this->active_search === null)
 		{
-			$search->tidy();
+			$this->active_search = $this->search_backend_factory->get_active();
 		}
+
+		$this->active_search->tidy();
 	}
 
 	/**
@@ -114,7 +82,19 @@ class tidy_search extends \phpbb\cron\task\base
 	*/
 	public function is_runnable()
 	{
-		return class_exists($this->config['search_type']);
+		try
+		{
+			if ($this->active_search === null)
+			{
+				$this->active_search = $this->search_backend_factory->get_active();
+			}
+		}
+		catch (di_exception $e)
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

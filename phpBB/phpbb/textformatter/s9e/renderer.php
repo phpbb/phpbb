@@ -29,6 +29,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	protected $dispatcher;
 
 	/**
+	* @var mention_helper
+	*/
+	protected $mention_helper;
+
+	/**
 	* @var quote_helper
 	*/
 	protected $quote_helper;
@@ -44,11 +49,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	protected $viewcensors = false;
 
 	/**
-	* @var bool Status of the viewflash option
-	*/
-	protected $viewflash = false;
-
-	/**
 	* @var bool Status of the viewimg option
 	*/
 	protected $viewimg = false;
@@ -57,6 +57,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	* @var bool Status of the viewsmilies option
 	*/
 	protected $viewsmilies = false;
+
+	/**
+	* @var bool Whether the user is allowed to use mentions
+	*/
+	protected $usemention = false;
 
 	/**
 	* Constructor
@@ -112,9 +117,20 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* @event core.text_formatter_s9e_renderer_setup
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('renderer');
+		$vars = ['renderer'];
 		extract($dispatcher->trigger_event('core.text_formatter_s9e_renderer_setup', compact($vars)));
+	}
+
+	/**
+	* Configure the mention_helper object used to display extended information in mentions
+	*
+	* @param  mention_helper $mention_helper
+	*/
+	public function configure_mention_helper(mention_helper $mention_helper)
+	{
+		$this->mention_helper = $mention_helper;
 	}
 
 	/**
@@ -132,7 +148,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*
 	* @param  \phpbb\config\config $config
 	* @param  \phpbb\path_helper   $path_helper
-	* @return null
+	* @return void
 	*/
 	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
 	{
@@ -147,7 +163,7 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* Configure this renderer as per the user's settings
 	*
-	* Should set the locale as well as the viewcensor/viewflash/viewimg/viewsmilies options.
+	* Should set the locale as well as the viewcensor/viewimg/viewsmilies options.
 	*
 	* @param  \phpbb\user          $user
 	* @param  \phpbb\config\config $config
@@ -159,9 +175,9 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		$censor = $user->optionget('viewcensors') || !$config['allow_nocensors'] || !$auth->acl_get('u_chgcensors');
 
 		$this->set_viewcensors($censor);
-		$this->set_viewflash($user->optionget('viewflash'));
 		$this->set_viewimg($user->optionget('viewimg'));
 		$this->set_viewsmilies($user->optionget('viewsmilies'));
+		$this->set_usemention($config['allow_mentions'] && $auth->acl_get('u_mention'));
 
 		// Set the stylesheet parameters
 		foreach (array_keys($this->renderer->getParameters()) as $param_name)
@@ -203,14 +219,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function get_viewflash()
-	{
-		return $this->viewflash;
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
 	public function get_viewimg()
 	{
 		return $this->viewimg;
@@ -227,11 +235,16 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function render($xml)
+	public function render($text)
 	{
+		if (isset($this->mention_helper))
+		{
+			$text = $this->mention_helper->inject_metadata($text);
+		}
+
 		if (isset($this->quote_helper))
 		{
-			$xml = $this->quote_helper->inject_metadata($xml);
+			$text = $this->quote_helper->inject_metadata($text);
 		}
 
 		$renderer = $this;
@@ -241,13 +254,14 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		*
 		* @event core.text_formatter_s9e_render_before
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
-		* @var string xml The parsed text, in its XML form
+		* @var string text The parsed text, in its XML form
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('renderer', 'xml');
+		$vars = ['renderer', 'text'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_before', compact($vars)));
 
-		$html = $this->renderer->render($xml);
+		$html = $this->renderer->render($text);
 		if (isset($this->censor) && $this->viewcensors)
 		{
 			$html = $this->censor->censorHtml($html, true);
@@ -260,8 +274,9 @@ class renderer implements \phpbb\textformatter\renderer_interface
 		* @var string html The rendered text's HTML
 		* @var \phpbb\textformatter\s9e\renderer renderer This renderer service
 		* @since 3.2.0-a1
+		* @psalm-ignore-var
 		*/
-		$vars = array('html', 'renderer');
+		$vars = ['html', 'renderer'];
 		extract($this->dispatcher->trigger_event('core.text_formatter_s9e_render_after', compact($vars)));
 
 		return $html;
@@ -287,15 +302,6 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function set_viewflash($value)
-	{
-		$this->viewflash = $value;
-		$this->renderer->setParameter('S_VIEWFLASH', $value);
-	}
-
-	/**
-	* {@inheritdoc}
-	*/
 	public function set_viewimg($value)
 	{
 		$this->viewimg = $value;
@@ -309,5 +315,14 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	{
 		$this->viewsmilies = $value;
 		$this->renderer->setParameter('S_VIEWSMILIES', $value);
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function set_usemention($value)
+	{
+		$this->usemention = $value;
+		$this->renderer->setParameter('S_VIEWMENTION', $value);
 	}
 }

@@ -40,8 +40,11 @@ abstract class base implements reparser_interface
 	abstract protected function get_records_by_range($min_id, $max_id);
 
 	/**
-	* {@inheritdoc}
-	*/
+	 * Save record
+	 *
+	 * @param array $record
+	 * @return void
+	 */
 	abstract protected function save_record(array $record);
 
 	/**
@@ -77,7 +80,7 @@ abstract class base implements reparser_interface
 
 		// Those BBCodes are disabled based on context and user permissions and that value is never
 		// stored in the database. Here we test whether they were used in the original text.
-		$bbcodes = array('flash', 'img', 'quote', 'url');
+		$bbcodes = array('img', 'quote', 'url');
 		foreach ($bbcodes as $bbcode)
 		{
 			$field_name = 'enable_' . $bbcode . '_bbcode';
@@ -246,7 +249,8 @@ abstract class base implements reparser_interface
 		// generate_text_for_edit() and decode_message() actually return the text as HTML. It has to
 		// be decoded to plain text before it can be reparsed
 		$text = html_entity_decode($unparsed['text'], ENT_QUOTES, 'UTF-8');
-		$bitfield = $flags = null;
+		$bitfield = '';
+		$flags = 0;
 		generate_text_for_storage(
 			$text,
 			$unparsed['bbcode_uid'],
@@ -256,7 +260,6 @@ abstract class base implements reparser_interface
 			$unparsed['enable_magic_url'],
 			$unparsed['enable_smilies'],
 			$unparsed['enable_img_bbcode'],
-			$unparsed['enable_flash_bbcode'],
 			$unparsed['enable_quote_bbcode'],
 			$unparsed['enable_url_bbcode'],
 			'text_reparser.' . $this->get_name()

@@ -39,15 +39,17 @@ class recursive_event_filter_iterator extends \RecursiveFilterIterator
 	*
 	* @return recursive_event_filter_iterator
 	*/
-	public function getChildren()
+	public function getChildren(): ?\RecursiveFilterIterator
 	{
-		return new self($this->getInnerIterator()->getChildren(), $this->root_path);
+		$inner_iterator = $this->getInnerIterator();
+		assert($inner_iterator instanceof \RecursiveIterator);
+		return new self($inner_iterator->getChildren(), $this->root_path);
 	}
 
 	/**
 	* {@inheritDoc}
 	*/
-	public function accept()
+	public function accept(): bool
 	{
 		$relative_path = str_replace(DIRECTORY_SEPARATOR, '/', $this->current());
 		$filename = $this->current()->getFilename();

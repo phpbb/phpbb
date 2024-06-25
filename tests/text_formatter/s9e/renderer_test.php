@@ -107,11 +107,6 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				array('set_viewcensors' => false)
 			),
 			array(
-				'<r><FLASH height="456" url="http://example.org/foo.swf" width="123"><s>[flash=123,456]</s><URL url="http://example.org/foo.swf">http://example.org/foo.swf</URL><e>[/flash]</e></FLASH></r>',
-				'<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0" width="123" height="456"><param name="movie" value="http://example.org/foo.swf"><param name="play" value="false"><param name="loop" value="false"><param name="quality" value="high"><param name="allowScriptAccess" value="never"><param name="allowNetworking" value="internal"><embed src="http://example.org/foo.swf" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" width="123" height="456" play="false" loop="false" quality="high" allowscriptaccess="never" allownetworking="internal"></object>',
-				array('set_viewflash' => true)
-			),
-			array(
 				'<r><IMG src="http://example.org/foo.png"><s>[img]</s>http://example.org/foo.png<e>[/img]</e></IMG></r>',
 				'<img src="http://example.org/foo.png" class="postimage" alt="Image">',
 				array('set_viewimg' => true)
@@ -215,26 +210,6 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 				}
 			),
 			array(
-				'<r><FLASH url="http://localhost/foo.swf" width="123" height="456"><s>[flash=123,456]</s>http://localhost/foo.swf<e>[/flash]</e></FLASH></r>',
-				'<object classid="clsid:D27CDB6E-AE6D-11CF-96B8-444553540000" codebase="http://active.macromedia.com/flash2/cabs/swflash.cab#version=5,0,0,0" width="123" height="456"><param name="movie" value="http://localhost/foo.swf"><param name="play" value="false"><param name="loop" value="false"><param name="quality" value="high"><param name="allowScriptAccess" value="never"><param name="allowNetworking" value="internal"><embed src="http://localhost/foo.swf" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" width="123" height="456" play="false" loop="false" quality="high" allowscriptaccess="never" allownetworking="internal"></object>'
-			),
-			array(
-				'<r><FLASH url="http://localhost/foo.swf" width="123" height="456"><s>[flash=123,456]</s>http://localhost/foo.swf<e>[/flash]</e></FLASH></r>',
-				'http://localhost/foo.swf',
-				function ($phpbb_container)
-				{
-					global $phpbb_root_path, $phpEx;
-
-					$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
-					$lang = new \phpbb\language\language($lang_loader);
-					$user = new \phpbb\user($lang, '\phpbb\datetime');
-					$user->data['user_options'] = 230271;
-					$user->optionset('viewflash', false);
-
-					$phpbb_container->set('user', $user);
-				}
-			),
-			array(
 				'<r><IMG src="http://localhost/mrgreen.gif"><s>[img]</s><URL url="http://localhost/mrgreen.gif">http://localhost/mrgreen.gif</URL><e>[/img]</e></IMG></r>',
 				'<img src="http://localhost/mrgreen.gif" class="postimage" alt="Image">'
 			),
@@ -307,7 +282,6 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return array(
 			array('viewcensors'),
-			array('viewflash'),
 			array('viewimg'),
 			array('viewsmilies')
 		);
@@ -463,8 +437,8 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 	{
 		return isset($vars['renderer'])
 			&& $vars['renderer'] instanceof \phpbb\textformatter\s9e\renderer
-			&& isset($vars['xml'])
-			&& $vars['xml'] === '<t>...</t>';
+			&& isset($vars['text'])
+			&& $vars['text'] === '<t>...</t>';
 	}
 
 	public function render_after_event_callback($vars)

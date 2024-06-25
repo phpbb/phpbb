@@ -70,7 +70,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 	public function test_quote()
 	{
 		$text     = 'Test post </textarea>"\' &&amp;amp;';
-		$expected = "(\\[quote=admin[^\\]]*\\]\n" . preg_quote($text) . "\n\\[/quote\\])";
+		$expected = "(\[quote=admin[^\]]*\]\s?" . preg_quote($text) . "\s?\[\/quote\])";
 
 		$this->login();
 		$topic = $this->create_topic(2, 'Test Topic 1', 'Test topic');
@@ -78,7 +78,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 
 		$crawler = self::request('GET', "posting.php?mode=quote&p={$post['post_id']}&sid={$this->sid}");
 
-		$this->assertRegexp($expected, $crawler->filter('textarea#message')->text());
+		$this->assertMatchesRegularExpression($expected, $crawler->filter('textarea#message')->text());
 	}
 
 	/**
@@ -122,8 +122,8 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		{
 			$this->set_quote_depth($quote_depth);
 			$crawler = self::request('GET', $quote_url);
-			$this->assertRegexp(
-				"(\\[quote=admin[^\\]]*\\]\n?" . preg_quote($expected_text) . "\n?\\[/quote\\])",
+			$this->assertMatchesRegularExpression(
+				"(\[quote=admin[^\]]*\]\s?" . preg_quote($expected_text) . "\s?\[\/quote\])",
 				$crawler->filter('textarea#message')->text()
 			);
 		}

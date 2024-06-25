@@ -38,39 +38,25 @@ class apcu extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Fetch an item from the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @return mixed Cached data
+	* {@inheritDoc}
 	*/
-	function _read($var)
+	protected function _read(string $var)
 	{
 		return apcu_fetch($this->key_prefix . $var);
 	}
 
 	/**
-	* Store data in the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @param mixed $data Data to store
-	* @param int $ttl Time-to-live of cached data
-	* @return bool True if the operation succeeded
+	* {@inheritDoc}
 	*/
-	function _write($var, $data, $ttl = 2592000)
+	protected function _write(string $var, $data, int $ttl = 2592000): bool
 	{
 		return apcu_store($this->key_prefix . $var, $data, $ttl);
 	}
 
 	/**
-	* Remove an item from the cache
-	*
-	* @access protected
-	* @param string $var Cache key
-	* @return bool True if the operation succeeded
-	*/
-	function _delete($var)
+	 * {@inheritDoc}
+	 */
+	protected function _delete(string $var): bool
 	{
 		return apcu_delete($this->key_prefix . $var);
 	}

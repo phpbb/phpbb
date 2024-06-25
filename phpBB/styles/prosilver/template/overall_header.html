@@ -49,10 +49,6 @@
 <link href="{T_STYLESHEET_LINK}" rel="stylesheet">
 <link href="{T_STYLESHEET_LANG_LINK}" rel="stylesheet">
 
-<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
-	<link href="{T_THEME_PATH}/bidi.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
-<!-- ENDIF -->
-
 <!-- IF S_PLUPLOAD -->
 	<link href="{T_THEME_PATH}/plupload.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
 <!-- ENDIF -->
@@ -61,15 +57,15 @@
 	<link href="{T_ASSETS_PATH}/cookieconsent/cookieconsent.min.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
 <!-- ENDIF -->
 
-<!--[if lte IE 9]>
-	<link href="{T_THEME_PATH}/tweaks.css?assets_version={T_ASSETS_VERSION}" rel="stylesheet">
-<![endif]-->
-
 <!-- EVENT overall_header_head_append -->
 
 {$STYLESHEETS}
 
 <!-- EVENT overall_header_stylesheets_after -->
+
+{% if NOTIFICATIONS_WEBPUSH_ENABLE %}
+	{% include('ucp_notifications_webpush.html') %}
+{% endif %}
 
 </head>
 <body id="phpbb" class="nojs notouch section-{SCRIPT_NAME} {S_CONTENT_DIRECTION} {BODY_CLASS}">
@@ -83,14 +79,17 @@
 		<!-- EVENT overall_header_headerbar_before -->
 			<div class="inner">
 
-			<div id="site-description" class="site-description">
-		<a id="logo" class="logo" href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
-					<span class="site_logo"></span>
+			<hgroup id="site-description" class="site-description c-hero">
+				<a id="logo" class="c-hero-logo" href="{% if U_SITE_HOME %}{{ U_SITE_HOME }}{% else %}{{ U_INDEX }}{% endif %}" title="{% if U_SITE_HOME %}{{ L_SITE_HOME }}{% else %}{{ L_INDEX }}{% endif %}">
+					{{ Icon('svg', 'logo', SITENAME, true, 'c-hero-logo-img') }}
 				</a>
-				<h1>{SITENAME}</h1>
-				<p>{SITE_DESCRIPTION}</p>
+
+				<h1 class="c-hero-heading">
+					{{ SITENAME }}
+					<p class="c-hero-lead">{{ SITE_DESCRIPTION }}</p>
+				</h1>
 				<p class="skiplink"><a href="#start_here">{L_SKIP}</a></p>
-			</div>
+			</hgroup>
 
 			<!-- EVENT overall_header_searchbox_before -->
 			<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
@@ -99,10 +98,10 @@
 				<fieldset>
 					<input name="keywords" id="keywords" type="search" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search tiny" size="20" value="{SEARCH_WORDS}" placeholder="{L_SEARCH_MINI}" />
 					<button class="button button-search" type="submit" title="{L_SEARCH}">
-						<i class="icon fa-search fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH}</span>
+						{{ Icon('font', 'search', lang('SEARCH'), true, 'fas c-button-icon') }}
 					</button>
 					<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
-						<i class="icon fa-cog fa-fw" aria-hidden="true"></i><span class="sr-only">{L_SEARCH_ADV}</span>
+						{{ Icon('font', 'gear', lang('SEARCH_ADV'), true, 'fas c-button-icon') }}
 					</a>
 					{S_SEARCH_HIDDEN_FIELDS}
 				</fieldset>

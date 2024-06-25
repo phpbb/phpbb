@@ -39,7 +39,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			$symfony_request,
-			$filesystem,
 			$request,
 			$phpbb_root_path,
 			$phpEx
@@ -67,15 +66,19 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		);
 		$phpbb_container->set('ext.manager', $extension_manager);
 
+		$assets_bag = new \phpbb\template\assets_bag();
+		$phpbb_container->set('assets.bag', $assets_bag);
+
 		$context = new \phpbb\template\context();
 		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
 			$config,
 			$filesystem,
 			$phpbb_path_helper,
 			$cache_path,
 			null,
-			new \phpbb\template\twig\loader($filesystem, ''),
-			new \phpbb\event\dispatcher($phpbb_container),
+			new \phpbb\template\twig\loader(''),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,

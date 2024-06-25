@@ -1,0 +1,66 @@
+{% include 'overall_header.html' %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('ACP_SEARCH_INDEX') }}</h1>
+
+<p>{{ lang('ACP_SEARCH_INDEX_EXPLAIN') }}</p>
+
+{% for backend in backends %}
+
+	{% if backend.S_STATS is not empty %}
+
+	<form id="acp_search_index_{{ backend.TYPE|replace({'\\': '-'}) }}" method="post" action="{{ U_ACTION }}">
+
+		<fieldset class="tabulated">
+
+		{{ backend.S_HIDDEN_FIELDS }}
+
+		<legend>{{ lang('INDEX_STATS') ~ lang('COLON') }} {{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</legend>
+
+		<table class="table1">
+			<caption>{{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</caption>
+			<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
+		<thead>
+		<tr>
+			<th>{{ lang('STATISTIC') }}</th>
+			<th>{{ lang('VALUE') }}</th>
+			<th>{{ lang('STATISTIC') }}</th>
+			<th>{{ lang('VALUE') }}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for stat in backend.S_STATS | batch(2, '') %}
+			<tr>
+			{% for key, value in stat %}
+				{% if value is not empty %}
+					<td>{{ key ~ lang('COLON') }}</td>
+					<td>{{ value }}</td>
+				{% else %}
+					<td></td>
+					<td></td>
+				{% endif %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+		</tbody>
+		</table>
+
+	{% endif %}
+
+	<p class="quick">
+	{% if backend.S_INDEXED %}
+		<input type="hidden" name="action" value="delete" />
+		<input class="button2" type="submit" name="submit" value="{{ lang('DELETE_INDEX') }}" />
+	{% else %}
+		<input type="hidden" name="action" value="create" />
+		<input class="button2" type="submit" name="submit" value="{{ lang('CREATE_INDEX') }}" />
+	{% endif %}
+	</p>
+	{{ S_FORM_TOKEN }}
+	</fieldset>
+
+	</form>
+{% endfor %}
+
+{% include 'overall_footer.html' %}

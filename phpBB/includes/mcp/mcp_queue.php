@@ -369,7 +369,6 @@ class mcp_queue
 				$user->add_lang(array('viewtopic', 'viewforum'));
 
 				$topic_id = $request->variable('t', 0);
-				$forum_info = array();
 
 				// If 'sort' is set, "Go" was pressed which is located behind the forums <select> box
 				// Then, unset the topic id so it does not override the forum id
@@ -413,13 +412,6 @@ class mcp_queue
 					{
 						trigger_error('NOT_MODERATOR');
 					}
-
-					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . '
-						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
-					$result = $db->sql_query($sql);
-					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
-					$db->sql_freeresult($result);
 				}
 				else
 				{
@@ -486,12 +478,10 @@ class mcp_queue
 
 					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-					$i = 0;
 					$post_ids = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$post_ids[] = $row['post_id'];
-						$row_num[$row['post_id']] = $i++;
 					}
 					$db->sql_freeresult($result);
 
@@ -687,9 +677,9 @@ class mcp_queue
 	* @param $post_id_list	array	IDs of the posts to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
-	static public function approve_posts($action, $post_id_list, $id, $mode)
+	public static function approve_posts($action, $post_id_list, $id, $mode)
 	{
 		global $template, $user, $request, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $phpbb_log;
@@ -810,10 +800,14 @@ class mcp_queue
 							), $post_data);
 						}
 					}
-					$phpbb_notifications->add_notifications(array('notification.type.quote'), $post_data);
+					$phpbb_notifications->add_notifications(array(
+						'notification.type.mention',
+						'notification.type.quote',
+					), $post_data);
 					$phpbb_notifications->delete_notifications('notification.type.post_in_queue', $post_id);
 
 					$phpbb_notifications->mark_notifications(array(
+						'notification.type.mention',
 						'notification.type.quote',
 						'notification.type.bookmark',
 						'notification.type.post',
@@ -943,9 +937,9 @@ class mcp_queue
 	* @param $topic_id_list	array	IDs of the topics to approve/restore
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
-	static public function approve_topics($action, $topic_id_list, $id, $mode)
+	public static function approve_topics($action, $topic_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $phpbb_log;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_container, $phpbb_dispatcher;
@@ -1045,12 +1039,13 @@ class mcp_queue
 					if ($topic_data['topic_visibility'] == ITEM_UNAPPROVED)
 					{
 						$phpbb_notifications->add_notifications(array(
+							'notification.type.mention',
 							'notification.type.quote',
 							'notification.type.topic',
 						), $topic_data);
 					}
 
-					$phpbb_notifications->mark_notifications('quote', $topic_data['post_id'], $user->data['user_id']);
+					$phpbb_notifications->mark_notifications(array('mention', 'quote'), $topic_data['post_id'], $user->data['user_id']);
 					$phpbb_notifications->mark_notifications('topic', $topic_id, $user->data['user_id']);
 
 					if ($notify_poster)
@@ -1141,9 +1136,9 @@ class mcp_queue
 	* @param $post_id_list	array	IDs of the posts to disapprove/delete
 	* @param $id			mixed	Category of the current active module
 	* @param $mode			string	Active module
-	* @return null
+	* @return void|never
 	*/
-	static public function disapprove_posts($post_id_list, $id, $mode)
+	public static function disapprove_posts($post_id_list, $id, $mode)
 	{
 		global $db, $template, $user, $phpbb_container, $phpbb_dispatcher;
 		global $phpEx, $phpbb_root_path, $request, $phpbb_log;

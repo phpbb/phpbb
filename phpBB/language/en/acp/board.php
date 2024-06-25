@@ -50,6 +50,11 @@ $lang = array_merge($lang, array(
 	'DEFAULT_STYLE_EXPLAIN'			=> 'The default style for new users.',
 	'DISABLE_BOARD'					=> 'Disable board',
 	'DISABLE_BOARD_EXPLAIN'			=> 'This will make the board unavailable to users who are neither administrators nor moderators. You can also enter a short (255 character) message to display if you wish.',
+	'DISABLE_BOARD_ACCESS'			=> 'Limit access to disabled board',
+	'DISABLE_BOARD_ACCESS_EXPLAIN'	=> 'This setting limits who can access a disabled board.',
+	'DISABLE_BOARD_ACCESS_ADMIN'			=> 'Only administrators',
+	'DISABLE_BOARD_ACCESS_ADMIN_GLOB_MODS'	=> 'Only administrators and global moderators',
+	'DISABLE_BOARD_ACCESS_ADMIN_ALL_MODS'	=> 'Only administrators and all moderators',
 	'DISPLAY_LAST_SUBJECT'			=> 'Display subject of last added post on forum list',
 	'DISPLAY_LAST_SUBJECT_EXPLAIN'	=> 'The subject of the last added post will be displayed in the forum list with a hyperlink to the post. Subjects from password protected forums and forums in which user doesn’t have read access are not shown.',
 	'DISPLAY_UNAPPROVED_POSTS'		=> 'Display unapproved posts to the author',
@@ -92,7 +97,6 @@ $lang = array_merge($lang, array(
 	'ALLOW_QUICK_REPLY_BUTTON'	=> 'Submit and enable quick reply in all forums',
 	'ALLOW_SIG'					=> 'Allow signatures',
 	'ALLOW_SIG_BBCODE'			=> 'Allow BBCode in user signatures',
-	'ALLOW_SIG_FLASH'			=> 'Allow use of <code>[FLASH]</code> BBCode tag in user signatures',
 	'ALLOW_SIG_IMG'				=> 'Allow use of <code>[IMG]</code> BBCode tag in user signatures',
 	'ALLOW_SIG_LINKS'			=> 'Allow use of links in user signatures',
 	'ALLOW_SIG_LINKS_EXPLAIN'	=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
@@ -106,16 +110,12 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
 	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br>If you disable avatars in general or avatars of a certain mode, the disabled avatars will no longer be shown on the board, but users will still be able to download their own avatars in the User Control Panel.',
 	'ALLOW_GRAVATAR'				=> 'Enable gravatar avatars',
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
-	'ALLOW_REMOTE'					=> 'Enable remote avatars',
-	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
-	'ALLOW_REMOTE_UPLOAD'			=> 'Enable remote avatar uploading',
-	'ALLOW_REMOTE_UPLOAD_EXPLAIN'	=> 'Allow uploading of avatars from another website.<br><em><strong class="error">Warning:</strong> Enabling this feature might allow users to check for the existence of files and services that are only accessible on the local network.</em>',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
 	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.<br>Double dots like <samp>../</samp> will be stripped from the path for security reasons.',
@@ -134,8 +134,6 @@ $lang = array_merge($lang, array(
 	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
-	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
-	'ALLOW_FLASH_PM_EXPLAIN'	=> 'Note that the ability to use flash in private messages, if enabled here, also depends on the permissions.',
 	'ALLOW_FORWARD_PM'			=> 'Allow forwarding of private messages',
 	'ALLOW_IMG_PM'				=> 'Allow use of <code>[IMG]</code> BBCode tag',
 	'ALLOW_MASS_PM'				=> 'Allow sending of private messages to multiple users and groups',
@@ -161,12 +159,11 @@ $lang = array_merge($lang, array(
 // Post Settings
 $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
+	'ALLOW_MENTIONS'					=> 'Allow mentions of users and groups boardwide',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOWED_SCHEMES_LINKS'				=> 'Allowed schemes in links',
 	'ALLOWED_SCHEMES_LINKS_EXPLAIN'		=> 'Users can only post schemeless URLs or one of the comma-separated list of allowed schemes.',
-	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts',
-	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump that topic. Setting the value to 0 disables bumping entirely.',
@@ -185,12 +182,12 @@ $lang = array_merge($lang, array(
 	'MAX_POLL_OPTIONS'				=> 'Maximum number of poll options',
 	'MAX_POST_FONT_SIZE'			=> 'Maximum font size per post',
 	'MAX_POST_FONT_SIZE_EXPLAIN'	=> 'Maximum font size allowed in a post. Set to 0 for unlimited font size.',
-	'MAX_POST_IMG_HEIGHT'			=> 'Maximum flash height per post',
-	'MAX_POST_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of a flash file in postings. Set to 0 for unlimited size.',
-	'MAX_POST_IMG_WIDTH'			=> 'Maximum flash width per post',
-	'MAX_POST_IMG_WIDTH_EXPLAIN'	=> 'Maximum width of a flash file in postings. Set to 0 for unlimited size.',
 	'MAX_POST_URLS'					=> 'Maximum links per post',
 	'MAX_POST_URLS_EXPLAIN'			=> 'Maximum number of URLs in a post. Set to 0 for unlimited links.',
+	'MENTIONS'						=> 'Mentions',
+	'MENTION_BATCH_SIZE'			=> 'Maximum number of names fetched from each source of names for a single request',
+	'MENTION_BATCH_SIZE_EXPLAIN'	=> 'Examples of sources: friends, topic repliers, group members etc.',
+	'MENTION_NAMES_LIMIT'			=> 'Maximum number of names in dropdown list',
 	'MIN_CHAR_LIMIT'				=> 'Minimum characters per post/message',
 	'MIN_CHAR_LIMIT_EXPLAIN'		=> 'The minimum number of characters the user need to enter within a post/private message. The minimum for this setting is 1.',
 	'POSTING'						=> 'Posting',
@@ -210,9 +207,9 @@ $lang = array_merge($lang, array(
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
 	'MAX_SIG_IMG_HEIGHT'			=> 'Maximum signature image height',
-	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image/flash file in user signatures. Set to 0 for unlimited height.',
+	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image file in user signatures. Set to 0 for unlimited height.',
 	'MAX_SIG_IMG_WIDTH'				=> 'Maximum signature image width',
-	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image/flash file in user signatures. Set to 0 for unlimited width.',
+	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image file in user signatures. Set to 0 for unlimited width.',
 	'MAX_SIG_LENGTH'				=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'		=> 'Maximum number of characters in user signatures.',
 	'MAX_SIG_SMILIES'				=> 'Maximum smilies per signature',
@@ -307,29 +304,11 @@ $lang = array_merge($lang, array(
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure plugins, which are designed to block automated form submissions by spambots. These plugins typically work by challenging the user with a <em>CAPTCHA</em>, a test which is designed to be difficult for computers to solve.',
+	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure plugins, which are designed to block automated form submissions by spambots. These plugins typically work by challenging the user with a <em>CAPTCHA</em>, a test which is designed to be difficult for computers to solve. phpBB defaults to "Incomplete Captcha," disabling verification and preventing functionality like registration that require CAPTCHA verification.',
 	'ACP_VC_EXT_GET_MORE'					=> 'For additional (and possibly better) anti-spam plugins, visit the <a href="https://www.phpbb.com/go/anti-spam-ext"><strong>phpBB.com Extensions Database</strong></a>. For more information on preventing spam on your board, visit the <a href="https://www.phpbb.com/go/anti-spam"><strong>phpBB.com Knowledge Base</strong></a>.',
 	'AVAILABLE_CAPTCHAS'					=> 'Available plugins',
 	'CAPTCHA_UNAVAILABLE'					=> 'The plugin cannot be selected as its requirements are not met.',
-	'CAPTCHA_GD'							=> 'GD image',
-	'CAPTCHA_GD_3D'							=> 'GD 3D image',
-	'CAPTCHA_GD_FOREGROUND_NOISE'			=> 'Foreground noise',
-	'CAPTCHA_GD_EXPLAIN'					=> 'Uses GD to make a more advanced anti-spambot image.',
-	'CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN'	=> 'Use foreground noise to make the image harder to read.',
-	'CAPTCHA_GD_X_GRID'						=> 'Background noise x-axis',
-	'CAPTCHA_GD_X_GRID_EXPLAIN'				=> 'Use lower settings of this to make the image harder to read. 0 will disable x-axis background noise.',
-	'CAPTCHA_GD_Y_GRID'						=> 'Background noise y-axis',
-	'CAPTCHA_GD_Y_GRID_EXPLAIN'				=> 'Use lower settings of this to make the image harder to read. 0 will disable y-axis background noise.',
-	'CAPTCHA_GD_WAVE'						=> 'Wave distortion',
-	'CAPTCHA_GD_WAVE_EXPLAIN'				=> 'This applies a wave distortion to the image.',
-	'CAPTCHA_GD_3D_NOISE'					=> 'Add 3D-noise objects',
-	'CAPTCHA_GD_3D_NOISE_EXPLAIN'			=> 'This adds additional objects to the image, over the letters.',
-	'CAPTCHA_GD_FONTS'						=> 'Use different fonts',
-	'CAPTCHA_GD_FONTS_EXPLAIN'				=> 'This setting controls how many different letter shapes are used. You can just use the default shapes or introduce altered letters. Adding lowercase letters is also possible.',
-	'CAPTCHA_FONT_DEFAULT'					=> 'Default',
-	'CAPTCHA_FONT_NEW'						=> 'New Shapes',
-	'CAPTCHA_FONT_LOWER'					=> 'Also use lowercase',
-	'CAPTCHA_NO_GD'							=> 'Simple image',
+	'CAPTCHA_INCOMPLETE'					=> 'Incomplete Captcha (Not configured)',
 	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes have not been saved, this is just a preview.',
 	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The plugin as it would look like using the current selection.',
 
@@ -546,10 +525,6 @@ $lang = array_merge($lang, array(
 	'REF_PATH'						=> 'Also validate path',
 	'REFERRER_VALID'				=> 'Validate Referrer',
 	'REFERRER_VALID_EXPLAIN'		=> 'If enabled, the referrer of POST requests will be checked against the host/script path settings. This may cause issues with boards using several domains and or external logins.',
-	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
-	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
-	'UPLOAD_CERT_VALID'				=> 'Validate upload certificate',
-	'UPLOAD_CERT_VALID_EXPLAIN'		=> 'If enabled, certificates of remote uploads will be validated. This requires the CA bundle to be defined by the <samp>openssl.cafile</samp> or <samp>curl.cainfo</samp> setting in your php.ini.',
 ));
 
 // Email Settings
@@ -605,6 +580,21 @@ $lang = array_merge($lang, array(
 	'USE_SMTP'						=> 'Use SMTP server for email',
 	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
 ));
+
+$lang = array_merge($lang, [
+	'ACP_WEBPUSH_SETTINGS_EXPLAIN'	=> 'Here you can enable Web Push for board notifications. Web Push is a protocol for the real-time delivery of events to user agents, commonly referred to as push messages. It is compatible with the majority of modern browsers on both desktop and mobile devices. Users can opt to receive Web Push alerts in their browser by subscribing and enabling their preferred notifications in the UCP.',
+	'WEBPUSH_ENABLE'				=> 'Enable Web Push',
+	'WEBPUSH_ENABLE_EXPLAIN'		=> 'Allow users to receive notifications in their browser or device via Web Push. To utilize Web Push, you must input or generate valid VAPID identification keys.',
+	'WEBPUSH_GENERATE_VAPID_KEYS'	=> 'Generate Identification keys',
+	'WEBPUSH_VAPID_PUBLIC'			=> 'Server identification public key',
+	'WEBPUSH_VAPID_PUBLIC_EXPLAIN'	=> 'The Voluntary Application Server Identification (VAPID) public key is shared to authenticate push messages from your site.<br><em><strong>Caution:</strong> Modifying the VAPID public key will automatically render all Web Push subscriptions invalid.</em>',
+	'WEBPUSH_VAPID_PRIVATE'			=> 'Server identification private key',
+	'WEBPUSH_VAPID_PRIVATE_EXPLAIN'	=> 'The Voluntary Application Server Identification (VAPID) private key is used to generate authenticated push messages dispatched from your site. The VAPID private key <strong>must</strong> form a valid public-private key pair alongside the VAPID public key.<br><em><strong>Caution:</strong> Modifying the VAPID private key will automatically render all Web Push subscriptions invalid.</em>',
+	'WEBPUSH_METHOD_DEFAULT_ENABLE'	=> 'Enable all user-based web push notification options by default',
+	'WEBPUSH_METHOD_DEFAULT_ENABLE_EXPLAIN'	=> 'When this setting is enabled, users who subscribe and allow browser notifications will start receiving them automatically. Users only need to visit the UCP Notification settings to disable any unwanted notifications.<br><br>If this setting is disabled, users will not receive any notifications, even if they have subscribed, until they visit the UCP Notification settings to enable the specific notification options they wish to receive.',
+	'WEBPUSH_DROPDOWN_SUBSCRIBE'	=> 'Show “Subscribe” button in notification dropdown',
+	'WEBPUSH_DROPDOWN_SUBSCRIBE_EXPLAIN'	=> 'Display a “Subscribe” button in the Notification dropdown, allowing users to easily subscribe to push notifications from anywhere in the forum.',
+]);
 
 // Jabber settings
 $lang = array_merge($lang, array(

@@ -24,7 +24,7 @@ class manager
 	* Hashing algorithm type map
 	* Will be used to map hash prefix to type
 	*/
-	protected $type_map = false;
+	protected $type_map = [];
 
 	/**
 	* Service collection of hashing algorithms
@@ -115,7 +115,7 @@ class manager
 	/**
 	* Fill algorithm type map
 	*
-	* @param \phpbb\di\service_collection $hashing_algorithms
+	* @param \phpbb\di\service_collection|array $hashing_algorithms
 	*/
 	protected function fill_type_map($hashing_algorithms)
 	{
@@ -154,7 +154,7 @@ class manager
 	*
 	* @param string $hash Password hash that should be checked
 	*
-	* @return object|bool The hash type object or false if the specified
+	* @return array|bool|object The hash type object or false if the specified
 	*			type is not supported
 	*/
 	public function detect_algorithm($hash)
@@ -206,8 +206,8 @@ class manager
 	* Hash supplied password
 	*
 	* @param string $password Password that should be hashed
-	* @param string $type Hash type. Will default to standard hash type if
-	*			none is supplied
+	* @param string|array $type Hash type. Will default to standard hash type if
+	*			none is supplied, array for combined hashing
 	* @return string|bool Password hash of supplied password or false if
 	*			if something went wrong during hashing
 	*/
@@ -276,7 +276,7 @@ class manager
 
 		// First find out what kind of hash we're dealing with
 		$stored_hash_type = $this->detect_algorithm($hash);
-		if ($stored_hash_type == false)
+		if (!$stored_hash_type)
 		{
 			// Still check MD5 hashes as that is what the installer
 			// will default to for the admin user
@@ -329,12 +329,12 @@ class manager
 	* Create combined hash from already hashed password
 	*
 	* @param string $password_hash Complete current password hash
-	* @param string $type Type of the hashing algorithm the password hash
+	* @param array $type Type of the hashing algorithm the password hash
 	*		should be combined with
 	* @return string|bool Combined password hash if combined hashing was
 	*		successful, else false
 	*/
-	public function combined_hash_password($password_hash, $type)
+	public function combined_hash_password($password_hash, array $type)
 	{
 		$this->initialize();
 

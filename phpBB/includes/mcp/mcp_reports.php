@@ -344,7 +344,6 @@ class mcp_reports
 					$topic_id = $request->variable('t', 0, false, \phpbb\request\request_interface::POST);
 				}
 
-				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
 				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
 
@@ -391,13 +390,6 @@ class mcp_reports
 					{
 						trigger_error('NOT_MODERATOR');
 					}
-
-					$sql = 'SELECT SUM(forum_topics_approved) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . '
-						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
-					$result = $db->sql_query($sql);
-					$forum_info['forum_topics_approved'] = (int) $db->sql_fetchfield('sum_forum_topics');
-					$db->sql_freeresult($result);
 				}
 				else
 				{

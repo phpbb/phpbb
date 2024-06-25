@@ -126,7 +126,7 @@ class lang_helper
 	* @param	int		$field_id		Database ID of the field
 	* @param	int		$lang_id		ID of the language
 	* @param	int		$field_value	Selected value of the field
-	* @return string
+	* @return string|array
 	*/
 	public function get($field_id, $lang_id, $field_value = null)
 	{

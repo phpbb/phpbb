@@ -232,13 +232,16 @@ class type_bool extends type_base
 			}
 
 			$options = $this->lang_helper->get($profile_row['field_id'], $profile_row['lang_id']);
-			foreach ($options as $option_id => $option_value)
+			if (is_array($options))
 			{
-				$this->template->assign_block_vars('bool.options', array(
-					'OPTION_ID'	=> $option_id,
-					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
-					'VALUE'		=> $option_value,
-				));
+				foreach ($options as $option_id => $option_value)
+				{
+					$this->template->assign_block_vars('bool.options', array(
+						'OPTION_ID'	=> $option_id,
+						'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
+						'VALUE'		=> $option_value,
+					));
+				}
 			}
 		}
 	}

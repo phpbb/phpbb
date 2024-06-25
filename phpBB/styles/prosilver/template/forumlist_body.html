@@ -31,14 +31,21 @@
 		<!-- EVENT forumlist_body_forum_row_before -->
 		<li class="row">
 			<!-- EVENT forumlist_body_forum_row_prepend -->
-			<dl class="row-item {forumrow.FORUM_IMG_STYLE}">
+			<dl class="row-item">
 				<dt title="{% if forumrow.S_IS_LINK %}{{ lang('FORUM_LINK') }}{% else %}{{ forumrow.FORUM_FOLDER_IMG_ALT }}{% endif %}">
-					<!-- IF forumrow.S_UNREAD_FORUM --><a href="{forumrow.U_VIEWFORUM}" class="row-item-link"></a><!-- ENDIF -->
+					<a class="row-item-link{% if forumrow.S_UNREAD_FORUM %} unread{% else %} read{% endif %}" href="{forumrow.U_VIEWFORUM}">
+						{{ Icon('svg', {
+							'link-variant' : forumrow.S_IS_LINK,
+							'lock' : forumrow.S_LOCKED_FORUM,
+							'file-document-box-multiple-outline' : forumrow.S_SUBFORUMS,
+							'file-document-box-outline' : true,
+						}, '', true, 'c-forum-row-icon') }}
+					</a>
 					<div class="list-inner">
 						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
 							<!--
 								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">
-									<i class="icon fa-rss-square fa-fw icon-orange" aria-hidden="true"></i><span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
+									{{ Icon('font', 'square-rss', '', true, 'fas c-feed-icon') }}<span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
 								</a>
 							-->
 						<!-- ENDIF -->
@@ -48,17 +55,26 @@
 							<!-- EVENT forumlist_body_forum_image_after -->
 						<!-- ENDIF -->
 						<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a>
-						<!-- IF forumrow.FORUM_DESC --><br />{forumrow.FORUM_DESC}<!-- ENDIF -->
+						<!-- IF forumrow.FORUM_DESC --><span class="forum-desc">{forumrow.FORUM_DESC}</span><!-- ENDIF -->
 						<!-- IF forumrow.MODERATORS -->
-							<br /><strong>{forumrow.L_MODERATOR_STR}{L_COLON}</strong> {forumrow.MODERATORS}
+							<span class="forum-mods"><strong>{forumrow.L_MODERATOR_STR}{L_COLON}</strong> {forumrow.MODERATORS}</span>
 						<!-- ENDIF -->
 						<!-- IF .forumrow.subforum and forumrow.S_LIST_SUBFORUMS -->
 							<!-- EVENT forumlist_body_subforums_before -->
-							<br /><strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
+							<span class="forum-subs">
+								<strong>{forumrow.L_SUBFORUM_STR}{L_COLON}</strong>
 							<!-- BEGIN subforum -->
-								<!-- EVENT forumlist_body_subforum_link_prepend --><a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="{% if forumrow.subforum.IS_LINK %}{{ lang('FORUM_LINK') }}{% elseif forumrow.subforum.S_UNREAD %}{{ lang('UNREAD_POSTS') }}{% else %}{{ lang('NO_UNREAD_POSTS') }}{% endif %}">
-									<i class="icon <!-- IF forumrow.subforum.IS_LINK -->fa-external-link<!-- ELSE -->fa-file-o<!-- ENDIF --> fa-fw <!-- IF forumrow.subforum.S_UNREAD --> icon-red<!-- ELSE --> icon-blue<!-- ENDIF --> icon-md" aria-hidden="true"></i>{forumrow.subforum.SUBFORUM_NAME}</a><!-- IF not forumrow.subforum.S_LAST_ROW -->{L_COMMA_SEPARATOR}<!-- ENDIF --><!-- EVENT forumlist_body_subforum_link_append -->
+								<!-- EVENT forumlist_body_subforum_link_prepend -->
+								<a href="{forumrow.subforum.U_SUBFORUM}" class="subforum<!-- IF forumrow.subforum.S_UNREAD --> unread<!-- ELSE --> read<!-- ENDIF -->" title="{% if forumrow.subforum.IS_LINK %}{{ lang('FORUM_LINK') }}{% elseif forumrow.subforum.S_UNREAD %}{{ lang('UNREAD_POSTS') }}{% else %}{{ lang('NO_UNREAD_POSTS') }}{% endif %}">
+									{% if forumrow.subforum.IS_LINK %}
+										{{ Icon('font', 'arrow-up-right-from-square', forumrow.subforum.SUBFORUM_NAME, false, 'fas c-subforum-icon') }}
+									{% else %}
+										{{ Icon('font', 'file', forumrow.subforum.SUBFORUM_NAME, false, 'far c-subforum-icon') }}
+									{% endif %}
+								</a>{% if not forumrow.subforum.S_LAST_ROW %}{L_COMMA_SEPARATOR}{% endif %}
+								<!-- EVENT forumlist_body_subforum_link_append -->
 							<!-- END subforum -->
+							</span>
 							<!-- EVENT forumlist_body_subforums_after -->
 						<!-- ENDIF -->
 
@@ -82,11 +98,11 @@
 						<span>
 							<!-- IF forumrow.U_UNAPPROVED_TOPICS -->
 								<a href="{forumrow.U_UNAPPROVED_TOPICS}" title="{L_TOPICS_UNAPPROVED}">
-									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPICS_UNAPPROVED}</span>
+									{{ Icon('font', 'circle-question', lang('TOPICS_UNAPPROVED'), true, 'fas c-unapproved-icon') }}
 								</a>
 							<!-- ELSEIF forumrow.U_UNAPPROVED_POSTS -->
 								<a href="{forumrow.U_UNAPPROVED_POSTS}" title="{L_POSTS_UNAPPROVED_FORUM}">
-									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_POSTS_UNAPPROVED_FORUM}</span>
+									{{ Icon('font', 'circle-question', lang('POSTS_UNAPPROVED_FORUM'), true, 'fas c-unapproved-icon') }}
 								</a>
 							<!-- ENDIF -->
 							<!-- IF forumrow.LAST_POST_TIME_RFC3339 -->
@@ -98,7 +114,7 @@
 									{L_POST_BY_AUTHOR} <!-- EVENT forumlist_body_last_poster_username_prepend -->{forumrow.LAST_POSTER_FULL}<!-- EVENT forumlist_body_last_poster_username_append -->
 								<!-- IF not S_IS_BOT -->
 									<a href="{forumrow.U_LAST_POST}" title="{L_VIEW_LATEST_POST}">
-										<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{L_VIEW_LATEST_POST}</span>
+										{{ Icon('font', 'arrow-up-right-from-square', lang('VIEW_LATEST_POST'), true, 'fas c-last-post-icon') }}
 									</a>
 								<!-- ENDIF -->
 								<br /><time datetime="{forumrow.LAST_POST_TIME_RFC3339}">{forumrow.LAST_POST_TIME}</time>

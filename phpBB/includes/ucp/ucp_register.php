@@ -106,7 +106,7 @@ class ucp_register
 		/* @var $cp \phpbb\profilefields\manager */
 		$cp = $phpbb_container->get('profilefields.manager');
 
-		$error = $cp_data = $cp_error = array();
+		$error = $cp_data = array();
 		$s_hidden_fields = array();
 
 		// Handle login_link data added to $_hidden_fields
@@ -157,6 +157,8 @@ class ucp_register
 			$lang_row = (array) $db->sql_fetchrowset($result);
 			$db->sql_freeresult($result);
 
+			$lang_options = phpbb_language_select($db, $user_lang, $lang_row);
+
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
@@ -167,7 +169,11 @@ class ucp_register
 				unset($now);
 
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang, $lang_row) : '',
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'L_COPPA_NO'		=> $user->lang('UCP_COPPA_BEFORE', $coppa_birthday),
 					'L_COPPA_YES'		=> $user->lang('UCP_COPPA_ON_AFTER', $coppa_birthday),
 
@@ -182,7 +188,11 @@ class ucp_register
 			else
 			{
 				$template_vars = array(
-					'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($user_lang, $lang_row) : '',
+					'LANG_OPTIONS'		=> [
+						'id'		=> 'lang',
+						'name'		=> 'lang',
+						'options'	=> $lang_options,
+					],
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -217,17 +227,6 @@ class ucp_register
 			));
 
 			$template->assign_vars($template_vars);
-
-			/**
-			* Allows to modify the agreements.
-			*
-			* To assign data to the template, use $template->assign_vars()
-			*
-			* @event core.ucp_register_agreement
-			* @since 3.1.6-RC1
-			* @deprecated 3.2.2-RC1 Replaced by core.ucp_register_agreement_modify_template_data and to be removed in 3.3.0-RC1
-			*/
-			$phpbb_dispatcher->dispatch('core.ucp_register_agreement');
 
 			$this->tpl_name = $tpl_name;
 			return;
@@ -628,7 +627,7 @@ class ucp_register
 		}
 
 		// Assign template vars for timezone select
-		phpbb_timezone_select($template, $user, $data['tz'], true);
+		$timezone_select = phpbb_timezone_select($user, $data['tz'], true);
 
 		// Checking amount of available languages
 		$sql = 'SELECT lang_iso, lang_local_name
@@ -637,6 +636,8 @@ class ucp_register
 		$result = $db->sql_query($sql);
 		$lang_row = (array) $db->sql_fetchrowset($result);
 		$db->sql_freeresult($result);
+
+		$lang_options = phpbb_language_select($db, $data['lang'], $lang_row);
 
 		$template_vars = array(
 			'USERNAME'			=> $data['username'],
@@ -648,7 +649,16 @@ class ucp_register
 			'L_USERNAME_EXPLAIN'		=> $user->lang($config['allow_name_chars'] . '_EXPLAIN', $user->lang('CHARACTERS_XY', (int) $config['min_name_chars']), $user->lang('CHARACTERS_XY', (int) $config['max_name_chars'])),
 			'L_PASSWORD_EXPLAIN'		=> $user->lang($config['pass_complex'] . '_EXPLAIN', $user->lang('CHARACTERS_XY', (int) $config['min_pass_chars'])),
 
-			'S_LANG_OPTIONS'	=> (count($lang_row) > 1) ? language_select($data['lang'], $lang_row) : '',
+			'LANG_OPTIONS'		=> [
+				'id'		=> 'lang',
+				'name'		=> 'lang',
+				'options'	=> $lang_options,
+			],
+			'TIMEZONE_OPTIONS'	=> [
+				'tag'		=> 'select',
+				'name'		=> 'tz',
+				'options'	=> $timezone_select,
+			],
 			'S_TZ_PRESELECT'	=> !$submit,
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
 			'S_REGISTRATION'	=> true,

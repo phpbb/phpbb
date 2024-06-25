@@ -23,19 +23,15 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	/**
 	* Sets up basic test objects
 	*
-	* @access public
-	* @return null
+	* @access protected
 	*/
 	protected function setUp(): void
 	{
-		global $config, $request, $user, $cache, $phpbb_root_path, $phpEx;
+		global $config, $request, $user, $cache;
 
 		$config = new \phpbb\config\config([]);
 		$cache = new phpbb_mock_cache;
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));

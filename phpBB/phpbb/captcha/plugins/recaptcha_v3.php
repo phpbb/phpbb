@@ -13,6 +13,8 @@
 
 namespace phpbb\captcha\plugins;
 
+use phpbb\exception\runtime_exception;
+
 /**
  * Google reCAPTCHA v3 plugin.
  */
@@ -33,14 +35,14 @@ class recaptcha_v3 extends captcha_abstract
 	const RECAPTCHA_CN	= 'recaptcha.google.cn';
 
 	/** @var string[] List of supported domains */
-	static public $supported_domains = [
+	public static $supported_domains = [
 		self::GOOGLE,
 		self::RECAPTCHA,
 		self::RECAPTCHA_CN
 	];
 
 	/** @var array CAPTCHA types mapped to their action */
-	static protected $actions = [
+	protected static $actions = [
 		0				=> 'default',
 		CONFIRM_REG		=> 'register',
 		CONFIRM_LOGIN	=> 'login',
@@ -54,7 +56,7 @@ class recaptcha_v3 extends captcha_abstract
 	 * @static
 	 * @return array
 	 */
-	static public function get_actions()
+	public static function get_actions()
 	{
 		return self::$actions;
 	}
@@ -86,12 +88,12 @@ class recaptcha_v3 extends captcha_abstract
 	 *
 	 * Not needed by this CAPTCHA plugin.
 	 *
-	 * @throws \Exception
+	 * @throws runtime_exception
 	 * @return void
 	 */
 	public function get_generator_class()
 	{
-		throw new \Exception('No generator class given.');
+		throw new runtime_exception('NO_GENERATOR_CLASS');
 	}
 
 	/**

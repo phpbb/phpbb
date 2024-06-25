@@ -14,7 +14,7 @@
 			<h3>{L_REPORT_REASON}{L_COLON} {REPORT_REASON_TITLE}</h3>
 			<p class="author">{L_REPORTED} {L_POST_BY_AUTHOR} {REPORTER_FULL} &laquo; {REPORT_DATE}</p>
 		<!-- IF S_REPORT_CLOSED -->
-			<p class="post-notice reported"><i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i>{L_REPORT_CLOSED}</p>
+			<p class="post-notice reported">{{ Icon('font', 'exclamation', '', true,  'fas c-topic-reported-icon') }}{L_REPORT_CLOSED}</p>
 		<!-- ENDIF -->
 			<div class="content">
 			<!-- IF REPORT_TEXT -->
@@ -33,9 +33,9 @@
 	<fieldset class="submit-buttons">
 		{% EVENT mcp_post_report_buttons_top_before %}
 		<!-- IF not S_REPORT_CLOSED -->
-			<input class="button1" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
+			<input class="button1 button button-form" type="submit" value="{L_CLOSE_REPORT}" name="action[close]" /> &nbsp;
 		<!-- ENDIF -->
-		<input class="button2" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
+		<input class="button1 button button-form-bold" type="submit" value="{L_DELETE_REPORT}" name="action[delete]" />
 		{% EVENT mcp_post_report_buttons_top_after %}
 		<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
 		{S_FORM_TOKEN}
@@ -61,7 +61,7 @@
 			<!-- IF U_EDIT -->
 				<li>
 					<a href="{U_EDIT}" title="{L_EDIT_POST}" class="button">
-						<i class="icon fa-pencil fa-fw" aria-hidden="true"></i><span class="sr-only">{L_EDIT_POST}</span>
+						{{ Icon('font', 'pencil', lang('EDIT_POST'), true, 'fas c-button-icon') }}
 					</a>
 				</li>
 			<!-- ENDIF -->
@@ -75,7 +75,7 @@
 			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:{bcc_recipient.COLOUR};"<!-- ENDIF -->><strong>{bcc_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
 		</p>
 		<!-- ELSE -->
-		<p class="author"><span><i class="icon fa-file fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{MINI_POST_IMG}</span></span> {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
+		<p class="author"><span>{{ Icon('font', 'file', MINI_POST, true, 'fas c-topic-icon') }}</span> {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
 		<!-- ENDIF -->
 
 		{% if S_CAN_APPROVE %}
@@ -83,8 +83,8 @@
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="post-notice unapproved">
-				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
-				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" />
+				<input class="button1 button button-form-bold" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" /> &nbsp;
+				<input class="button1 button button-form" type="submit" value="{L_APPROVE}" name="action[approve]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="unapproved_posts" /><!-- ENDIF -->
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
@@ -94,8 +94,8 @@
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
 
 			<p class="post-notice deleted">
-				<!-- IF S_CAN_DELETE_POST --><input class="button2" type="submit" value="{L_DELETE}" name="action[delete]" /> &nbsp;<!-- ENDIF -->
-				<input class="button1" type="submit" value="{L_RESTORE}" name="action[restore]" />
+				<!-- IF S_CAN_DELETE_POST --><input class="button1 button button-form-bold" type="submit" value="{L_DELETE}" name="action[delete]" /> &nbsp;<!-- ENDIF -->
+				<input class="button1 button button-form" type="submit" value="{L_RESTORE}" name="action[restore]" />
 				<!-- IF not S_FIRST_POST --><input type="hidden" name="mode" value="deleted_posts" /><!-- ENDIF -->
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 				{S_FORM_TOKEN}
@@ -106,7 +106,8 @@
 
 		{% if S_POST_REPORTED and not S_MCP_REPORT %}
 			<p class="post-notice reported">
-				<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{{ lang('TOPIC_REPORTED') }}</span> <a href="{{ U_MCP_REPORT }}"><strong>{{ lang('POST_REPORTED') }}</strong></a>
+				{{ Icon('font', 'exclamation', lang('TOPIC_REPORTED'), true, 'fas c-topic-reported-icon') }}
+				<a href="{U_MCP_REPORT}"><strong>{{ lang('POST_REPORTED') }}</strong></a>
 			</p>
 		{% endif %}
 
@@ -163,10 +164,10 @@
 			<fieldset>
 			<dl>
 				<dt><label>{L_CHANGE_POSTER}{L_COLON}</label></dt>
-				<!-- IF S_USER_SELECT --><dd><select name="u">{S_USER_SELECT}</select> <input type="submit" class="button2" name="action[chgposter_ip]" value="{L_CONFIRM}" /></dd><!-- ENDIF -->
+				<!-- IF S_USER_SELECT --><dd><select name="u">{S_USER_SELECT}</select> <input type="submit" class="button1 button button-form-bold" name="action[chgposter_ip]" value="{L_CONFIRM}" /></dd><!-- ENDIF -->
 				<dd style="margin-top:3px;">
 					<input class="inputbox autowidth" type="text" name="username" value="" />
-					<input type="submit" class="button2" name="action[chgposter]" value="{L_CONFIRM}" />
+					<input type="submit" class="button1 button button-form-bold" name="action[chgposter]" value="{L_CONFIRM}" />
 					<br />
 					<span>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</span>
 				</dd>
@@ -187,7 +188,7 @@
 				<dd><select name="action">
 					<!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF -->
 					<!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF -->
-					</select> <input class="button2" type="submit" value="{L_SUBMIT}" />
+					</select> <input class="button1 button button-form-bold" type="submit" value="{L_SUBMIT}" />
 				</dd>
 			</dl>
 			{S_FORM_TOKEN}
@@ -232,8 +233,8 @@
 
 				<!-- IF S_CLEAR_ALLOWED -->
 					<fieldset class="submit-buttons">
-						<input class="button2" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp;
-						<input class="button2" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
+						<input class="button1 button button-form-bold" type="submit" name="action[del_all]" value="{L_DELETE_ALL}" />&nbsp;
+						<input class="button1 button button-form-bold" type="submit" name="action[del_marked]" value="{L_DELETE_MARKED}" />
 					</fieldset>
 				<!-- ENDIF -->
 			<!-- ENDIF -->
@@ -246,8 +247,8 @@
 			</fieldset>
 
 			<fieldset class="submit-buttons">
-				<input class="button1" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;
-				<input class="button2" type="reset" value="{L_RESET}" />
+				<input class="button1 button button-form" type="submit" name="action[add_feedback]" value="{L_SUBMIT}" />&nbsp;
+				<input class="button1 button button-form-bold" type="reset" value="{L_RESET}" />
 				{S_FORM_TOKEN}
 			</fieldset>
 			</form>
@@ -341,13 +342,13 @@
 				<ul>
 				<!-- BEGIN pagination_ips -->
 					<!-- IF pagination_ips.S_IS_PREV -->
-					<li class="arrow previous"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="prev" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_BEGIN} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_PREVIOUS}</span></a></li>
+					<li class="arrow previous"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="prev" role="button">{{ Icon('font', 'chevron-' ~ S_CONTENT_FLOW_BEGIN, lang('PREVIOUS'), true, 'fas c-button-icon') }}</a></li>
 					<!-- ELSEIF pagination_ips.S_IS_CURRENT -->
 					<li class="active"><span>{pagination_ips.PAGE_NUMBER}</span></li>
 					<!-- ELSEIF pagination_ips.S_IS_ELLIPSIS -->
 					<li class="ellipsis" role="separator"><span>{L_ELLIPSIS}</span></li>
 					<!-- ELSEIF pagination_ips.S_IS_NEXT -->
-					<li class="arrow next"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="next" role="button"><i class="icon fa-chevron-{S_CONTENT_FLOW_END} fa-fw" aria-hidden="true"></i><span class="sr-only">{L_NEXT}</span></a></li>
+					<li class="arrow next"><a class="button button-icon-only" href="{pagination_ips.PAGE_URL}" rel="next" role="button">{{ Icon('font', 'chevron-' ~ S_CONTENT_FLOW_END, lang('NEXT'), true, 'fas c-button-icon') }}</a></li>
 					<!-- ELSE -->
 					<li><a class="button" href="{pagination_ips.PAGE_URL}" role="button">{pagination_ips.PAGE_NUMBER}</a></li>
 					<!-- ENDIF -->

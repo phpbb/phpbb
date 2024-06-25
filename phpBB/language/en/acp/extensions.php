@@ -35,6 +35,23 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
+
+	'EXTENSIONS_ALREADY_INSTALLED'				=> 'The “%s” extension has already been installed.',
+	'EXTENSIONS_ALREADY_INSTALLED_MANUALLY'		=> 'The “%s” extension has already been installed manually.',
+	'EXTENSIONS_ALREADY_MANAGED'				=> 'The “%s” extension is already managed.',
+	'EXTENSIONS_CANNOT_MANAGE_FILESYSTEM_ERROR'	=> 'The “%s” extension cannot be managed because the existing files could not be removed from the filesystem.',
+	'EXTENSIONS_CANNOT_MANAGE_INSTALL_ERROR'	=> 'The “%s” extension could not be installed. The prior installation of this extension has been restored.',
+	'EXTENSIONS_MANAGED_WITH_CLEAN_ERROR'		=> 'The “%1$s” extension has been installed but an error occurred and the old files could not be removed. You might want to delete the “%2$s” files manually.',
+	'EXTENSIONS_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred while enabling it.',
+	'EXTENSIONS_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
+	'EXTENSIONS_NOT_MANAGED'					=> 'The “%s” extension is not being managed.',
+
+	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
+	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
+
+	'EXTENSIONS_CATALOG'			=> 'Extensions Catalog',
+	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all of the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.',
+
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
 	'EXTENSIONS_ADMIN'			=> 'Extensions Manager',
@@ -43,7 +60,6 @@ $lang = array_merge($lang, array(
 	'EXTENSION_NOT_AVAILABLE'	=> 'The selected extension is not available for this board, please verify your phpBB and PHP versions are allowed (see the details page).',
 	'EXTENSION_DIR_INVALID'		=> 'The selected extension has an invalid directory structure and cannot be enabled.',
 	'EXTENSION_NOT_ENABLEABLE'	=> 'The selected extension cannot be enabled, please verify the extension’s requirements.',
-	'EXTENSION_NOT_INSTALLED'	=> 'The extension %s is not available. Please check that you have installed it correctly.',
 
 	'DETAILS'				=> 'Details',
 
@@ -53,10 +69,14 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DELETE_DATA'	=> 'Delete data',
 	'EXTENSION_DISABLE'		=> 'Disable',
 	'EXTENSION_ENABLE'		=> 'Enable',
+	'EXTENSION_UPDATE'		=> 'Update',
+	'EXTENSION_REMOVE'		=> 'Remove',
 
 	'EXTENSION_DELETE_DATA_EXPLAIN'	=> 'Deleting an extension’s data removes all of its data and settings. The extension files are retained so it can be enabled again.',
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
 	'EXTENSION_ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
+	'EXTENSION_REMOVE_EXPLAIN'		=> 'Removing an extension removes all of its files, data and settings.',
+	'EXTENSION_UPDATE_EXPLAIN'		=> 'Updating an extension will install the latest version compatible with your board, removing old files and replacing them with new ones, and updating the database if necessary.',
 
 	'EXTENSION_DELETE_DATA_IN_PROGRESS'	=> 'The extension’s data is currently being deleted. Please do not leave or refresh this page until it is completed.',
 	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled. Please do not leave or refresh this page until it is completed.',
@@ -69,30 +89,33 @@ $lang = array_merge($lang, array(
 	'EXTENSION_NAME'			=> 'Extension Name',
 	'EXTENSION_ACTIONS'			=> 'Actions',
 	'EXTENSION_OPTIONS'			=> 'Options',
-	'EXTENSION_INSTALL_HEADLINE'=> 'Installing an extension',
-	'EXTENSION_INSTALL_EXPLAIN'	=> '<ol>
-			<li>Download an extension from phpBB’s extensions database</li>
-			<li>Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board</li>
-			<li>Enable the extension, here in the Extensions manager</li>
-		</ol>',
-	'EXTENSION_UPDATE_HEADLINE'	=> 'Updating an extension',
-	'EXTENSION_UPDATE_EXPLAIN'	=> '<ol>
-			<li>Disable the extension</li>
-			<li>Delete the extension’s files from the filesystem</li>
-			<li>Upload the new files</li>
-			<li>Enable the extension</li>
-		</ol>',
-	'EXTENSION_REMOVE_HEADLINE'	=> 'Completely removing an extension from your board',
-	'EXTENSION_REMOVE_EXPLAIN'	=> '<ol>
-			<li>Disable the extension</li>
-			<li>Delete the extension’s data</li>
-			<li>Delete the extension’s files from the filesystem</li>
-		</ol>',
+	'EXTENSION_INSTALLING_HEADLINE'	=> 'Installing an extension',
+	'EXTENSION_INSTALLING_EXPLAIN'	=> [
+		0 => 'Download an extension from phpBB’s extensions database',
+		1 => 'Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board',
+		2 => 'Enable the extension, here in the Extensions manager',
+	],
+	'EXTENSION_REMOVING_HEADLINE'	=> 'Deleting an extension from your board',
+	'EXTENSION_REMOVING_EXPLAIN'	=> [
+		0 => 'Disable the extension',
+		1 => 'Delete the extension’s data',
+		2 => 'Delete the extension‘s files from the filesystem',
+	],
+	'EXTENSION_UPDATING_HEADLINE'	=> 'Updating an extension',
+	'EXTENSION_UPDATING_EXPLAIN'	=> [
+		0 => 'Disable the extension',
+		1 => 'Delete the extension’s files from the filesystem',
+		2 => 'Upload the new files',
+		3 => 'Enable the extension',
+	],
 
 	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
 	'EXTENSION_ENABLE_CONFIRM'		=> 'Are you sure that you wish to enable the “%s” extension?',
 	'EXTENSION_FORCE_UNSTABLE_CONFIRM'	=> 'Are you sure that you wish to force the use of unstable version?',
+
+	'INSTALLED'				=> 'Installed',
+	'INSTALLED_MANUALLY'	=> 'Installed manually',
 
 	'RETURN_TO_EXTENSION_LIST'	=> 'Return to the extension list',
 
@@ -130,4 +153,32 @@ $lang = array_merge($lang, array(
 
 	'META_FIELD_NOT_SET'	=> 'Required meta field %s has not been set.',
 	'META_FIELD_INVALID'	=> 'Meta field %s is invalid.',
+
+	'EXTENSIONS_CATALOG_SETTINGS'	=> 'Extensions catalog settings',
+	'ENABLE_ON_INSTALL'				=> 'Enable extensions while installing',
+	'PURGE_ON_REMOVE'				=> 'Purge extensions while removing',
+	'ENABLE_PACKAGIST'				=> 'Search packagist',
+	'ENABLE_PACKAGIST_EXPLAIN'		=> 'Search packagist for phpBB extensions. Beware that packagist may contain extensions not validated by the phpBB Extension Customisations Team.',
+	'ENABLE_PACKAGIST_CONFIRM'		=> 'Are you sure you want to search packagist?',
+	'COMPOSER_REPOSITORIES'			=> 'Repositories',
+	'COMPOSER_REPOSITORIES_EXPLAIN'	=> 'Add URLs to Composer repositories of phpBB extensions to search here, one per line (must be the base url of the packages.json file).',
+	'NO_EXTENSION_AVAILABLE'		=> 'There are no extension available for your board',
+
+	'EXTENSION_MANAGED_SUCCESS'		=> 'The extension %s is now being managed automatically.',
+	'EXTENSIONS_INSTALLED'			=> 'Extensions successfully installed.',
+	'EXTENSIONS_REMOVED'			=> 'Extensions successfully removed.',
+	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
+
+	'EXTENSIONS_CATALOG_NOT_AVAILABLE'	=> 'The extensions catalog is not available',
+	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'In order to use the catalog, the following files and directories must be writable: ext/ vendor-ext/ composer-ext.json and composer-ext.lock',
+
+	'STABILITY_STABLE'	=> 'stable',
+	'STABILITY_RC'		=> 'RC',
+	'STABILITY_BETA'	=> 'beta',
+	'STABILITY_ALPHA'	=> 'alpha',
+	'STABILITY_DEV'		=> 'dev',
+
+	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
+	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
+
 ));

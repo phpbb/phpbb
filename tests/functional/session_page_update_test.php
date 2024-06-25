@@ -38,7 +38,7 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 
 		// Request index page
 		self::request('GET', 'index.php');
-		$this->assertEquals(200, self::$client->getResponse()->getStatus());
+		$this->assertEquals(200, self::$client->getInternalResponse()->getStatusCode(), 'Failed asserting that status of index page is 200');
 
 		$sql = 'SELECT session_page FROM ' . SESSIONS_TABLE . ' WHERE session_user_id = 2 ORDER BY session_time DESC';
 		$db->sql_query_limit($sql, 1);
@@ -46,7 +46,7 @@ class phpbb_functional_session_page_update_test extends phpbb_functional_test_ca
 
 		// Request non-existent url
 		self::request('GET', 'nonexistent.jpg', [], false);
-		$this->assertEquals(404, self::$client->getResponse()->getStatus(), 'Failed asserting that status of non-existent image is 404');
+		$this->assertEquals(404, self::$client->getInternalResponse()->getStatusCode(), 'Failed asserting that status of non-existent image is 404');
 
 		$db->sql_query_limit($sql, 1);
 		// User page should not be updated to non-existent one

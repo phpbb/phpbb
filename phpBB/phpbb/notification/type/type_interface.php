@@ -37,14 +37,14 @@ interface type_interface
 	*
 	* @param array $type_data The type specific data
 	*/
-	static public function get_item_id($type_data);
+	public static function get_item_id($type_data);
 
 	/**
 	* Get the id of the parent
 	*
 	* @param array $type_data The type specific data
 	*/
-	static public function get_item_parent_id($type_data);
+	public static function get_item_parent_id($type_data);
 
 	/**
 	* Is this type available to the current user (defines whether or not it will be shown in the UCP Edit notification options)
@@ -139,7 +139,7 @@ interface type_interface
 	/**
 	* Get the user's avatar (the user who caused the notification typically)
 	*
-	* @return string
+	* @return array
 	*/
 	public function get_avatar();
 

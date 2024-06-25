@@ -13,6 +13,13 @@
 
 class phpbb_dbal_migration_dummy_order_5 extends \phpbb\db\migration\migration
 {
+	public static function depends_on()
+	{
+		return [
+			'phpbb_dbal_migration_dummy_order',
+		];
+	}
+
 	function update_schema()
 	{
 		return array(

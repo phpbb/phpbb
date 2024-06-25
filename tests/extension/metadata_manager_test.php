@@ -19,6 +19,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	protected $cache;
 	protected $config;
 	protected $db;
+	protected $db_doctrine;
 	protected $db_tools;
 	protected $table_prefix;
 	protected $phpbb_root_path;
@@ -40,9 +41,11 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			'version'		=> '3.1.0',
 		));
 		$this->db = $this->new_dbal();
+		$this->db_doctrine = $this->new_doctrine_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
-		$this->db_tools = $factory->get($this->db);
+		$this->db_tools = $factory->get($this->db_doctrine);
+		$finder_factory = $this->createMock('\phpbb\finder\factory');
 		$this->phpbb_root_path = __DIR__ . '/';
 		$this->phpEx = 'php';
 
@@ -53,18 +56,20 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $this->phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
 		$filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
 			$this->createMock('\phpbb\request\request'),
 			$this->phpbb_root_path,
 			$this->phpEx
 		);
+		$log = new \phpbb\log\dummy();
+		$assets_bag = new \phpbb\template\assets_bag();
 		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
 			$this->config,
 			$filesystem,
 			$phpbb_path_helper,
@@ -89,6 +94,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$this->phpbb_root_path,
 			'php',
 			$this->table_prefix,
+			self::get_core_tables(),
 			array(),
 			new \phpbb\db\migration\helper()
 		);
@@ -98,10 +104,9 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			$container,
 			$this->db,
 			$this->config,
-			new \phpbb\filesystem\filesystem(),
+			$finder_factory,
 			'phpbb_ext',
 			$this->phpbb_root_path,
-			$this->phpEx,
 			$this->cache
 		);
 

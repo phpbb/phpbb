@@ -75,7 +75,6 @@ class acp_modules
 		$this->parent_id = $request->variable('parent_id', 0);
 		$module_id = $request->variable('m', 0);
 		$action = $request->variable('action', '');
-		$errors = array();
 
 		switch ($action)
 		{
@@ -249,12 +248,8 @@ class acp_modules
 							trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 						}
 
-						if (!count($errors))
-						{
-							$module_manager->remove_cache_file($this->module_class);
-
-							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-						}
+						$module_manager->remove_cache_file($this->module_class);
+						trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 				else
@@ -364,12 +359,8 @@ class acp_modules
 						trigger_error($msg . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
-					if (!count($errors))
-					{
-						$module_manager->remove_cache_file($this->module_class);
-
-						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
-					}
+					$module_manager->remove_cache_file($this->module_class);
+					trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
 				// Category/not category?
@@ -430,36 +421,9 @@ class acp_modules
 					array_change_key_case($module_data, CASE_UPPER))
 				);
 
-				if (count($errors))
-				{
-					$template->assign_vars(array(
-						'S_ERROR'	=> true,
-						'ERROR_MSG'	=> implode('<br />', $errors))
-					);
-				}
-
 				return;
 
 			break;
-		}
-
-		// Default management page
-		if (count($errors))
-		{
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response;
-				$json_response->send(array(
-					'MESSAGE_TITLE'	=> $user->lang('ERROR'),
-					'MESSAGE_TEXT'	=> implode('<br />', $errors),
-					'SUCCESS'	=> false,
-				));
-			}
-
-			$template->assign_vars(array(
-				'S_ERROR'	=> true,
-				'ERROR_MSG'	=> implode('<br />', $errors))
-			);
 		}
 
 		if (!$this->parent_id)
@@ -503,25 +467,17 @@ class acp_modules
 			{
 				$langname = $user->lang($row['module_langname']);
 
-				if (!$row['module_enabled'])
-				{
-					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
-				}
-				else
-				{
-					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['MODULE'] . '" />';
-				}
-
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
 
 				$template->assign_block_vars('modules', array(
-					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
 					'MODULE_DISPLAYED'	=> ($row['module_display']) ? true : false,
 
 					'S_ACP_CAT_SYSTEM'			=> ($this->module_class == 'acp' && $row['module_langname'] == 'ACP_CAT_SYSTEM') ? true : false,
 					'S_ACP_MODULE_MANAGEMENT'	=> ($this->module_class == 'acp' && ($row['module_basename'] == 'modules' || $row['module_langname'] == 'ACP_MODULE_MANAGEMENT')) ? true : false,
+
+					'S_SUB_MODULE'		=> (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? true : false,
 
 					'U_MODULE'			=> $this->u_action . '&amp;parent_id=' . $row['module_id'],
 					'U_MOVE_UP'			=> $url . '&amp;action=move_up&amp;hash=' . generate_link_hash('acp_modules'),
@@ -605,7 +561,7 @@ class acp_modules
 			ORDER BY left_id ASC";
 		$result = $db->sql_query($sql);
 
-		$right = $iteration = 0;
+		$right = 0;
 		$padding_store = array('0' => '');
 		$module_list = $padding = '';
 
@@ -654,8 +610,6 @@ class acp_modules
 
 			$langname = $user->lang($row['module_langname']);
 			$module_list .= '<option value="' . $row['module_id'] . '"' . $selected . ((!$row['module_enabled']) ? ' class="disabled"' : '') . '>' . $padding . $langname . '</option>';
-
-			$iteration++;
 		}
 		$db->sql_freeresult($result);
 

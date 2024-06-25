@@ -94,7 +94,10 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->assertStringContainsString($key_id, $crawler->filter('label[for="' . $key_id . '"]')->text());
 
 		$form = $crawler->selectButton('submit')->form();
-		$form['keys'][0]->tick();
+		foreach ($form['keys'] as $key)
+		{
+			$key->tick();
+		}
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('AUTOLOGIN_SESSION_KEYS_DELETED'), $crawler->filter('html')->text());
 

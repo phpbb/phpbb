@@ -54,9 +54,8 @@ if (!defined('PHPBB_INSTALLED'))
 	$script_path = phpbb_get_install_redirect($phpbb_root_path, $phpEx);
 
 	// Eliminate . and .. from the path
-	require($phpbb_root_path . 'phpbb/filesystem/filesystem.' . $phpEx);
-	$phpbb_filesystem = new phpbb\filesystem\filesystem();
-	$script_path = $phpbb_filesystem->clean_path($script_path);
+	require($phpbb_root_path . 'phpbb/filesystem/helper.' . $phpEx);
+	$script_path = \phpbb\filesystem\helper::clean_path($script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
 
@@ -88,14 +87,7 @@ require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
 // Registered before building the container so the development environment stay capable of intercepting
 // the container builder exceptions.
-if (PHPBB_ENVIRONMENT === 'development')
-{
-	\phpbb\debug\debug::enable();
-}
-else
-{
-	set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
-}
+\phpbb\debug\debug::enable(null, PHPBB_ENVIRONMENT === 'development');
 
 $phpbb_class_loader_ext = new \phpbb\class_loader('\\', "{$phpbb_root_path}ext/", $phpEx);
 $phpbb_class_loader_ext->register();
@@ -139,20 +131,14 @@ $phpbb_class_loader_ext->set_cache($phpbb_container->get('cache.driver'));
 
 $phpbb_container->get('dbal.conn')->set_debug_sql_explain($phpbb_container->getParameter('debug.sql_explain'));
 $phpbb_container->get('dbal.conn')->set_debug_load_time($phpbb_container->getParameter('debug.load_time'));
+
 require($phpbb_root_path . 'includes/compatibility_globals.' . $phpEx);
 
 register_compatibility_globals();
 
-// Add own hook handler
-require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
-/* @var $phpbb_hook_finder \phpbb\hook\finder */
-$phpbb_hook_finder = $phpbb_container->get('hook_finder');
-
-foreach ($phpbb_hook_finder->find() as $hook)
+if (@is_file($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php'))
 {
-	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	require_once($phpbb_root_path . $config['exts_composer_vendor_dir'] . '/autoload.php');
 }
 
 /**
@@ -168,4 +154,4 @@ foreach ($phpbb_hook_finder->find() as $hook)
 * @event core.common
 * @since 3.1.0-a1
 */
-$phpbb_dispatcher->dispatch('core.common');
+$phpbb_dispatcher->trigger_event('core.common');

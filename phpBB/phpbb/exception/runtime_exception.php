@@ -32,7 +32,7 @@ class runtime_exception extends \RuntimeException implements exception_interface
 	 *
 	 * @param string		$message	The Exception message to throw (must be a language variable).
 	 * @param array			$parameters	The parameters to use with the language var.
-	 * @param \Exception	$previous	The previous runtime_exception used for the runtime_exception chaining.
+	 * @param \Exception|null	$previous	The previous runtime_exception used for the runtime_exception chaining.
 	 * @param integer		$code		The Exception code.
 	 */
 	public function __construct($message = "", array $parameters = array(), \Exception $previous = null, $code = 0)

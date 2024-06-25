@@ -106,6 +106,7 @@ abstract class module_base implements module_interface
 	{
 		// Recover install progress
 		$task_index	= $this->recover_progress();
+		/** @psalm-suppress InvalidTemplateParam */
 		$iterator	= $this->task_collection->getIterator();
 
 		if ($task_index < $iterator->count())
@@ -185,12 +186,12 @@ abstract class module_base implements module_interface
 	/**
 	 * Returns the next task's name
 	 *
-	 * @return string	Index of the array element of the next task
+	 * @return int	Index of the array element of the next task
 	 */
-	protected function recover_progress()
+	protected function recover_progress(): int
 	{
 		$progress_array = $this->install_config->get_progress_data();
-		return $progress_array['last_task_index'];
+		return (int) $progress_array['last_task_index'];
 	}
 
 	/**

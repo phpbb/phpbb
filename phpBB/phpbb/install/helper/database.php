@@ -13,7 +13,9 @@
 
 namespace phpbb\install\helper;
 
+use phpbb\db\doctrine\connection_factory;
 use phpbb\install\exception\invalid_dbms_exception;
+use phpbb\filesystem\helper as filesystem_helper;
 
 /**
  * Database related general functionality for installer
@@ -40,24 +42,27 @@ class database
 			'LABEL'			=> 'MySQL with MySQLi Extension',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
+			'DOCTRINE'		=> ['pdo_mysql'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mysqli',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssql_odbc'=>	array(
+		'mssql_odbc'	=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
+			'DOCTRINE'		=> ['pdo_sqlsrv'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssql_odbc',
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
-		'mssqlnative'		=> array(
+		'mssqlnative'	=> array(
 			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
+			'DOCTRINE'		=> ['pdo_sqlsrv'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\mssqlnative',
 			'AVAILABLE'		=> true,
@@ -76,6 +81,7 @@ class database
 			'LABEL'			=> 'PostgreSQL 8.3+',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
+			'DOCTRINE'		=> ['pdo_pgsql'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\postgres',
 			'AVAILABLE'		=> true,
@@ -85,6 +91,7 @@ class database
 			'LABEL'			=> 'SQLite3',
 			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite3',
+			'DOCTRINE'		=> ['pdo_sqlite'],
 			'DELIM'			=> ';',
 			'DRIVER'		=> 'phpbb\db\driver\sqlite3',
 			'AVAILABLE'		=> true,
@@ -163,6 +170,33 @@ class database
 				}
 
 				continue;
+			}
+
+			if (array_key_exists('DOCTRINE', $db_array))
+			{
+				$available = false;
+				foreach ($db_array['DOCTRINE'] as $dll)
+				{
+					if (@extension_loaded($dll))
+					{
+						$available = true;
+						break;
+					}
+				}
+
+				if (!$available)
+				{
+					if ($return_unavailable)
+					{
+						$available_dbms[$db_name]['AVAILABLE'] = false;
+					}
+					else
+					{
+						unset($available_dbms[$db_name]);
+					}
+
+					continue;
+				}
 			}
 
 			$any_dbms_available = true;
@@ -319,7 +353,7 @@ class database
 
 		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
 		if ($dbms_info['SCHEMA'] === 'sqlite'
-			&& stripos($this->filesystem->realpath($dbhost), $this->filesystem->realpath($this->phpbb_root_path) === 0))
+			&& stripos(filesystem_helper::realpath($dbhost), filesystem_helper::realpath($this->phpbb_root_path) === 0))
 		{
 			$errors[] = array(
 				'title' =>'INST_ERR_DB_FORUM_PATH',
@@ -356,8 +390,9 @@ class database
 				$temp_prefix . 'users',
 			);
 
+			$doctrine_db = connection_factory::get_connection_from_params($dbms, $dbhost, $dbuser, $dbpass, $dbname, $dbport);
 			$db_tools_factory = new \phpbb\db\tools\factory();
-			$db_tools = $db_tools_factory->get($db);
+			$db_tools = $db_tools_factory->get($doctrine_db);
 			$tables = $db_tools->sql_list_tables();
 			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
@@ -387,6 +422,7 @@ class database
 							OR PARAMETER = 'NLS_CHARACTERSET'";
 					$result = $db->sql_query($sql);
 
+					$stats = [];
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$stats[$row['parameter']] = $row['value'];

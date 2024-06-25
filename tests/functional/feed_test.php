@@ -30,9 +30,9 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 	{
 		parent::__construct($name, $data, $dataName);
 
-		$this->excludeBackupStaticAttributes([
+		$this->backupStaticAttributesExcludeList += [
 			'phpbb_functional_feed_test' => ['init_values'],
-		]);
+		];
 
 		$this->purge_cache();
 	}
@@ -51,14 +51,14 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		self::$init_values['topic_base_items'] = (int) $values['config[feed_limit_topic]'];
 
 		// Enable all feeds
-		$values['config[feed_enable]'] = true;
-		$values['config[feed_forum]'] = true;
-		$values['config[feed_item_statistics]'] = true;
-		$values['config[feed_overall]'] = true;
-		$values['config[feed_overall_forums]'] = true;
-		$values['config[feed_topic]'] = true;
-		$values['config[feed_topics_active]'] = true;
-		$values['config[feed_topics_new]'] = true;
+		$values['config[feed_enable]'] = 1;
+		$values['config[feed_forum]'] = 1;
+		$values['config[feed_item_statistics]'] = 1;
+		$values['config[feed_overall]'] = 1;
+		$values['config[feed_overall_forums]'] = 1;
+		$values['config[feed_topic]'] = 1;
+		$values['config[feed_topics_active]'] = 1;
+		$values['config[feed_topics_new]'] = 1;
 
 		$form->setValues($values);
 
@@ -68,7 +68,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		// Disable showing unapproved posts to users
 		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=features");
 		$form = $crawler->selectButton('Submit')->form();
-		$form->setValues(['config[display_unapproved_posts]' => false]);
+		$form->setValues(['config[display_unapproved_posts]' => 0]);
 		$crawler = self::submit($form);
 		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
@@ -1399,7 +1399,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
 					foreach ($attachments as $i => $attachment)
 					{
-						$url = self::$root_url . "download/file.php?id={$attachment['id']}";
+						$url = self::$root_url . "app.php/download/attachment/{$attachment['id']}";
 						$string = "Attachment #{$i}";
 
 						if ($attachment['displayed'])

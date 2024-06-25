@@ -7,7 +7,7 @@
 	<p>{L_EXTENSIONS_EXPLAIN}</p>
 
 	<fieldset class="quick">
-		<span class="small"><a href="https://www.phpbb.com/go/customise/extensions/3.3" target="_blank">{L_BROWSE_EXTENSIONS_DATABASE}</a> &bull; <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
+		<span class="small"><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE_ALL}</a> &bull; <a href="javascript:phpbb.toggleDisplay('version_check_settings');">{L_SETTINGS}</a></span>
 	</fieldset>
 
 	<form id="version_check_settings" method="post" action="{U_ACTION}" style="display:none">
@@ -52,7 +52,7 @@
 			<td style="text-align: center;">
 				<!-- IF enabled.S_VERSIONCHECK -->
 				<strong class="<!-- IF enabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{enabled.META_VERSION}</strong>
-				<!-- IF not enabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not enabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
 				<!-- ELSE -->
 				{enabled.META_VERSION}
 				<!-- ENDIF -->
@@ -60,7 +60,7 @@
 			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
+					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.ACTION == 'REMOVE' --> style="color: #bc2a4d;"<!-- ENDIF --><!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
 					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
@@ -78,7 +78,7 @@
 			<td style="text-align: center;">
 				<!-- IF disabled.S_VERSIONCHECK -->
 				<strong class="<!-- IF disabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{disabled.META_VERSION}</strong>
-				<!-- IF not disabled.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- IF not disabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
 				<!-- ELSE -->
 				{disabled.META_VERSION}
 				<!-- ENDIF -->
@@ -88,7 +88,7 @@
 			</td>
 			<td style="text-align: center;">
 				<!-- BEGIN actions -->
-					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
+					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.ACTION == 'REMOVE' --> style="color: #bc2a4d;"<!-- ENDIF --><!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
 					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
 				<!-- END actions -->
 			</td>
@@ -99,25 +99,44 @@
 	</table>
 
 	<table class="table1">
-	<tr>
-		<th>{L_EXTENSION_INSTALL_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_INSTALL_EXPLAIN}</td>
-	</tr>
-	<tr>
-		<th>{L_EXTENSION_UPDATE_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_UPDATE_EXPLAIN}</td>
-	</tr>
-	<tr>
-		<th>{L_EXTENSION_REMOVE_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_REMOVE_EXPLAIN}</td>
-	</tr>
-	</tbody>
+		<tbody>
+			<tr>
+				<th>{L_EXTENSION_INSTALLING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_INSTALLING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>{L_EXTENSION_UPDATING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_UPDATING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>{L_EXTENSION_REMOVING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_REMOVING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 <!-- INCLUDE overall_footer.html -->

@@ -26,8 +26,9 @@ class container_configuration implements ConfigurationInterface
 	 */
 	public function getConfigTreeBuilder()
 	{
-		$treeBuilder = new TreeBuilder();
-		$rootNode = $treeBuilder->root('core');
+		$treeBuilder = new TreeBuilder('core');
+		$rootNode = $treeBuilder->getRootNode();
+		/** @psalm-suppress UndefinedMethod */
 		$rootNode
 			->children()
 				->booleanNode('require_dev_dependencies')->defaultValue(false)->end()
@@ -40,6 +41,8 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('sql_explain')->defaultValue(false)->end()
 						->booleanNode('memory')->defaultValue(false)->end()
 						->booleanNode('show_errors')->defaultValue(false)->end()
+						->booleanNode('url_generator')->defaultValue(false)->end()
+						->booleanNode('url_matcher')->defaultValue(false)->end()
 						->booleanNode('error_handler')->defaultValue(false)->end()
 					->end()
 				->end()
@@ -51,10 +54,24 @@ class container_configuration implements ConfigurationInterface
 						->booleanNode('enable_debug_extension')->defaultValue(false)->end()
 					->end()
 				->end()
+				->arrayNode('extensions')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('composer_debug')->defaultValue(false)->end()
+						->booleanNode('composer_verbose')->defaultValue(false)->end()
+					->end()
+				->end()
 				->arrayNode('session')
 					->addDefaultsIfNotSet()
 					->children()
+						->booleanNode('force_sid')->defaultValue(false)->end()
 						->booleanNode('log_errors')->defaultValue(false)->end()
+					->end()
+				->end()
+				->arrayNode('finder')
+					->addDefaultsIfNotSet()
+					->children()
+						->booleanNode('cache')->defaultValue(true)->end()
 					->end()
 				->end()
 			->end()

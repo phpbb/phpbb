@@ -23,9 +23,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	// Keep the contents of the cache for debugging?
 	const PRESERVE_CACHE = true;
 
-	static protected $language_reflection_lang;
+	protected static $language_reflection_lang;
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -64,7 +64,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 	{
 		$defaults = array(
 			'load_tplcompile'	=> true,
-			'tpl_allow_php'		=> false,
 		);
 		return $defaults;
 	}
@@ -86,7 +85,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
-			$filesystem,
 			$this->createMock('\phpbb\request\request'),
 			$phpbb_root_path,
 			$phpEx
@@ -94,18 +92,20 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$this->template_path = $this->test_path . '/templates';
 
-		$container = new phpbb_mock_container_builder();
 		$cache_path = $phpbb_root_path . 'cache/twig';
 		$context = new \phpbb\template\context();
-		$loader = new \phpbb\template\twig\loader(new \phpbb\filesystem\filesystem(), '');
+		$loader = new \phpbb\template\twig\loader('');
+		$log = new \phpbb\log\dummy();
+		$assets_bag = new \phpbb\template\assets_bag();
 		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
 			$config,
 			$filesystem,
 			$path_helper,
 			$cache_path,
 			null,
 			$loader,
-			new \phpbb\event\dispatcher($container),
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -113,7 +113,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)));
+		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $lang)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
@@ -123,19 +123,9 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		// Test the engine can be used
 		$this->setup_engine();
 
-		$this->template->clear_cache();
-
 		global $phpbb_filesystem;
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
-	}
-
-	protected function tearDown(): void
-	{
-		if ($this->template)
-		{
-			$this->template->clear_cache();
-		}
 	}
 
 	protected function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $lang_vars = array())

@@ -20,7 +20,7 @@ class profilefield_contact_field extends \phpbb\db\migration\migration
 		return $this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields', 'field_is_contact');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v310\profilefield_on_memberlist',

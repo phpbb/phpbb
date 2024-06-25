@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PHP_VERSION="7.2"
+PHP_VERSION="8.1"
 PHPBB_PATH="/home/vagrant/phpbb"
 PHPBB_CONFIG="${PHPBB_PATH}/phpBB/config.php"
 PHPBB_INSTALL="${PHPBB_PATH}/vagrant/phpbb-install-config.yml"
@@ -34,4 +34,4 @@ sed -i "s/cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/" /etc/php/${PHP_VERSION}/fpm/p
 # Restart php-fpm to apply php.ini changes
 systemctl restart php${PHP_VERSION}-fpm.service
 
-echo "Your board is ready at http://192.168.10.10/"
+echo "Your board is ready at http://192.168.56.56/"

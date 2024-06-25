@@ -1,0 +1,84 @@
+services:
+
+    search.state_helper:
+        class: phpbb\search\state_helper
+        arguments:
+            - '@config'
+            - '@search.backend_factory'
+
+# Search backends
+    search.fulltext.mysql:
+        class: phpbb\search\backend\fulltext_mysql
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@event_dispatcher'
+            - '@language'
+            - '@user'
+            - '%tables.search_results%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: search.backend }
+
+    search.fulltext.native:
+        class: phpbb\search\backend\fulltext_native
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dbal.tools'
+            - '@event_dispatcher'
+            - '@language'
+            - '@user'
+            - '%tables.search_results%'
+            - '%tables.search_wordlist%'
+            - '%tables.search_wordmatch%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: search.backend }
+
+    search.fulltext.postgres:
+        class: phpbb\search\backend\fulltext_postgres
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@event_dispatcher'
+            - '@language'
+            - '@user'
+            - '%tables.search_results%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: search.backend }
+
+    search.fulltext.sphinx:
+        class: phpbb\search\backend\fulltext_sphinx
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dbal.tools'
+            - '@event_dispatcher'
+            - '@language'
+            - '@log'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: search.backend }
+
+# Factory
+    search.backend_factory:
+        class: phpbb\search\search_backend_factory
+        arguments:
+            - '@config'
+            - '@search.backend_collection'
+
+# Collections
+    search.backend_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: search.backend, class_name_aware: true }

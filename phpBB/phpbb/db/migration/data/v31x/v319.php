@@ -20,7 +20,7 @@ class v319 extends \phpbb\db\migration\migration
 		return phpbb_version_compare($this->config['version'], '3.1.9', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v31x\v319rc1',

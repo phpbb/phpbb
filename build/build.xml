@@ -2,7 +2,7 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.3.13-dev" />
+	<property name="newversion" value="4.0.0-a1-dev" />
 	<property name="prevversion" value="3.3.12" />
 	<property name="olderversions" value="3.1.0, 3.1.1, 3.1.2, 3.1.3, 3.1.4, 3.1.5, 3.1.6, 3.1.7, 3.1.7-pl1, 3.1.8, 3.1.9, 3.1.10, 3.1.11, 3.1.12, 3.2.0, 3.2.1, 3.2.2, 3.2.3, 3.2.4, 3.2.5, 3.2.6, 3.2.7, 3.2.8, 3.2.9, 3.2.10, 3.2.11, 3.3.0, 3.3.1, 3.3.2, 3.3.3, 3.3.4, 3.3.5, 3.3.6, 3.3.7, 3.3.8, 3.3.9, 3.3.10, 3.3.11" />
 	<!-- no configuration should be needed beyond this point -->
@@ -203,6 +203,12 @@
 		<phingcall target="checksum-dir">
 			<property name="dir" value="build/new_version/release_files" />
 		</phingcall>
+
+		<phingcall target="sign-packages">
+			<property name="dir" value="build/new_version/release_files" />
+		</phingcall>
+
+		<exec dir="build" command="php generate_package_json.php > new_version/packages.json"/>
 	</target>
 
 	<target name="checksum-dir">
@@ -217,6 +223,31 @@
 		<echo msg="Creating checksum file for ${absfilename}" />
 		<php function="dirname" returnProperty="dir"><param value="${absfilename}"/></php>
 		<exec dir="${dir}" command="sha256sum ${filename} > ${filename}.sha256" />
+	</target>
+
+	<target name="sign-packages">
+		<property name="packageSignatureExists" value="false" />
+		<exec command="if [ -f 'build/package_signature' ]; then echo 'true'; else echo 'false'; fi;" outputProperty="packageSignatureExists" />
+		<if>
+			<equals arg1="${packageSignatureExists}" arg2="true" />
+			<then>
+				<foreach param="filename" absparam="absfilename" target="sign-file">
+					<fileset dir="${dir}">
+						<type type="file" />
+						<include name="*.tar.bz2"/>
+						<include name="*.zip"/>
+					</fileset>
+				</foreach>
+			</then>
+			<else>
+				<echo msg="Skipping signing of packages due to missing build/package_signature"/>
+			</else>
+		</if>
+	</target>
+
+	<target name="sign-file">
+		<echo msg="Creating signature file for ${absfilename}" />
+		<exec command="php build/generate_signature.php `cat build/package_signature` ${absfilename}" />
 	</target>
 
 	<target name="announcement" depends="prepare">

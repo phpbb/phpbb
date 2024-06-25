@@ -63,13 +63,9 @@ abstract class type_string_common extends type_base
 	*/
 	public function validate_string_profile_field($field_type, &$field_value, $field_data)
 	{
-		if (trim($field_value) === '' && !$field_data['field_required'])
+		if (trim($field_value ?? '') === '')
 		{
-			return false;
-		}
-		else if (trim($field_value) === '' && $field_data['field_required'])
-		{
-			return $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name']));
+			return $field_data['field_required'] ? $this->user->lang('FIELD_REQUIRED', $this->get_field_name($field_data['lang_name'])) : false;
 		}
 
 		if ($field_data['field_minlen'] && utf8_strlen($field_value) < $field_data['field_minlen'])

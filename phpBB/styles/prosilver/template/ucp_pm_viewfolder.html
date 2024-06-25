@@ -24,8 +24,8 @@
 	</div>
 	<fieldset class="submit-buttons">
 		<input type="hidden" name="export_option" value="CSV" />
-		<input class="button1" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;
-		<input class="button2" type="reset" value="{L_RESET}" name="reset" />&nbsp;
+		<input class="button1 button button-form" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" />&nbsp;
+		<input class="button1 button button-form-bold" type="reset" value="{L_RESET}" name="reset" />&nbsp;
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
@@ -57,9 +57,14 @@
 
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
-				<dl class="row-item {messagerow.FOLDER_IMG_STYLE}">
-					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL}); background-repeat: no-repeat;"<!-- ENDIF -->>
-						<!-- IF messagerow.S_PM_UNREAD and not messagerow.S_PM_DELETED --><a href="{messagerow.U_VIEW_PM}" class="row-item-link"></a><!-- ENDIF -->
+				<dl class="row-item">
+					<dt>
+						<a class="row-item-link{% if messagerow.S_PM_UNREAD %} unread{% else %} read{% endif %}" href="{messagerow.U_VIEW_PM}">
+							{{ Icon('svg', 'comment-text-outline', '', true, 'c-forum-row-icon') }}
+						</a>
+						{% if messagerow.PM_ICON_URL and S_PM_ICONS %}
+							<img class="row-item-sub" src="{messagerow.PM_ICON_URL}" alt="">
+						{% endif %}
 						<div class="list-inner">
 
 						<!-- IF messagerow.S_PM_DELETED -->
@@ -73,9 +78,9 @@
 						<!-- ENDIF -->
 						<!-- IF messagerow.S_PM_REPORTED -->
 							<a href="{messagerow.U_MCP_REPORT}">
-								<i class="icon fa-exclamation fa-fw icon-red" aria-hidden="true"></i><span class="sr-only">{PM_REPORTED}</span>
+								{{ Icon('font', 'triangle-exclamation', PM_REPORTED, true, 'fas c-topic-reported-icon') }}
 							</a>
-						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG --><i class="icon fa-paperclip fa-fw" aria-hidden="true"></i> <!-- ENDIF --><br />
+						<!-- ENDIF --> <!-- IF messagerow.ATTACH_ICON_IMG -->{{ Icon('font', 'paperclip', '', true) }} <!-- ENDIF --><br />
 						<!-- IF S_SHOW_RECIPIENTS -->{L_MESSAGE_TO} {messagerow.RECIPIENTS}<!-- ELSE -->{L_MESSAGE_BY_AUTHOR} {messagerow.MESSAGE_AUTHOR_FULL} &raquo; {messagerow.SENT_TIME}<!-- ENDIF -->
 
 						</div>
@@ -100,8 +105,8 @@
 
 	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
 		<fieldset class="display-actions">
-			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
-			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
+			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}{L_COLON} <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button1 button button-form-bold" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
+			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button1 button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" />
 			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>
 		</fieldset>
 

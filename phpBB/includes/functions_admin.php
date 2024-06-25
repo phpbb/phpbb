@@ -160,20 +160,23 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 */
 function size_select_options($size_compare)
 {
-	global $user;
+	global $language;
 
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KIB'], $user->lang['MIB']);
+	$size_types_text = array($language->lang('BYTES'), $language->lang('KIB'), $language->lang('MIB'));
 	$size_types = array('b', 'kb', 'mb');
 
-	$s_size_options = '';
+	$size_options = [];
 
 	for ($i = 0, $size = count($size_types_text); $i < $size; $i++)
 	{
-		$selected = ($size_compare == $size_types[$i]) ? ' selected="selected"' : '';
-		$s_size_options .= '<option value="' . $size_types[$i] . '"' . $selected . '>' . $size_types_text[$i] . '</option>';
+		$size_options[] = [
+			'value'		=> $size_types[$i],
+			'selected'	=> $size_compare == $size_types[$i],
+			'label'		=> $size_types_text[$i],
+		];
 	}
 
-	return $s_size_options;
+	return $size_options;
 }
 
 /**
@@ -761,6 +764,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 
 /**
 * Remove topic(s)
+* @return array with topics and posts affected
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
@@ -890,11 +894,11 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->delete_notifications(array(
+	$phpbb_notifications->delete_notifications_by_types([
 		'notification.type.topic',
 		'notification.type.approve_topic',
 		'notification.type.topic_in_queue',
-	), $topic_ids);
+	], $topic_ids);
 
 	return $return;
 }
@@ -904,10 +908,11 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config, $phpbb_root_path, $phpEx, $auth, $user, $phpbb_container, $phpbb_dispatcher;
+	global $db, $config, $phpbb_container, $phpbb_dispatcher;
 
 	// Notifications types to delete
 	$delete_notifications_types = array(
+		'notification.type.mention',
 		'notification.type.quote',
 		'notification.type.approve_post',
 		'notification.type.post_in_queue',
@@ -978,7 +983,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	$approved_posts = 0;
-	$post_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
+	$post_ids = $poster_ids = $topic_ids = $forum_ids = $post_counts = $remove_topics = array();
 
 	$sql = 'SELECT post_id, poster_id, post_visibility, post_postcount, topic_id, forum_id
 		FROM ' . POSTS_TABLE . '
@@ -1086,19 +1091,14 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = $config['search_type'];
-
-	if (!class_exists($search_type))
+	try
+	{
+		$search_backend_factory = $phpbb_container->get('search.backend_factory');
+		$search = $search_backend_factory->get_active();
+	}
+	catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
-	}
-
-	$error = false;
-	$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-	if ($error)
-	{
-		trigger_error($error);
 	}
 
 	$search->index_remove($post_ids, $poster_ids, $forum_ids);
@@ -1185,7 +1185,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	/* @var $phpbb_notifications \phpbb\notification\manager */
 	$phpbb_notifications = $phpbb_container->get('notification_manager');
 
-	$phpbb_notifications->delete_notifications($delete_notifications_types, $post_ids);
+	$phpbb_notifications->delete_notifications_by_types($delete_notifications_types, $post_ids);
 
 	return count($post_ids);
 }
@@ -1206,7 +1206,7 @@ function delete_topic_shadows($forum_id, $sql_more = '', $auto_sync = true)
 	if (!$forum_id)
 	{
 		// Nothing to do.
-		return;
+		return [];
 	}
 
 	// Set of affected forums we have to resync
@@ -1518,7 +1518,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_reported should be empty by now, if it's not it contains
 			// posts that are falsely flagged as reported
-			foreach ($post_reported as $post_id => $void)
+			foreach (array_keys($post_reported) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1623,7 +1623,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			// $post_attachment should be empty by now, if it's not it contains
 			// posts that are falsely flagged as having attachments
-			foreach ($post_attachment as $post_id => $void)
+			foreach (array_keys($post_attachment) as $post_id)
 			{
 				$post_ids[] = $post_id;
 			}
@@ -1696,7 +1696,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$where_sql";
 			$result = $db->sql_query($sql);
 
-			$forum_data = $forum_ids = $post_ids = $last_post_id = $post_info = array();
+			$forum_data = $forum_ids = $post_ids = $post_info = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['forum_type'] == FORUM_LINK)
@@ -2062,7 +2062,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			if (count($delete_topics))
 			{
 				$delete_topic_ids = array();
-				foreach ($delete_topics as $topic_id => $void)
+				foreach (array_keys($delete_topics) as $topic_id)
 				{
 					unset($topic_data[$topic_id]);
 					$delete_topic_ids[] = $topic_id;
@@ -2329,6 +2329,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 /**
 * Prune function
+* @return array with topics and posts affected
 */
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true, $prune_limit = 0)
 {
@@ -2341,7 +2342,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 
 	if (!count($forum_id))
 	{
-		return;
+		return ['topics' => 0, 'posts' => 0];
 	}
 
 	$sql_and = '';
@@ -2489,26 +2490,17 @@ function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_fr
 * must be carried through for the moderators table.
 *
 * @param \phpbb\db\driver\driver_interface $db Database connection
+* @param \phpbb\db\tools\tools_interface $db_tools Database tools
 * @param \phpbb\cache\driver\driver_interface $cache Cache driver
 * @param \phpbb\auth\auth $auth Authentication object
-* @return null
+* @return void
 */
-function phpbb_cache_moderators($db, $cache, $auth)
+function phpbb_cache_moderators($db, $db_tools, $cache, $auth)
 {
 	// Remove cached sql results
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
-	// Clear table
-	switch ($db->get_sql_layer())
-	{
-		case 'sqlite3':
-			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
-		break;
-
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
-		break;
-	}
+	$db_tools->sql_truncate_table(MODERATOR_CACHE_TABLE);
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
 	$sql_ary = array();
@@ -2701,7 +2693,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 * @param \phpbb\auth\auth $auth Authentication object
 * @param array|bool $group_id If an array, remove all members of this group from foe lists, or false to ignore
 * @param array|bool $user_id If an array, remove this user from foe lists, or false to ignore
-* @return null
+* @return void
 */
 function phpbb_update_foes($db, $auth, $group_id = false, $user_id = false)
 {
@@ -3120,7 +3112,7 @@ function add_permission_language()
  * @param int		$flag			The binary flag which is OR-ed with the current column value
  * @param string	$sql_more		This string is attached to the sql query generated to update the table.
  *
- * @return null
+ * @return void
  */
 function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
 {
@@ -3155,109 +3147,68 @@ function display_ban_end_options()
 */
 function display_ban_options($mode)
 {
-	global $user, $db, $template;
+	global $language, $user, $template, $phpbb_container;
 
-	switch ($mode)
+	/** @var \phpbb\ban\manager $ban_manager */
+	$ban_manager = $phpbb_container->get('ban.manager');
+	$ban_rows = $ban_manager->get_bans($mode);
+
+	$banned_options = [];
+
+	foreach ($ban_rows as $ban_row)
 	{
-		case 'user':
+		$banned_options[] = [
+			'value'		=> $ban_row['ban_id'],
+			'label'		=> $ban_row['label'] ?? $ban_row['ban_item'],
+		];
 
-			$field = 'username';
-
-			$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
-				FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
-				WHERE (b.ban_end >= ' . time() . '
-						OR b.ban_end = 0)
-					AND u.user_id = b.ban_userid
-				ORDER BY u.username_clean ASC';
-		break;
-
-		case 'ip':
-
-			$field = 'ban_ip';
-
-			$sql = 'SELECT *
-				FROM ' . BANLIST_TABLE . '
-				WHERE (ban_end >= ' . time() . "
-						OR ban_end = 0)
-					AND ban_ip <> ''
-				ORDER BY ban_ip";
-		break;
-
-		case 'email':
-
-			$field = 'ban_email';
-
-			$sql = 'SELECT *
-				FROM ' . BANLIST_TABLE . '
-				WHERE (ban_end >= ' . time() . "
-						OR ban_end = 0)
-					AND ban_email <> ''
-				ORDER BY ban_email";
-		break;
-	}
-	$result = $db->sql_query($sql);
-
-	$banned_options = $excluded_options = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$option = '<option value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
-
-		if ($row['ban_exclude'])
-		{
-			$excluded_options[] = $option;
-		}
-		else
-		{
-			$banned_options[] = $option;
-		}
-
-		$time_length = ($row['ban_end']) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
+		$time_length = ($ban_row['ban_end']) ? ($ban_row['ban_end'] - $ban_row['ban_start']) / 60 : 0;
 
 		if ($time_length == 0)
 		{
 			// Banned permanently
-			$ban_length = $user->lang['PERMANENT'];
+			$ban_length = $language->lang('PERMANENT');
 		}
 		else if (isset($ban_end_text[$time_length]))
 		{
 			// Banned for a given duration
-			$ban_length = $user->lang('BANNED_UNTIL_DURATION', $ban_end_text[$time_length], $user->format_date($row['ban_end'], false, true));
+			$ban_length = $language->lang('BANNED_UNTIL_DURATION', $ban_end_text[$time_length], $user->format_date($ban_row['ban_end'], false, true));
 		}
 		else
 		{
 			// Banned until given date
-			$ban_length = $user->lang('BANNED_UNTIL_DATE', $user->format_date($row['ban_end'], false, true));
+			$ban_length = $language->lang('BANNED_UNTIL_DATE', $user->format_date($ban_row['ban_end'], false, true));
 		}
 
 		$template->assign_block_vars('bans', array(
-			'BAN_ID'		=> (int) $row['ban_id'],
+			'BAN_ID'		=> (int) $ban_row['ban_id'],
 			'LENGTH'		=> $ban_length,
 			'A_LENGTH'		=> addslashes($ban_length),
-			'REASON'		=> $row['ban_reason'],
-			'A_REASON'		=> addslashes($row['ban_reason']),
-			'GIVE_REASON'	=> $row['ban_give_reason'],
-			'A_GIVE_REASON'	=> addslashes($row['ban_give_reason']),
+			'REASON'		=> $ban_row['ban_reason'],
+			'A_REASON'		=> addslashes($ban_row['ban_reason']),
+			'GIVE_REASON'	=> $ban_row['ban_reason_display'],
+			'A_GIVE_REASON'	=> addslashes($ban_row['ban_reason_display']),
 		));
 	}
-	$db->sql_freeresult($result);
 
-	$options = '';
-	if ($excluded_options)
+	if (count($banned_options))
 	{
-		$options .= '<optgroup label="' . $user->lang['OPTIONS_EXCLUDED'] . '">';
-		$options .= implode('', $excluded_options);
-		$options .= '</optgroup>';
-	}
+		$banned_select = [
+			'tag'		=> 'select',
+			'name'		=> 'unban[]',
+			'id'		=> 'unban',
+			'class'		=> 'w-50',
+			'multiple'	=> true,
+			'size'		=> 10,
+			'data'		=> [
+				'onchange'	=> 'display_details',
+			],
+			'options'	=> [[
+				'label'		=> $language->lang('OPTIONS_BANNED'),
+				'options'	=> $banned_options,
+			]],
+		];
 
-	if ($banned_options)
-	{
-		$options .= '<optgroup label="' . $user->lang['OPTIONS_BANNED'] . '">';
-		$options .= implode('', $banned_options);
-		$options .= '</optgroup>';
+		$template->assign_vars(['BANNED_SELECT' => $banned_select]);
 	}
-
-	$template->assign_vars(array(
-		'S_BANNED_OPTIONS'	=> ($banned_options || $excluded_options) ? true : false,
-		'BANNED_OPTIONS'	=> $options,
-	));
 }

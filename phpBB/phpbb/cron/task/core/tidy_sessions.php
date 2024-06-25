@@ -36,7 +36,7 @@ class tidy_sessions extends \phpbb\cron\task\base
 	/**
 	* Runs this cron task.
 	*
-	* @return null
+	* @return void
 	*/
 	public function run()
 	{

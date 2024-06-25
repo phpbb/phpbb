@@ -13,6 +13,8 @@
 
 namespace phpbb\di;
 
+use phpbb\di\exception\multiple_service_definitions_exception;
+use phpbb\di\exception\service_not_found_exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -44,7 +46,7 @@ class service_collection extends \ArrayObject
 	/**
 	* {@inheritdoc}
 	*/
-	public function getIterator()
+	public function getIterator(): \Iterator
 	{
 		return new service_collection_iterator($this);
 	}
@@ -52,9 +54,9 @@ class service_collection extends \ArrayObject
 	/**
 	* {@inheritdoc}
 	*/
-	public function offsetGet($index)
+	public function offsetGet($key): mixed
 	{
-		return $this->container->get($index);
+		return $this->container->get($key);
 	}
 
 	/**
@@ -93,7 +95,7 @@ class service_collection extends \ArrayObject
 	 * Returns the service associated to a class
 	 *
 	 * @return mixed
-	 * @throw \RuntimeException if the
+	 * @throws \RuntimeException if the service isn't found
 	 */
 	public function get_by_class($class)
 	{
@@ -105,7 +107,7 @@ class service_collection extends \ArrayObject
 			{
 				if ($service_id !== null)
 				{
-					throw new \RuntimeException('More than one service definitions found for class "'.$class.'" in collection.');
+					throw new multiple_service_definitions_exception('DI_MULTIPLE_SERVICE_DEFINITIONS', [$class]);
 				}
 
 				$service_id = $id;
@@ -114,7 +116,7 @@ class service_collection extends \ArrayObject
 
 		if ($service_id === null)
 		{
-			throw new \RuntimeException('No service found for class "'.$class.'" in collection.');
+			throw new service_not_found_exception('DI_SERVICE_NOT_FOUND', [$class]);
 		}
 
 		return $this->offsetGet($service_id);

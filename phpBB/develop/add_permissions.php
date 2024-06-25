@@ -72,7 +72,6 @@ $f_permissions = array(
 	'f_bbcode'	=> array(1, 0),
 	'f_smilies'	=> array(1, 0),
 	'f_img'		=> array(1, 0),
-	'f_flash'	=> array(1, 0),
 	'f_sigs'	=> array(1, 0),
 	'f_search'	=> array(1, 0),
 	'f_email'	=> array(1, 0),
@@ -167,7 +166,6 @@ $u_permissions = array(
 	'u_pm_forward'	=> array(0, 1),
 	'u_pm_delete'	=> array(0, 1),
 	'u_pm_img'		=> array(0, 1),
-	'u_pm_flash'	=> array(0, 1),
 );
 
 echo "<p><b>Determining existing permissions</b></p>\n";

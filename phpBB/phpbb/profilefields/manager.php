@@ -27,7 +27,7 @@ class manager
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \phpbb\db\tools\tools */
+	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
 	/** @var \phpbb\event\dispatcher_interface */
@@ -38,9 +38,6 @@ class manager
 
 	/** @var \phpbb\log\log */
 	protected $log;
-
-	/** @var \phpbb\request\request */
-	protected $request;
 
 	/** @var \phpbb\template\template */
 	protected $template;
@@ -72,11 +69,10 @@ class manager
 	 * @param \phpbb\auth\auth					$auth					Auth object
 	 * @param \phpbb\config\db_text				$config_text			Config_text object
 	 * @param \phpbb\db\driver\driver_interface	$db						Database object
-	 * @param \phpbb\db\tools\tools				$db_tools				Database tools object
+	 * @param \phpbb\db\tools\tools_interface			$db_tools				Database tools object
 	 * @param \phpbb\event\dispatcher_interface	$dispatcher				Event dispatcher object
 	 * @param \phpbb\language\language			$language				Language object
 	 * @param \phpbb\log\log					$log					Log object
-	 * @param \phpbb\request\request			$request				Request object
 	 * @param \phpbb\template\template			$template				Template object
 	 * @param \phpbb\di\service_collection		$type_collection		CPF Type collection
 	 * @param \phpbb\user						$user					User object
@@ -89,11 +85,10 @@ class manager
 		\phpbb\auth\auth $auth,
 		\phpbb\config\db_text $config_text,
 		\phpbb\db\driver\driver_interface $db,
-		\phpbb\db\tools\tools $db_tools,
+		\phpbb\db\tools\tools_interface $db_tools,
 		\phpbb\event\dispatcher_interface $dispatcher,
 		\phpbb\language\language $language,
 		\phpbb\log\log $log,
-		\phpbb\request\request $request,
 		\phpbb\template\template $template,
 		\phpbb\di\service_collection $type_collection,
 		\phpbb\user $user,
@@ -110,7 +105,6 @@ class manager
 		$this->dispatcher		= $dispatcher;
 		$this->language			= $language;
 		$this->log				= $log;
-		$this->request			= $request;
 		$this->template			= $template;
 		$this->type_collection	= $type_collection;
 		$this->user				= $user;
@@ -544,7 +538,7 @@ class manager
 		$length = strlen($prefix);
 		$not_in = [];
 
-		foreach ($cp_data as $key => $null)
+		foreach (array_keys($cp_data) as $key)
 		{
 			$not_in[] = strncmp($key, $prefix, $length) === 0 ? substr($key, $length) : $key;
 		}

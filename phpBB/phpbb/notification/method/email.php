@@ -69,7 +69,7 @@ class email extends \phpbb\notification\method\messenger_base
 	* Is this method available for the user?
 	* This is checked on the notifications options
 	*
-	* @param type_interface $notification_type  An optional instance of a notification type. If provided, this
+	* @param type_interface|null $notification_type  An optional instance of a notification type. If provided, this
 	*											method additionally checks if the type provides an email template.
 	* @return bool
 	*/
@@ -117,7 +117,7 @@ class email extends \phpbb\notification\method\messenger_base
 
 		$insert_buffer->flush();
 
-		return $this->notify_using_messenger(NOTIFY_EMAIL);
+		$this->notify_using_messenger(NOTIFY_EMAIL);
 	}
 
 	/**
@@ -126,7 +126,7 @@ class email extends \phpbb\notification\method\messenger_base
 	public function mark_notifications($notification_type_id, $item_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
-			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', is_array($notification_type_id) ? $notification_type_id : [$notification_type_id]) : '1=1') .
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_id !== false ? ' AND ' . $this->db->sql_in_set('item_id', $item_id) : '');
 		$this->db->sql_query($sql);
@@ -138,7 +138,7 @@ class email extends \phpbb\notification\method\messenger_base
 	public function mark_notifications_by_parent($notification_type_id, $item_parent_id, $user_id, $time = false, $mark_read = true)
 	{
 		$sql = 'DELETE FROM ' . $this->notification_emails_table . '
-			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', $notification_type_id) : '1=1') .
+			WHERE ' . ($notification_type_id !== false ? $this->db->sql_in_set('notification_type_id', is_array($notification_type_id) ? $notification_type_id : [$notification_type_id]) : '1=1') .
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_parent_id !== false ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '');
 		$this->db->sql_query($sql);
@@ -150,7 +150,7 @@ class email extends \phpbb\notification\method\messenger_base
 	 * @param array $data Notification data
 	 * @return array Cleaned notification data
 	 */
-	static public function clean_data(array $data)
+	public static function clean_data(array $data)
 	{
 		$row = [
 			'notification_type_id'	=> null,

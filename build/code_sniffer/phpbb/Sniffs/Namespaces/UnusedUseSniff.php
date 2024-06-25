@@ -182,7 +182,7 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 
 		// Checks in type hinting
 		$old_function_declaration = $stackPtr;
-		while (($function_declaration = $phpcsFile->findNext(T_FUNCTION, ($old_function_declaration + 1))) !== false)
+		while (($function_declaration = $phpcsFile->findNext([T_FUNCTION, T_CLOSURE], ($old_function_declaration + 1))) !== false)
 		{
 			$old_function_declaration = $function_declaration;
 
@@ -192,6 +192,9 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			{
 				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 			}
+
+			$method_properties = $phpcsFile->getMethodProperties($function_declaration);
+			$ok = $this->check($phpcsFile, $method_properties['return_type'], $class_name_full, $class_name_short, $function_declaration) || $ok;
 		}
 
 		// Checks in catch blocks

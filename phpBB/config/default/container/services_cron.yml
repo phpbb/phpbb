@@ -131,13 +131,8 @@ services:
     cron.task.core.tidy_search:
         class: phpbb\cron\task\core\tidy_search
         arguments:
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '@auth'
             - '@config'
-            - '@dbal.conn'
-            - '@user'
-            - '@dispatcher'
+            - '@search.backend_factory'
         calls:
             - [set_name, [cron.task.core.tidy_search]]
         tags:
@@ -168,7 +163,6 @@ services:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
             - '@config'
-            - '@config_text'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'
@@ -182,7 +176,6 @@ services:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
             - '@config'
-            - '@config_text'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'
@@ -196,7 +189,6 @@ services:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
             - '@config'
-            - '@config_text'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'
@@ -210,7 +202,6 @@ services:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
             - '@config'
-            - '@config_text'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'
@@ -224,7 +215,6 @@ services:
         class: phpbb\cron\task\text_reparser\reparser
         arguments:
             - '@config'
-            - '@config_text'
             - '@text_reparser.lock'
             - '@text_reparser.manager'
             - '@text_reparser_collection'

@@ -68,7 +68,8 @@ require __DIR__ . '/../phpbb/event/md_exporter.' . $phpEx;
 require __DIR__ . '/../phpbb/event/rst_exporter.' . $phpEx;
 require __DIR__ . '/../includes/functions.' . $phpEx;
 require __DIR__ . '/../phpbb/event/recursive_event_filter_iterator.' . $phpEx;
-require __DIR__ . '/../phpbb/recursive_dot_prefix_filter_iterator.' . $phpEx;
+require __DIR__ . '/../phpbb/finder/recursive_dot_prefix_filter_iterator.' . $phpEx;
+require __DIR__ . '/../phpbb/finder/recursive_path_iterator.' . $phpEx;
 
 switch ($action)
 {

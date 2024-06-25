@@ -1,31 +1,49 @@
-/* Button Styles
----------------------------------------- */
+/* -------------------------------------------------------------- /*
+	$Buttons
+/* -------------------------------------------------------------- */
 
 .button {
-	display: inline-block;
-	padding: 2px 8px;
+	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	font-size: 13px;
 	font-weight: 600;
-	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
 	line-height: 1.4;
 	text-align: center;
-	white-space: nowrap;
 	vertical-align: middle;
-	-ms-touch-action: manipulation;
-	    touch-action: manipulation;
-	cursor: pointer;
-	-webkit-user-select: none;
-	   -moz-user-select: none;
-	    -ms-user-select: none;
-	        user-select: none;
+	white-space: nowrap;
 	border: 1px solid transparent;
 	border-radius: 4px;
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	box-sizing: border-box;
+	height: 24px;
+	padding: 2px 8px;
+	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 .button:focus,
 .button:hover {
- 	text-decoration: none;
- 	outline: none;
+	text-decoration: none;
+	outline: none;
+}
+
+.button[disabled],
+.button[disabled]:hover,
+.button.disabled,
+.button.disabled:hover {
+	background: #eeeeee;
+	border-color: #aaaaaa;
+	color: #aaaaaa;
+	cursor: default;
+}
+
+.button.hidden {
+	display: none;
 }
 
 .caret {
@@ -38,12 +56,45 @@
 	vertical-align: top;
 }
 
-/* Posting page styles
-----------------------------------------*/
-.button-search,
-.button-search-end  {
-	float: left;
+/** Button groups */
+.button-group {
+	display: inline-block;
+}
+
+.button-group + .button-group {
+	margin-left: 8px;
+}
+
+.button-group > .button:first-child {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.button-group > .button:last-child {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+
+.button-group > .button:not(:first-child):not(:last-child) {
 	border-radius: 0;
+}
+
+/* Posting page styles
+---------------------------------------- */
+.button-form,
+.button-form-bold {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	border-radius: 0;
+}
+
+.button-form-bold {
+	font-weight: 700;
+}
+
+.button-search,
+.button-search-end {
+	border-radius: 0;
+	float: left;
 	margin: 0;
 	padding: 2px 5px;
 }
@@ -65,27 +116,21 @@
 }
 
 .button-icon-only {
-	padding-left: 3px;
 	padding-right: 3px;
+	padding-left: 3px;
 }
 
 /* Poster contact icons
-----------------------------------------*/
+---------------------------------------- */
 .contact-icons.dropdown-contents {
+	font-size: 0;
 	min-width: 0;
 	padding: 0;
-	font-size: 0;
 }
 
-.contact-icon {
-	background-repeat: no-repeat;
-	display: block;
-	height: 16px;
-	width: 16px;
-}
 .contact-icons a {
-	border-bottom: 1px dotted;
 	border-right: 1px dotted;
+	border-bottom: 1px dotted;
 	display: block;
 	float: left;
 	padding: 8px;
@@ -107,16 +152,15 @@
 --------------------------------------------- */
 .post-buttons {
 	float: right;
-	list-style: none;
 	margin-top: 2px;
+	list-style: none;
 }
 
 .has-profile .post-buttons {
-	float: none;
 	position: absolute;
-	margin: 0;
-	right: 0;
 	top: 5px;
+	right: 0;
+	margin: 0;
 }
 
 .post-buttons > li {
@@ -124,17 +168,19 @@
 	margin-right: 3px;
 }
 
-.post-buttons .button, .format-buttons .button {
-	padding-left: 3px;
+.post-buttons .button,
+.format-buttons .button {
 	padding-right: 3px;
+	padding-left: 3px;
 }
 
 .hastouch .post-buttons {
 	margin-right: 10px;
 }
 
-.post-buttons .button span {
-	font-size: 0;
+.post-buttons-label,
+.post-buttons-responsive-menu {
+	display: none;
 }
 
 /* Responsive buttons in post body */
@@ -143,51 +189,40 @@
 }
 
 .post-buttons .dropdown a {
-	display: block;
-	font-size: 1.2em;
+	font-size: 13px;
 	text-align: right;
+	display: block;
+	justify-content: start;
 }
 
 .hasjs .postbody .post-buttons {
 	max-width: 40%;
 }
 
+/* Format buttons
+--------------------------------------------- */
+.format-buttons .button {
+	margin-bottom: 3px;
+}
+
 /* Browser-specific tweaks */
 button::-moz-focus-inner {
-	padding: 0;
 	border: 0;
+	padding: 0;
 }
 
-/* Deprecated as of version 3.2
--------------------------------------------------*/
-.small-icon {
-	background-position: 0 50%;
-	background-repeat: no-repeat;
-	background-image: none;
-}
-
-.dropdown .small-icon {
-	background-position: 5px 50%;
-	padding: 5px;
-}
-
-.small-icon > a {
-	padding: 0 0 0 18px;
-}
-
-ul.linklist.bulletin > li.small-icon:before {
+/* UCP: Avatar cropper */
+.avatar-cropper-buttons {
+	text-align: center;
 	display: none;
 }
 
-.dropdown .small-icon > a {
-	display: block;
+.avatar-cropper-buttons > .button-group {
+	margin: 4px;
 }
 
-.rtl .small-icon {
-	background-position: 100% 50%;
-}
-
-.rtl .small-icon > a {
-	padding-left: 0;
-	padding-right: 19px;
+/* Notification buttons
+--------------------------------------------- */
+.notification-subscribe_toggle:disabled {
+	opacity: 0.7;
 }

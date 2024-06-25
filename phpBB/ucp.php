@@ -103,7 +103,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && $request->is_set('sid') && $request->variable('sid', '') === $user->session_id)
+		if ($user->data['user_id'] != ANONYMOUS && check_link_hash($request->variable('hash', ''), 'ucp_logout'))
 		{
 			$user->session_kill();
 		}

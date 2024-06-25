@@ -62,6 +62,26 @@ class content_visibility
 	protected $php_ext;
 
 	/**
+	* @var string
+	*/
+	protected $forums_table;
+
+	/**
+	* @var string
+	*/
+	protected $posts_table;
+
+	/**
+	* @var string
+	*/
+	protected $topics_table;
+
+	/**
+	* @var string
+	*/
+	protected $users_table;
+
+	/**
 	* Constructor
 	*
 	* @param	\phpbb\auth\auth		$auth	Auth object
@@ -830,7 +850,7 @@ class content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time (by reference)
-	* @return null
+	* @return void
 	*/
 	public function add_post_to_statistic($data, &$sql_data)
 	{
@@ -851,7 +871,7 @@ class content_visibility
 	*
 	* @param $data			array	Contains information from the topics table about given topic
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time (by reference)
-	* @return null
+	* @return void
 	*/
 	public function remove_post_from_statistic($data, &$sql_data)
 	{
@@ -884,7 +904,7 @@ class content_visibility
 	*
 	* @param $data			array	Post and topic data
 	* @param $sql_data		array	Populated with the SQL changes, may be empty at call time (by reference)
-	* @return null
+	* @return void
 	*/
 	public function remove_topic_from_statistic($data, &$sql_data)
 	{

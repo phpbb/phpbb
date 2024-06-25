@@ -52,7 +52,7 @@ interface feed_interface
 	/**
 	 * Get the next post in the feed
 	 *
-	 * @return array
+	 * @return array|false Item array or false if no next item exists
 	 */
 	public function get_item();
 
@@ -61,7 +61,6 @@ interface feed_interface
 	 *
 	 * @param $item_row
 	 * @param $row
-	 * @return array
 	 */
 	public function adjust_item(&$item_row, &$row);
 }

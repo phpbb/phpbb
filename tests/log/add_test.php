@@ -23,7 +23,6 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
-		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
@@ -54,7 +53,6 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		global $phpbb_root_path, $phpEx, $db, $phpbb_dispatcher;
 
 		$db = $this->new_dbal();
-		$cache = new phpbb_mock_cache;
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
@@ -68,7 +66,6 @@ class phpbb_log_add_test extends phpbb_database_test_case
 		$log_ip = 'user_ip';
 		$log_time = time();
 		$log_operation = 'LOG_OPERATION';
-		$additional_data = array();
 
 		// Add an entry successful
 		$this->assertEquals(1, $log->add($mode, $user_id, $log_ip, $log_operation, $log_time));

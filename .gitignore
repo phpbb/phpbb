@@ -19,7 +19,6 @@
 # Excludes all custom styles
 /phpBB/styles/*
 !/phpBB/styles/prosilver
-/phpBB/styles/prosilver/theme/*/
 !/phpBB/styles/prosilver/theme/en
 !/phpBB/styles/prosilver/theme/images
 !/phpBB/styles/all
@@ -35,9 +34,14 @@
 
 # Excludes vendors
 /phpBB/vendor
+/phpBB/vendor-ext/*
+!/phpBB/vendor-ext/.git-keep
+/phpBB/composer-ext.json
+/phpBB/composer-ext.lock
 
 # Excludes test / dev files
 /phpunit.xml
+/.phpunit.result.cache
 /phpBB/composer.phar
 /tests/phpbb_unit_tests.sqlite*
 /tests/test_config*.php
@@ -46,6 +50,7 @@
 /vagrant/phpbb-install-config.yml
 .vagrant
 node_modules
+/build/package_signature
 
 # Excludes IDE / editors files
 *~

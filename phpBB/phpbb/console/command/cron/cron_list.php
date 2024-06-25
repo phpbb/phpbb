@@ -12,6 +12,7 @@
 */
 namespace phpbb\console\command\cron;
 
+use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -52,7 +53,7 @@ class cron_list extends \phpbb\console\command\command
 	* @param InputInterface  $input  An InputInterface instance
 	* @param OutputInterface $output An OutputInterface instance
 	*
-	* @return void
+	* @return int
 	*/
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
@@ -63,7 +64,7 @@ class cron_list extends \phpbb\console\command\command
 		if (empty($tasks))
 		{
 			$io->error($this->user->lang('CRON_NO_TASKS'));
-			return;
+			return symfony_command::FAILURE;
 		}
 
 		$ready_tasks = $not_ready_tasks = array();
@@ -90,5 +91,7 @@ class cron_list extends \phpbb\console\command\command
 			$io->title($this->user->lang('TASKS_NOT_READY'));
 			$io->listing($not_ready_tasks);
 		}
+
+		return symfony_command::SUCCESS;
 	}
 }

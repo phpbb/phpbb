@@ -30,7 +30,7 @@ class resolver implements ControllerResolverInterface
 
 	/**
 	* phpbb\template\template object
-	* @var \phpbb\template\template
+	* @var \phpbb\template\template|null
 	*/
 	protected $template;
 
@@ -51,7 +51,7 @@ class resolver implements ControllerResolverInterface
 	*
 	* @param ContainerInterface $container ContainerInterface object
 	* @param string $phpbb_root_path Relative path to phpBB root
-	* @param \phpbb\template\template $template
+	* @param \phpbb\template\template|null $template
 	*/
 	public function __construct(ContainerInterface $container, $phpbb_root_path, \phpbb\template\template $template = null)
 	{
@@ -65,10 +65,10 @@ class resolver implements ControllerResolverInterface
 	* Load a controller callable
 	*
 	* @param Request $request Symfony Request object
-	* @return bool|Callable Callable or false
+	* @return callable|false Callable or false
 	* @throws \phpbb\controller\exception
 	*/
-	public function getController(Request $request)
+	public function getController(Request $request): callable|false
 	{
 		$controller = $request->attributes->get('_controller');
 
@@ -160,7 +160,7 @@ class resolver implements ControllerResolverInterface
 					$arguments[] = $attributes[$param->name];
 				}
 			}
-			else if ($param->getClass() && $param->getClass()->isInstance($request))
+			else if ($param->getType() && $param->getType() instanceof $request)
 			{
 				$arguments[] = $request;
 			}

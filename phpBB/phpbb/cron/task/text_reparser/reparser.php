@@ -27,11 +27,6 @@ class reparser extends \phpbb\cron\task\base
 	protected $config;
 
 	/**
-	 * @var \phpbb\config\db_text
-	 */
-	protected $config_text;
-
-	/**
 	 * @var \phpbb\lock\db
 	 */
 	protected $reparse_lock;
@@ -60,15 +55,13 @@ class reparser extends \phpbb\cron\task\base
 	 * Constructor
 	 *
 	 * @param \phpbb\config\config			$config
-	 * @param \phpbb\config\db_text			$config_text
 	 * @param \phpbb\lock\db				$reparse_lock
 	 * @param \phpbb\textreparser\manager	$reparser_manager
 	 * @param \phpbb\di\service_collection	$reparsers
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\config\db_text $config_text, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
+	public function __construct(\phpbb\config\config $config, \phpbb\lock\db $reparse_lock, \phpbb\textreparser\manager $reparser_manager, \phpbb\di\service_collection $reparsers)
 	{
 		$this->config = $config;
-		$this->config_text = $config_text;
 		$this->reparse_lock = $reparse_lock;
 		$this->reparser_manager = $reparser_manager;
 		$this->reparsers = $reparsers;

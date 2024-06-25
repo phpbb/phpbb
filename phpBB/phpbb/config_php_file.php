@@ -42,8 +42,6 @@ class config_php_file
 	*/
 	protected $config_file;
 
-	private $defined_vars;
-
 	/**
 	* Constructor
 	*
@@ -96,16 +94,17 @@ class config_php_file
 	/**
 	* Load the config file and store the information.
 	*
-	* @return null
+	* @return void
 	*/
 	protected function load_config_file()
 	{
 		if (!$this->config_loaded && file_exists($this->config_file))
 		{
-			$this->defined_vars = get_defined_vars();
+			$defined_vars = null; // Define variable before call get_defined_vars
+			$defined_vars = get_defined_vars();
 
 			require($this->config_file);
-			$this->config_data = array_diff_key(get_defined_vars(), $this->defined_vars);
+			$this->config_data = array_diff_key(get_defined_vars(), $defined_vars);
 
 			$this->config_loaded = true;
 		}
@@ -122,7 +121,7 @@ class config_php_file
 	* @return string driver class
 	* @throws \RuntimeException
 	*/
-	public function convert_30_dbms_to_31($dbms)
+	public static function convert_30_dbms_to_31($dbms)
 	{
 		// Note: this check is done first because mysqli extension
 		// supplies a mysqli class, and class_exists($dbms) would return

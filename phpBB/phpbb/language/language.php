@@ -41,12 +41,12 @@ class language
 	protected $common_language_files_loaded;
 
 	/**
-	 * @var string	ISO code of the default board language
+	 * @var string|null	ISO code of the default board language
 	 */
 	protected $default_language;
 
 	/**
-	 * @var string	ISO code of the User's language
+	 * @var string|null	ISO code of the User's language
 	 */
 	protected $user_language;
 
@@ -81,8 +81,8 @@ class language
 		$this->loader = $loader;
 
 		// Set up default information
-		$this->user_language		= false;
-		$this->default_language		= false;
+		$this->user_language		= null;
+		$this->default_language		= null;
 		$this->lang					= array();
 		$this->loaded_language_sets	= array(
 			'core'	=> array(),
@@ -112,7 +112,7 @@ class language
 	 * @param string	$user_lang_iso		ISO code of the User's language
 	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_user_language($user_lang_iso, $reload = false)
+	public function set_user_language(string $user_lang_iso, $reload = false)
 	{
 		$this->user_language = $user_lang_iso;
 
@@ -125,7 +125,7 @@ class language
 	 * @param string	$default_lang_iso	ISO code of the board's default language
 	 * @param bool		$reload				Whether or not to reload language files
 	 */
-	public function set_default_language($default_lang_iso, $reload = false)
+	public function set_default_language(string $default_lang_iso, $reload = false)
 	{
 		$this->default_language = $default_lang_iso;
 
@@ -298,7 +298,7 @@ class language
 
 		if ($lang === $key)
 		{
-			return $key;
+			return (string) $key;
 		}
 
 		// If the language entry is a string, we simply mimic sprintf() behaviour
@@ -315,7 +315,7 @@ class language
 		else if (count($lang) == 0)
 		{
 			// If the language entry is an empty array, we just return the language key
-			return $key;
+			return (string) $key;
 		}
 
 		// It is an array... now handle different nullar/singular/plural forms
@@ -384,8 +384,25 @@ class language
 				$this->load_core_file($lang_file);
 			}
 
+			$this->inject_default_variables();
+
 			$this->common_language_files_loaded = true;
 		}
+	}
+
+	/**
+	 * Inject default values based on composer.json
+	 *
+	 * @return void
+	 */
+	protected function inject_default_variables(): void
+	{
+		$lang_values = $this->loader->get_composer_lang_values($this->language_fallback);
+
+		$this->lang['DIRECTION'] = $lang_values['direction'] ?? 'ltr';
+		$this->lang['USER_LANG'] = $lang_values['user_lang'] ?? 'en-gb';
+		$this->lang['PLURAL_RULE'] = $lang_values['plural_rule'] ?? 1;
+		$this->lang['RECAPTCHA_LANG'] = $lang_values['recaptcha_lang'] ?? 'en-GB';
 	}
 
 	/**
@@ -404,14 +421,7 @@ class language
 	public function get_plural_form($number, $force_rule = false)
 	{
 		$number			= (int) $number;
-		$plural_rule	= ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
-
-		if ($plural_rule > 15 || $plural_rule < 0)
-		{
-			throw new invalid_plural_rule_exception('INVALID_PLURAL_RULE', array(
-				'plural_rule' => $plural_rule,
-			));
-		}
+		$plural_rule = ($force_rule !== false) ? $force_rule : ((isset($this->lang['PLURAL_RULE'])) ? $this->lang['PLURAL_RULE'] : 1);
 
 		/**
 		 * The following plural rules are based on a list published by the Mozilla Developer Network
@@ -565,6 +575,9 @@ class language
 				 * 2 - everything else: 0, 2, 3, ... 10, 11, 12, ... 20, 22, ...
 				 */
 				return (($number % 10 === 1) && ($number % 100 != 11)) ? 1 : 2;
+
+			default:
+				throw new invalid_plural_rule_exception('INVALID_PLURAL_RULE', ['plural_rule' => $plural_rule]);
 		}
 	}
 
@@ -582,19 +595,17 @@ class language
 	 * Returns language fallback data
 	 *
 	 * @param bool	$reload	Whether or not to reload language files
-	 *
-	 * @return array
 	 */
 	protected function set_fallback_array($reload = false)
 	{
 		$fallback_array = array();
 
-		if ($this->user_language)
+		if ($this->user_language !== null)
 		{
 			$fallback_array[] = $this->user_language;
 		}
 
-		if ($this->default_language)
+		if ($this->default_language !== null)
 		{
 			$fallback_array[] = $this->default_language;
 		}

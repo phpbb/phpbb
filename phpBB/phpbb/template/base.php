@@ -87,7 +87,7 @@ abstract class base implements template
 	/**
 	* {@inheritdoc}
 	*/
-	public function assign_var($varname, $varval)
+	public function assign_var(string $varname, mixed $varval)
 	{
 		$this->context->assign_var($varname, $varval);
 
@@ -167,27 +167,5 @@ abstract class base implements template
 	public function find_key_index($blockname, $key)
 	{
 		return $this->context->find_key_index($blockname, $key);
-	}
-
-	/**
-	* Calls hook if any is defined.
-	*
-	* @param string $handle Template handle being displayed.
-	* @param string $method Method name of the caller.
-	*/
-	protected function call_hook($handle, $method)
-	{
-		global $phpbb_hook;
-
-		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array('template', $method), $handle, $this))
-		{
-			if ($phpbb_hook->hook_return(array('template', $method)))
-			{
-				$result = $phpbb_hook->hook_return_result(array('template', $method));
-				return array($result);
-			}
-		}
-
-		return false;
 	}
 }

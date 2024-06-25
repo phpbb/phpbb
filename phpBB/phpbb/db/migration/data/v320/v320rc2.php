@@ -22,7 +22,7 @@ class v320rc2 extends migration
 		return version_compare($this->config['version'], '3.2.0-RC2', '>=');
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return array(
 			'\phpbb\db\migration\data\v31x\remove_duplicate_migrations',

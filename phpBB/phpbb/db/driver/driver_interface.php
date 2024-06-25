@@ -180,7 +180,7 @@ interface driver_interface
 	* Return on error or display error message
 	*
 	* @param bool	$fail		Should we return on errors, or stop
-	* @return null
+	* @return void
 	*/
 	public function sql_return_on_error($fail = false);
 
@@ -190,9 +190,9 @@ interface driver_interface
 	* @param	string	$query		Should be on of the following strings:
 	*						INSERT, INSERT_SELECT, UPDATE, SELECT, DELETE
 	* @param	array	$assoc_ary	Array with "column => value" pairs
-	* @return	string		A SQL statement like "c1 = 'a' AND c2 = 'b'"
+	* @return	string|false		A SQL statement like "c1 = 'a' AND c2 = 'b'", false on invalid assoc_ary
 	*/
-	public function sql_build_array($query, $assoc_ary = array());
+	public function sql_build_array($query, $assoc_ary = []);
 
 	/**
 	* Fetch all rows
@@ -268,7 +268,7 @@ interface driver_interface
 	* @return	mixed		String value of the field in the selected row,
 	*						false, if the row does not exist
 	*/
-	public function sql_fetchfield($field, $rownum = false, $query_id = false);
+	public function sql_fetchfield($field, $rownum = false, &$query_id = false);
 
 	/**
 	* Fetch current row
@@ -289,6 +289,7 @@ interface driver_interface
 	public function cast_expr_to_bigint($expression);
 
 	/**
+
 	 * Gets the ID of the **last** inserted row immediately after an INSERT
 	 * statement.
 	 *
@@ -303,7 +304,7 @@ interface driver_interface
 	 *
 	 * @deprecated 3.3.11-RC1 Replaced by sql_last_inserted_id(), to be removed in 4.1.0-a1
 	 *
-	 * @return	string|false	Auto-incremented value of the last inserted row
+	 * @return	int|false	Auto-incremented value of the last inserted row
 	 */
 	public function sql_nextid();
 
@@ -313,7 +314,7 @@ interface driver_interface
 	 * just been inserted or for updating another table with an ID pointing to
 	 * that item.
 	 *
-	 * @return	string|false	Auto-incremented value of the last inserted row
+	 * @return	int|false	Auto-incremented value of the last inserted row
 	 */
 	public function sql_last_inserted_id();
 
@@ -321,7 +322,7 @@ interface driver_interface
 	* Add to query count
 	*
 	* @param bool $cached	Is this query cached?
-	* @return null
+	* @return void
 	*/
 	public function sql_add_num_queries($cached = false);
 
@@ -387,7 +388,7 @@ interface driver_interface
 	*
 	* @param	mixed	$query_id	Already executed query result,
 	*								if false, the last query will be used.
-	* @return	null
+	* @return	void
 	*/
 	public function sql_freeresult($query_id = false);
 
@@ -498,9 +499,9 @@ interface driver_interface
 	/**
 	 * Ensure query ID can be used by cache
 	 *
-	 * @param resource|int|string $query_id Mixed type query id
+	 * @param mixed $query_id Mixed type query id
 	 *
-	 * @return int|string Query id in string or integer format
+	 * @return int|string|null Query id in string or integer format
 	 */
-	public function clean_query_id($query_id);
+	public function clean_query_id(mixed $query_id): int|string|null;
 }

@@ -37,7 +37,7 @@ if (!defined('PHPBB_ACM_MEMCACHED'))
 /**
 * ACM for Memcached
 */
-class memcached extends \phpbb\cache\driver\memory
+class memcached extends memory
 {
 	/** @var string Extension to use */
 	protected $extension = 'memcached';
@@ -107,26 +107,17 @@ class memcached extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Fetch an item from the cache
-	*
-	* @param string $var Cache key
-	*
-	* @return mixed Cached data
-	*/
-	protected function _read($var)
+	 * {@inheritDoc}
+	 */
+	protected function _read(string $var)
 	{
 		return $this->memcached->get($this->key_prefix . $var);
 	}
 
 	/**
-	* Store data in the cache
-	*
-	* @param string $var Cache key
-	* @param mixed $data Data to store
-	* @param int $ttl Time-to-live of cached data
-	* @return bool True if the operation succeeded
+	* {@inheritDoc}
 	*/
-	protected function _write($var, $data, $ttl = 2592000)
+	protected function _write(string $var, $data, int $ttl = 2592000): bool
 	{
 		if (!$this->memcached->replace($this->key_prefix . $var, $data, $ttl))
 		{
@@ -136,12 +127,9 @@ class memcached extends \phpbb\cache\driver\memory
 	}
 
 	/**
-	* Remove an item from the cache
-	*
-	* @param string $var Cache key
-	* @return bool True if the operation succeeded
+	* {@inheritDoc}
 	*/
-	protected function _delete($var)
+	protected function _delete(string $var): bool
 	{
 		return $this->memcached->delete($this->key_prefix . $var);
 	}

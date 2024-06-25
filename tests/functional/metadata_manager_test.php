@@ -18,20 +18,20 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 {
 	protected $phpbb_extension_manager;
 
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = array(
-		'foo/bar/',
+	protected static $fixtures = array(
+		'./',
 	);
 
 	protected function tearDown(): void
 	{
-		$this->purge_cache();
+		$this->uninstall_ext('foo/bar');
 
 		parent::tearDown();
 	}
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -39,7 +39,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
@@ -50,14 +50,14 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 	{
 		parent::setUp();
 
-		$this->phpbb_extension_manager = $this->get_extension_manager();
-
-		$this->purge_cache();
-		$this->phpbb_extension_manager->enable('foo/bar');
-
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/extensions');
+	}
+
+	protected static function setup_extensions()
+	{
+		return ['foo/bar'];
 	}
 
 	public function test_extensions_list()

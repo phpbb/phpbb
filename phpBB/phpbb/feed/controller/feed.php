@@ -298,7 +298,7 @@ class feed
 	 *
 	 * @return Response
 	 *
-	 * @throw exception\feed_exception
+	 * @throws \phpbb\feed\exception\feed_exception
 	 */
 	protected function send_feed_do(feed_interface $feed)
 	{
@@ -387,7 +387,7 @@ class feed
 			'FEED_TITLE'			=> $this->config['sitename'],
 			'FEED_SUBTITLE'			=> $this->config['site_desc'],
 			'FEED_UPDATED'			=> $this->feed_helper->format_date($feed_updated_time),
-			'FEED_LANG'				=> $this->user->lang['USER_LANG'],
+			'FEED_LANG'				=> $this->language->lang('USER_LANG'),
 			'FEED_AUTHOR'			=> $this->config['sitename'],
 
 			// Feed entries
@@ -410,7 +410,7 @@ class feed
 	/**
 	 * Throw and exception saying that the feed isn't available
 	 *
-	 * @throw http_exception
+	 * @throws http_exception
 	 */
 	protected function send_unavailable()
 	{

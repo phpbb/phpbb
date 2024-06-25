@@ -431,7 +431,11 @@ class ucp_groups
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
-					$avatar = phpbb_get_group_avatar($group_row, 'GROUP_AVATAR', true);
+					/** @var \phpbb\avatar\helper $avatar_helper */
+					$avatar_helper = $phpbb_container->get('avatar.helper');
+
+					$group_avatar = $avatar_helper->get_group_avatar($group_row, 'GROUP_AVATAR', true);
+					$template->assign_vars($avatar_helper->get_template_vars($group_avatar));
 
 					$template->assign_vars(array(
 						'GROUP_NAME'			=> $group_helper->get_name($group_name),
@@ -439,11 +443,6 @@ class ucp_groups
 						'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
 						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 						'GROUP_TYPE'			=> $group_row['group_type'],
-
-						'AVATAR'				=> !empty($avatar) ? $avatar : '',
-						'AVATAR_IMAGE'			=> !empty($avatar) ? $avatar : '',
-						'AVATAR_WIDTH'			=> isset($group_row['group_avatar_width']) ? $group_row['group_avatar_width'] : '',
-						'AVATAR_HEIGHT'			=> isset($group_row['group_avatar_height']) ? $group_row['group_avatar_height'] : '',
 					));
 				}
 

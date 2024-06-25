@@ -280,7 +280,7 @@ class ucp_main
 				 * @event core.ucp_main_subscribed_post_data
 				 * @since 3.1.10-RC1
 				 */
-				$phpbb_dispatcher->dispatch('core.ucp_main_subscribed_post_data');
+				$phpbb_dispatcher->trigger_event('core.ucp_main_subscribed_post_data');
 
 				if ($unwatch)
 				{
@@ -607,10 +607,9 @@ class ucp_main
 							$bbcode_status = $auth->acl_get('u_pm_bbcode') || $auth->acl_getf_global('f_bbcode');
 							$smilies_status = $auth->acl_get('u_pm_smilies') || $auth->acl_getf_global('f_smilies');
 							$img_status = $auth->acl_get('u_pm_img') || $auth->acl_getf_global('f_img');
-							$flash_status = $auth->acl_get('u_pm_flash') || $auth->acl_getf_global('f_flash');
 
 							$message_parser->message = $draft_message;
-							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, $flash_status, true, $config['allow_post_links']);
+							$message_parser->parse($bbcode_status, $config['allow_post_links'], $smilies_status, $img_status, true, $config['allow_post_links']);
 
 							$draft_row = array(
 								'draft_subject' => $draft_subject,
@@ -678,6 +677,7 @@ class ucp_main
 						WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 					$result = $db->sql_query($sql);
 
+					$topic_rows = [];
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$topic_rows[$row['topic_id']] = $row;
@@ -902,7 +902,7 @@ class ucp_main
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-		$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
+		$topic_list = $topic_forum_list = $rowset = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = (isset($row['b_topic_id'])) ? $row['b_topic_id'] : $row['topic_id'];
@@ -912,11 +912,6 @@ class ucp_main
 
 			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $topic_id;
-
-			if ($row['topic_type'] == POST_GLOBAL)
-			{
-				$global_announce_list[] = $topic_id;
-			}
 		}
 		$db->sql_freeresult($result);
 
@@ -982,7 +977,7 @@ class ucp_main
 				'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 				'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 
-				'S_DELETED_TOPIC'	=> (!$row['topic_id']) ? true : false,
+				'S_DELETED_TOPIC'	=> !$row['topic_id'],
 
 				'REPLIES'			=> $replies,
 				'VIEWS'				=> $row['topic_views'],
@@ -997,9 +992,14 @@ class ucp_main
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
 				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+				'S_POST_ANNOUNCE'		=> $row['topic_type'] == POST_ANNOUNCE,
+				'S_POST_GLOBAL'			=> $row['topic_type'] == POST_GLOBAL,
+				'S_POST_STICKY'			=> $row['topic_type'] == POST_STICKY,
+				'S_TOPIC_LOCKED'		=> $row['topic_status'] == ITEM_LOCKED,
+				'S_TOPIC_MOVED'			=> $row['topic_status'] == ITEM_MOVED,
 
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
-				'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
+				'S_USER_POSTED'			=> !empty($row['topic_posted']),
 				'S_UNREAD_TOPIC'		=> $unread_topic,
 
 				'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread',

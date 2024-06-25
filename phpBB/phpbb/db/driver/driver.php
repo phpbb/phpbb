@@ -31,6 +31,9 @@ abstract class driver implements driver_interface
 	var $html_hold = '';
 	var $sql_report = '';
 
+	/** @var string Last query text */
+	protected $last_query_text = '';
+
 	var $persistency = false;
 	var $user = '';
 	var $server = '';
@@ -280,6 +283,13 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	 * Close sql connection
+	 *
+	 * @return	bool		False if failure
+	 */
+	abstract protected function _sql_close(): bool;
+
+	/**
 	* {@inheritDoc}
 	*/
 	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
@@ -295,6 +305,18 @@ abstract class driver implements driver_interface
 
 		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
 	}
+
+	/**
+	 * Build LIMIT query
+	 *
+	 * @param	string	$query		The SQL query to execute
+	 * @param	int		$total		The number of rows to select
+	 * @param	int		$offset
+	 * @param	int		$cache_ttl	Either 0 to avoid caching or
+	 *				the time in seconds which the result shall be kept in cache
+	 * @return	mixed	Buffered, seekable result handle, false on error
+	 */
+	abstract protected function _sql_query_limit(string $query, int $total, int $offset = 0, int $cache_ttl = 0);
 
 	/**
 	* {@inheritDoc}
@@ -365,7 +387,7 @@ abstract class driver implements driver_interface
 	/**
 	* {@inheritDoc}
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $rownum = false, &$query_id = false)
 	{
 		global $cache;
 
@@ -405,6 +427,18 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	 * Build LIKE expression
+	 *
+	 * @param string $expression Base expression
+	 *
+	 * @return string LIKE expression
+	 */
+	protected function _sql_like_expression(string $expression): string
+	{
+		return $expression;
+	}
+
+	/**
 	* {@inheritDoc}
 	*/
 	function sql_not_like_expression($expression)
@@ -413,6 +447,18 @@ abstract class driver implements driver_interface
 		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
 		return $this->_sql_not_like_expression('NOT LIKE \'' . $this->sql_escape($expression) . '\'');
+	}
+
+	/**
+	 * Build NOT LIKE expression
+	 *
+	 * @param string $expression Base expression
+	 *
+	 * @return string NOT LIKE expression
+	 */
+	protected function _sql_not_like_expression(string $expression): string
+	{
+		return $expression;
 	}
 
 	/**
@@ -511,11 +557,21 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	 * SQL Transaction
+	 *
+	 * @param string $status		Should be one of the following strings:
+	 *								begin, commit, rollback
+	 *
+	 * @return	bool	Success/failure of the transaction query
+	 */
+	abstract protected function _sql_transaction(string $status = 'begin'): bool;
+
+	/**
 	* {@inheritDoc}
 	*/
-	function sql_build_array($query, $assoc_ary = false)
+	function sql_build_array($query, $assoc_ary = [])
 	{
-		if (!is_array($assoc_ary))
+		if (!is_array($assoc_ary) || !count($assoc_ary))
 		{
 			return false;
 		}
@@ -668,43 +724,38 @@ abstract class driver implements driver_interface
 			return false;
 		}
 
-		if ($this->multi_insert)
+		$ary = array();
+		foreach ($sql_ary as $_sql_ary)
 		{
-			$ary = array();
-			foreach ($sql_ary as $id => $_sql_ary)
+			// If by accident the sql array is only one-dimensional we build a normal insert statement
+			if (!is_array($_sql_ary))
 			{
-				// If by accident the sql array is only one-dimensional we build a normal insert statement
-				if (!is_array($_sql_ary))
-				{
-					return $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
-				}
+				return $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
+			}
 
+			// Add values to set to $ary if multi insert is supported, otherwise run every insert query separately
+			if ($this->multi_insert)
+			{
 				$values = array();
-				foreach ($_sql_ary as $key => $var)
+				foreach ($_sql_ary as $var)
 				{
 					$values[] = $this->_sql_validate_value($var);
 				}
 				$ary[] = '(' . implode(', ', $values) . ')';
 			}
-
-			return $this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
-		}
-		else
-		{
-			foreach ($sql_ary as $ary)
+			else
 			{
-				if (!is_array($ary))
-				{
-					return false;
-				}
-
-				$result = $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
-
+				$result = $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $_sql_ary));
 				if (!$result)
 				{
 					return false;
 				}
 			}
+		}
+
+		if ($this->multi_insert)
+		{
+			return $this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
 		}
 
 		return true;
@@ -844,6 +895,18 @@ abstract class driver implements driver_interface
 		return $sql;
 	}
 
+	/**
+	 * Build db-specific query data
+	 *
+	 * @param string $stage Query stage, can be 'FROM' or 'WHERE'
+	 * @param string|array $data A string containing the CROSS JOIN query or an array of WHERE clauses
+	 *
+	 * @return string|array The db-specific query fragment
+	 */
+	protected function _sql_custom_build(string $stage, $data)
+	{
+		return $data;
+	}
 
 	protected function _process_boolean_tree_first($operations_ary)
 	{
@@ -1025,7 +1088,7 @@ abstract class driver implements driver_interface
 				global $msg_long_text;
 				$msg_long_text = $message;
 
-				trigger_error(false, E_USER_ERROR);
+				trigger_error('', E_USER_ERROR);
 			}
 
 			trigger_error($message, E_USER_ERROR);
@@ -1038,6 +1101,14 @@ abstract class driver implements driver_interface
 
 		return $this->sql_error_returned;
 	}
+
+	/**
+	 * Return sql error array
+	 *
+	 * @return array SQL error array with message and error code
+	 * @psalm-return array{message: string, code: int|string}
+	 */
+	abstract protected function _sql_error(): array;
 
 	/**
 	* {@inheritDoc}
@@ -1178,7 +1249,7 @@ abstract class driver implements driver_interface
 				$this->html_hold .= '<tr>';
 
 				$class = 'row1';
-				foreach (array_values($row) as $val)
+				foreach ($row as $val)
 				{
 					$class = ($class == 'row1') ? 'row2' : 'row1';
 					$this->html_hold .= '<td class="' . $class . '">' . (($val) ? $val : '&nbsp;') . '</td>';
@@ -1225,6 +1296,16 @@ abstract class driver implements driver_interface
 	}
 
 	/**
+	 * Build db-specific report
+	 *
+	 * @param string $mode 'start' to add to report, 'fromcache' to output it
+	 * @param string $query Query to add to sql report
+	 *
+	 * @return void
+	 */
+	abstract protected function _sql_report(string $mode, string $query = ''): void;
+
+	/**
 	* {@inheritDoc}
 	*/
 	function get_estimated_row_count($table_name)
@@ -1249,7 +1330,7 @@ abstract class driver implements driver_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function clean_query_id($query_id)
+	public function clean_query_id(mixed $query_id): int|string|null
 	{
 		// Some DBMS functions accept/return objects and/or resources instead if identifiers
 		// Attempting to use objects/resources as array keys will throw error, hence correctly handle all cases

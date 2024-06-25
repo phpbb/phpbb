@@ -23,7 +23,7 @@ interface migration_interface
 	 *
 	 * @return array An array of migration class names
 	 */
-	static public function depends_on();
+	public static function depends_on();
 
 	/**
 	 * Allows you to check if the migration is effectively installed (entirely optional)

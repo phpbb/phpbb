@@ -32,12 +32,12 @@ class ucp_profile
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
-		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher;
+		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher, $language;
 
 		$user->add_lang('posting');
 
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
-		$error = $data = array();
+		$error = array();
 		$s_hidden_fields = '';
 
 		switch ($mode)
@@ -539,7 +539,6 @@ class ucp_profile
 					$enable_urls,
 					$enable_smilies,
 					$config['allow_sig_img'],
-					$config['allow_sig_flash'],
 					true,
 					$config['allow_sig_links'],
 					'sig'
@@ -613,7 +612,6 @@ class ucp_profile
 					'BBCODE_STATUS'			=> $user->lang(($config['allow_sig_bbcode'] ? 'BBCODE_IS_ON' : 'BBCODE_IS_OFF'), '<a href="' . $controller_helper->route('phpbb_help_bbcode_controller') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 					'MAX_FONT_SIZE'			=> (int) $config['max_sig_font_size'],
 
@@ -622,7 +620,6 @@ class ucp_profile
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
 
@@ -673,7 +670,7 @@ class ucp_profile
 									);
 
 									/**
-									* Trigger events on successfull avatar change
+									* Trigger events on successful avatar change
 									*
 									* @event core.ucp_profile_avatar_sql
 									* @var	array	result	Array with data to be stored in DB
@@ -687,9 +684,46 @@ class ucp_profile
 										WHERE user_id = ' . (int) $user->data['user_id'];
 									$db->sql_query($sql);
 
-									meta_refresh(3, $this->u_action);
-									$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-									trigger_error($message);
+									if ($request->is_ajax())
+									{
+										/** @var \phpbb\avatar\helper $avatar_helper */
+										$avatar_helper = $phpbb_container->get('avatar.helper');
+
+										$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+
+										$json_response = new \phpbb\json_response;
+										$json_response->send(array(
+											'success' => true,
+
+											'MESSAGE_TITLE'	=> $language->lang('INFORMATION'),
+											'MESSAGE_TEXT'	=> $language->lang('PROFILE_UPDATED'),
+											'AVATAR'		=> $avatar_helper->get_template_vars($avatar),
+											'REFRESH_DATA'	=> [
+												'time'	=> 3,
+												'url'		=> $this->u_action,
+												'text'		=> $language->lang('RETURN_TO_UCP'),
+											]
+										));
+									}
+									else
+									{
+										meta_refresh(3, $this->u_action);
+										$message = $language->lang('PROFILE_UPDATED') . '<br><br>' . $language->lang('RETURN_UCP', '<a href="' . $this->u_action . '">', '</a>');
+										trigger_error($message);
+									}
+								}
+								else if ($request->is_ajax())
+								{
+									$error = $phpbb_avatar_manager->localize_errors($user, $error);
+
+									$json_response = new \phpbb\json_response;
+									$json_response->send([
+										'success' => false,
+										'error' => [
+											'title'		=> $language->lang('INFORMATION'),
+											'messages'	=> $error,
+										],
+									]);
 								}
 							}
 						}
@@ -758,11 +792,14 @@ class ucp_profile
 					$error = $phpbb_avatar_manager->localize_errors($user, $error);
 				}
 
-				$avatar = phpbb_get_user_avatar($user->data, 'USER_AVATAR', true);
+				/** @var \phpbb\avatar\helper $avatar_helper */
+				$avatar_helper = $phpbb_container->get('avatar.helper');
+
+				$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+				$template->assign_vars($avatar_helper->get_template_vars($avatar));
 
 				$template->assign_vars(array(
-					'ERROR'			=> (count($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> $avatar,
+					'ERROR'				=> !empty($error) ? implode('<br />', $error) : '',
 
 					'S_FORM_ENCTYPE'	=> ' enctype="multipart/form-data"',
 

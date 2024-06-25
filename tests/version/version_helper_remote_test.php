@@ -16,6 +16,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	protected $file_downloader;
 	protected $cache;
 	protected $version_helper;
+	protected $user;
 
 	protected function setUp(): void
 	{

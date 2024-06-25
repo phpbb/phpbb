@@ -84,7 +84,7 @@ class php_exporter
 	*
 	* @param string	$name	Name of the current event (used for error messages)
 	* @param int	$line	Line where the current event is placed in
-	* @return null
+	* @return void
 	*/
 	public function set_current_event($name, $line)
 	{
@@ -96,7 +96,7 @@ class php_exporter
 	* Set the content of this file
 	*
 	* @param array $content		Array with the lines of the file
-	* @return null
+	* @return void
 	*/
 	public function set_content($content)
 	{
@@ -148,8 +148,9 @@ class php_exporter
 		$files = array();
 		foreach ($iterator as $file_info)
 		{
-			/** @var \RecursiveDirectoryIterator $file_info */
-			$relative_path = $iterator->getInnerIterator()->getSubPathname();
+			/** @var \RecursiveDirectoryIterator $inner_iterator */
+			$inner_iterator = $iterator->getInnerIterator();
+			$relative_path = $inner_iterator->getSubPathname();
 			$files[] = str_replace(DIRECTORY_SEPARATOR, '/', $relative_path);
 		}
 
@@ -257,16 +258,20 @@ class php_exporter
 			{
 				$event_line = false;
 				$found_trigger_event = strpos($this->file_lines[$i], 'dispatcher->trigger_event(');
+				$found_use_vars = strpos($this->file_lines[$i], ', compact($vars)');
 				$arguments = array();
 				if ($found_trigger_event !== false)
 				{
 					$event_line = $i;
 					$this->set_current_event($this->get_event_name($event_line, false), $event_line);
 
-					// Find variables of the event
-					$arguments = $this->get_vars_from_array();
-					$doc_vars = $this->get_vars_from_docblock();
-					$this->validate_vars_docblock_array($arguments, $doc_vars);
+					if ($found_use_vars)
+					{
+						// Find variables of the event
+						$arguments = $this->get_vars_from_array();
+						$doc_vars = $this->get_vars_from_docblock();
+						$this->validate_vars_docblock_array($arguments, $doc_vars);
+					}
 				}
 				else
 				{
@@ -408,10 +413,10 @@ class php_exporter
 		}
 		else
 		{
-			$regex = '#extract\(\$[a-z](?:[a-z0-9_]|->)*';
+			$regex = '#(?:extract\()?\$[a-z](?:[a-z0-9_]|->)*';
 			$regex .= '->trigger_event\((\[)?';
 			$regex .= '\'' . $this->preg_match_event_name() . '(?(1)\', \'(?2))+\'';
-			$regex .= '(?(1)\]), compact\(\$vars\)\)\);#';
+			$regex .= '(?(1)\])(?:, compact\(\$vars\)\))?\);#';
 		}
 
 		$match = array();
@@ -785,7 +790,7 @@ class php_exporter
 	*
 	* @param array $vars_array		Variables found in the array line
 	* @param array $vars_docblock	Variables found in the doc block
-	* @return null
+	* @return void
 	* @throws \LogicException
 	*/
 	public function validate_vars_docblock_array($vars_array, $vars_docblock)

@@ -56,9 +56,16 @@ function mcp_topic_view($id, $mode, $action)
 	$checked_ids = $post_id_list = $request->variable('post_id_list', array(0));
 	$view		= $request->variable('view', '');
 
+	add_form_key('mcp_topic');
+
 	// Resync Topic?
 	if ($action == 'resync')
 	{
+		if (!check_form_key('mcp_topic'))
+		{
+			trigger_error('FORM_INVALID');
+		}
+
 		if (!function_exists('mcp_resync_topics'))
 		{
 			include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
@@ -91,7 +98,7 @@ function mcp_topic_view($id, $mode, $action)
 		$subject = $topic_info['topic_title'];
 	}
 
-	// Restore or pprove posts?
+	// Restore or approve posts?
 	if (($action == 'restore' || $action == 'approve') && $auth->acl_get('m_approve', $topic_info['forum_id']))
 	{
 		if (!class_exists('mcp_queue'))
@@ -485,7 +492,8 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request, $phpbb_dispatcher;
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth, $config, $phpbb_log, $request;
+	global $phpbb_container, $phpbb_dispatcher;
 
 	$post_id_list	= $request->variable('post_id_list', array(0));
 	$forum_id		= $request->variable('forum_id', 0);
@@ -686,22 +694,17 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		if ($first_post_data['enable_indexing'])
 		{
 			// Select the search method and do some additional checks to ensure it can actually be utilised
-			$search_type = $config['search_type'];
-
-			if (!class_exists($search_type))
+			try
+			{
+				$search_backend_factory = $phpbb_container->get('search.backend_factory');
+				$search = $search_backend_factory->get_active();
+			}
+			catch (\phpbb\search\exception\no_search_backend_found_exception $e)
 			{
 				trigger_error('NO_SUCH_SEARCH_MODULE');
 			}
 
-			$error = false;
-			$search = new $search_type($error, $phpbb_root_path, $phpEx, $auth, $config, $db, $user, $phpbb_dispatcher);
-
-			if ($error)
-			{
-				trigger_error($error);
-			}
-
-			$search->index('edit', $first_post_data['post_id'], $first_post_data['post_text'], $subject, $first_post_data['poster_id'], $first_post_data['forum_id']);
+			$search->index('edit', (int) $first_post_data['post_id'], $first_post_data['post_text'], $subject, (int) $first_post_data['poster_id'], (int) $first_post_data['forum_id']);
 		}
 
 		// Copy topic subscriptions to new topic

@@ -195,7 +195,7 @@ class acp_bbcodes
 					$data = $this->build_regexp($bbcode_match, $bbcode_tpl);
 
 					// Make sure the user didn't pick a "bad" name for the BBCode tag.
-					$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'flash', 'flash=');
+					$hard_coded = array('code', 'quote', 'quote=', 'attachment', 'attachment=', 'b', 'i', 'url', 'url=', 'img', 'size', 'size=', 'color', 'color=', 'u', 'list', 'list=', 'email', 'email=', 'mention');
 
 					if (($action == 'modify' && strtolower($data['bbcode_tag']) !== strtolower($row['bbcode_tag'])) || ($action == 'create'))
 					{
@@ -214,15 +214,6 @@ class acp_bbcodes
 						{
 							trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
-					}
-
-					if (substr($data['bbcode_tag'], -1) === '=')
-					{
-						$test = substr($data['bbcode_tag'], 0, -1);
-					}
-					else
-					{
-						$test = $data['bbcode_tag'];
 					}
 
 					if (strlen($data['bbcode_tag']) > 16)

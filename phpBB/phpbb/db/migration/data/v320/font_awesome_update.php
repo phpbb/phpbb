@@ -20,7 +20,7 @@ class font_awesome_update extends \phpbb\db\migration\migration
 		return isset($this->config['load_font_awesome_url']);
 	}
 
-	static public function depends_on()
+	public static function depends_on()
 	{
 		return [
 			'\phpbb\db\migration\data\v320\dev',

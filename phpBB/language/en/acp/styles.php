@@ -54,6 +54,7 @@ $lang = array_merge($lang, [
 	'INSTALL_STYLES'							=> 'Install styles',
 	'INSTALL_STYLES_EXPLAIN'					=> 'Here you can install new styles.<br>If you cannot find a specific style in list below, check to make sure style is already installed. If it is not installed, check if it was uploaded correctly.',
 	'INVALID_STYLE_ID'							=> 'Invalid style ID.',
+	'INVALID_STYLE_MESSAGE'						=> 'The directory <strong><i>%1$s</i></strong> does not contain a valid style.',
 
 	'NO_MATCHING_STYLES_FOUND'					=> 'No styles match your query.',
 	'NO_UNINSTALLED_STYLE'						=> 'No uninstalled styles detected.',

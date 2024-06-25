@@ -129,7 +129,7 @@ class log implements \phpbb\log\log_interface
 	* in get_logs()
 	*
 	* @param	bool	$is_in_admin		Are we called from within the acp?
-	* @return	null
+	* @return	void
 	*/
 	public function set_is_admin($is_in_admin)
 	{
@@ -150,7 +150,7 @@ class log implements \phpbb\log\log_interface
 	* Set table name
 	*
 	* @param	string	$log_table		Can overwrite the table to use for the logs
-	* @return	null
+	* @return	void
 	*/
 	public function set_log_table($log_table)
 	{
@@ -748,7 +748,7 @@ class log implements \phpbb\log\log_interface
 			{
 				$log[$key]['viewtopic'] = (isset($topic_auth['f_read'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 't=' . $row['topic_id']) : false;
 				$log[$key]['viewpost'] = (isset($topic_auth['f_read'][$row['topic_id']]) && $row['post_id']) ? append_sid("{$this->phpbb_root_path}viewtopic.{$this->php_ext}", 'p=' . $row['post_id'] . '#p' . $row['post_id']) : false;
-				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $this->user->session_id) : false;
+				$log[$key]['viewlogs'] = (isset($topic_auth['m_'][$row['topic_id']])) ? append_sid("{$this->phpbb_root_path}mcp.{$this->php_ext}", 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id']) : false;
 			}
 		}
 
@@ -764,7 +764,14 @@ class log implements \phpbb\log\log_interface
 				}
 
 				$log[$key]['reportee_username'] = $reportee_data_list[$row['reportee_id']]['username'];
-				$log[$key]['reportee_username_full'] = get_username_string('full', $row['reportee_id'], $reportee_data_list[$row['reportee_id']]['username'], $reportee_data_list[$row['reportee_id']]['user_colour'], false, $profile_url);
+				$log[$key]['reportee_username_full'] = get_username_string(
+					'full',
+					$row['reportee_id'],
+					$reportee_data_list[$row['reportee_id']]['username'],
+					$reportee_data_list[$row['reportee_id']]['user_colour'],
+					false,
+					$profile_url
+				);
 			}
 		}
 
