@@ -731,6 +731,10 @@ table.info tbody th {
 	max-width: 100%;
 }
 
+.avatar-rank-container {
+	max-width: 20%;
+}
+
 .left-box.profile-details {
 	width: 80%;
 }
