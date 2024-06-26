@@ -1722,7 +1722,7 @@ switch ($mode)
 			{
 				$row['session_time'] = $session_ary[$row['user_id']]['session_time'] ?? 0;
 				$row['session_viewonline'] = $session_ary[$row['user_id']]['session_viewonline'] ?? 0;
-				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_last_active'];
+				$row['last_visit'] = $row['user_last_active'] ?: $row['session_time'];
 
 				$id_cache[$row['user_id']] = $row;
 			}
