@@ -29,7 +29,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	public function get_data($row)
 	{
 		return array(
-			'src' => $row['avatar'],
+			'src' => $this->get_gravatar_url($row),
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
