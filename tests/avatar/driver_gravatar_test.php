@@ -72,6 +72,14 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 			$phpEx
 		);
 
+		global $phpbb_dispatcher;
+		$phpbb_dispatcher = $this->getMockBuilder(\phpbb\event\dispatcher::class)
+			->disableOriginalConstructor()
+			->onlyMethods(['trigger_event'])
+			->getMock();
+		$phpbb_dispatcher->method('trigger_event')
+			->willReturn($this->returnArgument(1));
+
 		$this->gravatar = new gravatar($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache);
 		$this->gravatar->set_name('avatar.driver.gravatar');
 	}
@@ -180,15 +188,6 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 		$this->assertEquals('ucp_avatar_options_gravatar.html', $this->gravatar->get_template_name());
 		$this->assertEquals('acp_avatar_options_gravatar.html', $this->gravatar->get_acp_template_name());
 
-
-		global $phpbb_dispatcher;
-		$phpbb_dispatcher = $this->getMockBuilder(\phpbb\event\dispatcher::class)
-			->disableOriginalConstructor()
-			->onlyMethods(['trigger_event'])
-			->getMock();
-		$phpbb_dispatcher->method('trigger_event')
-			->willReturn($this->returnArgument(1));
-
 		$row = [
 			'avatar_type'			=> 'avatar.driver.gravatar',
 			'avatar'				=> 'bar@foo.com',
@@ -196,5 +195,21 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 			'avatar_height'			=> '60',
 		];
 		$this->assertEquals('<img class="gravatar" src="//secure.gravatar.com/avatar/dc8a42aba3651b0b1f088ef928ff3b1d?s=70" width="70" height="60" alt="" />', $this->gravatar->get_custom_html($this->user, $row));
+	}
+
+	public function test_get_data(): void
+	{
+		$row = [
+			'avatar_type'			=> 'avatar.driver.gravatar',
+			'avatar'				=> 'bar@foo.com',
+			'avatar_width'			=> '70',
+			'avatar_height'			=> '60',
+		];
+
+		$this->assertEquals([
+			'src'		=> '//secure.gravatar.com/avatar/dc8a42aba3651b0b1f088ef928ff3b1d?s=70',
+			'width'		=> '70',
+			'height'	=> '60',
+		], $this->gravatar->get_data($row));
 	}
 }
