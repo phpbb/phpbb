@@ -207,7 +207,7 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 		];
 
 		$this->assertEquals([
-			'src'		=> '//secure.gravatar.com/avatar/dc8a42aba3651b0b1f088ef928ff3b1d?s=70',
+			'src'		=> '//gravatar.com/avatar/e0ee9d02824d4320a999507150c5b8a371c635c41f645ba3a7205f36384dc199?s=70',
 			'width'		=> '70',
 			'height'	=> '60',
 		], $this->gravatar->get_data($row));
