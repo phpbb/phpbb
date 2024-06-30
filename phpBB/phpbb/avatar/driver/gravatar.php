@@ -21,7 +21,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	/**
 	* The URL for the gravatar service
 	*/
-	const GRAVATAR_URL = '//secure.gravatar.com/avatar/';
+	const GRAVATAR_URL = '//gravatar.com/avatar/';
 
 	/**
 	* {@inheritdoc}
@@ -175,7 +175,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 		global $phpbb_dispatcher;
 
 		$url = self::GRAVATAR_URL;
-		$url .=  md5(strtolower(trim($row['avatar'])));
+		$url .= hash('sha256', strtolower(trim($row['avatar'])));
 
 		if ($row['avatar_width'] || $row['avatar_height'])
 		{
