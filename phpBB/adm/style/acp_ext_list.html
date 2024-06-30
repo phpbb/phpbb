@@ -95,6 +95,34 @@
 		</tr>
 		<!-- END disabled -->
 		<!-- ENDIF -->
+
+		<!-- IF .available -->
+		<tr>
+			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_AVAILABLE}</strong><!-- EVENT acp_ext_list_disabled_title_after --></td>
+		</tr>
+		<!-- BEGIN available -->
+		<tr class="ext_available row-highlight">
+			<td><strong title="{available.NAME}">{available.META_DISPLAY_NAME}</strong><!-- EVENT acp_ext_list_disabled_name_after --></td>
+			<td style="text-align: center;">
+				<!-- IF available.S_VERSIONCHECK -->
+				<strong class="<!-- IF available.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{available.META_VERSION}</strong>
+				<!-- IF not available.S_UP_TO_DATE --><i class="fa fa-exclamation-circle outdated-ext" aria-hidden="true"></i><!-- ENDIF -->
+				<!-- ELSE -->
+				{available.META_VERSION}
+				<!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- IF available.U_DETAILS --><a href="{available.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
+			</td>
+			<td style="text-align: center;">
+				<!-- BEGIN actions -->
+					<a href="{available.actions.U_ACTION}"<!-- IF available.actions.L_ACTION_EXPLAIN --> title="{available.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{available.actions.L_ACTION}</a>
+					<!-- IF not available.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
+				<!-- END actions -->
+			</td>
+		</tr>
+		<!-- END available -->
+		<!-- ENDIF -->
 	</tbody>
 	</table>
 

@@ -575,7 +575,7 @@ class acp_extensions
 			catch (exception_interface $e)
 			{
 				$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
-				$this->template->assign_block_vars('disabled', array(
+				$this->template->assign_block_vars('available', array(
 					'META_DISPLAY_NAME'		=> $this->user->lang('EXTENSION_INVALID_LIST', $name, $message),
 					'S_VERSIONCHECK'		=> false,
 				));
@@ -589,9 +589,9 @@ class acp_extensions
 			$block_vars['NAME'] = $name;
 			$block_vars['U_DETAILS'] = $this->u_action . '&amp;action=details&amp;ext_name=' . urlencode($name);
 
-			$this->template->assign_block_vars('disabled', $block_vars);
+			$this->template->assign_block_vars('available', $block_vars);
 
-			$this->output_actions('disabled', array(
+			$this->output_actions('available', array(
 				'ENABLE'		=> $this->u_action . '&amp;action=enable_pre&amp;ext_name=' . urlencode($name),
 			));
 		}
