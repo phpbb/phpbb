@@ -107,7 +107,15 @@ class update_hashes extends \phpbb\cron\task\base
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$old_hash = preg_replace('/^\$CP\$/', '', $row['user_password']);
-				$new_hash = $this->passwords_manager->hash($old_hash, array($this->default_type));
+
+				// If stored hash type is unknown then it's md5 hash with no prefix
+				// First rehash it using $H$ as hash type identifier (salted_md5)
+				if (!$this->passwords_manager->detect_algorithm($old_hash))
+				{
+					$old_hash = $this->passwords_manager->hash($old_hash, '$H$');
+				}
+
+				$new_hash = $this->passwords_manager->hash($old_hash, [$this->default_type]);
 
 				// Increase number so we know that users were selected from the database
 				$affected_rows++;
