@@ -361,8 +361,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'hot_threshold' => true,
 			'img_create_thumbnail' => true,
 			'img_display_inlined' => true,
-			'img_link_height' => true,
-			'img_link_width' => true,
 			'img_max_height' => true,
 			'img_max_thumb_width' => true,
 			'img_max_width' => true,

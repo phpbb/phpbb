@@ -16,6 +16,7 @@ namespace phpbb\storage\controller;
 use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
+use phpbb\mimetype\extension_guesser;
 use phpbb\storage\exception\storage_exception;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
@@ -33,6 +34,9 @@ class controller
 	/** @var driver_interface */
 	protected $db;
 
+	/** @var extension_guesser */
+	protected $extension_guesser;
+
 	/** @var storage */
 	protected $storage;
 
@@ -47,10 +51,11 @@ class controller
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 */
-	public function __construct(service $cache, driver_interface $db, storage $storage, symfony_request $symfony_request)
+	public function __construct(service $cache, driver_interface $db, extension_guesser $extension_guesser, storage $storage, symfony_request $symfony_request)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
+		$this->extension_guesser = $extension_guesser;
 		$this->storage = $storage;
 		$this->symfony_request = $symfony_request;
 	}
@@ -124,14 +129,12 @@ class controller
 	 */
 	protected function prepare(StreamedResponse $response, string $file): void
 	{
-		$file_info = $this->storage->file_info($file);
-
 		// Add Content-Type header
 		if (!$response->headers->has('Content-Type'))
 		{
 			try
 			{
-				$content_type = $file_info->get('mimetype');
+				$content_type = $this->extension_guesser->guess($file);
 			}
 			catch (storage_exception $e)
 			{
@@ -146,7 +149,7 @@ class controller
 		{
 			try
 			{
-				$response->headers->set('Content-Length', $file_info->get('size'));
+				$response->headers->set('Content-Length', $this->storage->file_size($file));
 			}
 			catch (storage_exception $e)
 			{
