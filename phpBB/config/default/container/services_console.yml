@@ -281,6 +281,22 @@ services:
         tags:
             - { name: console.command }
 
+    console.command.user.delete_id:
+        class: phpbb\console\command\user\delete_id
+        arguments:
+            - '@dbal.conn'
+            - '@language'
+            - '@log'
+            - '@user'
+            - '@user_loader'
+            - '%tables.bots%'
+            - '%tables.user_group%'
+            - '%tables.users%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: console.command }
+
     console.command.user.reclean:
         class: phpbb\console\command\user\reclean
         arguments:

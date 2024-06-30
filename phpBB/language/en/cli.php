@@ -108,6 +108,8 @@ $lang = array_merge($lang, array(
 	'CLI_DESCRIPTION_USER_ADD_OPTION_NOTIFY'	=> 'Send account activation email to the new user (not sent by default)',
 	'CLI_DESCRIPTION_USER_DELETE'				=> 'Delete a user account.',
 	'CLI_DESCRIPTION_USER_DELETE_USERNAME'		=> 'Username of the user to delete',
+	'CLI_DESCRIPTION_USER_DELETE_ID'			=> 'Delete user accounts by ID.',
+	'CLI_DESCRIPTION_USER_DELETE_ID_OPTION_ID'	=> 'User IDs of the users to delete',
 	'CLI_DESCRIPTION_USER_DELETE_OPTION_POSTS'	=> 'Delete all posts by the user. Without this option, the user’s posts will be retained.',
 	'CLI_DESCRIPTION_USER_RECLEAN'				=> 'Re-clean usernames.',
 
@@ -155,10 +157,14 @@ $lang = array_merge($lang, array(
 	'CLI_THUMBNAIL_NOTHING_TO_GENERATE'	=> 'No thumbnails to generate.',
 	'CLI_THUMBNAIL_NOTHING_TO_DELETE'	=> 'No thumbnails to delete.',
 
-	'CLI_USER_ADD_SUCCESS'		=> 'Successfully added user %s.',
-	'CLI_USER_DELETE_CONFIRM'	=> 'Are you sure you want to delete ‘%s’? [y/N]',
-	'CLI_USER_RECLEAN_START'	=> 'Re-cleaning usernames',
-	'CLI_USER_RECLEAN_DONE'		=> [
+	'CLI_USER_ADD_SUCCESS'			=> 'Successfully added user %s.',
+	'CLI_USER_DELETE_CONFIRM'		=> 'Are you sure you want to delete ‘%s’? [y/N]',
+	'CLI_USER_DELETE_ID_CONFIRM'	=> 'Are you sure you want to delete the user IDs ‘%s’? [y/N]',
+	'CLI_USER_DELETE_ID_SUCCESS'	=> 'Successfully deleted user IDs.',
+	'CLI_USER_DELETE_ID_START'		=> 'Deleting users by ID',
+	'CLI_USER_DELETE_NONE'			=> 'No users were deleted by user ID.',
+	'CLI_USER_RECLEAN_START'		=> 'Re-cleaning usernames',
+	'CLI_USER_RECLEAN_DONE'			=> [
 		0	=> 'Re-cleaning complete. No usernames needed to be cleaned.',
 		1	=> 'Re-cleaning complete. %d username was cleaned.',
 		2	=> 'Re-cleaning complete. %d usernames were cleaned.',
