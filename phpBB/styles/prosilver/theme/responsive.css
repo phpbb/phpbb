@@ -498,6 +498,10 @@
 		width: auto;
 	}
 
+	.avatar-rank-container {
+		max-width: 100%;
+	}
+
 	/* Polls
 	---------------------------------------------------------------- */
 	fieldset.polls dt {
