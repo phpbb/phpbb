@@ -129,6 +129,10 @@ class redis extends \phpbb\cache\driver\memory
 	/**
 	* Store data in the cache
 	*
+	* For the info, see https://phpredis.github.io/phpredis/Redis.html#method_set,
+	* https://redis.io/docs/latest/commands/set/
+	* and https://redis.io/docs/latest/commands/expire/#appendix-redis-expires
+	*
 	* @access protected
 	* @param string $var Cache key
 	* @param mixed $data Data to store
@@ -137,11 +141,7 @@ class redis extends \phpbb\cache\driver\memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		if ($ttl == 0)
-		{
-			return $this->redis->set($var, $data);
-		}
-		return $this->redis->setex($var, $ttl, $data);
+		return $this->redis->set($var, $data, ['EXAT' => time() + $ttl]);
 	}
 
 	/**
