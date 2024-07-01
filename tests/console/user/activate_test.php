@@ -38,6 +38,7 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 			$this->config,
 			$this->language,
 			$this->log,
+			$this->email,
 			$this->notifications,
 			$this->user_loader,
 			$this->phpbb_root_path,

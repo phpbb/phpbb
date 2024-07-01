@@ -17,6 +17,7 @@ use Minishlink\WebPush\Subscription;
 use phpbb\config\config;
 use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
+use phpbb\di\service_collection;
 use phpbb\form\form_helper;
 use phpbb\log\log_interface;
 use phpbb\notification\type\type_interface;
@@ -48,6 +49,9 @@ class webpush extends messenger_base implements extended_method_interface
 	/** @var string Notification push subscriptions table */
 	protected $push_subscriptions_table;
 
+	/** @var service_collection */
+	protected $messenger;
+
 	/** @var int Fallback size for padding if endpoint is mozilla, see https://github.com/web-push-libs/web-push-php/issues/108#issuecomment-2133477054 */
 	const MOZILLA_FALLBACK_PADDING = 2820;
 
@@ -66,11 +70,12 @@ class webpush extends messenger_base implements extended_method_interface
 	 * @param string $php_ext
 	 * @param string $notification_webpush_table
 	 * @param string $push_subscriptions_table
+	 * @param service_collection $messenger
 	 */
 	public function __construct(config $config, driver_interface $db, log_interface $log, user_loader $user_loader, user $user, string $phpbb_root_path,
-								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table)
+								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table, service_collection $messenger)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+		parent::__construct($messenger, $user_loader, $phpbb_root_path, $php_ext);
 
 		$this->config = $config;
 		$this->db = $db;
