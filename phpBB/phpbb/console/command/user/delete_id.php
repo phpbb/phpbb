@@ -19,6 +19,7 @@ use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\user;
 use phpbb\user_loader;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -192,6 +193,10 @@ class delete_id extends command
 	protected function interact(InputInterface $input, OutputInterface $output): void
 	{
 		$helper = $this->getHelper('question');
+		if (!$helper instanceof QuestionHelper)
+		{
+			return;
+		}
 
 		$user_ids = $input->getArgument('user_ids');
 		if (count($user_ids) > 0)
