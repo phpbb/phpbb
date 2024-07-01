@@ -155,8 +155,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('hot_threshold', '2
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('icons_path', 'images/icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_create_thumbnail', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_display_inlined', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_link_height', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_link_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_height', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_thumb_width', '400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('img_max_width', '0');

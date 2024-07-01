@@ -1260,19 +1260,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				{
 					if ($config['img_display_inlined'])
 					{
-						if ($config['img_link_width'] || $config['img_link_height'])
-						{
-							try
-							{
-								$file_info = $storage_attachment->file_info($filename);
-
-								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? attachment_category::IMAGE : attachment_category::NONE;
-							}
-							catch (\Exception $e)
-							{
-								$display_cat = attachment_category::NONE;
-							}
-						}
+						$display_cat = attachment_category::IMAGE;
 					}
 					else
 					{

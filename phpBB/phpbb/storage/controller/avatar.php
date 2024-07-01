@@ -16,6 +16,7 @@ namespace phpbb\storage\controller;
 use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\mimetype\extension_guesser;
 use phpbb\storage\storage;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,12 +40,13 @@ class avatar extends controller
 	 * @param service				$cache
 	 * @param config				$config
 	 * @param driver_interface		$db
+	 * @param extension_guesser		$extension_guesser
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 */
-	public function __construct(service $cache, config $config, driver_interface $db, storage $storage, symfony_request $symfony_request)
+	public function __construct(service $cache, config $config, driver_interface $db, extension_guesser $extension_guesser, storage $storage, symfony_request $symfony_request)
 	{
-		parent::__construct($cache, $db, $storage, $symfony_request);
+		parent::__construct($cache, $db , $extension_guesser, $storage, $symfony_request);
 
 		$this->config = $config;
 	}

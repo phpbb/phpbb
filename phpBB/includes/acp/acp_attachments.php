@@ -173,8 +173,6 @@ class acp_attachments
 
 						'img_max_width'			=> array('lang' => 'MAX_IMAGE_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false,),
 						'img_max_height'		=> array('lang' => 'MAX_IMAGE_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false,),
-						'img_link_width'		=> array('lang' => 'IMAGE_LINK_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false,),
-						'img_link_height'		=> array('lang' => 'IMAGE_LINK_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false,),
 
 						'allow_attachments'		=> array('lang' => 'ALLOW_ATTACHMENTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_pm_attach'		=> array('lang' => 'ALLOW_PM_ATTACHMENTS',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -197,7 +195,6 @@ class acp_attachments
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'img_strip_metadata'		=> array('lang' => 'IMAGE_STRIP_METADATA',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_quality'				=> array('lang' => 'IMAGE_QUALITY',			'validate' => 'int:50:90',	'type' => 'number:50:90', 'explain' => true, 'append' => ' &percnt;'),
-						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int:0:9999',	'type' => 'dimension:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 					)
 				);
 
