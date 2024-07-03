@@ -3855,6 +3855,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
+		'U_MANIFEST'			=> $controller_helper->route('phpbb_manifest_controller'),
 
 		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention') && (empty($forum_id) || $auth->acl_get('f_mention', $forum_id))) ? true : false,
 		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
