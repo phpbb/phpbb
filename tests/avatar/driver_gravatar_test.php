@@ -48,25 +48,27 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 		$this->config = new \phpbb\config\config(array());
 		$this->request = $this->getMockBuilder(request::class)
 			->disableOriginalConstructor()
-			->onlyMethods(['get_super_global'])
+			->setMethods(['get_super_global'])
 			->getMock();
 		$this->request->method('get_super_global')
 			->willReturn([]);
 		$this->template = $this->getMockBuilder(\phpbb\template\twig\twig::class)
 			->disableOriginalConstructor()
-			->onlyMethods(['assign_vars'])
+			->setMethods(['assign_vars'])
 			->getMock();
 		$this->template->method('assign_vars')
 			->will($this->returnCallback([$this, 'template_assign_vars']));
 		$this->user = $this->getMockBuilder(\phpbb\user::class)
 			->disableOriginalConstructor()
 			->getMock();
+		$filesystem = new \phpbb\filesystem\filesystem();
 		$imagesize = new \FastImageSize\FastImageSize();
 		$cache = $this->createMock('\phpbb\cache\driver\driver_interface');
 		$path_helper =  new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				$this->request
 			),
+			$filesystem,
 			$this->request,
 			$phpbb_root_path,
 			$phpEx
@@ -75,10 +77,10 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 		global $phpbb_dispatcher;
 		$phpbb_dispatcher = $this->getMockBuilder(\phpbb\event\dispatcher::class)
 			->disableOriginalConstructor()
-			->onlyMethods(['trigger_event'])
+			->setMethods(['trigger_event'])
 			->getMock();
 		$phpbb_dispatcher->method('trigger_event')
-			->willReturn($this->returnArgument(1));
+			->willReturnArgument(1);
 
 		$this->gravatar = new gravatar($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache);
 		$this->gravatar->set_name('avatar.driver.gravatar');
@@ -160,7 +162,7 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 
 		$request = $this->getMockBuilder(request::class)
 			->disableOriginalConstructor()
-			->onlyMethods(['get_super_global'])
+			->setMethods(['get_super_global'])
 			->getMock();
 		$request->method('get_super_global')
 			->willReturn([]);
@@ -194,7 +196,7 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 			'avatar_width'			=> '70',
 			'avatar_height'			=> '60',
 		];
-		$this->assertEquals('<img class="gravatar" src="//gravatar.com/avatar/e0ee9d02824d4320a999507150c5b8a371c635c41f645ba3a7205f36384dc199?s=70" width="70" height="60" alt="" />', $this->gravatar->get_custom_html($this->user, $row));
+		$this->assertEquals('<img src="//gravatar.com/avatar/e0ee9d02824d4320a999507150c5b8a371c635c41f645ba3a7205f36384dc199?s=70" width="70" height="60" alt="" />', $this->gravatar->get_custom_html($this->user, $row));
 	}
 
 	public function test_get_data(): void
