@@ -62,7 +62,7 @@ class manifest
 	 */
 	public function handle(): JsonResponse
 	{
-		if ($this->user->data['is_bot'] || $this->user->data['user_type'] == USER_INACTIVE)
+		if ($this->user->data['is_bot'])
 		{
 			throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
 		}
@@ -83,8 +83,8 @@ class manifest
 		 * Event to modify manifest data before it is outputted
 		 *
 		 * @event core.modify_manifest
-		 * @var	array	manifest	Array of config values to display and process
-		 * @var	string	board_path	Mode of the config page we are displaying
+		 * @var	array	manifest	Array of manifest members
+		 * @var	string	board_path	Path to the board root
 		 * @since 4.0.0-a1
 		 */
 		$vars = array('manifest', 'board_path');
