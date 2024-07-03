@@ -78,6 +78,7 @@ class acp_board
 						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'url',	'type' => 'url:40:255', 'explain' => true),
 						'site_home_text'		=> array('lang' => 'SITE_HOME_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
+						'sitename_short'		=> array('lang' => 'SITE_NAME_SHORT',		'validate' => 'string',	'type' => 'text:40:12', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
 						'board_disable_access'	=> array('lang' => 'DISABLE_BOARD_ACCESS', 	'validate' => 'int',	'type' => 'select', 'method' => 'board_disable_access', 'explain' => true),
@@ -593,6 +594,7 @@ class acp_board
 				// Array of emoji-enabled configurations
 				$config_name_ary = [
 					'sitename',
+					'sitename_short',
 					'site_desc',
 					'site_home_text',
 					'board_index_text',

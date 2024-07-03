@@ -284,6 +284,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CO
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename', '{L_CONFIG_SITENAME}');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('sitename_short', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_path', 'images/smilies');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smilies_per_page', '50');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('smtp_allow_self_signed', '0');
