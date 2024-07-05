@@ -289,6 +289,7 @@ class fulltext_native extends \phpbb\search\base
 			'#(\+|\-)(?:\+|\-)+#',
 			'#\(\|#',
 			'#\|\)#',
+			'#(?<!\s)(\+|\-|\|)#',
 		);
 		$replace = array(
 			' ',
@@ -296,6 +297,7 @@ class fulltext_native extends \phpbb\search\base
 			'$1',
 			'(',
 			')',
+			' $1',
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
