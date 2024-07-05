@@ -51,7 +51,15 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $phpbb_installer_container, $msg_long_text;
 
-	if (error_reporting() == 0)
+	// Acording to https://www.php.net/manual/en/language.operators.errorcontrol.php
+	// error_reporting() return a different error code inside the error handler after php 8.0
+	$suppresed = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
+	if (PHP_VERSION_ID < 80000)
+	{
+		$suppresed = 0;
+	}
+
+	if (error_reporting() == $suppresed)
 	{
 		return true;
 	}
