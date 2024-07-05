@@ -157,7 +157,7 @@ class install_extensions extends database_task
 			if (isset($extensions[$key]) && $extensions[$key]['ext_active'])
 			{
 				// Create log
-				$this->log->add('admin', ANONYMOUS, '', 'LOG_EXT_ENABLE', time(), array($key));
+				$this->log->add('admin', ANONYMOUS, $this->user->ip, 'LOG_EXT_ENABLE', time(), array($key));
 				$this->iohandler->add_success_message(array('CLI_EXTENSION_ENABLE_SUCCESS', $key));
 			}
 			else
