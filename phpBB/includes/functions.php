@@ -2931,8 +2931,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline): bool
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
 	global $phpbb_container;
 
+	// https://www.php.net/manual/en/language.operators.errorcontrol.php
+	// error_reporting() return a different error code inside the error handler after php 8.0
+	$suppresed = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
+	if (PHP_VERSION_ID < 80000)
+	{
+		$suppresed = 0;
+	}
+
 	// Do not display notices if we suppress them via @
-	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
+	if (error_reporting() == $suppresed && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
 	{
 		return true;
 	}
