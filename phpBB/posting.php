@@ -848,6 +848,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 				'disable_smilies'	=> false,
 				'disable_magic_url'	=> false,
 				'attach_sig'		=> true,
+				'notify'			=> false,
 				'lock_topic'		=> false,
 
 				'topic_type'		=> POST_NORMAL,
