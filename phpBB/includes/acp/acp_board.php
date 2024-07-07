@@ -393,7 +393,7 @@ class acp_board
 					'title'	=> 'ACP_AUTH_SETTINGS',
 					'vars'	=> array(
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
-						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'validate' => 'string',	'type' => 'select:1:toggable', 'method' => 'select_auth_method', 'explain' => false),
+						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'validate' => 'string',	'type' => 'select:1:toggleable', 'method' => 'select_auth_method', 'explain' => false),
 					)
 				);
 			break;
