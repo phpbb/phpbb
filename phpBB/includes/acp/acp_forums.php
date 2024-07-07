@@ -213,13 +213,7 @@ class acp_forums
 							phpbb_cache_moderators($db, $phpbb_container->get('dbal.tools'), $cache, $auth);
 							$copied_permissions = true;
 						}
-/* Commented out because of questionable UI workflow - re-visit for 3.0.7
-						else if (!$this->parent_id && $action != 'edit' && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
-						{
-							$this->copy_permission_page($forum_data);
-							return;
-						}
-*/
+
 						$auth->acl_clear_prefetch();
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
