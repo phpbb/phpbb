@@ -299,10 +299,10 @@ class fulltext_native extends \phpbb\search\base
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
-		
+
 		// Ensure a space exists before +, - and | to make the split and count work correctly
 		$countable_keywords = preg_replace('/(?<!\s)(\+|\-|\|)/', ' $1', $keywords);
-		
+
 		$num_keywords = count(explode(' ', $countable_keywords));
 
 		// We limit the number of allowed keywords to minimize load on the database
