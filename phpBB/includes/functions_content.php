@@ -398,7 +398,7 @@ function get_context(string $text, array $words, int $length = 400)
 			// Get the last fragment
 			$fragments[] = $fragment;
 
-			$output = htmlentities(implode($fragments, ''));
+			$output = htmlentities(implode('', $fragments));
 	}
 
 	return $output;
