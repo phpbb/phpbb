@@ -399,7 +399,7 @@ function get_context($text, $words, $length = 400)
 			// Get the last fragment
 			$fragments[] = $fragment;
 
-			$output = htmlentities(implode($fragments, ''));
+			$output = htmlentities(implode('', $fragments));
 	}
 
 	return $output;
