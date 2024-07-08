@@ -1689,7 +1689,7 @@ function submit_pm($mode, $subject, &$data_ary, $put_in_outbox = true)
 	}
 
 	// First of all make sure the subject are having the correct length.
-	$subject = truncate_string($subject);
+	$subject = truncate_string($subject, $mode === 'post' ? 120 : 124);
 
 	$db->sql_transaction('begin');
 
