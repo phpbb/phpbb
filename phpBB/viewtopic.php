@@ -2071,7 +2071,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
+		'U_APPROVE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f={$row['forum_id']}&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $phpbb_container->get('controller.helper')->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
 		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;p=' . $row['post_id'], true, $user->session_id) : '',
