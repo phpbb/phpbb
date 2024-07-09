@@ -399,10 +399,10 @@ function get_context($text, $words, $length = 400)
 			// Get the last fragment
 			$fragments[] = $fragment;
 
-			$output = htmlentities(implode('', $fragments));
+			return htmlentities(implode('', $fragments));
 	}
 
-	return $output;
+	return htmlentities($text_length >= $length + 3 ? utf8_substr($text, 0, $length) . ' ...' : $text);
 }
 
 /**
