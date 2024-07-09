@@ -327,7 +327,6 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 */
 function get_context($text, $words, $length = 400)
 {
-	$output = '';
 	$text_length = utf8_strlen($text);
 
 	// Replace all spaces/invisible characters with single spaces
@@ -336,7 +335,7 @@ function get_context($text, $words, $length = 400)
 	// we need to turn the entities back into their original form, to not cut the message in between them
 	$text = html_entity_decode($text);
 
-	// Get first ocurrence of each word
+	// Get first occurrence of each word
 	$word_indizes = [];
 	foreach ($words as $word)
 	{
@@ -375,14 +374,14 @@ function get_context($text, $words, $length = 400)
 					$fragments[] = $fragment;
 
 					$start = $indize - ($characters_per_word / 2);
-					// Start fragment at the begining of a word
+					// Start fragment at the beginning of a word
 					$end = $start = ($start > 0) ? (utf8_strpos($text, ' ', $start - 1) + 1) : 0;
 				}
 
 				$end += $characters_per_word;
 
 				// End fragment at the end of a word
-				$substring = utf8_substr($text, $start, $end-$start);
+				$substring = utf8_substr($text, $start, $end - $start);
 				$end = $start + utf8_strrpos($substring, ' ');
 			}
 
