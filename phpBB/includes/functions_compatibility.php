@@ -20,66 +20,6 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Sets a configuration option's value.
- *
- * Please note that this function does not update the is_dynamic value for
- * an already existing config option.
- *
- * @param string $config_name   The configuration option's name
- * @param string $config_value  New configuration value
- * @param bool   $is_dynamic    Whether this variable should be cached (false) or
- *                              if it changes too frequently (true) to be
- *                              efficiently cached.
- *
- * @return void
- *
- * @deprecated 3.1.0 (To be removed: 4.0.0)
- */
-function set_config($config_name, $config_value, $is_dynamic = false, \phpbb\config\config $set_config = null)
-{
-	static $config = null;
-
-	if ($set_config !== null)
-	{
-		$config = $set_config;
-
-		if (empty($config_name))
-		{
-			return;
-		}
-	}
-
-	$config->set($config_name, $config_value, !$is_dynamic);
-}
-
-/**
- * Increments an integer config value directly in the database.
- *
- * @param string $config_name   The configuration option's name
- * @param int    $increment     Amount to increment by
- * @param bool   $is_dynamic    Whether this variable should be cached (false) or
- *                              if it changes too frequently (true) to be
- *                              efficiently cached.
- *
- * @return void
- *
- * @deprecated 3.1.0 (To be removed: 4.0.0)
- */
-function set_config_count($config_name, $increment, $is_dynamic = false, \phpbb\config\config $set_config = null)
-{
-	static $config = null;
-	if ($set_config !== null)
-	{
-		$config = $set_config;
-		if (empty($config_name))
-		{
-			return;
-		}
-	}
-	$config->increment($config_name, $increment, !$is_dynamic);
-}
-
-/**
  * Wrapper function of \phpbb\request\request::variable which exists for backwards compatability.
  * See {@link \phpbb\request\request_interface::variable \phpbb\request\request_interface::variable} for
  * documentation of this function's use.
