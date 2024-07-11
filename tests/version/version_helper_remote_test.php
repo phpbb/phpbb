@@ -224,4 +224,65 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$this->assertEquals($expected_return, $return);
 	}
+
+	public function test_version_phpbb_com()
+	{
+		$file_downloader = new \phpbb\file_downloader();
+
+		$hostname = 'version.phpbb.com';
+
+		if (!checkdnsrr($hostname, 'A'))
+		{
+			$this->markTestSkipped(sprintf(
+				'Could not find a DNS record for hostname %s. ' .
+				'Assuming network is down.',
+				$hostname
+			));
+		}
+
+		$file = $file_downloader->get($hostname, '/phpbb', '30x.txt');
+		$errstr = $file_downloader->get_error_string();
+		$errno = $file_downloader->get_error_number();
+
+		$this->assertNotEquals(
+			0,
+			strlen($file),
+			'Failed asserting that the response is not empty.'
+		);
+
+		$this->assertSame(
+			'',
+			$errstr,
+			'Failed asserting that the error string is empty.'
+		);
+
+		$this->assertSame(
+			0,
+			$errno,
+			'Failed asserting that the error number is 0 (i.e. no error occurred).'
+		);
+
+		$lines = explode("\n", $file);
+
+		$this->assertGreaterThanOrEqual(
+			2,
+			count($lines),
+			'Failed asserting that the version file has at least two lines.'
+		);
+
+		$this->assertStringStartsWith(
+			'3.',
+			$lines[0],
+			"Failed asserting that the first line of the version file starts with '3.'"
+		);
+
+		$this->assertNotSame(
+			false,
+			filter_var($lines[1], FILTER_VALIDATE_URL),
+			'Failed asserting that the second line of the version file is a valid URL.'
+		);
+
+		$this->assertStringContainsString('http', $lines[1]);
+		$this->assertStringContainsString('phpbb.com', $lines[1], '', true);
+	}
 }
