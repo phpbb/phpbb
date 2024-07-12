@@ -20,21 +20,6 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Casts a numeric string $input to an appropriate numeric type (i.e. integer or float)
-*
-* @param string $input		A numeric string.
-*
-* @return int|float			Integer $input if $input fits integer,
-*							float $input otherwise.
-*
-* @deprecated 3.2.10 (To be removed 4.0.0)
-*/
-function phpbb_to_numeric($input)
-{
-	return ($input > PHP_INT_MAX) ? (float) $input : (int) $input;
-}
-
-/**
  * Parse cfg file
  * @param string $filename
  * @param bool|array $lines
