@@ -399,23 +399,24 @@ function get_context(string $text, array $words, int $length = 400): string
 	{
 		$fragment = utf8_substr($text, $start, $end - $start + 1);
 
-		$offset = $start;
+		$fragment_start = 0;
+		$fragment_end = $end - $start + 1;
 
 		// Find the first valid alphanumeric character in the fragment to don't cut words
 		if ($start > 0)
 		{
 			preg_match('/[^a-zA-Z0-9][a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
-			$start = $offset + (int) $matches[0][1] + 1; // first valid alphanumeric character
+			$fragment_start = (int) $matches[0][1] + 1; // first valid alphanumeric character
 		}
 
 		// Find the last valid alphanumeric character in the fragment to don't cut words
 		if ($end < $text_length - 1)
 		{
 			preg_match_all('/[a-zA-Z0-9][^a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
-			$end = $offset + end($matches[0])[1]; // last valid alphanumeric character
+			$fragment_end = end($matches[0])[1]; // last valid alphanumeric character
 		}
 
-		$output[] = utf8_substr($text, $start, $end - $start + 1);
+		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
 	}
 
 	return htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
