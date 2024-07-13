@@ -451,7 +451,7 @@ class session
 						$this->check_ban_for_current_session($config);
 
 						// Update user last active time accordingly, but in a minute or so
-						if ((int) $this->data['session_time'] - (int) $this->data['user_last_active'] > 60)
+						if ($this->time_now - (int) $this->data['user_last_active'] > 60)
 						{
 							$this->update_last_active_time();
 						}
@@ -1718,7 +1718,7 @@ class session
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_lastvisit = ' . (int) $this->data['session_time'] . ',
-					user_last_active = ' . (int) $this->data['session_time'] . '
+					user_last_active = ' . $this->time_now . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 		}
@@ -1733,10 +1733,10 @@ class session
 	{
 		global $db;
 
-		if (isset($this->data['session_time'], $this->data['user_id']))
+		if (isset($this->time_now, $this->data['user_id']))
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_last_active = ' . (int) $this->data['session_time'] . '
+				SET user_last_active = ' . $this->time_now . '
 				WHERE user_id = ' . (int) $this->data['user_id'];
 			$db->sql_query($sql);
 		}

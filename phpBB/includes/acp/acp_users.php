@@ -1094,7 +1094,7 @@ class acp_users
 					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
-				$last_active = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_last_active'];
+				$last_active = $user_row['user_last_active'] ?: ($user_row['session_time'] ?? 0);
 
 				$inactive_reason = '';
 				if ($user_row['user_type'] == USER_INACTIVE)
