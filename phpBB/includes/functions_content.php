@@ -325,83 +325,101 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 *
 * @return	string			Context of the specified words separated by "..."
 */
-function get_context($text, $words, $length = 400)
+function get_context(string $text, array $words, int $length = 400): string
 {
-	$text_length = utf8_strlen($text);
-
-	// Replace all spaces/invisible characters with single spaces
-	$text = preg_replace("/\s+/", ' ', $text);
+	if ($length <= 0)
+	{
+		return '...';
+	}
 
 	// we need to turn the entities back into their original form, to not cut the message in between them
 	$text = html_entity_decode($text);
 
+	// Replace all spaces/invisible characters with single spaces
+	$text = preg_replace("/\s+/u", ' ', $text);
+
+	$text_length = utf8_strlen($text);
+
 	// Get first occurrence of each word
-	$word_indizes = [];
+	$word_indexes = [];
 	foreach ($words as $word)
 	{
 		$pos = utf8_stripos($text, $word);
 
 		if ($pos !== false)
 		{
-			$word_indizes[$pos] = $word;
+			$word_indexes[$pos] = $word;
 		}
 	}
 
-	// If there are coincidences
-	if (!empty($word_indizes))
+	if (!empty($word_indexes))
 	{
-			ksort($word_indizes);
+		ksort($word_indexes);
 
-			$wordnum = count($word_indizes);
-			// Size of the fragment of text per word
-			$characters_per_word = (int) ($length / $wordnum);
+		// Size of the fragment of text per word
+		$num_indexes = count($word_indexes);
+		$characters_per_word = (int) ($length / $num_indexes) + 2; // 2 to leave one character of margin at the sides to don't cut words
 
-			// Get text fragments
-			$fragments = [];
-			$start = $end = 0;
-			foreach ($word_indizes as $indize => $word)
+		// Get text fragment indexes
+		$fragments = [];
+		foreach ($word_indexes as $index => $word)
+		{
+			$word_length = utf8_strlen($word);
+			$start = max(0, min($text_length - 1 - $characters_per_word, (int) ($index + ($word_length / 2) - ($characters_per_word / 2))));
+			$end = $start + $characters_per_word;
+
+			// Check if we can merge this fragment into the previous fragment
+			$last_element = array_pop($fragments);
+			if ($last_element !== null)
 			{
-				// Check if the next word can be inside the current fragment of text
-				if ($end + $characters_per_word + utf8_strlen($word) < $indize)
+				[$prev_start, $prev_end] = $last_element;
+
+				if ($prev_end + $characters_per_word >= $index + $word_length)
 				{
-					$fragment = utf8_substr($text, $start, $end-$start);
-
-					if ($start != 0)
-					{
-						$fragment = '... ' . $fragment;
-					}
-
-					$fragments[] = $fragment;
-
-					$start = $indize - ($characters_per_word / 2);
-					// Start fragment at the beginning of a word
-					$end = $start = ($start > 0) ? (utf8_strpos($text, ' ', $start - 1) + 1) : 0;
+					$start = $prev_start;
+					$end = $prev_end + $characters_per_word;
 				}
-
-				$end += $characters_per_word;
-
-				// End fragment at the end of a word
-				$substring = utf8_substr($text, $start, $end - $start);
-				$end = $start + utf8_strrpos($substring, ' ');
+				else
+				{
+					$fragments[] = $last_element;
+				}
 			}
 
-			$fragment = utf8_substr($text, $start, $end-$start);
-			if ($start != 0)
-			{
-				$fragment = '... ' . $fragment;
-			}
-			if ($end < $text_length)
-			{
-				$fragment .= ' ...';
-			}
-
-			// Get the last fragment
-			$fragments[] = $fragment;
-
-			return htmlentities(implode('', $fragments));
+			$fragments[] = [$start, $end];
+		}
+	}
+	else
+	{
+		// There is no coincidences, so we just create a fragment with the first $length characters
+		$fragments[] = [0, $length];
+		$end = $length;
 	}
 
-	return htmlentities($text_length >= $length + 3 ? utf8_substr($text, 0, $length) . ' ...' : $text);
+	$output = [];
+	foreach ($fragments as [$start, $end])
+	{
+		$fragment = utf8_substr($text, $start, $end - $start + 1);
+
+		$offset = $start;
+
+		// Find the first valid alphanumeric character in the fragment to don't cut words
+		if ($start > 0)
+		{
+			preg_match('/[^a-zA-Z0-9][a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
+			$start = $offset + (int) $matches[0][1] + 1; // first valid alphanumeric character
+		}
+
+		// Find the last valid alphanumeric character in the fragment to don't cut words
+		if ($end < $text_length - 1)
+		{
+			preg_match_all('/[a-zA-Z0-9][^a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
+			$end = $offset + end($matches[0])[1]; // last valid alphanumeric character
+		}
+
+		$output[] = utf8_substr($text, $start, $end - $start + 1);
+	}
+
+	return htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**

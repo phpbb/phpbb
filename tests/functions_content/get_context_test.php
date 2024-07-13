@@ -39,7 +39,7 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'text' => 'This is a sample text containing several words, but none of them match the given words.',
 				'words' => ['nonexistent'],
 				'length' => 50,
-				'expected' => 'This is a sample text containing several words, bu ...',
+				'expected' => 'This is a sample text containing several words ...',
 			],
 			'desired length equal to text length' => [
 				'text' => 'Exact length text.',
@@ -57,13 +57,13 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'text' => 'This is a sample text containing &amp; and &lt; and &gt; entities.',
 				'words' => ['sample', 'entities'],
 				'length' => 50,
-				'expected' => 'This is a sample text containing &amp; and &lt; and ...',
+				'expected' => 'This is a sample text ... and &lt; and &gt; entities.',
 			],
 			'text with multiple spaces and special characters' => [
 				'text' => 'This    is    a   sample   text containing    several   words.',
 				'words' => ['sample', 'several'],
 				'length' => 50,
-				'expected' => 'This is a sample text containing several words ...',
+				'expected' => 'This is a sample text containing several words.',
 			],
 			'empty text' => [
 				'text' => '',
