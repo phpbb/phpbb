@@ -89,6 +89,24 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'length' => -10,
 				'expected' => '...',
 			],
+			'ellipses_beginning' => [
+				'text' => 'foo foo foo foo foo foo foo foo bar',
+				'words' => ['bar'],
+				'length' => 10,
+				'expected' => '... foo foo bar',
+			],
+			'ellipsis_end' => [
+				'text' => 'bar foo foo foo foo foo foo foo foo',
+				'words' => ['bar'],
+				'length' => 10,
+				'expected' => 'bar foo foo ...',
+			],
+			'ellipsis_middle' => [
+				'text' => 'foo word1 foo foo foo foo foo foo foo foo foo word2 foo',
+				'words' => ['word1', 'word2'],
+				'length' => 10,
+				'expected' => '... word1 ... word2 ...',
+			],
 		];
 	}
 
@@ -99,4 +117,5 @@ class phpbb_functions_content_get_context_test extends TestCase
 	{
 		$this->assertEquals($expected, get_context($text, $words, $length));
 	}
+
 }
