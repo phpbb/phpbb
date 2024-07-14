@@ -107,6 +107,12 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'length' => 10,
 				'expected' => '... word1 ... word2 ...',
 			],
+			'ellipsis_middle2' => [
+				'text' => 'word1 foo foo foo foo foo foo foo foo foo word2',
+				'words' => ['word1', 'word2'],
+				'length' => 10,
+				'expected' => 'word1 ... word2',
+			]
 		];
 	}
 
