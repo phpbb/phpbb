@@ -369,19 +369,15 @@ function get_context(string $text, array $words, int $length = 400): string
 			$end = $start + $characters_per_word;
 
 			// Check if we can merge this fragment into the previous fragment
-			$last_element = array_pop($fragments);
-			if ($last_element !== null)
+			if (!empty($fragments))
 			{
-				[$prev_start, $prev_end] = $last_element;
+				[$prev_start, $prev_end] = end($fragments);
 
 				if ($prev_end + $characters_per_word >= $index + $word_length)
 				{
+					array_pop($fragments);
 					$start = $prev_start;
 					$end = $prev_end + $characters_per_word;
-				}
-				else
-				{
-					$fragments[] = $last_element;
 				}
 			}
 
@@ -420,7 +416,7 @@ function get_context(string $text, array $words, int $length = 400): string
 		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
 	}
 
-	return ($fragments[0][0] != 0 ? '... ' : '') . htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
+	return ($fragments[0][0] !== 0 ? '... ' : '') . htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**
