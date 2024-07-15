@@ -73,9 +73,6 @@
 		"vimeo/psalm": "^5.18.0",
 		"psalm/plugin-symfony": "^v5.1.0"
 	},
-	"suggest": {
-		"ext-mbstring": "Better performance in search"
-	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "4.0.x-dev"

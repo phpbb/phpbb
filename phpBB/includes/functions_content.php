@@ -324,121 +324,98 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 *
 * @return	string			Context of the specified words separated by "..."
 */
-function get_context(string $text, array $words, int $length = 400)
+function get_context(string $text, array $words, int $length = 400): string
 {
-	// first replace all whitespaces with single spaces
-	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
+	if ($length <= 0)
+	{
+		return '...';
+	}
 
 	// we need to turn the entities back into their original form, to not cut the message in between them
-	$entities = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
-	$characters = array('<', '>', '[', ']', '.', ':', ':');
-	$text = str_replace($entities, $characters, $text);
+	$text = html_entity_decode($text);
 
-	$word_indizes = array();
-	if (count($words))
+	// Replace all spaces/invisible characters with single spaces
+	$text = preg_replace("/\s+/u", ' ', $text);
+
+	$text_length = utf8_strlen($text);
+
+	// Get first occurrence of each word
+	$word_indexes = [];
+	foreach ($words as $word)
 	{
-		$match = '';
-		// find the starting indizes of all words
-		foreach ($words as $word)
+		$pos = utf8_stripos($text, $word);
+
+		if ($pos !== false)
 		{
-			if ($word)
-			{
-				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
-				{
-					if (empty($match[1]))
-					{
-						continue;
-					}
-
-					$pos = utf8_strpos($text, $match[1]);
-					if ($pos !== false)
-					{
-						$word_indizes[] = $pos;
-					}
-				}
-			}
-		}
-		unset($match);
-
-		if (count($word_indizes))
-		{
-			$word_indizes = array_unique($word_indizes);
-			sort($word_indizes);
-
-			$wordnum = count($word_indizes);
-			// number of characters on the right and left side of each word
-			$sequence_length = (int) ($length / (2 * $wordnum)) - 2;
-			$final_text = '';
-			$word = $j = 0;
-			$final_text_index = -1;
-
-			// cycle through every character in the original text
-			for ($i = $word_indizes[$word], $n = utf8_strlen($text); $i < $n; $i++)
-			{
-				// if the current position is the start of one of the words then append $sequence_length characters to the final text
-				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
-				{
-					if ($final_text_index < $i - $sequence_length - 1)
-					{
-						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', utf8_substr($text, $i - $sequence_length, $sequence_length));
-					}
-					else
-					{
-						// if the final text is already nearer to the current word than $sequence_length we only append the text
-						// from its current index on and distribute the unused length to all other sequenes
-						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
-						$final_text .= utf8_substr($text, $final_text_index + 1, $i - $final_text_index - 1);
-					}
-					$final_text_index = $i - 1;
-
-					// add the following characters to the final text (see below)
-					$word++;
-					$j = 1;
-				}
-
-				if ($j > 0)
-				{
-					// add the character to the final text and increment the sequence counter
-					$final_text .= utf8_substr($text, $i, 1);
-					$final_text_index++;
-					$j++;
-
-					// if this is a whitespace then check whether we are done with this sequence
-					if (utf8_substr($text, $i, 1) == ' ')
-					{
-						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
-						if ($i + 4 < $n)
-						{
-							if (($j > $sequence_length && $word >= $wordnum) || utf8_strlen($final_text) > $length)
-							{
-								$final_text .= ' ...';
-								break;
-							}
-						}
-						else
-						{
-							// make sure the text really reaches the end
-							$j -= 4;
-						}
-
-						// stop context generation and wait for the next word
-						if ($j > $sequence_length)
-						{
-							$j = 0;
-						}
-					}
-				}
-			}
-			return str_replace($characters, $entities, $final_text);
+			$word_indexes[$pos] = $word;
 		}
 	}
 
-	if (!count($words) || !count($word_indizes))
+	if (!empty($word_indexes))
 	{
-		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
+		ksort($word_indexes);
+
+		// Size of the fragment of text per word
+		$num_indexes = count($word_indexes);
+		$characters_per_word = (int) ($length / $num_indexes) + 2; // 2 to leave one character of margin at the sides to don't cut words
+
+		// Get text fragment indexes
+		$fragments = [];
+		foreach ($word_indexes as $index => $word)
+		{
+			$word_length = utf8_strlen($word);
+			$start = max(0, min($text_length - 1 - $characters_per_word, (int) ($index + ($word_length / 2) - ($characters_per_word / 2))));
+			$end = $start + $characters_per_word;
+
+			// Check if we can merge this fragment into the previous fragment
+			if (!empty($fragments))
+			{
+				[$prev_start, $prev_end] = end($fragments);
+
+				if ($prev_end + $characters_per_word >= $index + $word_length)
+				{
+					array_pop($fragments);
+					$start = $prev_start;
+					$end = $prev_end + $characters_per_word;
+				}
+			}
+
+			$fragments[] = [$start, $end];
+		}
+	}
+	else
+	{
+		// There is no coincidences, so we just create a fragment with the first $length characters
+		$fragments[] = [0, $length];
+		$end = $length;
 	}
 
-	return '';
+	$output = [];
+	foreach ($fragments as [$start, $end])
+	{
+		$fragment = utf8_substr($text, $start, $end - $start + 1);
+
+		$fragment_start = 0;
+		$fragment_end = $end - $start + 1;
+
+		// Find the first valid alphanumeric character in the fragment to don't cut words
+		if ($start > 0)
+		{
+			preg_match('/[^a-zA-Z0-9][a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
+			$fragment_start = (int) $matches[0][1] + 1; // first valid alphanumeric character
+		}
+
+		// Find the last valid alphanumeric character in the fragment to don't cut words
+		if ($end < $text_length - 1)
+		{
+			preg_match_all('/[a-zA-Z0-9][^a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
+			$fragment_end = end($matches[0])[1]; // last valid alphanumeric character
+		}
+
+		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
+	}
+
+	return ($fragments[0][0] !== 0 ? '... ' : '') . htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**
