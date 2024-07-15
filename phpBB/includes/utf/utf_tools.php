@@ -73,6 +73,22 @@ function utf8_strpos($str, $needle, $offset = null)
 }
 
 /**
+* UTF-8 aware alternative to stripos
+* @ignore
+*/
+function utf8_stripos($str, $needle, $offset = null)
+{
+	if (is_null($offset))
+	{
+		return mb_stripos($str, $needle);
+	}
+	else
+	{
+		return mb_stripos($str, $needle, $offset);
+	}
+}
+
+/**
 * UTF-8 aware alternative to strtolower
 * @ignore
 */

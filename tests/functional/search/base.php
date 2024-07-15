@@ -146,7 +146,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		foreach (['', 'a', 't', 'f', 'i', 's'] as $sort_key)
 		{
-			$this->assert_search_found('phpbb3+installation', 1, 3, $sort_key);
+			$this->assert_search_found('phpbb3+installation', 1, 4, $sort_key);
 			$this->assert_search_found('foosubject+barsearch', 1, 2, $sort_key);
 			$this->assert_search_found('barsearch-testing', 1, 2, $sort_key); // test hyphen ignored
 			$this->assert_search_found('barsearch+-+testing', 1, 2, $sort_key); // test hyphen wrapped with space ignored
