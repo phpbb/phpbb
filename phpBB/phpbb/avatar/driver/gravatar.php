@@ -21,7 +21,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	/**
 	* The URL for the gravatar service
 	*/
-	const GRAVATAR_URL = '//secure.gravatar.com/avatar/';
+	const GRAVATAR_URL = '//gravatar.com/avatar/';
 
 	/**
 	* {@inheritdoc}
@@ -29,7 +29,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	public function get_data($row)
 	{
 		return array(
-			'src' => $row['avatar'],
+			'src' => $this->get_gravatar_url($row),
 			'width' => $row['avatar_width'],
 			'height' => $row['avatar_height'],
 		);
@@ -53,7 +53,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 	{
 		$template->assign_vars(array(
 			'AVATAR_GRAVATAR_WIDTH' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_width']) ? $row['avatar_width'] : $request->variable('avatar_gravatar_width', ''),
-			'AVATAR_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_gravatar_width', ''),
+			'AVATAR_GRAVATAR_HEIGHT' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar_height']) ? $row['avatar_height'] : $request->variable('avatar_gravatar_height', ''),
 			'AVATAR_GRAVATAR_EMAIL' => (($row['avatar_type'] == $this->get_name() || $row['avatar_type'] == 'gravatar') && $row['avatar']) ? $row['avatar'] : '',
 		));
 
@@ -175,7 +175,7 @@ class gravatar extends \phpbb\avatar\driver\driver
 		global $phpbb_dispatcher;
 
 		$url = self::GRAVATAR_URL;
-		$url .=  md5(strtolower(trim($row['avatar'])));
+		$url .= hash('sha256', strtolower(trim($row['avatar'])));
 
 		if ($row['avatar_width'] || $row['avatar_height'])
 		{
