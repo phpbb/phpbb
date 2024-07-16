@@ -110,6 +110,7 @@ class acp_bbcodes
 				);
 
 				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
+				$bbcode_tokens = array_merge($bbcode_tokens, ['ALNUM', 'CHOICE', 'FLOAT', 'HASHMAP', 'INT', 'IP', 'IPPORT', 'IPV4', 'IPV6', 'MAP', 'RANGE', 'REGEXP', 'TIMESTAMP', 'UINT']);
 
 				/**
 				* Modify custom bbcode template data before we display the add/edit form
