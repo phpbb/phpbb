@@ -140,13 +140,7 @@ class webpush extends messenger_base implements extended_method_interface
 		{
 			$data = $notification->get_insert_array();
 			$data += [
-				'push_data'		=> json_encode([
-					'heading'	=> $this->config['sitename'],
-					'title'		=> strip_tags($notification->get_title()),
-					'text'		=> strip_tags($notification->get_reference()),
-					'url'		=> htmlspecialchars_decode($notification->get_url()),
-					'avatar'	=> $notification->get_avatar(),
-				]),
+				'push_data'				=> json_encode(array_merge($notification->get_insert_array(), ['notification_type_name' => $notification->get_type()])),
 				'notification_time'		=> time(),
 				'push_token'			=> hash('sha256', random_bytes(32))
 			];
