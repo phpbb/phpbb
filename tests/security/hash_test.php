@@ -40,7 +40,7 @@ class phpbb_security_hash_test extends phpbb_test_case
 
 	public function test_check_hash_with_phpass()
 	{
-		global $phpbb_container;;
+		global $phpbb_container;
 
 		/** @var \phpbb\passwords\manager $passwords_manager */
 		$passwords_manager = $phpbb_container->get('passwords.manager');
@@ -52,7 +52,7 @@ class phpbb_security_hash_test extends phpbb_test_case
 
 	public function test_check_hash_with_large_input()
 	{
-		global $phpbb_container;;
+		global $phpbb_container;
 
 		/** @var \phpbb\passwords\manager $passwords_manager */
 		$passwords_manager = $phpbb_container->get('passwords.manager');

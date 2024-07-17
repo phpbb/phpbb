@@ -111,7 +111,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => '0'));
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
-		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$container = new phpbb_mock_container_builder();
 		$container->setParameter('core.environment', PHPBB_ENVIRONMENT);
