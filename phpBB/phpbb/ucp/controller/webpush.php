@@ -19,6 +19,8 @@ use phpbb\db\driver\driver_interface;
 use phpbb\exception\http_exception;
 use phpbb\form\form_helper;
 use phpbb\json\sanitizer as json_sanitizer;
+use phpbb\language\language;
+use phpbb\notification\manager;
 use phpbb\path_helper;
 use phpbb\request\request_interface;
 use phpbb\symfony_request;
@@ -47,6 +49,12 @@ class webpush
 	/** @var form_helper */
 	protected $form_helper;
 
+	/** @var language */
+	protected $language;
+
+	/** @var manager */
+	protected $notification_manager;
+
 	/** @var path_helper */
 	protected $path_helper;
 
@@ -72,6 +80,8 @@ class webpush
 	 * @param controller_helper $controller_helper
 	 * @param driver_interface $db
 	 * @param form_helper $form_helper
+	 * @param language $language
+	 * @param manager $notification_manager
 	 * @param path_helper $path_helper
 	 * @param request_interface $request
 	 * @param user $user
@@ -79,13 +89,15 @@ class webpush
 	 * @param string $notification_webpush_table
 	 * @param string $push_subscriptions_table
 	 */
-	public function __construct(config $config, controller_helper $controller_helper, driver_interface $db, form_helper $form_helper, path_helper $path_helper,
-								request_interface $request, user $user, Environment $template, string $notification_webpush_table, string $push_subscriptions_table)
+	public function __construct(config $config, controller_helper $controller_helper, driver_interface $db, form_helper $form_helper, language $language, manager $notification_manager,
+								path_helper $path_helper, request_interface $request, user $user, Environment $template, string $notification_webpush_table, string $push_subscriptions_table)
 	{
 		$this->config = $config;
 		$this->controller_helper = $controller_helper;
 		$this->db = $db;
 		$this->form_helper = $form_helper;
+		$this->language = $language;
+		$this->notification_manager = $notification_manager;
 		$this->path_helper = $path_helper;
 		$this->request = $request;
 		$this->user = $user;
@@ -147,7 +159,7 @@ class webpush
 		$notification_data = $this->db->sql_fetchfield('push_data');
 		$this->db->sql_freeresult($result);
 
-		return $notification_data;
+		return $this->get_notification_data($notification_data);
 	}
 
 	/**
@@ -178,21 +190,52 @@ class webpush
 			$push_token = $notification_row['push_token'];
 
 			// Check if passed push token is valid
-			$sql = 'SELECT user_form_salt
+			$sql = 'SELECT user_form_salt, user_lang
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . (int) $user_id;
 			$result = $this->db->sql_query($sql);
-			$user_form_token = $this->db->sql_fetchfield('user_form_salt');
+			$row = $this->db->sql_fetchrow($result);
 			$this->db->sql_freeresult($result);
+
+			$user_form_token = $row['user_form_salt'];
+			$user_lang = $row['user_lang'];
 
 			$expected_push_token = hash('sha256', $user_form_token . $push_token);
 			if ($expected_push_token === $token)
 			{
-				return $notification_data;
+				if ($user_lang !== $this->language->get_used_language())
+				{
+					$this->language->set_user_language($user_lang, true);
+				}
+				return $this->get_notification_data($notification_data);
 			}
 		}
 
 		throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
+	}
+
+	private function get_notification_data(string $notification_data): string
+	{
+		$row_data = json_decode($notification_data, true);
+
+		// Old notification data is pre-parsed and just needs to be returned
+		if (isset($row_data['heading']))
+		{
+			return $notification_data;
+		}
+
+		// Get notification from row_data
+		$notification = $this->notification_manager->get_item_type_class($row_data['notification_type_name'], $row_data);
+
+		$notification_data = [
+			'heading'	=> $this->config['sitename'],
+			'title'		=> strip_tags($notification->get_title()),
+			'text'		=> strip_tags($notification->get_reference()),
+			'url'		=> htmlspecialchars_decode($notification->get_url()),
+			'avatar'	=> $notification->get_avatar(),
+		];
+
+		return json_encode($notification_data);
 	}
 
 	/**

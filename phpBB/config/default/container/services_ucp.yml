@@ -34,6 +34,8 @@ services:
             - '@controller.helper'
             - '@dbal.conn'
             - '@form_helper'
+            - '@language'
+            - '@notification_manager'
             - '@path_helper'
             - '@request'
             - '@user'
