@@ -276,15 +276,6 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$hostname = 'version.phpbb.com';
 
-		if (!checkdnsrr($hostname, 'A'))
-		{
-			$this->markTestSkipped(sprintf(
-				'Could not find a DNS record for hostname %s. ' .
-				'Assuming network is down.',
-				$hostname
-			));
-		}
-
 		$file = $file_downloader->get($hostname, '/phpbb', '30x.txt');
 		$errstr = $file_downloader->get_error_string();
 		$errno = $file_downloader->get_error_number();
