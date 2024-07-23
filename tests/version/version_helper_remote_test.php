@@ -1,4 +1,7 @@
 <?php
+
+use GuzzleHttp\Exception\RequestException;
+
 /**
  *
  * This file is part of the phpBB Forum Software package.
@@ -17,6 +20,11 @@ class version_helper_remote_test extends \phpbb_test_case
 	protected $cache;
 	protected $version_helper;
 	protected $user;
+
+	// Guzzle mock data
+	protected $guzzle_status = 200; // Default to 200 status
+	protected $guzzle_data;
+	protected $guzzle_mock;
 
 	protected function setUp(): void
 	{
@@ -41,7 +49,29 @@ class version_helper_remote_test extends \phpbb_test_case
 			->method('get')
 			->with($this->anything())
 			->will($this->returnValue(false));
-		$this->file_downloader = new phpbb_mock_file_downloader();
+
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->addMethods(['set_data'])
+			->onlyMethods(['request'])
+			->getMock();
+		$this->guzzle_mock->method('set_data')
+			->will($this->returnCallback(function($data)
+				{
+					$this->guzzle_data = $data;
+				}
+			));
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function()
+				{
+					return new \GuzzleHttp\Psr7\Response($this->guzzle_status, [], $this->guzzle_data);
+				}
+			));
+
+		$this->file_downloader = $this->getMockBuilder('\phpbb\file_downloader')
+			->onlyMethods(['create_client'])
+			->getMock();
+		$this->file_downloader->method('create_client')
+			->will($this->returnValue($this->guzzle_mock));
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 
@@ -203,7 +233,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	 */
 	public function test_get_versions($input, $valid_data, $expected_return = '', $expected_exception = '')
 	{
-		$this->file_downloader->set($input);
+		$this->guzzle_mock->set_data($input);
 
 		// version_helper->get_versions() doesn't return a value on VERSIONCHECK_FAIL but only throws exception
 		// so the $return is undefined. Define it here
@@ -214,7 +244,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			try {
 				$return = $this->version_helper->get_versions();
 			} catch (\phpbb\exception\runtime_exception $e) {
-				$this->assertEquals((string)$e->getMessage(), $expected_exception);
+				$this->assertEquals($expected_exception, $e->getMessage());
 			}
 		}
 		else
@@ -227,7 +257,23 @@ class version_helper_remote_test extends \phpbb_test_case
 
 	public function test_version_phpbb_com()
 	{
-		$file_downloader = new \phpbb\file_downloader();
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function()
+				{
+					return new \GuzzleHttp\Psr7\Response(200, [], file_get_contents(__DIR__ . '/fixture/30x.txt'));
+				}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
 
 		$hostname = 'version.phpbb.com';
 
@@ -284,5 +330,139 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$this->assertStringContainsString('http', $lines[1]);
 		$this->assertStringContainsString('phpbb.com', $lines[1], '', true);
+	}
+
+	public function test_file_downloader_file_not_found()
+	{
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function()
+				{
+					return new \GuzzleHttp\Psr7\Response(404, [], '');
+				}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
+
+		$this->expectException(\phpbb\exception\runtime_exception::class);
+		$this->expectExceptionMessage('FILE_NOT_FOUND');
+
+		$file_downloader->get('foo.com', 'bar', 'foo.txt');
+	}
+
+	public function test_file_downloader_exception_not_found()
+	{
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function($method, $uri)
+				{
+					$request = new \GuzzleHttp\Psr7\Request('GET', $uri);
+					$response = new \GuzzleHttp\Psr7\Response(404, [], '');
+					throw new RequestException('FILE_NOT_FOUND', $request, $response);
+				}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
+
+		$this->expectException(\phpbb\exception\runtime_exception::class);
+		$this->expectExceptionMessage('FILE_NOT_FOUND');
+
+		$file_downloader->get('foo.com', 'bar', 'foo.txt');
+	}
+
+	public function test_file_downloader_exception_moved()
+	{
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function($method, $uri)
+			{
+				$request = new \GuzzleHttp\Psr7\Request('GET', $uri);
+				$response = new \GuzzleHttp\Psr7\Response(302, [], '');
+				throw new RequestException('FILE_MOVED', $request, $response);
+			}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
+
+		$this->assertFalse($file_downloader->get('foo.com', 'bar', 'foo.txt'));
+		$this->assertEquals(302, $file_downloader->get_error_number());
+		$this->assertEquals('FILE_MOVED', $file_downloader->get_error_string());
+	}
+
+	public function test_file_downloader_exception_timeout()
+	{
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function($method, $uri)
+				{
+					$request = new \GuzzleHttp\Psr7\Request('GET', $uri);
+					throw new RequestException('FILE_NOT_FOUND', $request);
+				}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
+
+		$this->expectException(\phpbb\exception\runtime_exception::class);
+		$this->expectExceptionMessage('FSOCK_TIMEOUT');
+
+		$file_downloader->get('foo.com', 'bar', 'foo.txt');
+	}
+
+	public function test_file_downloader_exception_other()
+	{
+		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+			->onlyMethods(['request'])
+			->getMock();
+
+		$this->guzzle_mock->method('request')
+			->will($this->returnCallback(function($method, $uri)
+				{
+					throw new \RuntimeException('FSOCK_NOT_SUPPORTED');
+				}
+			));
+
+		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
+			->onlyMethods(['create_client'])
+			->getMock();
+
+		$file_downloader->method('create_client')
+			->willReturn($this->guzzle_mock);
+
+		$this->expectException(\phpbb\exception\runtime_exception::class);
+		$this->expectExceptionMessage('FSOCK_DISABLED');
+
+		$file_downloader->get('foo.com', 'bar', 'foo.txt');
 	}
 }
