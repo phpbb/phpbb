@@ -256,11 +256,11 @@ class version_helper_remote_test extends \phpbb_test_case
 
 	public function test_version_phpbb_com()
 	{
-		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
+		$guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
 			->onlyMethods(['request'])
 			->getMock();
 
-		$this->guzzle_mock->method('request')
+		$guzzle_mock->method('request')
 			->will($this->returnCallback(function()
 				{
 					return new \GuzzleHttp\Psr7\Response(200, [], file_get_contents(__DIR__ . '/fixture/30x.txt'));
@@ -272,7 +272,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			->getMock();
 
 		$file_downloader->method('create_client')
-			->willReturn($this->guzzle_mock);
+			->willReturn($guzzle_mock);
 
 		$hostname = 'version.phpbb.com';
 
