@@ -51,7 +51,7 @@ class acp_logs
 		$pagination = $phpbb_container->get('pagination');
 
 		// Delete entries if requested and able
-		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+		if (($deleteall || ($deletemark && count($marked))) && $auth->acl_get('a_clearlogs'))
 		{
 			if (confirm_box(true))
 			{
