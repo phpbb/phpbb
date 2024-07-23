@@ -14,9 +14,8 @@
 namespace phpbb;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException ;
+use GuzzleHttp\Exception\RequestException;
 use phpbb\exception\runtime_exception;
-use function Amp\Promise\rethrow;
 
 class file_downloader
 {
