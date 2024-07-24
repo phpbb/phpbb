@@ -97,7 +97,7 @@ class phpbb_privmsgs_delete_user_pms_test extends phpbb_database_test_case
 		// Works as a workaround for tests
 		$phpbb_container->set('attachment.manager', new \phpbb\attachment\delete(new \phpbb\config\config(array()), $db, new \phpbb_mock_event_dispatcher(), new \phpbb\attachment\resync($db), $storage));
 
-		phpbb_delete_user_pms($delete_user);
+		phpbb_delete_users_pms([$delete_user]);
 
 		$sql = 'SELECT msg_id
 			FROM ' . PRIVMSGS_TABLE;

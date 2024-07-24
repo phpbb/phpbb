@@ -59,7 +59,7 @@ interface request_interface
 	* @param	int				$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	* 										Specifies which super global shall be changed
 	*
-	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	* @return	mixed	The value of $_REQUEST[$var_name] run through {@link type_cast_helper_interface::set_var} to ensure that the type is the
 	*					the same as that of $default. If the variable is not set $default is returned.
 	*/
 	public function variable($var_name, $default, $multibyte = false, $super_global = request_interface::REQUEST);
@@ -81,7 +81,7 @@ interface request_interface
 	 * @param	int				$super_global		(\phpbb\request\request_interface::POST|GET|REQUEST|COOKIE)
 	 * 										Specifies which super global shall be changed
 	 *
-	 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+	 * @return	mixed	The value of $_REQUEST[$var_name] run through {@link type_cast_helper_interface::set_var} to ensure that the type is the
 	 *					the same as that of $default. If the variable is not set $default is returned.
 	 */
 	public function raw_variable($var_name, $default, $super_global = request_interface::REQUEST);

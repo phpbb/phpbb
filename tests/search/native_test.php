@@ -36,7 +36,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
-		$user = new \phpbb\user($lang, '\phpbb\datetime');;
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$this->db = $this->new_dbal();
 		$tools_factory = new \phpbb\db\tools\factory();

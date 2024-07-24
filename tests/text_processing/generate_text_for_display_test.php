@@ -21,7 +21,6 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
 		$config = new \phpbb\config\config(array());
-		set_config(null, null, null, $config);
 	}
 
 	/**

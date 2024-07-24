@@ -136,7 +136,7 @@ class phpbb_config_db_test extends phpbb_database_test_case
 	public function test_increment_new()
 	{
 		$this->config->increment('foobar', 3);
-		$this->assertEquals(3, $this->config['foobar']);;
+		$this->assertEquals(3, $this->config['foobar']);
 	}
 
 	public function test_delete()

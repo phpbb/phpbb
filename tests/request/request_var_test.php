@@ -14,15 +14,6 @@
 class phpbb_request_var_test extends phpbb_test_case
 {
 	/**
-	* Makes sure request_var has its standard behaviour.
-	*/
-	protected function setUp(): void
-	{
-		parent::setUp();
-		request_var(false, false, false, false, false);
-	}
-
-	/**
 	* @dataProvider request_variables
 	*/
 	public function test_post($variable_value, $default, $multibyte, $expected)
@@ -33,7 +24,8 @@ class phpbb_request_var_test extends phpbb_test_case
 		$_POST[$variable_name] = $variable_value;
 		$_REQUEST[$variable_name] = $variable_value;
 
-		$result = request_var($variable_name, $default, $multibyte);
+		$request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
+		$result = $request->variable($variable_name, $default, $multibyte);
 
 		$label = 'Requesting POST variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
 		$this->assertEquals($expected, $result, $label);
@@ -50,7 +42,8 @@ class phpbb_request_var_test extends phpbb_test_case
 		$_GET[$variable_name] = $variable_value;
 		$_REQUEST[$variable_name] = $variable_value;
 
-		$result = request_var($variable_name, $default, $multibyte);
+		$request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
+		$result = $request->variable($variable_name, $default, $multibyte);
 
 		$label = 'Requesting GET variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
 		$this->assertEquals($expected, $result, $label);
@@ -69,7 +62,8 @@ class phpbb_request_var_test extends phpbb_test_case
 		$_REQUEST[$variable_name] = false;
 		$_COOKIE[$variable_name] = $variable_value;
 
-		$result = request_var($variable_name, $default, $multibyte, true);
+		$request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
+		$result = $request->variable($variable_name, $default, $multibyte, \phpbb\request\request_interface::COOKIE);
 
 		$label = 'Requesting COOKIE variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
 		$this->assertEquals($expected, $result, $label);
@@ -109,7 +103,8 @@ class phpbb_request_var_test extends phpbb_test_case
 			),
 		);
 
-		$result = request_var($path, $default);
+		$request = new \phpbb\request\request(new \phpbb\request\type_cast_helper(), false);
+		$result = $request->variable($path, $default);
 		$this->assertEquals($expected, $result);
 	}
 

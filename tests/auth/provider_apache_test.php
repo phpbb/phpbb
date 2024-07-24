@@ -33,7 +33,7 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$this->request = $this->createMock('\phpbb\request\request');
-		$this->user = new \phpbb\user($lang, '\phpbb\datetime');;
+		$this->user = new \phpbb\user($lang, '\phpbb\datetime');
 
 		$this->provider = new \phpbb\auth\provider\apache($config, $db, $lang, $this->request, $this->user, $phpbb_root_path, $phpEx);
 	}

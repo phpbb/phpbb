@@ -20,7 +20,6 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 		parent::setUp();
 
 		$config = new \phpbb\config\config(array());
-		set_config(null, null, null, $config);
 
 		$phpbb_container = new phpbb_mock_container_builder;
 		$phpbb_container->set('config', $config);

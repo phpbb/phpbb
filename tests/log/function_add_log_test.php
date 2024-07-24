@@ -172,19 +172,63 @@ class phpbb_log_function_add_log_test extends phpbb_database_test_case
 
 		if ($additional3 != null)
 		{
-			add_log($mode, $required1, $additional1, $additional2, $additional3);
+			$additional_data = [
+				'forum_id'	=> $required1,
+				'topic_id'	=> $additional1,
+				$additional3,
+			];
+			$phpbb_log->add($mode, $user_id, '', $additional2, false, $additional_data);
 		}
 		else if ($additional2 != null)
 		{
-			add_log($mode, $required1, $additional1, $additional2);
+			if ($mode == 'user')
+			{
+				$additional_data = [
+					'reportee_id'	=> $required1,
+					$additional2,
+				];
+				$log_operation = $additional1;
+			}
+			else if ($mode == 'mod')
+			{
+				$additional_data = [
+					'forum_id'	=> $required1,
+					'topic_id'	=> $additional1,
+				];
+				$log_operation = $additional2;
+			}
+			else
+			{
+				$log_operation = $required1;
+				$additional_data = [
+					$additional1,
+					$additional2,
+				];
+			}
+			$phpbb_log->add($mode, $user_id, '', $log_operation, false, $additional_data);
 		}
 		else if ($additional1 != null)
 		{
-			add_log($mode, $required1, $additional1);
+			if ($mode == 'user')
+			{
+				$additional_data = [
+					'reportee_id'	=> $required1,
+				];
+				$log_operation = $additional1;
+			}
+			else
+			{
+				$log_operation = $required1;
+				$additional_data = [
+					$additional1,
+				];
+			}
+
+			$phpbb_log->add($mode, $user_id, '', $log_operation, false, $additional_data);
 		}
 		else
 		{
-			add_log($mode, $required1);
+			$phpbb_log->add($mode, $user_id, '', $required1);
 		}
 
 		$result = $db->sql_query('SELECT user_id, log_type, log_operation, log_data, reportee_id, forum_id, topic_id

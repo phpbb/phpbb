@@ -398,7 +398,7 @@ class filespec
 	 * @param bool $overwrite If set to true, an already existing file will be overwritten
 	 * @param bool $skip_image_check If set to true, the check for the file to be a valid image is skipped
 	 * @param string|bool $chmod Permission mask for chmodding the file after a successful move.
-	 *				The mode entered here reflects the mode defined by {@link phpbb_chmod()}
+	 *				The mode entered here reflects the mode defined by {@link \phpbb\filesystem\filesystem::phpbb_chmod()}
 	 *
 	 * @return bool True if file was moved, false if not
 	 * @access public
