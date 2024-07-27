@@ -4032,7 +4032,9 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
+			$page_url = build_url();
+			$page_url .= ((!str_contains($page_url, '?')) ? '?' : '&amp;') . 'explain=1';
+			$debug_info[] = '<a href="' . $page_url . '">SQL Explain</a>';
 		}
 	}
 
