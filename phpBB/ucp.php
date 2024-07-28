@@ -154,68 +154,11 @@ switch ($mode)
 	break;
 
 	case 'delete_cookies':
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
 
-		// Delete Cookies with dynamic names (do NOT delete poll cookies)
-		if (confirm_box(true))
-		{
-			$set_time = time() - 31536000;
-
-			foreach ($request->variable_names(\phpbb\request\request_interface::COOKIE) as $cookie_name)
-			{
-				$cookie_data = $request->variable($cookie_name, '', true, \phpbb\request\request_interface::COOKIE);
-
-				// Only delete board cookies, no other ones...
-				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
-				{
-					continue;
-				}
-
-				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
-
-				/**
-				* Event to save custom cookies from deletion
-				*
-				* @event core.ucp_delete_cookies
-				* @var	string	cookie_name		Cookie name to checking
-				* @var	bool	retain_cookie	Do we retain our cookie or not, true if retain
-				* @since 3.1.3-RC1
-				*/
-				$retain_cookie = false;
-				$vars = array('cookie_name', 'retain_cookie');
-				extract($phpbb_dispatcher->trigger_event('core.ucp_delete_cookies', compact($vars)));
-				if ($retain_cookie)
-				{
-					continue;
-				}
-
-				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
-				if (strpos($cookie_name, 'poll_') !== 0)
-				{
-					$user->set_cookie($cookie_name, '', $set_time);
-				}
-			}
-
-			$user->set_cookie('track', '', $set_time);
-			$user->set_cookie('u', '', $set_time);
-			$user->set_cookie('k', '', $set_time);
-			$user->set_cookie('sid', '', $set_time);
-
-			// We destroy the session here, the user will be logged out nevertheless
-			$user->session_kill();
-			$user->session_begin();
-
-			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-
-			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
-			trigger_error($message);
-		}
-		else
-		{
-			confirm_box(false, 'DELETE_COOKIES', '');
-		}
-
-		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
-
+		// Redirect to controller
+		redirect($controller_helper->route('phpbb_ucp_delete_cookies_controller'));
 	break;
 
 	case 'switch_perm':
