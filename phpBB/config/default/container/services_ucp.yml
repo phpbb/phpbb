@@ -1,4 +1,15 @@
 services:
+    phpbb.ucp.controller.delete_cookies:
+        class: phpbb\ucp\controller\delete_cookies
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     phpbb.ucp.controller.reset_password:
         class: phpbb\ucp\controller\reset_password
         arguments:
