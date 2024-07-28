@@ -181,6 +181,7 @@
 
 		<!-- create an empty config.php file (not for diffs) -->
 		<touch file="build/new_version/phpBB3/config.php" />
+		<copy file="build/new_version/phpBB3/phpbb/.htaccess" tofile="build/new_version/phpBB3/vendor/.htaccess" />
 
 	</target>
 
