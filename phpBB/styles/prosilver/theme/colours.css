@@ -298,6 +298,14 @@ a:hover .icon.icon-black, /* DEPRECATED 4.0 */
 	color: inherit;
 }
 
+.push-subscribe-toggle-icon.toggle-on {
+	color: #0059b3;
+}
+
+.push-subscribe-toggle-icon.toggle-off {
+	color: #9e9e9e;
+}
+
 /* jumpbox */
 .jumpbox .dropdown li {
 	border-top-color: #dedede;
