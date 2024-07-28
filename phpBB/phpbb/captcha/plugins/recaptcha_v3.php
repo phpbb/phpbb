@@ -359,6 +359,7 @@ class recaptcha_v3 extends captcha_abstract
 		if ($result->isSuccess())
 		{
 			$this->solved = true;
+			$this->confirm_code = $this->code;
 
 			return false;
 		}
