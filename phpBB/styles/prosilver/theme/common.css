@@ -560,7 +560,7 @@ a.header-avatar img {
 	line-height: normal !important;
 	text-align: left;
 	white-space: nowrap;
-	border-top: 1px dotted transparent;
+	border-top: 1px solid transparent;
 	display: list-item;
 	float: none !important;
 	margin: 0;
