@@ -819,7 +819,7 @@ class session
 				// Update the form key
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\',
-						user_last_active = ' . (int) $this->data['session_time'] . '
+						user_last_active = ' . (int) $this->time_now . '
 					WHERE user_id = ' . (int) $this->data['user_id'];
 				$db->sql_query($sql);
 			}
