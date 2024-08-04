@@ -59,11 +59,11 @@ class storage
 	 *
 	 * @param db								$db
 	 * @param cache								$cache
-	 * @param adapter_factory $factory
+	 * @param adapter_factory 					$factory
 	 * @param string							$storage_name
 	 * @param string							$storage_table
 	 */
-	public function __construct(db $db, cache $cache, adapter_factory $factory, $storage_name, $storage_table)
+	public function __construct(db $db, cache $cache, adapter_factory $factory, string $storage_name, string $storage_table)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
@@ -77,7 +77,7 @@ class storage
 	 *
 	 * @return string
 	 */
-	public function get_name()
+	public function get_name(): string
 	{
 		return $this->storage_name;
 	}
@@ -87,7 +87,7 @@ class storage
 	 *
 	 * @return adapter_interface
 	 */
-	protected function get_adapter()
+	protected function get_adapter(): mixed
 	{
 		if ($this->adapter === null)
 		{
@@ -106,7 +106,7 @@ class storage
 	 * @throws storage_exception	When the file already exists
 	 * 						When the file cannot be written
 	 */
-	public function put_contents($path, $content)
+	public function put_contents(string $path, string $content): void
 	{
 		if ($this->exists($path))
 		{
@@ -128,7 +128,7 @@ class storage
 	 * 						When cannot read file contents
 	 *
 	 */
-	public function get_contents($path)
+	public function get_contents(string $path): string
 	{
 		if (!$this->exists($path))
 		{
@@ -146,7 +146,7 @@ class storage
 	 *
 	 * @return bool	Returns true if the file/directory exist, false otherwise
 	 */
-	public function exists($path, $full_check = false)
+	public function exists(string $path, bool $full_check = false): bool
 	{
 		return ($this->is_tracked($path) && (!$full_check || $this->get_adapter()->exists($path)));
 	}
@@ -154,12 +154,12 @@ class storage
 	/**
 	 * Removes files or directories
 	 *
-	 * @param string	$path	file/directory to remove
+	 * @param string $path	file/directory to remove
 	 *
 	 * @throws storage_exception    When removal fails
 	 *						When the file doesn't exist
 	 */
-	public function delete($path)
+	public function delete(string $path): void
 	{
 		if (!$this->exists($path))
 		{
@@ -173,14 +173,14 @@ class storage
 	/**
 	 * Rename a file or a directory
 	 *
-	 * @param string	$path_orig	The original file/direcotry
-	 * @param string	$path_dest	The target file/directory
+	 * @param string $path_orig	The original file/direcotry
+	 * @param string $path_dest	The target file/directory
 	 *
 	 * @throws storage_exception    When the file doesn't exist
 	 *						When target exists
 	 * 						When file/directory cannot be renamed
 	 */
-	public function rename($path_orig, $path_dest)
+	public function rename(string $path_orig, string $path_dest): void
 	{
 		if (!$this->exists($path_orig))
 		{
@@ -199,14 +199,14 @@ class storage
 	/**
 	 * Copies a file
 	 *
-	 * @param string	$path_orig	The original filename
-	 * @param string	$path_dest	The target filename
+	 * @param string $path_orig	The original filename
+	 * @param string $path_dest	The target filename
 	 *
 	 * @throws storage_exception    When the file doesn't exist
 	 *						When target exists
 	 * 						When the file cannot be copied
 	 */
-	public function copy($path_orig, $path_dest)
+	public function copy(string $path_orig, string $path_dest): void
 	{
 		if (!$this->exists($path_orig))
 		{
@@ -225,14 +225,14 @@ class storage
 	/**
 	 * Reads a file as a stream
 	 *
-	 * @param string	$path	File to read
+	 * @param string $path	File to read
 	 *
 	 * @return resource    Returns a file pointer
 	 * @throws storage_exception	When the file doesn't exist
 	 *						When unable to open file
 	 *
 	 */
-	public function read_stream($path)
+	public function read_stream(string $path)
 	{
 		if (!$this->exists($path))
 		{
@@ -260,13 +260,13 @@ class storage
 	/**
 	 * Writes a new file using a stream
 	 *
-	 * @param string	$path		The target file
+	 * @param string $path		The target file
 	 * @param resource	$resource	The resource
 	 *
 	 * @throws storage_exception    When the file exist
 	 *						When target file cannot be created
 	 */
-	public function write_stream($path, $resource)
+	public function write_stream(string $path, $resource): void
 	{
 		if ($this->exists($path))
 		{
@@ -295,10 +295,10 @@ class storage
 	/**
 	 * Track file in database
 	 *
-	 * @param string	$path		The target file
-	 * @param bool		$update		Update file size when already tracked
+	 * @param string $path		The target file
+	 * @param bool $update		Update file size when already tracked
 	 */
-	public function track_file($path, $update = false)
+	public function track_file(string $path, bool $update = false): void
 	{
 		if (!$this->get_adapter()->exists($path))
 		{
@@ -319,20 +319,15 @@ class storage
 
 		if (!$row)
 		{
-			// Don't call the file_info method, because it check's if the file is tracked
-			// and is not (for now). This method check if the file exists using the adapter
-			// at the beginning.
-			$file = new file_info($this->get_adapter(), $path);
-			$sql_ary['filesize'] = $file->size;
+			$sql_ary['filesize'] = $this->get_adapter()->file_size($path);
 
 			$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
 			$this->db->sql_query($sql);
 		}
 		else if ($update)
 		{
-			$file = $this->file_info($path);
 			$sql = 'UPDATE ' . $this->storage_table . '
-				SET filesize = ' . $file->size . '
+				SET filesize = ' . $this->get_adapter()->file_size($path) . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 			$this->db->sql_query($sql);
 		}
@@ -364,11 +359,11 @@ class storage
 	/**
 	 * Check if a file is tracked
 	 *
-	 * @param string	$path	The file
+	 * @param string $path	The file
 	 *
 	 * @return bool	True if file is tracked
 	 */
-	public function is_tracked($path)
+	public function is_tracked(string $path): bool
 	{
 		$sql_ary = array(
 			'file_path'		=> $path,
@@ -381,16 +376,16 @@ class storage
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return ($row) ? true : false;
+		return $row !== false;
 	}
 
 	/**
 	 * Rename tracked file
 	 *
-	 * @param string	$path_orig	The original file/direcotry
-	 * @param string	$path_dest	The target file/directory
+	 * @param string $path_orig	The original file/direcotry
+	 * @param string $path_dest	The target file/directory
 	 */
-	protected function track_rename($path_orig, $path_dest)
+	protected function track_rename(string $path_orig, string $path_dest): void
 	{
 		$sql = 'UPDATE ' . $this->storage_table . "
 			SET file_path = '" . $this->db->sql_escape($path_dest) . "'
@@ -400,36 +395,28 @@ class storage
 	}
 
 	/**
-	 * Get file info
+	 * Get file size in bytes
 	 *
-	 * @param string	$path	The file
+	 * @param string $path The file
 	 *
-	 * @return \phpbb\storage\file_info	Returns file_info object
-	 * @throws storage_exception    When the adapter doesn't implement the method
-	 *													When the file doesn't exist
+	 * @return int Size in bytes.
 	 *
+	 * @throws storage_exception When unable to retrieve file size
 	 */
-	public function file_info($path)
+	public function file_size(string $path): int
 	{
-		if (!$this->exists($path))
-		{
-			throw new storage_exception('STORAGE_FILE_NO_EXIST', $path);
-		}
+		$sql_ary = array(
+			'file_path'		=> $path,
+			'storage'		=> $this->get_name(),
+		);
 
-		return new file_info($this->get_adapter(), $path);
-	}
+		$sql = 'SELECT filesize FROM ' .  $this->storage_table . '
+				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
-	/**
-	 * Get direct link
-	 *
-	 * @param string	$path	The file
-	 *
-	 * @return string	Returns link.
-	 *
-	 */
-	public function get_link($path)
-	{
-		return $this->get_adapter()->get_link($path);
+		return $row !== false && !empty($row['filesize']) ? $row['filesize'] : $this->get_adapter()->file_size($path);
 	}
 
 	/**
@@ -437,7 +424,7 @@ class storage
 	 *
 	 * @return int	Size in bytes
 	 */
-	public function get_size()
+	public function get_size(): int
 	{
 		$total_size = $this->cache->get('_storage_' . $this->get_name() . '_totalsize');
 
@@ -462,7 +449,7 @@ class storage
 	 *
 	 * @return int	Number of files
 	 */
-	public function get_num_files()
+	public function get_num_files(): int
 	{
 		$number_files = $this->cache->get('_storage_' . $this->get_name() . '_numfiles');
 
@@ -493,4 +480,5 @@ class storage
 	{
 		return $this->get_adapter()->free_space();
 	}
+
 }

@@ -86,16 +86,16 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 	public function data_attachment_unlink()
 	{
 		return array(
-			array(true, true, true),
-			array(true, false, false),
-			array(true, true, false, true),
+			array(true, true),
+			array(false, false),
+			array(true, false, true),
 		);
 	}
 
 	/**
 	 * @dataProvider data_attachment_unlink
 	 */
-	public function test_attachment_delete_success($remove_success, $exists_success, $expected, $throw_exception = false)
+	public function test_attachment_delete_success($exists_success, $expected, $throw_exception = false)
 	{
 		$this->storage = $this->createMock('\phpbb\storage\storage');
 		if ($throw_exception)
@@ -107,8 +107,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		else
 		{
 			$this->storage->expects($this->any())
-				->method('delete')
-				->willReturn($remove_success);
+				->method('delete');
 		}
 		$this->storage->expects($this->any())
 			->method('exists')

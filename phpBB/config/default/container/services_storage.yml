@@ -70,8 +70,6 @@ services:
         shared: false
         arguments:
             - '@filesystem'
-            - '@upload_imagesize'
-            - '@mimetype.guesser'
             - '%core.root_path%'
         tags:
             - { name: storage.adapter }
@@ -90,6 +88,7 @@ services:
             - '@cache'
             - '@config'
             - '@dbal.conn'
+            - '@mimetype.extension_guesser'
             - '@storage.avatar'
             - '@symfony_request'
 
@@ -102,6 +101,7 @@ services:
             - '@content.visibility'
             - '@dbal.conn'
             - '@event_dispatcher'
+            - '@mimetype.extension_guesser'
             - '@language'
             - '@request'
             - '@storage.attachment'
