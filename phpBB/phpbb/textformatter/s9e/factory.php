@@ -355,8 +355,6 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Register some vars with a default value. Those should be set at runtime by whatever calls
 		// the parser
 		$configurator->registeredVars['max_font_size'] = 0;
-		$configurator->registeredVars['max_img_height'] = 0;
-		$configurator->registeredVars['max_img_width'] = 0;
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
 		$tag = $configurator->Emoji->getTag();

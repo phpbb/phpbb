@@ -227,8 +227,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_quote_depth', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_reg_attempts', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_chars', '255');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_font_size', '200');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_height', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_img_width', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mention_batch_size', '50');

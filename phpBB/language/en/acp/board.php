@@ -208,10 +208,6 @@ $lang = array_merge($lang, array(
 
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
-	'MAX_SIG_IMG_HEIGHT'			=> 'Maximum signature image height',
-	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image file in user signatures. Set to 0 for unlimited height.',
-	'MAX_SIG_IMG_WIDTH'				=> 'Maximum signature image width',
-	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image file in user signatures. Set to 0 for unlimited width.',
 	'MAX_SIG_LENGTH'				=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'		=> 'Maximum number of characters in user signatures.',
 	'MAX_SIG_SMILIES'				=> 'Maximum smilies per signature',

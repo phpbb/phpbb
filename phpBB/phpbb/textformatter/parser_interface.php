@@ -91,8 +91,6 @@ interface parser_interface
 	* Set a variable to be used by the parser
 	*
 	*  - max_font_size
-	*  - max_img_height
-	*  - max_img_width
 	*  - max_smilies
 	*  - max_urls
 	*

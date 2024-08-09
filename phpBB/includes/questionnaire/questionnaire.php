@@ -406,8 +406,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'max_reg_attempts' => true,
 			'max_sig_chars' => true,
 			'max_sig_font_size' => true,
-			'max_sig_img_height' => true,
-			'max_sig_img_width' => true,
 			'max_sig_smilies' => true,
 			'max_sig_urls' => true,
 			'min_name_chars' => true,
