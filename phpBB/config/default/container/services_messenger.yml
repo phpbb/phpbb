@@ -1,0 +1,57 @@
+parameters:
+    core.messenger_queue_file: '%core.cache_dir%queue.%core.php_ext%'
+
+services:
+    messenger.method_collection:
+        class: phpbb\di\service_collection
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: service_collection, tag: messenger.method, class_name_aware: true }
+
+    messenger.method.base:
+        class: phpbb\messenger\method\base
+        shared: false
+        arguments:
+            - '@assets.bag'
+            - '@config'
+            - '@dispatcher'
+            - '@language'
+            - '@messenger.queue'
+            - '@path_helper'
+            - '@request'
+            - '@template.twig.extensions.collection'
+            - '@template.twig.lexer'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.template.cache_path%'
+            - '@?ext.manager'
+            - '@?log'
+
+    messenger.method.email:
+        class: phpbb\messenger\method\email
+        shared: false
+        parent: messenger.method.base
+        calls:
+            - [init, []]
+            - [set_transport, []]
+        tags:
+            - { name: messenger.method }
+
+    messenger.method.jabber:
+        class: phpbb\messenger\method\jabber
+        shared: false
+        parent: messenger.method.base
+        calls:
+            - [init, []]
+        tags:
+            - { name: messenger.method }
+
+    messenger.queue:
+        class: phpbb\messenger\queue
+        shared: false
+        arguments:
+            - '@config'
+            - '@dispatcher'
+            - '@messenger.method_collection'
+            - '%core.messenger_queue_file%'
