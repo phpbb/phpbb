@@ -174,7 +174,7 @@ define('BBCODE_UID_LEN', 8);
 
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
-define('NUM_PREDEFINED_BBCODES', 22);
+define('NUM_PREDEFINED_BBCODES', 20);
 
 // BBCode IDs
 define('BBCODE_ID_QUOTE', 0);
