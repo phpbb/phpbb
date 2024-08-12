@@ -32,7 +32,7 @@ class add_bbcode_font_icon extends \phpbb\db\migration\migration
 		return [
 			'add_columns'	=> [
 				$this->table_prefix . 'bbcodes'	=> [
-					'bbcode_font_icon'	=> ['VCHAR:50', ''],
+					'bbcode_font_icon'	=> ['VCHAR:64', ''],
 				],
 			],
 		];

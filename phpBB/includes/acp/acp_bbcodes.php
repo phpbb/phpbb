@@ -104,12 +104,13 @@ class acp_bbcodes
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
 
-					'L_BBCODE_USAGE_EXPLAIN'=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
-					'BBCODE_MATCH'			=> $bbcode_match,
-					'BBCODE_TPL'			=> $bbcode_tpl,
-					'BBCODE_HELPLINE'		=> $bbcode_helpline,
-					'BBCODE_FONT_ICON'		=> $bbcode_font_icon,
-					'DISPLAY_ON_POSTING'	=> $display_on_posting,
+					'L_BBCODE_USAGE_EXPLAIN'		=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
+					'L_BBCODE_FONT_ICON_EXPLAIN'	=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="https://fontawesome.com/v6/icons/" target="_blank">', '</a>'),
+					'BBCODE_MATCH'					=> $bbcode_match,
+					'BBCODE_TPL'					=> $bbcode_tpl,
+					'BBCODE_HELPLINE'				=> $bbcode_helpline,
+					'BBCODE_FONT_ICON'				=> $bbcode_font_icon,
+					'DISPLAY_ON_POSTING'			=> $display_on_posting,
 				);
 
 				$bbcode_tokens = array('TEXT', 'SIMPLETEXT', 'INTTEXT', 'IDENTIFIER', 'NUMBER', 'EMAIL', 'URL', 'LOCAL_URL', 'RELATIVE_URL', 'COLOR');
