@@ -280,7 +280,10 @@ function parse_document(container)
 
 		// Live update BBCode font icon preview
 		$('#bbcode_font_icon').on('keyup', function(e) {
-			$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $(this).val());
+			const iconName = $(this).val();
+			if (iconName.match(/^[\w-]+$/)) {
+				$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $(this).val());
+			}
 		});
 	});
 })(jQuery);
