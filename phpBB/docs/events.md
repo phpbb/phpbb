@@ -73,13 +73,13 @@ acp_ext_details_notice
 acp_ext_list_available_name_after
 ===
 * Location: adm/style/acp_ext_list.html
-* Since: 3.1.13-RC1
+* Since: 3.3.14-RC1
 * Purpose: Add content after the name of available extensions in the list
 
 acp_ext_list_available_title_after
 ===
 * Location: adm/style/acp_ext_list.html
-* Since: 3.1.13-RC1
+* Since: 3.3.14-RC1
 * Purpose: Add text after available extensions section title.
 
 acp_ext_list_disabled_name_after
