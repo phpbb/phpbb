@@ -1428,7 +1428,7 @@ class smtp_class
 			if (($addr = @gethostbyname($local_host)) !== $local_host)
 			{
 				// Able to resolve IP back to name
-				if (($name = @gethostbyaddr($addr)) !== $addr)
+				if (!empty($name = @gethostbyaddr($addr)) && $name !== $addr)
 				{
 					$local_host = $name;
 				}
