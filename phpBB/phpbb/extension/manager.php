@@ -548,10 +548,11 @@ class manager
 		}
 
 		$version_check = $meta['extra']['version-check'];
+		$ssl = ($version_check['host'] == 'www.phpbb.com') ?: ($version_check['ssl'] ?? false);
 
 		$version_helper = new \phpbb\version_helper($this->cache, $this->config, new file_downloader());
 		$version_helper->set_current_version($meta['version']);
-		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], isset($version_check['ssl']) ? $version_check['ssl'] : false);
+		$version_helper->set_file_location($version_check['host'], $version_check['directory'], $version_check['filename'], $ssl);
 		$version_helper->force_stability($stability);
 
 		return $version_helper->get_ext_update_on_branch($force_update, $force_cache);
