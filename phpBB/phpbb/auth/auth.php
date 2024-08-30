@@ -776,7 +776,7 @@ class auth
 
 		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? 'group_id = ' . (int) $group_id : $db->sql_in_set('group_id', array_map('intval', $group_id))) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
-		$sql_is_local = $forum_id !== false ? 'AND ao.is_local <> 0' : '';
+		$sql_is_local = !empty($forum_id) ? 'AND ao.is_local <> 0' : '';
 
 		$sql_opts = '';
 		$hold_ary = $sql_ary = array();
