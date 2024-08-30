@@ -31,6 +31,8 @@ class phpbb_test_case extends TestCase
 
 			'phpbb_database_test_case' => ['already_connected', 'last_post_timestamp'],
 		];
+
+		set_error_handler([$this, 'trigger_error_callback']);
 	}
 
 	public function get_test_case_helpers()
@@ -46,5 +48,32 @@ class phpbb_test_case extends TestCase
 	public function setExpectedTriggerError($errno, $message = '')
 	{
 		$this->get_test_case_helpers()->setExpectedTriggerError($errno, $message);
+	}
+
+	/**
+	 * Passing E_USER_ERROR to trigger_error() is deprecated as of PHP 8.4, so it causes E_DEPRECATED
+	 * Use trigger_error() callback function to workaround this by handling E_USER_ERROR and suppressing E_DEPRECATED
+	 * "Passing E_USER_ERROR to trigger_error() is deprecated since 8.4, throw an exception or call exit with a string message instead"
+	 * 
+	 */
+	public function trigger_error_callback($errno, $errstr, $errfile, $errline)
+	{
+		// $errstr may need to be escaped
+		$errstr = htmlspecialchars($errstr);
+
+		switch ($errno) {
+			case E_USER_ERROR:
+				echo $errstr;
+				exit();
+			break;
+
+			case E_DEPRECATED:
+				return true;
+			break;
+
+			default:
+				return false;
+			break;
+		}
 	}
 }
