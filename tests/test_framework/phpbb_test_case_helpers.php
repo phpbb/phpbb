@@ -104,7 +104,7 @@ class phpbb_test_case_helpers
 		}
 	}
 
-	public function setExpectedTriggerError($errno, $message = '')
+	public function setExpectedTriggerError($errno, $message = ''): void
 	{
 		set_error_handler(
 			static function ($errno, $errstr)
@@ -112,7 +112,7 @@ class phpbb_test_case_helpers
 				restore_error_handler();
 				throw new Exception($errstr, $errno);
 			},
-			E_ALL
+			E_ALL ^ E_DEPRECATED
 		);
 
 		$this->expectedTriggerError = true;
