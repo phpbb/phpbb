@@ -1,0 +1,5 @@
+services:
+  foo_test_captcha.captcha.test_captcha:
+    class: foo\test_captcha\captcha\test_captcha
+    tags:
+      - { name: captcha.plugins }

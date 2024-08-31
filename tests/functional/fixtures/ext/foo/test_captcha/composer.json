@@ -1,0 +1,23 @@
+{
+	"name": "foo/test_captcha",
+	"type": "phpbb-extension",
+	"description": "Testing extension for having a working captcha plugin",
+	"homepage": "",
+	"version": "1.0.0",
+	"time": "2024-03-24 01:01:01",
+	"license": "GPL-2.0",
+	"authors": [{
+		"name": "phpBB Limited",
+		"homepage": "https://www.phpbb.com",
+		"role": "Developer"
+	}],
+	"require": {
+		"php": ">=8.1"
+	},
+	"extra": {
+		"display-name": "phpBB 4.0 Test Captcha",
+		"soft-require": {
+			"phpbb/phpbb": "4.0.*@dev"
+		}
+	}
+}
