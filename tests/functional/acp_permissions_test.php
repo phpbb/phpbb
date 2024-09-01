@@ -149,4 +149,26 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$this->assertContainsLang('ACL_M_EDIT', $page_text);
 		$this->assertContainsLang('ACL_M_MOVE', $page_text);
 	}
+
+	public function test_tracing_user_based_permissions()
+	{
+		$this->create_user('newlyregistereduser');
+
+		// Open user-based permissions masks page
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=view_user_global&sid=" . $this->sid);
+
+		// Select newlyregistereduser
+		$form = $crawler->filter('#add_user')->form(['username' => ['newlyregistereduser']]);
+		$crawler = self::submit($form);
+
+		// Test 1st "Yes" permission tracing result match
+		$trace_link_yes = $crawler->filter('td.yes')->eq(0)->parents()->eq(0)->filter('a.trace')->link();
+		$crawler_trace_yes = self::$client->click($trace_link_yes);
+		$this->assertEquals(1, $crawler_trace_yes->filter('tr.row2 > td.yes')->count());
+
+		// Test 1st "Never" permission tracing result match
+		$trace_link_never = $crawler->filter('td.never')->eq(0)->parents()->eq(0)->filter('a.trace')->link();
+		$crawler_trace_never = self::$client->click($trace_link_never);
+		$this->assertEquals(1, $crawler_trace_never->filter('tr.row2 > td.never')->count());
+	}
 }
