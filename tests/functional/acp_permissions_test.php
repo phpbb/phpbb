@@ -162,12 +162,12 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 
 		// Test 1st "Yes" permission tracing result match
-		$trace_link_yes = $crawler->filter('td.yes')->eq(0)->parents()->eq(0)->filter('a.trace')->link();
+		$trace_link_yes = $crawler->filter('td.yes')->eq(0)->siblings()->filter('th > a.trace')->link();
 		$crawler_trace_yes = self::$client->click($trace_link_yes);
 		$this->assertEquals(1, $crawler_trace_yes->filter('tr.row2 > td.yes')->count());
 
 		// Test 1st "Never" permission tracing result match
-		$trace_link_never = $crawler->filter('td.never')->eq(0)->parents()->eq(0)->filter('a.trace')->link();
+		$trace_link_never = $crawler->filter('td.never')->eq(0)->siblings()->filter('th > a.trace')->link();
 		$crawler_trace_never = self::$client->click($trace_link_never);
 		$this->assertEquals(1, $crawler_trace_never->filter('tr.row2 > td.never')->count());
 	}
