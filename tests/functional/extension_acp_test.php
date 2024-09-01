@@ -84,7 +84,8 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
 		$this->assertCount(1, $crawler->filter('.ext_enabled'));
-		$this->assertCount(7, $crawler->filter('.ext_disabled'));
+		$this->assertCount(3, $crawler->filter('.ext_disabled'));
+		$this->assertCount(4, $crawler->filter('.ext_available'));
 
 		$this->assertStringContainsString('phpBB Foo Extension', $crawler->filter('.ext_enabled')->eq(0)->text());
 		$this->assertContainsLang('EXTENSION_DISABLE', $crawler->filter('.ext_enabled')->eq(0)->text());
@@ -98,9 +99,9 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		$this->assertStringContainsString('The “vendor/test3” extension is not valid.', $crawler->filter('.ext_disabled')->eq(1)->text());
 
-		$this->assertStringContainsString('phpBB Bar Extension', $crawler->filter('.ext_disabled')->eq(3)->text());
-		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_disabled')->eq(3)->text());
-		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_disabled')->eq(3)->text());
+		$this->assertStringContainsString('phpBB Bar Extension', $crawler->filter('.ext_available')->eq(0)->text());
+		$this->assertContainsLang('DETAILS', $crawler->filter('.ext_available')->eq(0)->text());
+		$this->assertContainsLang('EXTENSION_ENABLE', $crawler->filter('.ext_available')->eq(0)->text());
 
 		// Check that invalid extensions are not listed.
 		$this->assertStringNotContainsString('phpBB BarFoo Extension', $crawler->filter('.table1')->text());
