@@ -329,10 +329,10 @@ function get_context(string $text, array $words, int $length = 400): string
 {
 	if ($length <= 0)
 	{
-		return '...';
+		return $text;
 	}
 
-	// we need to turn the entities back into their original form, to not cut the message in between them
+	// We need to turn the entities back into their original form, to not cut the message in between them
 	$text = html_entity_decode($text);
 
 	// Replace all spaces/invisible characters with single spaces

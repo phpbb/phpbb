@@ -81,13 +81,13 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'text' => 'This is a sample text.',
 				'words' => ['sample'],
 				'length' => 0,
-				'expected' => '...',
+				'expected' => 'This is a sample text.',
 			],
 			'negative length' => [
 				'text' => 'This is a sample text.',
 				'words' => ['sample'],
 				'length' => -10,
-				'expected' => '...',
+				'expected' => 'This is a sample text.',
 			],
 			'ellipses_beginning' => [
 				'text' => 'foo foo foo foo foo foo foo foo bar',
