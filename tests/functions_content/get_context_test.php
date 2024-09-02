@@ -112,6 +112,12 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'words' => ['word1', 'word2'],
 				'length' => 10,
 				'expected' => 'word1 ... word2',
+			],
+			'fruits_spanish' => [
+				'text' => 'Manzana,plátano,naranja,fresa,mango,uva,piña,pera,kiwi,cereza,sandía,melón,papaya,arándano,durazno',
+				'words' => ['piña'],
+				'length' => 20,
+				'expected' => '... uva,piña,pera, ...',
 			]
 		];
 	}

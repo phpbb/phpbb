@@ -333,7 +333,7 @@ function get_context(string $text, array $words, int $length = 400): string
 	}
 
 	// We need to turn the entities back into their original form, to not cut the message in between them
-	$text = html_entity_decode($text);
+	$text = htmlspecialchars_decode($text);
 
 	// Replace all spaces/invisible characters with single spaces
 	$text = preg_replace("/\s+/u", ' ', $text);
@@ -414,7 +414,7 @@ function get_context(string $text, array $words, int $length = 400): string
 		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
 	}
 
-	return ($fragments[0][0] !== 0 ? '... ' : '') . htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
+	return ($fragments[0][0] !== 0 ? '... ' : '') . htmlspecialchars(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**
