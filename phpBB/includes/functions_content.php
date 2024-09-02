@@ -401,13 +401,13 @@ function get_context(string $text, array $words, int $length = 400): string
 		// Find the first valid alphanumeric character in the fragment to don't cut words
 		if ($start > 0 && preg_match('/[^\p{L}\p{N}][\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
 		{
-			$fragment_start = mb_strlen(substr($fragment, 0, (int) $matches[0][1])) + 1;
+			$fragment_start = utf8_strlen(substr($fragment, 0, (int) $matches[0][1])) + 1;
 		}
 
 		// Find the last valid alphanumeric character in the fragment to don't cut words
 		if ($end < $text_length - 1 && preg_match_all('/[\p{L}\p{N}][^\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
 		{
-			$fragment_end = mb_strlen(substr($fragment, 0, end($matches[0])[1]));
+			$fragment_end = utf8_strlen(substr($fragment, 0, end($matches[0])[1]));
 		}
 
 		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
