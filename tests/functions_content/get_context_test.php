@@ -117,7 +117,7 @@ class phpbb_functions_content_get_context_test extends TestCase
 				'text' => 'Manzana,plátano,naranja,fresa,mango,uva,piña,pera,kiwi,cereza,sandía,melón,papaya,arándano,durazno',
 				'words' => ['piña'],
 				'length' => 20,
-				'expected' => '... uva,piña,pera, ...',
+				'expected' => '... uva,piña,pera ...',
 			]
 		];
 	}
