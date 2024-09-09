@@ -328,14 +328,14 @@ function get_context(string $text, array $words, int $length = 400): string
 {
 	if ($length <= 0)
 	{
-		return '...';
+		return $text;
 	}
 
-	// we need to turn the entities back into their original form, to not cut the message in between them
-	$text = html_entity_decode($text);
+	// We need to turn the entities back into their original form, to not cut the message in between them
+	$text = htmlspecialchars_decode($text);
 
 	// Replace all spaces/invisible characters with single spaces
-	$text = preg_replace("/\s+/u", ' ', $text);
+	$text = preg_replace("/[\p{Z}\h\v]+/u", ' ', $text);
 
 	$text_length = utf8_strlen($text);
 
@@ -350,7 +350,6 @@ function get_context(string $text, array $words, int $length = 400): string
 			$word_indexes[$pos] = $word;
 		}
 	}
-
 	if (!empty($word_indexes))
 	{
 		ksort($word_indexes);
@@ -399,23 +398,21 @@ function get_context(string $text, array $words, int $length = 400): string
 		$fragment_end = $end - $start + 1;
 
 		// Find the first valid alphanumeric character in the fragment to don't cut words
-		if ($start > 0)
+		if ($start > 0 && preg_match('/[^\p{L}\p{N}][\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
 		{
-			preg_match('/[^a-zA-Z0-9][a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
-			$fragment_start = (int) $matches[0][1] + 1; // first valid alphanumeric character
+			$fragment_start = utf8_strlen(substr($fragment, 0, (int) $matches[0][1])) + 1;
 		}
 
 		// Find the last valid alphanumeric character in the fragment to don't cut words
-		if ($end < $text_length - 1)
+		if ($end < $text_length - 1 && preg_match_all('/[\p{L}\p{N}][^\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
 		{
-			preg_match_all('/[a-zA-Z0-9][^a-zA-Z0-9]/u', $fragment, $matches, PREG_OFFSET_CAPTURE);
-			$fragment_end = end($matches[0])[1]; // last valid alphanumeric character
+			$fragment_end = utf8_strlen(substr($fragment, 0, end($matches[0])[1]));
 		}
 
 		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
 	}
 
-	return ($fragments[0][0] !== 0 ? '... ' : '') . htmlentities(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
+	return ($fragments[0][0] !== 0 ? '... ' : '') . utf8_htmlspecialchars(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**
