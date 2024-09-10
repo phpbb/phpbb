@@ -46,12 +46,11 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$this->cache->expects($this->any())
 			->method('get')
-			->with($this->anything())
+			->withAnyParameters()
 			->will($this->returnValue(false));
 
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->addMethods(['set_data'])
-			->onlyMethods(['request'])
+			->setMethods(['set_data', 'request'])
 			->getMock();
 		$this->guzzle_mock->method('set_data')
 			->will($this->returnCallback(function($data)
@@ -67,7 +66,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$this->file_downloader = $this->getMockBuilder('\phpbb\file_downloader')
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 		$this->file_downloader->method('create_client')
 			->will($this->returnValue($this->guzzle_mock));
@@ -257,7 +256,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_version_phpbb_com()
 	{
 		$guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$guzzle_mock->method('request')
@@ -268,7 +267,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
@@ -325,7 +324,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_file_downloader_file_not_found()
 	{
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$this->guzzle_mock->method('request')
@@ -336,7 +335,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
@@ -351,7 +350,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_file_downloader_exception_not_found()
 	{
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$this->guzzle_mock->method('request')
@@ -364,7 +363,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
@@ -379,7 +378,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_file_downloader_exception_moved()
 	{
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$this->guzzle_mock->method('request')
@@ -392,7 +391,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
@@ -406,7 +405,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_file_downloader_exception_timeout()
 	{
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$this->guzzle_mock->method('request')
@@ -418,7 +417,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
@@ -433,7 +432,7 @@ class version_helper_remote_test extends \phpbb_test_case
 	public function test_file_downloader_exception_other()
 	{
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
-			->onlyMethods(['request'])
+			->setMethods(['request'])
 			->getMock();
 
 		$this->guzzle_mock->method('request')
@@ -444,7 +443,7 @@ class version_helper_remote_test extends \phpbb_test_case
 			));
 
 		$file_downloader = $this->getMockBuilder(\phpbb\file_downloader::class)
-			->onlyMethods(['create_client'])
+			->setMethods(['create_client'])
 			->getMock();
 
 		$file_downloader->method('create_client')
