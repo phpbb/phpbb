@@ -14,6 +14,7 @@ on:
             - master
             - 'prep-release-*'
     pull_request_target:
+        types: [ opened, synchronize, reopened ]
         branches:
             - 3.3.x
             - master
@@ -634,9 +635,9 @@ jobs:
                 run: |
                     git checkout master
                     if git merge --no-ff origin/3.3.x --no-commit; then
-                      echo "::set-output name=mergeable::true"
+                      echo "mergeable=true" >> $GITHUB_OUTPUT
                     else
-                      echo "::set-output name=mergeable::false"
+                      echo "mergeable=false" >> $GITHUB_OUTPUT
                       git merge --abort
                     fi
 
@@ -649,9 +650,9 @@ jobs:
                     body: |
                         The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
 
-                        - Merge result: ${{ steps.merge_master.outputs.mergeable == 'true' && 'Success' || 'Conflict' }}
+                        - Merge result: ${{ steps.merge_master.outputs.mergeable == 'true' && 'Success ✅' || 'Conflict ❌' }}
 
-                        If there is a conflict, a separate PR will be needed to merge `3.3.x` into `master`.
+                        ${{ steps.merge_master.outputs.mergeable == 'false' && 'A separate PR will be needed to merge `3.3.x` into `master`.' || 'This PR is ready to be merged.' }}
 
             -   name: Mark job as succeeded
                 if: always()
