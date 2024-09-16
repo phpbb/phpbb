@@ -13,10 +13,15 @@ on:
             - 3.3.x
             - master
             - 'prep-release-*'
+    pull_request_target:
+        branches:
+            - 3.3.x
+            - master
 
 jobs:
     # Basic checks, e.g. parse errors, commit messages, etc.
     basic-checks:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -88,6 +93,7 @@ jobs:
 
     # Tests for MySQL and MariaDB
     mysql-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -231,6 +237,7 @@ jobs:
 
     # Tests for PostgreSQL
     postgres-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -351,6 +358,7 @@ jobs:
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -454,6 +462,7 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: windows-latest
         strategy:
             matrix:
@@ -598,7 +607,7 @@ jobs:
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
 
     merge-check:
-        if: github.event.pull_request.base.ref == '3.3.x'
+        if: github.event_name == 'pull_request_target' && github.event.pull_request.base.ref == '3.3.x'
         runs-on: ubuntu-latest
         steps:
             -   name: Checkout the repository
@@ -618,13 +627,13 @@ jobs:
                 id: simulate_merge
                 run: |
                     git checkout 3.3.x
-                    git merge --no-ff ${{ github.event.pull_request.head.sha }} --no-commit --no-ff || exit 1
+                    git merge --no-ff ${{ github.event.pull_request.head.sha }} || exit 1
 
             -   name: Attempt to merge updated 3.3.x into master
                 id: merge_master
                 run: |
                     git checkout master
-                    if git merge --no-ff origin/3.3.x --no-commit --no-ff; then
+                    if git merge --no-ff origin/3.3.x --no-commit; then
                       echo "::set-output name=mergeable::true"
                     else
                       echo "::set-output name=mergeable::false"
