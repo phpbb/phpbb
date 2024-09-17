@@ -13,10 +13,16 @@ on:
             - 3.3.x
             - master
             - 'prep-release-*'
+    pull_request_target:
+        types: [ opened, synchronize, reopened ]
+        branches:
+            - 3.3.x
+            - master
 
 jobs:
     # Basic checks, e.g. parse errors, commit messages, etc.
     basic-checks:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -88,6 +94,7 @@ jobs:
 
     # Tests for MySQL and MariaDB
     mysql-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -231,6 +238,7 @@ jobs:
 
     # Tests for PostgreSQL
     postgres-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -351,6 +359,7 @@ jobs:
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: ubuntu-22.04
         strategy:
             matrix:
@@ -454,6 +463,7 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
+        if: github.event_name != 'pull_request_target'
         runs-on: windows-latest
         strategy:
             matrix:
@@ -596,3 +606,54 @@ jobs:
               if: ${{ matrix.type == 'functional' }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
+
+    merge-check:
+        if: github.event_name == 'pull_request_target' && github.event.pull_request.base.ref == '3.3.x'
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout the repository
+                uses: actions/checkout@v3
+                with:
+                    fetch-depth: 0  # Ensure full history is fetched
+
+            -   name: Set up Git user
+                run: |
+                    git config --global user.name "github-actions"
+                    git config --global user.email "github-actions@github.com"
+
+            -   name: Fetch all branches
+                run: git fetch origin
+
+            -   name: Simulate merging PR into 3.3.x
+                id: simulate_merge
+                run: |
+                    git checkout 3.3.x
+                    git merge --no-ff ${{ github.event.pull_request.head.sha }} || exit 1
+
+            -   name: Attempt to merge updated 3.3.x into master
+                id: merge_master
+                run: |
+                    git checkout master
+                    if git merge --no-ff origin/3.3.x --no-commit; then
+                      echo "mergeable=true" >> $GITHUB_OUTPUT
+                    else
+                      echo "mergeable=false" >> $GITHUB_OUTPUT
+                      git merge --abort
+                    fi
+
+            -   name: Post comment on PR
+                if: always()  # Ensure this step always runs, regardless of merge result
+                uses: peter-evans/create-or-update-comment@v4
+                with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    issue-number: ${{ github.event.pull_request.number }}
+                    body: |
+                        The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
+
+                        - Merge result: ${{ steps.merge_master.outputs.mergeable == 'true' && 'Success ✅' || 'Conflict ❌' }}
+
+                        ${{ steps.merge_master.outputs.mergeable == 'false' && 'A separate PR will be needed to merge `3.3.x` into `master`.' || 'This PR is ready to be merged.' }}
+
+            -   name: Mark job as succeeded
+                if: always()
+                run: echo "Merge check completed. Ignoring the result to avoid failed status."
