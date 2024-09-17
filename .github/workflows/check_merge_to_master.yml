@@ -28,7 +28,8 @@ jobs:
                 id: simulate_merge
                 run: |
                     git checkout 3.3.x
-                    git merge --no-ff ${{ github.event.pull_request.head.sha }} || exit 1
+                    git fetch origin pull/${{ github.event.pull_request.number }}/head
+                    git merge --no-ff FETCH_HEAD || exit 1
 
             -   name: Attempt to merge updated 3.3.x into master
                 id: merge_master
