@@ -35,11 +35,18 @@ jobs:
               run: git fetch --all
 
             - name: Merge 3.3.x into master
+              # First checkout 3.3.x and master to track from origin, then try merging to master
               run: |
+                  git checkout 3.3.x
                   git checkout master
-                  git merge --no-ff 3.3.x
+                  if git merge --no-ff 3.3.x; then
+                      echo "merge_failed=false" >> $GITHUB_ENV
+                  else
+                      echo "merge_failed=true" >> $GITHUB_ENV
+                  fi
 
-            - name: Push changes to master
+            - name: Push changes to master if merge was successful
+              if: env.merge_failed == 'false'
               run: git push origin master
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
