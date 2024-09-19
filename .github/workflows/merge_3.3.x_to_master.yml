@@ -12,6 +12,9 @@ jobs:
         steps:
             - name: Checkout the repository
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0  # Fetch full history for proper merging
+                  ref: 3.3.x      # Checkout the 3.3.x branch
 
             - name: Fetch the latest commit information
               id: get-commit-info
@@ -35,9 +38,7 @@ jobs:
               run: git fetch --all
 
             - name: Merge 3.3.x into master
-              # First checkout 3.3.x and master to track from origin, then try merging to master
               run: |
-                  git checkout 3.3.x
                   git checkout master
                   if git merge --no-ff 3.3.x; then
                       echo "merge_failed=false" >> $GITHUB_ENV
