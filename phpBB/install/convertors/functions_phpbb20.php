@@ -1676,8 +1676,6 @@ function phpbb_import_attach_config()
 	$config->set('img_display_inlined', $attach_config['img_display_inlined']);
 	$config->set('img_max_width', $attach_config['img_max_width']);
 	$config->set('img_max_height', $attach_config['img_max_height']);
-	$config->set('img_link_width', $attach_config['img_link_width']);
-	$config->set('img_link_height', $attach_config['img_link_height']);
 	$config->set('img_create_thumbnail', $attach_config['img_create_thumbnail']);
 	$config->set('img_max_thumb_width', 400);
 	$config->set('img_min_thumb_filesize', $attach_config['img_min_thumb_filesize']);
