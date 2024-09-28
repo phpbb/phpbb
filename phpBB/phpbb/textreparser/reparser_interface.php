@@ -41,6 +41,7 @@ interface reparser_interface
 	*
 	* @param integer $min_id Lower bound
 	* @param integer $max_id Upper bound
+	* @param bool $force_bbcode_reparsing Flag indicating if BBCode should be reparsed unconditionally
 	*/
-	public function reparse_range($min_id, $max_id);
+	public function reparse_range($min_id, $max_id, bool $force_bbcode_reparsing = false);
 }
