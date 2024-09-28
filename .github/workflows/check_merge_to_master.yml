@@ -35,7 +35,7 @@ jobs:
                 id: merge_master
                 run: |
                     git checkout master
-                    if git merge --no-ff origin/3.3.x --no-commit; then
+                    if git merge --no-ff 3.3.x --no-commit; then
                       echo "mergeable=true" >> $GITHUB_OUTPUT
                     else
                       echo "mergeable=false" >> $GITHUB_OUTPUT
