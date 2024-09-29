@@ -107,9 +107,17 @@ function phpbb_gmgetdate($time = false)
 	}
 
 	// getdate() interprets timestamps in local time.
-	// What follows uses the fact that getdate() and
-	// date('Z') balance each other out.
-	return getdate($time - date('Z'));
+	// So use UTC timezone temporarily to get UTC date info array.
+	$current_timezone = date_default_timezone_get();
+
+	// Set UTC timezone and get respective date info
+	date_default_timezone_set('UTC');
+	$date_info = getdate($time);
+
+	// Restore timezone back
+	date_default_timezone_set($current_timezone);
+
+	return $date_info;
 }
 
 /**
