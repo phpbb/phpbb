@@ -60,7 +60,7 @@ class file_downloader
 	 * @param string    $host            File host
 	 * @param string    $directory       Directory file is in
 	 * @param string    $filename        Filename of file to retrieve
-	 * @param int       $port            Port to connect to; default: 80
+	 * @param int       $port            Port to connect to; default: 443
 	 * @param int       $timeout         Connection timeout in seconds; default: 6
 	 *
 	 * @return false|string File data as string if file can be read and there is no

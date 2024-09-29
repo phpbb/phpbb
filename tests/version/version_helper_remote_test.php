@@ -47,7 +47,7 @@ class version_helper_remote_test extends \phpbb_test_case
 
 		$this->cache->expects($this->any())
 			->method('get')
-			->with($this->anything())
+			->withAnyParameters()
 			->will($this->returnValue(false));
 
 		$this->guzzle_mock = $this->getMockBuilder('\GuzzleHttp\Client')
