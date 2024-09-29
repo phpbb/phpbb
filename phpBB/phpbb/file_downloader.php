@@ -13,8 +13,16 @@
 
 namespace phpbb;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use phpbb\exception\runtime_exception;
+
 class file_downloader
 {
+	const OK = 200;
+	const NOT_FOUND = 404;
+	const REQUEST_TIMEOUT = 408;
+
 	/** @var string Error string */
 	protected $error_string = '';
 
@@ -22,82 +30,99 @@ class file_downloader
 	protected $error_number = 0;
 
 	/**
+	 * Create new guzzle client
+	 *
+	 * @param string $host
+	 * @param int $port
+	 * @param int $timeout
+	 *
+	 * @return Client
+	 */
+	protected function create_client(string $host, int $port = 443, int $timeout = 6): Client
+	{
+		// Only set URL scheme if not specified in URL
+		$url_parts = parse_url($host);
+		if (!isset($url_parts['scheme']))
+		{
+			$host = (($port === 443) ? 'https://' : 'http://') . $host;
+		}
+
+		// Initialize Guzzle client
+		return new Client([
+			'base_uri' => $host,
+			'timeout'  => $timeout,
+		]);
+	}
+
+	/**
 	 * Retrieve contents from remotely stored file
 	 *
-	 * @param string	$host			File host
-	 * @param string	$directory		Directory file is in
-	 * @param string	$filename		Filename of file to retrieve
-	 * @param int		$port			Port to connect to; default: 80
-	 * @param int		$timeout		Connection timeout in seconds; default: 6
+	 * @param string    $host            File host
+	 * @param string    $directory       Directory file is in
+	 * @param string    $filename        Filename of file to retrieve
+	 * @param int       $port            Port to connect to; default: 443
+	 * @param int       $timeout         Connection timeout in seconds; default: 6
 	 *
-	 * @return mixed File data as string if file can be read and there is no
-	 *			timeout, false if there were errors or the connection timed out
+	 * @return false|string File data as string if file can be read and there is no
+	 *         timeout, false if there were errors or the connection timed out
 	 *
-	 * @throws \phpbb\exception\runtime_exception If data can't be retrieved and no error
-	 *		message is returned
+	 * @throws runtime_exception If data can't be retrieved and no error
+	 *         message is returned
 	 */
-	public function get($host, $directory, $filename, $port = 80, $timeout = 6)
+	public function get(string $host, string $directory, string $filename, int $port = 443, int $timeout = 6)
 	{
+		// Initialize Guzzle client
+		$client = $this->create_client($host, $port, $timeout);
+
 		// Set default values for error variables
 		$this->error_number = 0;
 		$this->error_string = '';
 
-		if (function_exists('fsockopen') &&
-			$socket = @fsockopen(($port == 443 ? 'ssl://' : '') . $host, $port, $this->error_number, $this->error_string, $timeout)
-		)
+		try
 		{
-			@fputs($socket, "GET $directory/$filename HTTP/1.0\r\n");
-			@fputs($socket, "HOST: $host\r\n");
-			@fputs($socket, "Connection: close\r\n\r\n");
+			$response = $client->request('GET', "$directory/$filename");
 
-			$timer_stop = time() + $timeout;
-			stream_set_timeout($socket, $timeout);
-
-			$file_info = '';
-			$get_info = false;
-
-			while (!@feof($socket))
+			// Check if the response status code is 200 (OK)
+			if ($response->getStatusCode() == self::OK)
 			{
-				if ($get_info)
-				{
-					$file_info .= @fread($socket, 1024);
-				}
-				else
-				{
-					$line = @fgets($socket, 1024);
-					if ($line == "\r\n")
-					{
-						$get_info = true;
-					}
-					else if (stripos($line, '404 not found') !== false)
-					{
-						throw new \phpbb\exception\runtime_exception('FILE_NOT_FOUND', array($filename));
-					}
-				}
-
-				$stream_meta_data = stream_get_meta_data($socket);
-
-				if (!empty($stream_meta_data['timed_out']) || time() >= $timer_stop)
-				{
-					throw new \phpbb\exception\runtime_exception('FSOCK_TIMEOUT');
-				}
-			}
-			@fclose($socket);
-		}
-		else
-		{
-			if ($this->error_string)
-			{
-				$this->error_string = utf8_convert_message($this->error_string);
-				return false;
+				return $response->getBody()->getContents();
 			}
 			else
 			{
-				throw new \phpbb\exception\runtime_exception('FSOCK_DISABLED');
+				$this->error_number = $response->getStatusCode();
+				throw new runtime_exception('FILE_NOT_FOUND', [$filename]);
 			}
 		}
+		catch (RequestException $exception)
+		{
+			if ($exception->hasResponse())
+			{
+				$this->error_number = $exception->getResponse()->getStatusCode();
 
-		return $file_info;
+				if ($this->error_number == self::NOT_FOUND)
+				{
+					throw new runtime_exception('FILE_NOT_FOUND', [$filename]);
+				}
+			}
+			else
+			{
+				$this->error_number = self::REQUEST_TIMEOUT;
+				throw new runtime_exception('FSOCK_TIMEOUT');
+			}
+
+			$this->error_string = utf8_convert_message($exception->getMessage());
+			return false;
+		}
+		catch (runtime_exception $exception)
+		{
+			// Rethrow runtime_exceptions, only handle unknown cases below
+			throw $exception;
+		}
+		catch (\Throwable $exception)
+		{
+			$this->error_string = utf8_convert_message($exception->getMessage());
+			throw new runtime_exception('FSOCK_DISABLED');
+		}
 	}
 
 	/**
@@ -105,7 +130,7 @@ class file_downloader
 	 *
 	 * @return string Error string
 	 */
-	public function get_error_string()
+	public function get_error_string(): string
 	{
 		return $this->error_string;
 	}
@@ -115,7 +140,7 @@ class file_downloader
 	 *
 	 * @return int Error number
 	 */
-	public function get_error_number()
+	public function get_error_number(): int
 	{
 		return $this->error_number;
 	}
