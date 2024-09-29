@@ -10,11 +10,18 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
+            - uses: actions/create-github-app-token@v1
+              id: app-token
+              with:
+                  app-id: ${{ vars.MERGE_MASTER_APP_ID }}
+                  private-key: ${{ secrets.MERGE_MASTER_SECRET }}
+
             - name: Checkout the repository
               uses: actions/checkout@v4
               with:
                   fetch-depth: 0  # Fetch full history for proper merging
                   ref: 3.3.x      # Checkout the 3.3.x branch
+                  token: ${{ steps.app-token.outputs.token }}
 
             - name: Fetch the latest commit information
               id: get-commit-info
