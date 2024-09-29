@@ -1418,21 +1418,21 @@ class smtp_class
 		global $user;
 
 		// Here we try to determine the *real* hostname (reverse DNS entry preferrably)
-		$local_host = $user->host;
-
-		if (function_exists('php_uname'))
+		if (function_exists('php_uname') && !empty($local_host = php_uname('n')))
 		{
-			$local_host = php_uname('n');
-
 			// Able to resolve name to IP
 			if (($addr = @gethostbyname($local_host)) !== $local_host)
 			{
 				// Able to resolve IP back to name
-				if (($name = @gethostbyaddr($addr)) !== $addr)
+				if (!empty($name = @gethostbyaddr($addr)) && $name !== $addr)
 				{
 					$local_host = $name;
 				}
 			}
+		}
+		else
+		{
+			$local_host = $user->host;
 		}
 
 		// If we are authenticating through pop-before-smtp, we
