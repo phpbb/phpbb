@@ -260,8 +260,6 @@ class acp_board
 						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
 						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' %'),
 						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
-						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)

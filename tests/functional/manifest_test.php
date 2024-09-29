@@ -18,14 +18,16 @@ class phpbb_functional_manifest_test extends phpbb_functional_test_case
 {
 	public function test_manifest()
 	{
+		$url_path = preg_replace('#^(/.+)/$#', '$1', parse_url(self::$root_url, PHP_URL_PATH));
+
 		$expected = [
 			'name'			=> 'yourdomain.com',
 			'short_name'	=> 'yourdomain',
 			'display'		=> 'standalone',
 			'orientation'	=> 'portrait',
 			'dir'			=> 'ltr',
-			'start_url'		=> '/',
-			'scope'			=> '/',
+			'start_url'		=> $url_path,
+			'scope'			=> $url_path,
 		];
 
 		$this->login();

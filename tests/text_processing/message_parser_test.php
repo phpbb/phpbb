@@ -40,8 +40,6 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$map = array(
 			array('MAX_FONT_SIZE_EXCEEDED', 120, 'You may only use fonts up to size 120.'),
 			array('MAX_FONT_SIZE_EXCEEDED', 200, 'You may only use fonts up to size 200.'),
-			array('MAX_IMG_HEIGHT_EXCEEDED', 12, 'Your images may only be up to 12 pixels high.'),
-			array('MAX_IMG_WIDTH_EXCEEDED', 34, 'Your images may only be up to 34 pixels wide.'),
 			array('TOO_MANY_SMILIES', 3, 'Your message contains too many smilies. The maximum number of smilies allowed is 3.'),
 			array('TOO_MANY_URLS', 2, 'Your message contains too many URLs. The maximum number of URLs allowed is 2.'),
 			array('UNAUTHORISED_BBCODE', '[img]', 'You cannot use certain BBCodes: [img].'),
