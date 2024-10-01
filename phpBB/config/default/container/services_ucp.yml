@@ -38,6 +38,7 @@ services:
             - '@notification_manager'
             - '@path_helper'
             - '@request'
+            - '@user_loader'
             - '@user'
             - '@template.twig.environment'
             - '%tables.notification_push%'
