@@ -220,6 +220,13 @@ class webpush
 		throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
 	}
 
+	/**
+	 * Get notification data for output from json encoded data stored in database
+	 *
+	 * @param string $notification_data Encoded data stored in database
+	 *
+	 * @return string Data for notification output with javascript
+	 */
 	private function get_notification_data(string $notification_data): string
 	{
 		$row_data = json_decode($notification_data, true);
@@ -255,7 +262,6 @@ class webpush
 	 */
 	public function worker(): Response
 	{
-		// @todo: only work for logged in users, no anonymous & bot
 		$content = $this->template->render('push_worker.js.twig', [
 			'U_WEBPUSH_GET_NOTIFICATION'	=> $this->controller_helper->route('phpbb_ucp_push_get_notification_controller'),
 			'ASSETS_VERSION'				=> $this->config['assets_version'],
@@ -271,20 +277,6 @@ class webpush
 		}
 
 		return $response;
-	}
-
-	/**
-	 * Get template variables for subscribe type pages
-	 *
-	 * @return array
-	 */
-	protected function get_subscribe_vars(): array
-	{
-		return [
-			'U_WEBPUSH_SUBSCRIBE'	=> $this->controller_helper->route('phpbb_ucp_push_subscribe_controller'),
-			'U_WEBPUSH_UNSUBSCRIBE'	=> $this->controller_helper->route('phpbb_ucp_push_unsubscribe_controller'),
-			'FORM_TOKENS'			=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
-		];
 	}
 
 	/**
