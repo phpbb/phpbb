@@ -1,4 +1,15 @@
 <?php
+/**
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\captcha\plugins;
 
@@ -30,7 +41,7 @@ interface plugin_interface
 	 *
 	 * @return string
 	 */
-	public static function get_name(): string;
+	public function get_name(): string;
 
 	/**
 	 * Display the captcha for the specified type
