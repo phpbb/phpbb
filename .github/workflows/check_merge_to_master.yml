@@ -42,12 +42,33 @@ jobs:
                       git merge --abort
                     fi
 
+            - name: Find Comment
+              uses: peter-evans/find-comment@v3
+              id: fc
+              with:
+                  issue-number: ${{ github.event.pull_request.number }}
+                  comment-author: 'github-actions[bot]'
+                  body-includes: The attempt to merge branch `3.3.x` into `master` has completed
+
             -   name: Post comment on PR
-                if: always()  # Ensure this step always runs, regardless of merge result
+                if: steps.fc.outputs.comment-id == ''
                 uses: peter-evans/create-or-update-comment@v4
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
                     issue-number: ${{ github.event.pull_request.number }}
+                    body: |
+                        The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
+
+                        - Merge result: ${{ steps.merge_master.outputs.mergeable == 'true' && 'Success ✅' || 'Conflict ❌' }}
+
+                        ${{ steps.merge_master.outputs.mergeable == 'true' && 'This PR is ready to be merged.' || 'A separate PR will be needed to merge `3.3.x` into `master`.' }}
+
+            -   name: Update comment on PR
+                if: steps.fc.outputs.comment-id != ''
+                uses: peter-evans/create-or-update-comment@v4
+                with:
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    comment-id: ${{ steps.fc.outputs.comment-id }}
                     body: |
                         The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
 
