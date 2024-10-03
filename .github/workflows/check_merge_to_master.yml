@@ -51,24 +51,13 @@ jobs:
                   body-includes: The attempt to merge branch `3.3.x` into `master` has completed
 
             -   name: Post comment on PR
-                if: steps.fc.outputs.comment-id == ''
+                if: always()  # Ensure this step always runs, regardless of merge result
                 uses: peter-evans/create-or-update-comment@v4
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
                     issue-number: ${{ github.event.pull_request.number }}
-                    body: |
-                        The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
-
-                        - Merge result: ${{ steps.merge_master.outputs.mergeable == 'true' && 'Success ✅' || 'Conflict ❌' }}
-
-                        ${{ steps.merge_master.outputs.mergeable == 'true' && 'This PR is ready to be merged.' || 'A separate PR will be needed to merge `3.3.x` into `master`.' }}
-
-            -   name: Update comment on PR
-                if: steps.fc.outputs.comment-id != ''
-                uses: peter-evans/create-or-update-comment@v4
-                with:
-                    token: ${{ secrets.GITHUB_TOKEN }}
                     comment-id: ${{ steps.fc.outputs.comment-id }}
+                    edit-mode: replace
                     body: |
                         The attempt to merge branch `3.3.x` into `master` has completed after considering the changes in this PR.
 
