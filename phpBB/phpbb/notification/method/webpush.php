@@ -140,13 +140,10 @@ class webpush extends messenger_base implements extended_method_interface
 		{
 			$data = $notification->get_insert_array();
 			$data += [
-				'push_data'		=> json_encode([
-					'heading'	=> $this->config['sitename'],
-					'title'		=> strip_tags($notification->get_title()),
-					'text'		=> strip_tags($notification->get_reference()),
-					'url'		=> htmlspecialchars_decode($notification->get_url()),
-					'avatar'	=> $notification->get_avatar(),
-				]),
+				'push_data'				=> json_encode(array_merge(
+					$data,
+					['notification_type_name' => $notification->get_type()],
+				)),
 				'notification_time'		=> time(),
 				'push_token'			=> hash('sha256', random_bytes(32))
 			];
@@ -351,6 +348,14 @@ class webpush extends messenger_base implements extended_method_interface
 		return array_intersect_key($data, $row);
 	}
 
+	/**
+	 * Get template data for the UCP
+	 *
+	 * @param helper $controller_helper
+	 * @param form_helper $form_helper
+	 *
+	 * @return array
+	 */
 	public function get_ucp_template_data(helper $controller_helper, form_helper $form_helper): array
 	{
 		$subscription_map = $this->get_user_subscription_map([$this->user->id()]);
