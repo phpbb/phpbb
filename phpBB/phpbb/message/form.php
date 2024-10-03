@@ -129,10 +129,10 @@ abstract class form
 	/**
 	* Submit form, generate the email and send it
 	*
-	* @param \messenger $messenger
+	* @param \phpbb\di\service_collection $messenger
 	* @return void
 	*/
-	public function submit(\messenger $messenger)
+	public function submit(\phpbb\di\service_collection $messenger)
 	{
 		if (!check_form_key('memberlist_email'))
 		{
