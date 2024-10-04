@@ -15,16 +15,17 @@ namespace phpbb\captcha\plugins;
 
 interface plugin_interface
 {
-	const CONFIRMATION_REGISTRATION = 1;
-	const CONFIRMATION_LOGIN = 2;
+	const CONFIRM_REGISTRATION = 1;
+	const CONFIRM_LOGIN = 2;
 
-	const CONFIRMATION_POST = 3;
+	const CONFIRM_POST = 3;
 
-	const CONFIRMATION_REPORT = 4;
+	const CONFIRM_REPORT = 4;
 
 
 	/**
 	 * Check if the plugin is available
+	 *
 	 * @return bool True if the plugin is available, false if not
 	 */
 	public function is_available(): bool;
@@ -49,5 +50,34 @@ interface plugin_interface
 	 * @param int $type Type of captcha, should be one of the CONFIRMATION_* constants
 	 * @return void
 	 */
-	public function show(int $type): void;
+	public function init(int $type): void;
+
+	/**
+	 * Validate the captcha with the given request data
+	 *
+	 * @param array $request_data Request data for the captcha
+	 * @return bool True if request data was valid captcha reply, false if not
+	 */
+	public function validate(array $request_data): bool;
+
+	/**
+	 * Return whether captcha was solved
+	 *
+	 * @return bool True if captcha was solved, false if not
+	 */
+	public function is_solved(): bool;
+
+	/**
+	 * Reset captcha state, e.g. after checking if it's valid
+	 *
+	 * @return void
+	 */
+	public function reset(): void;
+
+	/**
+	 * Get attempt count for this captcha and user
+	 *
+	 * @return int Number of attempts
+	 */
+	public function get_attempt_count(): int;
 }

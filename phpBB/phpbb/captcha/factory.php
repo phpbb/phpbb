@@ -13,6 +13,9 @@
 
 namespace phpbb\captcha;
 
+use phpbb\captcha\plugins\legacy_wrapper;
+use phpbb\captcha\plugins\plugin_interface;
+
 class factory
 {
 	/**
@@ -41,11 +44,17 @@ class factory
 	* Return a new instance of a given plugin
 	*
 	* @param $name
-	* @return object|null
+	* @return plugin_interface
 	*/
-	public function get_instance($name)
+	public function get_instance($name): plugin_interface
 	{
-		return $this->container->get($name);
+		$captcha = $this->container->get($name);
+		if ($captcha instanceof plugin_interface)
+		{
+			return $captcha;
+		}
+
+		return new legacy_wrapper($name);
 	}
 
 	/**

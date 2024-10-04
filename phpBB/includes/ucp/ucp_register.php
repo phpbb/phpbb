@@ -235,8 +235,10 @@ class ucp_register
 		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change.
 		if ($config['enable_confirm'])
 		{
-			$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-			$captcha->init(CONFIRM_REG);
+			/** @var \phpbb\captcha\factory $captcha_factory */
+			$captcha_factory = $phpbb_container->get('captcha.factory');
+			$captcha = $captcha_factory->get_instance($config['captcha_plugin']);
+			$captcha->init(\phpbb\captcha\plugins\plugin_interface::CONFIRM_REGISTRATION);
 		}
 
 		$timezone = $config['board_timezone'];
@@ -426,7 +428,7 @@ class ucp_register
 				}
 
 				// Okay, captcha, your job is done.
-				if ($config['enable_confirm'] && isset($captcha))
+				if ($config['enable_confirm'])
 				{
 					$captcha->reset();
 				}

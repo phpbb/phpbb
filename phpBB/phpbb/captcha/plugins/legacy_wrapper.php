@@ -17,6 +17,8 @@ class legacy_wrapper implements plugin_interface
 {
 	private $legacy_captcha;
 
+	private string $last_error;
+
 	public function __construct($legacy_captcha)
 	{
 		$this->legacy_captcha = $legacy_captcha;
@@ -72,11 +74,69 @@ class legacy_wrapper implements plugin_interface
 	 * @param int $type Type of captcha, should be one of the CONFIRMATION_* constants
 	 * @return void
 	 */
-	public function show(int $type): void
+	public function init(int $type): void
 	{
 		if (method_exists($this->legacy_captcha, 'init'))
 		{
 			$this->legacy_captcha->init($type);
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function validate(array $request_data): bool
+	{
+		if (method_exists($this->legacy_captcha, 'validate'))
+		{
+			$error = $this->legacy_captcha->validate($request_data);
+			if ($error)
+			{
+				$this->last_error = $error;
+				return false;
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function is_solved(): bool
+	{
+		if (method_exists($this->legacy_captcha, 'is_solved'))
+		{
+			return $this->legacy_captcha->is_solved();
+		}
+
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function reset(): void
+	{
+		if (method_exists($this->legacy_captcha, 'reset'))
+		{
+			$this->legacy_captcha->reset();
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_attempt_count(): int
+	{
+		if (method_exists($this->legacy_captcha, 'get_attempt_count'))
+		{
+			return $this->legacy_captcha->get_attempt_count();
+		}
+
+		// Ensure this is deemed as too many attempts
+		return PHP_INT_MAX;
 	}
 }
