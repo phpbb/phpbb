@@ -53,6 +53,13 @@ interface plugin_interface
 	public function init(int $type): void;
 
 	/**
+	 * Get hidden form fields for this captcha plugin
+	 *
+	 * @return array Hidden form fields
+	 */
+	public function get_hidden_fields(): array;
+
+	/**
 	 * Validate the captcha with the given request data
 	 *
 	 * @param array $request_data Request data for the captcha

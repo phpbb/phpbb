@@ -77,6 +77,19 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_hidden_fields(): array
+	{
+		if (method_exists($this->legacy_captcha, 'get_hidden_fields'))
+		{
+			return $this->legacy_captcha->get_hidden_fields();
+		}
+
+		return [];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function validate(array $request_data): bool
 	{
 		if (method_exists($this->legacy_captcha, 'validate'))
