@@ -336,56 +336,6 @@ class qa
 	*/
 	function install()
 	{
-		global $phpbb_container;
-
-		$db_tool = $phpbb_container->get('dbal.tools');
-		$schemas = array(
-				$this->table_captcha_questions		=> array (
-					'COLUMNS' => array(
-						'question_id'	=> array('UINT', null, 'auto_increment'),
-						'strict'		=> array('BOOL', 0),
-						'lang_id'		=> array('UINT', 0),
-						'lang_iso'		=> array('VCHAR:30', ''),
-						'question_text'	=> array('TEXT_UNI', ''),
-					),
-					'PRIMARY_KEY'		=> 'question_id',
-					'KEYS'				=> array(
-						'lang'			=> array('INDEX', 'lang_iso'),
-					),
-				),
-				$this->table_captcha_answers		=> array (
-					'COLUMNS' => array(
-						'question_id'	=> array('UINT', 0),
-						'answer_text'	=> array('STEXT_UNI', ''),
-					),
-					'KEYS'				=> array(
-						'qid'			=> array('INDEX', 'question_id'),
-					),
-				),
-				$this->table_qa_confirm		=> array (
-					'COLUMNS' => array(
-						'session_id'	=> array('CHAR:32', ''),
-						'confirm_id'	=> array('CHAR:32', ''),
-						'lang_iso'		=> array('VCHAR:30', ''),
-						'question_id'	=> array('UINT', 0),
-						'attempts'		=> array('UINT', 0),
-						'confirm_type'	=> array('USINT', 0),
-					),
-					'KEYS'				=> array(
-						'session_id'			=> array('INDEX', 'session_id'),
-						'lookup'				=> array('INDEX', array('confirm_id', 'session_id', 'lang_iso')),
-					),
-					'PRIMARY_KEY'		=> 'confirm_id',
-				),
-		);
-
-		foreach ($schemas as $table => $schema)
-		{
-			if (!$db_tool->sql_table_exists($table))
-			{
-				$db_tool->sql_create_table($table, $schema);
-			}
-		}
 	}
 
 	/**
