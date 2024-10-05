@@ -8,12 +8,12 @@
 
 <p>{L_ACP_VC_EXT_GET_MORE}</p>
 
-<!-- IF ERROR_MSG -->
+{% if ERRORS %}
 <div class="errorbox">
-	<h3>{L_WARNING}</h3>
-	<p>{ERROR_MSG}</p>
+	<h3>{{ lang('WARNING') }}</h3>
+	<p>{{ ERRORS|join('<br>') }}</p>
 </div>
-<!-- ENDIF -->
+{% endif %}
 
 <form id="acp_captcha" method="post" action="{U_ACTION}">
 
@@ -47,10 +47,10 @@
 
 <fieldset>
 <legend>{L_AVAILABLE_CAPTCHAS}</legend>
-<dl>
-	<dt><label for="captcha_select">{L_CAPTCHA_SELECT}{L_COLON}</label><br /><span>{L_CAPTCHA_SELECT_EXPLAIN}</span></dt>
-	<dd><select id="captcha_select" name="select_captcha" onchange="(document.getElementById('acp_captcha')).submit()" >{CAPTCHA_SELECT}</select></dd>
-</dl>
+	<dl>
+		<dt><label for="captcha_select">{{ lang('CAPTCHA_SELECT') ~ lang('COLON') }}</label><br><span>{{ lang('CAPTCHA_SELECT_EXPLAIN') }}</span></dt>
+		<dd>{{ FormsSelect(CAPTCHA_SELECT | merge({id: 'captcha_select', onchange: "(document.getElementById('acp_captcha')).submit()"})) }}</dd>
+	</dl>
  <!-- IF S_CAPTCHA_HAS_CONFIG -->
 <dl>
 	<dt><label for="configure">{L_CAPTCHA_CONFIGURE}{L_COLON}</label><br /><span>{L_CAPTCHA_CONFIGURE_EXPLAIN}</span></dt>
