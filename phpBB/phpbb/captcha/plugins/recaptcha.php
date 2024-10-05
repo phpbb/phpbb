@@ -179,11 +179,6 @@ class recaptcha extends captcha_abstract
 		return $hidden_fields;
 	}
 
-	function uninstall()
-	{
-		$this->garbage_collect(0);
-	}
-
 	function validate()
 	{
 		if (!parent::validate())

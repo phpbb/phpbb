@@ -324,14 +324,6 @@ class qa
 	}
 
 	/**
-	*  API function - we don't drop the tables here, as that would cause the loss of all entered questions.
-	*/
-	function uninstall()
-	{
-		$this->garbage_collect(0);
-	}
-
-	/**
 	*  API function - see what has to be done to validate
 	*/
 	function validate()
