@@ -128,11 +128,9 @@ class acp_captcha
 					if (isset($captchas['available'][$selected]))
 					{
 						$old_captcha = $factory->get_instance($config['captcha_plugin']);
-						$old_captcha->uninstall();
+						$old_captcha->garbage_collect();
 
 						$config->set('captcha_plugin', $selected);
-						$new_captcha = $factory->get_instance($config['captcha_plugin']);
-						$new_captcha->install();
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 					}

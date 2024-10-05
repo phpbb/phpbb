@@ -332,13 +332,6 @@ class qa
 	}
 
 	/**
-	*  API function - set up shop
-	*/
-	function install()
-	{
-	}
-
-	/**
 	*  API function - see what has to be done to validate
 	*/
 	function validate()
@@ -596,11 +589,6 @@ class qa
 
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
-
-		if (!self::is_installed())
-		{
-			$this->install();
-		}
 
 		$module->tpl_name = 'captcha_qa_acp';
 		$module->page_title = 'ACP_VC_SETTINGS';

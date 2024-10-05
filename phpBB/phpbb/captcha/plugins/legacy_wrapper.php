@@ -25,8 +25,7 @@ class legacy_wrapper implements plugin_interface
 	}
 
 	/**
-	 * Check if the plugin is available
-	 * @return bool True if the plugin is available, false if not
+	 * {@inheritDoc}
 	 */
 	public function is_available(): bool
 	{
@@ -39,9 +38,7 @@ class legacy_wrapper implements plugin_interface
 	}
 
 	/**
-	 * Check if the plugin has a configuration
-	 *
-	 * @return bool True if the plugin has a configuration, false if not
+	 * {@inheritDoc}
 	 */
 	public function has_config(): bool
 	{
@@ -54,9 +51,7 @@ class legacy_wrapper implements plugin_interface
 	}
 
 	/**
-	 * Get the name of the plugin, should be language variable
-	 *
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function get_name(): string
 	{
@@ -69,10 +64,7 @@ class legacy_wrapper implements plugin_interface
 	}
 
 	/**
-	 * Display the captcha for the specified type
-	 *
-	 * @param int $type Type of captcha, should be one of the CONFIRMATION_* constants
-	 * @return void
+	 * {@inheritDoc}
 	 */
 	public function init(int $type): void
 	{
@@ -138,5 +130,37 @@ class legacy_wrapper implements plugin_interface
 
 		// Ensure this is deemed as too many attempts
 		return PHP_INT_MAX;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_demo_template(): string
+	{
+		if (method_exists($this->legacy_captcha, 'get_demo_template'))
+		{
+			return $this->legacy_captcha->get_demo_template(0);
+		}
+
+		return '';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function garbage_collect(int $confirm_type = 0): void
+	{
+		if (method_exists($this->legacy_captcha, 'garbage_collect'))
+		{
+			$this->legacy_captcha->garbage_collect($confirm_type);
+		}
+	}
+
+	public function acp_page($id, $module): void
+	{
+		if (method_exists($this->legacy_captcha, 'acp_page'))
+		{
+			$this->legacy_captcha->acp_page($id, $module);
+		}
 	}
 }

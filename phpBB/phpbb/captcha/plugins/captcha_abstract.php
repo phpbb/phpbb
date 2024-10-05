@@ -184,11 +184,6 @@ abstract class captcha_abstract
 		$this->garbage_collect(0);
 	}
 
-	function install()
-	{
-		return;
-	}
-
 	function validate()
 	{
 		global $user;

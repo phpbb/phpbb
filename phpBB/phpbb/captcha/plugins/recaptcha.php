@@ -184,11 +184,6 @@ class recaptcha extends captcha_abstract
 		$this->garbage_collect(0);
 	}
 
-	function install()
-	{
-		return;
-	}
-
 	function validate()
 	{
 		if (!parent::validate())

@@ -80,4 +80,21 @@ interface plugin_interface
 	 * @return int Number of attempts
 	 */
 	public function get_attempt_count(): int;
+
+	/**
+	 * Get template data for demo
+	 *
+	 * @return string Demo template file name
+	 */
+	public function get_demo_template(): string;
+
+	/**
+	 * Garbage collect captcha plugin
+	 *
+	 * @param int $confirm_type Confirm type to garbage collect, defaults to all (0)
+	 * @return void
+	 */
+	public function garbage_collect(int $confirm_type = 0): void;
+
+	public function acp_page($id, $module): void;
 }
