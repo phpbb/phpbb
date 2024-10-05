@@ -54,7 +54,7 @@ class factory
 			return $captcha;
 		}
 
-		return new legacy_wrapper($name);
+		return new legacy_wrapper($captcha);
 	}
 
 	/**
