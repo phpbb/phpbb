@@ -605,11 +605,29 @@
 	function interceptFormSubmit($form) {
 		if (!$form.length) {
 			return;
+		} else if ($form.find('input[name="admin_name"]').length > 0) {
+			setAdminTimezone($form);
 		}
 
 		$form.find(':submit').bind('click', function (event) {
 			event.preventDefault();
 			submitForm($form, $(this));
 		});
+	}
+
+	/**
+	 * Set admin timezone in form
+	 *
+	 * @param $form
+	 */
+	function setAdminTimezone($form) {
+		// Set admin timezone if it does not exist yet
+		if ($form.find('input[name="admin_timezone"]').length === 0) {
+			const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+			// Add timezone as form entry
+			const timezoneEntry = $('<input type="hidden" name="admin_timezone" value="' + timeZone + '">');
+			$form.append(timezoneEntry);
+		}
 	}
 })(jQuery); // Avoid conflicts with other libraries

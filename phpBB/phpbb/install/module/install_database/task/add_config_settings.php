@@ -132,6 +132,7 @@ class add_config_settings extends database_task
 
 		$updates = [
 			'board_startdate' => (string) $current_time,
+			'board_timezone' => $this->install_config->get('admin_timezone'),
 			'default_lang' => $this->install_config->get('default_lang'),
 
 			'server_name' => $this->install_config->get('server_name'),
