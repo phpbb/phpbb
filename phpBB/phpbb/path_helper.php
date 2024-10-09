@@ -223,13 +223,13 @@ class path_helper
 		*
 		* The referer must be specified as a parameter in the query.
 		*/
-		if ($this->request->is_ajax() && $this->symfony_request->get('_referer'))
+		if ($this->request->is_ajax() && $this->request->header('Referer'))
 		{
 			// We need to escape $absolute_board_url because it can be partially concatenated to the result.
 			$absolute_board_url = $this->request->escape($this->symfony_request->getSchemeAndHttpHost() . $this->symfony_request->getBasePath(), true);
 
 			$referer_web_root_path = $this->get_web_root_path_from_ajax_referer(
-				$this->symfony_request->get('_referer'),
+				$this->request->header('Referer'),
 				$absolute_board_url
 			);
 			return $this->web_root_path = $referer_web_root_path;
