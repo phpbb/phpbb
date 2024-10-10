@@ -28,7 +28,7 @@ class phpbb_functional_switch_permissions_test extends phpbb_functional_test_cas
 		$this->add_lang(['common', 'ucp']);
 	}
 
-	public function test_switch_permissions()
+	public function test_switch_permissions_acp()
 	{
 		$user_id = $this->create_user(self::TEST_USER);
 
@@ -55,6 +55,55 @@ class phpbb_functional_switch_permissions_test extends phpbb_functional_test_cas
 
 		// Check that restore permissions link exists
 		$crawler = self::$client->request('GET', '../index.php?sid=' . $this->sid);
+		$this->assertStringContainsString(
+			$this->lang('RESTORE_PERMISSIONS'),
+			$crawler->text()
+		);
+
+		// Check that restore permissions works
+		$crawler = self::$client->request('GET', 'ucp.php?mode=restore_perm&sid=' . $this->sid);
+		$this->assertStringContainsString(
+			$this->lang('PERMISSIONS_RESTORED'),
+			$crawler->text()
+		);
+	}
+
+	/**
+	 * @depends test_switch_permissions_acp
+	 */
+	public function test_switch_permissions_ucp()
+	{
+		$db = $this->get_db();
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . "
+			WHERE username = '" . self::TEST_USER . "'";
+		$result = $db->sql_query($sql);
+		$user_id = $db->sql_fetchfield('user_id');
+		$db->sql_freeresult($result);
+
+		// Open memberlist profile page for user
+		$crawler = self::request('GET', "memberlist.php?mode=viewprofile&u={$user_id}&sid={$this->sid}");
+
+		// Use permissions
+		$link = $crawler->selectLink($this->lang('USE_PERMISSIONS'))->link();
+		$crawler = self::$client->click($link);
+
+		// Check that we switched permissions to test user
+		$this->assertStringContainsString(
+			str_replace('<br />', '<br>', $this->lang('PERMISSIONS_TRANSFERRED', self::TEST_USER)),
+			$crawler->html()
+		);
+
+		// Check that UCP pages don't get forced to UCP main with restore permission info
+		$this->add_lang(['memberlist', 'ucp']);
+		$crawler = self::request('GET', "ucp.php?i=ucp_profile&mode=profile_info&sid={$this->sid}");
+		$this->assertStringContainsString(
+			$this->lang('EDIT_PROFILE'),
+			$crawler->text()
+		);
+
+		// Check that restore permissions link exists
+		$crawler = self::$client->request('GET', 'index.php?sid=' . $this->sid);
 		$this->assertStringContainsString(
 			$this->lang('RESTORE_PERMISSIONS'),
 			$crawler->text()
