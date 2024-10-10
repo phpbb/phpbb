@@ -502,8 +502,8 @@ class p_master
 			$id = $this->p_class . '_' . $id;
 		}
 
-		// Fallback to acp main page for special restore permission mode
-		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
+		// Fallback to acp main page for special test permission mode
+		if ($this->p_class === 'acp' && $user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
 		{
 			$id = '';
 			$mode = '';
