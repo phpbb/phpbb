@@ -148,6 +148,19 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_template(): string
+	{
+		if (method_exists($this->legacy_captcha, 'get_template'))
+		{
+			return $this->legacy_captcha->get_template();
+		}
+
+		return '';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_demo_template(): string
 	{
 		if (method_exists($this->legacy_captcha, 'get_demo_template'))

@@ -89,7 +89,14 @@ interface plugin_interface
 	public function get_attempt_count(): int;
 
 	/**
-	 * Get template data for demo
+	 * Get template filename for captcha
+	 *
+	 * @return string Template file name
+	 */
+	public function get_template(): string;
+
+	/**
+	 * Get template filename for demo
 	 *
 	 * @return string Demo template file name
 	 */
