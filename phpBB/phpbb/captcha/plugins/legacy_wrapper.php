@@ -90,11 +90,11 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate(array $request_data): bool
+	public function validate(): bool
 	{
 		if (method_exists($this->legacy_captcha, 'validate'))
 		{
-			$error = $this->legacy_captcha->validate($request_data);
+			$error = $this->legacy_captcha->validate();
 			if ($error)
 			{
 				$this->last_error = $error;

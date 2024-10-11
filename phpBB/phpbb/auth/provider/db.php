@@ -177,7 +177,7 @@ class db extends base
 		if ($show_captcha)
 		{
 			$captcha->init(CONFIRM_LOGIN);
-			$vc_response = $captcha->validate($row);
+			$vc_response = $captcha->validate();
 			if ($vc_response)
 			{
 				return array(

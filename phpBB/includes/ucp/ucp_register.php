@@ -293,7 +293,7 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				$vc_response = $captcha->validate($data);
+				$vc_response = $captcha->validate();
 				if ($vc_response !== false)
 				{
 					$error[] = $vc_response;

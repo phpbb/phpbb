@@ -62,10 +62,9 @@ interface plugin_interface
 	/**
 	 * Validate the captcha with the given request data
 	 *
-	 * @param array $request_data Request data for the captcha
 	 * @return bool True if request data was valid captcha reply, false if not
 	 */
-	public function validate(array $request_data): bool;
+	public function validate(): bool;
 
 	/**
 	 * Return whether captcha was solved
