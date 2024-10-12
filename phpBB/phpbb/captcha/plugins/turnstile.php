@@ -26,6 +26,8 @@ class turnstile implements plugin_interface
 	/** @var language */
 	protected $language;
 
+	protected string $service_name = '';
+
 	public function __construct(config $config, language $language)
 	{
 		$this->config = $config;
@@ -34,7 +36,10 @@ class turnstile implements plugin_interface
 
 	public function is_available(): bool
 	{
-		return ($this->config->offsetGet('captcha_turnstile_key') ?? false);
+		$this->language->add_lang('captcha_turnstile');
+
+		return !empty($this->config->offsetGet('captcha_turnstile_sitekey'))
+			&& !empty($this->config->offsetGet('captcha_turnstile_secret'));
 	}
 
 	public function has_config(): bool
@@ -45,6 +50,14 @@ class turnstile implements plugin_interface
 	public function get_name(): string
 	{
 		return 'CAPTCHA_TURNSTILE';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function set_name(string $name): void
+	{
+		$this->service_name = $name;
 	}
 
 	public function init(int $type): void
@@ -147,7 +160,7 @@ class turnstile implements plugin_interface
 
 	public function get_demo_template(): string
 	{
-		return '';
+		return 'captcha_turnstile_acp_demo.html';
 	}
 
 	public function garbage_collect(int $confirm_type = 0): void

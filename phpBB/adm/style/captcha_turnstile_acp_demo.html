@@ -1,0 +1,23 @@
+<dl>
+	<dt><div id="captcha_turnstile"></div></dt>
+</dl>
+{% INCLUDEJS 'https://challenges.cloudflare.com/turnstile/v0/api.js' %}
+<script>
+	function domReady(callBack) {
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', callBack);
+		} else {
+			callBack();
+		}
+	}
+
+	domReady(() => {
+		/* global turnstile */
+		console.debug('_turnstileCb called');
+
+		turnstile.render('#captcha_turnstile', {
+			sitekey: '1x00000000000000000000AA',
+			theme: 'light',
+		});
+	});
+</script>

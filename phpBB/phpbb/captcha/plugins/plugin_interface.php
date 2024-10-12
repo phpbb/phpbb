@@ -45,6 +45,13 @@ interface plugin_interface
 	public function get_name(): string;
 
 	/**
+	 * Set the service name of the plugin
+	 *
+	 * @param string $name
+	 */
+	public function set_name(string $name): void;
+
+	/**
 	 * Display the captcha for the specified type
 	 *
 	 * @param int $type Type of captcha, should be one of the CONFIRMATION_* constants

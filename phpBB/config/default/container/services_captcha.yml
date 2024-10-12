@@ -64,4 +64,4 @@ services:
         calls:
             - ['set_name', ['core.captcha.plugins.turnstile']]
         tags:
-            - { name: catpcha.plugins }
+            - { name: captcha.plugins }

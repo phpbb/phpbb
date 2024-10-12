@@ -66,6 +66,17 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function set_name(string $name): void
+	{
+		if (method_exists($this->legacy_captcha, 'set_name'))
+		{
+			$this->legacy_captcha->set_name($name);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function init(int $type): void
 	{
 		if (method_exists($this->legacy_captcha, 'init'))
