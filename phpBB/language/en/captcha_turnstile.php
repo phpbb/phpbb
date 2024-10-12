@@ -37,5 +37,9 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, [
-	'CAPTCHA_TURNSTILE'				=> 'Turnstile',
+	'CAPTCHA_TURNSTILE'					=> 'Turnstile',
+	'CAPTCHA_TURNSTILE_SITEKEY'			=> 'Sitekey',
+	'CAPTCHA_TURNSTILE_SITEKEY_EXPLAIN'	=> 'Your Turnstile sitekey. The sitekey can be retrieved from your <a href="https://dash.cloudflare.com/?to=/:account/turnstile">Cloudflare dashboard</a>.',
+	'CAPTCHA_TURNSTILE_SECRET'			=> 'Secret key',
+	'CAPTCHA_TURNSTILE_SECRET_EXPLAIN'	=> 'Your Turnstile secret key. The secret key can be retrieved from your <a href="https://dash.cloudflare.com/?to=/:account/turnstile">Cloudflare dashboard</a>.',
 ]);

@@ -116,5 +116,12 @@ interface plugin_interface
 	 */
 	public function garbage_collect(int $confirm_type = 0): void;
 
+	/**
+	 * Display acp page
+	 *
+	 * @param mixed $id ACP module id
+	 * @param mixed $module ACP module name
+	 * @return void
+	 */
 	public function acp_page($id, $module): void;
 }

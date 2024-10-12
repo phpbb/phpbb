@@ -15,23 +15,54 @@ namespace phpbb\captcha\plugins;
 
 use phpbb\config\config;
 use phpbb\language\language;
+use phpbb\log\log_interface;
+use phpbb\request\request_interface;
+use phpbb\template\template;
+use phpbb\user;
 
 class turnstile implements plugin_interface
 {
 	private const API_ENDPOINT = 'https://api.cloudflare.com/client/v4/captcha/validate';
 
 	/** @var config */
-	protected $config;
+	protected config $config;
 
 	/** @var language */
-	protected $language;
+	protected language $language;
 
+	/** @var log_interface */
+	protected log_interface $log;
+
+	/** @var request_interface */
+	protected request_interface $request;
+
+	/** @var template */
+	protected template $template;
+
+	/** @var user */
+	protected user $user;
+
+	/** @var string Service name */
 	protected string $service_name = '';
 
-	public function __construct(config $config, language $language)
+	/**
+	 * Constructor for turnstile captcha plugin
+	 *
+	 * @param config $config
+	 * @param language $language
+	 * @param log_interface $log
+	 * @param request_interface $request
+	 * @param template $template
+	 * @param user $user
+	 */
+	public function __construct(config $config, language $language, log_interface $log, request_interface $request, template $template, user $user)
 	{
 		$this->config = $config;
 		$this->language = $language;
+		$this->log = $log;
+		$this->request = $request;
+		$this->template = $template;
+		$this->user = $user;
 	}
 
 	public function is_available(): bool
@@ -168,8 +199,55 @@ class turnstile implements plugin_interface
 		// TODO: Implement garbage_collect() method.
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function acp_page($id, $module): void
 	{
-		// TODO: Implement acp_page() method.
+		$captcha_vars = [
+			'captcha_turnstile_sitekey'			=> 'CAPTCHA_TURNSTILE_SITEKEY',
+			'captcha_turnstile_secret'			=> 'CAPTCHA_TURNSTILE_SECRET',
+		];
+
+		$module->tpl_name = 'captcha_turnstile_acp';
+		$module->page_title = 'ACP_VC_SETTINGS';
+		$form_key = 'acp_captcha';
+		add_form_key($form_key);
+
+		$submit = $this->request->is_set_post('submit');
+
+		if ($submit && check_form_key($form_key))
+		{
+			$captcha_vars = array_keys($captcha_vars);
+			foreach ($captcha_vars as $captcha_var)
+			{
+				$value = $this->request->variable($captcha_var, '');
+				if ($value)
+				{
+					$this->config->set($captcha_var, $value);
+				}
+			}
+
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_VISUAL');
+			trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($module->u_action));
+		}
+		else if ($submit)
+		{
+			trigger_error($this->language->lang('FORM_INVALID') . adm_back_link($module->u_action));
+		}
+		else
+		{
+			foreach ($captcha_vars as $captcha_var => $template_var)
+			{
+				$var = $this->request->is_set($captcha_var) ? $this->request->variable($captcha_var, '') : $this->config->offsetGet($captcha_var);;
+				$this->template->assign_var($template_var, $var);
+			}
+
+			$this->template->assign_vars(array(
+				'CAPTCHA_PREVIEW'		=> $this->get_demo_template(),
+				'CAPTCHA_NAME'			=> $this->service_name,
+				'U_ACTION'				=> $module->u_action,
+			));
+		}
 	}
 }

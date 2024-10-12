@@ -61,6 +61,10 @@ services:
         arguments:
             - '@config'
             - '@language'
+            - '@log'
+            - '@request'
+            - '@template'
+            - '@user'
         calls:
             - ['set_name', ['core.captcha.plugins.turnstile']]
         tags:
