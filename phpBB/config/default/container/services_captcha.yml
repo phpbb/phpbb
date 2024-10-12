@@ -54,3 +54,14 @@ services:
             - ['set_name', ['core.captcha.plugins.recaptcha_v3']]
         tags:
             - { name: captcha.plugins }
+
+    core.captcha.plugins.turnstile:
+        class: phpbb\captcha\plugins\turnstile
+        shared: false
+        arguments:
+            - '@config'
+            - '@language'
+        calls:
+            - ['set_name', ['core.captcha.plugins.turnstile']]
+        tags:
+            - { name: catpcha.plugins }

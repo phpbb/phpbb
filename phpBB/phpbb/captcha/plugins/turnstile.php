@@ -13,32 +13,59 @@
 
 namespace phpbb\captcha\plugins;
 
-class turnstile extends captcha_abstract
+use phpbb\config\config;
+use phpbb\language\language;
+
+class turnstile implements plugin_interface
 {
-	/** @var \phpbb\config\config */
+	private const API_ENDPOINT = 'https://api.cloudflare.com/client/v4/captcha/validate';
+
+	/** @var config */
 	protected $config;
 
-	public function __construct(\phpbb\config\config $config)
+	/** @var language */
+	protected $language;
+
+	public function __construct(config $config, language $language)
 	{
 		$this->config = $config;
+		$this->language = $language;
 	}
 
-	public function is_available()
+	public function is_available(): bool
 	{
 		return ($this->config->offsetGet('captcha_turnstile_key') ?? false);
 	}
 
-	public function get_template()
+	public function has_config(): bool
 	{
-		return 'custom_captcha.html'; // Template file for displaying the CAPTCHA
+		return true;
 	}
 
-	public function execute()
+	public function get_name(): string
 	{
-		// Perform any necessary initialization or setup
+		return 'CAPTCHA_TURNSTILE';
 	}
 
-	public function validate()
+	public function init(int $type): void
+	{
+		$this->language->add_lang('captcha_turnstile');
+	}
+
+	public function get_hidden_fields(): array
+	{
+		$hidden_fields = [];
+
+		// Required for posting page to store solved state
+		if ($this->solved)
+		{
+			$hidden_fields['confirm_code'] = $this->code;
+		}
+		$hidden_fields['confirm_id'] = $this->confirm_id;
+		return $hidden_fields;
+	}
+
+	public function validate(): bool
 	{
 		// Implement server-side validation logic here
 		// Example: Validate the submitted CAPTCHA value using Cloudflare API
@@ -97,8 +124,39 @@ class turnstile extends captcha_abstract
 		}
 	}
 
-	public function get_generator_class()
+	public function is_solved(): bool
 	{
-		throw new \Exception('No generator class given.');
+		return false;
+	}
+
+	public function reset(): void
+	{
+		// TODO: Implement reset() method.
+	}
+
+	public function get_attempt_count(): int
+	{
+		// TODO: Implement get_attempt_count() method.
+		return 0;
+	}
+
+	public function get_template(): string
+	{
+		return 'custom_captcha.html'; // Template file for displaying the CAPTCHA
+	}
+
+	public function get_demo_template(): string
+	{
+		return '';
+	}
+
+	public function garbage_collect(int $confirm_type = 0): void
+	{
+		// TODO: Implement garbage_collect() method.
+	}
+
+	public function acp_page($id, $module): void
+	{
+		// TODO: Implement acp_page() method.
 	}
 }
