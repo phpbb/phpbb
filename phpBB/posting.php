@@ -1210,15 +1210,9 @@ if ($submit || $preview || $refresh)
 
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
-		$captcha_data = array(
-			'message'	=> $request->variable('message', '', true),
-			'subject'	=> $request->variable('subject', '', true),
-			'username'	=> $request->variable('username', '', true),
-		);
-		$vc_response = $captcha->validate($captcha_data);
-		if ($vc_response)
+		if ($captcha->validate() !== true)
 		{
-			$error[] = $vc_response;
+			$error[] = $captcha->get_error();
 		}
 	}
 

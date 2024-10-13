@@ -176,9 +176,8 @@ class db extends base
 		// Every auth module is able to define what to do by itself...
 		if ($show_captcha)
 		{
-			$captcha->init(CONFIRM_LOGIN);
-			$vc_response = $captcha->validate();
-			if ($vc_response)
+			$captcha->init(\phpbb\captcha\plugins\plugin_interface::CONFIRM_LOGIN);
+			if ($captcha->validate() !== true)
 			{
 				return array(
 					'status'		=> LOGIN_ERROR_ATTEMPTS,

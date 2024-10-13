@@ -293,10 +293,9 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				$vc_response = $captcha->validate();
-				if ($vc_response !== false)
+				if ($captcha->validate() !== true)
 				{
-					$error[] = $vc_response;
+					$error[] = $captcha->get_error();
 				}
 
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
