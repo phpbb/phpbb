@@ -14,13 +14,15 @@
 namespace phpbb\captcha\plugins;
 
 use phpbb\config\config;
+use phpbb\db\driver\driver;
+use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
 use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\user;
 
-class turnstile implements plugin_interface
+class turnstile extends base
 {
 	private const API_ENDPOINT = 'https://api.cloudflare.com/client/v4/captcha/validate';
 
@@ -49,14 +51,17 @@ class turnstile implements plugin_interface
 	 * Constructor for turnstile captcha plugin
 	 *
 	 * @param config $config
+	 * @param driver_interface $db
 	 * @param language $language
 	 * @param log_interface $log
 	 * @param request_interface $request
 	 * @param template $template
 	 * @param user $user
 	 */
-	public function __construct(config $config, language $language, log_interface $log, request_interface $request, template $template, user $user)
+	public function __construct(config $config, driver_interface $db, language $language, log_interface $log, request_interface $request, template $template, user $user)
 	{
+		parent::__construct($db);
+
 		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
@@ -103,7 +108,7 @@ class turnstile implements plugin_interface
 		// Required for posting page to store solved state
 		if ($this->solved)
 		{
-			$hidden_fields['confirm_code'] = $this->code;
+			$hidden_fields['confirm_code'] = $this->confirm_code;
 		}
 		$hidden_fields['confirm_id'] = $this->confirm_id;
 		return $hidden_fields;

@@ -60,6 +60,7 @@ services:
         shared: false
         arguments:
             - '@config'
+            - '@dbal.conn'
             - '@language'
             - '@log'
             - '@request'
