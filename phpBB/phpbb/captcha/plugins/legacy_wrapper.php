@@ -19,7 +19,12 @@ class legacy_wrapper implements plugin_interface
 
 	private string $last_error;
 
-	public function __construct($legacy_captcha)
+	/**
+	 * Constructor for legacy CAPTCHA wrapper
+	 *
+	 * @param object $legacy_captcha
+	 */
+	public function __construct(object $legacy_captcha)
 	{
 		$this->legacy_captcha = $legacy_captcha;
 	}
@@ -77,7 +82,7 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(int $type): void
+	public function init(confirm_type $type): void
 	{
 		if (method_exists($this->legacy_captcha, 'init'))
 		{

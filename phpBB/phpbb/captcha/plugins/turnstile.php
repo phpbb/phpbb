@@ -16,7 +16,6 @@ namespace phpbb\captcha\plugins;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use phpbb\config\config;
-use phpbb\db\driver\driver;
 use phpbb\db\driver\driver_interface;
 use phpbb\language\language;
 use phpbb\log\log_interface;
@@ -32,23 +31,14 @@ class turnstile extends base
 	/** @var string API endpoint for turnstile verification */
 	private const VERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-	/** @var config */
-	protected config $config;
-
 	/** @var language */
 	protected language $language;
 
 	/** @var log_interface */
 	protected log_interface $log;
 
-	/** @var request_interface */
-	protected request_interface $request;
-
 	/** @var template */
 	protected template $template;
-
-	/** @var user */
-	protected user $user;
 
 	/** @var string Service name */
 	protected string $service_name = '';
@@ -73,14 +63,11 @@ class turnstile extends base
 	 */
 	public function __construct(config $config, driver_interface $db, language $language, log_interface $log, request_interface $request, template $template, user $user)
 	{
-		parent::__construct($db);
+		parent::__construct($config, $db, $request, $user);
 
-		$this->config = $config;
 		$this->language = $language;
 		$this->log = $log;
-		$this->request = $request;
 		$this->template = $template;
-		$this->user = $user;
 	}
 
 	/**
@@ -88,7 +75,7 @@ class turnstile extends base
 	 */
 	public function is_available(): bool
 	{
-		$this->init(0);
+		$this->init(confirm_type::UNDEFINED);
 
 		return !empty($this->config->offsetGet('captcha_turnstile_sitekey'))
 			&& !empty($this->config->offsetGet('captcha_turnstile_secret'));
@@ -124,22 +111,6 @@ class turnstile extends base
 	public function init(confirm_type $type): void
 	{
 		$this->language->add_lang('captcha_turnstile');
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function get_hidden_fields(): array
-	{
-		$hidden_fields = [];
-
-		// Required for posting page to store solved state
-		if ($this->solved)
-		{
-			$hidden_fields['confirm_code'] = $this->confirm_code;
-		}
-		$hidden_fields['confirm_id'] = $this->confirm_id;
-		return $hidden_fields;
 	}
 
 	/**
@@ -196,6 +167,9 @@ class turnstile extends base
 		// TODO: Implement reset() method.
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_attempt_count(): int
 	{
 		// TODO: Implement get_attempt_count() method.

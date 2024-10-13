@@ -17,6 +17,7 @@ namespace phpbb\captcha\plugins;
  * Confirmation types for CAPTCHA plugins
  */
 enum confirm_type: int {
+	case UNDEFINED = 0;
 	case REGISTRATION = 1;
 	case LOGIN = 2;
 	case POST = 3;
