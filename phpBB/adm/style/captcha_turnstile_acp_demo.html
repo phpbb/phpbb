@@ -1,5 +1,5 @@
 <dl>
-	<dt><div id="captcha_turnstile"></div></dt>
+	<dt><div id="captcha_turnstile" data-language="{{ lang('TURNSTILE_LANG') }}"{% if TURNSTILE_THEME %} data-theme="{{ TURNSTILE_THEME }}"{% endif %}></div></dt>
 </dl>
 {% INCLUDEJS U_TURNSTILE_SCRIPT %}
 <script>

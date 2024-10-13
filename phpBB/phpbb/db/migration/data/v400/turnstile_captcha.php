@@ -20,7 +20,8 @@ class turnstile_captcha extends migration
 	public function effectively_installed(): bool
 	{
 		return $this->config->offsetExists('captcha_turnstile_sitekey')
-			&& $this->config->offsetExists('captcha_turnstile_secret');
+			&& $this->config->offsetExists('captcha_turnstile_secret')
+			&& $this->config->offsetExists('captcha_turnstile_theme');
 	}
 
 	public static function depends_on(): array
@@ -35,6 +36,7 @@ class turnstile_captcha extends migration
 		return [
 			['config.add', ['captcha_turnstile_sitekey', '']],
 			['config.add', ['captcha_turnstile_secret', '']],
+			['config.add', ['captcha_turnstile_theme', 'light']],
 		];
 	}
 
@@ -43,6 +45,7 @@ class turnstile_captcha extends migration
 		return [
 			['config.remove', ['captcha_turnstile_sitekey']],
 			['config.remove', ['captcha_turnstile_secret']],
+			['config.remove', ['captcha_turnstile_theme']],
 		];
 	}
 }

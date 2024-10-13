@@ -53,6 +53,13 @@ class turnstile extends base
 	/** @var string Service name */
 	protected string $service_name = '';
 
+	/** @var array|string[] Supported themes for Turnstile CAPTCHA */
+	protected static array $supported_themes = [
+		'light',
+		'dark',
+		'auto'
+	];
+
 	/**
 	 * Constructor for turnstile captcha plugin
 	 *
@@ -205,6 +212,7 @@ class turnstile extends base
 		$this->template->assign_vars([
 			'S_TURNSTILE_AVAILABLE'	=> $this->is_available(),
 			'TURNSTILE_SITEKEY'		=> $this->config->offsetGet('captcha_turnstile_sitekey'),
+			'TURNSTILE_THEME'		=> $this->config->offsetGet('captcha_turnstile_theme'),
 			'U_TURNSTILE_SCRIPT'	=> self::SCRIPT_URL,
 		]);
 
@@ -214,6 +222,7 @@ class turnstile extends base
 	public function get_demo_template(): string
 	{
 		$this->template->assign_vars([
+			'TURNSTILE_THEME'		=> $this->config->offsetGet('captcha_turnstile_theme'),
 			'U_TURNSTILE_SCRIPT'	=> self::SCRIPT_URL,
 		]);
 
@@ -254,6 +263,12 @@ class turnstile extends base
 				}
 			}
 
+			$captcha_theme = $this->request->variable('captcha_turnstile_theme', self::$supported_themes[0]);
+			if (in_array($captcha_theme, self::$supported_themes))
+			{
+				$this->config->set('captcha_turnstile_theme', $captcha_theme);
+			}
+
 			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_CONFIG_VISUAL');
 			trigger_error($this->language->lang('CONFIG_UPDATED') . adm_back_link($module->u_action));
 		}
@@ -270,9 +285,11 @@ class turnstile extends base
 			}
 
 			$this->template->assign_vars(array(
-				'CAPTCHA_PREVIEW'		=> $this->get_demo_template(),
-				'CAPTCHA_NAME'			=> $this->service_name,
-				'U_ACTION'				=> $module->u_action,
+				'CAPTCHA_PREVIEW'			=> $this->get_demo_template(),
+				'CAPTCHA_NAME'				=> $this->service_name,
+				'CAPTCHA_TURNSTILE_THEME'	=> $this->config->offsetGet('captcha_turnstile_theme'),
+				'CAPTCHA_TURNSTILE_THEMES'	=> self::$supported_themes,
+				'U_ACTION'					=> $module->u_action,
 			));
 		}
 	}

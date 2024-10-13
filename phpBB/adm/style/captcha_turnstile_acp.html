@@ -23,10 +23,24 @@
 			</dt>
 			<dd><input id="captcha_turnstile_secret" name="captcha_turnstile_secret" value="{{ CAPTCHA_TURNSTILE_SECRET }}" size="50" type="text" /></dd>
 		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('CAPTCHA_TURNSTILE_THEME') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('CAPTCHA_TURNSTILE_THEME_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{% for theme in CAPTCHA_TURNSTILE_THEMES %}
+				<label>
+					<input class="radio" name="captcha_turnstile_theme" type="radio" value="{{ theme }}"{{ theme == CAPTCHA_TURNSTILE_THEME ? ' checked' }}>
+					<span>{{ lang('CAPTCHA_TURNSTILE_THEME_' ~ theme|upper) }}</span>
+				</label>
+				{% endfor %}
+			</dd>
+		</dl>
 	</fieldset>
 	<fieldset>
 		<legend>{{ lang('PREVIEW') }}</legend>
-	{% if PREVIEW %}
+		{% if PREVIEW %}
 		<div class="successbox">
 			<h3>{{ lang('WARNING') }}</h3>
 			<p>{{ lang('CAPTCHA_PREVIEW_MSG') }}</p>
