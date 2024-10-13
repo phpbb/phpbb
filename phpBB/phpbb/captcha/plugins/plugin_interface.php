@@ -74,6 +74,13 @@ interface plugin_interface
 	public function validate(): bool;
 
 	/**
+	 * Get error string from captcha
+	 *
+	 * @return string Error string, empty string if there is no error
+	 */
+	public function get_error(): string;
+
+	/**
 	 * Return whether captcha was solved
 	 *
 	 * @return bool True if captcha was solved, false if not

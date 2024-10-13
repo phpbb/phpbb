@@ -13,6 +13,8 @@
 
 namespace phpbb\captcha\plugins;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use phpbb\config\config;
 use phpbb\db\driver\driver;
 use phpbb\db\driver\driver_interface;
@@ -24,7 +26,11 @@ use phpbb\user;
 
 class turnstile extends base
 {
-	private const API_ENDPOINT = 'https://api.cloudflare.com/client/v4/captcha/validate';
+	/** @var string URL to cloudflare turnstile API javascript */
+	private const SCRIPT_URL = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+
+	/** @var string API endpoint for turnstile verification */
+	private const VERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 	/** @var config */
 	protected config $config;
@@ -70,19 +76,28 @@ class turnstile extends base
 		$this->user = $user;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function is_available(): bool
 	{
-		$this->language->add_lang('captcha_turnstile');
+		$this->init(0);
 
 		return !empty($this->config->offsetGet('captcha_turnstile_sitekey'))
 			&& !empty($this->config->offsetGet('captcha_turnstile_secret'));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function has_config(): bool
 	{
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_name(): string
 	{
 		return 'CAPTCHA_TURNSTILE';
@@ -96,11 +111,17 @@ class turnstile extends base
 		$this->service_name = $name;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function init(int $type): void
 	{
 		$this->language->add_lang('captcha_turnstile');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_hidden_fields(): array
 	{
 		$hidden_fields = [];
@@ -114,70 +135,55 @@ class turnstile extends base
 		return $hidden_fields;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function validate(): bool
 	{
-		// Implement server-side validation logic here
-		// Example: Validate the submitted CAPTCHA value using Cloudflare API
-
-		// Your Cloudflare API credentials
-		$api_email = 'your_email@example.com';
-		$api_key = 'your_api_key';
-
-		// Cloudflare API endpoint for CAPTCHA verification
-		$endpoint = 'https://api.cloudflare.com/client/v4/captcha/validate';
-
-		// CAPTCHA data to be sent in the request
-		$data = [
-			'email' => $api_email,
-			'key' => $api_key,
-			'response' => $this->confirm_code
+		// Retrieve form data for verification
+		$form_data = [
+			'secret'			=> $this->config['captcha_turnstile_secret'],
+			'response'			=> $this->request->variable('cf-turnstile-response', ''),
+			'remoteip'			=> $this->request->header('CF-Connecting-IP'),
+			//'idempotency_key'	=> $this->confirm_id, // check if we need this
 		];
 
-		// Initialize cURL session
-		$ch = curl_init();
+		// Create guzzle client
+		$client = new Client();
 
-		// Set cURL options
-		curl_setopt_array($ch, [
-			CURLOPT_URL => $endpoint,
-			CURLOPT_POST => true,
-			CURLOPT_POSTFIELDS => json_encode($data),
-			CURLOPT_HTTPHEADER => [
-				'Content-Type: application/json',
-				'Accept: application/json'
-			],
-			CURLOPT_RETURNTRANSFER => true
-		]);
-
-		// Execute the cURL request
-		$response = curl_exec($ch);
-
-		// Check for errors
-		if ($response === false) {
-			// Handle cURL error
-			curl_close($ch);
+		// Check captcha with turnstile API
+		try
+		{
+			$response = $client->request('POST', self::VERIFY_ENDPOINT, [
+				'form_params' => $form_data,
+			]);
+		}
+		catch (GuzzleException)
+		{
+			// Something went wrong during the request to Cloudflare, assume captcha was bad
+			$this->solved = false;
 			return false;
 		}
 
 		// Decode the JSON response
-		$result = json_decode($response, true);
+		$result = json_decode($response->getBody(), true);
 
 		// Check if the response indicates success
-		if (isset($result['success']) && $result['success'] === true) {
-			// CAPTCHA validation passed
-			curl_close($ch);
+		if (isset($result['success']) && $result['success'] === true)
+		{
+			$this->solved = true;
 			return true;
-		} else {
-			// CAPTCHA validation failed
-			curl_close($ch);
+		}
+		else
+		{
+			$this->last_error = $this->language->lang('CAPTCHA_TURNSTILE_INCORRECT');
 			return false;
 		}
 	}
 
-	public function is_solved(): bool
-	{
-		return false;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public function reset(): void
 	{
 		// TODO: Implement reset() method.
@@ -191,11 +197,26 @@ class turnstile extends base
 
 	public function get_template(): string
 	{
-		return 'custom_captcha.html'; // Template file for displaying the CAPTCHA
+		if ($this->is_solved())
+		{
+			return '';
+		}
+
+		$this->template->assign_vars([
+			'S_TURNSTILE_AVAILABLE'	=> $this->is_available(),
+			'TURNSTILE_SITEKEY'		=> $this->config->offsetGet('captcha_turnstile_sitekey'),
+			'U_TURNSTILE_SCRIPT'	=> self::SCRIPT_URL,
+		]);
+
+		return 'captcha_turnstile.html';
 	}
 
 	public function get_demo_template(): string
 	{
+		$this->template->assign_vars([
+			'U_TURNSTILE_SCRIPT'	=> self::SCRIPT_URL,
+		]);
+
 		return 'captcha_turnstile_acp_demo.html';
 	}
 

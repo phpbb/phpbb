@@ -121,6 +121,14 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function get_error(): string
+	{
+		return $this->last_error;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function is_solved(): bool
 	{
 		if (method_exists($this->legacy_captcha, 'is_solved'))

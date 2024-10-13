@@ -19,6 +19,9 @@ abstract class base implements plugin_interface
 	/** @var string Confirm id hash */
 	protected string $confirm_id = '';
 
+	/** @var string Last error message */
+	protected string $last_error = '';
+
 	/**
 	 * Constructor for abstract captcha base class
 	 *
@@ -27,6 +30,22 @@ abstract class base implements plugin_interface
 	public function __construct(driver_interface $db)
 	{
 		$this->db = $db;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function is_solved(): bool
+	{
+		return $this->solved;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_error(): string
+	{
+		return $this->last_error;
 	}
 
 	/**

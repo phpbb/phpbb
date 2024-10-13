@@ -1,0 +1,12 @@
+{% if S_TURNSTILE_AVAILABLE %}
+	<noscript>
+		<div>{{ lang('CAPTCHA_TURNSTILE_NOSCRIPT') }}</div>
+	</noscript>
+
+	<script src="{{ U_TURNSTILE_SCRIPT }}" async defer></script>
+
+	{# The cf-turnstile class is used in JavaScript #}
+	<div class="cf-turnstile" data-sitekey="{{ TURNSTILE_SITEKEY }}"></div>
+{% else %}
+	{{ lang('CAPTCHA_TURNSTILE_NOT_AVAILABLE') }}
+{% endif %}
