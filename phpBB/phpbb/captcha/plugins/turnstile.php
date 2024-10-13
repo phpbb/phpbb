@@ -121,7 +121,7 @@ class turnstile extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(int $type): void
+	public function init(confirm_type $type): void
 	{
 		$this->language->add_lang('captcha_turnstile');
 	}

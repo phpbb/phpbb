@@ -458,7 +458,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 	/** @var \phpbb\captcha\factory $captcha_factory */
 	$captcha_factory = $phpbb_container->get('captcha.factory');
 	$captcha = $captcha_factory->get_instance($config['captcha_plugin']);
-	$captcha->init(\phpbb\captcha\plugins\plugin_interface::CONFIRM_POST);
+	$captcha->init(\phpbb\captcha\plugins\confirm_type::POST);
 }
 
 // Is the user able to post within this forum?

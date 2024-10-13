@@ -238,7 +238,7 @@ class ucp_register
 			/** @var \phpbb\captcha\factory $captcha_factory */
 			$captcha_factory = $phpbb_container->get('captcha.factory');
 			$captcha = $captcha_factory->get_instance($config['captcha_plugin']);
-			$captcha->init(\phpbb\captcha\plugins\plugin_interface::CONFIRM_REGISTRATION);
+			$captcha->init(\phpbb\captcha\plugins\confirm_type::REGISTRATION);
 		}
 
 		$timezone = $config['board_timezone'];

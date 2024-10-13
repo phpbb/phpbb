@@ -15,14 +15,6 @@ namespace phpbb\captcha\plugins;
 
 interface plugin_interface
 {
-	const CONFIRM_REGISTRATION = 1;
-	const CONFIRM_LOGIN = 2;
-
-	const CONFIRM_POST = 3;
-
-	const CONFIRM_REPORT = 4;
-
-
 	/**
 	 * Check if the plugin is available
 	 *
@@ -54,10 +46,10 @@ interface plugin_interface
 	/**
 	 * Display the captcha for the specified type
 	 *
-	 * @param int $type Type of captcha, should be one of the CONFIRMATION_* constants
+	 * @param confirm_type $type Type of captcha, should be one of the CONFIRMATION_* constants
 	 * @return void
 	 */
-	public function init(int $type): void;
+	public function init(confirm_type $type): void;
 
 	/**
 	 * Get hidden form fields for this captcha plugin

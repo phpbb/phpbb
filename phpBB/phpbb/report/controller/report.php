@@ -13,6 +13,7 @@
 
 namespace phpbb\report\controller;
 
+use phpbb\captcha\plugins\confirm_type;
 use phpbb\captcha\plugins\plugin_interface;
 use phpbb\exception\http_exception;
 use phpbb\report\report_handler_interface;
@@ -132,7 +133,7 @@ class report
 		if ($this->config['enable_post_confirm'] && !$this->user->data['is_registered'])
 		{
 			$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
-			$captcha->init(plugin_interface::CONFIRM_REPORT);
+			$captcha->init(confirm_type::REPORT);
 		}
 
 		//Has the report been cancelled?
