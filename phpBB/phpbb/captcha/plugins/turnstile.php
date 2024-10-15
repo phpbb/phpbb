@@ -31,6 +31,9 @@ class turnstile extends base
 	/** @var string API endpoint for turnstile verification */
 	private const VERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
+	/** @var Client */
+	protected Client $client;
+
 	/** @var language */
 	protected language $language;
 
@@ -141,7 +144,7 @@ class turnstile extends base
 		];
 
 		// Create guzzle client
-		$client = new Client();
+		$client = $this->get_client();
 
 		// Check captcha with turnstile API
 		try
@@ -172,6 +175,21 @@ class turnstile extends base
 			$this->last_error = $this->language->lang('CAPTCHA_TURNSTILE_INCORRECT');
 			return false;
 		}
+	}
+
+	/**
+	 * Get Guzzle client
+	 *
+	 * @return Client
+	 */
+	protected function get_client(): Client
+	{
+		if (!isset($this->client))
+		{
+			$this->client = new Client();
+		}
+
+		return $this->client;
 	}
 
 	/**
