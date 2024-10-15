@@ -70,13 +70,23 @@ class manager
 	/**
 	 * Updates the resume data in the database
 	 *
+	 * Resume data must contain the following elements:
+	 *  - range-min:  lowest record ID
+	 *  - range-max:  current record ID
+	 *  - range-size: number of records to process at a time
+	 *
+	 * Resume data may contain the following elements:
+	 *  - filter-callback:    a callback that accepts a record as argument and returns a boolean
+	 *  - filter-text-like:   a SQL LIKE predicate applied on the text, if applicable, e.g. '<r%'
+	 *  - filter-text-regexp: a PCRE regexp that matches against the text
+	 *
+	 * @see reparser_interface::reparse()
+	 *
 	 * @param string	$name		Name of the reparser to which the resume data belongs
-	 * @param int		$min		Lowest record ID
-	 * @param int		$current	Current record ID
-	 * @param int		$size		Number of records to process at a time
+	 * @param array		$data		Resume data
 	 * @param bool		$update_db	True if the resume data should be written to the database, false if not. (default: true)
 	 */
-	public function update_resume_data($name, $min, $current, $size, $update_db = true)
+	public function update_resume_data(string $name, array $data, bool $update_db = true)
 	{
 		// Prevent overwriting the old, stored array
 		if ($this->resume_data === null)
@@ -84,11 +94,7 @@ class manager
 			$this->get_resume_data('');
 		}
 
-		$this->resume_data[$name] = array(
-			'range-min'		=> $min,
-			'range-max'		=> $current,
-			'range-size'	=> $size,
-		);
+		$this->resume_data[$name] = $data;
 
 		if ($update_db)
 		{

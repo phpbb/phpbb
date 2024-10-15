@@ -151,7 +151,11 @@ class reparser extends \phpbb\cron\task\base
 
 				$reparser->reparse_range($start, $end);
 
-				$this->reparser_manager->update_resume_data($this->reparser_name, $min, $start - 1, $size);
+				$this->resume_data['range-min']  = $min;
+				$this->resume_data['range-max']  = $start - 1;
+				$this->resume_data['range-size'] = $size;
+
+				$this->reparser_manager->update_resume_data($this->reparser_name, $this->resume_data);
 			}
 
 			$this->config->set($this->reparser_name . '_last_cron', time());

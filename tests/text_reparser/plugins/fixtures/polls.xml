@@ -100,6 +100,18 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>100</value>
+			<value>1</value>
+			<value>Matches LIKE foo123</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>101</value>
+			<value>1</value>
+			<value>Does not match LIKE</value>
+			<value>1</value>
+		</row>
+		<row>
 			<value>1000</value>
 			<value>1</value>
 			<value>This row should be [b]ignored[/b]</value>

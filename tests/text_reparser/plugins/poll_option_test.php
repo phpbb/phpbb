@@ -27,10 +27,11 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 		return new \phpbb\textreparser\plugins\poll_option($this->db, POLL_OPTIONS_TABLE);
 	}
 
-	protected function get_rows()
+	protected function get_rows(array $ids = null)
 	{
 		$sql = 'SELECT topic_id, poll_option_id, poll_option_text
 			FROM ' . POLL_OPTIONS_TABLE . '
+			WHERE ' . $this->db->sql_in_set('topic_id', $ids) . '
 			ORDER BY topic_id, poll_option_id';
 		$result = $this->db->sql_query($sql);
 		$rows = $this->db->sql_fetchrowset($result);
@@ -59,11 +60,11 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 
 	public function test_dry_run()
 	{
-		$old_rows = $this->get_rows();
+		$old_rows = $this->get_rows([1]);
 		$reparser = $this->get_reparser();
 		$reparser->disable_save();
 		$reparser->reparse_range(1, 1);
-		$new_rows = $this->get_rows();
+		$new_rows = $this->get_rows([1]);
 		$this->assertEquals($old_rows, $new_rows);
 	}
 
@@ -124,6 +125,32 @@ class phpbb_textreparser_poll_option_test extends phpbb_database_test_case
 				'poll_option_text' => 'This row should be [b:abcd1234]ignored[/b:abcd1234]',
 			),
 		);
-		$this->assertEquals($expected, $this->get_rows());
+		$this->assertEquals($expected, $this->get_rows([1, 2, 11, 12, 13, 123]));
+	}
+
+
+	public function test_filter_like()
+	{
+		$reparser = $this->get_reparser();
+		$reparser->reparse([
+			'range-min'        => 100,
+			'range-max'        => 100,
+			'filter-text-like' => '%foo123%'
+		]);
+
+		$expected = [
+			[
+				'topic_id'         => 100,
+				'poll_option_id'   => 1,
+				'poll_option_text' => '<t>Matches LIKE foo123</t>'
+			],
+			[
+				'topic_id'         => 100,
+				'poll_option_id'   => 2,
+				'poll_option_text' => 'Does not match LIKE'
+			],
+		];
+
+		$this->assertEquals($expected, $this->get_rows([100, 100]));
 	}
 }

@@ -76,10 +76,25 @@ class phpbb_text_reparser_manager_test extends phpbb_database_test_case
 		);
 		$this->config_text->set('reparser_resume', serialize($resume_data));
 
-		$this->reparser_manager->update_resume_data('another_reparser', 5, 20, 10, false);
+		$this->reparser_manager->update_resume_data(
+			'another_reparser',
+			[
+				'range-min'  => 5,
+				'range-max'  => 20,
+				'range-size' => 10,
+			],
+			false
+		);
 		$this->assert_array_content_equals($resume_data, unserialize($this->config_text->get('reparser_resume')));
 
-		$this->reparser_manager->update_resume_data('test_reparser', 0, 50, 50);
+		$this->reparser_manager->update_resume_data(
+			'test_reparser',
+			[
+				'range-min'  => 0,
+				'range-max'  => 50,
+				'range-size' => 50,
+			]
+		);
 		$resume_data = array(
 			'test_reparser'	=> array(
 				'range-min'		=> 0,

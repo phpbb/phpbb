@@ -29,13 +29,18 @@ class poll_option extends \phpbb\textreparser\row_based_plugin
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records_by_range_query($min_id, $max_id)
+	protected function get_records_sql(array $config): string
 	{
 		$sql = 'SELECT o.topic_id, o.poll_option_id, o.poll_option_text AS text, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, p.bbcode_uid
 			FROM ' . POLL_OPTIONS_TABLE . ' o, ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-			WHERE o.topic_id BETWEEN ' . $min_id . ' AND ' . $max_id .'
-				AND t.topic_id = o.topic_id
+			WHERE t.topic_id = o.topic_id
 				AND p.post_id = t.topic_first_post_id';
+
+		$where = $this->get_where_clauses($config, 'o.topic_id', 'o.poll_option_text');
+		if (!empty($where))
+		{
+			$sql .= "\nAND " . implode("\nAND ", $where);
+		}
 
 		return $sql;
 	}

@@ -62,10 +62,10 @@ abstract class row_based_plugin extends base
 	/**
 	* {@inheritdoc}
 	*/
-	protected function get_records_by_range($min_id, $max_id)
+	protected function get_records(array $config): array
 	{
-		$sql = $this->get_records_by_range_query($min_id, $max_id);
-		$result = $this->db->sql_query($sql);
+		$sql     = $this->get_records_sql($config);
+		$result  = $this->db->sql_query($sql);
 		$records = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
@@ -73,13 +73,12 @@ abstract class row_based_plugin extends base
 	}
 
 	/**
-	* Generate the query that retrieves all records for given range
+	* Generate the query that retrieves records that match given criteria
 	*
-	* @param  integer $min_id Lower bound
-	* @param  integer $max_id Upper bound
-	* @return string          SQL query
+	* @param  array  $config Criteria used to select records
+	* @return string         SQL query
 	*/
-	protected function get_records_by_range_query($min_id, $max_id)
+	protected function get_records_sql(array $config): string
 	{
 		$columns = $this->get_columns();
 		$fields  = array();
@@ -95,11 +94,41 @@ abstract class row_based_plugin extends base
 			}
 		}
 
-		$sql = 'SELECT ' . implode(', ', $fields) . '
-			FROM ' . $this->table . '
-			WHERE ' . $columns['id'] . ' BETWEEN ' . $min_id . ' AND ' . $max_id;
+		$sql   = 'SELECT ' . implode(', ', $fields) . ' FROM ' . $this->table;
+		$where = $this->get_where_clauses($config, $columns['id'], $columns['text']);
+		if (!empty($where))
+		{
+			$sql .= ' WHERE ' . implode("\nAND ", $where);
+		}
 
 		return $sql;
+	}
+
+	/**
+	* Generate WHERE clauses for given set of criteria
+	*
+	* @param  array  $config
+	* @param  string $column_id   Name for the id column, including its table alias
+	* @param  string $column_text Name for the text column, including its table alias
+	* @return array               Potentially empty list of SQL clauses
+	*/
+	protected function get_where_clauses(array $config, string $column_id, string $column_text): array
+	{
+		$where = [];
+		if (isset($config['range-min']))
+		{
+			$where[] = $column_id . ' >= ' . $config['range-min'];
+		}
+		if (isset($config['range-max']))
+		{
+			$where[] = $column_id . ' <= ' . $config['range-max'];
+		}
+		if (isset($config['filter-text-like']))
+		{
+			$where[] = $column_text . ' ' . $this->db->sql_like_expression(str_replace('%', $this->db->get_any_char(), $config['filter-text-like']));
+		}
+
+		return $where;
 	}
 
 	/**
