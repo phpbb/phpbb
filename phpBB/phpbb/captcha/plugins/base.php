@@ -4,6 +4,7 @@ namespace phpbb\captcha\plugins;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\user;
 
@@ -15,6 +16,9 @@ abstract class base implements plugin_interface
 	/** @var driver_interface */
 	protected driver_interface $db;
 
+	/** @var language */
+	protected language $language;
+
 	/** @var request_interface */
 	protected request_interface $request;
 
@@ -24,8 +28,14 @@ abstract class base implements plugin_interface
 	/** @var int Attempts at solving the CAPTCHA */
 	protected int $attempts = 0;
 
+	/** @var string Stored random CAPTCHA code */
+	protected string $code = '';
+
 	/** @var bool Resolved state of captcha */
 	protected bool $solved = false;
+
+	/** @var string User supplied confirm code */
+	protected string $confirm_code = '';
 
 	/** @var string Confirm id hash */
 	protected string $confirm_id = '';
@@ -41,13 +51,15 @@ abstract class base implements plugin_interface
 	 *
 	 * @param config $config
 	 * @param driver_interface $db
+	 * @param language $language
 	 * @param request_interface $request
 	 * @param user $user
 	 */
-	public function __construct(config $config, driver_interface $db, request_interface $request, user $user)
+	public function __construct(config $config, driver_interface $db, language $language, request_interface $request, user $user)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
 	}
@@ -58,6 +70,7 @@ abstract class base implements plugin_interface
 	public function init(confirm_type $type): void
 	{
 		$this->confirm_id = $this->request->variable('confirm_id', '');
+		$this->confirm_code = $this->request->variable('confirm_code', '');
 		$this->type = $type;
 
 		if (empty($this->confirm_id) || !$this->load_confirm_data())
@@ -68,15 +81,51 @@ abstract class base implements plugin_interface
 	}
 
 	/**
+	 * {@inheritDoc}
+	 */
+	public function validate(): bool
+	{
+		if ($this->confirm_id && hash_equals($this->code, $this->confirm_code))
+		{
+			return true;
+		}
+
+		$this->increment_attempts();
+		$this->last_error = $this->language->lang('CONFIRM_CODE_WRONG');
+		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function reset(): void
+	{
+		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
+			WHERE session_id = '" . $this->db->sql_escape($this->user->session_id) . "'
+				AND confirm_type = " . $this->type->value;
+		$this->db->sql_query($sql);
+
+		$this->generate_confirm_data();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_attempt_count(): int
+	{
+		return $this->attempts;
+	}
+
+	/**
 	 * Look up attempts from confirm table
 	 */
 	protected function load_confirm_data(): bool
 	{
-		$sql = 'SELECT attempts
+		$sql = 'SELECT code, attempts
 			FROM ' . CONFIRM_TABLE . "
 			WHERE confirm_id = '" . $this->db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $this->db->sql_escape($this->user->session_id) . "'
-				AND confirm_type = " . (int) $this->type;
+				AND confirm_type = " . $this->type->value;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -84,6 +133,7 @@ abstract class base implements plugin_interface
 		if ($row)
 		{
 			$this->attempts = $row['attempts'];
+			$this->code = $row['code'];
 
 			return true;
 		}
@@ -98,14 +148,32 @@ abstract class base implements plugin_interface
 	 */
 	protected function generate_confirm_data(): void
 	{
+		$this->code = gen_rand_string_friendly(CAPTCHA_MAX_CHARS);
 		$this->confirm_id = md5(unique_id());
 
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 					'confirm_id'	=> $this->confirm_id,
 					'session_id'	=> (string) $this->user->session_id,
-					'confirm_type'	=> $this->type
+					'confirm_type'	=> $this->type->value,
+					'code'			=> $this->code,
 			));
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	 * Increment number of attempts for confirm ID and session
+	 *
+	 * @return void
+	 */
+	protected function increment_attempts(): void
+	{
+		$sql = 'UPDATE ' . CONFIRM_TABLE . "
+				SET attempts = attempts + 1
+				WHERE confirm_id = '{$this->db->sql_escape($this->confirm_id)}'
+					AND session_id = '{$this->db->sql_escape($this->user->session_id)}'";
+		$this->db->sql_query($sql);
+
+		$this->attempts++;
 	}
 
 	/**
@@ -113,7 +181,10 @@ abstract class base implements plugin_interface
 	 */
 	public function get_hidden_fields(): array
 	{
-		return ['confirm_id' => $this->confirm_id];
+		return [
+			'confirm_id'	=> $this->confirm_id,
+			'confirm_code'	=> $this->solved === true ? $this->confirm_code : '',
+		];
 	}
 
 	/**

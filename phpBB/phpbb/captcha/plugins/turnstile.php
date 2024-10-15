@@ -63,7 +63,7 @@ class turnstile extends base
 	 */
 	public function __construct(config $config, driver_interface $db, language $language, log_interface $log, request_interface $request, template $template, user $user)
 	{
-		parent::__construct($config, $db, $request, $user);
+		parent::__construct($config, $db, $language, $request, $user);
 
 		$this->language = $language;
 		$this->log = $log;
@@ -75,7 +75,7 @@ class turnstile extends base
 	 */
 	public function is_available(): bool
 	{
-		$this->init(confirm_type::UNDEFINED);
+		$this->init($this->type);
 
 		return !empty($this->config->offsetGet('captcha_turnstile_sitekey'))
 			&& !empty($this->config->offsetGet('captcha_turnstile_secret'));
@@ -110,6 +110,8 @@ class turnstile extends base
 	 */
 	public function init(confirm_type $type): void
 	{
+		parent::init($type);
+
 		$this->language->add_lang('captcha_turnstile');
 	}
 
@@ -118,10 +120,22 @@ class turnstile extends base
 	 */
 	public function validate(): bool
 	{
+		if (parent::validate())
+		{
+			return true;
+		}
+
+		$turnstile_response = $this->request->variable('cf-turnstile-response', '');
+		if (!$turnstile_response)
+		{
+			// Return without checking against server without a turnstile response
+			return false;
+		}
+
 		// Retrieve form data for verification
 		$form_data = [
 			'secret'			=> $this->config['captcha_turnstile_secret'],
-			'response'			=> $this->request->variable('cf-turnstile-response', ''),
+			'response'			=> $turnstile_response,
 			'remoteip'			=> $this->request->header('CF-Connecting-IP'),
 			//'idempotency_key'	=> $this->confirm_id, // check if we need this
 		];
@@ -150,6 +164,7 @@ class turnstile extends base
 		if (isset($result['success']) && $result['success'] === true)
 		{
 			$this->solved = true;
+			$this->confirm_code = $this->code;
 			return true;
 		}
 		else
@@ -162,20 +177,6 @@ class turnstile extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function reset(): void
-	{
-		// TODO: Implement reset() method.
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function get_attempt_count(): int
-	{
-		// TODO: Implement get_attempt_count() method.
-		return 0;
-	}
-
 	public function get_template(): string
 	{
 		if ($this->is_solved())
@@ -184,15 +185,19 @@ class turnstile extends base
 		}
 
 		$this->template->assign_vars([
-			'S_TURNSTILE_AVAILABLE'	=> $this->is_available(),
-			'TURNSTILE_SITEKEY'		=> $this->config->offsetGet('captcha_turnstile_sitekey'),
-			'TURNSTILE_THEME'		=> $this->config->offsetGet('captcha_turnstile_theme'),
-			'U_TURNSTILE_SCRIPT'	=> self::SCRIPT_URL,
+			'S_TURNSTILE_AVAILABLE'		=> $this->is_available(),
+			'TURNSTILE_SITEKEY'			=> $this->config->offsetGet('captcha_turnstile_sitekey'),
+			'TURNSTILE_THEME'			=> $this->config->offsetGet('captcha_turnstile_theme'),
+			'U_TURNSTILE_SCRIPT'		=> self::SCRIPT_URL,
+			'CONFIRM_TYPE_REGISTRATION'	=> (int) $this->type->value,
 		]);
 
 		return 'captcha_turnstile.html';
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function get_demo_template(): string
 	{
 		$this->template->assign_vars([
@@ -201,11 +206,6 @@ class turnstile extends base
 		]);
 
 		return 'captcha_turnstile_acp_demo.html';
-	}
-
-	public function garbage_collect(int $confirm_type = 0): void
-	{
-		// TODO: Implement garbage_collect() method.
 	}
 
 	/**
