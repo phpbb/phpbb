@@ -87,6 +87,7 @@ abstract class base implements plugin_interface
 	{
 		if ($this->confirm_id && hash_equals($this->code, $this->confirm_code))
 		{
+			$this->solved = true;
 			return true;
 		}
 

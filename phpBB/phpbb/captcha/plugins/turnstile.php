@@ -189,7 +189,7 @@ class turnstile extends base
 			'TURNSTILE_SITEKEY'			=> $this->config->offsetGet('captcha_turnstile_sitekey'),
 			'TURNSTILE_THEME'			=> $this->config->offsetGet('captcha_turnstile_theme'),
 			'U_TURNSTILE_SCRIPT'		=> self::SCRIPT_URL,
-			'CONFIRM_TYPE_REGISTRATION'	=> (int) $this->type->value,
+			'CONFIRM_TYPE_REGISTRATION'	=> $this->type->value,
 		]);
 
 		return 'captcha_turnstile.html';
