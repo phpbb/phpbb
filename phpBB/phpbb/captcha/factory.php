@@ -65,7 +65,7 @@ class factory
 	function garbage_collect($name)
 	{
 		$captcha = $this->get_instance($name);
-		$captcha->garbage_collect(0);
+		$captcha->garbage_collect();
 	}
 
 	/**

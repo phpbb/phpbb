@@ -62,7 +62,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 	{
 		// Mock the dependencies
 		$this->config = $this->createMock(config::class);
-		$this->db = $this->createMock(driver_interface::class);
+		$this->db = $this->new_dbal();
 		$this->language = $this->createMock(language::class);
 		$this->log = $this->createMock(log_interface::class);
 		$this->request = $this->createMock(request::class);
@@ -83,7 +83,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		);
 	}
 
-	public function testIsAvailable(): void
+	public function test_is_available(): void
 	{
 		// Test when both sitekey and secret are present
 		$this->config->method('offsetGet')->willReturnMap([
@@ -97,9 +97,128 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		]);
 
 		$this->assertTrue($this->turnstile->is_available());
+
+		$this->assertEquals(0, $this->turnstile->get_attempt_count());
 	}
 
-	public function test_not_vailable(): void
+	public function test_attempt_count_increase(): void
+	{
+		// Test when both sitekey and secret are present
+		$this->config->method('offsetGet')->willReturnMap([
+			['captcha_turnstile_sitekey', 'sitekey_value'],
+			['captcha_turnstile_secret', 'secret_value'],
+		]);
+
+		$this->request->method('variable')->willReturnMap([
+			['confirm_id', '', false, request_interface::REQUEST, 'confirm_id'],
+			['confirm_code', '', false, request_interface::REQUEST, 'confirm_code']
+		]);
+
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		$this->assertFalse($this->turnstile->validate());
+
+		$confirm_id_reflection = new \ReflectionProperty($this->turnstile, 'confirm_id');
+		$confirm_id = $confirm_id_reflection->getValue($this->turnstile);
+
+		$this->request = $this->createMock(request::class);
+		$this->request->method('variable')->willReturnMap([
+			['confirm_id', '', false, request_interface::REQUEST, $confirm_id],
+			['confirm_code', '', false, request_interface::REQUEST, 'confirm_code']
+		]);
+
+		$this->turnstile = new turnstile(
+			$this->config,
+			$this->db,
+			$this->language,
+			$this->log,
+			$this->request,
+			$this->template,
+			$this->user
+		);
+
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		$this->assertEquals(1, $this->turnstile->get_attempt_count());
+
+		// Run some garbage collection
+		$this->turnstile->garbage_collect(confirm_type::REGISTRATION);
+
+		// Start again at 0 after garbage collection
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		$this->assertEquals(0, $this->turnstile->get_attempt_count());
+	}
+
+	public function test_reset(): void
+	{
+		// Test when both sitekey and secret are present
+		$this->config->method('offsetGet')->willReturnMap([
+			['captcha_turnstile_sitekey', 'sitekey_value'],
+			['captcha_turnstile_secret', 'secret_value'],
+		]);
+
+		$this->request->method('variable')->willReturnMap([
+			['confirm_id', '', false, request_interface::REQUEST, 'confirm_id'],
+			['confirm_code', '', false, request_interface::REQUEST, 'confirm_code']
+		]);
+
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		$this->assertFalse($this->turnstile->validate());
+		$this->turnstile->reset();
+
+		$confirm_id_reflection = new \ReflectionProperty($this->turnstile, 'confirm_id');
+		$confirm_id = $confirm_id_reflection->getValue($this->turnstile);
+
+		$this->request = $this->createMock(request::class);
+		$this->request->method('variable')->willReturnMap([
+			['confirm_id', '', false, request_interface::REQUEST, $confirm_id],
+			['confirm_code', '', false, request_interface::REQUEST, 'confirm_code']
+		]);
+
+		$this->turnstile = new turnstile(
+			$this->config,
+			$this->db,
+			$this->language,
+			$this->log,
+			$this->request,
+			$this->template,
+			$this->user
+		);
+
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		// Should be zero attempts since we reset the captcha
+		$this->assertEquals(0,  $this->turnstile->get_attempt_count());
+	}
+
+	public function test_get_hidden_fields(): void
+	{
+		// Test when both sitekey and secret are present
+		$this->config->method('offsetGet')->willReturnMap([
+			['captcha_turnstile_sitekey', 'sitekey_value'],
+			['captcha_turnstile_secret', 'secret_value'],
+		]);
+
+		$this->request->method('variable')->willReturnMap([
+			['confirm_id', '', false, request_interface::REQUEST, 'confirm_id'],
+			['confirm_code', '', false, request_interface::REQUEST, 'confirm_code']
+		]);
+
+		$this->turnstile->init(confirm_type::REGISTRATION);
+		$this->assertFalse($this->turnstile->validate());
+		$this->turnstile->reset();
+
+		$confirm_id_reflection = new \ReflectionProperty($this->turnstile, 'confirm_id');
+		$confirm_id = $confirm_id_reflection->getValue($this->turnstile);
+
+		$this->assertEquals(
+			[
+				'confirm_id'		=> $confirm_id,
+				'confirm_code'		=> '',
+			],
+			$this->turnstile->get_hidden_fields(),
+		);
+		$this->assertEquals('CONFIRM_CODE_WRONG', $this->turnstile->get_error());
+	}
+
+	public function test_not_available(): void
 	{
 		$this->request->method('variable')->willReturnMap([
 			['confirm_id', '', false, request_interface::REQUEST, 'confirm_id'],

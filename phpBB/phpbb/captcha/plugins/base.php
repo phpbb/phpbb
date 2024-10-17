@@ -151,6 +151,7 @@ abstract class base implements plugin_interface
 	{
 		$this->code = gen_rand_string_friendly(CAPTCHA_MAX_CHARS);
 		$this->confirm_id = md5(unique_id());
+		$this->attempts = 0;
 
 		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 					'confirm_id'	=> $this->confirm_id,
@@ -207,13 +208,13 @@ abstract class base implements plugin_interface
 	/**
 	 * @inheritDoc
 	 */
-	public function garbage_collect(int $confirm_type = 0): void
+	public function garbage_collect(confirm_type $confirm_type = confirm_type::UNDEFINED): void
 	{
 		$sql = 'SELECT DISTINCT c.session_id
 			FROM ' . CONFIRM_TABLE . ' c
 			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
 			WHERE s.session_id IS NULL' .
-			((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+			((empty($confirm_type)) ? '' : ' AND c.confirm_type = ' . $confirm_type->value);
 		$result = $this->db->sql_query($sql);
 
 		if ($row = $this->db->sql_fetchrow($result))

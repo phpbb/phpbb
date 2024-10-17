@@ -198,11 +198,11 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function garbage_collect(int $confirm_type = 0): void
+	public function garbage_collect(confirm_type $confirm_type = confirm_type::UNDEFINED): void
 	{
 		if (method_exists($this->legacy_captcha, 'garbage_collect'))
 		{
-			$this->legacy_captcha->garbage_collect($confirm_type);
+			$this->legacy_captcha->garbage_collect($confirm_type->value);
 		}
 	}
 

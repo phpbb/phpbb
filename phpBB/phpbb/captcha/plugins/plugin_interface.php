@@ -110,10 +110,10 @@ interface plugin_interface
 	/**
 	 * Garbage collect captcha plugin
 	 *
-	 * @param int $confirm_type Confirm type to garbage collect, defaults to all (0)
+	 * @param confirm_type $confirm_type Confirm type to garbage collect, defaults to all (0)
 	 * @return void
 	 */
-	public function garbage_collect(int $confirm_type = 0): void;
+	public function garbage_collect(confirm_type $confirm_type = confirm_type::UNDEFINED): void;
 
 	/**
 	 * Display acp page
