@@ -65,7 +65,7 @@ class legacy_wrapper implements plugin_interface
 			return $this->legacy_captcha->has_config();
 		}
 
-		return false;
+		return '';
 	}
 
 	/**

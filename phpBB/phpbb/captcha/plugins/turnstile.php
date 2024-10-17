@@ -272,7 +272,7 @@ class turnstile extends base
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = $this->request->is_set($captcha_var) ? $this->request->variable($captcha_var, '') : $this->config->offsetGet($captcha_var);;
+				$var = $this->request->is_set($captcha_var) ? $this->request->variable($captcha_var, '') : $this->config->offsetGet($captcha_var);
 				$this->template->assign_var($template_var, $var);
 			}
 
