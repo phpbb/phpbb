@@ -26,6 +26,7 @@
 		"direction": "ltr",
 		"user-lang": "en-gb",
 		"plural-rule": 1,
-		"recaptcha-lang": "en-GB"
+		"recaptcha-lang": "en-GB",
+		"turnstile-lang": "en"
 	}
 }

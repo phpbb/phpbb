@@ -110,16 +110,17 @@ class language_file_helper
 		}
 
 		return [
-			'iso'			=> $data['extra']['language-iso'],
-			'name'			=> $data['extra']['english-name'],
-			'local_name'	=> $data['extra']['local-name'],
-			'author'		=> implode(', ', $authors),
-			'version'		=> $data['version'],
-			'phpbb_version'	=> $data['extra']['phpbb-version'],
-			'direction'		=> $data['extra']['direction'],
-			'user_lang'		=> $data['extra']['user-lang'],
-			'plural_rule'	=> $data['extra']['plural-rule'],
-			'recaptcha_lang'=> $data['extra']['recaptcha-lang'],
+			'iso'				=> $data['extra']['language-iso'],
+			'name'				=> $data['extra']['english-name'],
+			'local_name'		=> $data['extra']['local-name'],
+			'author'			=> implode(', ', $authors),
+			'version'			=> $data['version'],
+			'phpbb_version'		=> $data['extra']['phpbb-version'],
+			'direction'			=> $data['extra']['direction'],
+			'user_lang'			=> $data['extra']['user-lang'],
+			'plural_rule'		=> $data['extra']['plural-rule'],
+			'recaptcha_lang'	=> $data['extra']['recaptcha-lang'],
+			'turnstile_lang'	=> $data['extra']['turnstile-lang'] ?? '',
 		];
 	}
 }

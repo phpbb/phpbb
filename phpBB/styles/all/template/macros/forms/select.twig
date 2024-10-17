@@ -8,6 +8,7 @@
 		name="{{ NAME }}"
 		{% if TOGGLEABLE %}data-togglable-settings="true"{% endif %}
 		{% if MULTIPLE %}multiple="multiple"{% endif %}
+		{% if ONCHANGE %}onchange="{{ ONCHANGE }}"{% endif %}
 		{% if SIZE %}size="{{ SIZE }}"{% endif %}>
 {% for element in OPTIONS %}
 	{% if not GROUP_ONLY and element.options %}

@@ -179,16 +179,6 @@ abstract class captcha_abstract
 		$db->sql_freeresult($result);
 	}
 
-	function uninstall()
-	{
-		$this->garbage_collect(0);
-	}
-
-	function install()
-	{
-		return;
-	}
-
 	function validate()
 	{
 		global $user;
