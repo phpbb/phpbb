@@ -92,7 +92,7 @@ switch ($search_id)
 
 $search_auth_check_override = false;
 /**
-* This event allows you to override serach auth checks
+* This event allows you to override search auth checks
 *
 * @event core.search_auth_check_override
 * @var	bool	search_auth_check_override	Whether or not the search auth check overridden
