@@ -90,8 +90,21 @@ switch ($search_id)
 	break;
 }
 
+$search_auth_check_override = false;
+/**
+* This event allows you to override search auth checks
+*
+* @event core.search_auth_check_override
+* @var	bool	search_auth_check_override	Whether or not the search auth check overridden
+* @since 3.3.14-RC1
+*/
+$vars = [
+	'search_auth_check_override',
+];
+extract($phpbb_dispatcher->trigger_event('core.search_auth_check_override', compact($vars)));
+
 // Is user able to search? Has search been disabled?
-if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
+if (!$search_auth_check_override && (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search']))
 {
 	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH');
