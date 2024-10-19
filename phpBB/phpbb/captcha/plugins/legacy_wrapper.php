@@ -86,7 +86,7 @@ class legacy_wrapper implements plugin_interface
 	{
 		if (method_exists($this->legacy_captcha, 'init'))
 		{
-			$this->legacy_captcha->init($type);
+			$this->legacy_captcha->init($type->value);
 		}
 	}
 

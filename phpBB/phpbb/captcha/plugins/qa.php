@@ -40,7 +40,7 @@ class qa
 	protected $service_name;
 
 	/** @var int Question ID */
-	protected $question = -1;
+	private $question = -1;
 
 	/**
 	* Constructor
