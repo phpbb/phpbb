@@ -64,7 +64,7 @@ class legacy_wrapper implements plugin_interface
 	{
 		if (method_exists($this->legacy_captcha, 'get_name'))
 		{
-			return $this->legacy_captcha->has_config();
+			return $this->legacy_captcha->get_name();
 		}
 
 		return '';
