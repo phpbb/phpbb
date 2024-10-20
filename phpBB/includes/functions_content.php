@@ -288,7 +288,27 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 */
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
-	global $config, $auth, $user;
+	global $config, $auth, $user, $phpbb_dispatcher;
+
+	/**
+	 * Event to run code before the topic bump checks
+	 *
+	 * @event core.bump_topic_allowed_before
+	 * @var	int		forum_id			ID of the forum
+	 * @var	int		topic_bumped		Flag indicating if the topic was already bumped (0/1)
+	 * @var	int		last_post_time		The time of the topic last post
+	 * @var	int		topic_poster		User ID of the topic author
+	 * @var	int		last_topic_poster	User ID of the topic last post author
+	 * @since 3.3.14-RC1
+	 */
+	$vars = [
+		'forum_id',
+		'topic_bumped',
+		'last_post_time',
+		'topic_poster',
+		'last_topic_poster',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.bump_topic_allowed_before', compact($vars)));
 
 	// Check permission and make sure the last post was not already bumped
 	if (!$auth->acl_get('f_bump', $forum_id) || $topic_bumped)
@@ -310,6 +330,28 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	{
 		return false;
 	}
+
+	/**
+	 * Event to run code after the topic bump checks
+	 *
+	 * @event core.bump_topic_allowed_after
+	 * @var	int		forum_id			ID of the forum
+	 * @var	int		topic_bumped		Flag indicating if the topic was already bumped (0/1)
+	 * @var	int		last_post_time		The time of the topic last post
+	 * @var	int		topic_poster		User ID of the topic author
+	 * @var	int		last_topic_poster	User ID of the topic last post author
+	 * @var	int		bump_time			Bump time range
+	 * @since 3.3.14-RC1
+	 */
+	$vars = [
+		'forum_id',
+		'topic_bumped',
+		'last_post_time',
+		'topic_poster',
+		'last_topic_poster',
+		'bump_time',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.bump_topic_allowed_after', compact($vars)));
 
 	// A bump time of 0 will completely disable the bump feature... not intended but might be useful.
 	return $bump_time;
