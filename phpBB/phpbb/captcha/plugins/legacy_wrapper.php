@@ -211,7 +211,7 @@ class legacy_wrapper implements plugin_interface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function acp_page($id, $module): void
+	public function acp_page(mixed $id, mixed $module): void
 	{
 		if (method_exists($this->legacy_captcha, 'acp_page'))
 		{

@@ -246,4 +246,11 @@ abstract class base implements plugin_interface
 		}
 		$this->db->sql_freeresult($result);
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function acp_page(mixed $id, mixed $module): void
+	{
+	}
 }

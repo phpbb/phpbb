@@ -19,7 +19,11 @@ services:
         shared: false
         arguments:
             - '@config'
+            - '@dbal.conn'
+            - '@language'
+            - '@request'
             - '@template'
+            - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
         calls:

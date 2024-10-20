@@ -122,5 +122,5 @@ interface plugin_interface
 	 * @param mixed $module ACP module name
 	 * @return void
 	 */
-	public function acp_page($id, $module): void;
+	public function acp_page(mixed $id, mixed $module): void;
 }

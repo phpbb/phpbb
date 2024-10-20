@@ -229,7 +229,7 @@ class turnstile extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function acp_page($id, $module): void
+	public function acp_page(mixed $id, mixed $module): void
 	{
 		$captcha_vars = [
 			'captcha_turnstile_sitekey'			=> 'CAPTCHA_TURNSTILE_SITEKEY',
