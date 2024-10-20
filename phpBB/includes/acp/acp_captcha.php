@@ -95,7 +95,7 @@ class acp_captcha
 			add_form_key($form_key);
 
 			$submit = $request->variable('main_submit', false);
-			$error = $cfg_array = array();
+			$errors = $cfg_array = array();
 
 			if ($submit)
 			{
@@ -103,13 +103,13 @@ class acp_captcha
 				{
 					$cfg_array[$config_var] = $request->variable($config_var, $options['default']);
 				}
-				validate_config_vars($config_vars, $cfg_array, $error);
+				validate_config_vars($config_vars, $cfg_array, $errors);
 
 				if (!check_form_key($form_key))
 				{
-					$error[] = $user->lang['FORM_INVALID'];
+					$errors[] = $user->lang['FORM_INVALID'];
 				}
-				if ($error)
+				if ($errors)
 				{
 					$submit = false;
 				}
@@ -128,11 +128,9 @@ class acp_captcha
 					if (isset($captchas['available'][$selected]))
 					{
 						$old_captcha = $factory->get_instance($config['captcha_plugin']);
-						$old_captcha->uninstall();
+						$old_captcha->garbage_collect();
 
 						$config->set('captcha_plugin', $selected);
-						$new_captcha = $factory->get_instance($config['captcha_plugin']);
-						$new_captcha->install();
 
 						$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_CONFIG_VISUAL');
 					}
@@ -145,17 +143,24 @@ class acp_captcha
 			}
 			else
 			{
-				$captcha_select = '';
+				$captcha_options = [];
 				foreach ($captchas['available'] as $value => $title)
 				{
-					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang($title) . '</option>';
+					$captcha_options[] = [
+						'value'		=> $value,
+						'label'		=> $user->lang($title),
+						'selected'	=> $selected !== false && $value == $selected,
+					];
 				}
 
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
-					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang($title) . '</option>';
+					$captcha_options[] = [
+						'value'		=> $value,
+						'label'		=> $user->lang($title),
+						'selected'	=> $selected !== false && $value == $selected,
+						'class'		=> 'disabled-option',
+					];
 				}
 
 				$demo_captcha = $factory->get_instance($selected);
@@ -168,8 +173,12 @@ class acp_captcha
 				$template->assign_vars(array(
 					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
 					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
-					'CAPTCHA_SELECT'		=> $captcha_select,
-					'ERROR_MSG'				=> implode('<br />', $error),
+					'CAPTCHA_SELECT'		=> [
+						'tag'		=> 'select',
+						'name'		=> 'select_captcha',
+						'options'	=> $captcha_options,
+					],
+					'ERRORS'				=> $errors,
 
 					'U_ACTION'				=> $this->u_action,
 				));

@@ -14,25 +14,34 @@
 namespace phpbb\captcha\plugins;
 
 use phpbb\config\config;
-use phpbb\exception\runtime_exception;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\request\request_interface;
 use phpbb\template\template;
+use phpbb\user;
 
-class incomplete extends captcha_abstract
+class incomplete extends base
 {
 	/**
 	 * Constructor for incomplete captcha
 	 *
 	 * @param config $config
+	 * @param driver_interface $db
+	 * @param language $language
+	 * @param request_interface $request
 	 * @param template $template
+	 * @param user $user
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct(protected config $config, protected template $template,
-								protected string $phpbb_root_path, protected string $phpEx)
-	{}
+	public function __construct(config $config, driver_interface $db, language $language, request_interface $request,
+								protected template $template, user $user, protected string $phpbb_root_path, protected string $phpEx)
+	{
+		parent::__construct($config, $db, $language, $request, $user);
+	}
 
 	/**
-	 * @return bool True if captcha is available, false if not
+	 * {@inheritDoc}
 	 */
 	public function is_available(): bool
 	{
@@ -40,70 +49,45 @@ class incomplete extends captcha_abstract
 	}
 
 	/**
-	 * Dummy implementation, not supported by this captcha
-	 *
-	 * @throws runtime_exception
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function get_generator_class(): void
+	public function has_config(): bool
 	{
-		throw new runtime_exception('NO_GENERATOR_CLASS');
+		return false;
 	}
 
 	/**
-	 * Get CAPTCHA name language variable
-	 *
-	 * @return string Language variable
+	 * {@inheritDoc}
 	 */
-	public static function get_name(): string
+	public function get_name(): string
 	{
 		return 'CAPTCHA_INCOMPLETE';
 	}
 
 	/**
-	 * Init CAPTCHA
-	 *
-	 * @param int $type CAPTCHA type
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function init($type)
+	public function set_name(string $name): void
 	{
 	}
 
 	/**
-	 * Execute demo
-	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function execute_demo()
+	public function init(confirm_type $type): void
 	{
 	}
 
 	/**
-	 * Execute CAPTCHA
-	 *
-	 * @return void
+	 * {@inheritDoc}
 	 */
-	public function execute()
-	{
-	}
-
-	/**
-	 * Get template data for demo
-	 *
-	 * @param int|string $id ACP module ID
-	 *
-	 * @return string Demo template file name
-	 */
-	public function get_demo_template($id): string
+	public function get_demo_template(): string
 	{
 		return '';
 	}
 
 	/**
-	 * Get template data for CAPTCHA
-	 *
-	 * @return string CAPTCHA template file name
+	 * {@inheritDoc}
 	 */
 	public function get_template(): string
 	{
@@ -118,9 +102,7 @@ class incomplete extends captcha_abstract
 	}
 
 	/**
-	 * Validate CAPTCHA
-	 *
-	 * @return false Incomplete CAPTCHA will never validate
+	 * {@inheritDoc}
 	 */
 	public function validate(): bool
 	{
@@ -128,12 +110,26 @@ class incomplete extends captcha_abstract
 	}
 
 	/**
-	 * Check whether CAPTCHA is solved
-	 *
-	 * @return false Incomplete CAPTCHA will never be solved
+	 * {@inheritDoc}
+	 */
+	public function get_error(): string
+	{
+		return '';
+	}
+
+	/**
+	 * {@inheritDoc}
 	 */
 	public function is_solved(): bool
 	{
 		return false;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function get_attempt_count(): int
+	{
+		return 0;
 	}
 }

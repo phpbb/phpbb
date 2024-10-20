@@ -41,10 +41,6 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 
 	public function test_is_installed()
 	{
-		$this->assertFalse($this->qa->is_installed());
-
-		$this->qa->install();
-
 		$this->assertTrue($this->qa->is_installed());
 	}
 

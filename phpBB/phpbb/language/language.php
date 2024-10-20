@@ -403,6 +403,7 @@ class language
 		$this->lang['USER_LANG'] = $lang_values['user_lang'] ?? 'en-gb';
 		$this->lang['PLURAL_RULE'] = $lang_values['plural_rule'] ?? 1;
 		$this->lang['RECAPTCHA_LANG'] = $lang_values['recaptcha_lang'] ?? 'en-GB';
+		$this->lang['TURNSTILE_LANG'] = $lang_values['turnstile_lang'] ?? 'auto'; // default to auto mode
 	}
 
 	/**

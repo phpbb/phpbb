@@ -455,8 +455,10 @@ if (!$is_authed || !empty($error))
 
 if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 {
-	$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
+	/** @var \phpbb\captcha\factory $captcha_factory */
+	$captcha_factory = $phpbb_container->get('captcha.factory');
+	$captcha = $captcha_factory->get_instance($config['captcha_plugin']);
+	$captcha->init(\phpbb\captcha\plugins\confirm_type::POST);
 }
 
 // Is the user able to post within this forum?
@@ -1208,15 +1210,9 @@ if ($submit || $preview || $refresh)
 
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
-		$captcha_data = array(
-			'message'	=> $request->variable('message', '', true),
-			'subject'	=> $request->variable('subject', '', true),
-			'username'	=> $request->variable('username', '', true),
-		);
-		$vc_response = $captcha->validate($captcha_data);
-		if ($vc_response)
+		if ($captcha->validate() !== true)
 		{
-			$error[] = $vc_response;
+			$error[] = $captcha->get_error();
 		}
 	}
 
@@ -1600,7 +1596,7 @@ if ($submit || $preview || $refresh)
 			);
 			extract($phpbb_dispatcher->trigger_event('core.posting_modify_submit_post_after', compact($vars)));
 
-			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === true) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $captcha->is_solved() === true && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 			{
 				$captcha->reset();
 			}

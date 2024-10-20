@@ -61,4 +61,5 @@ $lang = array_merge($lang, array(
 
 	'QA_ERROR_MSG'				=> 'Please fill in all fields and enter at least one answer.',
 	'QA_LAST_QUESTION'			=> 'You cannot delete all questions while the plugin is active.',
+	'QA_NO_QUESTIONS'			=> 'There are no questions yet.',
 ));

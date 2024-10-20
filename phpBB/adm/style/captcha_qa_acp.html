@@ -18,11 +18,13 @@
 	<tr>
 		<th colspan="3">{L_QUESTIONS}</th>
 	</tr>
+	{% if questions %}
 	<tr class="row3">
 		<td style="text-align: center;">{L_QUESTION_TEXT}</td>
 		<td style="width: 5%; text-align: center;">{L_QUESTION_LANG}</td>
 		<td style="vertical-align: top; width: 50px; text-align: center; white-space: nowrap;">{L_ACTION}</td>
 	</tr>
+	{% endif %}
 	</thead>
 
 	<tbody>
@@ -32,6 +34,10 @@
 			<td>{{ question.QUESTION_TEXT }}</td>
 			<td style="text-align: center;">{{ question.QUESTION_LANG }}</td>
 			<td style="text-align: center;"><a href="{{ question.U_EDIT }}">{{ ICON_EDIT }}</a> <a href="{{ question.U_DELETE }}">{{ ICON_DELETE }}</a></td>
+		</tr>
+	{% else %}
+		<tr>
+			<td class="row3 centered-text" colspan="3">{{ lang('QA_NO_QUESTIONS') }}</td>
 		</tr>
 	{% endfor %}
 	</tbody>

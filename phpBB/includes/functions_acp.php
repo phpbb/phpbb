@@ -203,8 +203,8 @@ function adm_page_footer($copyright_html = true)
 */
 function adm_back_link($u_action)
 {
-	global $user;
-	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>';
+	global $language;
+	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $language->lang('BACK_TO_PREV') . '</a>';
 }
 
 /**

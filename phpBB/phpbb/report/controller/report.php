@@ -13,6 +13,8 @@
 
 namespace phpbb\report\controller;
 
+use phpbb\captcha\plugins\confirm_type;
+use phpbb\captcha\plugins\plugin_interface;
 use phpbb\exception\http_exception;
 use phpbb\report\report_handler_interface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -131,7 +133,7 @@ class report
 		if ($this->config['enable_post_confirm'] && !$this->user->data['is_registered'])
 		{
 			$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
-			$captcha->init(CONFIRM_REPORT);
+			$captcha->init(confirm_type::REPORT);
 		}
 
 		//Has the report been cancelled?
@@ -140,7 +142,7 @@ class report
 			return new RedirectResponse($redirect_url, 302);
 		}
 
-		// Check CAPTCHA, if the form was submited
+		// Check CAPTCHA, if the form was submitted
 		if (!empty($submit) && isset($captcha))
 		{
 			$captcha_template_array = $this->check_captcha($captcha);
@@ -298,18 +300,17 @@ class report
 	/**
 	 * Check CAPTCHA
 	 *
-	 * @param	object	$captcha	A phpBB CAPTCHA object
+	 * @param	plugin_interface	$captcha	A phpBB CAPTCHA object
 	 * @return	array	template variables which ensures that CAPTCHA's work correctly
 	 */
-	protected function check_captcha($captcha)
+	protected function check_captcha(plugin_interface $captcha)
 	{
 		$error = array();
 		$captcha_hidden_fields = '';
 
-		$visual_confirmation_response = $captcha->validate();
-		if ($visual_confirmation_response)
+		if ($captcha->validate() !== true)
 		{
-			$error[] = $visual_confirmation_response;
+			$error[] = $captcha->get_error();
 		}
 
 		if (count($error) === 0)
