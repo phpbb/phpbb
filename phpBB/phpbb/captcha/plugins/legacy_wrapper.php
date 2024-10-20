@@ -15,8 +15,10 @@ namespace phpbb\captcha\plugins;
 
 class legacy_wrapper implements plugin_interface
 {
+	/** @var object Legacy CAPTCHA instance, should implement functionality as required in phpBB 3.3 */
 	private $legacy_captcha;
 
+	/** @var string Last error */
 	private string $last_error;
 
 	/**
@@ -206,6 +208,9 @@ class legacy_wrapper implements plugin_interface
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function acp_page($id, $module): void
 	{
 		if (method_exists($this->legacy_captcha, 'acp_page'))
