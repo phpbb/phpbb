@@ -41,6 +41,7 @@ $lang = array_merge($lang, array(
 	'HELP_FAQ_BLOCK_POSTING'	=> 'Posting Issues',
 	'HELP_FAQ_BLOCK_SEARCH'	=> 'Searching the Forums',
 	'HELP_FAQ_BLOCK_USERSETTINGS'	=> 'User Preferences and settings',
+	'HELP_FAQ_BLOCK_WEBPUSH'	=> 'Web Push Notifications for Browsers',
 
 	'HELP_FAQ_BOOKMARKS_DIFFERENCE_ANSWER'	=> 'In phpBB 3.0, bookmarking topics worked much like bookmarking in a web browser. You were not alerted when there was an update. As of phpBB 3.1, bookmarking is more like subscribing to a topic. You can be notified when a bookmarked topic is updated. Subscribing, however, will notify you when there is an update to a topic or forum on the board. Notification options for bookmarks and subscriptions can be configured in the User Control Panel, under “Board preferences”.',
 	'HELP_FAQ_BOOKMARKS_DIFFERENCE_QUESTION'	=> 'What is the difference between bookmarking and subscribing?',
@@ -183,4 +184,17 @@ $lang = array_merge($lang, array(
 	'HELP_FAQ_USERSETTINGS_SERVERTIME_QUESTION'	=> 'I changed the timezone and the time is still wrong!',
 	'HELP_FAQ_USERSETTINGS_TIMEZONE_ANSWER'	=> 'It is possible the time displayed is from a timezone different from the one you are in. If this is the case, visit your User Control Panel and change your timezone to match your particular area, e.g. London, Paris, New York, Sydney, etc. Please note that changing the timezone, like most settings, can only be done by registered users. If you are not registered, this is a good time to do so.',
 	'HELP_FAQ_USERSETTINGS_TIMEZONE_QUESTION'	=> 'The times are not correct!',
+
+	'HELP_FAQ_WEBPUSH_GENERAL_ANSWER'	=> 'Make sure this forum is allowed to send notifications in your browser settings. Also, verify that your device’s system settings permit notifications from your web browser or app. Some browsers deliver notifications even when closed, whilst others only do so when the browser is open. <a href="https://caniuse.com/push-api" target="_blank">View this table for browser support information.</a>',
+	'HELP_FAQ_WEBPUSH_GENERAL_QUESTION'	=> 'What if I’m still having trouble receiving notifications?',
+	'HELP_FAQ_WEBPUSH_HOW_ANSWER'		=> 'Navigate to “Notification options” in your UCP (User Control Panel) and click “Subscribe”. After subscribing, your browser may prompt you to allow the forum to send notifications to your device—make sure to grant permission. If you’re still not receiving notifications, check your device’s system settings to ensure notifications are enabled for your browser.',
+	'HELP_FAQ_WEBPUSH_HOW_QUESTION'		=> 'How can I receive forum notification alerts on my computer or mobile device?',
+	'HELP_FAQ_WEBPUSH_IOS_ANSWER'		=> 'For certain devices, such as those running iOS or iPadOS, you may need to add the forum site to your Home Screen for push notifications to work. This essentially makes the forum function like a standalone web app. Refer to your device’s operating system instructions to enable push notifications for <a href="https://www.xda-developers.com/how-enable-safari-notifications-iphone/" target="_blank">iOS/iPadOS</a> or <a href="https://support.google.com/chrome/answer/3220216?hl=en&co=GENIE.Platform%3DAndroid&oco=0" target="_blank">Android</a>.',
+	'HELP_FAQ_WEBPUSH_IOS_QUESTION'		=> 'How does it work on mobile devices (iOS/Android)?',
+	'HELP_FAQ_WEBPUSH_SESSION_ANSWER'	=> 'Yes, you will continue to receive notifications even if you’re logged out.',
+	'HELP_FAQ_WEBPUSH_SESSION_QUESTION'	=> 'Will I receive notifications if I am logged out?',
+	'HELP_FAQ_WEBPUSH_SUBBING_ANSWER'	=> 'If the “Subscribe” button is visible but cannot be clicked, your browser or device likely doesn’t support push notifications. Try using a different browser or device that supports this feature.',
+	'HELP_FAQ_WEBPUSH_SUBBING_QUESTION'	=> 'Why is the “Subscribe” button disabled?',
+	'HELP_FAQ_WEBPUSH_WHAT_ANSWER'		=> 'Web push notifications enhance phpBB’s notification system by allowing real-time notifications to be sent directly to your desktop or mobile device, even if you’re not actively browsing the forum. These notifications function like app alerts, providing instant updates for private messages, post interactions, moderation actions, and more.',
+	'HELP_FAQ_WEBPUSH_WHAT_QUESTION'	=> 'What are web push notifications?',
 ));
