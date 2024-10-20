@@ -195,7 +195,6 @@ class install extends \phpbb\console\command\command
 		$iohandler->set_input('smtp_delivery', $config['email']['smtp_delivery']);
 		$iohandler->set_input('smtp_host', $config['email']['smtp_host']);
 		$iohandler->set_input('smtp_port', $config['email']['smtp_port']);
-		$iohandler->set_input('smtp_auth', $config['email']['smtp_auth']);
 		$iohandler->set_input('smtp_user', $config['email']['smtp_user']);
 		$iohandler->set_input('smtp_pass', $config['email']['smtp_pass']);
 		$iohandler->set_input('submit_email', 'submit');
