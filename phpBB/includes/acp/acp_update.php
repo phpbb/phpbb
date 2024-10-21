@@ -38,11 +38,31 @@ class acp_update
 		try
 		{
 			$recheck = $request->variable('versioncheck_force', false);
+			$do_update = $request->variable('do_update', false);
+
 			$updates_available = $version_helper->get_update_on_branch($recheck);
 			$upgrades_available = $version_helper->get_suggested_updates();
+			$branch = '';
 			if (!empty($upgrades_available))
 			{
+				$branch = array_key_last($upgrades_available);
 				$upgrades_available = array_pop($upgrades_available);
+			}
+
+			if ($do_update && !empty($updates_available))
+			{
+				$updater = $phpbb_container->get('updater.controller');
+				$current_version = $config['version'];
+				$new_version = $upgrades_available['current'];
+				$download_url = 'https://download.phpbb.com/pub/release/';
+				$download_url .= $branch . '/' . $new_version . '/';
+				$download_url .= 'phpBB-' . $current_version . '_to_' . $new_version . '.zip';
+				$data = $updater->handle(
+					$download_url
+				);
+
+				$response = new \phpbb\json_response();
+				$response->send($data);
 			}
 		}
 		catch (\RuntimeException $e)
