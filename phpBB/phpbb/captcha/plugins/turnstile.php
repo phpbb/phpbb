@@ -139,8 +139,7 @@ class turnstile extends base
 		$form_data = [
 			'secret'			=> $this->config['captcha_turnstile_secret'],
 			'response'			=> $turnstile_response,
-			'remoteip'			=> $this->request->header('CF-Connecting-IP'),
-			//'idempotency_key'	=> $this->confirm_id, // check if we need this
+			'remoteip'			=> $this->user->ip,
 		];
 
 		// Create guzzle client
