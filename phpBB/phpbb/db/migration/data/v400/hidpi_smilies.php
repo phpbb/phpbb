@@ -69,7 +69,7 @@ class hidpi_smilies extends migration
 	{
 		foreach ($this->default_smilies as $smiley)
 		{
-			$sql = 'UPDATE ' . $this->tables['smilies'] . "smilies
+			$sql = 'UPDATE ' . $this->tables['smilies'] . "
 				SET smiley_url = '" . $this->db->sql_escape($smiley) . ".svg'
 				WHERE smiley_url = '" . $this->db->sql_escape($smiley) . ".gif'";
 			$this->db->sql_query($sql);
