@@ -1,0 +1,23 @@
+<dl>
+	<dt><div id="captcha_turnstile" data-language="{{ lang('TURNSTILE_LANG') }}"{% if TURNSTILE_THEME %} data-theme="{{ TURNSTILE_THEME }}"{% endif %}></div></dt>
+</dl>
+{% INCLUDEJS U_TURNSTILE_SCRIPT %}
+<script>
+	function domReady(callBack) {
+		if (document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', callBack);
+		} else {
+			callBack();
+		}
+	}
+
+	domReady(() => {
+		/* global turnstile */
+		console.debug('_turnstileCb called');
+
+		turnstile.render('#captcha_turnstile', {
+			sitekey: '1x00000000000000000000AA',
+			theme: 'light',
+		});
+	});
+</script>

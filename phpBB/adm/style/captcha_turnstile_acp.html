@@ -1,0 +1,64 @@
+{% include('overall_header.html') %}
+
+<a id="maincontent"></a>
+
+<h1>{{ lang('ACP_VC_SETTINGS') }}</h1>
+
+<p>{{ lang('ACP_VC_SETTINGS_EXPLAIN') }}</p>
+
+<form id="acp_captcha" method="post" action="{{ U_ACTION }}">
+	<fieldset>
+		<legend>{{ lang('GENERAL_OPTIONS') }}</legend>
+		<dl>
+			<dt>
+				<label for="captcha_turnstile_sitekey">{{ lang('CAPTCHA_TURNSTILE_SITEKEY') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('CAPTCHA_TURNSTILE_SITEKEY_EXPLAIN') }}</span>
+			</dt>
+			<dd><input id="captcha_turnstile_sitekey" name="captcha_turnstile_sitekey" value="{{ CAPTCHA_TURNSTILE_SITEKEY }}" size="50" type="text" /></dd>
+		</dl>
+		<dl>
+			<dt>
+				<label for="captcha_turnstile_secret">{{ lang('CAPTCHA_TURNSTILE_SECRET') ~ lang('COLON') }}</label><br>
+				<span>{{ lang('CAPTCHA_TURNSTILE_SECRET_EXPLAIN') }}</span>
+			</dt>
+			<dd><input id="captcha_turnstile_secret" name="captcha_turnstile_secret" value="{{ CAPTCHA_TURNSTILE_SECRET }}" size="50" type="text" /></dd>
+		</dl>
+		<dl>
+			<dt>
+				<label>{{ lang('CAPTCHA_TURNSTILE_THEME') ~ lang('COLON') }}</label>
+				<br><span>{{ lang('CAPTCHA_TURNSTILE_THEME_EXPLAIN') }}</span>
+			</dt>
+			<dd>
+				{% for theme in CAPTCHA_TURNSTILE_THEMES %}
+				<label>
+					<input class="radio" name="captcha_turnstile_theme" type="radio" value="{{ theme }}"{{ theme == CAPTCHA_TURNSTILE_THEME ? ' checked' }}>
+					<span>{{ lang('CAPTCHA_TURNSTILE_THEME_' ~ theme|upper) }}</span>
+				</label>
+				{% endfor %}
+			</dd>
+		</dl>
+	</fieldset>
+	<fieldset>
+		<legend>{{ lang('PREVIEW') }}</legend>
+		{% if PREVIEW %}
+		<div class="successbox">
+			<h3>{{ lang('WARNING') }}</h3>
+			<p>{{ lang('CAPTCHA_PREVIEW_MSG') }}</p>
+		</div>
+		{% endif %}
+		{% include(CAPTCHA_PREVIEW) %}
+	</fieldset>
+
+	<fieldset>
+		<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{{ lang('SUBMIT') }}" />&nbsp;
+			<input class="button2" type="reset" id="reset" name="reset" value="{{ lang('RESET') }}" />&nbsp;
+		</p>
+		<input type="hidden" name="select_captcha" value="{{ CAPTCHA_NAME }}" />
+		<input type="hidden" name="configure" value="1" />
+		{{ S_FORM_TOKEN }}
+	</fieldset>
+</form>
+
+{% include('overall_footer.html') %}
