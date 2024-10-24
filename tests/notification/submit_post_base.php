@@ -158,6 +158,12 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
 		$phpbb_container->setParameter('tables.push_subscriptions', 'phpbb_push_subscriptions');
 		$phpbb_container->set('content.visibility', new \phpbb\content_visibility($auth, $config, $phpbb_dispatcher, $db, $user, $phpbb_root_path, $phpEx, FORUMS_TABLE, POSTS_TABLE, TOPICS_TABLE, USERS_TABLE));
+
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$messenger_method_collection->add('messenger.method.email');
+		$messenger_method_collection->add('messenger.method.jabber');
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
 		$phpbb_container->addCompilerPass(new phpbb\di\pass\markpublic_pass());
 		$phpbb_container->compile();
 

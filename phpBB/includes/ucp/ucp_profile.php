@@ -170,27 +170,20 @@ class ucp_profile
 						{
 							$message = ($config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
 
-							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
 							$server_url = generate_board_url();
 
 							$user_actkey = gen_rand_string(mt_rand(6, 10));
 
-							$messenger = new messenger(false);
-
+							$email_method = $phpbb_container->get('messenger.method.email');
 							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
-							$messenger->template($template_file, $user->data['user_lang']);
-
-							$messenger->to($data['email'], $data['username']);
-
-							$messenger->anti_abuse_headers($config, $user);
-
-							$messenger->assign_vars(array(
+							$email_method->template($template_file, $user->data['user_lang']);
+							$email_method->to($data['email'], $data['username']);
+							$email_method->anti_abuse_headers($config, $user);
+							$email_method->assign_vars([
 								'USERNAME'		=> html_entity_decode($data['username'], ENT_COMPAT),
-								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
-							);
-
-							$messenger->send(NOTIFY_EMAIL);
+								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey",
+							]);
+							$email_method->send();
 
 							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
