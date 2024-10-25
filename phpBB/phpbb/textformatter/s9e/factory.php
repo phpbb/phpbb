@@ -358,15 +358,7 @@ class factory implements \phpbb\textformatter\cache_interface
 
 		// Load the Emoji plugin and modify its tag's template to obey viewsmilies
 		$tag = $configurator->Emoji->getTag();
-		$tag->template = '<xsl:choose>
-			<xsl:when test="@tseq">
-				<img alt="{.}" class="emoji" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/{@tseq}.svg"/>
-			</xsl:when>
-			<xsl:otherwise>
-				<img alt="{.}" class="emoji" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/{@seq}.svg"/>
-			</xsl:otherwise>
-		</xsl:choose>';
-		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
+		$tag->template = '<span class="emoji"><xsl:value-of select="."/></span>';
 
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set

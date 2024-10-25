@@ -1224,14 +1224,9 @@ ul.linklist:after,
 	content: "";
 }
 
-/* stylelint-disable declaration-property-unit-allowed-list */
 .emoji {
-	width: 1em;
-	min-width: 18px;
-	height: 1em;
-	min-height: 18px;
+	font-size: 17px;
 }
-/* stylelint-enable declaration-property-unit-allowed-list */
 
 .smilies {
 	vertical-align: text-bottom;
