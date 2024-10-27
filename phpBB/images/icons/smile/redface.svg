@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 88.04 87.12">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        stroke-width: 0px;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+      }
+
+      .cls-3, .cls-4, .cls-5 {
+        stroke: #000;
+        stroke-width: 3px;
+      }
+
+      .cls-3, .cls-5 {
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+    </style>
+	<!-- Define the linear (start) gradient -->
+    <linearGradient id="linearGradient" x1="1.5" y1="43.56" x2="86.54" y2="43.56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffa49f" id="linearStart" />
+      <stop offset="1" stop-color="#fd5756" id="linearEnd" />
+    </linearGradient>
+
+    <!-- Define the radial gradient -->
+    <radialGradient id="radialGradient" cx="44.02" cy="43.56" fx="44.02" fy="43.56" r="42.29" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fdf504" id="radialStart" />
+      <stop offset="0.71" stop-color="#f8c00c" />
+      <stop offset="1" stop-color="#f8bd0c" id="radialEnd" />
+    </radialGradient>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="redface">
+      <!-- <ellipse class="cls-5" cx="44.02" cy="43.56" rx="42.52" ry="42.06"/> -->
+	  <!-- Ellipse with linear gradient -->
+	  <ellipse class="cls-5" cx="44.02" cy="43.56" rx="42.52" ry="42.06" fill="url(#linearGradient)" opacity="1"/>
+
+	  <!-- Ellipse with radial gradient, positioned exactly over the first -->
+	  <ellipse class="cls-5" cx="44.02" cy="43.56" rx="42.52" ry="42.06" fill="url(#radialGradient)" opacity="0">
+		<animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;0.25;0.5;0.75;1" dur="2s" repeatCount="indefinite" />
+	  </ellipse>
+      <path class="cls-2" d="m44.02,18.65s-10.68.01-13.17.98q-3.17,1.23-6.41,5.94c-1.47,2.13-1.95,5.1-2.06,5.89-.02.13-.02.24-.02.37v8.48c0,1.56,1.26,2.82,2.82,2.82h18.85"/>
+      <path class="cls-2" d="m44.02,18.65s10.68.01,13.17.98q3.17,1.23,6.41,5.94c1.71,2.48,2.08,6.08,2.08,6.08v8.65c0,1.56-1.26,2.82-2.82,2.82h-18.85"/>
+      <ellipse class="cls-1" cx="38.06" cy="34.43" rx="4.96" ry="6.57"/>
+      <ellipse class="cls-1" cx="49.98" cy="34.43" rx="4.96" ry="6.57"/>
+      <path class="cls-4" d="m20.35,27.15s3.16-7.94,9.17-9.33"/>
+      <path class="cls-4" d="m67.69,27.15s-3.16-7.94-9.17-9.33"/>
+      <path class="cls-3" d="m56.52,68.49c7.91,0,13.33.12,13.33-12.09"/>
+    </g>
+  </g>
+</svg>
