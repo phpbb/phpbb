@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 89.46 92.29">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+      }
+
+      .cls-1, .cls-2, .cls-3 {
+        stroke: #000;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 3px;
+      }
+
+      .cls-2 {
+        fill: none;
+      }
+
+      .cls-3 {
+        fill: url(#Unbenannter_Verlauf_24);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf_24" data-name="Unbenannter Verlauf 24" x1="13.66" y1="15.07" x2="75.8" y2="77.22" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9af17d"/>
+      <stop offset="1" stop-color="#559435"/>
+    </linearGradient>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="mrgreen">
+      <ellipse class="cls-3" cx="44.73" cy="46.15" rx="43.23" ry="44.65"/>
+      <path class="cls-2" d="m19.52,30.72s5.5-9.42,10.5-9.42,11.69,9.42,11.69,9.42"/>
+      <path class="cls-2" d="m69.64,30.72s-5.5-9.42-10.5-9.42-11.69,9.42-11.69,9.42"/>
+      <path class="cls-1" d="m11.52,41.47h68.33s-5.36,19.13-8.33,24.83-11,18.17-25.83,18.17-22.62-11.76-25.33-16.5c-3.67-6.42-8.83-26.5-8.83-26.5"/>
+      <line class="cls-2" x1="56.97" y1="81.63" x2="56.97" y2="41.47"/>
+      <line class="cls-2" x1="32.18" y1="80.24" x2="32.18" y2="41.97"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.66 83.37">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #ecedf0;
+        stroke: #196db5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 4px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="star">
+      <polygon class="cls-1" points="43.33 61.61 17.13 81.37 26.28 48.78 2 28.28 30.83 28.28 43.33 2 55.82 28.28 84.66 28.28 60.38 48.78 69.52 81.37 43.33 61.61"/>
+    </g>
+  </g>
+</svg>
