@@ -21,4 +21,4 @@ parameters:
         - passwords.driver.salted_md5
         - passwords.driver.phpass
 
-    public_key: 'auJX0pGetfYatE7t/rX5hAkCLZv9s78TwKkLfR3YGuQ='
+    packages.public_key: 'auJX0pGetfYatE7t/rX5hAkCLZv9s78TwKkLfR3YGuQ='

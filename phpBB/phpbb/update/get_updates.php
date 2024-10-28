@@ -22,7 +22,7 @@ use ZipArchive;
 
 class get_updates
 {
-	/** @var filesystem_interface Filesystem managerr */
+	/** @var filesystem_interface Filesystem manager */
 	private filesystem_interface $filesystem;
 
 	/** @var Client HTTP client */
