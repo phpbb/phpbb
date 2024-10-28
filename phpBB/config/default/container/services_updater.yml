@@ -3,7 +3,7 @@ services:
         class: phpbb\update\get_updates
         arguments:
             - '@filesystem'
-            - '%public_key%'
+            - '%packages.public_key%'
             - '%core.root_path%'
 
     updater.controller:
