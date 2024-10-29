@@ -101,7 +101,7 @@ class get_updates
 			return false;
 		}
 
-		$raw_signature = file_get_contents($signature_path);
+		$signature = file_get_contents($signature_path);
 
 		$hash = hash_file('sha384', $file_path, true);
 		if ($hash === false)
@@ -109,15 +109,21 @@ class get_updates
 			return false;
 		}
 
-		$signature = base64_decode($raw_signature);
-		if ($signature === false)
+		$raw_signature = base64_decode($signature);
+		if ($raw_signature === false)
+		{
+			return false;
+		}
+
+		$raw_public_key = base64_decode($this->public_key);
+		if ($raw_public_key === false)
 		{
 			return false;
 		}
 
 		try
 		{
-			return sodium_crypto_sign_verify_detached($signature, $hash, $this->public_key);
+			return sodium_crypto_sign_verify_detached($raw_signature, $hash, $raw_public_key);
 		}
 		catch (SodiumException)
 		{
