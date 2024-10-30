@@ -23,19 +23,19 @@ use ZipArchive;
 class get_updates
 {
 	/** @var filesystem_interface Filesystem manager */
-	private filesystem_interface $filesystem;
+	protected filesystem_interface $filesystem;
 
 	/** @var Client HTTP client */
-	private Client $http_client;
+	protected Client $http_client;
+
+	/** @var ZipArchive Zip extractor */
+	protected ZipArchive $zipper;
 
 	/** @var string Public key to verify package  */
-	private string $public_key;
+	protected string $public_key;
 
 	/** @var string phpBB root path */
 	private string $phpbb_root_path;
-
-	/** @var ZipArchive Zip extractor */
-	private ZipArchive $zipper;
 
 	/**
 	 * Constructor
@@ -51,9 +51,9 @@ class get_updates
 	{
 		$this->filesystem = $filesystem;
 		$this->http_client = new Client();
+		$this->zipper = new ZipArchive();
 		$this->public_key = base64_decode($public_key);
 		$this->phpbb_root_path = $phpbb_root_path;
-		$this->zipper = new ZipArchive();
 	}
 
 	/**
@@ -91,12 +91,12 @@ class get_updates
 	 */
 	public function validate(string $file_path, string $signature_path): bool
 	{
-		if (file_exists($file_path) === false)
+		if (file_exists($file_path) === false || !is_readable($file_path))
 		{
 			return false;
 		}
 
-		if (file_exists($signature_path) === false)
+		if (file_exists($signature_path) === false || !is_readable($signature_path))
 		{
 			return false;
 		}
@@ -109,13 +109,13 @@ class get_updates
 			return false;
 		}
 
-		$raw_signature = base64_decode($signature);
+		$raw_signature = base64_decode($signature, true);
 		if ($raw_signature === false)
 		{
 			return false;
 		}
 
-		$raw_public_key = base64_decode($this->public_key);
+		$raw_public_key = base64_decode($this->public_key, true);
 		if ($raw_public_key === false)
 		{
 			return false;
