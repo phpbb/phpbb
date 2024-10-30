@@ -1525,7 +1525,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @return bool Returns true if a user exists, false otherwise
 	*/
-	protected function user_exists($username, $user_id = null)
+	protected function user_exists(&$username, &$user_id = null)
 	{
 		global $db;
 
