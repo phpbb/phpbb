@@ -142,6 +142,11 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 
 	public function test_validate_file_not_accessible()
 	{
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped('Unable to test unreadable files on Windows');
+		}
+
 		$keypair = sodium_crypto_sign_keypair();
 
 		$public_key = base64_encode(sodium_crypto_sign_publickey($keypair));
@@ -160,6 +165,11 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 
 	public function test_validate_sig_not_accessible()
 	{
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped('Unable to test unreadable files on Windows');
+		}
+
 		$keypair = sodium_crypto_sign_keypair();
 
 		$secret_key = sodium_crypto_sign_secretkey($keypair);
