@@ -24,8 +24,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 		$this->path = __DIR__ . '/fixtures/files/';
 		$this->add_lang('posting');
 
-		$username = 'ucp-file-test';
-		if (!$this->user_exists($username))
+		if (!$this->user_exists('ucp-file-test'))
 		{
 			$this->create_user('ucp-file-test');
 		}

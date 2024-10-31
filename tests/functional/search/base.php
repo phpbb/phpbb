@@ -117,15 +117,13 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->add_lang('common');
 
 		// Create a new standard user if needed, topic and post to test searh for author
-		$searchforauthoruser_name = 'searchforauthoruser';
-		$searchforauthoruser_id = null; // if the user exists, array with user_id will be returned
-		if (!$this->user_exists($searchforauthoruser_name, $searchforauthoruser_id))
+		if (!$searchforauthoruser_id = $this->user_exists('searchforauthoruser'))
 		{
 			$searchforauthoruser_id = $this->create_user('searchforauthoruser');
 		}
 		else
 		{
-			$searchforauthoruser_id = (int) $searchforauthoruser_id[0];
+			$searchforauthoruser_id = key($searchforauthoruser_id);
 		}
 		$this->remove_user_group('NEWLY_REGISTERED', ['searchforauthoruser']);
 		$this->set_flood_interval(0);
