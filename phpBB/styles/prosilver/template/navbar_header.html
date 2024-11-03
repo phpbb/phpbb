@@ -44,6 +44,13 @@
 									{{ Icon('font', 'file-lines', lang('SEARCH_ACTIVE_TOPICS'), false, 'far icon icon-blue') }}
 								</a>
 							</li>
+							{% if U_MARK_FORUMS %}
+							<li>
+								<a href="{{ U_MARK_FORUMS }}" role="menuitem" accesskey="m" data-ajax="mark_forums_read">
+									{{ Icon('font', 'book-open-reader', lang('MARK_FORUMS_READ'), false) }}
+								</a>
+							</li>
+							{% endif %}
 							<li class="separator"></li>
 							<li>
 								<a href="{{ U_SEARCH }}" role="menuitem">

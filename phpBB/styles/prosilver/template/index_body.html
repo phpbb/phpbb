@@ -1,15 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<p class="{S_CONTENT_FLOW_END} responsive-center time<!-- IF S_USER_LOGGED_IN --> rightside<!-- ENDIF -->"><!-- IF S_USER_LOGGED_IN -->{LAST_VISIT_DATE}<!-- ELSE -->{CURRENT_TIME}<!-- ENDIF --></p>
-<!-- IF S_USER_LOGGED_IN --><p class="responsive-center time">{CURRENT_TIME}</p><!-- ENDIF -->
-
 <!-- EVENT index_body_markforums_before -->
-<!-- IF U_MARK_FORUMS -->
-	<div class="action-bar compact">
-		<a href="{U_MARK_FORUMS}" class="mark-read rightside" accesskey="m" data-ajax="mark_forums_read">{L_MARK_FORUMS_READ}</a>
-	</div>
-<!-- ENDIF -->
 <!-- EVENT index_body_markforums_after -->
+<!-- EVENT index_body_forumlist_body_before -->
 
 <!-- INCLUDE forumlist_body.html -->
 
