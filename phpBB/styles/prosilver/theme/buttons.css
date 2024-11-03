@@ -4,7 +4,7 @@
 
 .button {
 	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	font-size: 16px;
+	font-size: var(--ps-font-normal);
 	font-weight: 600;
 	line-height: 1.4;
 	text-align: center;
@@ -16,7 +16,7 @@
 	justify-content: center;
 	align-items: center;
 	box-sizing: border-box;
-	height: 30px;
+	height: calc(var(--ps-font-normal) * 1.875);
 	padding: 2px 8px;
 	cursor: pointer;
 	touch-action: manipulation;
@@ -185,11 +185,11 @@
 
 /* Responsive buttons in post body */
 .post-buttons .dropdown {
-	top: 30px;
+	top: calc(var(--ps-font-normal) * 1.875);
 }
 
 .post-buttons .dropdown a {
-	font-size: 16px;
+	font-size: var(--ps-font-normal);
 	text-align: right;
 	display: block;
 	justify-content: start;
