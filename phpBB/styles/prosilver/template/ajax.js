@@ -393,6 +393,28 @@ $('#member_search').click(function () {
 });
 
 /**
+ * Show to top button if available on page
+ */
+const $scrollTopButton = $('.to-top-button');
+
+if ($scrollTopButton.length) {
+	// Show or hide the button based on scroll position
+	$(window).scroll(function () {
+		if ($(this).scrollTop() > 300) {
+			$scrollTopButton.fadeIn(); // Fade in the button
+		} else {
+			$scrollTopButton.fadeOut(); // Fade out the button
+		}
+	});
+
+	// Scroll smoothly to the top when the button is clicked
+	$scrollTopButton.click(function (e) {
+		e.preventDefault(); // Prevent the default anchor link behavior
+		$('html, body').animate({scrollTop: 0}, 500); // Smooth scroll to top
+	});
+}
+
+/**
 * Automatically resize textarea
 */
 $(function() {
