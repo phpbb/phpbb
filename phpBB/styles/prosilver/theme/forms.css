@@ -9,13 +9,13 @@
 ---------------------------------------- */
 fieldset {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 14px;
 	border-width: 0;
 }
 
 input {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 14px;
 	font-weight: normal;
 	vertical-align: middle;
 	padding: 0 3px;
@@ -23,7 +23,7 @@ input {
 
 select {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 14px;
 	font-weight: normal;
 	vertical-align: middle;
 	border: 1px solid transparent;
@@ -36,18 +36,18 @@ select:focus {
 }
 
 option {
-	padding-right: 11px;
+	padding-right: 14px;
 }
 
 select optgroup option {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	padding-right: 11px;
+	padding-right: 14px;
 }
 
 textarea {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
-	line-height: 18px;
+	font-size: 14px;
+	line-height: 20px;
 	width: 60%;
 	padding: 2px;
 }
@@ -184,7 +184,7 @@ fieldset.display-options a {
 }
 
 .dropdown fieldset.display-options {
-	font-size: 11px;
+	font-size: 14px;
 	margin: 0;
 	padding: 0;
 }
@@ -203,10 +203,10 @@ fieldset.display-options a {
 
 /* Display actions for ucp and mcp pages */
 fieldset.display-actions {
-	line-height: 22px;
+	line-height: 28px;
 	text-align: right;
 	white-space: nowrap;
-	padding-right: 11px;
+	padding-right: 14px;
 }
 
 fieldset.display-actions label {
@@ -216,7 +216,7 @@ fieldset.display-actions label {
 
 /* Not used anywhere */
 fieldset.sort-options {
-	line-height: 22px;
+	line-height: 28px;
 }
 
 /* MCP forum selection */
@@ -262,7 +262,7 @@ fieldset.submit-buttons input {
 
 .message-box textarea {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 13px;
+	font-size: 16px;
 	outline: 3px dashed transparent;
 	outline-offset: -4px;
 	-webkit-box-sizing: border-box;
@@ -369,7 +369,7 @@ input.disabled {
 	float: left;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
-	height: 24px;
+	height: 30px;
 	padding: 3px;
 }
 

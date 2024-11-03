@@ -24,12 +24,12 @@
 }
 
 .panel-container .panel p {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 .panel-container .panel ol {
-	font-size: 11px;
-	margin-left: 22px;
+	font-size: 14px;
+	margin-left: 28px;
 }
 
 .panel-container .panel li.row {
@@ -80,7 +80,7 @@ ul.cplist {
 }
 
 .panel-container .postbody p.author {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 .cp-main .buttons {
@@ -118,9 +118,9 @@ ul.cplist {
 
 .tabs .tab,
 .minitabs .tab {
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: bold;
-	line-height: 14px;
+	line-height: 18px;
 	display: block;
 	float: left;
 }
@@ -144,7 +144,7 @@ ul.cplist {
 .tabs .tab > a {
 	border: 1px solid transparent;
 	border-radius: 4px 4px 0 0;
-	margin: 1px 1px 0 0;
+	margin: 1px 1px -1px 0;
 }
 
 .tabs .activetab > a {
@@ -180,12 +180,12 @@ ul.cplist {
 }
 
 .responsive-tab > a.responsive-tab-link {
-	font-size: 16px;
-	line-height: 14px;
+	font-size: 20px;
+	line-height: 18px;
 	text-decoration: none;
 	position: relative;
 	display: block;
-	width: 16px;
+	width: 20px;
 }
 
 .responsive-tab .responsive-tab-link:before {
@@ -201,7 +201,7 @@ ul.cplist {
 
 .tabs .dropdown,
 .minitabs .dropdown {
-	font-size: 11px;
+	font-size: 14px;
 	font-weight: normal;
 	top: 20px;
 	margin-right: -2px;
@@ -248,11 +248,14 @@ ul.cplist {
 
 /* Link styles for the sub-section links */
 .navigation a {
-	font-size: 10px;
+	font-size: 12px;
 	text-decoration: none;
 	display: block;
 	margin: 1px 0;
 	padding: 5px;
+	border: 1px solid transparent;
+	border-radius: 4px 0 0 4px;
+
 }
 
 .navigation a:hover {
@@ -269,12 +272,12 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	font-size: 10px;
+	font-size: 12px;
 	border-radius: 7px;
 	overflow-y: auto;
 	max-height: 200px;
-	margin: 10px 15px 10px 5px;
-	padding: 5px 10px;
+	margin: 12px 15px 12px 5px;
+	padding: 5px 12px;
 }
 
 dl.mini dt {

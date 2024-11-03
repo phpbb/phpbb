@@ -97,15 +97,11 @@ th a:hover {
 .headerbar,
 .forumbg {
 	background-color: #13a4ec;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #0077b3), color-stop(30%, #13a4ec), to(#13a4ec));
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 0.1%, #13a4ec 30%, #13a4ec 100%);
 	background-repeat: repeat-x;
 }
 
 .forabg {
-	background-color: #0077b3;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #13a4ec), color-stop(30%, #0077b3), to(#0077b3));
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 0.1%, #0077b3 30%, #0077b3 100%);
+	background-color: #13a4ec;
 	background-repeat: repeat-x;
 }
 
@@ -413,9 +409,7 @@ p.post-notice {
 
 /*	colours and backgrounds for content.css */
 ul.forums {
-	background-color: #edf4f7;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#b8d3e0), to(#edf4f7));
-	background-image: linear-gradient(to bottom, #b8d3e0 0%, #edf4f7 100%);
+	background-color: #d2e4ec;
 }
 
 ul.topiclist > li {
@@ -441,7 +435,7 @@ li.row strong {
 }
 
 li.row:hover {
-	background-color: #fffbcc;
+	background-color: #cde9f5;
 }
 
 li.row:hover dd {
@@ -862,11 +856,7 @@ ul.cplist {
 .tabs .activetab > a,
 .tabs .activetab > a:hover {
 	background-color: #c9dee8;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#e6f7ff), to(#c9dee8));
-	background-image: linear-gradient(to bottom, #e6f7ff 0%, #c9dee8 100%);
 	border-color: #c9dee8;
-	-webkit-box-shadow: 0 1px 1px #e6f7ff inset;
-	box-shadow: 0 1px 1px #e6f7ff inset;
 	color: #212121;
 }
 
@@ -885,9 +875,7 @@ ul.cplist {
 
 /* link styles for the sub-section links */
 .navigation a {
-	background: #c0d3dd;
-	background-image: -webkit-gradient(linear, left top, right top, color-stop(50%, #aab9c0), to(#c0d3dd));
-	background-image: linear-gradient(to right, #aab9c0 50%, #c0d3dd 100%);
+	background: #b5c6cf;
 	color: #212121;
 }
 

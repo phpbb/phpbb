@@ -24,7 +24,7 @@ body {
 h1 {
 	/* Forum name */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 20px;
+	font-size: 24px;
 	font-weight: bold;
 	margin-top: 15px;
 	margin-right: 200px;
@@ -33,7 +33,7 @@ h1 {
 h2 {
 	/* Forum header titles */
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 20px;
+	font-size: 24px;
 	font-weight: normal;
 	margin: 0.8em 0 0.2em;
 }
@@ -45,7 +45,7 @@ h2.solo {
 h3 {
 	/* Sub-headers (also used as post headers, but defined later) */
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 16px;
 	font-weight: bold;
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
@@ -57,13 +57,13 @@ h3 {
 h4 {
 	/* Forum and topic list titles */
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 13px;
+	font-size: 18px;
 }
 
 p {
-	font-size: 11px;
-	line-height: 14px;
-	margin-bottom: 16px;
+	font-size: 14px;
+	line-height: 18px;
+	margin-bottom: 20px;
 }
 
 img {
@@ -228,7 +228,7 @@ a:hover {
 
 .panel {
 	border-radius: 7px;
-	margin-bottom: 4px;
+	margin-bottom: 8px;
 	padding: 5px 10px;
 }
 
@@ -262,8 +262,8 @@ ul.linklist {
 }
 
 ul.linklist > li {
-	font-size: 11px;
-	line-height: 24px;
+	font-size: 14px;
+	line-height: 30px;
 	float: left;
 	width: auto;
 	margin-right: 7px;
@@ -434,12 +434,12 @@ a.header-avatar img {
 }
 
 .dropdown-button-control .dropdown {
-	top: 24px;
+	top: 30px;
 }
 
 .dropdown-button-control.dropdown-up .dropdown {
 	top: auto;
-	bottom: 24px;
+	bottom: 30px;
 }
 
 .dropdown .pointer,
@@ -556,7 +556,7 @@ a.header-avatar img {
 }
 
 .dropdown li {
-	font-size: 11px !important;
+	font-size: 14px !important;
 	line-height: normal !important;
 	text-align: left;
 	white-space: nowrap;
@@ -678,9 +678,9 @@ table.table1 {
 }
 
 table.table1 thead th {
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: normal;
-	line-height: 13px;
+	line-height: 15px;
 	text-transform: uppercase;
 	padding: 0 0 4px 3px;
 }
@@ -694,7 +694,7 @@ table.table1 tbody tr {
 }
 
 table.table1 td {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 table.table1 tbody td {
@@ -831,7 +831,7 @@ table.info tbody th {
 
 dl.details {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 14px;
 }
 
 dl.details dt {
@@ -882,7 +882,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Action-bars (container for post/reply buttons, pagination, etc.)
 ---------------------------------------- */
 .action-bar {
-	font-size: 11px;
+	font-size: 14px;
 	margin: 4px 0;
 }
 
@@ -938,7 +938,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .pagination li.active span {
 	font-family: "Open Sans", "Droid Sans", Verdana, Arial, Helvetica;
-	font-size: 13px;
+	font-size: 16px;
 	font-weight: normal;
 	line-height: 1.4;
 	text-align: center;
@@ -962,7 +962,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .pagination li.page-jump a i {
-	font-size: 16px;
+	font-size: 20px;
 }
 
 .pagination .arrow a {
@@ -982,10 +982,10 @@ fieldset.fields1 dl.pmlist dd.recipients {
 
 .row .pagination li a,
 .row .pagination li span {
-	font-size: 9px;
+	font-size: 12px;
 	border-radius: 2px;
-	width: 14px;
-	height: 17px;
+	width: 17px;
+	height: 22px;
 	padding: 1px 3px;
 }
 
@@ -1026,7 +1026,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .phpbb_alert div.alert_text > select,
 .phpbb_alert div.alert_text > textarea,
 .phpbb_alert div.alert_text > input {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 .darkenwrapper {
@@ -1141,13 +1141,13 @@ fieldset.fields1 dl.pmlist dd.recipients {
 /* Miscellaneous styles
 ---------------------------------------- */
 .copyright {
-	font-size: 10px;
+	font-size: 12px;
 	text-align: center;
 	padding: 10px;
 }
 
 .footer-row {
-	font-size: 10px;
+	font-size: 12px;
 	line-height: 1.8;
 	margin: 0;
 }
@@ -1165,12 +1165,12 @@ fieldset.fields1 dl.pmlist dd.recipients {
 }
 
 .error {
-	font-size: 10px;
+	font-size: 12px;
 	font-weight: bold;
 }
 
 div.rules {
-	font-size: 11px;
+	font-size: 18px;
 	border-radius: 7px;
 	margin: 10px 0;
 	padding: 5px 10px;
@@ -1243,7 +1243,7 @@ ul.linklist:after,
 }
 
 .member-search strong {
-	font-size: 11px;
+	font-size: 14px;
 }
 
 .dropdown-extended {
@@ -1319,7 +1319,7 @@ ul.linklist:after,
 }
 
 .dropdown-extended .footer {
-	font-size: 12px;
+	font-size: 16px;
 	text-align: center;
 }
 
@@ -1372,7 +1372,7 @@ ul.linklist:after,
 }
 
 .notification-time {
-	font-size: 10px;
+	font-size: 12px;
 	text-align: right;
 	margin: 0;
 }
@@ -1388,7 +1388,7 @@ ul.linklist:after,
 
 .notifications-title {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
-	font-size: 13px !important;
+	font-size: 16px !important;
 }
 
 .notifications-title strong {
@@ -1396,7 +1396,7 @@ ul.linklist:after,
 }
 
 .notifications-time {
-	font-size: 10px !important;
+	font-size: 12px !important;
 }
 
 .notification-text {
@@ -1404,16 +1404,16 @@ ul.linklist:after,
 }
 
 .badge {
-	font-size: 10px;
+	font-size: 12px;
 	line-height: 1;
 	text-align: center;
 	white-space: nowrap;
 	border-radius: 10px;
 	opacity: 0.8;
 	position: relative;
-	top: 3px;
+	top: 5px;
 	float: right;
-	margin-left: 3px;
+	margin-left: 5px;
 	padding: 4px 6px;
 }
 
