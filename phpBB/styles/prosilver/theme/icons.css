@@ -12,14 +12,14 @@ svg {
 
 .o-icon {
 	vertical-align: middle !important;
-	width: 18px;
-	height: 18px;
+	width: var(--ps-font-h4);
+	height: var(--ps-font-h4);
 }
 
 .o-icon-src-mdi,
 .o-icon-src-ic {
-	width: 22px;
-	height: 22px;
+	width: calc(var(--ps-font-h4) + 4px); /* icon + 2 * 2px padding */
+	height: calc(var(--ps-font-h4) + 4px); /* icon + 2 * 2px padding */
 }
 
 .o-icon-src-fa {
@@ -28,7 +28,7 @@ svg {
 
 .o-icon-font {
 	font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands";
-	font-size: 18px;
+	font-size: var(--ps-font-h4);
 	font-style: normal;
 	font-variant: normal;
 	-webkit-font-smoothing: antialiased;
@@ -57,7 +57,7 @@ span + .o-icon {
 
 blockquote cite:before,
 .uncited:before {
-	font-size: 40px;
+	font-size: calc(var(--ps-font-normal) * 2.5);
 	vertical-align: bottom;
 	display: inline-block;
 	margin-top: 8px;
@@ -72,9 +72,9 @@ blockquote cite:before,
 
 .c-forum-row-icon,
 .c-notification-check-icon {
-	font-size: 24px;
-	width: 24px;
-	height: 24px;
+	font-size: var(--ps-font-h1);
+	width: var(--ps-font-h1);
+	height: var(--ps-font-h1);
 	margin-top: 0;
 }
 
@@ -86,8 +86,8 @@ blockquote cite:before,
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
-	width: 36px;
-	height: 36px;
+	width: calc(var(--ps-font-normal) * 2.25);
+	height: calc(var(--ps-font-normal) * 2.25);
 	margin-top: -17px;
 	margin-left: 9px;
 }

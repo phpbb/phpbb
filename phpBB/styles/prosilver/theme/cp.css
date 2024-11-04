@@ -24,12 +24,12 @@
 }
 
 .panel-container .panel p {
-	font-size: 14px;
+	font-size: var(--ps-font-small);
 }
 
 .panel-container .panel ol {
-	font-size: 14px;
-	margin-left: 28px;
+	font-size: var(--ps-font-small);
+	margin-left: calc(var(--ps-font-small) * 2);
 }
 
 .panel-container .panel li.row {
@@ -80,7 +80,7 @@ ul.cplist {
 }
 
 .panel-container .postbody p.author {
-	font-size: 14px;
+	font-size: var(--ps-font-small);
 }
 
 .cp-main .buttons {
@@ -118,9 +118,9 @@ ul.cplist {
 
 .tabs .tab,
 .minitabs .tab {
-	font-size: 12px;
+	font-size: var(--ps-font-tiny);
 	font-weight: bold;
-	line-height: 18px;
+	line-height: 1.4;
 	display: block;
 	float: left;
 }
@@ -180,12 +180,12 @@ ul.cplist {
 }
 
 .responsive-tab > a.responsive-tab-link {
-	font-size: 20px;
-	line-height: 18px;
+	font-size: var(--ps-font-h3);
+	line-height: 0.875;
 	text-decoration: none;
 	position: relative;
 	display: block;
-	width: 20px;
+	width: var(--ps-font-h3);
 }
 
 .responsive-tab .responsive-tab-link:before {
@@ -201,7 +201,7 @@ ul.cplist {
 
 .tabs .dropdown,
 .minitabs .dropdown {
-	font-size: 14px;
+	font-size: var(--ps-font-small);
 	font-weight: normal;
 	top: 20px;
 	margin-right: -2px;
@@ -248,14 +248,13 @@ ul.cplist {
 
 /* Link styles for the sub-section links */
 .navigation a {
-	font-size: 12px;
+	font-size: var(--ps-font-tiny);
 	text-decoration: none;
+	border: 1px solid transparent;
+	border-radius: 4px 0 0 4px;
 	display: block;
 	margin: 1px 0;
 	padding: 5px;
-	border: 1px solid transparent;
-	border-radius: 4px 0 0 4px;
-
 }
 
 .navigation a:hover {
@@ -272,12 +271,12 @@ ul.cplist {
 
 /* Friends list */
 .cp-mini {
-	font-size: 12px;
+	font-size: var(--ps-font-tiny);
 	border-radius: 7px;
 	overflow-y: auto;
 	max-height: 200px;
-	margin: 12px 15px 12px 5px;
-	padding: 5px 12px;
+	margin: var(--ps-font-tiny) 15px var(--ps-font-tiny) 5px;
+	padding: 5px var(--ps-font-tiny);
 }
 
 dl.mini dt {
