@@ -42,7 +42,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{% for list in ['enabled', 'disabled', 'available'] %}
+		{% for list in ['enabled', 'disabled', 'not_installed'] %}
 			{% set blockname = attribute(loops, list) %}
 			{% if blockname|length %}
 			<tr>
@@ -51,8 +51,8 @@
 						{% EVENT acp_ext_list_enabled_title_after %}
 					{% elseif list == 'disabled' %}
 						{% EVENT acp_ext_list_disabled_title_after %}
-					{% elseif list == 'available' %}
-						{% EVENT acp_ext_list_available_title_after %}
+					{% elseif list == 'not_installed' %}
+						{% EVENT acp_ext_list_not_installed_title_after %}
 					{% endif %}
 				</td>
 			</tr>
@@ -63,8 +63,8 @@
 						{% EVENT acp_ext_list_enabled_name_after %}
 					{% elseif list == 'disabled' %}
 						{% EVENT acp_ext_list_disabled_name_after %}
-					{% elseif list == 'available' %}
-						{% EVENT acp_ext_list_available_name_after %}
+					{% elseif list == 'not_installed' %}
+						{% EVENT acp_ext_list_not_installed_name_after %}
 					{% endif %}
 				</td>
 				<td style="text-align: center;">

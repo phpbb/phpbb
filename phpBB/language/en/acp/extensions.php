@@ -47,9 +47,9 @@ $lang = array_merge($lang, array(
 
 	'DETAILS'				=> 'Details',
 
-	'EXTENSIONS_AVAILABLE'	=> 'Available Extensions',
-	'EXTENSIONS_DISABLED'	=> 'Disabled Extensions',
-	'EXTENSIONS_ENABLED'	=> 'Enabled Extensions',
+	'EXTENSIONS_NOT_INSTALLED'	=> 'Not installed Extensions',
+	'EXTENSIONS_DISABLED'		=> 'Disabled Extensions',
+	'EXTENSIONS_ENABLED'		=> 'Enabled Extensions',
 
 	'EXTENSION_DELETE_DATA'	=> 'Delete data',
 	'EXTENSION_DISABLE'		=> 'Disable',
