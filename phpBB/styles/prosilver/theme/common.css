@@ -17,7 +17,7 @@ body {
 	line-height: normal;
 	word-wrap: break-word;
 	margin: 0;
-	padding: 12px 0;
+	padding: 0 0 12px;
 	-webkit-print-color-adjust: exact;
 }
 
@@ -151,12 +151,13 @@ a:hover {
 /* Main blocks
 ---------------------------------------- */
 .wrap {
-	border: 1px solid transparent;
-	border-radius: 8px;
+	border: solid transparent;
+	border-width: 0 1px 1px;
+	border-radius: 0 0 8px 8px;
 	min-width: 625px;
 	max-width: 1152px;
 	margin: 0 auto;
-	padding: 15px;
+	padding: 0 15px 15px;
 }
 
 .page-body {
@@ -200,7 +201,9 @@ a:hover {
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	border-radius: 7px;
+	background-image: url('images/lighter2.png');
+	border-radius: 0 0 7px 7px;
+	background-size: cover;
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 0.5rem;
@@ -210,6 +213,11 @@ a:hover {
 .navbar {
 	border-radius: 7px;
 	padding: 3px 10px;
+}
+
+.headerbar .navbar {
+	background: none;
+	padding: calc(var(--ps-line-height) * 0.25) 5px calc(var(--ps-line-height) * 0.5);
 }
 
 .forabg {
@@ -338,6 +346,10 @@ ul.linklist .dropdown {
 ul.linklist .dropdown-up .dropdown {
 	top: auto;
 	bottom: 18px;
+}
+
+ul.nav-breadcrumbs {
+	margin: var(--ps-line-height) 0;
 }
 
 /* Bulletin icons for list items
