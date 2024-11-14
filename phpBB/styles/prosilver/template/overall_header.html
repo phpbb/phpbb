@@ -79,7 +79,11 @@
 <div id="wrap" class="wrap">
 	<a id="top" class="top-anchor" accesskey="t"></a>
 	<div id="page-header">
+		<!-- EVENT overall_header_navbar_before -->
+
 		<div class="headerbar" role="banner">
+
+			{% include('navbar_header.html') %}
 		<!-- EVENT overall_header_headerbar_before -->
 			<div class="inner">
 
@@ -117,9 +121,9 @@
 			</div>
 			<!-- EVENT overall_header_headerbar_after -->
 		</div>
-		<!-- EVENT overall_header_navbar_before -->
-		<!-- INCLUDE navbar_header.html -->
 	</div>
+
+	{% include 'breadcrumbs.html' %}
 
 	<!-- EVENT overall_header_page_body_before -->
 
