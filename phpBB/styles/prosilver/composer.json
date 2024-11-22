@@ -19,7 +19,7 @@
 		"irc": "irc://irc.freenode.org/phpbb"
 	},
 	"extra": {
-		"display-name": "prosilver v2",
+		"display-name": "prosilver",
 		"phpbb-version": "4.0.0-a1-dev",
 		"parent-style":  ""
 	}
