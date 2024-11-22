@@ -1,0 +1,95 @@
+<!-- INCLUDE ucp_header.html -->
+
+{% EVENT ucp_notifications_form_before %}
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2 class="cp-title">{TITLE}</h2>
+
+{% EVENT ucp_notifications_content_before %}
+
+<div class="panel">
+	<div class="inner">
+
+		<p class="cp-desc">{TITLE_EXPLAIN}</p>
+			<!-- IF .notification_list -->
+				<div class="action-bar bar-top">
+					<div class="pagination">
+						<!-- IF U_MARK_ALL --><a href="{U_MARK_ALL}" class="mark">{L_NOTIFICATIONS_MARK_ALL_READ}</a> &bull; <!-- ENDIF -->
+						{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
+						<!-- IF .pagination -->
+							<!-- INCLUDE pagination.html -->
+						<!-- ELSE -->
+							 &bull; {PAGE_NUMBER}
+						<!-- ENDIF -->
+					</div>
+				</div>
+
+			<div class="notification-list">
+				<ul class="topiclist two-columns">
+					<li class="header">
+						<dl>
+							<dt><div class="list-inner">{L_NOTIFICATIONS}</div></dt>
+							<dd class="mark">{L_MARK_READ}</dd>
+						</dl>
+					</li>
+				</ul>
+				<ul class="topiclist cplist two-columns">
+					<!-- BEGIN notification_list -->
+						<li class="row<!-- IF notification_list.UNREAD --> bg3<!-- ELSE --><!-- IF notification_list.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- ENDIF --><!-- IF notification_list.STYLING --> {notification_list.STYLING}<!-- ENDIF -->">
+							<dl>
+								<dt>
+									<div class="list-inner notification-item">
+										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR_HTML}<!-- ELSE --><img class="avatar notification-avatar" src="{{ NO_AVATAR_SOURCE }}" alt="" /><!-- ENDIF -->
+										<div class="notification-text">
+											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
+												<p class="notification-title">{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF --></p>
+											<!-- IF notification_list.URL --></a><!-- ENDIF -->
+											<!-- IF notification_list.FORUM --><p class="notifications-forum">{notification_list.FORUM}</p><!-- ENDIF -->
+											<!-- IF notification_list.REASON --><p class="notifications-reason">{notification_list.REASON}</p><!-- ENDIF -->
+											<p class="notifications-time">{notification_list.TIME}</p>
+										</div>
+									</div>
+								</dt>
+
+								<dd class="mark">&nbsp;<input type="checkbox" name="mark[]" value="{notification_list.NOTIFICATION_ID}"<!-- IF not notification_list.UNREAD --> disabled="disabled"<!-- ENDIF --> /> <dfn>{L_MARK_READ}</dfn>&nbsp;</dd>
+							</dl>
+						</li>
+					<!-- END notification_list -->
+				</ul>
+			</div>
+
+			<div class="action-bar bar-bottom">
+				<div class="pagination">
+					{L_NOTIFICATIONS} [<strong>{TOTAL_COUNT}</strong>]
+					<!-- IF .pagination -->
+						<!-- INCLUDE pagination.html -->
+					<!-- ELSE -->
+						  &bull; {PAGE_NUMBER}
+					<!-- ENDIF -->
+				</div>
+			</div>
+
+			<!-- ELSE -->
+				<p><strong>{L_NO_NOTIFICATIONS}</strong></p>
+			<!-- ENDIF -->
+	</div>
+</div>
+
+{% EVENT ucp_notifications_content_after %}
+
+<!-- IF .notification_types or .notification_list -->
+<fieldset class="display-actions">
+	<input type="hidden" name="form_time" value="{FORM_TIME}" />
+	{S_HIDDEN_FIELDS}
+	<input type="submit" name="submit" value="<!-- IF MODE == 'notification_options' -->{L_SUBMIT}<!-- ELSE -->{L_MARK_READ}<!-- ENDIF -->" class="button1 button button-form" />
+	<div><a href="#" onclick="$('#ucp input:checkbox').prop('checked', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').prop('checked', false); return false;">{L_UNMARK_ALL}</a></div>
+	{S_FORM_TOKEN}
+</fieldset>
+<!-- ENDIF -->
+
+</form>
+
+{% EVENT ucp_notifications_form_after %}
+
+<!-- INCLUDE ucp_footer.html -->

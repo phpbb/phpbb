@@ -1,0 +1,132 @@
+/* -------------------------------------------------------------- /*
+	$Base
+/* -------------------------------------------------------------- */
+
+/** {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+*:before,
+*:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+*/
+
+/*
+ * 1. Define your base font-size here (16px), most elements will inherit this.
+ * 2. 24px (This is now our magic number; all subsequent margin-bottoms and
+ *    line-heights want to be a multiple of this number in order to maintain
+ *    vertical rhythm.)
+*/
+html {
+	font-size: 16px; /* [1] */
+	line-height: 1.5; /* [2] */
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+body {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	background-color: #ffffff;
+	color: #333333;
+}
+
+input,
+button,
+select,
+textarea {
+	font-family: inherit;
+	font-size: inherit;
+	line-height: inherit;
+}
+
+figure {
+	margin: 0;
+}
+
+img {
+	vertical-align: middle;
+}
+
+hr {
+	border: 0;
+	border-top: 1px solid #e5e5e5;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+a {
+	text-decoration: none;
+	color: #428bca;
+}
+
+a:hover,
+a:focus,
+a:active {
+	text-decoration: underline;
+	color: #2a6496;
+}
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+figure,
+p,
+pre {
+	margin: 0;
+}
+
+button {
+	background: transparent;
+	border: 0;
+	padding: 0;
+}
+
+/**
+ * Work around a Firefox/IE bug where the transparent `button` background
+ * results in a loss of the default `button` focus styles.
+ */
+button:focus {
+	outline: 1px dotted 5px auto -webkit-focus-ring-color;
+}
+
+fieldset {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+iframe {
+	border: 0;
+}
+
+ol,
+ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/**
+ * Suppress the focus outline on links that cannot be accessed via keyboard.
+ * This prevents an unwanted focus outline from appearing around elements that
+ * might still respond to pointer events.
+ */
+[tabindex="-1"]:focus {
+	outline: none !important;
+}
+
+/**
+ * Remove double underline from recent version of firefox
+ */
+abbr[title] {
+	text-decoration: none;
+}
