@@ -129,7 +129,7 @@ class helper
 				$options[$definition] = $this->state_helper->new_definition_value($storage_name, $definition);
 			}
 
-			$adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $options);
+			$adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $provider_class, $options);
 		}
 
 		return $adapters[$storage_name];
@@ -193,8 +193,8 @@ class helper
 		$current_adapter = $this->get_current_adapter($storage_name);
 		$new_adapter = $this->get_new_adapter($storage_name);
 
-		$stream = $current_adapter->read_stream($file);
-		$new_adapter->write_stream($file, $stream);
+		$stream = $current_adapter->read($file);
+		$new_adapter->write($file, $stream);
 
 		if (is_resource($stream))
 		{

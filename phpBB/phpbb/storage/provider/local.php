@@ -18,7 +18,7 @@ class local implements provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_name()
+	public function get_name(): string
 	{
 		return 'local';
 	}
@@ -34,7 +34,7 @@ class local implements provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_options()
+	public function get_options(): array
 	{
 		return [
 			'path' => [
@@ -47,7 +47,7 @@ class local implements provider_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function is_available()
+	public function is_available(): bool
 	{
 		return true;
 	}

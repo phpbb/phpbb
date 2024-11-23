@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\container_aware_migration;
 use phpbb\storage\exception\storage_exception;
-use phpbb\storage\storage;
+use phpbb\storage\file_tracker;
 
 class storage_track extends container_aware_migration
 {
@@ -70,8 +70,8 @@ class storage_track extends container_aware_migration
 
 	public function track_avatars()
 	{
-		/** @var storage $storage */
-		$storage = $this->container->get('storage.avatar');
+		/** @var file_tracker $file_tracker */
+		$file_tracker = $this->container->get('storage.file_tracker');
 
 		$sql = 'SELECT user_avatar
 			FROM ' . USERS_TABLE . "
@@ -95,7 +95,8 @@ class storage_track extends container_aware_migration
 
 			try
 			{
-				$storage->track_file($this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext);
+				$filename = $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext;
+				$file_tracker->track_file('avatar', $filename, filesize($this->phpbb_root_path . $this->config['storage\\avatar\\config\\path'] . '/' . $filename));
 			}
 			catch (storage_exception $e)
 			{
@@ -107,8 +108,8 @@ class storage_track extends container_aware_migration
 
 	public function track_attachments()
 	{
-		/** @var storage $storage */
-		$storage = $this->container->get('storage.attachment');
+		/** @var file_tracker $file_tracker */
+		$file_tracker = $this->container->get('storage.file_tracker');
 
 		$sql = 'SELECT physical_filename, thumbnail
 			FROM ' . ATTACHMENTS_TABLE;
@@ -119,7 +120,7 @@ class storage_track extends container_aware_migration
 		{
 			try
 			{
-				$storage->track_file($row['physical_filename']);
+				$file_tracker->track_file('attachment', $row['physical_filename'], filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $row['physical_filename']));
 			}
 			catch (storage_exception $e)
 			{
@@ -130,7 +131,7 @@ class storage_track extends container_aware_migration
 			{
 				try
 				{
-					$storage->track_file('thumb_' . $row['physical_filename']);
+					$file_tracker->track_file('attachment', 'thumb_' . $row['physical_filename'], filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/thumb_' . $row['physical_filename']));
 				}
 				catch (storage_exception $e)
 				{
@@ -143,8 +144,8 @@ class storage_track extends container_aware_migration
 
 	public function track_backups()
 	{
-		/** @var storage $storage */
-		$storage = $this->container->get('storage.backup');
+		/** @var file_tracker $file_tracker */
+		$file_tracker = $this->container->get('storage.file_tracker');
 
 		$sql = 'SELECT filename
 			FROM ' . BACKUPS_TABLE;
@@ -155,7 +156,7 @@ class storage_track extends container_aware_migration
 		{
 			try
 			{
-				$storage->track_file($row['filename']);
+				$file_tracker->track_file('backup', $row['filename'], filesize($this->phpbb_root_path . $this->config['storage\\backup\\config\\path'] . '/' . $row['filename']));
 			}
 			catch (storage_exception $e)
 			{

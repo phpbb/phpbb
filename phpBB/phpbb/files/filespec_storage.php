@@ -446,7 +446,7 @@ class filespec_storage
 		{
 			$fp = fopen($this->filename, 'rb');
 
-			$storage->write_stream($this->destination_file, $fp);
+			$storage->write($this->destination_file, $fp);
 
 			if (is_resource($fp))
 			{

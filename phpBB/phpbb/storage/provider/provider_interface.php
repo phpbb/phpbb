@@ -20,7 +20,7 @@ interface provider_interface
 	 *
 	 * @return string
 	 */
-	public function get_name();
+	public function get_name(): string;
 
 	/**
 	 * Gets adapter class
@@ -34,12 +34,12 @@ interface provider_interface
 	 *
 	 * @return array	Configuration keys
 	 */
-	public function get_options();
+	public function get_options(): array;
 
 	/**
 	 * Return true if the adapter is available
 	 *
 	 * @return bool
 	 */
-	public function is_available();
+	public function is_available(): bool;
 }
