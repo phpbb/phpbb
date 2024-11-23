@@ -25,32 +25,26 @@ interface adapter_interface
 	public function configure(array $options): void;
 
 	/**
-	 * Dumps content into a file
+	 * Reads a file as a stream
 	 *
-	 * @param string $path
-	 * @param string $content
-	 * @throws storage_exception When the file cannot be written
+	 * @param string $path File to read
+	 *
+	 * @return resource Returns a file pointer
+	 * @throws storage_exception When unable to open file
 	 */
-	public function put_contents(string $path, string $content): void;
+	public function read(string $path);
 
 	/**
-	 * Read the contents of a file
+	 * Writes a new file using a stream
 	 *
-	 * @param string $path The file to read
+	 * @param string $path The target file
+	 * @param resource $resource The resource
 	 *
-	 * @return string Returns file contents
-	 * @throws storage_exception When cannot read file contents
+	 * @return int Returns the number of bytes written
+	 * @throws storage_exception When target file exists
+	 * When target file cannot be created
 	 */
-	public function get_contents(string $path): string;
-
-	/**
-	 * Checks the existence of files or directories
-	 *
-	 * @param string $path file/directory to check
-	 *
-	 * @return bool Returns true if the file/directory exist, false otherwise.
-	 */
-	public function exists(string $path): bool;
+	public function write(string $path, $resource): int;
 
 	/**
 	 * Removes files or directories
@@ -60,37 +54,6 @@ interface adapter_interface
 	 * @throws storage_exception When removal fails.
 	 */
 	public function delete(string $path): void;
-
-	/**
-	 * Rename a file or a directory
-	 *
-	 * @param string $path_orig The original file/direcotry
-	 * @param string $path_dest The target file/directory
-	 *
-	 * @throws storage_exception When file/directory cannot be renamed
-	 */
-	public function rename(string $path_orig, string $path_dest): void;
-
-	/**
-	 * Copies a file
-	 *
-	 * @param string $path_orig The original filename
-	 * @param string $path_dest The target filename
-	 *
-	 * @throws storage_exception When the file cannot be copied
-	 */
-	public function copy(string $path_orig, string $path_dest): void;
-
-	/**
-	 * Get file size in bytes
-	 *
-	 * @param string $path The file
-	 *
-	 * @return int Size in bytes.
-	 *
-	 * @throws storage_exception When unable to retrieve file size
-	 */
-	public function file_size(string $path): int;
 
 	/**
 	 * Get space available in bytes

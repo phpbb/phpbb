@@ -4,33 +4,27 @@ services:
     storage.attachment:
         class: phpbb\storage\storage
         arguments:
-            - '@dbal.conn'
-            - '@cache.driver'
             - '@storage.adapter.factory'
+            - '@storage.file_tracker'
             - 'attachment'
-            - '%tables.storage%'
         tags:
             - { name: storage }
 
     storage.avatar:
         class: phpbb\storage\storage
         arguments:
-            - '@dbal.conn'
-            - '@cache.driver'
             - '@storage.adapter.factory'
+            - '@storage.file_tracker'
             - 'avatar'
-            - '%tables.storage%'
         tags:
             - { name: storage }
 
     storage.backup:
         class: phpbb\storage\storage
         arguments:
-            - '@dbal.conn'
-            - '@cache.driver'
             - '@storage.adapter.factory'
+            - '@storage.file_tracker'
             - 'backup'
-            - '%tables.storage%'
         tags:
             - { name: storage }
 
@@ -124,3 +118,11 @@ services:
             - '@storage.state_helper'
             - '@storage.provider_collection'
             - '@storage.adapter_collection'
+
+    storage.file_tracker:
+        class: phpbb\storage\file_tracker
+        arguments:
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '%tables.storage%'
+

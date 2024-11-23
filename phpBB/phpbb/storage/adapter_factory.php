@@ -67,20 +67,20 @@ class adapter_factory
 			$options[$definition] = $this->config['storage\\' . $storage_name . '\\config\\' . $definition];
 		}
 
-		return $this->get_with_options($storage_name, $options);
+		return $this->get_with_options($storage_name, $provider_class, $options);
 	}
 
 	/**
-	 * Obtains a configured adapters for a given storage with custom options
+	 * Obtains a configured adapters with custom options
 	 *
 	 * @param string	$storage_name
+	 * @param string	$provider_class
 	 * @param array		$options
 	 *
 	 * @return mixed
 	 */
-	public function get_with_options(string $storage_name, array $options): mixed
+	public function get_with_options(string $storage_name, string $provider_class, array $options): mixed
 	{
-		$provider_class = $this->config['storage\\' . $storage_name . '\\provider'];
 		$provider = $this->providers->get_by_class($provider_class);
 
 		if (!$provider->is_available())
@@ -89,6 +89,7 @@ class adapter_factory
 		}
 
 		$adapter = $this->adapters->get_by_class($provider->get_adapter_class());
+		$options['storage'] = $storage_name;
 		$adapter->configure($options);
 
 		return $adapter;
