@@ -245,7 +245,7 @@ class upload
 				// Move the thumbnail from temp folder to the storage
 				$fp = fopen($destination, 'rb');
 
-				$this->storage->write_stream($destination_name, $fp);
+				$this->storage->write($destination_name, $fp);
 
 				if (is_resource($fp))
 				{

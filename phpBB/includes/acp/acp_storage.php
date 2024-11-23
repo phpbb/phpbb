@@ -431,8 +431,8 @@ class acp_storage
 
 			$storage_stats[] = [
 				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
-				'files' => $storage->get_num_files(),
-				'size' => get_formatted_filesize($storage->get_size()),
+				'files' => $storage->total_files(),
+				'size' => get_formatted_filesize($storage->total_size()),
 				'free_space' => $free_space,
 			];
 		}
@@ -619,10 +619,18 @@ class acp_storage
 	 */
 	protected function validate_path(string $storage_name, array &$messages) : void
 	{
-		$current_provider = $this->storage_helper->get_current_provider($storage_name);
-		$options = $this->storage_helper->get_provider_options($current_provider);
+		if ($this->request->is_set_post('submit'))
+		{
+			$provider = $this->request->variable([$storage_name, 'provider'], '');
+		}
+		else
+		{
+			$provider = $this->storage_helper->get_current_provider($storage_name);
+		}
 
-		if ($this->provider_collection->get_by_class($current_provider)->get_name() == 'local' && isset($options['path']))
+		$options = $this->storage_helper->get_provider_options($provider);
+
+		if ($this->provider_collection->get_by_class($provider)->get_name() === 'local' && isset($options['path']))
 		{
 			$path = $this->request->is_set_post('submit') ? $this->request->variable([$storage_name, 'path'], '') : $this->storage_helper->get_current_definition($storage_name, 'path');
 

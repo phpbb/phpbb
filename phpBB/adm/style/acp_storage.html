@@ -82,7 +82,7 @@
 									{% set buttons = [] %}
 
 									{% for button in options.buttons %}
-										{% set new_button = button | merge({"name": input_name, "checked": button.value == input_value}) %}
+										{% set new_button = button | merge({"name": input_name, "label": lang(button.label), "checked": button.value == input_value}) %}
 										{% set buttons = buttons | merge([new_button]) %}
 									{% endfor %}
 
