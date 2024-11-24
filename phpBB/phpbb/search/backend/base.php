@@ -112,17 +112,10 @@ abstract class base implements search_backend_interface
 				}
 			}
 
-			// change the start to the actual end of the current request if the sort direction differs
-			// from the direction in the cache and reverse the ids later
+			// If the sort direction differs from the direction in the cache, then reverse the ids array
 			if ($reverse_ids)
 			{
-				$start = $result_count - $start - $per_page;
-
-				// the user requested a page past the last index
-				if ($start < 0)
-				{
-					return self::SEARCH_RESULT_NOT_IN_CACHE;
-				}
+				$stored_ids = array_reverse($stored_ids);
 			}
 
 			for ($i = $start, $n = $start + $per_page; ($i < $n) && ($i < $result_count); $i++)
@@ -137,11 +130,6 @@ abstract class base implements search_backend_interface
 				}
 			}
 			unset($stored_ids);
-
-			if ($reverse_ids)
-			{
-				$id_ary = array_reverse($id_ary);
-			}
 
 			if (!$complete)
 			{
