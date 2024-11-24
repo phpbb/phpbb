@@ -1420,9 +1420,9 @@ function phpbb_attachment_extension_group_name()
 	$result = $db->sql_query($sql);
 
 	$extension_groups_updated = array();
-	while ($lang_dir = $db->sql_fetchfield('lang_dir'))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$lang_dir = basename($lang_dir);
+		$lang_dir = basename($row['lang_dir']);
 		$lang_file = $phpbb_root_path . 'language/' . $lang_dir . '/acp/attachments.' . $phpEx;
 
 		if (!file_exists($lang_file))
