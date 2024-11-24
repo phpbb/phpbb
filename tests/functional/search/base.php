@@ -49,6 +49,30 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->assertStringContainsString("Search found $topics_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
 	}
 
+	protected function assert_search_posts_by_author_id($author_id, $posts_found, $sort_key = '', $sort_dir = '')
+	{
+		// Test obtaining data from cache if sorting direction is set
+		if (!$sort_dir)
+		{
+			$this->purge_cache();
+		}
+		$crawler = self::request('GET', 'search.php?author_id=' . $author_id . ($sort_key ? "&sk=$sort_key" : '') . ($sort_dir ? "&sk=$sort_dir" : ''));
+		$this->assertEquals($posts_found, $crawler->filter('.postbody')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
+	protected function assert_search_topics_by_author_id($author_id, $topics_found, $sort_key = '', $sort_dir = '')
+	{
+		// Test obtaining data from cache if sorting direction is set
+		if (!$sort_dir)
+		{
+			$this->purge_cache();
+		}
+		$crawler = self::request('GET', 'search.php?sr=topics&author_id=' . $author_id . ($sort_key ? "&sk=$sort_key" : '') . ($sort_dir ? "&sk=$sort_dir" : ''));
+		$this->assertEquals($topics_found, $crawler->filter('.row')->count(), $this->search_backend);
+		$this->assertStringContainsString("Search found $topics_found match", $crawler->filter('.searchresults-title')->text(), $this->search_backend);
+	}
+
 	protected function assert_search_in_topic($topic_id, $keywords, $posts_found, $sort_key = '')
 	{
 		$this->purge_cache();
@@ -93,9 +117,13 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->add_lang('common');
 
 		// Create a new standard user if needed, topic and post to test searh for author
-		if (!$this->user_exists('searchforauthoruser'))
+		if (!$searchforauthoruser_id = $this->user_exists('searchforauthoruser'))
 		{
 			$searchforauthoruser_id = $this->create_user('searchforauthoruser');
+		}
+		else
+		{
+			$searchforauthoruser_id = key($searchforauthoruser_id);
 		}
 		$this->remove_user_group('NEWLY_REGISTERED', ['searchforauthoruser']);
 		$this->set_flood_interval(0);
@@ -161,6 +189,11 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 			$this->assert_search_posts_by_author('searchforauthoruser', 2, $sort_key);
 			$this->assert_search_topics_by_author('searchforauthoruser', 1, $sort_key);
+
+			$this->assert_search_posts_by_author_id($searchforauthoruser_id, 2, $sort_key);
+			$this->assert_search_topics_by_author_id($searchforauthoruser_id, 1, $sort_key);
+			$this->assert_search_posts_by_author_id($searchforauthoruser_id, 2, $sort_key, 'a'); //search asc order
+			$this->assert_search_topics_by_author_id($searchforauthoruser_id, 1, $sort_key, 'a'); // search asc order
 		}
 
 		$this->assert_search_not_found('loremipsumdedo');

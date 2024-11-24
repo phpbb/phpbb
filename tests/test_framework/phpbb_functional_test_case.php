@@ -1523,9 +1523,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $username The username to check or empty if user_id is used
 	* @param int $user_id The user id to check or empty if username is used
 	*
-	* @return bool Returns true if a user exists, false otherwise
+	* @return array Returns user_id => username array or empty array if user does not exist
 	*/
-	protected function user_exists($username, $user_id = null)
+	protected function user_exists($username = '', $user_id = '')
 	{
 		global $db;
 
@@ -1540,6 +1540,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 			require_once(__DIR__ . '/../../phpBB/includes/functions_user.php');
 		}
 
-		return user_get_id_name($user_id, $username) ? false : true;
+		user_get_id_name($user_id, $username, false, true);
+
+		return $username;
 	}
 }
