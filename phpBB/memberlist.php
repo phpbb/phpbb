@@ -816,11 +816,26 @@ switch ($mode)
 		* Modify user's template vars before we display the profile
 		*
 		* @event core.memberlist_modify_view_profile_template_vars
-		* @var	array	template_ary	Array with user's template vars
+		* @var	array	template_ary			Array with user's template vars
+		* @var	int		user_id					The user ID
+		* @var	bool	user_notes_enabled		Is the mcp user notes module enabled?
+		* @var	bool	warn_user_enabled		Is the mcp warnings module enabled?
+		* @var	bool	friends_enabled			Is the ucp friends module enabled?
+		* @var	bool	foes_enabled			Is the ucp foes module enabled?
+		* @var	bool    friend					Is the user friend?
+		* @var	bool	foe						Is the user foe?
 		* @since 3.2.6-RC1
+		* @changed 3.3.15-RC1 Added vars user_id, user_notes_enabled, warn_user_enabled, friend, friends_enabled, foe, foes_enabled
 		*/
 		$vars = array(
 			'template_ary',
+			'user_id',
+			'user_notes_enabled',
+			'warn_user_enabled',
+			'friend',
+			'friends_enabled',
+			'foe',
+			'foes_enabled',
 		);
 		extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_view_profile_template_vars', compact($vars)));
 
