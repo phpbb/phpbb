@@ -53,7 +53,7 @@ class file_downloader
 			'timeout'  => $timeout,
 			'headers' => [
 				'user-agent' => 'phpBB/' . PHPBB_VERSION,
-				'accept' => 'text/html,application/xhtml+xml,application/xml'
+				'accept' => '*/*',
 			  ],
 		]);
 	}
