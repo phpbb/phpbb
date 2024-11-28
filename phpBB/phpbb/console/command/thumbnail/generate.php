@@ -151,10 +151,12 @@ class generate extends \phpbb\console\command\command
 				$destination = tempnam(sys_get_temp_dir(), 'thumbnail_destination');
 
 				file_put_contents($source, $this->storage->read($row['physical_filename']));
+				@unlink($source);
 
 				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{
 					$this->storage->write('thumb_' . $row['physical_filename'], fopen($destination, 'rb'));
+					@unlink($destination);
 
 					$thumbnail_created[] = (int) $row['attach_id'];
 
