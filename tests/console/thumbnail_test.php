@@ -24,6 +24,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	protected $config;
 	protected $cache;
 	protected $user;
+	protected $storage;
 	protected $phpEx;
 	protected $phpbb_root_path;
 	protected $application;
@@ -46,11 +47,10 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 		$config = $this->config = new \phpbb\config\config(array(
 			'img_min_thumb_filesize' => 2,
-			'img_max_thumb_width' => 2,
-			'upload_path' => 'files',
+			'img_max_thumb_width' => 2
 		));
 
-		$this->db = $this->db = $this->new_dbal();
+		$this->db  = $this->new_dbal();
 		$this->language = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -62,12 +62,23 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 			'txt' => array('display_cat' => attachment_category::NONE),
 		)));
 
-		$this->application = new Application();
-		$this->application->add(new generate($config, $this->user, $this->db, $this->cache, $this->phpbb_root_path, $this->phpEx));
-		$this->application->add(new delete($config, $this->user, $this->db, $this->phpbb_root_path));
-		$this->application->add(new recreate($this->user));
-
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+
+		$this->storage = $this->createMock('\phpbb\storage\storage');
+		$this->storage->method('write')->willReturnCallback(function ($path, $data) use ($phpbb_root_path) {
+			file_put_contents($phpbb_root_path . 'files/' . $path, $data);
+		});
+		$this->storage->method('read')->willReturnCallback(function ($path) use ($phpbb_root_path) {
+			return fopen($phpbb_root_path . 'files/' . $path, 'rb');
+		});
+		$this->storage->method('delete')->willReturnCallback(function ($path) use ($phpbb_root_path) {
+			unlink($phpbb_root_path . 'files/' . $path);
+		});
+
+		$this->application = new Application();
+		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new delete($this->user, $this->db, $this->language, $this->storage));
+		$this->application->add(new recreate($this->user, $this->language));
 
 		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
 		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
