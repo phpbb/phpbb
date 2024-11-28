@@ -195,11 +195,6 @@ class helper
 
 		$stream = $current_adapter->read($file);
 		$new_adapter->write($file, $stream);
-
-		if (is_resource($stream))
-		{
-			fclose($stream);
-		}
 	}
 
 
