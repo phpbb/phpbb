@@ -246,11 +246,6 @@ class upload
 				$fp = fopen($destination, 'rb');
 
 				$this->storage->write($destination_name, $fp);
-
-				if (is_resource($fp))
-				{
-					fclose($fp);
-				}
 			}
 			else
 			{
