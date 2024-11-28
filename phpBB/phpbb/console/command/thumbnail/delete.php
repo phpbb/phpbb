@@ -12,6 +12,11 @@
 */
 namespace phpbb\console\command\thumbnail;
 
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\storage\exception\storage_exception;
+use phpbb\storage\storage;
+use phpbb\user;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -20,14 +25,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class delete extends \phpbb\console\command\command
 {
 	/**
-	* @var \phpbb\config\config
-	*/
-	protected $config;
-
-	/**
-	* @var \phpbb\db\driver\driver_interface
+	* @var driver_interface
 	*/
 	protected $db;
+
+	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * @var storage
+	 */
+	protected $storage;
 
 	/**
 	* phpBB root path
@@ -38,16 +48,16 @@ class delete extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $config The config
-	* @param \phpbb\user $user The user object (used to get language information)
-	* @param \phpbb\db\driver\driver_interface $db Database connection
-	* @param string $phpbb_root_path Root path
+	* @param user $user The user object (used to get language information)
+	* @param driver_interface $db Database connection
+	* @param language $language Language
+	* @param storage $storage Storage
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, $phpbb_root_path)
+	public function __construct(user $user, driver_interface $db, language $language, storage $storage)
 	{
-		$this->config = $config;
 		$this->db = $db;
-		$this->phpbb_root_path = $phpbb_root_path;
+		$this->language = $language;
+		$this->storage = $storage;
 
 		parent::__construct($user);
 	}
@@ -61,7 +71,7 @@ class delete extends \phpbb\console\command\command
 	{
 		$this
 			->setName('thumbnail:delete')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_THUMBNAIL_DELETE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_THUMBNAIL_DELETE'))
 		;
 	}
 
@@ -79,7 +89,7 @@ class delete extends \phpbb\console\command\command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$io->section($this->user->lang('CLI_THUMBNAIL_DELETING'));
+		$io->section($this->language->lang('CLI_THUMBNAIL_DELETING'));
 
 		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -90,7 +100,7 @@ class delete extends \phpbb\console\command\command
 
 		if ($nb_missing_thumbnails === 0)
 		{
-			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_DELETE'));
+			$io->warning($this->language->lang('CLI_THUMBNAIL_NOTHING_TO_DELETE'));
 			return symfony_command::SUCCESS;
 		}
 
@@ -101,7 +111,7 @@ class delete extends \phpbb\console\command\command
 
 		$progress = $this->create_progress_bar($nb_missing_thumbnails, $io, $output);
 
-		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_DELETING'));
+		$progress->setMessage($this->language->lang('CLI_THUMBNAIL_DELETING'));
 
 		$progress->start();
 
@@ -109,10 +119,10 @@ class delete extends \phpbb\console\command\command
 		$return = symfony_command::SUCCESS;
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$thumbnail_path = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
-
-			if (@unlink($thumbnail_path))
+			try
 			{
+				$this->storage->delete('thumb_' . $row['physical_filename']);
+
 				$thumbnail_deleted[] = $row['attach_id'];
 
 				if (count($thumbnail_deleted) === 250)
@@ -121,12 +131,11 @@ class delete extends \phpbb\console\command\command
 					$thumbnail_deleted = array();
 				}
 
-				$progress->setMessage($this->user->lang('CLI_THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
-			}
-			else
-			{
+				$progress->setMessage($this->language->lang('CLI_THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
+			} catch (storage_exception $e) {
 				$return = symfony_command::FAILURE;
-				$progress->setMessage('<error>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
+				$progress->setMessage('<error>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
+
 			}
 
 			$progress->advance();
@@ -141,7 +150,7 @@ class delete extends \phpbb\console\command\command
 		$progress->finish();
 
 		$io->newLine(2);
-		$io->success($this->user->lang('CLI_THUMBNAIL_DELETING_DONE'));
+		$io->success($this->language->lang('CLI_THUMBNAIL_DELETING_DONE'));
 
 		return $return;
 	}
