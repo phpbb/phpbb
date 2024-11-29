@@ -931,6 +931,18 @@ class acp_board
 		);
 
 		$act_options = '';
+
+		/**
+		* Event to add and/or modify account activation configurations
+		*
+		* @event core.acp_account_activation_edit_add
+		* @var	array	act_ary		Array of account activation methods
+		* @var	string	act_options	Options avialbe in the activation method
+		* @since 3.3.15-RC1
+		*/
+		$vars = array('act_ary', 'act_options');
+		extract($phpbb_dispatcher->trigger_event('core.acp_account_activation_edit_add', compact($vars)));
+
 		foreach ($act_ary as $key => $data)
 		{
 			list($available, $value) = $data;
