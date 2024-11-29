@@ -156,9 +156,6 @@ class generate extends \phpbb\console\command\command
 				{
 					$this->storage->write('thumb_' . $row['physical_filename'], fopen($destination, 'rb'));
 
-					@unlink($source);
-					@unlink($destination);
-
 					$thumbnail_created[] = (int) $row['attach_id'];
 
 					if (count($thumbnail_created) === 250)
@@ -173,6 +170,9 @@ class generate extends \phpbb\console\command\command
 				{
 					$progress->setMessage('<info>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
 				}
+
+				@unlink($source);
+				@unlink($destination);
 			}
 
 			$progress->advance();

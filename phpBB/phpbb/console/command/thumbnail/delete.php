@@ -132,7 +132,9 @@ class delete extends \phpbb\console\command\command
 				}
 
 				$progress->setMessage($this->language->lang('CLI_THUMBNAIL_DELETED', $row['real_filename'], $row['physical_filename']));
-			} catch (storage_exception $e) {
+			}
+			catch (storage_exception $e)
+			{
 				$return = symfony_command::FAILURE;
 				$progress->setMessage('<error>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</error>');
 
