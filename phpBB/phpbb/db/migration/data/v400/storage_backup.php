@@ -45,11 +45,28 @@ class storage_backup extends migration
 		];
 	}
 
+	public function revert_schema()
+	{
+		return [
+			'drop_tables'	=> [
+				$this->table_prefix . 'backups',
+			],
+		];
+	}
+
 	public function update_data()
 	{
 		return [
 			['config.add', ['storage\\backup\\provider', local::class]],
 			['config.add', ['storage\\backup\\config\\path', 'store']],
+		];
+	}
+
+	public function revert_data()
+	{
+		return [
+			['config.remove', ['storage\\backup\\provider']],
+			['config.remove', ['storage\\backup\\config\\path']],
 		];
 	}
 }
