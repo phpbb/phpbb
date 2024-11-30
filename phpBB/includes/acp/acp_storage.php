@@ -378,7 +378,6 @@ class acp_storage
 		foreach ($this->storage_collection as $storage)
 		{
 			$storage_name = $storage->get_name();
-			$options = $this->storage_helper->get_provider_options($this->storage_helper->get_current_provider($storage_name));
 
 			$modified = false;
 
@@ -389,6 +388,8 @@ class acp_storage
 			}
 			else
 			{
+				$options = $this->storage_helper->get_provider_options($this->storage_helper->get_current_provider($storage_name));
+
 				// Check if options have been modified
 				foreach (array_keys($options) as $definition)
 				{
@@ -535,30 +536,29 @@ class acp_storage
 		$this->validate_path($storage_name, $messages);
 
 		// Check options
-		$new_options = $this->storage_helper->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
+		$new_provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
 
-		foreach ($new_options as $definition_key => $definition_value)
+		foreach ($new_provider->get_options() as $definition_key => $definition_value)
 		{
-			$provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
-			$definition_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
 
+			$definition_title = $definition_value['title'];
 			$value = $this->request->variable([$storage_name, $definition_key], '');
 
-			switch ($definition_value['tag'])
+			switch ($definition_value['form_macro']['tag'])
 			{
 				case 'text':
-					if ($definition_value['type'] == 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
+					if ($definition_value['form_macro']['type'] === 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 
-					$maxlength = $definition_value['max'] ?? 255;
+					$maxlength = $definition_value['form_macro']['max'] ?? 255;
 					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
 
-					if ($provider->get_name() == 'local' && $definition_key == 'path')
+					if ($new_provider->get_name() === 'local' && $definition_key === 'path')
 					{
 						$path = $value;
 
@@ -575,7 +575,7 @@ class acp_storage
 
 				case 'radio':
 					$found = false;
-					foreach ($definition_value['buttons'] as $button)
+					foreach ($definition_value['form_macro']['buttons'] as $button)
 					{
 						if ($button['value'] == $value)
 						{
@@ -592,7 +592,7 @@ class acp_storage
 
 				case 'select':
 					$found = false;
-					foreach ($definition_value['options'] as $option)
+					foreach ($definition_value['form_macro']['options'] as $option)
 					{
 						if ($option['value'] == $value)
 						{
