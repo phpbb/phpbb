@@ -30,6 +30,7 @@ class storage_track extends container_aware_migration
 			'\phpbb\db\migration\data\v400\storage_attachment',
 			'\phpbb\db\migration\data\v400\storage_avatar',
 			'\phpbb\db\migration\data\v400\storage_backup',
+			'\phpbb\db\migration\data\v400\storage_backup_data',
 		];
 	}
 

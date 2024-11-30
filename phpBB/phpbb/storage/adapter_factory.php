@@ -89,7 +89,7 @@ class adapter_factory
 		}
 
 		$adapter = $this->adapters->get_by_class($provider->get_adapter_class());
-		$options['storage'] = $storage_name;
+		$options['storage'] = $storage_name; // Inject storage name into options so it can be used by extensiosn
 		$adapter->configure($options);
 
 		return $adapter;
