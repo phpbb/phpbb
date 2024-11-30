@@ -206,7 +206,7 @@ class forms extends AbstractExtension
 		{
 			return $environment->render('macros/forms/textarea.twig', [
 				'CLASS'		=> (string) ($form_data['class'] ?? ''),
-				'ID'		=> (string) $form_data['id'],
+				'ID'		=> (string) ($form_data['id'] ?? ''),
 				'DATA'		=> $form_data['data'] ?? [],
 				'NAME'		=> (string) $form_data['name'],
 				'ROWS'		=> (int) ($form_data['rows'] ?? ''),

@@ -13,14 +13,36 @@
 
 namespace phpbb\storage\provider;
 
+use phpbb\language\language;
+
 class local implements provider_interface
 {
+	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * Constructor
+	 *
+	 * @param language $language
+	 */
+	public function __construct(language $language)
+	{
+		$this->language = $language;
+	}
+
 	/**
 	 * {@inheritdoc}
 	 */
 	public function get_name(): string
 	{
 		return 'local';
+	}
+
+	public function get_title(): string
+	{
+		return $this->language->lang('STORAGE_ADAPTER_LOCAL_NAME');
 	}
 
 	/**
@@ -38,8 +60,12 @@ class local implements provider_interface
 	{
 		return [
 			'path' => [
-				'tag' => 'input',
-				'type' => 'text',
+				'title' => $this->language->lang('STORAGE_ADAPTER_LOCAL_OPTION_PATH'),
+				'description' => $this->language->lang('STORAGE_ADAPTER_LOCAL_OPTION_PATH_EXPLAIN'),
+				'form_macro' => [
+					'tag' => 'input',
+					'type' => 'text',
+				],
 			],
 		];
 	}
