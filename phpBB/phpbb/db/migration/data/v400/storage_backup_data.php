@@ -42,7 +42,6 @@ class storage_backup_data extends migration
 		{
 			while (($file = readdir($dh)) !== false)
 			{
-				echo "FILE $file\n";
 				if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
 				{
 					if (in_array($matches[2], $methods))
