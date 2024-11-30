@@ -39,8 +39,17 @@ class webpush extends base implements extended_method_interface
 	/** @var log_interface */
 	protected $log;
 
+	/** @var user_loader */
+	protected $user_loader;
+
 	/** @var user */
 	protected $user;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
 
 	/** @var string Notification Web Push table */
 	protected $notification_webpush_table;
