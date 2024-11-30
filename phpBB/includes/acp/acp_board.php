@@ -937,7 +937,7 @@ class acp_board
 		 *
 		 * @event core.acp_account_activation_edit_add
 		 * @var	array	act_ary		Array of account activation methods
-		 * @var	string	act_options	Options avialbe in the activation method
+		 * @var	string	act_options	Options available in the activation method
 		 * @since 3.3.15-RC1
 		 */
 		$vars = ['act_ary', 'act_options'];
