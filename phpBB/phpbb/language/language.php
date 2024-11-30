@@ -230,10 +230,10 @@ class language
 	 * Params are the language key and the parameters to be substituted.
 	 * This function/functionality is inspired by SHS` and Ashe.
 	 *
-	 * Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
+	 * Example call: <samp>$language->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
 	 *
 	 * If the first parameter is an array, the elements are used as keys and subkeys to get the language entry:
-	 * Example: <samp>$user->lang(array('datetime', 'AGO'), 1)</samp> uses $user->lang['datetime']['AGO'] as language entry.
+	 * Example: <samp>$language->lang(array('datetime', 'AGO'), 1)</samp> uses $language->lang['datetime']['AGO'] as language entry.
 	 *
 	 * @return string	Return localized string or the language key if the translation is not available
 	 */
