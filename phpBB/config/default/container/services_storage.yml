@@ -72,6 +72,7 @@ services:
     storage.provider.local:
         class: phpbb\storage\provider\local
         arguments:
+            - '@language'
         tags:
             - { name: storage.provider }
 
