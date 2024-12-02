@@ -68,7 +68,7 @@ class controller
 			{
 				return [
 					'status' => 'error',
-					'error' => $this->language->lang('COULD_NOT_DOWNLOAD_UPDATE_PACKAGE')
+					'error' => $this->language->lang('UPDATE_PACKAGE_DOWNLOAD_FAILURE')
 				];
 			}
 
@@ -82,7 +82,7 @@ class controller
 			{
 				return [
 					'status' => 'error',
-					'error' => $this->language->lang('COULD_NOT_DOWNLOAD_UPDATE_SIGNATURE')
+					'error' => $this->language->lang('UPDATE_SIGNATURE_DOWNLOAD_FAILURE')
 				];
 			}
 			return $status;
@@ -104,7 +104,7 @@ class controller
 			{
 				return [
 					'status' => 'error',
-					'error' => $this->language->lang('COULD_NOT_EXTRACT_UPDATE')
+					'error' => $this->language->lang('UPDATE_PACKAGE_EXTRACT_FAILURE')
 				];
 			}
 
@@ -118,7 +118,7 @@ class controller
 			{
 				return [
 					'status' => 'error',
-					'error' => $this->language->lang('COULD_NOT_WRITE_UPDATE_FILES')
+					'error' => $this->language->lang('UPDATE_FILES_COPY_FAILURE')
 				];
 			}
 
