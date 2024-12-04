@@ -53,7 +53,7 @@ class controller
 	/**
 	 * Handle requests.
 	 *
-	 * @param string $download	The download URL.
+	 * @param string $download The download URL.
 	 *
 	 * @return string[] Unencoded json response.
 	 */
@@ -61,65 +61,51 @@ class controller
 	{
 		$update_path = $this->phpbb_root_path . 'store/update.zip';
 		$status = ['status' => 'continue'];
-		if (!file_exists($update_path))
+		if (!$this->filesystem->exists($update_path))
 		{
 			$result = $this->updater->download($download, $update_path);
 			if (!$result)
 			{
-				return [
-					'status' => 'error',
-					'error' => $this->language->lang('UPDATE_PACKAGE_DOWNLOAD_FAILURE')
-				];
+				return $this->error_response('UPDATE_PACKAGE_DOWNLOAD_FAILURE');
 			}
 
 			return $status;
 		}
 
-		if (!file_exists($update_path . '.sig'))
+		if (!$this->filesystem->exists($update_path . '.sig'))
 		{
 			$result = $this->updater->download($download . '.sig', $update_path . '.sig');
 			if (!$result)
 			{
-				return [
-					'status' => 'error',
-					'error' => $this->language->lang('UPDATE_SIGNATURE_DOWNLOAD_FAILURE')
-				];
+				return $this->error_response('UPDATE_SIGNATURE_DOWNLOAD_FAILURE');
 			}
+
 			return $status;
 		}
 
-		if (!is_dir($this->phpbb_root_path . 'store/update'))
+		if (!$this->filesystem->exists($this->phpbb_root_path . 'store/update') || !is_dir($this->phpbb_root_path . 'store/update'))
 		{
 			$result = $this->updater->validate($update_path, $update_path . '.sig');
 			if (!$result)
 			{
-				return [
-					'status' => 'error',
-					'error' => $this->language->lang('UPDATE_SIGNATURE_INVALID')
-				];
+				return $this->error_response('UPDATE_SIGNATURE_INVALID');
 			}
 
 			$result = $this->updater->extract($update_path, $this->phpbb_root_path . 'store/update');
 			if (!$result)
 			{
-				return [
-					'status' => 'error',
-					'error' => $this->language->lang('UPDATE_PACKAGE_EXTRACT_FAILURE')
-				];
+				return $this->error_response('UPDATE_PACKAGE_EXTRACT_FAILURE');
 			}
 
 			return $status;
 		}
 
-		if (!is_dir($this->phpbb_root_path . 'install'))
+		if (!$this->filesystem->exists($this->phpbb_root_path . 'install') || !is_dir($this->phpbb_root_path . 'install'))
 		{
 			$result = $this->updater->copy($this->phpbb_root_path . 'store/update');
 			if (!$result)
 			{
-				return [
-					'status' => 'error',
-					'error' => $this->language->lang('UPDATE_FILES_COPY_FAILURE')
-				];
+				return $this->error_response('UPDATE_FILES_COPY_FAILURE');
 			}
 
 			return $status;
@@ -133,5 +119,19 @@ class controller
 
 		$status['status'] = 'done';
 		return $status;
+	}
+
+	/**
+	 * Create error response
+	 *
+	 * @param string $error_key
+	 * @return array Error response
+	 */
+	protected function error_response(string $error_key): array
+	{
+		return [
+			'status' => 'error',
+			'error' => $this->language->lang($error_key),
+		];
 	}
 }
