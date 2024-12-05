@@ -69,6 +69,8 @@ $lang = array_merge($lang, array(
 	'SITE_HOME_URL'					=> 'Main website URL',
 	'SITE_HOME_URL_EXPLAIN'			=> 'If specified, a link to this URL will be prepended to your board’s breadcrumbs and the board logo will link to this URL instead of the forum index. An absolute URL is required, e.g. <samp>http://www.phpbb.com</samp>.',
 	'SITE_NAME'						=> 'Site name',
+	'SITE_NAME_SHORT'				=> 'Short site name',
+	'SITE_NAME_SHORT_EXPLAIN'		=> 'Short name will be used if your site is added to a mobile device’s home screen. It can not exceed 12 characters (Emoji is supported).',
 	'SYSTEM_TIMEZONE'				=> 'Guest timezone',
 	'SYSTEM_TIMEZONE_EXPLAIN'			=> 'Timezone to use for displaying times to users who are not logged in (guests, bots). Logged in users set their timezone during registration and can change it in their user control panel.',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
@@ -206,10 +208,6 @@ $lang = array_merge($lang, array(
 
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
-	'MAX_SIG_IMG_HEIGHT'			=> 'Maximum signature image height',
-	'MAX_SIG_IMG_HEIGHT_EXPLAIN'	=> 'Maximum height of an image file in user signatures. Set to 0 for unlimited height.',
-	'MAX_SIG_IMG_WIDTH'				=> 'Maximum signature image width',
-	'MAX_SIG_IMG_WIDTH_EXPLAIN'		=> 'Maximum width of an image file in user signatures. Set to 0 for unlimited width.',
 	'MAX_SIG_LENGTH'				=> 'Maximum signature length',
 	'MAX_SIG_LENGTH_EXPLAIN'		=> 'Maximum number of characters in user signatures.',
 	'MAX_SIG_SMILIES'				=> 'Maximum smilies per signature',
@@ -472,8 +470,8 @@ $lang = array_merge($lang, array(
 	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/smilies</samp>.',
 	'UPLOAD_ICONS_PATH'			=> 'Extension group icons storage path',
 	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/upload_icons</samp>.',
-	'USE_SYSTEM_CRON'		=> 'Run periodic tasks from system cron',
-	'USE_SYSTEM_CRON_EXPLAIN'		=> 'When off, phpBB will arrange for periodic tasks to be run automatically. When on, phpBB will not schedule any periodic tasks by itself; a system administrator must arrange for <code>bin/phpbbcli.php cron:run</code> to be run by the system cron facility at regular intervals (e.g. every 5 minutes).',
+	'USE_SYSTEM_CRON'			=> 'Run periodic tasks from operating system cron',
+	'USE_SYSTEM_CRON_EXPLAIN'	=> 'When disabled, phpBB will arrange for periodic tasks to be run automatically. When enabled, phpBB will not schedule any periodic tasks by itself; a system administrator must arrange for <code>bin/phpbbcli.php cron:run</code> to be run by the operating system cron facility at regular intervals (e.g. every 5 minutes).',
 ));
 
 // Security Settings

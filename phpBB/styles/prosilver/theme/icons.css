@@ -123,6 +123,12 @@ blockquote cite:before,
 	height: 18px;
 }
 
+.push-subscribe-toggle-icon {
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+}
+
 /* Contact icons
 ---------------------------------------- */
 .contact-icon {

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Ebene_2" data-name="Ebene 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 92.62 89.11">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#Unbenannter_Verlauf_13-7);
+      }
+
+      .cls-1, .cls-2, .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8 {
+        stroke: #605a4f;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-1, .cls-4 {
+        stroke-width: 3px;
+      }
+
+      .cls-2 {
+        fill: url(#Unbenannter_Verlauf_13-4);
+      }
+
+      .cls-2, .cls-3, .cls-5, .cls-6, .cls-8 {
+        stroke-width: 2px;
+      }
+
+      .cls-3 {
+        fill: url(#Unbenannter_Verlauf_13-6);
+      }
+
+      .cls-4 {
+        fill: url(#Unbenannter_Verlauf_13-8);
+      }
+
+      .cls-5 {
+        fill: url(#Unbenannter_Verlauf_13-3);
+      }
+
+      .cls-6 {
+        fill: url(#Unbenannter_Verlauf_13-2);
+      }
+
+      .cls-7 {
+        fill: url(#Unbenannter_Verlauf_13);
+        stroke-width: 4px;
+      }
+
+      .cls-8 {
+        fill: url(#Unbenannter_Verlauf_13-5);
+      }
+    </style>
+    <linearGradient id="Unbenannter_Verlauf_13" data-name="Unbenannter Verlauf 13" x1="46.31" y1="22.65" x2="46.31" y2="76.67" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffb607"/>
+      <stop offset="1" stop-color="#fdda99"/>
+    </linearGradient>
+    <linearGradient id="Unbenannter_Verlauf_13-2" data-name="Unbenannter Verlauf 13" x1="46.48" y1="1" x2="46.48" y2="15.17" gradientTransform="translate(38.05 54.23) scale(1 -1)" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-3" data-name="Unbenannter Verlauf 13" x1="46.48" y1="1" x2="46.48" y2="15.17" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-4" data-name="Unbenannter Verlauf 13" x1="46.48" y1="1" x2="46.48" y2="15.17" gradientTransform="translate(-38.4 54.57) scale(1 -1)" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-5" data-name="Unbenannter Verlauf 13" x1="46.48" y1="1" x2="46.48" y2="15.17" gradientTransform="translate(-27.58 11.58)" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-6" data-name="Unbenannter Verlauf 13" x1="46.48" y1="1" x2="46.48" y2="15.17" gradientTransform="translate(27.24 27.76) scale(1 -1)" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-7" data-name="Unbenannter Verlauf 13" x1="52.5" y1="76.15" x2="40.76" y2="87.45" xlink:href="#Unbenannter_Verlauf_13"/>
+    <linearGradient id="Unbenannter_Verlauf_13-8" data-name="Unbenannter Verlauf 13" x1="51.08" y1="82.31" x2="41.55" y2="91.49" xlink:href="#Unbenannter_Verlauf_13"/>
+  </defs>
+  <g id="Layer_1" data-name="Layer 1">
+    <g id="thinking">
+      <path class="cls-7" d="m30.32,64.76c6.94,5.25,5.92,11.91,5.92,11.91h10.07s10.07,0,10.07,0c0,0-1.02-6.66,5.92-11.91l-.73.63c1.86-1.53,3.49-3.33,4.83-5.34,2.53-3.81,4-8.39,4-13.3,0-13.31-10.79-24.09-24.09-24.09-13.31,0-24.09,10.79-24.09,24.09,0,4.92,1.47,9.49,4,13.3,1.34,2.01,2.97,3.82,4.83,5.34"/>
+      <rect class="cls-6" x="81.7" y="39.05" width="5.67" height="14.17" transform="translate(38.4 130.68) rotate(-90)"/>
+      <rect class="cls-5" x="43.65" y="1" width="5.67" height="14.17"/>
+      <rect class="cls-2" x="5.25" y="39.4" width="5.67" height="14.17" transform="translate(54.57 38.4) rotate(90)"/>
+      <rect class="cls-8" x="16.07" y="12.58" width="5.67" height="14.17" transform="translate(-8.38 19.64) rotate(-46.07)"/>
+      <rect class="cls-3" x="70.89" y="12.58" width="5.67" height="14.17" transform="translate(110.7 86.41) rotate(-133.93)"/>
+      <rect class="cls-1" x="36" y="81.09" width="21.26" height="1.42"/>
+      <rect class="cls-4" x="37.81" y="86.19" width="17.01" height="1.42"/>
+    </g>
+  </g>
+</svg>

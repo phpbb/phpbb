@@ -51,7 +51,7 @@ function PhpbbWebpush() {
 
 		// Service workers are only supported in secure context
 		if (window.isSecureContext !== true) {
-			subscribeButton.disabled = true;
+			setDisabledState();
 			return;
 		}
 
@@ -66,12 +66,32 @@ function PhpbbWebpush() {
 				.catch(error => {
 					console.info(error);
 					// Service worker could not be registered
-					subscribeButton.disabled = true;
+					setDisabledState();
 				});
 		} else {
-			subscribeButton.disabled = true;
+			setDisabledState();
 		}
 	};
+
+	/**
+	 * Disable subscribing buttons, update subscribe button text and hide dropdown toggle
+	 *
+	 * @return void
+	 */
+	function setDisabledState() {
+		subscribeButton.disabled = true;
+
+		const notificationList = document.getElementById('notification-menu');
+		const subscribeToggle = notificationList.querySelector('.webpush-subscribe');
+
+		if (subscribeToggle) {
+			subscribeToggle.style.display = 'none';
+		}
+
+		if (subscribeButton.type === 'submit' || subscribeButton.classList.contains('button')) {
+			subscribeButton.value = subscribeButton.getAttribute('data-disabled-msg');
+		}
+	}
 
 	/**
 	 * Update button state depending on notifications state
@@ -150,6 +170,7 @@ function PhpbbWebpush() {
 		// Prevent the user from clicking the subscribe button multiple times.
 		const result = await Notification.requestPermission();
 		if (result === 'denied') {
+			phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-l-msg'));
 			return;
 		}
 

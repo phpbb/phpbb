@@ -157,6 +157,15 @@ services:
             - '%core.php_ext%'
             - '%tables.log%'
 
+    manifest.controller:
+        class: phpbb\manifest
+        arguments:
+            - '@config'
+            - '@language'
+            - '@path_helper'
+            - '@event_dispatcher'
+            - '@user'
+
     path_helper:
         class: phpbb\path_helper
         arguments:

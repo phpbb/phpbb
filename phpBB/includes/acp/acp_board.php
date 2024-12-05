@@ -78,6 +78,7 @@ class acp_board
 						'site_home_url'			=> array('lang' => 'SITE_HOME_URL',			'validate' => 'url',	'type' => 'url:40:255', 'explain' => true),
 						'site_home_text'		=> array('lang' => 'SITE_HOME_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
 						'board_index_text'		=> array('lang' => 'BOARD_INDEX_TEXT',		'validate' => 'string',	'type' => 'text:40:255', 'explain' => true),
+						'sitename_short'		=> array('lang' => 'SITE_NAME_SHORT',		'validate' => 'string',	'type' => 'text:40:12', 'explain' => true),
 						'board_disable'			=> array('lang' => 'DISABLE_BOARD',			'validate' => 'bool',	'type' => 'custom', 'method' => 'board_disable', 'explain' => true),
 						'board_disable_msg'		=> false,
 						'board_disable_access'	=> array('lang' => 'DISABLE_BOARD_ACCESS', 	'validate' => 'int',	'type' => 'select', 'method' => 'board_disable_access', 'explain' => true),
@@ -259,8 +260,6 @@ class acp_board
 						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
 						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' %'),
 						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
-						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					)
@@ -392,7 +391,7 @@ class acp_board
 					'title'	=> 'ACP_AUTH_SETTINGS',
 					'vars'	=> array(
 						'legend1'		=> 'ACP_AUTH_SETTINGS',
-						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'validate' => 'string',	'type' => 'select:1:toggable', 'method' => 'select_auth_method', 'explain' => false),
+						'auth_method'	=> array('lang' => 'AUTH_METHOD',	'validate' => 'string',	'type' => 'select:1:toggleable', 'method' => 'select_auth_method', 'explain' => false),
 					)
 				);
 			break;
@@ -403,7 +402,7 @@ class acp_board
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SERVER_SETTINGS',
 						'gzip_compress'			=> array('lang' => 'ENABLE_GZIP',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'use_system_cron'		=> array('lang' => 'USE_SYSTEM_CRON',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'use_system_cron'		=> array('lang' => 'USE_SYSTEM_CRON',		'validate' => 'bool',	'type' => 'radio:enabled_disabled', 'explain' => true),
 
 						'legend2'				=> 'PATH_SETTINGS',
 						'enable_mod_rewrite'	=> array('lang' => 'MOD_REWRITE_ENABLE',	'validate' => 'bool',	'type' => 'custom', 'method' => 'enable_mod_rewrite', 'explain' => true),
@@ -593,6 +592,7 @@ class acp_board
 				// Array of emoji-enabled configurations
 				$config_name_ary = [
 					'sitename',
+					'sitename_short',
 					'site_desc',
 					'site_home_text',
 					'board_index_text',

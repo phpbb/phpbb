@@ -38,11 +38,11 @@
 				<xsl:value-of select="$L_COLON"/>
 				<xsl:if test="@post_url">
 					<xsl:text> </xsl:text>
-					<a href="{@post_url}" data-post-id="{@post_id}" onclick="if(document.getElementById(hash.substr(1)))href=hash">&#8593;</a>
+					<a href="{@post_url}" aria-label="{L_VIEW_QUOTED_POST}" data-post-id="{@post_id}" onclick="if(document.getElementById(hash.substr(1)))href=hash"><i class="icon fa-arrow-circle-up fa-fw" aria-hidden="true"></i></a>
 				</xsl:if>
 				<xsl:if test="@msg_url">
 					<xsl:text> </xsl:text>
-					<a href="{@msg_url}" data-msg-id="{@msg_id}">&#8593;</a>
+					<a href="{@msg_url}" aria-label="{L_VIEW_QUOTED_POST}" data-msg-id="{@msg_id}"><i class="icon fa-arrow-circle-up fa-fw" aria-hidden="true"></i></a>
 				</xsl:if>
 				<xsl:if test="@date">
 					<span class="responsive-hide"><xsl:value-of select="@date"/></span>

@@ -94,6 +94,20 @@ acp_ext_list_enabled_title_after
 * Since: 3.1.11-RC1
 * Purpose: Add text after enabled extensions section title.
 
+acp_ext_list_not_installed_name_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.3.14-RC1
+* Changed: 3.3.14 Renamed from acp_ext_list_available_name_after
+* Purpose: Add content after the name of not installed extensions in the list
+
+acp_ext_list_not_installed_title_after
+===
+* Location: adm/style/acp_ext_list.html
+* Since: 3.3.14-RC1
+* Changed: 3.3.14 Renamed from acp_ext_list_available_title_after
+* Purpose: Add text after not installed extensions section title.
+
 acp_forums_custom_settings
 ===
 * Location: adm/style/acp_forums.html

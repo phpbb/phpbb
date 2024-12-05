@@ -58,7 +58,7 @@
 		"symfony/routing": "^6.3",
 		"symfony/twig-bridge": "^6.3",
 		"symfony/yaml": "^6.3",
-		"twig/twig": "3.8.0"
+		"twig/twig": "^3.14"
 	},
 	"require-dev": {
 		"laravel/homestead": "~14.4",
@@ -72,9 +72,6 @@
 		"symfony/http-client": "^6.3",
 		"vimeo/psalm": "^5.18.0",
 		"psalm/plugin-symfony": "^v5.1.0"
-	},
-	"suggest": {
-		"ext-mbstring": "Better performance in search"
 	},
 	"extra": {
 		"branch-alias": {

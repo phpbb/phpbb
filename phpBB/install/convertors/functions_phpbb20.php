@@ -1420,9 +1420,9 @@ function phpbb_attachment_extension_group_name()
 	$result = $db->sql_query($sql);
 
 	$extension_groups_updated = array();
-	while ($lang_dir = $db->sql_fetchfield('lang_dir'))
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$lang_dir = basename($lang_dir);
+		$lang_dir = basename($row['lang_dir']);
 		$lang_file = $phpbb_root_path . 'language/' . $lang_dir . '/acp/attachments.' . $phpEx;
 
 		if (!file_exists($lang_file))
@@ -1676,8 +1676,6 @@ function phpbb_import_attach_config()
 	$config->set('img_display_inlined', $attach_config['img_display_inlined']);
 	$config->set('img_max_width', $attach_config['img_max_width']);
 	$config->set('img_max_height', $attach_config['img_max_height']);
-	$config->set('img_link_width', $attach_config['img_link_width']);
-	$config->set('img_link_height', $attach_config['img_link_height']);
 	$config->set('img_create_thumbnail', $attach_config['img_create_thumbnail']);
 	$config->set('img_max_thumb_width', 400);
 	$config->set('img_min_thumb_filesize', $attach_config['img_min_thumb_filesize']);

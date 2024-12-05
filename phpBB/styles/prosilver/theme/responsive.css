@@ -18,6 +18,10 @@
 	.dropdown-extended .dropdown-contents {
 		width: auto;
 	}
+
+	.dropdown-extended .dropdown-contents .webpush-subscribe .notification-subscribe-toggle > span {
+		display: none;
+	}
 }
 
 @media (max-width: 430px) {
@@ -492,6 +496,10 @@
 		float: none;
 		clear: both;
 		width: auto;
+	}
+
+	.avatar-rank-container {
+		max-width: 100%;
 	}
 
 	/* Polls

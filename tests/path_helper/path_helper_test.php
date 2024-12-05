@@ -464,9 +464,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 			->setConstructorArgs([new phpbb_mock_request()])
 			->setMethods(['get', 'getSchemeAndHttpHost', 'getBasePath', 'getPathInfo'])
 			->getMock();
-		$symfony_request->method('get')
-			->with('_referer')
-			->willReturn('http://www.phpbb.com/community/route1/route2/');
 		$symfony_request->method('getSchemeAndHttpHost')
 			->willReturn('http://www.phpbb.com');
 		$symfony_request->method('getBasePath')
@@ -480,6 +477,9 @@ class phpbb_path_helper_test extends phpbb_test_case
 			->willReturn(true);
 		$request->method('escape')
 			->willReturnArgument(0);
+		$request->method('header')
+			->with('Referer')
+			->willReturn('http://www.phpbb.com/community/route1/route2/');
 
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,

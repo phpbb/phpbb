@@ -33,8 +33,6 @@ class phpbb_local_test_case extends phpbb_test_case
 
 		$this->adapter = new local(
 			$this->filesystem,
-			new FastImageSize(),
-			new guesser(array(new extension_guesser)),
 			$phpbb_root_path
 		);
 

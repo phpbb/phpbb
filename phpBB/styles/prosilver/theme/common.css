@@ -560,7 +560,7 @@ a.header-avatar img {
 	line-height: normal !important;
 	text-align: left;
 	white-space: nowrap;
-	border-top: 1px dotted transparent;
+	border-top: 1px solid transparent;
 	display: list-item;
 	float: none !important;
 	margin: 0;
@@ -812,6 +812,10 @@ table.info tbody th {
 	float: left;
 	width: auto;
 	max-width: 100%;
+}
+
+.avatar-rank-container {
+	max-width: 20%;
 }
 
 .left-box.profile-details {
@@ -1220,14 +1224,9 @@ ul.linklist:after,
 	content: "";
 }
 
-/* stylelint-disable declaration-property-unit-allowed-list */
 .emoji {
-	width: 1em;
-	min-width: 18px;
-	height: 1em;
-	min-height: 18px;
+	font-size: 17px;
 }
-/* stylelint-enable declaration-property-unit-allowed-list */
 
 .smilies {
 	vertical-align: text-bottom;
@@ -1340,13 +1339,13 @@ ul.linklist:after,
 	display: block;
 }
 
-.dropdown-extended .notification-dropdown-footer {
+.dropdown-extended .webpush-subscribe {
 	white-space: nowrap;
-	border-top: solid 1px #b9b9b9;
 	display: flex;
 	flex-wrap: nowrap;
 	justify-content: space-between;
 	padding: 5px 10px;
+	gap: 20px;
 }
 
 .notification-avatar,

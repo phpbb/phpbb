@@ -123,4 +123,20 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_common_groups_te
 			$this->assertEquals((bool) $tick_teampage, (bool) ($this->form_data['group_teampage'] ?? false));
 		}
 	}
+
+	public function test_acp_groups_create_existing_name()
+	{
+		$this->group_manage_login();
+
+		$crawler = self::request('GET', 'adm/index.php?i=groups&mode=manage&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
+			'group_name'	=> 'Guests', // 'Guests' is the group name already in use for predefined Guests group
+		]);
+
+		$crawler = self::submit($form);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$crawler = self::submit($form); // Just submit the form with selected group name
+
+		$this->assertStringContainsString($this->lang('GROUP_NAME_TAKEN'), $crawler->text());
+	}
 }

@@ -223,6 +223,6 @@ button::-moz-focus-inner {
 
 /* Notification buttons
 --------------------------------------------- */
-.notification-subscribe_toggle:disabled {
+.notification-subscribe-toggle:disabled {
 	opacity: 0.7;
 }

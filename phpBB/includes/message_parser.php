@@ -1179,8 +1179,6 @@ class parse_message extends bbcode_firstpass
 		// Set some config values
 		$parser->set_vars(array(
 			'max_font_size'  => $config['max_' . $this->mode . '_font_size'],
-			'max_img_height' => $config['max_' . $this->mode . '_img_height'],
-			'max_img_width'  => $config['max_' . $this->mode . '_img_width'],
 			'max_smilies'    => $config['max_' . $this->mode . '_smilies'],
 			'max_urls'       => $config['max_' . $this->mode . '_urls']
 		));

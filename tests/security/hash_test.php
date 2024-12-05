@@ -40,16 +40,26 @@ class phpbb_security_hash_test extends phpbb_test_case
 
 	public function test_check_hash_with_phpass()
 	{
-		$this->assertTrue(phpbb_check_hash('test', '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
-		$this->assertTrue(phpbb_check_hash('test', '$P$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
-		$this->assertFalse(phpbb_check_hash('foo', '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
+		global $phpbb_container;
+
+		/** @var \phpbb\passwords\manager $passwords_manager */
+		$passwords_manager = $phpbb_container->get('passwords.manager');
+
+		$this->assertTrue($passwords_manager->check('test', '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
+		$this->assertTrue($passwords_manager->check('test', '$P$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
+		$this->assertFalse($passwords_manager->check('foo', '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
 	}
 
 	public function test_check_hash_with_large_input()
 	{
+		global $phpbb_container;
+
+		/** @var \phpbb\passwords\manager $passwords_manager */
+		$passwords_manager = $phpbb_container->get('passwords.manager');
+
 		// 16 MB password, should be rejected quite fast
 		$start_time = time();
-		$this->assertFalse(phpbb_check_hash(str_repeat('a', 1024 * 1024 * 16), '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
+		$this->assertFalse($passwords_manager->check(str_repeat('a', 1024 * 1024 * 16), '$H$9isfrtKXWqrz8PvztXlL3.daw4U0zI1'));
 		$this->assertLessThanOrEqual(5, time() - $start_time);
 	}
 }

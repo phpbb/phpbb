@@ -1,0 +1,60 @@
+name: Merge 3.3.x into master
+
+on:
+    push:
+        branches:
+            - 3.3.x
+
+jobs:
+    merge-branch:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/create-github-app-token@v1
+              id: app-token
+              with:
+                  app-id: ${{ vars.MERGE_MASTER_APP_ID }}
+                  private-key: ${{ secrets.MERGE_MASTER_SECRET }}
+
+            - name: Checkout the repository
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0  # Fetch full history for proper merging
+                  ref: 3.3.x      # Checkout the 3.3.x branch
+                  token: ${{ steps.app-token.outputs.token }}
+
+            - name: Fetch the latest commit information
+              id: get-commit-info
+              run: |
+                  # Get the latest commit SHA and its author details
+                  COMMIT_SHA=$(git rev-parse HEAD)
+                  COMMIT_AUTHOR_NAME=$(git log -1 --pretty=format:'%an' $COMMIT_SHA)
+                  COMMIT_AUTHOR_EMAIL=$(git log -1 --pretty=format:'%ae' $COMMIT_SHA)
+
+                  # Save them as output for later steps
+                  echo "commit_sha=$COMMIT_SHA" >> $GITHUB_ENV
+                  echo "commit_author_name=$COMMIT_AUTHOR_NAME" >> $GITHUB_ENV
+                  echo "commit_author_email=$COMMIT_AUTHOR_EMAIL" >> $GITHUB_ENV
+
+            - name: Set up Git with the pull request author's info
+              run: |
+                  git config --global user.name "${{ env.commit_author_name }}"
+                  git config --global user.email "${{ env.commit_author_email }}"
+
+            - name: Fetch all branches
+              run: git fetch --all
+
+            - name: Merge 3.3.x into master
+              run: |
+                  git checkout master
+                  if git merge --no-ff 3.3.x; then
+                      echo "merge_failed=false" >> $GITHUB_ENV
+                  else
+                      echo "merge_failed=true" >> $GITHUB_ENV
+                  fi
+
+            - name: Push changes to master if merge was successful
+              if: env.merge_failed == 'false'
+              run: git push origin master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

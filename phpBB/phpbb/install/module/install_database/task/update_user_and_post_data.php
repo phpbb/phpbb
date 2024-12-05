@@ -114,7 +114,8 @@ class update_user_and_post_data extends database_task
 			. '		user_lang = :lang,'
 			. '		user_email = :email,'
 			. '		user_dateformat = :dateformat,'
-			. '		username_clean = :clean_username'
+			. '		username_clean = :clean_username,'
+			. '		user_timezone = :timezone'
 			. ' WHERE username = \'Admin\'';
 
 		$this->create_and_execute_prepared_stmt($sql, [
@@ -125,6 +126,7 @@ class update_user_and_post_data extends database_task
 			'email'				=> $this->install_config->get('board_email'),
 			'dateformat'		=> $this->language->lang('default_dateformat'),
 			'clean_username'	=> utf8_clean_string($this->install_config->get('admin_name')),
+			'timezone'			=> $this->install_config->get('admin_timezone'),
 		]);
 		$this->exec_sql('UPDATE ' . $this->user_table . ' SET user_regdate = ' . $current_time);
 

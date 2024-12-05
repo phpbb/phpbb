@@ -71,6 +71,7 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 		$admin_pass1	= $this->io_handler->get_input('admin_pass1', '', true);
 		$admin_pass2	= $this->io_handler->get_input('admin_pass2', '', true);
 		$board_email	= $this->io_handler->get_input('board_email', '', true);
+		$admin_timezone	= $this->io_handler->get_input('admin_timezone', 'UTC', true);
 
 		$admin_data_valid = $this->check_admin_data($admin_name, $admin_pass1, $admin_pass2, $board_email);
 
@@ -79,6 +80,7 @@ class obtain_admin_data extends \phpbb\install\task_base implements \phpbb\insta
 			$this->install_config->set('admin_name', $admin_name);
 			$this->install_config->set('admin_passwd', $admin_pass1);
 			$this->install_config->set('board_email', $board_email);
+			$this->install_config->set('admin_timezone', $admin_timezone);
 		}
 		else
 		{

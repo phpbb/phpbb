@@ -40,7 +40,7 @@ class qa
 	protected $service_name;
 
 	/** @var int Question ID */
-	protected $question = -1;
+	private $question = -1;
 
 	/**
 	* Constructor
@@ -324,71 +324,6 @@ class qa
 	}
 
 	/**
-	*  API function - we don't drop the tables here, as that would cause the loss of all entered questions.
-	*/
-	function uninstall()
-	{
-		$this->garbage_collect(0);
-	}
-
-	/**
-	*  API function - set up shop
-	*/
-	function install()
-	{
-		global $phpbb_container;
-
-		$db_tool = $phpbb_container->get('dbal.tools');
-		$schemas = array(
-				$this->table_captcha_questions		=> array (
-					'COLUMNS' => array(
-						'question_id'	=> array('UINT', null, 'auto_increment'),
-						'strict'		=> array('BOOL', 0),
-						'lang_id'		=> array('UINT', 0),
-						'lang_iso'		=> array('VCHAR:30', ''),
-						'question_text'	=> array('TEXT_UNI', ''),
-					),
-					'PRIMARY_KEY'		=> 'question_id',
-					'KEYS'				=> array(
-						'lang'			=> array('INDEX', 'lang_iso'),
-					),
-				),
-				$this->table_captcha_answers		=> array (
-					'COLUMNS' => array(
-						'question_id'	=> array('UINT', 0),
-						'answer_text'	=> array('STEXT_UNI', ''),
-					),
-					'KEYS'				=> array(
-						'qid'			=> array('INDEX', 'question_id'),
-					),
-				),
-				$this->table_qa_confirm		=> array (
-					'COLUMNS' => array(
-						'session_id'	=> array('CHAR:32', ''),
-						'confirm_id'	=> array('CHAR:32', ''),
-						'lang_iso'		=> array('VCHAR:30', ''),
-						'question_id'	=> array('UINT', 0),
-						'attempts'		=> array('UINT', 0),
-						'confirm_type'	=> array('USINT', 0),
-					),
-					'KEYS'				=> array(
-						'session_id'			=> array('INDEX', 'session_id'),
-						'lookup'				=> array('INDEX', array('confirm_id', 'session_id', 'lang_iso')),
-					),
-					'PRIMARY_KEY'		=> 'confirm_id',
-				),
-		);
-
-		foreach ($schemas as $table => $schema)
-		{
-			if (!$db_tool->sql_table_exists($table))
-			{
-				$db_tool->sql_create_table($table, $schema);
-			}
-		}
-	}
-
-	/**
 	*  API function - see what has to be done to validate
 	*/
 	function validate()
@@ -646,11 +581,6 @@ class qa
 
 		$user->add_lang('acp/board');
 		$user->add_lang('captcha_qa');
-
-		if (!self::is_installed())
-		{
-			$this->install();
-		}
 
 		$module->tpl_name = 'captcha_qa_acp';
 		$module->page_title = 'ACP_VC_SETTINGS';

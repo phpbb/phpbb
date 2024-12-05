@@ -28,7 +28,7 @@ use phpbb\user_loader;
 * This class handles sending push messages for notifications
 */
 
-class webpush extends messenger_base implements extended_method_interface
+class webpush extends base implements extended_method_interface
 {
 	/** @var config */
 	protected $config;
@@ -39,8 +39,17 @@ class webpush extends messenger_base implements extended_method_interface
 	/** @var log_interface */
 	protected $log;
 
+	/** @var user_loader */
+	protected $user_loader;
+
 	/** @var user */
 	protected $user;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
 
 	/** @var string Notification Web Push table */
 	protected $notification_webpush_table;
@@ -50,6 +59,9 @@ class webpush extends messenger_base implements extended_method_interface
 
 	/** @var int Fallback size for padding if endpoint is mozilla, see https://github.com/web-push-libs/web-push-php/issues/108#issuecomment-2133477054 */
 	const MOZILLA_FALLBACK_PADDING = 2820;
+
+	/** @var array Map for storing push token between db insertion and sending of notifications */
+	private array $push_token_map = [];
 
 	/**
 	 * Notification Method Web Push constructor
@@ -67,12 +79,13 @@ class webpush extends messenger_base implements extended_method_interface
 	public function __construct(config $config, driver_interface $db, log_interface $log, user_loader $user_loader, user $user, string $phpbb_root_path,
 								string $php_ext, string $notification_webpush_table, string $push_subscriptions_table)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
-
 		$this->config = $config;
 		$this->db = $db;
 		$this->log = $log;
+		$this->user_loader = $user_loader;
 		$this->user = $user;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $php_ext;
 		$this->notification_webpush_table = $notification_webpush_table;
 		$this->push_subscriptions_table = $push_subscriptions_table;
 	}
@@ -90,8 +103,9 @@ class webpush extends messenger_base implements extended_method_interface
 	*/
 	public function is_available(type_interface $notification_type = null): bool
 	{
-		return parent::is_available($notification_type) && $this->config['webpush_enable']
-			&& !empty($this->config['webpush_vapid_public']) && !empty($this->config['webpush_vapid_private']);
+		return $this->config['webpush_enable']
+			&& $this->config['webpush_vapid_public']
+			&& $this->config['webpush_vapid_private'];
 	}
 
 	/**
@@ -137,17 +151,16 @@ class webpush extends messenger_base implements extended_method_interface
 		{
 			$data = $notification->get_insert_array();
 			$data += [
-				'push_data'		=> json_encode([
-					'heading'	=> $this->config['sitename'],
-					'title'		=> strip_tags($notification->get_title()),
-					'text'		=> strip_tags($notification->get_reference()),
-					'url'		=> htmlspecialchars_decode($notification->get_url()),
-					'avatar'	=> $notification->get_avatar(),
-				]),
+				'push_data'				=> json_encode(array_merge(
+					$data,
+					['notification_type_name' => $notification->get_type()],
+				)),
 				'notification_time'		=> time(),
+				'push_token'			=> hash('sha256', random_bytes(32))
 			];
 			$data = self::clean_data($data);
 			$insert_buffer->insert($data);
+			$this->push_token_map[$notification->notification_type_id][$notification->item_id] = $data['push_token'];
 		}
 
 		$insert_buffer->flush();
@@ -221,7 +234,9 @@ class webpush extends messenger_base implements extended_method_interface
 			$data = [
 				'item_id'	=> $notification->item_id,
 				'type_id'	=> $notification->notification_type_id,
+				'user_id'	=> $notification->user_id,
 				'version'	=> $this->config['assets_version'],
+				'token'		=> hash('sha256', $user['user_form_salt'] . $this->push_token_map[$notification->notification_type_id][$notification->item_id]),
 			];
 			$json_data = json_encode($data);
 
@@ -337,12 +352,21 @@ class webpush extends messenger_base implements extended_method_interface
 			'item_parent_id'		=> null,
 			'user_id'				=> null,
 			'push_data'				=> null,
+			'push_token'			=> null,
 			'notification_time'		=> null,
 		];
 
 		return array_intersect_key($data, $row);
 	}
 
+	/**
+	 * Get template data for the UCP
+	 *
+	 * @param helper $controller_helper
+	 * @param form_helper $form_helper
+	 *
+	 * @return array
+	 */
 	public function get_ucp_template_data(helper $controller_helper, form_helper $form_helper): array
 	{
 		$subscription_map = $this->get_user_subscription_map([$this->user->id()]);

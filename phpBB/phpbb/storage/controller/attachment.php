@@ -22,6 +22,7 @@ use phpbb\db\driver\driver_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\language\language;
+use phpbb\mimetype\extension_guesser;
 use phpbb\request\request;
 use phpbb\storage\storage;
 use phpbb\user;
@@ -66,15 +67,16 @@ class attachment extends controller
 	 * @param content_visibility	$content_visibility
 	 * @param driver_interface		$db
 	 * @param dispatcher_interface	$dispatcher
+	 * @param extension_guesser		$extension_guesser
 	 * @param language				$language
 	 * @param request				$request
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 * @param user					$user
 	 */
-	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
+	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, extension_guesser $extension_guesser, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
-		parent::__construct($cache, $db, $storage, $symfony_request);
+		parent::__construct($cache, $db, $extension_guesser, $storage, $symfony_request);
 
 		$this->auth = $auth;
 		$this->config = $config;

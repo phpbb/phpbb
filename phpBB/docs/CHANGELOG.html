@@ -50,6 +50,10 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v3314rc1">Changes since 3.3.14-RC1</a></li>
+		<li><a href="#v3313">Changes since 3.3.13</a></li>
+		<li><a href="#v3313rc1">Changes since 3.3.13-RC1</a></li>
+		<li><a href="#v3312">Changes since 3.3.12</a></li>
 		<li><a href="#v3312rc1">Changes since 3.3.12-RC1</a></li>
 		<li><a href="#v3311">Changes since 3.3.11</a></li>
 		<li><a href="#v3310">Changes since 3.3.10</a></li>
@@ -169,6 +173,97 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v3314rc1"></a><h3>Changes since 3.3.14-RC1</h3>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17421">PHPBB-17421</a>] - Rename section for not installed extensions to not installed</li>
+			</ul>
+
+			<a name="v3313"></a><h3>Changes since 3.3.13</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17181">PHPBB-17181</a>] - If statement to highlight Reported PMS on the view message page doesn't work.</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17383">PHPBB-17383</a>] - HELO/EHLO error while using gethostbyaddr()</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17384">PHPBB-17384</a>] - Passing E_USER_ERROR to trigger_error() is deprecated in PHP 8.4</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17385">PHPBB-17385</a>] - Version check without SSL flag for CDB extensions fails</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17386">PHPBB-17386</a>] - Incorrect trace result while tracing user-based permissions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17387">PHPBB-17387</a>] - PHP warnings in search results</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17390">PHPBB-17390</a>] - Missing buttons for approval of new messages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17391">PHPBB-17391</a>] - PHP warnings on attempt to create user group having name already in use</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17398">PHPBB-17398</a>] - Ajax error on deleting cookies</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17405">PHPBB-17405</a>] - Function phpbb_gmgetdate() returns incorrect result for edge cases</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17410">PHPBB-17410</a>] - UCP tabs do not work when testing out another user's permissions</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16852">PHPBB-16852</a>] - Addition of a new PHP event concerning bump topics</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17359">PHPBB-17359</a>] - Distinct disabled and not installed extensions in the list</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17376">PHPBB-17376</a>] - Link reference to quote post is a poor accessibility experience</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17382">PHPBB-17382</a>] - Incorrect grammar on FAQ page regarding searching for members</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17388">PHPBB-17388</a>] - Add php event to bump_topic_allowed function</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17394">PHPBB-17394</a>] - Check mergeability of PR on GitHub Actions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17396">PHPBB-17396</a>] - Automatically handle merges of 3.3.x into master</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17397">PHPBB-17397</a>] - Add event for forum_data query in viewforum</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17402">PHPBB-17402</a>] - Add possibility to force reparsing BBCode via CLI</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17407">PHPBB-17407</a>] - Limit mergeability check to single comment</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17411">PHPBB-17411</a>] - Add core event to search.php</li>
+			</ul>
+
+			<a name="v3313rc1"></a><h3>Changes since 3.3.13-RC1</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17377">PHPBB-17377</a>] - MSSQL builds on GitHub actions broken</li>
+			</ul>
+
+			<a name="v3312"></a><h3>Changes since 3.3.12</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-13916">PHPBB-13916</a>] - Cancelling save draft removes previous notify setting on posting page</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-14454">PHPBB-14454</a>] - Accessing ACP modules while testing user permissions returns a General Error</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-15043">PHPBB-15043</a>] - Searching no longer working in 3.2.0</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-15576">PHPBB-15576</a>] - PM subject truncated to shorter length than maxlength</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16213">PHPBB-16213</a>] - vendor and phpbb folders should have .htaccess files</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16907">PHPBB-16907</a>] - &quot;phpbb&quot; value in &quot;hiddenSegments&quot; blocks client requests for extensions in IIS</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17109">PHPBB-17109</a>] - Users without the &quot;Can use signature&quot; permission should not see checkboxes for signature</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17175">PHPBB-17175</a>] - Breadcrumbs show wrong forum and topic when using 'email topic'</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17301">PHPBB-17301</a>] - Wrong length parameter for fread in phpbb/cache/driver/file.php can lead to unusable forum</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17327">PHPBB-17327</a>] - Fix linting issue in console user add command</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17332">PHPBB-17332</a>] - New permission copied from existing permission ignores permission set options</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17337">PHPBB-17337</a>] - Transaction begin is missing from mysqli driver </li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17338">PHPBB-17338</a>] - Incorrect members list sorting by user_last_visit</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17351">PHPBB-17351</a>] - phpBB2 password hashes incorrectly handled during rehash cron</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17352">PHPBB-17352</a>] - Long rank titles push other profile details below</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17353">PHPBB-17353</a>] - Gravatar avatar src is not image src</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17356">PHPBB-17356</a>] - Errors hidden by at are being displayed in PHP 8 or newer</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17358">PHPBB-17358</a>] - Redis cache never expires with the TTL of 0</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17362">PHPBB-17362</a>] - Missing declaration of property in extension manager</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17365">PHPBB-17365</a>] - Enforce the search word limit on queries containing operators without white space</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17366">PHPBB-17366</a>] - Captcha disappears on error message from registration &amp; posting</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17369">PHPBB-17369</a>] - Permanently deleting soft-deleted topics returns incorrect forum in redirect link</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17370">PHPBB-17370</a>] - Deleting Cookies on FAQ/other pages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17374">PHPBB-17374</a>] - ACP - Maintenance - Logs: Deleting Error / Bug</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17375">PHPBB-17375</a>] - User lastvisit gets updated too often in session garbage collection</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16553">PHPBB-16553</a>] - Disapproving a reported post causes a &quot;Module not accessible&quot; error</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17308">PHPBB-17308</a>] - Rename tracker project key to PHPBB-</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17315">PHPBB-17315</a>] - Add new template events to group</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17316">PHPBB-17316</a>] - Add template events to ucp_groups_manage</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17317">PHPBB-17317</a>] - Update button text and make it more readable</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17325">PHPBB-17325</a>] - Show explicit message for &quot;Re-Check version&quot; if installed version is still up to date</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17340">PHPBB-17340</a>] - Update composer to 2.7.7</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17342">PHPBB-17342</a>] - Add PHP 8.4-dev tests to GitHub Actions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17347">PHPBB-17347</a>] - Support deleting users by ID via console</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17350">PHPBB-17350</a>] - Add user IP address to log when installing extensions on fresh installs</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17355">PHPBB-17355</a>] - Update gravatar hash to sha256</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-13933">PHPBB-13933</a>] - Update tokens' definitions in acp_bbcodes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16890">PHPBB-16890</a>] - Edit the config sample files and web.config to deny access to the &quot;config&quot; directory</li>
+			</ul>
+
 			<a name="v3312rc1"></a><h3>Changes since 3.3.12-RC1</h3>
 			<h4>Bug</h4>
 			<ul>

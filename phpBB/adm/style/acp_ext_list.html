@@ -42,82 +42,94 @@
 		</tr>
 	</thead>
 	<tbody>
-		<!-- IF .enabled -->
-		<tr>
-			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_ENABLED}</strong><!-- EVENT acp_ext_list_enabled_title_after --></td>
-		</tr>
-		<!-- BEGIN enabled -->
-		<tr class="ext_enabled row-highlight">
-			<td><strong title="{enabled.NAME}">{enabled.META_DISPLAY_NAME}</strong><!-- EVENT acp_ext_list_enabled_name_after --></td>
-			<td style="text-align: center;">
-				<!-- IF enabled.S_VERSIONCHECK -->
-				<strong class="<!-- IF enabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{enabled.META_VERSION}</strong>
-				<!-- IF not enabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
-				<!-- ELSE -->
-				{enabled.META_VERSION}
-				<!-- ENDIF -->
-			</td>
-			<td style="text-align: center;"><a href="{enabled.U_DETAILS}">{L_DETAILS}</a></td>
-			<td style="text-align: center;">
-				<!-- BEGIN actions -->
-					<a href="{enabled.actions.U_ACTION}"<!-- IF enabled.actions.ACTION == 'REMOVE' --> style="color: #bc2a4d;"<!-- ENDIF --><!-- IF enabled.actions.L_ACTION_EXPLAIN --> title="{enabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{enabled.actions.L_ACTION}</a>
-					<!-- IF not enabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
-				<!-- END actions -->
-			</td>
-		</tr>
-		<!-- END enabled -->
-		<!-- ENDIF -->
-
-		<!-- IF .disabled -->
-		<tr>
-			<td class="row3" colspan="4"><strong>{L_EXTENSIONS_DISABLED}</strong><!-- EVENT acp_ext_list_disabled_title_after --></td>
-		</tr>
-		<!-- BEGIN disabled -->
-		<tr class="ext_disabled row-highlight">
-			<td><strong title="{disabled.NAME}">{disabled.META_DISPLAY_NAME}</strong><!-- EVENT acp_ext_list_disabled_name_after --></td>
-			<td style="text-align: center;">
-				<!-- IF disabled.S_VERSIONCHECK -->
-				<strong class="<!-- IF disabled.S_UP_TO_DATE -->current-ext<!-- ELSE -->outdated-ext<!-- ENDIF -->">{disabled.META_VERSION}</strong>
-				<!-- IF not disabled.S_UP_TO_DATE -->{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}<!-- ENDIF -->
-				<!-- ELSE -->
-				{disabled.META_VERSION}
-				<!-- ENDIF -->
-			</td>
-			<td style="text-align: center;">
-				<!-- IF disabled.U_DETAILS --><a href="{disabled.U_DETAILS}">{L_DETAILS}</a><!-- ENDIF -->
-			</td>
-			<td style="text-align: center;">
-				<!-- BEGIN actions -->
-					<a href="{disabled.actions.U_ACTION}"<!-- IF disabled.actions.ACTION == 'REMOVE' --> style="color: #bc2a4d;"<!-- ENDIF --><!-- IF disabled.actions.L_ACTION_EXPLAIN --> title="{disabled.actions.L_ACTION_EXPLAIN}"<!-- ENDIF -->>{disabled.actions.L_ACTION}</a>
-					<!-- IF not disabled.actions.S_LAST_ROW -->&nbsp;|&nbsp;<!-- ENDIF -->
-				<!-- END actions -->
-			</td>
-		</tr>
-		<!-- END disabled -->
-		<!-- ENDIF -->
+		{% for list in ['enabled', 'disabled', 'not_installed'] %}
+			{% set blockname = attribute(loops, list) %}
+			{% if blockname|length %}
+			<tr>
+				<td class="row3" colspan="4"><strong>{{ lang('EXTENSIONS_' ~ list|upper) }}</strong>
+					{% if list == 'enabled' %}
+						{% EVENT acp_ext_list_enabled_title_after %}
+					{% elseif list == 'disabled' %}
+						{% EVENT acp_ext_list_disabled_title_after %}
+					{% elseif list == 'not_installed' %}
+						{% EVENT acp_ext_list_not_installed_title_after %}
+					{% endif %}
+				</td>
+			</tr>
+			{% for data in blockname %}
+			<tr class="ext_{{ list }} row-highlight">
+				<td><strong title="{{ data.NAME }}">{{ data.META_DISPLAY_NAME }}</strong>
+					{% if list == 'enabled' %}
+						{% EVENT acp_ext_list_enabled_name_after %}
+					{% elseif list == 'disabled' %}
+						{% EVENT acp_ext_list_disabled_name_after %}
+					{% elseif list == 'not_installed' %}
+						{% EVENT acp_ext_list_not_installed_name_after %}
+					{% endif %}
+				</td>
+				<td style="text-align: center;">
+					{% if data.S_VERSIONCHECK %}
+					<strong class="{% if data.S_UP_TO_DATE %}current-ext{% else %}outdated-ext{% endif %}">{{ data.META_VERSION }}</strong>
+					{% if not data.S_UP_TO_DATE %}{{ Icon('font', 'circle-exclamation', '', true, 'fas outdated-ext') }}{% endif %}
+					{% else %}
+					{{ data.META_VERSION }}
+					{% endif %}
+				</td>
+				<td style="text-align: center;">
+					{% if data.U_DETAILS %}<a href="{{ data.U_DETAILS }}">{{ lang ('DETAILS') }}</a>{% endif %}
+				</td>
+				<td style="text-align: center;">
+					{% for actions in data.actions %}
+						<a href="{{ actions.U_ACTION }}"{% if actions.L_ACTION_EXPLAIN %} title="{{ actions.L_ACTION_EXPLAIN }}"{% endif %}>{{ actions.L_ACTION }}</a>
+						{% if not actions.S_LAST_ROW %}&nbsp;|&nbsp;{% endif %}
+					{% endfor %}
+				</td>
+			</tr>
+			{% endfor %}
+			{% endif %}
+		{% endfor %}
 	</tbody>
 	</table>
 
 	<table class="table1">
-	<tr>
-		<th>{L_EXTENSION_INSTALL_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_INSTALL_EXPLAIN}</td>
-	</tr>
-	<tr>
-		<th>{L_EXTENSION_UPDATE_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_UPDATE_EXPLAIN}</td>
-	</tr>
-	<tr>
-		<th>{L_EXTENSION_REMOVE_HEADLINE}</th>
-	</tr>
-	<tr>
-		<td class="row3">{L_EXTENSION_REMOVE_EXPLAIN}</td>
-	</tr>
-	</tbody>
+		<tbody>
+			<tr>
+				<th>{L_EXTENSION_INSTALLING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_INSTALLING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>{L_EXTENSION_UPDATING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_UPDATING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+			<tr>
+				<th>{L_EXTENSION_REMOVING_HEADLINE}</th>
+			</tr>
+			<tr>
+				<td class="row3">
+					<ol>
+						{% for step in lang_raw('EXTENSION_REMOVING_EXPLAIN') %}
+							<li>{{ step }}</li>
+						{% endfor %}
+					</ol>
+				</td>
+			</tr>
+		</tbody>
 	</table>
 
 <!-- INCLUDE overall_footer.html -->

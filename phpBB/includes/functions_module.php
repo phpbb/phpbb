@@ -480,7 +480,7 @@ class p_master
 	*/
 	function set_active($id = false, $mode = false)
 	{
-		global $request;
+		global $auth, $request, $user;
 
 		$icat = false;
 		$this->active_module = false;
@@ -500,6 +500,14 @@ class p_master
 		if ($id && !is_numeric($id) && !$this->is_full_class($id))
 		{
 			$id = $this->p_class . '_' . $id;
+		}
+
+		// Fallback to acp main page for special test permission mode
+		if ($this->p_class === 'acp' && $user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
+		{
+			$id = '';
+			$mode = '';
+			$icat = false;
 		}
 
 		$category = false;

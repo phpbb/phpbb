@@ -20,7 +20,7 @@ interface adapter_interface
 	/**
 	 * Set adapter parameters
 	 *
-	 * @param array	options	Storage-specific options.
+	 * @param array $options options	Storage-specific options.
 	 */
 	public function configure(array $options): void;
 
@@ -82,13 +82,15 @@ interface adapter_interface
 	public function copy(string $path_orig, string $path_dest): void;
 
 	/**
-	 * Get direct link
+	 * Get file size in bytes
 	 *
 	 * @param string $path The file
 	 *
-	 * @return string Returns link.
+	 * @return int Size in bytes.
+	 *
+	 * @throws storage_exception When unable to retrieve file size
 	 */
-	public function get_link(string $path): string;
+	public function file_size(string $path): int;
 
 	/**
 	 * Get space available in bytes

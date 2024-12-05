@@ -181,7 +181,14 @@
 	<!-- ENDIF -->
 	<dl>
 		<dt><label for="forum_style">{L_FORUM_STYLE}{L_COLON}</label></dt>
-		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>
+		<dd>
+			<select id="forum_style" name="forum_style">
+				<option value="0">{{ lang('DEFAULT_STYLE') }}</option>
+			{% for style in S_STYLES_OPTIONS %}
+				<option value="{{ style.value }}"{% if style.selected %} selected="selected"{% endif %}>{{ style.label }}</option>
+			{% endfor %}
+			</select>
+		</dd>
 	</dl>
 	<!-- EVENT acp_forums_main_settings_append -->
 	</fieldset>

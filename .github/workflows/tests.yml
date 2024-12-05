@@ -137,6 +137,10 @@ jobs:
                       db: "mysql:5.7"
                     - php: '8.3'
                       db: "mariadb:10.2"
+                    - php: '8.4'
+                      db: "mysql:8.0"
+                    - php: '8.4'
+                      db: "mariadb:10.3"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -272,6 +276,8 @@ jobs:
                       db: "postgres:9.5"
                     - php: '8.3'
                       db: "postgres:9.5"
+                    - php: '8.4'
+                      db: "postgres:9.5"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
@@ -364,7 +370,7 @@ jobs:
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-20.04
         strategy:
             matrix:
                 include:
@@ -374,17 +380,17 @@ jobs:
                       db: "mcr.microsoft.com/mssql/server:2017-latest"
                       db_alias: 'MSSQL 2017'
                     - php: '8.1'
-                      db: "mcr.microsoft.com/mssql/server:2019-latest"
+                      db: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
                     - php: '8.1'
-                      db: "mcr.microsoft.com/mssql/server:2022-latest"
+                      db: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mssql:
-                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2017-latest' && matrix.db != 'mcr.microsoft.com/mssql/server:2019-latest' && matrix.db != 'mcr.microsoft.com/mssql/server:2022-latest' && 'mcr.microsoft.com/mssql/server:2017-latest' || matrix.db }}
+                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2017-latest' && matrix.db != 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' && matrix.db != 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' && 'mcr.microsoft.com/mssql/server:2017-latest' || matrix.db }}
                 env:
                     SA_PASSWORD: "Pssw0rd_12"
                     ACCEPT_EULA: "y"
@@ -416,7 +422,7 @@ jobs:
               env:
                   MATRIX_DB: ${{ matrix.db }}
               run: |
-                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2017-latest' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-latest' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2022-latest' ]
+                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2017-latest' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' ]
                   then
                       db='mssql'
                   else
@@ -480,7 +486,7 @@ jobs:
         strategy:
             matrix:
                 type: ['unit', 'functional']
-                php: ['8.1', '8.2']
+                php: ['8.1', '8.2', '8.3']
                 db: ['postgres']
 
         name: Windows - ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db }}

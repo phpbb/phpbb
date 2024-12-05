@@ -107,9 +107,17 @@ function phpbb_gmgetdate($time = false)
 	}
 
 	// getdate() interprets timestamps in local time.
-	// What follows uses the fact that getdate() and
-	// date('Z') balance each other out.
-	return getdate($time - date('Z'));
+	// So use UTC timezone temporarily to get UTC date info array.
+	$current_timezone = date_default_timezone_get();
+
+	// Set UTC timezone and get respective date info
+	date_default_timezone_set('UTC');
+	$date_info = getdate($time);
+
+	// Restore timezone back
+	date_default_timezone_set($current_timezone);
+
+	return $date_info;
 }
 
 /**
@@ -2931,8 +2939,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline): bool
 	global $phpbb_root_path, $msg_title, $msg_long_text, $phpbb_log;
 	global $phpbb_container;
 
+	// https://www.php.net/manual/en/language.operators.errorcontrol.php
+	// error_reporting() return a different error code inside the error handler after php 8.0
+	$suppresed = E_ERROR | E_CORE_ERROR | E_COMPILE_ERROR | E_USER_ERROR | E_RECOVERABLE_ERROR | E_PARSE;
+	if (PHP_VERSION_ID < 80000)
+	{
+		$suppresed = 0;
+	}
+
 	// Do not display notices if we suppress them via @
-	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
+	if (error_reporting() == $suppresed && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
 	{
 		return true;
 	}
@@ -3847,7 +3863,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),
 		'U_SEARCH_UNREAD'		=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unreadposts'),
 		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
-		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
+		'U_DELETE_COOKIES'		=> $controller_helper->route('phpbb_ucp_delete_cookies_controller'),
 		'U_CONTACT_US'			=> ($config['contact_admin_form_enable'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contactadmin') : '',
 		'U_TEAM'				=> (!$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'),
 		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
@@ -3855,6 +3871,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'UA_PRIVACY'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy')),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 		'U_FEED'				=> $controller_helper->route('phpbb_feed_index'),
+		'U_MANIFEST'			=> $controller_helper->route('phpbb_manifest_controller'),
 
 		'S_ALLOW_MENTIONS'		=> ($config['allow_mentions'] && $auth->acl_get('u_mention') && (empty($forum_id) || $auth->acl_get('f_mention', $forum_id))) ? true : false,
 		'S_MENTION_NAMES_LIMIT'	=> $config['mention_names_limit'],
@@ -4023,7 +4040,9 @@ function phpbb_generate_debug_output(\phpbb\db\driver\driver_interface $db, \php
 
 		if ($auth->acl_get('a_'))
 		{
-			$debug_info[] = '<a href="' . build_url() . '&amp;explain=1">SQL Explain</a>';
+			$page_url = build_url();
+			$page_url .= ((!str_contains($page_url, '?')) ? '?' : '&amp;') . 'explain=1';
+			$debug_info[] = '<a href="' . $page_url . '">SQL Explain</a>';
 		}
 	}
 

@@ -288,7 +288,27 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 */
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
-	global $config, $auth, $user;
+	global $config, $auth, $user, $phpbb_dispatcher;
+
+	/**
+	 * Event to run code before the topic bump checks
+	 *
+	 * @event core.bump_topic_allowed_before
+	 * @var	int		forum_id			ID of the forum
+	 * @var	int		topic_bumped		Flag indicating if the topic was already bumped (0/1)
+	 * @var	int		last_post_time		The time of the topic last post
+	 * @var	int		topic_poster		User ID of the topic author
+	 * @var	int		last_topic_poster	User ID of the topic last post author
+	 * @since 3.3.14-RC1
+	 */
+	$vars = [
+		'forum_id',
+		'topic_bumped',
+		'last_post_time',
+		'topic_poster',
+		'last_topic_poster',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.bump_topic_allowed_before', compact($vars)));
 
 	// Check permission and make sure the last post was not already bumped
 	if (!$auth->acl_get('f_bump', $forum_id) || $topic_bumped)
@@ -311,6 +331,28 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 		return false;
 	}
 
+	/**
+	 * Event to run code after the topic bump checks
+	 *
+	 * @event core.bump_topic_allowed_after
+	 * @var	int		forum_id			ID of the forum
+	 * @var	int		topic_bumped		Flag indicating if the topic was already bumped (0/1)
+	 * @var	int		last_post_time		The time of the topic last post
+	 * @var	int		topic_poster		User ID of the topic author
+	 * @var	int		last_topic_poster	User ID of the topic last post author
+	 * @var	int		bump_time			Bump time range
+	 * @since 3.3.14-RC1
+	 */
+	$vars = [
+		'forum_id',
+		'topic_bumped',
+		'last_post_time',
+		'topic_poster',
+		'last_topic_poster',
+		'bump_time',
+	];
+	extract($phpbb_dispatcher->trigger_event('core.bump_topic_allowed_after', compact($vars)));
+
 	// A bump time of 0 will completely disable the bump feature... not intended but might be useful.
 	return $bump_time;
 }
@@ -324,121 +366,95 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 *
 * @return	string			Context of the specified words separated by "..."
 */
-function get_context(string $text, array $words, int $length = 400)
+function get_context(string $text, array $words, int $length = 400): string
 {
-	// first replace all whitespaces with single spaces
-	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
-
-	// we need to turn the entities back into their original form, to not cut the message in between them
-	$entities = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
-	$characters = array('<', '>', '[', ']', '.', ':', ':');
-	$text = str_replace($entities, $characters, $text);
-
-	$word_indizes = array();
-	if (count($words))
+	if ($length <= 0)
 	{
-		$match = '';
-		// find the starting indizes of all words
-		foreach ($words as $word)
-		{
-			if ($word)
-			{
-				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
-				{
-					if (empty($match[1]))
-					{
-						continue;
-					}
-
-					$pos = utf8_strpos($text, $match[1]);
-					if ($pos !== false)
-					{
-						$word_indizes[] = $pos;
-					}
-				}
-			}
-		}
-		unset($match);
-
-		if (count($word_indizes))
-		{
-			$word_indizes = array_unique($word_indizes);
-			sort($word_indizes);
-
-			$wordnum = count($word_indizes);
-			// number of characters on the right and left side of each word
-			$sequence_length = (int) ($length / (2 * $wordnum)) - 2;
-			$final_text = '';
-			$word = $j = 0;
-			$final_text_index = -1;
-
-			// cycle through every character in the original text
-			for ($i = $word_indizes[$word], $n = utf8_strlen($text); $i < $n; $i++)
-			{
-				// if the current position is the start of one of the words then append $sequence_length characters to the final text
-				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
-				{
-					if ($final_text_index < $i - $sequence_length - 1)
-					{
-						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', utf8_substr($text, $i - $sequence_length, $sequence_length));
-					}
-					else
-					{
-						// if the final text is already nearer to the current word than $sequence_length we only append the text
-						// from its current index on and distribute the unused length to all other sequenes
-						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
-						$final_text .= utf8_substr($text, $final_text_index + 1, $i - $final_text_index - 1);
-					}
-					$final_text_index = $i - 1;
-
-					// add the following characters to the final text (see below)
-					$word++;
-					$j = 1;
-				}
-
-				if ($j > 0)
-				{
-					// add the character to the final text and increment the sequence counter
-					$final_text .= utf8_substr($text, $i, 1);
-					$final_text_index++;
-					$j++;
-
-					// if this is a whitespace then check whether we are done with this sequence
-					if (utf8_substr($text, $i, 1) == ' ')
-					{
-						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
-						if ($i + 4 < $n)
-						{
-							if (($j > $sequence_length && $word >= $wordnum) || utf8_strlen($final_text) > $length)
-							{
-								$final_text .= ' ...';
-								break;
-							}
-						}
-						else
-						{
-							// make sure the text really reaches the end
-							$j -= 4;
-						}
-
-						// stop context generation and wait for the next word
-						if ($j > $sequence_length)
-						{
-							$j = 0;
-						}
-					}
-				}
-			}
-			return str_replace($characters, $entities, $final_text);
-		}
+		return $text;
 	}
 
-	if (!count($words) || !count($word_indizes))
+	// We need to turn the entities back into their original form, to not cut the message in between them
+	$text = htmlspecialchars_decode($text);
+
+	// Replace all spaces/invisible characters with single spaces
+	$text = preg_replace("/[\p{Z}\h\v]+/u", ' ', $text);
+
+	$text_length = utf8_strlen($text);
+
+	// Get first occurrence of each word
+	$word_indexes = [];
+	foreach ($words as $word)
 	{
-		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
+		$pos = utf8_stripos($text, $word);
+
+		if ($pos !== false)
+		{
+			$word_indexes[$pos] = $word;
+		}
+	}
+	if (!empty($word_indexes))
+	{
+		ksort($word_indexes);
+
+		// Size of the fragment of text per word
+		$num_indexes = count($word_indexes);
+		$characters_per_word = (int) ($length / $num_indexes) + 2; // 2 to leave one character of margin at the sides to don't cut words
+
+		// Get text fragment indexes
+		$fragments = [];
+		foreach ($word_indexes as $index => $word)
+		{
+			$word_length = utf8_strlen($word);
+			$start = max(0, min($text_length - 1 - $characters_per_word, (int) ($index + ($word_length / 2) - ($characters_per_word / 2))));
+			$end = $start + $characters_per_word;
+
+			// Check if we can merge this fragment into the previous fragment
+			if (!empty($fragments))
+			{
+				[$prev_start, $prev_end] = end($fragments);
+
+				if ($prev_end + $characters_per_word >= $index + $word_length)
+				{
+					array_pop($fragments);
+					$start = $prev_start;
+					$end = $prev_end + $characters_per_word;
+				}
+			}
+
+			$fragments[] = [$start, $end];
+		}
+	}
+	else
+	{
+		// There is no coincidences, so we just create a fragment with the first $length characters
+		$fragments[] = [0, $length];
+		$end = $length;
 	}
 
-	return '';
+	$output = [];
+	foreach ($fragments as [$start, $end])
+	{
+		$fragment = utf8_substr($text, $start, $end - $start + 1);
+
+		$fragment_start = 0;
+		$fragment_end = $end - $start + 1;
+
+		// Find the first valid alphanumeric character in the fragment to don't cut words
+		if ($start > 0 && preg_match('/[^\p{L}\p{N}][\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
+		{
+			$fragment_start = utf8_strlen(substr($fragment, 0, (int) $matches[0][1])) + 1;
+		}
+
+		// Find the last valid alphanumeric character in the fragment to don't cut words
+		if ($end < $text_length - 1 && preg_match_all('/[\p{L}\p{N}][^\p{L}\p{N}]/u', $fragment, $matches, PREG_OFFSET_CAPTURE))
+		{
+			$fragment_end = utf8_strlen(substr($fragment, 0, end($matches[0])[1]));
+		}
+
+		$output[] = utf8_substr($fragment, $fragment_start, $fragment_end - $fragment_start + 1);
+	}
+
+	return ($fragments[0][0] !== 0 ? '... ' : '') . utf8_htmlspecialchars(implode(' ... ', $output)) . ($end < $text_length - 1 ? ' ...' : '');
 }
 
 /**
@@ -1260,19 +1276,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count_a
 				{
 					if ($config['img_display_inlined'])
 					{
-						if ($config['img_link_width'] || $config['img_link_height'])
-						{
-							try
-							{
-								$file_info = $storage_attachment->file_info($filename);
-
-								$display_cat = ($file_info->image_width <= $config['img_link_width'] && $file_info->image_height <= $config['img_link_height']) ? attachment_category::IMAGE : attachment_category::NONE;
-							}
-							catch (\Exception $e)
-							{
-								$display_cat = attachment_category::NONE;
-							}
-						}
+						$display_cat = attachment_category::IMAGE;
 					}
 					else
 					{

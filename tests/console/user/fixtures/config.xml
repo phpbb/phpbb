@@ -47,6 +47,14 @@
 			<value></value>
 			<value>0</value>
 		</row>
+		<row>
+			<value>6</value>
+			<value></value>
+			<value>Test Bot</value>
+			<value>Test Bot</value>
+			<value></value>
+			<value>2</value>
+		</row>
 	</table>
 	<table name="phpbb_groups">
 		<column>group_id</column>
@@ -58,6 +66,24 @@
 			<value>REGISTERED</value>
 			<value>3</value>
 			<value>foobar</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>BOTS</value>
+			<value>3</value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_user_group">
+		<column>group_id</column>
+		<column>user_id</column>
+		<column>group_leader</column>
+		<column>user_pending</column>
+		<row>
+			<value>6</value>
+			<value>6</value>
+			<value>0</value>
+			<value>0</value>
 		</row>
 	</table>
 </dataset>

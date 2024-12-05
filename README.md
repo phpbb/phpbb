@@ -42,8 +42,8 @@ We have unit and functional tests in order to prevent regressions. You can view 
 
 Branch  | Description | GitHub Actions |
 ------- | ----------- | -------------- |
-**master** | Latest development version | ![Tests](https://github.com/phpbb/phpbb/workflows/Tests/badge.svg?branch=master) |
-**3.3.x** | Development of version 3.3.x | ![Tests](https://github.com/phpbb/phpbb/workflows/Tests/badge.svg?branch=3.3.x) |
+**master** | Latest development version | ![Tests](https://github.com/phpbb/phpbb/actions/workflows/tests.yml/badge.svg?branch=master) |
+**3.3.x** | Development of version 3.3.x | ![Tests](https://github.com/phpbb/phpbb/actions/workflows/tests.yml/badge.svg?branch=3.3.x) |
 
 ## 📜 License
 
