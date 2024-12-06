@@ -69,9 +69,12 @@ class manifest
 
 		$board_path = $this->config['force_server_vars'] ? $this->config['script_path'] : $this->path_helper->get_web_root_path();
 
+		$sitename = html_entity_decode($this->config['sitename'], ENT_QUOTES, 'UTF-8');
+		$sitename_short = html_entity_decode($this->config['sitename_short'], ENT_QUOTES, 'UTF-8');
+
 		$manifest = [
-			'name'			=> $this->config['sitename'],
-			'short_name'	=> $this->config['sitename_short'] ?: substr($this->config['sitename'], 0, 12),
+			'name'			=> $sitename,
+			'short_name'	=> $sitename_short ?: utf8_substr($sitename, 0, 12),
 			'display'		=> 'standalone',
 			'orientation'	=> 'portrait',
 			'dir'			=> $this->language->lang('DIRECTION'),

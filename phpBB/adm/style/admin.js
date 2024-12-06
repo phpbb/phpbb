@@ -163,6 +163,22 @@ function parse_document(container)
 	});
 
 	/**
+	 * Dynamically control a text field's maxlength (allows emoji to be counted as 1 character)
+	 */
+	container.find('#sitename_short').each(function() {
+		const $this = this;
+		const maxLength = $this.maxLength;
+		$this.maxLength = maxLength * 2;
+		$this.addEventListener('input', () => {
+			const inputChars = Array.from($this.value);
+			if (inputChars.length > maxLength) {
+				$this.value = inputChars.slice(0, maxLength).join('');
+			}
+		});
+
+	});
+
+	/**
 	* Responsive tabs
 	*/
 	container.find('#tabs').not('[data-skip-responsive]').each(function() {
