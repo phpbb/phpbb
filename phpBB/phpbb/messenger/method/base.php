@@ -29,7 +29,7 @@ use phpbb\user;
 /**
  * Messenger base class
  */
-abstract class base
+abstract class base implements messenger_interface
 {
 	/** @var array */
 	protected $additional_headers = [];
@@ -142,16 +142,12 @@ abstract class base
 	}
 
 	/**
-	 * Get messenger method id
-	 *
-	 * @return int
+	 * {@inheritdoc}
 	 */
 	abstract public function get_id(): int;
 
 	/**
-	 * Check if the messenger method is enabled
-	 *
-	 * @return bool
+	 * {@inheritdoc}
 	 */
 	abstract public function is_enabled(): bool;
 
@@ -176,6 +172,7 @@ abstract class base
 	 * Set addresses for to/im as available
 	 *
 	 * @param array $user_row User row
+	 *
 	 * @return void
 	 */
 	abstract public function set_addresses(array $user_row): void;
@@ -188,10 +185,7 @@ abstract class base
 	abstract public function get_queue_object_name(): string;
 
 	/**
-	 * Set up subject for mail
-	 *
-	 * @param string	$subject	Email subject
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function subject(string $subject = ''): void
 	{
@@ -199,16 +193,15 @@ abstract class base
 	}
 
 	/**
-	 * Send out messages
-	 *
-	 * @return bool
+	 * {@inheritdoc}
 	 */
-	abstract protected function send(): bool;
+	abstract public function send(): bool;
 
 	/**
 	 * Send messages from the queue
 	 *
 	 * @param array $queue_data Queue data array
+	 *
 	 * @return void
 	 */
 	abstract public function process_queue(array &$queue_data): void;
@@ -303,6 +296,7 @@ abstract class base
 	 * Assign variables to email template
 	 *
 	 * @param array	$vars	Array of VAR => VALUE to assign to email template
+	 *
 	 * @return void
 	 */
 	public function assign_vars(array $vars): void
@@ -316,6 +310,7 @@ abstract class base
 	 *
 	 * @param string	$blockname	Template block name
 	 * @param array		$vars		Array of VAR => VALUE to assign to email template block
+	 *
 	 * @return void
 	 */
 	public function assign_block_vars(string $blockname, array $vars): void
@@ -402,10 +397,7 @@ abstract class base
 	}
 
 	/**
-	 * Add error message to log
-	 *
-	 * @param string	$msg	Error message text
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function error(string $msg): void
 	{
@@ -426,6 +418,7 @@ abstract class base
 
 	/**
 	 * Save message data to the messenger file queue
+	 *
 	 * @return void
 	 */
 	public function save_queue(): void
@@ -479,6 +472,7 @@ abstract class base
 	 *
 	 * @param string|array $path_name	Email template path name
 	 * @param string|array $paths		Email template paths
+	 *
 	 * @return void
 	 */
 	protected function set_template_paths(string|array $path_name, string|array $paths): void
