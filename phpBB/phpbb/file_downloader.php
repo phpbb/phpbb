@@ -51,6 +51,10 @@ class file_downloader
 		return new Client([
 			'base_uri' => $host,
 			'timeout'  => $timeout,
+			'headers' => [
+				'user-agent' => 'phpBB/' . PHPBB_VERSION,
+				'accept' => '*/*',
+			  ],
 		]);
 	}
 
