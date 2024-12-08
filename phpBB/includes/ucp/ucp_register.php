@@ -458,30 +458,26 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
-					$messenger = new messenger(false);
-
-					$messenger->template($email_template, $data['lang']);
-
-					$messenger->to($data['email'], $data['username']);
-
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->assign_vars(array(
+					/** var \phpbb\messenger\method\email */
+					$email_method = $phpbb_container->get('messenger.method.email');
+					$email_method->set_use_queue(false);
+					$email_method->template($email_template, $data['lang']);
+					$email_method->to($data['email'], $data['username']);
+					$email_method->anti_abuse_headers($config, $user);
+					$email_method->assign_vars([
 						'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 						'USERNAME'		=> html_entity_decode($data['username'], ENT_COMPAT),
 						'PASSWORD'		=> html_entity_decode($data['new_password'], ENT_COMPAT),
-						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
-					);
+						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey",
+					]);
 
 					if ($coppa)
 					{
-						$messenger->assign_vars(array(
+						$email_method->assign_vars([
 							'FAX_INFO'		=> $config['coppa_fax'],
 							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $data['email'])
-						);
+							'EMAIL_ADDRESS'	=> $data['email'],
+						]);
 					}
 
 					/**
@@ -495,8 +491,9 @@ class ucp_register
 					* @var	string		server_url	Server URL
 					* @var	int			user_id		New user ID
 					* @var	string		user_actkey	User activation key
-					* @var	messenger	messenger	phpBB Messenger
+					* @var	\phpbb\messenger\method\email	email_method	phpBB email notification method
 					* @since 3.2.4-RC1
+					* @changed 4.0.0-a1 Added vars: email_method. Removed vars: messenger.
 					*/
 					$vars = array(
 						'user_row',
@@ -506,11 +503,11 @@ class ucp_register
 						'server_url',
 						'user_id',
 						'user_actkey',
-						'messenger',
+						'email_method',
 					);
 					extract($phpbb_dispatcher->trigger_event('core.ucp_register_welcome_email_before', compact($vars)));
 
-					$messenger->send(NOTIFY_EMAIL);
+					$email_method->send();
 				}
 
 				if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
