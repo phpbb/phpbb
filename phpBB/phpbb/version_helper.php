@@ -381,7 +381,7 @@ class version_helper
 		}
 		else if ($info === false || $force_update)
 		{
-			$info = $this->file_downloader->get($this->host, $this->path, $this->file, $this->use_ssl ? 443 : 80);
+			$info = $this->file_downloader->get($this->host, $this->path, $this->file, $this->use_ssl ? 443 : 80, 30);
 			$error_string = $this->file_downloader->get_error_string();
 
 			if (!empty($error_string))
