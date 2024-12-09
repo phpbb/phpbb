@@ -5,6 +5,7 @@ imports:
     - { resource: ../../default/container/services_filesystem.yml }
     - { resource: ../../default/container/services_http.yml }
     - { resource: ../../default/container/services_language.yml }
+    - { resource: ../../default/container/services_messenger.yml }
     - { resource: ../../default/container/services_php.yml }
     - { resource: ../../default/container/services_routing.yml }
     - { resource: ../../default/container/services_twig.yml }
