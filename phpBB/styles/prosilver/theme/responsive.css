@@ -183,7 +183,7 @@
 		border: none;
 		border-radius: 0;
 		min-width: 390px;
-		margin: 0;
+		margin: 0 !important;
 		padding: 0 5px;
 	}
 
