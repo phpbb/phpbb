@@ -769,7 +769,7 @@ fieldset.polls dd div {
 /* Poster profile block
 ---------------------------------------- */
 .postprofile {
-	line-height: calc(var(--ps-font-tiny) * 1.6);
+	line-height: calc(var(--ps-font-small) * 1.5);
 	border: 1px solid transparent;
 	border-width: 0 0 0 1px;
 	float: right;
@@ -780,7 +780,7 @@ fieldset.polls dd div {
 
 .postprofile dd,
 .postprofile dt {
-	font-size: var(--ps-font-tiny);
+	font-size: var(--ps-font-small);
 	line-height: 1.6;
 	margin-left: 8px;
 }
