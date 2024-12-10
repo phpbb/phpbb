@@ -615,12 +615,12 @@ a.header-avatar img {
 .breadcrumbs .crumb {
 	font-weight: bold;
 	word-wrap: normal;
-	float: left;
+	display: inline-block;
 }
 
 .breadcrumbs .crumb:before {
 	font-weight: bold;
-	padding: 0 0.5em;
+	padding: 0 0.1em;
 	content: "\203A";
 }
 
