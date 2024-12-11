@@ -1904,8 +1904,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		// It is safe to grab the username from the user cache array, we are at the last
 		// post and only the topic poster and last poster are allowed to bump.
 		// Admins and mods are bound to the above rules too...
-		$display_username = get_username_string('full', $topic_data['topic_bumper'], $user_cache[$topic_data['topic_bumper']]['username'], $user_cache[$topic_data['topic_bumper']]['user_colour']);
-		$l_bumped_by = sprintf($user->lang['BUMPED_BY'], $display_username, $user->format_date($topic_data['topic_last_post_time'], false, true));
+		$l_bumped_by = sprintf($user->lang['BUMPED_BY'], $user_cache[$topic_data['topic_bumper']]['username'], $user->format_date($topic_data['topic_last_post_time'], false, true));
 	}
 	else
 	{
