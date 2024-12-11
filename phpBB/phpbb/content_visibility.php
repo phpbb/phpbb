@@ -441,12 +441,15 @@ class content_visibility
 		{
 			$post_ids[] = (int) $row['post_id'];
 
-			if ($row['post_visibility'] != $visibility)
+			if ($row['post_visibility'] != $visibility )
 			{
 				if ($row['post_postcount'] && !isset($poster_postcounts[(int) $row['poster_id']]))
 				{
-					$poster_postcounts[(int) $row['poster_id']] = 1;
+					if($row['post_visibility'] != 0 || $visibility != ITEM_DELETED ){
+						$poster_postcounts[(int) $row['poster_id']] = 1;
+					}
 				}
+				
 				else if ($row['post_postcount'])
 				{
 					$poster_postcounts[(int) $row['poster_id']]++;
