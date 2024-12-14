@@ -27,7 +27,6 @@
 	},
 	"require": {
 		"php": "^8.1",
-		"ext-json": "*",
 		"ext-pdo": "*",
 		"ext-zlib": "*",
 		"bantu/ini-get-wrapper": "~1.0",
