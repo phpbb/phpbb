@@ -244,7 +244,7 @@ class webpush
 		$this->user_loader->load_users($notification->users_to_query());
 
 		return json_encode([
-			'heading'	=> $this->config['sitename'],
+			'heading'	=> html_entity_decode($this->config['sitename'], ENT_QUOTES, 'UTF-8'),
 			'title'		=> strip_tags(html_entity_decode($notification->get_title(), ENT_NOQUOTES, 'UTF-8')),
 			'text'		=> strip_tags(html_entity_decode($notification->get_reference(), ENT_NOQUOTES, 'UTF-8')),
 			'url'		=> htmlspecialchars_decode($notification->get_url()),
