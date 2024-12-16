@@ -63,10 +63,10 @@ class mysqli extends \phpbb\db\driver\mysql_base
 
 		if (!@mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS))
 		{
-			$this->db_connect_id = '';
+			$this->connect_error = 'Failed to establish a connection to the MySQL database engine. Please ensure MySQL server is running and the database configuration parameters are correct.';
 		}
 
-		if ($this->db_connect_id && $this->dbname != '')
+		if (!$this->connect_error && $this->db_connect_id && $this->dbname != '')
 		{
 			// Disable loading local files on client side
 			@mysqli_options($this->db_connect_id, MYSQLI_OPT_LOCAL_INFILE, false);
