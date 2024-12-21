@@ -80,12 +80,12 @@ class manifest
 		 *
 		 * @event core.modify_manifest
 		 * @var	array	manifest	    Array of manifest members
-		 * @var	string	board_url	    Url to the board root
+		 * @var	string	board_path	    Path to the board root
 		 * @var	string	sitename	    Full name of the board
 		 * @var	string	sitename_short	Shortened name of the board
 		 * @since 4.0.0-a1
 		 */
-		$vars = ['manifest', 'board_url', 'sitename', 'sitename_short'];
+		$vars = ['manifest', 'board_path', 'sitename', 'sitename_short'];
 		extract($this->phpbb_dispatcher->trigger_event('core.modify_manifest', compact($vars)));
 
 		$response = new JsonResponse($manifest);
