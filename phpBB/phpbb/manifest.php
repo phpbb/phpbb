@@ -93,6 +93,10 @@ class manifest
 		$vars = array('manifest', 'board_path');
 		extract($this->phpbb_dispatcher->trigger_event('core.modify_manifest', compact($vars)));
 
-		return new JsonResponse($manifest);
+		$response = new JsonResponse($manifest);
+		$response->setPublic();
+		$response->setMaxAge(3600);
+		$response->headers->addCacheControlDirective('must-revalidate', true);
+		return $response;
 	}
 }
