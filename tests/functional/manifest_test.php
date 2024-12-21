@@ -25,7 +25,6 @@ class phpbb_functional_manifest_test extends phpbb_functional_test_case
 			'short_name'	=> 'yourdomain',
 			'display'		=> 'standalone',
 			'orientation'	=> 'portrait',
-			'dir'			=> 'ltr',
 			'start_url'		=> $url_path,
 			'scope'			=> $url_path,
 		];
