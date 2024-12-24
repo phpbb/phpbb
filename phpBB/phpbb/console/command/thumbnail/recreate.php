@@ -29,6 +29,7 @@ class recreate extends \phpbb\console\command\command
 	/**
 	 * Constructor
 	 *
+	 * @param user $user User
 	 * @param language $language Language
 	 */
 	public function __construct(user $user, language $language)

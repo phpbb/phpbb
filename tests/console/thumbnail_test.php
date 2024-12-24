@@ -25,6 +25,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	protected $cache;
 	protected $user;
 	protected $storage;
+	protected $temp;
 	protected $phpEx;
 	protected $phpbb_root_path;
 	protected $application;
@@ -75,8 +76,13 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 			unlink($phpbb_root_path . 'files/' . $path);
 		});
 
+		$this->temp = $this->createMock('\phpbb\filesystem\temp');
+		$this->temp->method('get_dir')->willReturnCallback(function () {
+			return sys_get_temp_dir();
+		});
+
 		$this->application = new Application();
-		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->phpbb_root_path, $this->phpEx));
+		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->temp, $this->phpbb_root_path, $this->phpEx));
 		$this->application->add(new delete($this->user, $this->db, $this->language, $this->storage));
 		$this->application->add(new recreate($this->user, $this->language));
 

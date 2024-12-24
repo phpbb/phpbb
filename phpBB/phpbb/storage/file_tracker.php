@@ -19,7 +19,6 @@ use phpbb\storage\exception\storage_exception;
 
 class file_tracker
 {
-
 	/**
 	 * @var db
 	 */
@@ -59,11 +58,11 @@ class file_tracker
 	 */
 	public function track_file(string $storage, string $path, int $size): void
 	{
-		$sql_ary = array(
+		$sql_ary = [
 			'file_path'		=> $path,
 			'storage'		=> $storage,
 			'filesize'		=> $size,
-		);
+		];
 
 		$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
 		$this->db->sql_query($sql);
@@ -80,10 +79,10 @@ class file_tracker
 	 */
 	public function untrack_file(string $storage, $path): void
 	{
-		$sql_ary = array(
+		$sql_ary = [
 			'file_path'		=> $path,
 			'storage'		=> $storage,
-		);
+		];
 
 		$sql = 'DELETE FROM ' . $this->storage_table . '
 			WHERE ' . $this->db->sql_build_array('DELETE', $sql_ary);
@@ -103,13 +102,14 @@ class file_tracker
 	 */
 	public function is_tracked(string $storage, string $path): bool
 	{
-		$sql_ary = array(
+		$sql_ary = [
 			'file_path'		=> $path,
 			'storage'		=> $storage,
-		);
+		];
 
-		$sql = 'SELECT file_id FROM ' .  $this->storage_table . '
-				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$sql = 'SELECT file_id
+			FROM ' .  $this->storage_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -128,13 +128,14 @@ class file_tracker
 	 */
 	public function file_size(string $storage, string $path): int
 	{
-		$sql_ary = array(
+		$sql_ary = [
 			'file_path'		=> $path,
 			'storage'		=> $storage,
-		);
+		];
 
-		$sql = 'SELECT filesize FROM ' .  $this->storage_table . '
-				WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
+		$sql = 'SELECT filesize
+			FROM ' .  $this->storage_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

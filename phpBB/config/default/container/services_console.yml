@@ -299,6 +299,7 @@ services:
             - '@cache'
             - '@language'
             - '@storage.attachment'
+            - '@filesystem.temp'
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:

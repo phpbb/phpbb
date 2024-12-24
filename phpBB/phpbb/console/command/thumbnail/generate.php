@@ -13,8 +13,10 @@
 
 namespace phpbb\console\command\thumbnail;
 
+use phpbb\attachment\attachment_category;
 use phpbb\cache\service;
 use phpbb\db\driver\driver_interface;
+use phpbb\filesystem\temp;
 use phpbb\language\language;
 use phpbb\storage\storage;
 use phpbb\user;
@@ -22,6 +24,7 @@ use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem as symfony_filesystem;
 
 class generate extends \phpbb\console\command\command
 {
@@ -42,9 +45,19 @@ class generate extends \phpbb\console\command\command
 	protected $language;
 
 	/**
+	 * @var symfony_filesystem
+	 */
+	protected $symfony_filesystem;
+
+	/**
 	 * @var storage
 	 */
 	protected $storage;
+
+	/**
+	 * @var temp
+	 */
+	protected $temp;
 
 	/**
 	* phpBB root path
@@ -67,15 +80,18 @@ class generate extends \phpbb\console\command\command
 	* @param service $cache The cache service
 	* @param language $language Language
 	* @param storage $storage Storage
+	* @param temp $temp Temp
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(user $user, driver_interface $db, service $cache, language $language, storage $storage, string $phpbb_root_path, string $php_ext)
+	public function __construct(user $user, driver_interface $db, service $cache, language $language, storage $storage, temp $temp, string $phpbb_root_path, string $php_ext)
 	{
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->symfony_filesystem = new symfony_filesystem();
 		$this->language = $language;
 		$this->storage = $storage;
+		$this->temp = $temp;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -145,10 +161,10 @@ class generate extends \phpbb\console\command\command
 		$thumbnail_created = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == \phpbb\attachment\attachment_category::IMAGE)
+			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == attachment_category::IMAGE)
 			{
-				$source = tempnam(sys_get_temp_dir(), 'thumbnail_source');
-				$destination = tempnam(sys_get_temp_dir(), 'thumbnail_destination');
+				$source = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_source');
+				$destination = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_destination');
 
 				file_put_contents($source, $this->storage->read($row['physical_filename']));
 

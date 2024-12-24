@@ -36,11 +36,11 @@ class storage_backup_data extends migration
 		$methods = ['sql', 'sql.gz', 'sql.bz2'];
 
 		$dir = $this->phpbb_root_path . 'store/';
-		$dh = @opendir($dir);
+		$handle = @opendir($dir);
 
-		if ($dh)
+		if ($handle)
 		{
-			while (($file = readdir($dh)) !== false)
+			while (($file = readdir($handle)) !== false)
 			{
 				if (preg_match('#^backup_(\d{10,})_(?:[a-z\d]{16}|[a-z\d]{32})\.(sql(?:\.(?:gz|bz2))?)$#i', $file, $matches))
 				{
@@ -58,7 +58,7 @@ class storage_backup_data extends migration
 
 			}
 
-			closedir($dh);
+			closedir($handle);
 		}
 	}
 }
