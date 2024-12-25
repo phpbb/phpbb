@@ -30,6 +30,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 			$this->db,
 			$this->config,
 			$this->language,
+			$this->email,
 			$this->passwords_manager,
 			$this->phpbb_root_path,
 			$this->php_ext
