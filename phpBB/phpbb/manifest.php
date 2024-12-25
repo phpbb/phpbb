@@ -15,18 +15,12 @@ namespace phpbb;
 
 use phpbb\config\config;
 use phpbb\event\dispatcher_interface;
-use phpbb\exception\http_exception;
-use phpbb\language\language;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class manifest
 {
 	/** @var config */
 	protected $config;
-
-	/** @var language */
-	protected $language;
 
 	/** @var path_helper */
 	protected $path_helper;
@@ -41,17 +35,15 @@ class manifest
 	 * Constructor for manifest controller
 	 *
 	 * @param config $config
-	 * @param language $language
 	 * @param path_helper $path_helper
 	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param user $user
 	 */
-	public function __construct(config $config, language $language, path_helper $path_helper, dispatcher_interface $phpbb_dispatcher, user $user)
+	public function __construct(config $config, path_helper $path_helper, dispatcher_interface $phpbb_dispatcher, user $user)
 	{
 		$this->config = $config;
 		$this->path_helper = $path_helper;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-		$this->language = $language;
 		$this->user = $user;
 	}
 
@@ -62,11 +54,6 @@ class manifest
 	 */
 	public function handle(): JsonResponse
 	{
-		if ($this->user->data['is_bot'])
-		{
-			throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
-		}
-
 		$board_path = $this->config['force_server_vars'] ? $this->config['script_path'] : $this->path_helper->get_web_root_path();
 
 		$sitename = html_entity_decode($this->config['sitename'], ENT_QUOTES, 'UTF-8');
@@ -77,7 +64,6 @@ class manifest
 			'short_name'	=> $sitename_short ?: utf8_substr($sitename, 0, 12),
 			'display'		=> 'standalone',
 			'orientation'	=> 'portrait',
-			'dir'			=> $this->language->lang('DIRECTION'),
 			'start_url'		=> $board_path,
 			'scope'			=> $board_path,
 		];
@@ -86,13 +72,26 @@ class manifest
 		 * Event to modify manifest data before it is outputted
 		 *
 		 * @event core.modify_manifest
-		 * @var	array	manifest	Array of manifest members
-		 * @var	string	board_path	Path to the board root
+		 * @var	array	manifest	    Array of manifest members
+		 * @var	string	board_path	    Path to the board root
+		 * @var	string	sitename	    Full name of the board
+		 * @var	string	sitename_short	Shortened name of the board
 		 * @since 4.0.0-a1
 		 */
-		$vars = array('manifest', 'board_path');
+		$vars = ['manifest', 'board_path', 'sitename', 'sitename_short'];
 		extract($this->phpbb_dispatcher->trigger_event('core.modify_manifest', compact($vars)));
 
-		return new JsonResponse($manifest);
+		$response = new JsonResponse($manifest);
+		$response->setPublic();
+		$response->setMaxAge(3600);
+		$response->headers->addCacheControlDirective('must-revalidate', true);
+
+		if (!empty($this->user->data['is_bot']))
+		{
+			// Let reverse proxies know we detected a bot.
+			$response->headers->set('X-PHPBB-IS-BOT', 'yes');
+		}
+
+		return $response;
 	}
 }
