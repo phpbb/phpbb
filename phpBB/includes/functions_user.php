@@ -2759,6 +2759,28 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		return 'GROUP_USERS_EXIST';
 	}
 
+	/**
+	 * Event before users are added to a group
+	 *
+	 * @event core.group_add_user_before
+	 * @var	int		group_id		ID of the group to which users are added
+	 * @var	string 	group_name		Name of the group
+	 * @var	array	user_id_ary		IDs of the users to be added
+	 * @var	array	username_ary	Names of the users to be added
+	 * @var	int		pending			Pending setting, 1 if user(s) added are pending
+	 * @var	array	add_id_ary		IDs of the users to be added who are not members yet
+	 * @since 3.3.15-RC1
+	 */
+	$vars = array(
+		'group_id',
+		'group_name',
+		'user_id_ary',
+		'username_ary',
+		'pending',
+		'add_id_ary',
+	);
+	extract($phpbb_dispatcher->trigger_event('core.group_add_user_before', compact($vars)));
+
 	$db->sql_transaction('begin');
 
 	// Insert the new users
