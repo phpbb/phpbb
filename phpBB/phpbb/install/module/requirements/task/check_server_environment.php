@@ -68,9 +68,6 @@ class check_server_environment extends \phpbb\install\task_base
 		// Check for PCRE support
 		$this->check_pcre();
 
-		// Check for JSON support
-		$this->check_json();
-
 		// Check for mbstring support
 		$this->check_mbstring();
 
@@ -138,22 +135,6 @@ class check_server_environment extends \phpbb\install\task_base
 		}
 
 		$this->response_helper->add_error_message('PCRE_UTF_SUPPORT', 'PCRE_UTF_SUPPORT_EXPLAIN');
-
-		$this->set_test_passed(false);
-	}
-
-	/**
-	 * Checks whether PHP's JSON extension is available or not
-	 */
-	protected function check_json()
-	{
-		if (@extension_loaded('json'))
-		{
-			$this->set_test_passed(true);
-			return;
-		}
-
-		$this->response_helper->add_error_message('PHP_JSON_SUPPORT', 'PHP_JSON_SUPPORT_EXPLAIN');
 
 		$this->set_test_passed(false);
 	}
