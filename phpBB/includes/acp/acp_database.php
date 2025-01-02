@@ -162,12 +162,7 @@ class acp_database
 								throw new \phpbb\exception\runtime_exception('CANNOT_OPEN_FILE');
 							}
 
-							$storage->write_stream($file, $fp);
-
-							if (is_resource($fp))
-							{
-								fclose($fp);
-							}
+							$storage->write($file, $fp);
 
 							// Remove file from tmp
 							@unlink($temp_dir . '/' . $file);
@@ -279,7 +274,7 @@ class acp_database
 
 							try
 							{
-								$stream = $storage->read_stream($backup_info['file_name']);
+								$stream = $storage->read($backup_info['file_name']);
 								$fp = fopen($temp_file_name, 'w+b');
 
 								stream_copy_to_stream($stream, $fp);

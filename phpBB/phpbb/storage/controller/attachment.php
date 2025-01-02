@@ -293,11 +293,11 @@ class attachment extends controller
 	/**
 	 * Remove non valid characters https://github.com/symfony/http-foundation/commit/c7df9082ee7205548a97031683bc6550b5dc9551
 	 */
-	protected function filenameFallback($filename)
+	protected function filenameFallback($filename): string
 	{
-		$filename = preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
+		$filename = (string) preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
 
-		return (!empty($filename)) ?: 'File';
+		return !empty($filename) ? $filename : 'File';
 	}
 
 	/**
@@ -305,7 +305,7 @@ class attachment extends controller
 	 */
 	protected function prepare(StreamedResponse $response, string $file): void
 	{
-		$response->setPrivate();	// By default should be private, but make sure of it
+		$response->setPrivate();	// By default, should be private, but make sure of it
 
 		parent::prepare($response, $file);
 	}
@@ -445,7 +445,7 @@ class attachment extends controller
 
 		if (!$url)
 		{
-			return ($this->config['secure_allow_empty_referer']) ? true : false;
+			return (bool) $this->config['secure_allow_empty_referer'];
 		}
 
 		// Split URL into domain and script part
@@ -453,13 +453,13 @@ class attachment extends controller
 
 		if ($url === false)
 		{
-			return ($this->config['secure_allow_empty_referer']) ? true : false;
+			return (bool) $this->config['secure_allow_empty_referer'];
 		}
 
 		$hostname = $url['host'];
 		unset($url);
 
-		$allowed = ($this->config['secure_allow_deny']) ? false : true;
+		$allowed = !$this->config['secure_allow_deny'];
 		$iplist = array();
 
 		if (($ip_ary = @gethostbynamel($hostname)) !== false)
