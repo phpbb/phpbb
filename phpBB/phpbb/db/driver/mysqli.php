@@ -59,9 +59,12 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			}
 		}
 
-		$this->db_connect_id = mysqli_init();
+		if (!$this->db_connect_id = mysqli_init())
+		{
+			$this->connect_error = 'Failed to initialize MySQLi object.';
 
-		if (!@mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS))
+		}
+		else if (!@mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS))
 		{
 			$this->connect_error = 'Failed to establish a connection to the MySQL database engine. Please ensure MySQL server is running and the database configuration parameters are correct.';
 		}
@@ -357,15 +360,8 @@ class mysqli extends \phpbb\db\driver\mysql_base
 		if ($this->db_connect_id)
 		{
 			$error = [
-				'message'	=> $this->db_connect_id->error,
-				'code'		=> $this->db_connect_id->errno,
-			];
-		}
-		else if (function_exists('mysqli_connect_error'))
-		{
-			$error = [
-				'message'	=> $this->db_connect_id->connect_error,
-				'code'		=> $this->db_connect_id->connect_errno,
+				'message'	=> $this->db_connect_id->connect_error ?: $this->db_connect_id->error,
+				'code'		=> $this->db_connect_id->connect_errno ?: $this->db_connect_id->errno,
 			];
 		}
 		else
