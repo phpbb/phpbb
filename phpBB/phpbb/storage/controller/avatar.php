@@ -90,7 +90,7 @@ class avatar extends controller
 		}
 
 		$ext	= substr(strrchr($file, '.'), 1);
-		$file	= (int) $file;
+		$file	= (int) $file; // This removes the timestamp leaving only the user id
 
 		return $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $file . '.' . $ext;
 	}

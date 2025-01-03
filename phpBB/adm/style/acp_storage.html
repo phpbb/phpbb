@@ -47,7 +47,7 @@
 						{% for provider in PROVIDERS %}
 							{% if provider.is_available %}
 								<option value="{{ get_class(provider) }}"{{ attribute(config, 'storage\\' ~ storage.get_name ~ '\\provider') ==  get_class(provider) ? ' selected' : '' }} data-toggle-setting="#{{ storage.get_name }}_{{ provider.get_name }}_settings">
-									{{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}
+									{{ provider.get_title }}
 								</option>
 							{% endif %}
 						{% endfor %}
@@ -59,43 +59,42 @@
 		{% for provider in PROVIDERS %}
 			{% if provider.is_available %}
 				<fieldset id="{{ storage.get_name }}_{{ provider.get_name }}_settings">
-					<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ lang('STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_NAME') }}</legend>
+					<legend>{{ lang('STORAGE_' ~ storage.get_name | upper ~ '_TITLE') }} - {{ provider.get_title }}</legend>
 					{% for name, options in provider.get_options %}
 						<dl>
 							<dt>
-								{% set title = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper %}
-								{% set description = 'STORAGE_ADAPTER_' ~ provider.get_name | upper ~ '_OPTION_' ~ name | upper ~ '_EXPLAIN' %}
-								<label>{{ lang(title) ~ lang('COLON') }}</label>
-								{% if lang_defined(description) %}
-									<br /><span>{{ lang(description) }}</span>
+								<label>{{ options.title ~ lang('COLON') }}</label>
+								{% if options.description %}
+									<br /><span>{{ options.description }}</span>
 								{% endif %}
 							</dt>
 							<dd>
 								{% set input_name = storage.get_name ~ '[' ~ name ~ ']' %}
 								{% set input_value = attribute(config, 'storage\\' ~ storage.get_name ~ '\\config\\' ~ name) %}
+								{% set form_macro = options.form_macro %}
 
-								{% if options.tag == 'input' %}
-									{{ FormsInput(options | merge({"name": input_name, "value": input_value})) }}
-								{% elseif options.tag == 'textarea' %}
-									{{ FormsTextarea(options | merge({"name": input_name, "content": input_value})) }}
-								{% elseif options.tag == 'radio' %}
+								{% if form_macro.tag == 'input' %}
+									{{ FormsInput(form_macro | merge({"name": input_name, "value": input_value})) }}
+								{% elseif form_macro.tag == 'textarea' %}
+									{{ FormsTextarea(form_macro | merge({"name": input_name, "content": input_value})) }}
+								{% elseif form_macro.tag == 'radio' %}
 									{% set buttons = [] %}
 
-									{% for button in options.buttons %}
+									{% for button in form_macro.buttons %}
 										{% set new_button = button | merge({"name": input_name, "checked": button.value == input_value}) %}
 										{% set buttons = buttons | merge([new_button]) %}
 									{% endfor %}
 
-									{{ FormsRadioButtons(options | merge({"buttons": buttons})) }}
-								{% elseif options.tag == 'select' %}
+									{{ FormsRadioButtons(form_macro | merge({"buttons": buttons})) }}
+								{% elseif form_macro.tag == 'select' %}
 									{% set select_options = [] %}
 
-									{% for option in options.options %}
+									{% for option in form_macro.options %}
 										{% set new_option = option | merge({"selected": option.value == input_value}) %}
 										{% set select_options = select_options | merge([new_option]) %}
 									{% endfor %}
 
-									{{ FormsSelect(options | merge({"name": input_name, "options": select_options})) }}
+									{{ FormsSelect(form_macro | merge({"name": input_name, "options": select_options})) }}
 								{% endif %}
 							</dd>
 						</dl>
@@ -109,9 +108,9 @@
 		<dl>
 			<dt><label for="update_type">{{ lang('STORAGE_UPDATE_TYPE') ~ lang('COLON') }}</label></dt>
 			<dd>
-				<label><input id="update_type" class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_CONFIG }}" checked="checked" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_CONFIG') }}</label>
+				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_CONFIG }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_CONFIG') }}</label>
 				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_COPY }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_COPY') }}</label>
-				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_MOVE }}" type="radio"> {{ lang('STORAGE_UPDATE_TYPE_MOVE') }}</label>
+				<label><input class="radio" name="update_type" value="{{ STORAGE_UPDATE_TYPE_MOVE }}" type="radio" checked="checked" id="update_type"> {{ lang('STORAGE_UPDATE_TYPE_MOVE') }}</label>
 			</dd>
 		</dl>
 	</fieldset>

@@ -159,7 +159,7 @@ class controller
 
 		@set_time_limit(0);
 
-		$fp = $this->storage->read_stream($file);
+		$fp = $this->storage->read($file);
 
 		// Close db connection
 		$this->file_gc();
@@ -173,7 +173,7 @@ class controller
 			flush();
 
 			// Terminate script to avoid the execution of terminate events
-			// This avoid possible errors with db connection closed
+			// This avoids possible errors with db connection closed
 			exit;
 		});
 
