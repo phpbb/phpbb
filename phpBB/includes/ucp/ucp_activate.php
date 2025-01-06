@@ -135,7 +135,7 @@ class ucp_activate
 			$messenger_collection_iterator = $messenger->getIterator();
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
-				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == NOTIFY_BOTH)
+				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
 				{
 					$messenger_method->set_use_queue(false);
 					$messenger_method->template('admin_welcome_activated', $user_row['user_lang']);

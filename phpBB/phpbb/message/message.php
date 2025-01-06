@@ -13,6 +13,8 @@
 
 namespace phpbb\message;
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * Class message
 * Holds all information for an email and sends it in the end
@@ -46,7 +48,7 @@ class message
 	/** @var string */
 	protected $sender_jabber = '';
 	/** @var int */
-	protected $sender_notify_type = NOTIFY_EMAIL;
+	protected $sender_notify_type = messenger_interface::NOTIFY_EMAIL;
 
 	/** @var array */
 	protected $recipients;
@@ -134,7 +136,7 @@ class message
 	* @param string $recipient_jabber
 	* @return void
 	*/
-	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = NOTIFY_EMAIL, $recipient_username = '', $recipient_jabber = '')
+	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = messenger_interface::NOTIFY_EMAIL, $recipient_username = '', $recipient_jabber = '')
 	{
 		$this->recipients[] = array(
 			'name'			=> $recipient_name,
@@ -250,7 +252,7 @@ class message
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				$messenger_method->set_use_queue(false);
-				if ($messenger_method->get_id() == $recipient['notify_type'] || $recipient['notify_type'] == NOTIFY_BOTH)
+				if ($messenger_method->get_id() == $recipient['notify_type'] || $recipient['notify_type'] == $messenger_method::NOTIFY_BOTH)
 				{
 					$messenger_method->template($this->template, $recipient['lang']);
 					$messenger_method->set_addresses($recipient);

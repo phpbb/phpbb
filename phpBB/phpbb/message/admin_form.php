@@ -13,6 +13,8 @@
 
 namespace phpbb\message;
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * Class admin_form
 * Displays a message to the user and allows him to send an email
@@ -155,7 +157,7 @@ class admin_form extends form
 			}
 
 			$this->message->set_sender($this->user->ip, $this->sender_name, $this->sender_address, $this->user->lang_name);
-			$this->message->set_sender_notify_type(NOTIFY_EMAIL);
+			$this->message->set_sender_notify_type(messenger_interface::NOTIFY_EMAIL);
 		}
 
 		$this->message->set_template('contact_admin');
@@ -165,7 +167,7 @@ class admin_form extends form
 			$this->user->lang['ADMINISTRATOR'],
 			$this->config['board_contact'],
 			$this->config['default_lang'],
-			NOTIFY_EMAIL
+			messenger_interface::NOTIFY_EMAIL
 		);
 
 		$this->message->set_template_vars(array(

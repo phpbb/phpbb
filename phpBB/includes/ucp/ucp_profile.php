@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * @ignore
 */
@@ -363,11 +365,11 @@ class ucp_profile
 					{
 						$data['notify'] = $user->data['user_notify_type'];
 
-						if ($data['notify'] == NOTIFY_IM && (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml')))
+						if ($data['notify'] == messenger_interface::NOTIFY_IM && (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml')))
 						{
 							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
 							// Disable notify by Jabber now for this user.
-							$data['notify'] = NOTIFY_EMAIL;
+							$data['notify'] = messenger_interface::NOTIFY_EMAIL;
 						}
 
 						$sql_ary = array(

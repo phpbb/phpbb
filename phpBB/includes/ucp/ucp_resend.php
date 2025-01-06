@@ -139,7 +139,7 @@ class ucp_resend
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$messenger_method->set_use_queue(false);
-						if ($messenger_method->get_id() == $row['user_notify_type'] || $row['user_notify_type'] == NOTIFY_BOTH)
+						if ($messenger_method->get_id() == $row['user_notify_type'] || $row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
 						{
 							$messenger_method->template('admin_activate', $row['user_lang']);
 							$messenger_method->set_addresses($row);

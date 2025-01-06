@@ -75,7 +75,7 @@ class email extends base
 	 */
 	public function get_id(): int
 	{
-		return NOTIFY_EMAIL;
+		return self::NOTIFY_EMAIL;
 	}
 
 	/**

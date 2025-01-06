@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * @ignore
 */
@@ -52,10 +54,10 @@ class ucp_prefs
 					'allowpm'		=> $request->variable('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
-				if ($data['notifymethod'] == NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
+				if ($data['notifymethod'] == messenger_interface::NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
 				{
 					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
-					$data['notifymethod'] = NOTIFY_BOTH;
+					$data['notifymethod'] = messenger_interface::NOTIFY_BOTH;
 				}
 
 				/**
@@ -182,9 +184,9 @@ class ucp_prefs
 				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
-					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
-					'S_NOTIFY_IM'		=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
-					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
+					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == messenger_interface::NOTIFY_EMAIL) ? true : false,
+					'S_NOTIFY_IM'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_IM) ? true : false,
+					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_BOTH) ? true : false,
 					'S_VIEW_EMAIL'		=> $data['viewemail'],
 					'S_MASS_EMAIL'		=> $data['massemail'],
 					'S_ALLOW_PM'		=> $data['allowpm'],

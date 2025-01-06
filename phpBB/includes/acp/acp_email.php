@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * @ignore
 */
@@ -156,9 +158,9 @@ class acp_email
 
 				foreach ($rows as $row)
 				{
-					if (($row['user_notify_type'] == NOTIFY_EMAIL && $row['user_email']) ||
-						($row['user_notify_type'] == NOTIFY_IM && $row['user_jabber']) ||
-						($row['user_notify_type'] == NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
+					if (($row['user_notify_type'] == messenger_interface::NOTIFY_EMAIL && $row['user_email']) ||
+						($row['user_notify_type'] == messenger_interface::NOTIFY_IM && $row['user_jabber']) ||
+						($row['user_notify_type'] == messenger_interface::NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
 					{
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
@@ -228,14 +230,14 @@ class acp_email
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$notify_method = $messenger_method->get_id();
-						if ($notify_method == $used_method || $used_method == NOTIFY_BOTH)
+						if ($notify_method == $used_method || $used_method == messenger_interface::NOTIFY_BOTH)
 						{
 							$messenger_method->set_use_queue($use_queue);
 							$messenger_method->template($email_template, $used_lang);
 							$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
 							$messenger_method->assign_vars($template_data);
 
-							if ($notify_method == NOTIFY_EMAIL)
+							if ($notify_method == messenger_interface::NOTIFY_EMAIL)
 							{
 								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
 								{
@@ -243,7 +245,6 @@ class acp_email
 									if (count($email_list[$i]) == 1)
 									{
 										$messenger_method->to($email_row['email'], $email_row['name']);
-									
 									}
 									else
 									{
@@ -254,7 +255,7 @@ class acp_email
 								$messenger_method->anti_abuse_headers($config, $user);
 								$messenger_method->set_mail_priority($priority);
 							}
-							else if ($notify_method == NOTIFY_IM)
+							else if ($notify_method == messenger_interface::NOTIFY_IM)
 							{
 								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
 								{

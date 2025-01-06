@@ -115,7 +115,7 @@ class jabber extends base
 	 */
 	public function get_id(): int
 	{
-		return NOTIFY_IM;
+		return self::NOTIFY_IM;
 	}
 
 	/**

@@ -18,6 +18,7 @@ use phpbb\user;
 use phpbb\user_loader;
 use phpbb\config\config;
 use phpbb\di\service_collection;
+use phpbb\messenger\method\messenger_interface;
 
 /**
 * Jabber notification method class
@@ -98,6 +99,6 @@ class jabber extends \phpbb\notification\method\messenger_base
 			return;
 		}
 
-		$this->notify_using_messenger(NOTIFY_IM, 'short/');
+		$this->notify_using_messenger(messenger_interface::NOTIFY_IM, 'short/');
 	}
 }

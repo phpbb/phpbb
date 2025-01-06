@@ -16,6 +16,7 @@
 */
 
 use phpbb\controller\helper;
+use phpbb\messenger\method\messenger_interface;
 
 if (!defined('IN_PHPBB'))
 {
@@ -1792,9 +1793,9 @@ class acp_users
 					'MASS_EMAIL'		=> $data['massemail'],
 					'ALLOW_PM'			=> $data['allowpm'],
 					'HIDE_ONLINE'		=> $data['hideonline'],
-					'NOTIFY_EMAIL'		=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
-					'NOTIFY_IM'			=> ($data['notifymethod'] == NOTIFY_IM) ? true : false,
-					'NOTIFY_BOTH'		=> ($data['notifymethod'] == NOTIFY_BOTH) ? true : false,
+					'NOTIFY_EMAIL'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_EMAIL) ? true : false,
+					'NOTIFY_IM'			=> ($data['notifymethod'] == messenger_interface::NOTIFY_IM) ? true : false,
+					'NOTIFY_BOTH'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],
