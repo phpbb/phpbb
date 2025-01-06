@@ -15,7 +15,6 @@ namespace phpbb\template\twig;
 
 use Twig\Error\RuntimeError;
 use Twig\Extension\CoreExtension;
-use Twig\Extension\EscaperExtension;
 use Twig\Runtime\EscaperRuntime;
 
 class extension extends \Twig\Extension\AbstractExtension
