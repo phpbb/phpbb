@@ -110,9 +110,7 @@ class email extends base
 	}
 
 	/**
-	 * Sets the use of messenger queue flag
-	 *
-	 * @return void
+	 * {@inheritdoc}
 	 */
 	public function set_use_queue(bool $use_queue = true): void
 	{
@@ -124,7 +122,7 @@ class email extends base
 	 */
 	public function set_addresses(array $user_row): void
 	{
-		if (isset($user_row['user_email']) && $user_row['user_email'])
+		if (!empty($user_row['user_email']))
 		{
 			$this->to($user_row['user_email'], $user_row['username'] ?: '');
 		}
@@ -295,8 +293,8 @@ class email extends base
 			'Return-Path'		=> new Address($this->config['board_email']),
 			'Sender'			=> new Address($this->config['board_email']),
 			'X-MSMail-Priority'	=> self::PRIORITY_MAP[$this->mail_priority],
-			'X-Mailer'			=> 'phpBB3',
-			'X-MimeOLE'			=> 'phpBB3',
+			'X-Mailer'			=> 'phpBB',
+			'X-MimeOLE'			=> 'phpBB',
 			'X-phpBB-Origin'	=> 'phpbb://' . str_replace(['http://', 'https://'], ['', ''], generate_board_url()),
 		];
 
@@ -472,6 +470,7 @@ class email extends base
 		$this->email->subject($this->subject);
 		$this->email->text($this->msg);
 
+		$break = false;
 		$subject = $this->subject;
 		$msg = $this->msg;
 		$email = $this->email;
@@ -479,13 +478,15 @@ class email extends base
 		 * Event to send message via external transport
 		 *
 		 * @event core.notification_message_email
+		 * @var	bool	break	Flag indicating if the function return after hook
 		 * @var	string	subject	The message subject
 		 * @var	string	msg		The message text
 		 * @var	string	email	The Symfony Email object
 		 * @since 3.2.4-RC1
-		 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses, break
+		 * @changed 4.0.0-a1 Added vars: email. Removed vars: addresses
 		 */
 		$vars = [
+			'break',
 			'subject',
 			'msg',
 			'email',
@@ -494,6 +495,11 @@ class email extends base
 		$this->email = $email;
 
 		$this->build_headers();
+
+		if ($break)
+		{
+			return true;
+		}
 
 		// Send message ...
 		if (!$this->use_queue)

@@ -191,7 +191,7 @@ class jabber extends base
 	 */
 	public function port(int $port = 5222): self
 	{
-		$this->port	= ($port) ? $port : 5222;
+		$this->port	= ($port > 0) ? $port : 5222;
 
 		// Change port if we use SSL
 		if ($this->port == 5222 && $this->use_ssl)
@@ -210,14 +210,14 @@ class jabber extends base
 	 */
 	public function username(string $username = ''): self
 	{
-		if (strpos($username, '@') === false)
-		{
-			$this->username = $username;
-		}
-		else
+		if (str_contains($username, '@'))
 		{
 			$this->jid = explode('@', $username, 2);
 			$this->username = $this->jid[0];
+		}
+		else
+		{
+			$this->username = $username;
 		}
 
 		return $this;
@@ -232,7 +232,7 @@ class jabber extends base
 	 */
 	public function server(string $server = ''): self
 	{
-		$this->connect_server = ($server) ? $server : 'localhost';
+		$this->connect_server = $server ?: 'localhost';
 		$this->server = $this->jid[1] ?? $this->connect_server;
 
 		return $this;
@@ -407,7 +407,7 @@ class jabber extends base
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Resets all the data (address, template file, etc) to default
 	 */
 	public function reset(): void
 	{
@@ -663,7 +663,7 @@ class jabber extends base
 	}
 
 	/**
-	 * Initiates account registration (based on data used for contructor)
+	 * Initiates account registration (based on data used for constructor)
 	 *
 	 * @return bool|null
 	 */
@@ -714,7 +714,7 @@ class jabber extends base
 	 */
 	function response(array $xml): bool
 	{
-		if (!is_array($xml) || !count($xml))
+		if (!count($xml))
 		{
 			return false;
 		}

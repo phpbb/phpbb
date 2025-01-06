@@ -14,6 +14,9 @@
 namespace phpbb\template\twig;
 
 use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\EscaperExtension;
+use Twig\Runtime\EscaperRuntime;
 
 class extension extends \Twig\Extension\AbstractExtension
 {
@@ -164,8 +167,7 @@ class extension extends \Twig\Extension\AbstractExtension
 		// We always include the last element (this was the past design)
 		$end = ($end == -1 || $end === null) ? null : $end + 1;
 
-		/** @psalm-suppress UndefinedFunction */
-		return twig_slice($env, $item, $start, $end, $preserveKeys);
+		return CoreExtension::slice($env->getCharset(), $item, $start, $end, $preserveKeys);
 	}
 
 	/**
@@ -214,8 +216,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	{
 		$args = func_get_args();
 
-		/** @psalm-suppress UndefinedFunction */
-		return twig_escape_filter($this->environment, call_user_func_array([$this, 'lang'], $args), 'js');
+		return $this->environment->getRuntime(EscaperRuntime::class)->escape(call_user_func_array([$this, 'lang'], $args), 'js');
 	}
 
 	/**

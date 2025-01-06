@@ -227,25 +227,34 @@ class acp_email
 
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
-						if ($messenger_method->get_id() == $used_method || $used_method == NOTIFY_BOTH)
+						$notify_method = $messenger_method->get_id();
+						if ($notify_method == $used_method || $used_method == NOTIFY_BOTH)
 						{
 							$messenger_method->set_use_queue($use_queue);
 							$messenger_method->template($email_template, $used_lang);
 							$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
 							$messenger_method->assign_vars($template_data);
 
-							if ($messenger_method->get_id() == NOTIFY_EMAIL)
+							if ($notify_method == NOTIFY_EMAIL)
 							{
 								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
 								{
 									$email_row = $email_list[$i][$j];
-									$messenger_method->{((count($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
+									if (count($email_list[$i]) == 1)
+									{
+										$messenger_method->to($email_row['email'], $email_row['name']);
+									
+									}
+									else
+									{
+										$messenger_method->bcc($email_row['email'], $email_row['name']);
+									}
 								}
 
 								$messenger_method->anti_abuse_headers($config, $user);
 								$messenger_method->set_mail_priority($priority);
 							}
-							else if ($messenger_method->get_id() == NOTIFY_JABBER)
+							else if ($notify_method == NOTIFY_IM)
 							{
 								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
 								{
@@ -254,7 +263,7 @@ class acp_email
 								}
 							}
 
-							$errored = !$messenger_method->send();
+							$errored = !$messenger_method->send() || $errored;
 							if ($use_queue)
 							{
 								$messenger_method->save_queue();

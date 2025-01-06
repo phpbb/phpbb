@@ -112,7 +112,6 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
-			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $this->messenger->getIterator();
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{

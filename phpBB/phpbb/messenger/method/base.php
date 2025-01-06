@@ -117,8 +117,8 @@ abstract class base implements messenger_interface
 		service_collection $twig_extensions_collection,
 		lexer $twig_lexer,
 		user $user,
-		$phpbb_root_path,
-		$template_cache_path,
+		string $phpbb_root_path,
+		string $template_cache_path,
 		?manager $ext_manager = null,
 		?log_interface $log = null
 	)
@@ -153,6 +153,8 @@ abstract class base implements messenger_interface
 
 	/**
 	 * Sets the use of messenger queue flag
+	 *
+	 * @param bool $use_queue Flag indicating if cached queue to be used
 	 *
 	 * @return void
 	 */
@@ -426,7 +428,6 @@ abstract class base implements messenger_interface
 		if ($this->use_queue && !empty($this->queue))
 		{
 			$this->queue->save();
-			return;
 		}
 	}
 

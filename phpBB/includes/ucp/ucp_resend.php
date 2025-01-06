@@ -92,6 +92,7 @@ class ucp_resend
 				trigger_error('NO_GROUP');
 			}
 
+			$board_url = generate_board_url();
 			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
 			$email_method = $phpbb_container->get('messenger.method.email');
@@ -107,7 +108,7 @@ class ucp_resend
 				$email_method->assign_vars([
 					'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 					'USERNAME'		=> html_entity_decode($user_row['username'], ENT_COMPAT),
-					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+					'U_ACTIVATE'	=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
 				]);
 
 				if ($coppa)
@@ -145,8 +146,8 @@ class ucp_resend
 							$messenger_method->anti_abuse_headers($config, $user);
 							$messenger_method->assign_vars([
 								'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
-								'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
-								'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+								'U_USER_DETAILS'	=> $board_url . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
+								'U_ACTIVATE'		=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
 							]);
 
 							$messenger_method->send();
