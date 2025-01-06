@@ -25,6 +25,7 @@ class phpbb_functional_acp_test extends phpbb_functional_test_case
 		// Browse ACP main page
 		$crawler = self::request('GET', 'index.php');
 		$crawler = self::$client->click($crawler->selectLink($this->lang('ACP_SHORT'))->link());
+		self::assert_response_html();
 
 		// Get all ACP module URLs array
 		$acp_modules = $crawler->filter('li.tab a')->each(
@@ -37,24 +38,28 @@ class phpbb_functional_acp_test extends phpbb_functional_test_case
 				}
 			}
 		);
+		$this->assertNotEmpty($acp_modules);
 
 		// Browse all ACP modules and get their mode URLs array
 		$acp_submodules = [];
 		foreach ($acp_modules as $module)
 		{
 			$crawler = self::$client->click($module);
-			$acp_submodules = array_merge($acp_submodules, $crawler->filter('div.menu_block li a')->each(
+			self::assert_response_html();
+			$acp_submodules = array_merge($acp_submodules, $crawler->filter('div.menu-block li a')->each(
 				function ($node, $i)
 				{
 					return $node->link();
 				}
 			));
 		}
+		$this->assertNotEmpty($acp_submodules);
 
 		// Browse all ACP submodules' modes
 		foreach ($acp_submodules as $acp_submodule)
 		{
 			self::$client->click($acp_submodule);
+			self::assert_response_html();
 		}
 	}
 }
