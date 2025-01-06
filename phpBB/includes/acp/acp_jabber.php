@@ -32,6 +32,8 @@ class acp_jabber
 		global $db, $user, $template, $phpbb_log, $request;
 		global $config, $phpbb_container, $phpbb_root_path, $phpEx;
 
+		$jabber = $phpbb_container->get('messenger.method.jabber');
+
 		$user->add_lang('acp/board');
 
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -67,8 +69,6 @@ class acp_jabber
 
 			$message = $user->lang['JAB_SETTINGS_CHANGED'];
 			$log = 'JAB_SETTINGS_CHANGED';
-
-			$jabber = $phpbb_container->get('messenger.method.jabber');
 
 			// Is this feature enabled? Then try to establish a connection
 			if ($jabber->is_enabled())
