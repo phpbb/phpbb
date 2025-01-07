@@ -133,6 +133,8 @@ class ucp_resend
 					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);
 
+				/** @var \phpbb\di\service_collection */
+				$messenger = $phpbb_container->get('messenger.method_collection');
 				$messenger_collection_iterator = $messenger->getIterator();
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -151,13 +153,16 @@ class ucp_resend
 							]);
 
 							$messenger_method->send();
-
-							// Save the queue in the messenger method class (has to be called or these messages could be lost)
-							$messenger_method->save_queue();
 						}
 					}
 				}
 				$db->sql_freeresult($result);
+
+				// Save the queue in the messenger method class (has to be called or these messages could be lost)
+				foreach ($messenger_collection_iterator as $messenger_method)
+				{
+					$messenger_method->save_queue();
+				}
 			}
 
 			$this->update_activation_expiration();

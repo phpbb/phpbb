@@ -86,7 +86,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			$user_ids[] = $notification->user_id;
 		}
 
-		// We do not send emails to banned users
+		// We do not notify banned users
 		if (!function_exists('phpbb_get_banned_user_ids'))
 		{
 			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
@@ -96,7 +96,9 @@ abstract class messenger_base extends \phpbb\notification\method\base
 		// Load all the users we need
 		$this->user_loader->load_users(array_diff($user_ids, $banned_users), array(USER_IGNORE));
 
-		// Time to go through the queue and send emails
+		// Time to go through the queue and send notifications
+		$messenger_collection_iterator = $this->messenger->getIterator();
+
 		/** @var type_interface $notification */
 		foreach ($this->queue as $notification)
 		{
@@ -112,7 +114,6 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
-			$messenger_collection_iterator = $this->messenger->getIterator();
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				if ($messenger_method->get_id() == $notify_method || $notify_method == $messenger_method::NOTIFY_BOTH)
@@ -125,11 +126,14 @@ abstract class messenger_base extends \phpbb\notification\method\base
 					], $notification->get_email_template_variables()));
 
 					$messenger_method->send();
-
-					// Save the queue in the messenger method class (has to be called or these messages could be lost)
-					$messenger_method->save_queue();
 				}
 			}
+		}
+
+		// Save the queue in the messenger method class (has to be called or these messages could be lost)
+		foreach ($messenger_collection_iterator as $messenger_method)
+		{
+			$messenger_method->save_queue();
 		}
 
 		// We're done, empty the queue

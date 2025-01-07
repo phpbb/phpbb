@@ -194,14 +194,14 @@ class acp_inactive
 
 					$result = $db->sql_query($sql);
 
+					/** @var \phpbb\di\service_collection */
+					$messenger = $phpbb_container->get('messenger.method_collection');
+					$messenger_collection_iterator = $messenger->getIterator();
+
 					if ($row = $db->sql_fetchrow($result))
 					{
 						// Send the messages
 						$usernames = $user_ids = array();
-
-						/** @var \phpbb\di\service_collection */
-						$messenger = $phpbb_container->get('messenger.method_collection');
-						$messenger_collection_iterator = $messenger->getIterator();
 
 						do
 						{
@@ -219,7 +219,6 @@ class acp_inactive
 									]);
 
 									$messenger_method->send();
-									$messenger_method->save_queue();
 								}
 							}
 
@@ -241,6 +240,11 @@ class acp_inactive
 						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
+
+					foreach ($messenger_collection_iterator as $messenger_method)
+					{
+						$messenger_method->save_queue();
+					}
 
 					// For remind we really need to redirect, else a refresh can result in more than one reminder
 					$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";

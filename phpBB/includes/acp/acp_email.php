@@ -265,16 +265,18 @@ class acp_email
 							}
 
 							$errored = !$messenger_method->send() || $errored;
-							if ($use_queue)
-							{
-								$messenger_method->save_queue();
-							}
 						}
 					}
 				}
 				unset($email_list);
 
-				$messenger->save_queue();
+				if ($use_queue)
+				{
+					foreach ($messenger_collection_iterator as $messenger_method)
+					{
+						$messenger_method->save_queue();
+					}
+				}
 
 				if ($generate_log_entry)
 				{
