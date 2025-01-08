@@ -227,6 +227,11 @@ class acp_inactive
 						}
 						while ($row = $db->sql_fetchrow($result));
 
+						foreach ($messenger_collection_iterator as $messenger_method)
+						{
+							$messenger_method->save_queue();
+						}
+
 						// Add the remind state to the database and increase activation expiration by one day
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_reminded = user_reminded + 1,
@@ -240,11 +245,6 @@ class acp_inactive
 						trigger_error(sprintf($user->lang['LOG_INACTIVE_REMIND'], implode($user->lang['COMMA_SEPARATOR'], $usernames) . ' ' . adm_back_link($this->u_action)));
 					}
 					$db->sql_freeresult($result);
-
-					foreach ($messenger_collection_iterator as $messenger_method)
-					{
-						$messenger_method->save_queue();
-					}
 
 					// For remind we really need to redirect, else a refresh can result in more than one reminder
 					$u_action = $this->u_action . "&amp;$u_sort_param&amp;start=$start";
