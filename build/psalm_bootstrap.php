@@ -33,7 +33,6 @@ require_once $phpbb_root_path . 'includes/functions_compress.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_content.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_display.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_mcp.' . $phpEx;
-require_once $phpbb_root_path . 'includes/functions_messenger.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_module.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_posting.' . $phpEx;
 require_once $phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx;

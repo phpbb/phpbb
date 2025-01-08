@@ -24,6 +24,7 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 		// Browse MCP main page
 		$crawler = self::request('GET', 'index.php');
 		$crawler = self::$client->click($crawler->selectLink($this->lang('MCP_SHORT'))->link());
+		self::assert_response_html();
 
 		// Get all MCP module URLs array
 		$mcp_modules = $crawler->filter('.tabs a')->each(
@@ -32,12 +33,14 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 				return $node->link();
 			}
 		);
+		$this->assertNotEmpty($mcp_modules);
 
 		// Browse all MCP modules and get their mode URLs array
 		$mcp_submodules = [];
 		foreach ($mcp_modules as $module)
 		{
 			$crawler = self::$client->click($module);
+			self::assert_response_html();
 			$mcp_submodules = array_merge($mcp_submodules, $crawler->filter('.cp-menu a')->each(
 				function ($node, $i)
 				{
@@ -45,11 +48,13 @@ class phpbb_functional_mcp_test extends phpbb_functional_test_case
 				}
 			));
 		}
+		$this->assertNotEmpty($mcp_submodules);
 
 		// Browse all MCP submodules' modes
 		foreach ($mcp_submodules as $mcp_submodule)
 		{
 			self::$client->click($mcp_submodule);
+			self::assert_response_html();
 		}
 	}
 }

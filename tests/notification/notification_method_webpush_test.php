@@ -171,6 +171,9 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$ban_manager = new \phpbb\ban\manager($collection, new \phpbb\cache\driver\dummy(), $this->db, $this->language, $this->log, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
 
+		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
+		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+
 		$this->notification_method_webpush = new \phpbb\notification\method\webpush(
 			$phpbb_container->get('config'),
 			$phpbb_container->get('dbal.conn'),

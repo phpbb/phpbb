@@ -30,14 +30,11 @@ class acp_jabber
 	function main($id, $mode)
 	{
 		global $db, $user, $template, $phpbb_log, $request;
-		global $config, $phpbb_root_path, $phpEx;
+		global $config, $phpbb_container, $phpbb_root_path, $phpEx;
+
+		$jabber = $phpbb_container->get('messenger.method.jabber');
 
 		$user->add_lang('acp/board');
-
-		if (!class_exists('jabber'))
-		{
-			include($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-		}
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 
@@ -74,10 +71,8 @@ class acp_jabber
 			$log = 'JAB_SETTINGS_CHANGED';
 
 			// Is this feature enabled? Then try to establish a connection
-			if ($jab_enable)
+			if ($jabber->is_enabled())
 			{
-				$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_use_ssl, $jab_verify_peer, $jab_verify_peer_name, $jab_allow_self_signed);
-
 				if (!$jabber->connect())
 				{
 					trigger_error($user->lang['ERR_JAB_CONNECT'] . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
@@ -97,12 +92,12 @@ class acp_jabber
 				// We update the user table to be sure all users that have IM as notify type are set to both as notify type
 				// We set this to both because users still have their jabber address entered and may want to receive jabber notifications again once it is re-enabled.
 				$sql_ary = array(
-					'user_notify_type'		=> NOTIFY_BOTH,
+					'user_notify_type'		=> $jabber::NOTIFY_BOTH,
 				);
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-					WHERE user_notify_type = ' . NOTIFY_IM;
+					WHERE user_notify_type = ' . $jabber::NOTIFY_IM;
 				$db->sql_query($sql);
 			}
 
@@ -137,7 +132,7 @@ class acp_jabber
 			'JAB_VERIFY_PEER'		=> $jab_verify_peer,
 			'JAB_VERIFY_PEER_NAME'	=> $jab_verify_peer_name,
 			'JAB_ALLOW_SELF_SIGNED'	=> $jab_allow_self_signed,
-			'S_CAN_USE_SSL'			=> jabber::can_use_ssl(),
+			'S_CAN_USE_SSL'			=> $jabber::can_use_ssl(),
 			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		));
 	}

@@ -114,29 +114,19 @@ class acp_inactive
 
 						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
 						{
-							if (!class_exists('messenger'))
-							{
-								include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-							}
-
-							$messenger = new messenger(false);
+							$email_method = $phpbb_container->get('messenger.method.email');
+							$email_method->set_use_queue(false);
 
 							foreach ($inactive_users as $row)
 							{
-								$messenger->template('admin_welcome_activated', $row['user_lang']);
-
-								$messenger->set_addresses($row);
-
-								$messenger->anti_abuse_headers($config, $user);
-
-								$messenger->assign_vars(array(
-									'USERNAME'	=> html_entity_decode($row['username'], ENT_COMPAT))
-								);
-
-								$messenger->send(NOTIFY_EMAIL);
+								$email_method->template('admin_welcome_activated', $row['user_lang']);
+								$email_method->set_addresses($row);
+								$email_method->anti_abuse_headers($config, $user);
+								$email_method->assign_vars([
+									'USERNAME'	=> html_entity_decode($row['username'], ENT_COMPAT),
+								]);
+								$email_method->send();
 							}
-
-							$messenger->save_queue();
 						}
 
 						if (!empty($inactive_users))
@@ -204,39 +194,43 @@ class acp_inactive
 
 					$result = $db->sql_query($sql);
 
+					/** @var \phpbb\di\service_collection */
+					$messenger = $phpbb_container->get('messenger.method_collection');
+					$messenger_collection_iterator = $messenger->getIterator();
+
 					if ($row = $db->sql_fetchrow($result))
 					{
 						// Send the messages
-						if (!class_exists('messenger'))
-						{
-							include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-						}
-
-						$messenger = new messenger();
 						$usernames = $user_ids = array();
 
 						do
 						{
-							$messenger->template('user_remind_inactive', $row['user_lang']);
+							foreach ($messenger_collection_iterator as $messenger_method)
+							{
+								if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
+								{
+									$messenger_method->template('user_remind_inactive', $row['user_lang']);
+									$messenger_method->set_addresses($row);
+									$messenger_method->anti_abuse_headers($config, $user);
+									$messenger_method->assign_vars([
+										'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
+										'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
+										'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
+									]);
 
-							$messenger->set_addresses($row);
-
-							$messenger->anti_abuse_headers($config, $user);
-
-							$messenger->assign_vars(array(
-								'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
-								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
-							);
-
-							$messenger->send($row['user_notify_type']);
+									$messenger_method->send();
+								}
+							}
 
 							$usernames[] = $row['username'];
 							$user_ids[] = (int) $row['user_id'];
 						}
 						while ($row = $db->sql_fetchrow($result));
 
-						$messenger->save_queue();
+						foreach ($messenger_collection_iterator as $messenger_method)
+						{
+							$messenger_method->save_queue();
+						}
 
 						// Add the remind state to the database and increase activation expiration by one day
 						$sql = 'UPDATE ' . USERS_TABLE . '

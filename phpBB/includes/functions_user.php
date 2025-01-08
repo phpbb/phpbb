@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * @ignore
 */
@@ -244,7 +246,7 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
 
 		'user_notify'			=> 0,
 		'user_notify_pm'		=> 1,
-		'user_notify_type'		=> NOTIFY_EMAIL,
+		'user_notify_type'		=> messenger_interface::NOTIFY_EMAIL,
 		'user_allow_pm'			=> 1,
 		'user_allow_viewonline'	=> 1,
 		'user_allow_viewemail'	=> 1,

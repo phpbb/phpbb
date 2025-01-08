@@ -11,6 +11,8 @@
 *
 */
 
+use phpbb\messenger\method\messenger_interface;
+
 /**
 * @ignore
 */
@@ -156,9 +158,9 @@ class acp_email
 
 				foreach ($rows as $row)
 				{
-					if (($row['user_notify_type'] == NOTIFY_EMAIL && $row['user_email']) ||
-						($row['user_notify_type'] == NOTIFY_IM && $row['user_jabber']) ||
-						($row['user_notify_type'] == NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
+					if (($row['user_notify_type'] == messenger_interface::NOTIFY_EMAIL && $row['user_email']) ||
+						($row['user_notify_type'] == messenger_interface::NOTIFY_IM && $row['user_jabber']) ||
+						($row['user_notify_type'] == messenger_interface::NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
 					{
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
@@ -182,25 +184,13 @@ class acp_email
 					}
 				}
 
-				// Send the messages
-				if (!class_exists('messenger'))
-				{
-					include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-				}
-
-				if (!function_exists('get_group_name'))
-				{
-					include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-				}
-				$messenger = new messenger($use_queue);
-
 				$errored = false;
 
 				$email_template = 'admin_send_email';
-				$template_data = array(
+				$template_data = [
 					'CONTACT_EMAIL' => phpbb_get_board_contact($config, $phpEx),
 					'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT),
-				);
+				];
 				$generate_log_entry = true;
 
 				/**
@@ -229,36 +219,64 @@ class acp_email
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
+				/** @var \phpbb\di\service_collection */
+				$messenger = $phpbb_container->get('messenger.method_collection');
+				$messenger_collection_iterator = $messenger->getIterator();
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{
 					$used_lang = $email_list[$i][0]['lang'];
 					$used_method = $email_list[$i][0]['method'];
 
-					for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+					foreach ($messenger_collection_iterator as $messenger_method)
 					{
-						$email_row = $email_list[$i][$j];
+						$notify_method = $messenger_method->get_id();
+						if ($notify_method == $used_method || $used_method == messenger_interface::NOTIFY_BOTH)
+						{
+							$messenger_method->set_use_queue($use_queue);
+							$messenger_method->template($email_template, $used_lang);
+							$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
+							$messenger_method->assign_vars($template_data);
 
-						$messenger->{((count($email_list[$i]) == 1) ? 'to' : 'bcc')}($email_row['email'], $email_row['name']);
-						$messenger->im($email_row['jabber'], $email_row['name']);
-					}
+							if ($notify_method == messenger_interface::NOTIFY_EMAIL)
+							{
+								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+								{
+									$email_row = $email_list[$i][$j];
+									if (count($email_list[$i]) == 1)
+									{
+										$messenger_method->to($email_row['email'], $email_row['name']);
+									}
+									else
+									{
+										$messenger_method->bcc($email_row['email'], $email_row['name']);
+									}
+								}
 
-					$messenger->template($email_template, $used_lang);
+								$messenger_method->anti_abuse_headers($config, $user);
+								$messenger_method->set_mail_priority($priority);
+							}
+							else if ($notify_method == messenger_interface::NOTIFY_IM)
+							{
+								for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+								{
+									$email_row = $email_list[$i][$j];
+									$messenger_method->to($email_row['jabber'], $email_row['name']);
+								}
+							}
 
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->subject(html_entity_decode($subject, ENT_COMPAT));
-					$messenger->set_mail_priority($priority);
-
-					$messenger->assign_vars($template_data);
-
-					if (!($messenger->send($used_method)))
-					{
-						$errored = true;
+							$errored = !$messenger_method->send() || $errored;
+						}
 					}
 				}
 				unset($email_list);
 
-				$messenger->save_queue();
+				if ($use_queue)
+				{
+					foreach ($messenger_collection_iterator as $messenger_method)
+					{
+						$messenger_method->save_queue();
+					}
+				}
 
 				if ($generate_log_entry)
 				{

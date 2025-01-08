@@ -14,6 +14,11 @@
 namespace phpbb\notification\method;
 
 use phpbb\notification\type\type_interface;
+use phpbb\user;
+use phpbb\user_loader;
+use phpbb\config\config;
+use phpbb\di\service_collection;
+use phpbb\messenger\method\messenger_interface;
 
 /**
 * Jabber notification method class
@@ -22,24 +27,28 @@ use phpbb\notification\type\type_interface;
 
 class jabber extends \phpbb\notification\method\messenger_base
 {
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\config\config */
+	/** @var config */
 	protected $config;
+
+	/** @var service_collection */
+	protected $messenger;
 
 	/**
 	 * Notification Method jabber Constructor
 	 *
-	 * @param \phpbb\user_loader $user_loader
-	 * @param \phpbb\user $user
-	 * @param \phpbb\config\config $config
+	 * @param user_loader $user_loader
+	 * @param user $user
+	 * @param config $config
 	 * @param string $phpbb_root_path
 	 * @param string $php_ext
+	 * @param service_collection $messenger
 	 */
-	public function __construct(\phpbb\user_loader $user_loader, \phpbb\user $user, \phpbb\config\config $config, $phpbb_root_path, $php_ext)
+	public function __construct(user_loader $user_loader, user $user, config $config, $phpbb_root_path, $php_ext, service_collection $messenger)
 	{
-		parent::__construct($user_loader, $phpbb_root_path, $php_ext);
+		parent::__construct($messenger, $user_loader, $phpbb_root_path, $php_ext);
 
 		$this->user = $user;
 		$this->config = $config;
@@ -90,6 +99,6 @@ class jabber extends \phpbb\notification\method\messenger_base
 			return;
 		}
 
-		$this->notify_using_messenger(NOTIFY_IM, 'short/');
+		$this->notify_using_messenger(messenger_interface::NOTIFY_IM, 'short/');
 	}
 }

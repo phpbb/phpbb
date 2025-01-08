@@ -38,7 +38,6 @@ installer:
         enabled: false
         smtp_delivery : ~
         smtp_host: ~
-        smtp_auth: ~
         smtp_user: ~
         smtp_pass: ~
 

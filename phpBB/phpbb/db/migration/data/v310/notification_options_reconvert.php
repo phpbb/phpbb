@@ -13,6 +13,8 @@
 
 namespace phpbb\db\migration\data\v310;
 
+use phpbb\messenger\method\messenger_interface;
+
 class notification_options_reconvert extends \phpbb\db\migration\migration
 {
 	public static function depends_on()
@@ -67,12 +69,12 @@ class notification_options_reconvert extends \phpbb\db\migration\migration
 			// In-board notification
 			$notification_methods[] = '';
 
-			if ($row['user_notify_type'] == NOTIFY_EMAIL || $row['user_notify_type'] == NOTIFY_BOTH)
+			if ($row['user_notify_type'] == messenger_interface::NOTIFY_EMAIL || $row['user_notify_type'] == messenger_interface::NOTIFY_BOTH)
 			{
 				$notification_methods[] = 'email';
 			}
 
-			if ($row['user_notify_type'] == NOTIFY_IM || $row['user_notify_type'] == NOTIFY_BOTH)
+			if ($row['user_notify_type'] == messenger_interface::NOTIFY_IM || $row['user_notify_type'] == messenger_interface::NOTIFY_BOTH)
 			{
 				$notification_methods[] = 'jabber';
 			}

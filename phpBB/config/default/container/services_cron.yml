@@ -86,10 +86,9 @@ services:
     cron.task.core.queue:
         class: phpbb\cron\task\core\queue
         arguments:
-            - '%core.root_path%'
-            - '%core.php_ext%'
             - '@config'
-            - '%core.cache_dir%'
+            - '@messenger.queue'
+            - '%core.messenger_queue_file%'
         calls:
             - [set_name, [cron.task.core.queue]]
         tags:

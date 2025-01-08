@@ -19,6 +19,7 @@ services:
             - '@controller.helper'
             - '@language'
             - '@log'
+            - '@messenger.method.email'
             - '@passwords.manager'
             - '@request'
             - '@template'

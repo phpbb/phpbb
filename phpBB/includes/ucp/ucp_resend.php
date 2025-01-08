@@ -30,7 +30,7 @@ class ucp_resend
 	function main($id, $mode)
 	{
 		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $template, $request;
+		global $db, $user, $auth, $template, $request, $phpbb_container;
 
 		$username	= $request->variable('username', '', true);
 		$email		= strtolower($request->variable('email', ''));
@@ -92,34 +92,35 @@ class ucp_resend
 				trigger_error('NO_GROUP');
 			}
 
+			$board_url = generate_board_url();
 			$coppa = ($row['group_name'] == 'REGISTERED_COPPA' && $row['group_type'] == GROUP_SPECIAL) ? true : false;
 
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-			$messenger = new messenger(false);
+			$email_method = $phpbb_container->get('messenger.method.email');
+			$email_method->set_use_queue(false);
 
 			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
 			{
-				$messenger->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
-				$messenger->set_addresses($user_row);
+				$email_method->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
+				$email_method->set_addresses($user_row);
 
-				$messenger->anti_abuse_headers($config, $user);
+				$email_method->anti_abuse_headers($config, $user);
 
-				$messenger->assign_vars(array(
+				$email_method->assign_vars([
 					'WELCOME_MSG'	=> html_entity_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename']), ENT_COMPAT),
 					'USERNAME'		=> html_entity_decode($user_row['username'], ENT_COMPAT),
-					'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
-				);
+					'U_ACTIVATE'	=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+				]);
 
 				if ($coppa)
 				{
-					$messenger->assign_vars(array(
+					$email_method->assign_vars([
 						'FAX_INFO'		=> $config['coppa_fax'],
 						'MAIL_INFO'		=> $config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email'])
-					);
+						'EMAIL_ADDRESS'	=> $user_row['user_email'],
+					]);
 				}
 
-				$messenger->send(NOTIFY_EMAIL);
+				$email_method->send();
 			}
 
 			if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
@@ -132,22 +133,36 @@ class ucp_resend
 					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);
 
+				/** @var \phpbb\di\service_collection */
+				$messenger = $phpbb_container->get('messenger.method_collection');
+				$messenger_collection_iterator = $messenger->getIterator();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$messenger->template('admin_activate', $row['user_lang']);
-					$messenger->set_addresses($row);
+					foreach ($messenger_collection_iterator as $messenger_method)
+					{
+						$messenger_method->set_use_queue(false);
+						if ($messenger_method->get_id() == $row['user_notify_type'] || $row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
+						{
+							$messenger_method->template('admin_activate', $row['user_lang']);
+							$messenger_method->set_addresses($row);
+							$messenger_method->anti_abuse_headers($config, $user);
+							$messenger_method->assign_vars([
+								'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
+								'U_USER_DETAILS'	=> $board_url . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
+								'U_ACTIVATE'		=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+							]);
 
-					$messenger->anti_abuse_headers($config, $user);
-
-					$messenger->assign_vars(array(
-						'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
-						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
-						'U_ACTIVATE'		=> generate_board_url() . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
-					);
-
-					$messenger->send($row['user_notify_type']);
+							$messenger_method->send();
+						}
+					}
 				}
 				$db->sql_freeresult($result);
+
+				// Save the queue in the messenger method class (has to be called or these messages could be lost)
+				foreach ($messenger_collection_iterator as $messenger_method)
+				{
+					$messenger_method->save_queue();
+				}
 			}
 
 			$this->update_activation_expiration();
