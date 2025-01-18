@@ -123,7 +123,7 @@ services:
     storage.file_tracker:
         class: phpbb\storage\file_tracker
         arguments:
-            - '@dbal.conn'
             - '@cache.driver'
+            - '@dbal.conn'
             - '%tables.storage%'
 

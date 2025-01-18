@@ -20,15 +20,15 @@ use phpbb\storage\exception\storage_exception;
 class file_tracker
 {
 	/**
-	 * @var db
-	 */
-	protected $db;
-
-	/**
 	 * Cache driver
 	 * @var cache
 	 */
 	protected $cache;
+
+	/**
+	 * @var db
+	 */
+	protected $db;
 
 	/**
 	 * @var string
@@ -38,14 +38,14 @@ class file_tracker
 	/**
 	 * Constructor
 	 *
-	 * @param db								$db
-	 * @param cache								$cache
-	 * @param string							$storage_table
+	 * @param cache			$cache
+	 * @param db			$db
+	 * @param string		$storage_table
 	 */
-	public function __construct(db $db, cache $cache, string $storage_table)
+	public function __construct(cache $cache,db $db, string $storage_table)
 	{
-		$this->db = $db;
 		$this->cache = $cache;
+		$this->db = $db;
 		$this->storage_table = $storage_table;
 	}
 
