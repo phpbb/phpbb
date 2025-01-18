@@ -14,7 +14,6 @@
 namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\container_aware_migration;
-use phpbb\storage\exception\storage_exception;
 use phpbb\storage\file_tracker;
 
 class storage_track extends container_aware_migration

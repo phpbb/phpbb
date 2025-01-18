@@ -42,7 +42,7 @@ class file_tracker
 	 * @param db			$db
 	 * @param string		$storage_table
 	 */
-	public function __construct(cache $cache,db $db, string $storage_table)
+	public function __construct(cache $cache, db $db, string $storage_table)
 	{
 		$this->cache = $cache;
 		$this->db = $db;
