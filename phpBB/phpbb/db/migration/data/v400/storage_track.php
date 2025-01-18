@@ -19,6 +19,8 @@ use phpbb\storage\file_tracker;
 
 class storage_track extends container_aware_migration
 {
+	private const BATCH_SIZE = 100;
+
 	public function effectively_installed()
 	{
 		return $this->db_tools->sql_table_exists($this->tables['storage']);
@@ -77,9 +79,9 @@ class storage_track extends container_aware_migration
 		$sql = 'SELECT user_avatar
 			FROM ' . USERS_TABLE . "
 			WHERE user_avatar_type = 'avatar.driver.upload'";
-
 		$result = $this->db->sql_query($sql);
 
+		$files = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$avatar_group = false;
@@ -94,16 +96,24 @@ class storage_track extends container_aware_migration
 			$ext		= substr(strrchr($filename, '.'), 1);
 			$filename	= (int) $filename;
 
-			try
+			$filename = $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext;
+			$files[] = [
+				'file_path' => $filename,
+				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\avatar\\config\\path'] . '/' . $filename),
+			];
+
+			if (count($files) >= self::BATCH_SIZE)
 			{
-				$filename = $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext;
-				$file_tracker->track_file('avatar', $filename, filesize($this->phpbb_root_path . $this->config['storage\\avatar\\config\\path'] . '/' . $filename));
-			}
-			catch (storage_exception $e)
-			{
-				// If file doesn't exist, don't track it
+				$file_tracker->track_files('avatar', $files);
+				$files = [];
 			}
 		}
+
+		if (!empty($files))
+		{
+			$file_tracker->track_files('avatar', $files);
+		}
+
 		$this->db->sql_freeresult($result);
 	}
 
@@ -114,32 +124,36 @@ class storage_track extends container_aware_migration
 
 		$sql = 'SELECT physical_filename, thumbnail
 			FROM ' . ATTACHMENTS_TABLE;
-
 		$result = $this->db->sql_query($sql);
 
+		$files = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			try
-			{
-				$file_tracker->track_file('attachment', $row['physical_filename'], filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $row['physical_filename']));
-			}
-			catch (storage_exception $e)
-			{
-				// If file doesn't exist, don't track it
-			}
+			$files[] = [
+				'file_path' => $row['physical_filename'],
+				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $row['physical_filename']),
+			];
 
 			if ($row['thumbnail'] == 1)
 			{
-				try
-				{
-					$file_tracker->track_file('attachment', 'thumb_' . $row['physical_filename'], filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/thumb_' . $row['physical_filename']));
-				}
-				catch (storage_exception $e)
-				{
-					// If file doesn't exist, don't track it
-				}
+				$files[] = [
+					'file_path' => 'thumb_' . $row['physical_filename'],
+					'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/thumb_' . $row['physical_filename']),
+				];
+			}
+
+			if (count($files) >= self::BATCH_SIZE)
+			{
+				$file_tracker->track_files('attachment', $files);
+				$files = [];
 			}
 		}
+
+		if (!empty($files))
+		{
+			$file_tracker->track_files('attachment', $files);
+		}
+
 		$this->db->sql_freeresult($result);
 	}
 
@@ -150,19 +164,26 @@ class storage_track extends container_aware_migration
 
 		$sql = 'SELECT filename
 			FROM ' . BACKUPS_TABLE;
-
 		$result = $this->db->sql_query($sql);
 
+		$files = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			try
+			$files[] = [
+				'file_path' => $row['filename'],
+				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\backup\\config\\path'] . '/' . $row['filename']),
+			];
+
+			if (count($files) >= self::BATCH_SIZE)
 			{
-				$file_tracker->track_file('backup', $row['filename'], filesize($this->phpbb_root_path . $this->config['storage\\backup\\config\\path'] . '/' . $row['filename']));
+				$file_tracker->track_files('backup', $files);
+				$files = [];
 			}
-			catch (storage_exception $e)
-			{
-				// If file doesn't exist, don't track it
-			}
+		}
+
+		if (!empty($files))
+		{
+			$file_tracker->track_files('backup', $files);
 		}
 
 		$this->db->sql_freeresult($result);

@@ -58,14 +58,33 @@ class file_tracker
 	 */
 	public function track_file(string $storage, string $path, int $size): void
 	{
-		$sql_ary = [
+		$file = [
 			'file_path'		=> $path,
-			'storage'		=> $storage,
 			'filesize'		=> $size,
 		];
 
-		$sql = 'INSERT INTO ' . $this->storage_table . $this->db->sql_build_array('INSERT', $sql_ary);
-		$this->db->sql_query($sql);
+		$this->track_files($storage, [$file]);
+	}
+
+	/**
+	 * Track files in database
+	 *
+	 * @param string $storage	Storage name
+	 * @param array $files		Array of files to track
+	 */
+	public function track_files(string $storage, array $files): void
+	{
+		$sql_ary = [];
+		foreach ($files as $file)
+		{
+			$sql_ary[] = [
+				'storage'		=> $storage,
+				'file_path'		=> $file['file_path'],
+				'filesize'		=> $file['filesize'],
+			];
+		}
+
+		$this->db->sql_multi_insert($this->storage_table, $sql_ary);
 
 		$this->cache->destroy('_storage_' . $storage . '_totalsize');
 		$this->cache->destroy('_storage_' . $storage . '_numfiles');
