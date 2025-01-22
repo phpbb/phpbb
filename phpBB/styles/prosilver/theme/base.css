@@ -24,18 +24,18 @@
 :root {
 	/* Base font size */
 	--ps-font-base: 16px;								/* [1] */
-	--ps-line-height: calc(var(--ps-font-base) * 1.5);	/* [2] */
+	--ps-line-height: 1.5rem;							/* [2] */
 
 	/* Headings */
-	--ps-font-h1: calc(var(--ps-font-base) * 1.5);		/* 24px */
-	--ps-font-h2: calc(var(--ps-font-base) * 1.5);		/* 24px */
-	--ps-font-h3: calc(var(--ps-font-base) * 1.25);		/* 20px */
-	--ps-font-h4: calc(var(--ps-font-base) * 1.125);	/* 18px */
+	--ps-font-h1: 1.5rem;								/* 24px */
+	--ps-font-h2: 1.5rem;								/* 24px */
+	--ps-font-h3: 1.25rem;								/* 20px */
+	--ps-font-h4: 1.125rem;								/* 18px */
 
 	/* Text and Paragraphs */
-	--ps-font-normal: var(--ps-font-base);						/* 16px */
-	--ps-font-small: calc(var(--ps-font-base) * 0.875);			/* 14px */
-	--ps-font-tiny: calc(var(--ps-font-base) * 0.75);			/* 12px */
+	--ps-font-normal: 1rem;								/* 16px */
+	--ps-font-small: 0.875rem;							/* 14px */
+	--ps-font-tiny: 0.75rem;							/* 12px */
 }
 
 html {
