@@ -65,39 +65,85 @@ class test_ucp_controller_webpush_test extends phpbb_test_case
 		);
 	}
 
-	public function data_notification_no_data(): array
+	public function data_notification_exceptions(): array
 	{
 		return [
-			'logged_in_user' => [
+			'not_ajax' => [
+				false,
+				false,
 				USER_NORMAL,
 				2,
 				[],
+				'NO_AUTH_OPERATION',
 			],
-			'anonymous_user' => [
+			'is_bot' => [
+				true,
+				true,
+				USER_NORMAL,
+				2,
+				[],
+				'NO_AUTH_OPERATION',
+			],
+			'inactive_user' => [
+				true,
+				false,
+				USER_INACTIVE,
+				2,
+				[],
+				'NO_AUTH_OPERATION',
+			],
+			'ignore_user' => [
+				true,
+				false,
+				USER_IGNORE,
+				2,
+				[],
+				'NO_AUTH_OPERATION',
+			],
+			'no_notification' => [
+				true,
+				false,
+				USER_NORMAL,
+				2,
+				[],
+				'AJAX_ERROR_TEXT',
+			],
+			'no_notification_anonymous' => [
+				true,
+				false,
 				USER_NORMAL,
 				ANONYMOUS,
 				[
 					['token', '', false, request_interface::REQUEST, 'foobar'],
 				],
+				'AJAX_ERROR_TEXT',
+			],
+			'no_notification_anonymous_no_token' => [
+				true,
+				false,
+				USER_NORMAL,
+				ANONYMOUS,
+				[],
+				'NO_AUTH_OPERATION',
 			],
 		];
 	}
 
 	/**
-	 * @dataProvider data_notification_no_data
+	 * @dataProvider data_notification_exceptions
 	 */
-	public function test_notification_no_data($user_type, $user_id, $request_data)
+	public function test_notification_no_data($is_ajax, $is_bot, $user_type, $user_id, $request_data, $expected_message)
 	{
-		$this->request->method('is_ajax')->willReturn(true);
+		$this->request->method('is_ajax')->willReturn($is_ajax);
 		$this->request->expects($this->any())
 			->method('variable')
 			->will($this->returnValueMap($request_data));
-		$this->user->data['is_bot'] = false;
+		$this->user->data['is_bot'] = $is_bot;
 		$this->user->data['user_type'] = $user_type;
 		$this->user->method('id')->willReturn($user_id);
 
 		$this->expectException(http_exception::class);
-		$this->expectExceptionMessage('AJAX_ERROR_TEXT');
+		$this->expectExceptionMessage($expected_message);
 
 		$this->controller->notification();
 	}
