@@ -135,7 +135,6 @@ class webpush
 
 		// Decode and return data if everything is fine
 		$data = json_decode($notification_data, true);
-		$data['url'] = isset($data['url']) ? $this->path_helper->update_web_root_path($data['url']) : '';
 
 		return new JsonResponse($data);
 	}

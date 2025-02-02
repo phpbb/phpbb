@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_notification_push">
+		<column>item_id</column>
+		<column>push_data</column>
+		<column>push_token</column>
+		<column>user_id</column>
+		<column>notification_type_id</column>
+		<column>notification_time</column>
+		<row>
+			<value>1</value>
+			<value><![CDATA[{"item_id":1,"notification_type_id":4,"item_parent_id":1,"notification_time":1738437884,"notification_read":false,"notification_data":"a:6:{s:9:\"poster_id\";i:3;s:11:\"topic_title\";s:17:\"Welcome to phpBB3\";s:12:\"post_subject\";s:21:\"Re: Welcome to phpBB3\";s:13:\"post_username\";s:0:\"\";s:8:\"forum_id\";i:2;s:10:\"forum_name\";s:16:\"Your first forum\";}","user_id":2,"notification_type_name":"notification.type.quote"}]]></value>
+			<value>488c17afe4f18714c235b395e21b78df1c3d78bf1e13d0633ed9425d2eebf967</value>
+			<value>2</value>
+			<value>4</value>
+			<value>1738437884</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value><![CDATA[{"heading":"yourdomain.com","title":"Quoted by Guest in:","text":"\"Welcome to phpBB3\"","url":"phpBB\/viewtopic.php?p=1#p1","avatar":[]}]]></value>
+			<value>488c17afe4f18714c235b395e21b78df1c3d78bf1e13d0633ed9425d2eebf967</value>
+			<value>2</value>
+			<value>4</value>
+			<value>1738437884</value>
+		</row>
+	</table>
+	<table name="phpbb_notification_types">
+		<column>notification_type_id</column>
+		<column>notification_type_name</column>
+		<column>notification_type_enabled</column>
+		<row>
+			<value>4</value>
+			<value>notification.type.quote</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username_clean</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<column>user_form_salt</column>
+		<row>
+			<value>1</value>
+			<value>Anonymous</value>
+			<value></value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>poster</value>
+			<value></value>
+			<value></value>
+			<value>sua0m6f0ektt1g9z</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>test</value>
+			<value></value>
+			<value></value>
+			<value>abcdef</value>
+		</row>
+	</table>
+</dataset>
