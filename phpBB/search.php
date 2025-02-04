@@ -697,10 +697,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$hilit = str_replace(' ', '|', $hilit);
 
 	$u_hilit = urlencode(html_entity_decode(str_replace('|', ' ', $hilit), ENT_COMPAT));
-	$u_show_results = '&amp;sr=' . $show_results;
+	$u_show_results = 'sr=' . $show_results;
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
-	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", $u_sort_param . $u_show_results);
+	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", (($u_sort_param) ? $u_sort_param . '&amp;' : '') . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(html_entity_decode($keywords, ENT_COMPAT)) : '';
 	$u_search .= ($search_terms != 'all') ? '&amp;terms=' . $search_terms : '';
