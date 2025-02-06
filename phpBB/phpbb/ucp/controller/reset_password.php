@@ -272,7 +272,7 @@ class reset_password
 						], false)
 				]);
 
-				$messenger->send($user_row['user_notify_type']);
+				$messenger->send(NOTIFY_EMAIL);
 
 				return $this->helper->message($message);
 			}
