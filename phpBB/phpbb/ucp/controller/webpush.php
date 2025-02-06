@@ -133,10 +133,7 @@ class webpush
 			$notification_data = $this->get_anonymous_notifications();
 		}
 
-		// Decode and return data if everything is fine
-		$data = json_decode($notification_data, true);
-
-		return new JsonResponse($data);
+		return new JsonResponse($notification_data, 200, [], true);
 	}
 
 	/**
