@@ -103,7 +103,7 @@ class acp_bbcodes
 					'S_EDIT_BBCODE'		=> true,
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
-
+					'L_BBCODE_USAGE_EXPLAIN'		=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'					=> $bbcode_match,
 					'BBCODE_TPL'					=> $bbcode_tpl,
 					'BBCODE_HELPLINE'				=> $bbcode_helpline,

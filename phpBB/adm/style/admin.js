@@ -279,11 +279,24 @@ function parse_document(container)
 		});
 
 		// Live update BBCode font icon preview
-		$('#bbcode_font_icon').on('keyup', function(e) {
-			const iconName = $(this).val();
-			if (iconName.match(/^[\w-]+$/)) {
-				$('#bbcode_icon_preview').attr('class', "o-icon o-icon-font fa-fw fas icon fa-" + $(this).val());
-			}
+		const updateIconClass = (element, newClass) => {
+			element.classList.forEach(className => {
+				if (className.startsWith('fa-') && className !== 'fa-fw') {
+					element.classList.remove(className);
+				}
+			});
+
+			element.classList.add(`fa-${newClass}`);
+		};
+
+		const pageIconFont = document.getElementById('bbcode_font_icon');
+
+		pageIconFont.addEventListener('keyup', function() {
+			updateIconClass(this.nextElementSibling, this.value);
+		});
+
+		pageIconFont.addEventListener('blur', function() {
+			updateIconClass(this.nextElementSibling, this.value);
 		});
 	});
 })(jQuery);
