@@ -161,7 +161,7 @@ a:hover {
 
 .page-body {
 	clear: both;
-	margin: 4px 0;
+	margin: 0.4rem 0;
 }
 
 .page-footer {
@@ -203,7 +203,7 @@ a:hover {
 	border-radius: 7px;
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 4px;
+	margin-bottom: 0.5rem;
 	padding: 5px;
 }
 
@@ -215,14 +215,14 @@ a:hover {
 .forabg {
 	border-radius: 7px;
 	clear: both;
-	margin-bottom: 4px;
+	margin-bottom: 0.5rem;
 	padding: 5px;
 }
 
 .forumbg {
 	border-radius: 7px;
 	clear: both;
-	margin-bottom: 4px;
+	margin-bottom: 0.5rem;
 	padding: 5px;
 }
 
