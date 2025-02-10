@@ -1615,12 +1615,10 @@ class smtp_class
 		$result = false;
 		$stream_meta = stream_get_meta_data($this->socket);
 
-		if (socket_set_blocking($this->socket, 1))
+		if (stream_set_blocking($this->socket, 1))
 		{
-			// https://secure.php.net/manual/en/function.stream-socket-enable-crypto.php#119122
-			$crypto = (phpbb_version_compare(PHP_VERSION, '5.6.7', '<')) ? STREAM_CRYPTO_METHOD_TLS_CLIENT : STREAM_CRYPTO_METHOD_SSLv23_CLIENT;
-			$result = stream_socket_enable_crypto($this->socket, true, $crypto);
-			socket_set_blocking($this->socket, (int) $stream_meta['blocked']);
+			$result = stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+			stream_set_blocking($this->socket, (int) $stream_meta['blocked']);
 		}
 
 		return $result;
