@@ -221,6 +221,13 @@ $lang = array_merge($lang, array(
 
 		<p>We noticed that the last update of your phpBB installation hasn’t been completed. Visit the <a href="%1$s" title="%1$s">database updater</a>, ensure <em>Update database only</em> is selected and click on <strong>Submit</strong>. Don\'t forget to delete the "install"-directory after you have updated the database successfully.</p>',
 
+	// Auto update
+	'UPDATE_PACKAGE_DOWNLOAD_FAILURE'		=> 'Failed to download the update package.',
+	'UPDATE_SIGNATURE_DOWNLOAD_FAILURE'		=> 'Failed to download the update package signature.',
+	'UPDATE_SIGNATURE_INVALID'				=> 'The update package is corrupted.',
+	'UPDATE_PACKAGE_EXTRACT_FAILURE'		=> 'Could not extract files from the update package.',
+	'UPDATE_FILES_COPY_FAILURE'				=> 'Could not copy files from the update package.',
+
 	//
 	// Server data
 	//
