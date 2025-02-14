@@ -44,6 +44,13 @@
 									{{ Icon('font', 'file-lines', lang('SEARCH_ACTIVE_TOPICS'), false, 'far icon icon-blue') }}
 								</a>
 							</li>
+							{% if U_MARK_FORUMS %}
+							<li>
+								<a href="{{ U_MARK_FORUMS }}" role="menuitem" accesskey="m" data-ajax="mark_forums_read">
+									{{ Icon('font', 'book-open-reader', lang('MARK_FORUMS_READ'), false) }}
+								</a>
+							</li>
+							{% endif %}
 							<li class="separator"></li>
 							<li>
 								<a href="{{ U_SEARCH }}" role="menuitem">
@@ -160,7 +167,7 @@
 				{% if S_DISPLAY_PM %}
 					<li class="rightside">
 						<a href="{{ U_PRIVATEMSGS }}" role="menuitem">
-							{{ Icon('font', 'inbox', lang('PRIVATE_MESSAGES'), false) }}<strong class="badge{% if not PRIVATE_MESSAGE_COUNT %} hidden{% endif %}"> {PRIVATE_MESSAGE_COUNT}</strong>
+							{{ Icon('font', 'inbox', lang('PRIVATE_MESSAGES'), true) }}<strong class="badge{% if not PRIVATE_MESSAGE_COUNT %} hidden{% endif %}"> {PRIVATE_MESSAGE_COUNT}</strong>
 						</a>
 					</li>
 				{% endif %}
@@ -168,7 +175,7 @@
 				{% if S_NOTIFICATIONS_DISPLAY %}
 					<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside">
 						<a href="{{ U_VIEW_ALL_NOTIFICATIONS }}" id="notification-button" class="dropdown-trigger">
-							{{ Icon('font', 'bell', lang('NOTIFICATIONS'), false) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
+							{{ Icon('font', 'bell', lang('NOTIFICATIONS'), true) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
 						</a>
 
 						{% include 'notification_dropdown.html' %}

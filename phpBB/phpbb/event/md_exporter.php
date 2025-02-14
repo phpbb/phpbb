@@ -169,7 +169,7 @@ class md_exporter
 
 			list($file_details, $details) = explode("\n* Since: ", $details, 2);
 
-			$changed_versions = array();
+			$changed_versions = [];
 			if (strpos($details, "\n* Changed: ") !== false)
 			{
 				list($since, $details) = explode("\n* Changed: ", $details, 2);
@@ -184,7 +184,11 @@ class md_exporter
 			else
 			{
 				list($since, $description) = explode("\n* Purpose: ", $details, 2);
-				$changed_versions = array();
+			}
+
+			if (str_contains($since, "\n* Deprecated: "))
+			{
+				list($since, $deprecated) = explode("\n* Deprecated: ", $since, 2);
 			}
 
 			$files = $this->validate_file_list($file_details);
@@ -225,6 +229,7 @@ class md_exporter
 				'event'			=> $this->current_event,
 				'files'			=> $files,
 				'since'			=> $since,
+				'deprecated'	=> $deprecated ?? '',
 				'changed'		=> $changes,
 				'description'	=> $description,
 			);
@@ -451,7 +456,7 @@ class md_exporter
 	{
 		if (!$this->validate_version($since))
 		{
-			throw new \LogicException("Invalid since information found for event '{$this->current_event}'");
+			throw new \LogicException("Invalid since information found for event '{$this->current_event}': {$since}");
 		}
 
 		return $since;

@@ -21,9 +21,26 @@
  *    line-heights want to be a multiple of this number in order to maintain
  *    vertical rhythm.)
 */
+:root {
+	/* Base font size */
+	--ps-font-base: 16px;								/* [1] */
+	--ps-line-height: 1.5rem;							/* [2] */
+
+	/* Headings */
+	--ps-font-h1: 1.5rem;								/* 24px */
+	--ps-font-h2: 1.5rem;								/* 24px */
+	--ps-font-h3: 1.25rem;								/* 20px */
+	--ps-font-h4: 1.125rem;								/* 18px */
+
+	/* Text and Paragraphs */
+	--ps-font-normal: 1rem;								/* 16px */
+	--ps-font-small: 0.875rem;							/* 14px */
+	--ps-font-tiny: 0.75rem;							/* 12px */
+}
+
 html {
-	font-size: 16px; /* [1] */
-	line-height: 1.5; /* [2] */
+	font-size: var(--ps-font-base);
+	line-height: var(--ps-line-height);
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 

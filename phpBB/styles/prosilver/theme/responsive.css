@@ -152,7 +152,7 @@
 	}
 }
 
-@media (max-width: 700px) {
+@media (max-width: 750px) {
 	.responsive-hide {
 		display: none !important;
 	}
@@ -182,8 +182,8 @@
 	.wrap {
 		border: none;
 		border-radius: 0;
-		min-width: 290px;
-		margin: 0;
+		min-width: 390px;
+		margin: 0 !important;
 		padding: 0 5px;
 	}
 

@@ -18,3 +18,19 @@ acp_bbcodes_actions_prepend2
 * Changed: 3.1.0-a5 Moved up
 * Changed: 3.1.0-a6 Moved down
 * Purpose: desc2
+
+acp_bbcodes_actions_prepend2_deprecated
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a4
+* Deprecated: 3.1.0-a6
+* Changed: 3.1.0-a5 Moved up
+* Changed: 3.1.0-a6 Moved down
+* Purpose: desc2
+
+acp_bbcodes_actions_prepend_deprecated
+===
+* Location: adm/style/acp_bbcodes.html
+* Since: 3.1.0-a5
+* Deprecated: 3.1.0-a6
+* Purpose: desc2

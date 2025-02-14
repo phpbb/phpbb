@@ -35,9 +35,6 @@
 					<dt id="f{faq_block.S_ROW_COUNT}r{faq_block.faq_row.S_ROW_COUNT}"><strong>{faq_block.faq_row.FAQ_QUESTION}</strong></dt>
 					<dd>{faq_block.faq_row.FAQ_ANSWER}</dd>
 				</dl>
-				<a href="#faqlinks" class="top">
-					{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), false) }}
-				</a>
 				<!-- IF not faq_block.faq_row.S_LAST_ROW --><hr class="dashed" /><!-- ENDIF -->
 			<!-- END faq_row -->
 		</div>
@@ -45,6 +42,12 @@
 		</div>
 	</div>
 <!-- END faq_block -->
+
+<div class="to-top-button">
+	<a href="#faqlinks">
+		{{ Icon('font', 'chevron-up', '', false) }}
+	</a>
+</div>
 
 <!-- INCLUDE jumpbox.html -->
 <!-- INCLUDE overall_footer.html -->

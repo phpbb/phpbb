@@ -37,7 +37,7 @@ ul.topiclist dd {
 }
 
 ul.topiclist dt {
-	font-size: 11px;
+	font-size: var(--ps-font-small);
 	width: 100%;
 	margin-right: -440px;
 }
@@ -55,7 +55,7 @@ ul.topiclist.two-columns dt {
 }
 
 ul.topiclist dt .list-inner {
-	line-height: 16px;
+	line-height: calc(var(--ps-line-height) / 1.2);
 	margin-right: 440px;
 	padding-right: 5px;
 	padding-left: 5px;
@@ -140,8 +140,8 @@ li.row strong {
 li.header dt,
 li.header dd {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px;
-	line-height: 16px;
+	font-size: var(--ps-font-tiny);
+	line-height: 1.6;
 	text-transform: uppercase;
 	border-left-width: 0;
 	margin: 2px 0 4px;
@@ -193,7 +193,7 @@ dl.row-item dt {
 }
 
 dl.row-item dt .list-inner {
-	padding-left: 52px;			/* Space for folder icon */
+	padding-left: 54px;			/* Space for folder icon */
 }
 
 dl.row-item dt,
@@ -207,8 +207,8 @@ dd.topics,
 dd.views,
 dd.extra,
 dd.mark {
-	font-size: 12px;
-	line-height: 26px;
+	font-size: var(--ps-font-normal);
+	line-height: 2;
 	text-align: center;
 	width: 80px;
 }
@@ -236,16 +236,16 @@ dd.redirect,
 dd.moderation,
 dd.time,
 dd.info {
-	font-size: 11px;
+	font-size: var(--ps-font-small);
 	width: 250px;
 }
 
 dd.redirect {
-	line-height: 26px;
+	line-height: calc(var(--ps-line-height) / 0.75);
 }
 
 dd.time {
-	line-height: 22px;
+	line-height: calc(var(--ps-line-height) * 1.1);
 }
 
 dd.lastpost > span,
@@ -258,17 +258,17 @@ dd.moderation > span {
 }
 
 dd.lastpost > span {
-	line-height: 16px;
+	line-height: calc(var(--ps-line-height) / 1.2);
 }
 
 dd.extra,
 dd.mark {
-	line-height: 24px;
+	line-height: var(--ps-line-height);
 }
 
 dd.option {
-	font-size: 11px;
-	line-height: 22px;
+	font-size: var(--ps-font-small);
+	line-height: 1.75;
 	text-align: center;
 	width: 125px;
 }
@@ -276,7 +276,7 @@ dd.option {
 /* Post body styles
 ---------------------------------------- */
 .postbody {
-	line-height: 16px;
+	line-height: var(--ps-line-height);
 	position: relative;
 	float: left;
 	width: 76%;
@@ -284,18 +284,18 @@ dd.option {
 }
 
 .postbody .ignore {
-	font-size: 11px;
+	font-size: var(--ps-font-small);
 }
 
 .postbody h3.first {
 	/* The first post on the page uses this */
-	font-size: 17px;
+	font-size: var(--ps-font-h3);
 }
 
 .postbody h3 {
 	font-family: "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 15px;
-	line-height: 19px;
+	font-size: var(--ps-font-h4);
+	line-height: calc(var(--ps-font-h4) + 4px);
 	text-transform: none;
 	border: none;
 
@@ -317,7 +317,7 @@ dd.option {
 }
 
 .postbody .content {
-	font-size: 13px;
+	font-size: var(--ps-font-normal);
 	overflow-x: auto;
 }
 
@@ -374,17 +374,17 @@ dd.option {
 ---------------------------------------- */
 .content {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 13px;
-	line-height: 18px;
+	font-size: var(--ps-font-normal);
+	line-height: var(--ps-line-height);
 	clear: both;
 	overflow: hidden;
-	min-height: 30px;
+	min-height: calc(var(--ps-line-height) * 1.5);
 	padding-bottom: 1px;
 }
 
 .content h2,
 .panel h2 {
-	font-size: 16px;
+	font-size: var(--ps-font-h3);
 	font-weight: normal;
 	border-bottom: 1px solid transparent;
 	margin-top: 8px;
@@ -397,9 +397,9 @@ dd.option {
 }
 
 .panel p {
-	font-size: 12px;
-	line-height: 16px;
-	margin-bottom: 12px;
+	font-size: var(--ps-font-normal);
+	line-height: 1.25;
+	margin-bottom: var(--ps-font-normal);
 }
 
 .content p {
@@ -407,22 +407,22 @@ dd.option {
 }
 
 .agreement {
-	font-size: 12px;
-	line-height: 17px;
-	margin-bottom: 10px;
+	font-size: var(--ps-font-normal);
+	line-height: 1.25;
+	margin-bottom: var(--ps-font-small);
 }
 
 .agreement-text {
-	line-height: 17px;
-	margin-bottom: 10px;
+	line-height: calc(var(--ps-font-normal) * 1.25);
+	margin-bottom: var(--ps-font-small);
 }
 
 dl.faq {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
-	line-height: 15px;
-	margin-top: 11px;
-	margin-bottom: 22px;
+	font-size: var(--ps-font-small);
+	line-height: 1.4;
+	margin-top: var(--ps-font-small);
+	margin-bottom: calc(var(--ps-font-small) * 2);
 }
 
 dl.faq dt {
@@ -430,8 +430,8 @@ dl.faq dt {
 }
 
 .content dl.faq {
-	font-size: 12px;
-	margin-bottom: 6px;
+	font-size: var(--ps-font-normal);
+	margin-bottom: calc(var(--ps-font-normal) / 2);
 }
 
 .content li {
@@ -450,22 +450,22 @@ dl.faq dt {
 /* Post author */
 p.author {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
-	font-size: 10px;
-	line-height: 12px;
+	font-size: var(--ps-font-tiny);
+	line-height: 1.2;
 	clear: both;
-	margin-bottom: 8px;
+	margin-bottom: calc(var(--ps-font-tiny) / 1.2);
 	padding: 0 0 5px;
 }
 
 /* Post signature */
 .signature {
-	font-size: 11px;
-	line-height: 16px;
+	font-size: var(--ps-font-small);
+	line-height: 1.4;
 	border-top: 1px solid transparent;
 	clear: left;
 	overflow: hidden;
 	width: 100%;
-	margin-top: 16px;
+	margin-top: calc(var(--ps-font-small) * 1.4);
 	padding-top: 2px;
 }
 
@@ -493,18 +493,18 @@ dd .signature {
 /* Post noticies */
 .notice {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 10px;
-	line-height: 13px;
+	font-size: var(--ps-font-tiny);
+	line-height: 1.3;
 	border-top: 1px dashed transparent;
 	clear: left;
 	width: auto;
-	margin-top: 15px;
+	margin-top: calc(var(--ps-font-tiny) * 1.3 + 2px);
 	padding-top: 2px;
 }
 
 /* Jump to post link for now */
 ul.searchresults {
-	font-size: 12px;
+	font-size: var(--ps-font-normal);
 	text-align: right;
 	clear: both;
 	list-style: none;
@@ -551,20 +551,20 @@ blockquote cite > span {
 
 /* Code block */
 .codebox {
-	font-size: 13px;
+	font-size: var(--ps-font-normal);
 	word-wrap: normal;
 	border: 1px solid transparent;
-	margin: 13px 0 16px;
+	margin: var(--ps-font-normal) 0 calc(var(--ps-font-normal) + 2px);
 }
 
 .codebox p {
-	font-size: 10px !important;
+	font-size: var(--ps-font-tiny) !important;
 	font-weight: bold;
 	text-transform: uppercase;
 	border-bottom: 1px solid transparent;
 	display: block;
 	margin-bottom: 0;
-	padding: 3px;
+	padding: calc(var(--ps-font-tiny) / 3);
 }
 
 blockquote .codebox {
@@ -584,7 +584,7 @@ blockquote .codebox {
 /* Attachments
 ---------------------------------------- */
 .attachbox {
-	font-size: 13px;
+	font-size: var(--ps-font-normal);
 	border: 1px dashed transparent;
 	float: left;
 	clear: left;
@@ -715,7 +715,7 @@ fieldset.polls dl.voted {
 }
 
 fieldset.polls dt {
-	font-size: 11px;
+	font-size: var(--ps-font-small);
 	text-align: left;
 	border-right: none;
 	display: block;
@@ -726,7 +726,7 @@ fieldset.polls dt {
 }
 
 fieldset.polls dd {
-	font-size: 11px;
+	font-size: var(--ps-font-small);
 	border-left: none;
 	float: left;
 	width: 10%;
@@ -761,7 +761,7 @@ fieldset.polls dd div {
 }
 
 .vote-submitted {
-	font-size: 12px;
+	font-size: var(--ps-font-normal);
 	font-weight: bold;
 	text-align: center;
 }
@@ -769,7 +769,7 @@ fieldset.polls dd div {
 /* Poster profile block
 ---------------------------------------- */
 .postprofile {
-	line-height: 16px;
+	line-height: calc(var(--ps-font-small) * 1.5);
 	border: 1px solid transparent;
 	border-width: 0 0 0 1px;
 	float: right;
@@ -780,8 +780,8 @@ fieldset.polls dd div {
 
 .postprofile dd,
 .postprofile dt {
-	font-size: 10px;
-	line-height: 16px;
+	font-size: var(--ps-font-small);
+	line-height: 1.6;
 	margin-left: 8px;
 }
 
