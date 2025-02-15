@@ -291,12 +291,14 @@ function parse_document(container)
 
 		const pageIconFont = document.getElementById('bbcode_font_icon');
 
-		pageIconFont.addEventListener('keyup', function() {
-			updateIconClass(this.nextElementSibling, this.value);
-		});
+		if (pageIconFont) {
+			pageIconFont.addEventListener('keyup', function () {
+				updateIconClass(this.nextElementSibling, this.value);
+			});
 
-		pageIconFont.addEventListener('blur', function() {
-			updateIconClass(this.nextElementSibling, this.value);
-		});
+			pageIconFont.addEventListener('blur', function () {
+				updateIconClass(this.nextElementSibling, this.value);
+			});
+		}
 	});
 })(jQuery);
