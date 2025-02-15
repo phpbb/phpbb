@@ -98,6 +98,18 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 				'Not a valid icon name',
 				'is invalid',
 			],
+			'icon name invalid double dash' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				'us--er',
+				'is invalid',
+			],
+			'icon name invalid trailing dash' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				'user-',
+				'is invalid',
+			],
 		];
 	}
 }

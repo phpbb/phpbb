@@ -241,7 +241,7 @@ class acp_bbcodes
 						trigger_error($user->lang['BBCODE_FONT_ICON_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if (!empty($bbcode_font_icon) && !preg_match('/^[\w-]+$/', $bbcode_font_icon))
+					if (!empty($bbcode_font_icon) && !preg_match('/^(?!-)(?!.*--)[a-z0-9-]+(?<!-)$/', $bbcode_font_icon))
 					{
 						trigger_error($user->lang['BBCODE_FONT_ICON_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
