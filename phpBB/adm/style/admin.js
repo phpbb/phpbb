@@ -280,6 +280,12 @@ function parse_document(container)
 
 		// Live update BBCode font icon preview
 		const updateIconClass = (element, newClass) => {
+			// Ignore invalid class names
+			const faIconRegex = /^(?!-)(?!.*--)[a-z0-9-]+(?<!-)$/;
+			if (!faIconRegex.test(newClass)) {
+				return;
+			}
+
 			element.classList.forEach(className => {
 				if (className.startsWith('fa-') && className !== 'fa-fw') {
 					element.classList.remove(className);
