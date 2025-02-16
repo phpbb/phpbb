@@ -261,6 +261,29 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		$this->data['topics']['Feeds #exclude - Topic #1'] = (int) $post['topic_id'];
 	}
 
+	public function test_feeds_disabled()
+	{
+		$this->login();
+		$this->admin_login();
+
+		// Disable feeds in ACP
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
+		$form = $crawler->selectButton('Submit')->form();
+		$crawler = self::submit($form, ['config[feed_enable]' => false]);
+		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+
+		// Assert that feeds aren't available
+		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
+		self::assert_response_status_code(404);
+		$this->assertContainsLang('NO_FEED_ENABLED', $crawler->text());
+
+		// Enable feeds again in ACP
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
+		$form = $crawler->selectButton('Submit')->form();
+		$crawler = self::submit($form, ['config[feed_enable]' => true]);
+		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+	}
+
 	public function test_feeds_exclude()
 	{
 		$this->load_ids(array(
