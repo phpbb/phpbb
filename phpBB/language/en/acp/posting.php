@@ -53,7 +53,10 @@ $lang = array_merge($lang, array(
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouse over text of the BBCode.',
 	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_HELPLINE_TOO_LONG'	=> 'The help line you entered is too long.',
-
+	'BBCODE_FONT_ICON'			=> 'BBCode icon',
+	'BBCODE_FONT_ICON_EXPLAIN'	=> 'Enter the name of a Font Awesome icon (without the fa prefix) to display instead of the BBCode name appearing on the button. %1$sClick here%2$s to view the list of available icons. Only solid style icons are supported.',
+	'BBCODE_FONT_ICON_INVALID'	=> 'The icon name you have entered is invalid.',
+	'BBCODE_FONT_ICON_TOO_LONG'	=> 'The icon name you have entered is too long.',
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_INVALID'			=> 'Your BBCode is constructed in an invalid form.',
 	'BBCODE_INVALID_TEMPLATE'	=> 'Your BBCode’s template is invalid.',

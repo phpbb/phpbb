@@ -24,8 +24,9 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		// Create the BBCode
 		$crawler = self::request('GET', 'adm/index.php?i=acp_bbcodes&sid=' . $this->sid . '&mode=bbcodes&action=add');
 		$form = $crawler->selectButton('Submit')->form(array(
-			'bbcode_match' => '[mod="{TEXT1}"]{TEXT2}[/mod]',
-			'bbcode_tpl'   => '<div>{TEXT1}</div><div>{TEXT2}</div>'
+			'bbcode_match'		=> '[mod="{TEXT1}"]{TEXT2}[/mod]',
+			'bbcode_tpl'		=> '<div>{TEXT1}</div><div>{TEXT2}</div>',
+			'bbcode_font_icon'	=> 'user',
 		));
 		self::submit($form);
 
@@ -47,15 +48,16 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 	/**
 	* @dataProvider get_bbcode_error_tests
 	*/
-	public function test_bbcode_error($match, $tpl, $error)
+	public function test_bbcode_error($match, $tpl, $icon, $error)
 	{
 		$this->login();
 		$this->admin_login();
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_bbcodes&sid=' . $this->sid . '&mode=bbcodes&action=add');
 		$form = $crawler->selectButton('Submit')->form([
-			'bbcode_match' => $match,
-			'bbcode_tpl'   => $tpl
+			'bbcode_match'		=> $match,
+			'bbcode_tpl'		=> $tpl,
+			'bbcode_font_icon'	=> $icon,
 		]);
 		$crawler = self::submit($form);
 
@@ -69,17 +71,44 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 			[
 				'XXX',
 				'',
+				'',
 				'BBCode is constructed in an invalid form'
 			],
 			[
 				'[x]{TEXT}[/x]',
 				'<xsl:invalid',
+				'',
 				'template is invalid'
 			],
 			[
 				'[x]{TEXT}[/x]',
 				'<script>{TEXT}</script>',
+				'',
 				'unsafe'
+			],
+			'icon name too long' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				str_repeat('a', 65),
+				'is too long',
+			],
+			'icon name invalid' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				'Not a valid icon name',
+				'is invalid',
+			],
+			'icon name invalid double dash' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				'us--er',
+				'is invalid',
+			],
+			'icon name invalid trailing dash' => [
+				'[mod2="{TEXT1}"]{TEXT2}[/mod2]',
+				'<div>{TEXT1}</div><div>{TEXT2}</div>',
+				'user-',
+				'is invalid',
 			],
 		];
 	}
