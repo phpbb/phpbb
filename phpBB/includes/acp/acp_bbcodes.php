@@ -163,6 +163,7 @@ class acp_bbcodes
 				* @var	array	hidden_fields		Array of hidden fields for use when
 				*									submitting form when $warn_unsafe is true
 				* @since 3.1.0-a3
+				* @changed 4.0.0-a1 Added bbcode_font_icon
 				*/
 				$vars = array(
 					'action',
