@@ -123,12 +123,6 @@ class feed
 		$this->template = $twig;
 		$this->language = $language;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
-
-		// Feeds are disabled, no need to continue
-		if (!$this->config['feed_enable'])
-		{
-			$this->send_unavailable();
-		}
 	}
 
 	/**
@@ -140,6 +134,8 @@ class feed
 	 */
 	public function forums()
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_overall_forums'])
 		{
 			$this->send_unavailable();
@@ -157,6 +153,8 @@ class feed
 	 */
 	public function news()
 	{
+		$this->check_enabled();
+
 		// Get at least one news forum
 		$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
@@ -182,6 +180,8 @@ class feed
 	 */
 	public function topics()
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_topics_new'])
 		{
 			$this->send_unavailable();
@@ -199,6 +199,8 @@ class feed
 	 */
 	public function topics_new()
 	{
+		$this->check_enabled();
+
 		return $this->topics();
 	}
 
@@ -211,6 +213,8 @@ class feed
 	 */
 	public function topics_active()
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_topics_active'])
 		{
 			$this->send_unavailable();
@@ -230,6 +234,8 @@ class feed
 	 */
 	public function forum($forum_id)
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_forum'])
 		{
 			$this->send_unavailable();
@@ -249,6 +255,8 @@ class feed
 	 */
 	public function topic($topic_id)
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_topic'])
 		{
 			$this->send_unavailable();
@@ -266,6 +274,8 @@ class feed
 	 */
 	public function overall()
 	{
+		$this->check_enabled();
+
 		if (!$this->config['feed_overall'])
 		{
 			$this->send_unavailable();
@@ -411,6 +421,22 @@ class feed
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Check if feeds are enabled in the configuration.
+	 *
+	 * @throws http_exception If feeds are disabled.
+	 *
+	 * @return void
+	 */
+	protected function check_enabled()
+	{
+		// Feeds are disabled, no need to continue
+		if (!$this->config['feed_enable'])
+		{
+			throw new http_exception(404, 'NO_FEED_ENABLED');
+		}
 	}
 
 	/**
