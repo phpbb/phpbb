@@ -123,6 +123,12 @@ class feed
 		$this->template = $twig;
 		$this->language = $language;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
+
+		// Feeds are disabled, no need to continue
+		if (!$this->config['feed_enable'])
+		{
+			$this->send_unavailable();
+		}
 	}
 
 	/**
