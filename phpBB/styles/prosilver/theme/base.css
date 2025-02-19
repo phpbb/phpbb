@@ -112,3 +112,11 @@ ul {
 abbr[title] {
 	text-decoration: none;
 }
+
+/**
+ * Fixes accessibility issue introduced by `normalize.css` by re-adding outline
+ * to elements covered by the mouse when they are navigated into via keyboard
+ */
+a:hover {
+	outline: revert;
+}
