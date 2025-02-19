@@ -44,7 +44,7 @@
 					<div class="list-inner">
 						<!-- IF S_ENABLE_FEEDS and forumrow.S_FEED_ENABLED -->
 							<!--
-								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{U_FEED}?f={forumrow.FORUM_ID}">
+								<a class="feed-icon-forum" title="{L_FEED} - {forumrow.FORUM_NAME}" href="{{ path('phpbb_feed_forum', { forum_id : forumrow.FORUM_ID } ) }}">
 									{{ Icon('font', 'square-rss', '', true, 'fas c-feed-icon') }}<span class="sr-only">{L_FEED} - {forumrow.FORUM_NAME}</span>
 								</a>
 							-->
