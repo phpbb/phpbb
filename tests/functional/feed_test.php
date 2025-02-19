@@ -269,7 +269,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		// Disable feeds in ACP
 		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
 		$form = $crawler->selectButton('Submit')->form();
-		$crawler = self::submit($form, ['config[feed_enable]' => false]);
+		$crawler = self::submit($form, ['config[feed_enable]' => 0]);
 		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
 		// Assert that feeds aren't available
@@ -280,7 +280,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		// Enable feeds again in ACP
 		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=feed");
 		$form = $crawler->selectButton('Submit')->form();
-		$crawler = self::submit($form, ['config[feed_enable]' => true]);
+		$crawler = self::submit($form, ['config[feed_enable]' => 1]);
 		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 	}
 
