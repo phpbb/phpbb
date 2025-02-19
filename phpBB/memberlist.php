@@ -1390,10 +1390,10 @@ switch ($mode)
 
 		$order_by .= $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
-		// Unfortunately we must do this here for sorting by rank, else the sort order is applied wrongly
-		if ($sort_key == 'm')
+		// For sorting by non-unique columns (rank, posts) add unique sort key to avoid duplicated rows in results
+		if ($sort_key == 'm' || $sort_key == 'd')
 		{
-			$order_by .= ', u.user_posts DESC';
+			$order_by .= ', u.user_id ASC';
 		}
 
 		/**
