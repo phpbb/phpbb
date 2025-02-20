@@ -65,6 +65,7 @@ $lang = array_merge($lang, [
 	// Local adapter
 	'STORAGE_ADAPTER_LOCAL_NAME'						=> 'Local',
 	'STORAGE_ADAPTER_LOCAL_OPTION_PATH'					=> 'Path',
+	'STORAGE_ADAPTER_LOCAL_OPTION_PATH_EXPLAIN'			=> 'Storage path for files.<br>For example: <samp>files</samp>, <samp>images/avatars/upload</samp> or <samp>store</samp>.',
 
 	// Form validation
 	'STORAGE_UPDATE_SUCCESSFUL' 				=>	'All storage types were successfully updated.',

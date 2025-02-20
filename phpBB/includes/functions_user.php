@@ -2126,7 +2126,8 @@ function group_correct_avatar($group_id, $old_entry)
 
 	try
 	{
-		$storage->rename($old_filename, $new_filename);
+		$storage->write($new_filename, $storage->read($old_filename));
+		$storage->delete($old_filename);
 
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
 			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'

@@ -38,4 +38,13 @@ class storage_attachment extends migration
 			['config.remove', ['upload_path']],
 		];
 	}
+
+	public function revert_data()
+	{
+		return [
+			['config.remove', ['storage\\attachment\\provider']],
+			['config.remove', ['storage\\attachment\\config\\path']],
+			['config.add', ['upload_path', 'files']],
+		];
+	}
 }
