@@ -12,6 +12,8 @@
 */
 namespace phpbb\console\command\thumbnail;
 
+use phpbb\language\language;
+use phpbb\user;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -19,6 +21,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class recreate extends \phpbb\console\command\command
 {
+	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * Constructor
+	 *
+	 * @param user $user User
+	 * @param language $language Language
+	 */
+	public function __construct(user $user, language $language)
+	{
+		$this->language = $language;
+
+		parent::__construct($user);
+	}
+
 	/**
 	* Sets the command name and description
 	*
@@ -28,7 +48,7 @@ class recreate extends \phpbb\console\command\command
 	{
 		$this
 			->setName('thumbnail:recreate')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_THUMBNAIL_RECREATE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_THUMBNAIL_RECREATE'))
 		;
 	}
 

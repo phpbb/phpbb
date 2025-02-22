@@ -36,7 +36,7 @@ class storage_exception extends runtime_exception
 	 *
 	 * @return string
 	 */
-	public function get_filename()
+	public function get_filename(): string
 	{
 		$parameters = $this->get_parameters();
 		return $parameters['filename'];

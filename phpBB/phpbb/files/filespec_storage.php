@@ -446,12 +446,8 @@ class filespec_storage
 		{
 			$fp = fopen($this->filename, 'rb');
 
-			$storage->write_stream($this->destination_file, $fp);
-
-			if (is_resource($fp))
-			{
-				fclose($fp);
-			}
+			$storage->write($this->destination_file, $fp);
+			$this->file_moved = true;
 		}
 		catch (\phpbb\storage\exception\storage_exception $e)
 		{

@@ -378,7 +378,6 @@ class acp_storage
 		foreach ($this->storage_collection as $storage)
 		{
 			$storage_name = $storage->get_name();
-			$options = $this->storage_helper->get_provider_options($this->storage_helper->get_current_provider($storage_name));
 
 			$modified = false;
 
@@ -389,6 +388,8 @@ class acp_storage
 			}
 			else
 			{
+				$options = $this->storage_helper->get_provider_options($this->storage_helper->get_current_provider($storage_name));
+
 				// Check if options have been modified
 				foreach (array_keys($options) as $definition)
 				{
@@ -431,8 +432,8 @@ class acp_storage
 
 			$storage_stats[] = [
 				'name' => $this->lang->lang('STORAGE_' . strtoupper($storage->get_name()) . '_TITLE'),
-				'files' => $storage->get_num_files(),
-				'size' => get_formatted_filesize($storage->get_size()),
+				'files' => $storage->total_files(),
+				'size' => get_formatted_filesize($storage->total_size()),
 				'free_space' => $free_space,
 			];
 		}
@@ -535,30 +536,29 @@ class acp_storage
 		$this->validate_path($storage_name, $messages);
 
 		// Check options
-		$new_options = $this->storage_helper->get_provider_options($this->request->variable([$storage_name, 'provider'], ''));
+		$new_provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
 
-		foreach ($new_options as $definition_key => $definition_value)
+		foreach ($new_provider->get_options() as $definition_key => $definition_value)
 		{
-			$provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
-			$definition_title = $this->lang->lang('STORAGE_ADAPTER_' . strtoupper($provider->get_name()) . '_OPTION_' . strtoupper($definition_key));
 
+			$definition_title = $definition_value['title'];
 			$value = $this->request->variable([$storage_name, $definition_key], '');
 
-			switch ($definition_value['tag'])
+			switch ($definition_value['form_macro']['tag'])
 			{
 				case 'text':
-					if ($definition_value['type'] == 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
+					if ($definition_value['form_macro']['type'] === 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 
-					$maxlength = $definition_value['max'] ?? 255;
+					$maxlength = $definition_value['form_macro']['max'] ?? 255;
 					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
 					}
 
-					if ($provider->get_name() == 'local' && $definition_key == 'path')
+					if ($new_provider->get_name() === 'local' && $definition_key === 'path')
 					{
 						$path = $value;
 
@@ -575,7 +575,7 @@ class acp_storage
 
 				case 'radio':
 					$found = false;
-					foreach ($definition_value['buttons'] as $button)
+					foreach ($definition_value['form_macro']['buttons'] as $button)
 					{
 						if ($button['value'] == $value)
 						{
@@ -592,7 +592,7 @@ class acp_storage
 
 				case 'select':
 					$found = false;
-					foreach ($definition_value['options'] as $option)
+					foreach ($definition_value['form_macro']['options'] as $option)
 					{
 						if ($option['value'] == $value)
 						{
@@ -619,10 +619,18 @@ class acp_storage
 	 */
 	protected function validate_path(string $storage_name, array &$messages) : void
 	{
-		$current_provider = $this->storage_helper->get_current_provider($storage_name);
-		$options = $this->storage_helper->get_provider_options($current_provider);
+		if ($this->request->is_set_post('submit'))
+		{
+			$provider = $this->request->variable([$storage_name, 'provider'], '');
+		}
+		else
+		{
+			$provider = $this->storage_helper->get_current_provider($storage_name);
+		}
 
-		if ($this->provider_collection->get_by_class($current_provider)->get_name() == 'local' && isset($options['path']))
+		$options = $this->storage_helper->get_provider_options($provider);
+
+		if ($this->provider_collection->get_by_class($provider)->get_name() === 'local' && isset($options['path']))
 		{
 			$path = $this->request->is_set_post('submit') ? $this->request->variable([$storage_name, 'path'], '') : $this->storage_helper->get_current_definition($storage_name, 'path');
 

@@ -13,27 +13,51 @@
 
 namespace phpbb\console\command\thumbnail;
 
+use phpbb\attachment\attachment_category;
+use phpbb\cache\service;
+use phpbb\db\driver\driver_interface;
+use phpbb\filesystem\temp;
+use phpbb\language\language;
+use phpbb\storage\storage;
+use phpbb\user;
 use Symfony\Component\Console\Command\Command as symfony_command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem as symfony_filesystem;
 
 class generate extends \phpbb\console\command\command
 {
-	/**
-	* @var \phpbb\config\config
-	*/
-	protected $config;
 
 	/**
-	* @var \phpbb\db\driver\driver_interface
+	* @var driver_interface
 	*/
 	protected $db;
 
 	/**
-	* @var \phpbb\cache\service
+	* @var service
 	*/
 	protected $cache;
+
+	/**
+	 * @var language
+	 */
+	protected $language;
+
+	/**
+	 * @var symfony_filesystem
+	 */
+	protected $symfony_filesystem;
+
+	/**
+	 * @var storage
+	 */
+	protected $storage;
+
+	/**
+	 * @var temp
+	 */
+	protected $temp;
 
 	/**
 	* phpBB root path
@@ -51,18 +75,23 @@ class generate extends \phpbb\console\command\command
 	/**
 	* Constructor
 	*
-	* @param \phpbb\config\config $config The config
-	* @param \phpbb\user $user The user object (used to get language information)
-	* @param \phpbb\db\driver\driver_interface $db Database connection
-	* @param \phpbb\cache\service $cache The cache service
+	* @param user $user The user object (used to get language information)
+	* @param driver_interface $db Database connection
+	* @param service $cache The cache service
+	* @param language $language Language
+	* @param storage $storage Storage
+	* @param temp $temp Temp
 	* @param string $phpbb_root_path Root path
 	* @param string $php_ext PHP extension
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\db\driver\driver_interface $db, \phpbb\cache\service $cache, $phpbb_root_path, $php_ext)
+	public function __construct(user $user, driver_interface $db, service $cache, language $language, storage $storage, temp $temp, string $phpbb_root_path, string $php_ext)
 	{
-		$this->config = $config;
 		$this->db = $db;
 		$this->cache = $cache;
+		$this->symfony_filesystem = new symfony_filesystem();
+		$this->language = $language;
+		$this->storage = $storage;
+		$this->temp = $temp;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
 
@@ -78,7 +107,7 @@ class generate extends \phpbb\console\command\command
 	{
 		$this
 			->setName('thumbnail:generate')
-			->setDescription($this->user->lang('CLI_DESCRIPTION_THUMBNAIL_GENERATE'))
+			->setDescription($this->language->lang('CLI_DESCRIPTION_THUMBNAIL_GENERATE'))
 		;
 	}
 
@@ -96,7 +125,7 @@ class generate extends \phpbb\console\command\command
 	{
 		$io = new SymfonyStyle($input, $output);
 
-		$io->section($this->user->lang('CLI_THUMBNAIL_GENERATING'));
+		$io->section($this->language->lang('CLI_THUMBNAIL_GENERATING'));
 
 		$sql = 'SELECT COUNT(*) AS nb_missing_thumbnails
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -107,7 +136,7 @@ class generate extends \phpbb\console\command\command
 
 		if ($nb_missing_thumbnails === 0)
 		{
-			$io->warning($this->user->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE'));
+			$io->warning($this->language->lang('CLI_THUMBNAIL_NOTHING_TO_GENERATE'));
 			return symfony_command::SUCCESS;
 		}
 
@@ -125,20 +154,24 @@ class generate extends \phpbb\console\command\command
 
 		$progress = $this->create_progress_bar($nb_missing_thumbnails, $io, $output);
 
-		$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATING'));
+		$progress->setMessage($this->language->lang('CLI_THUMBNAIL_GENERATING'));
 
 		$progress->start();
 
 		$thumbnail_created = array();
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == \phpbb\attachment\attachment_category::IMAGE)
+			if (isset($extensions[$row['extension']]['display_cat']) && $extensions[$row['extension']]['display_cat'] == attachment_category::IMAGE)
 			{
-				$source = $this->phpbb_root_path . $this->config['upload_path'] . '/' . $row['physical_filename'];
-				$destination = $this->phpbb_root_path . $this->config['upload_path'] . '/thumb_' . $row['physical_filename'];
+				$source = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_source');
+				$destination = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_destination');
+
+				file_put_contents($source, $this->storage->read($row['physical_filename']));
 
 				if (create_thumbnail($source, $destination, $row['mimetype']))
 				{
+					$this->storage->write('thumb_' . $row['physical_filename'], fopen($destination, 'rb'));
+
 					$thumbnail_created[] = (int) $row['attach_id'];
 
 					if (count($thumbnail_created) === 250)
@@ -147,12 +180,15 @@ class generate extends \phpbb\console\command\command
 						$thumbnail_created = array();
 					}
 
-					$progress->setMessage($this->user->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
+					$progress->setMessage($this->language->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
 				}
 				else
 				{
-					$progress->setMessage('<info>' . $this->user->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
+					$progress->setMessage('<info>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
 				}
+
+				@unlink($source);
+				@unlink($destination);
 			}
 
 			$progress->advance();
@@ -167,7 +203,7 @@ class generate extends \phpbb\console\command\command
 		$progress->finish();
 
 		$io->newLine(2);
-		$io->success($this->user->lang('CLI_THUMBNAIL_GENERATING_DONE'));
+		$io->success($this->language->lang('CLI_THUMBNAIL_GENERATING_DONE'));
 
 		return symfony_command::SUCCESS;
 	}

@@ -496,7 +496,7 @@ class acp_main
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
 
 		$storage_avatar = $phpbb_container->get('storage.avatar');
-		$avatar_dir_size = get_formatted_filesize($storage_avatar->get_size());
+		$avatar_dir_size = get_formatted_filesize($storage_avatar->total_size());
 
 		if ($posts_per_day > $total_posts)
 		{

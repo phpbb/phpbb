@@ -38,4 +38,13 @@ class storage_avatar extends migration
 			['config.remove', ['avatar_path']],
 		];
 	}
+
+	public function revert_data()
+	{
+		return [
+			['config.remove', ['storage\\avatar\\provider']],
+			['config.remove', ['storage\\avatar\\config\\path']],
+			['config.add', ['avatar_path', 'images/avatars/upload']],
+		];
+	}
 }
