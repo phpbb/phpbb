@@ -5,6 +5,20 @@
 */
 
 /**
+* Escape HTML special characters
+*/
+function escapeHtml(text) {
+	var map = {
+		'&': '&amp;',
+		'<': '&lt;',
+		'>': '&gt;',
+		'"': '&quot;',
+		"'": '&#039;'
+	};
+	return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+/**
 * Find a member
 */
 function find_username(url) {
@@ -599,7 +613,7 @@ function parseDocument($container) {
 				}
 
 				if ((text.length && text !== '-') || cell.children().length) {
-					cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+					cell.prepend('<dfn style="display: none;">' + escapeHtml(headers[column]) + '</dfn>');
 				} else {
 					cell.addClass('empty');
 				}
