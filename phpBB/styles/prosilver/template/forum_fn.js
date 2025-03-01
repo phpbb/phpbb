@@ -773,8 +773,9 @@ function parseDocument($container) {
 				}
 
 				if ((text.length && text !== '-') || cell.children().length) {
-					const $dfnElement = $("<dfn>").css('display', 'none').text(headers[column]);
-					cell.prepend($dfnElement);
+					if (headers[column].length) {
+						cell.prepend($("<dfn>").css('display', 'none').text(headers[column]));
+					}
 				} else {
 					cell.addClass('empty');
 				}
