@@ -107,6 +107,20 @@ class acp_main
 					default:
 						$confirm = true;
 						$confirm_lang = 'CONFIRM_OPERATION';
+
+						/**
+						 * Event to add confirm box for custom ACP quick actions
+						 *
+						 * @event core.acp_main_add_actions_confirm
+						 * @var	string	id				The module ID
+						 * @var	string	mode			The module mode
+						 * @var	string	action			Custom action type name
+						 * @var	boolean	confirm			Do we display the confirm box to run the custom action
+						 * @var	string	confirm_lang	Lang var name to display in confirm box
+						 * @since 3.3.15-RC1
+						 */
+						$vars = ['id', 'mode', 'action', 'confirm', 'confirm_lang'];
+						extract($phpbb_dispatcher->trigger_event('core.acp_main_add_actions_confirm', compact($vars)));
 				}
 
 				if ($confirm)
@@ -414,6 +428,19 @@ class acp_main
 							trigger_error('PURGE_SESSIONS_SUCCESS');
 						}
 					break;
+
+					default:
+						/**
+						 * Event to add custom ACP quick actions
+						 *
+						 * @event core.acp_main_add_actions
+						 * @var	string	id				The module ID
+						 * @var	string	mode			The module mode
+						 * @var	string	action			Custom action type name
+						 * @since 3.3.15-RC1
+						 */
+						$vars = ['id', 'mode', 'action'];
+						extract($phpbb_dispatcher->trigger_event('core.acp_main_add_actions', compact($vars)));
 				}
 			}
 		}
