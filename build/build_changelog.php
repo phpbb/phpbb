@@ -29,7 +29,7 @@ else
 {
 	$fixVersion = $_SERVER['argv'][1];
 
-	$query = 'project IN (PHPBB3, SECURITY)
+	$query = 'project IN (PHPBB, PHPBB3, SECURITY)
 		AND resolution = Fixed
 		AND fixVersion = "' . $fixVersion . '"
 		AND status IN ("Unverified Fix", Closed)';
