@@ -50,7 +50,7 @@ class build_package
 		);
 
 		$this->package_infos = array(
-			'package_name'			=> 'phpBB3',
+			'package_name'			=> 'phpBB',
 			'name_prefix'			=> 'phpbb',
 			'simple_name'			=> 'release-' . $_latest,
 			'new_version_number'	=> $_latest,
