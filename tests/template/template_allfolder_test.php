@@ -60,6 +60,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 		$loader = new \phpbb\template\twig\loader('');
 		$log = new \phpbb\log\dummy();
 		$assets_bag = new \phpbb\template\assets_bag();
+		$dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,
@@ -68,7 +69,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 			$cache_path,
 			$this->extension_manager,
 			$loader,
-			new \phpbb\event\dispatcher(),
+			$dispatcher,
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -76,7 +77,7 @@ class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 				'autoescape'	=> false,
 			)
 		);
-		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user)), $this->extension_manager);
+		$this->template = new \phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $this->user, $dispatcher)), $this->extension_manager);
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 
 		$this->template_path = $this->test_path . '/templates';

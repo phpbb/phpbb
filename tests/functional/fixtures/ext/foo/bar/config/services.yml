@@ -14,7 +14,13 @@ services:
         class: foo\bar\event\permission
         tags:
             - { name: event.listener }
+
     foo_bar.listener.user_setup:
         class: foo\bar\event\user_setup
+        tags:
+            - { name: event.listener }
+
+    foo_bar.listener.template_event_order:
+        class: foo\bar\event\template_event_order
         tags:
             - { name: event.listener }
