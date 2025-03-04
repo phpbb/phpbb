@@ -75,8 +75,15 @@ class file_downloader
 	 */
 	public function get(string $host, string $directory, string $filename, int $port = 443, int $timeout = 6)
 	{
-		// Initialize Guzzle client
-		$client = $this->create_client($host, $port, $timeout);
+		try
+		{
+			// Initialize Guzzle client
+			$client = $this->create_client($host, $port, $timeout);
+		}
+		catch (\RuntimeException $exception)
+		{
+			throw new runtime_exception($exception->getMessage());
+		}
 
 		// Set default values for error variables
 		$this->error_number = 0;
