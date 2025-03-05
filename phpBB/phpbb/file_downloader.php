@@ -82,7 +82,7 @@ class file_downloader
 		}
 		catch (\RuntimeException $exception)
 		{
-			throw new runtime_exception($exception->getMessage());
+			throw new runtime_exception('HTTP_HANDLER_NOT_FOUND');
 		}
 
 		// Set default values for error variables
