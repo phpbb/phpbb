@@ -357,6 +357,7 @@ $lang = array_merge($lang, array(
 	'HIDE_ME'						=> 'Hide my online status this session',
 	'HOURS'							=> 'Hours',
 	'HOME'							=> 'Home',
+	'HTTP_HANDLER_NOT_FOUND'		=> 'The operation could not be completed because the cURL PHP extension and allow_url_fopen PHP ini setting have been disabled and no other HTTP handler could be found.',
 
 	'ICQ'						=> 'ICQ',
 	'IF'						=> 'If',
