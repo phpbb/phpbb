@@ -2071,7 +2071,7 @@ class acp_forums
 
 		$config->set('num_files', (int) $row['stat'], false);
 
-		$sql = 'SELECT SUM(filesize) as stat
+		$sql = 'SELECT SUM(' . $db->cast_expr_to_bigint('filesize') . ') as stat
 			FROM ' . ATTACHMENTS_TABLE;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
