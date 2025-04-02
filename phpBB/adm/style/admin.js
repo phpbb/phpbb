@@ -5,7 +5,7 @@
 /**
 * Parse document block
 */
-function parse_document(container) 
+function parse_document(container)
 {
 	var test = document.createElement('div'),
 		oldBrowser = (typeof test.style.borderRadius == 'undefined');
@@ -90,7 +90,7 @@ function parse_document(container)
 				}
 			});
 		}
-		
+
 		headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>
@@ -121,8 +121,8 @@ function parse_document(container)
 				}
 
 				if ((text.length && text !== '-') || cell.children().length) {
-					if (headers[column] != '') {
-						cell.prepend('<dfn style="display: none;">' + headers[column] + '</dfn>');
+					if (headers[column].length) {
+						cell.prepend($("<dfn>").css('display', 'none').text(headers[column]));
 					}
 				}
 				else {
@@ -143,7 +143,7 @@ function parse_document(container)
 	*/
 	container.find('table.responsive > tbody').each(function() {
 		var items = $(this).children('tr');
-		if (items.length == 0)
+		if (!items.length)
 		{
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
@@ -157,7 +157,7 @@ function parse_document(container)
 		if ($this.html() == '&nbsp;') {
 			$this.addClass('responsive-hide');
 		}
-		
+
 	});
 
 	/**
@@ -184,7 +184,7 @@ function parse_document(container)
 			var width = $body.width(),
 				height = $this.height();
 
-			if (arguments.length == 0 && (!responsive || width <= lastWidth) && height <= maxHeight) {
+			if (!arguments.length && (!responsive || width <= lastWidth) && height <= maxHeight) {
 				return;
 			}
 
