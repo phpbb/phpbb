@@ -138,7 +138,10 @@ class ucp_resend
 				$messenger_collection_iterator = $messenger->getIterator();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					/** @var \phpbb\messenger\method\base $messenger_method */
+					/**
+					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+					 * @psalm-suppress UndefinedMethod
+					 */
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$messenger_method->set_use_queue(false);

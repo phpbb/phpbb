@@ -117,7 +117,10 @@ class queue
 		/** @psalm-suppress InvalidTemplateParam */
 		$messenger_collection_iterator = $this->messenger_method_collection->getIterator();
 
-		/** @var \phpbb\messenger\method\base $messenger_method */
+		/**
+		 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+		 * @psalm-suppress UndefinedMethod
+		 */
 		foreach ($messenger_collection_iterator as $messenger_method)
 		{
 			if (isset($this->queue_data[$messenger_method->get_queue_object_name()]))

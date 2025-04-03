@@ -250,7 +250,10 @@ class message
 			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $messenger->getIterator();
 
-			/** @var \phpbb\messenger\method\base $messenger_method */
+			/**
+			 * @var messenger_interface $messenger_method
+			 * @psalm-suppress UndefinedMethod
+			 */
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				$messenger_method->set_use_queue(false);
