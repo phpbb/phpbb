@@ -1845,7 +1845,7 @@ function update_dynamic_config()
 	$config->set('num_files', (int) $db->sql_fetchfield('stat'), false);
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT SUM(filesize) as stat
+	$sql = 'SELECT SUM(' . $db->cast_expr_to_bigint('filesize') . ') as stat
 		FROM ' . ATTACHMENTS_TABLE . '
 		WHERE is_orphan = 0';
 	$result = $db->sql_query($sql);

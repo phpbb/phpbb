@@ -1079,7 +1079,7 @@ class acp_attachments
 				$attachments_per_page = (int) $config['topics_per_page'];
 
 				// Get total number or orphans older than 3 hours
-				$sql = 'SELECT COUNT(attach_id) as num_files, SUM(filesize) as total_size
+				$sql = 'SELECT COUNT(attach_id) as num_files, SUM(' . $this->db->cast_expr_to_bigint('filesize') . ') as total_size
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE is_orphan = 1
 						AND filetime < ' . (time() - 3*60*60);
