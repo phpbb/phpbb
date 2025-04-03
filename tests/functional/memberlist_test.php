@@ -134,4 +134,29 @@ class phpbb_functional_memberlist_test extends phpbb_functional_test_case
 
 		unlink(__DIR__ . '/../../phpBB/images/ranks/valid.jpg');
 	}
+
+	public function test_email()
+	{
+		$this->login();
+		$this->admin_login();
+		$this->add_lang(['acp/board', 'acp/common', 'memberlist']);
+
+		$crawler = self::request('GET', "adm/index.php?sid={$this->sid}&i=acp_board&mode=email");
+		$form = $crawler->selectButton('Submit')->form([
+			'config[board_email_form]' => 1,
+		]);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
+
+		$crawler = self::request('GET', 'memberlist.php?mode=email&u=2');
+		$this->assertStringContainsString($this->lang('SEND_EMAIL_USER', 'admin'), $crawler->filter('.titlespace')->text());
+
+		$form = $crawler->selectButton($this->lang('SEND_EMAIL'))->form([
+			'subject' => 'Test email form message',
+			'message' => 'This is a test email message sent from a member profile email form.',
+		]);
+		$crawler = self::submit($form);
+
+		$this->assertContainsLang('EMAIL_SENT', $crawler->text());
+	}
 }
