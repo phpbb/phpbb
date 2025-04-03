@@ -105,7 +105,7 @@ class email extends base
 		$this->mail_priority = symfony_email::PRIORITY_NORMAL;
 
 		$this->additional_headers = [];
-		$this->use_queue = true;
+		$this->set_use_queue();
 		unset($this->template, $this->reply_to, $this->from);
 	}
 
@@ -242,10 +242,10 @@ class email extends base
 	 */
 	public function anti_abuse_headers(\phpbb\config\config $config, \phpbb\user $user): void
 	{
-		$this->headers->addHeader('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
-		$this->headers->addHeader('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
-		$this->headers->addHeader('X-AntiAbuse', 'Username - ' . $user->data['username']);
-		$this->headers->addHeader('X-AntiAbuse', 'User IP - ' . $user->ip);
+		$this->header('X-AntiAbuse', 'Board servername - ' . $config['server_name']);
+		$this->header('X-AntiAbuse', 'User_id - ' . $user->data['user_id']);
+		$this->header('X-AntiAbuse', 'Username - ' . $user->data['username']);
+		$this->header('X-AntiAbuse', 'User IP - ' . $user->ip);
 	}
 
 	/**
@@ -313,7 +313,7 @@ class email extends base
 
 		foreach ($headers as $header => $value)
 		{
-			$this->headers->addHeader($header, $value);
+			$this->header($header, $value);
 		}
 
 	}
@@ -575,5 +575,13 @@ class email extends base
 		$this->init();
 
 		return true;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function header(string $header_name, mixed $header_value): void
+	{
+		$this->headers->addHeader($header_name, $header_value);
 	}
 }

@@ -133,6 +133,11 @@ class ucp_activate
 
 			$messenger = $phpbb_container->get('messenger.method_collection');
 			$messenger_collection_iterator = $messenger->getIterator();
+
+			/**
+			 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+			 * @psalm-suppress UndefinedMethod
+			 */
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)

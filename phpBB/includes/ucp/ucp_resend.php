@@ -138,6 +138,10 @@ class ucp_resend
 				$messenger_collection_iterator = $messenger->getIterator();
 				while ($row = $db->sql_fetchrow($result))
 				{
+					/**
+					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+					 * @psalm-suppress UndefinedMethod
+					 */
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$messenger_method->set_use_queue(false);
@@ -157,12 +161,6 @@ class ucp_resend
 					}
 				}
 				$db->sql_freeresult($result);
-
-				// Save the queue in the messenger method class (has to be called or these messages could be lost)
-				foreach ($messenger_collection_iterator as $messenger_method)
-				{
-					$messenger_method->save_queue();
-				}
 			}
 
 			$this->update_activation_expiration();

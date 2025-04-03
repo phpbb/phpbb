@@ -249,6 +249,11 @@ class message
 		{
 			/** @psalm-suppress InvalidTemplateParam */
 			$messenger_collection_iterator = $messenger->getIterator();
+
+			/**
+			 * @var messenger_interface $messenger_method
+			 * @psalm-suppress UndefinedMethod
+			 */
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				$messenger_method->set_use_queue(false);
@@ -264,6 +269,7 @@ class message
 					{
 						$messenger_method->header('X-AntiAbuse', 'User_id - ' . $this->sender_id);
 					}
+
 					if ($this->sender_username)
 					{
 						$messenger_method->header('X-AntiAbuse', 'Username - ' . $this->sender_username);

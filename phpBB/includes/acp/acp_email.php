@@ -227,6 +227,10 @@ class acp_email
 					$used_lang = $email_list[$i][0]['lang'];
 					$used_method = $email_list[$i][0]['method'];
 
+					/**
+					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+					 * @psalm-suppress UndefinedMethod
+					 */
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$notify_method = $messenger_method->get_id();
@@ -265,18 +269,11 @@ class acp_email
 							}
 
 							$errored = !$messenger_method->send() || $errored;
+							$messenger_method->save_queue();
 						}
 					}
 				}
 				unset($email_list);
-
-				if ($use_queue)
-				{
-					foreach ($messenger_collection_iterator as $messenger_method)
-					{
-						$messenger_method->save_queue();
-					}
-				}
 
 				if ($generate_log_entry)
 				{
