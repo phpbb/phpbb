@@ -126,14 +126,11 @@ abstract class messenger_base extends \phpbb\notification\method\base
 					], $notification->get_email_template_variables()));
 
 					$messenger_method->send();
+
+					// Save the queue in the messenger method class (has to be called or these messages could be lost)
+					$messenger_method->save_queue();
 				}
 			}
-		}
-
-		// Save the queue in the messenger method class (has to be called or these messages could be lost)
-		foreach ($messenger_collection_iterator as $messenger_method)
-		{
-			$messenger_method->save_queue();
 		}
 
 		// We're done, empty the queue
