@@ -105,7 +105,7 @@ class email extends base
 		$this->mail_priority = symfony_email::PRIORITY_NORMAL;
 
 		$this->additional_headers = [];
-		$this->use_queue = true;
+		$this->set_use_queue();
 		unset($this->template, $this->reply_to, $this->from);
 	}
 
