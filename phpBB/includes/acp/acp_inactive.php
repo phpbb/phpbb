@@ -205,6 +205,7 @@ class acp_inactive
 
 						do
 						{
+							/** @var \phpbb\messenger\method\base $messenger_method */
 							foreach ($messenger_collection_iterator as $messenger_method)
 							{
 								if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
@@ -227,6 +228,7 @@ class acp_inactive
 						}
 						while ($row = $db->sql_fetchrow($result));
 
+						/** @var \phpbb\messenger\method\base $messenger_method */
 						foreach ($messenger_collection_iterator as $messenger_method)
 						{
 							$messenger_method->save_queue();

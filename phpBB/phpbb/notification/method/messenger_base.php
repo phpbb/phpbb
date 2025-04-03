@@ -114,6 +114,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
+			/** @var \phpbb\messenger\method\base $messenger_method */
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
 				if ($messenger_method->get_id() == $notify_method || $notify_method == $messenger_method::NOTIFY_BOTH)

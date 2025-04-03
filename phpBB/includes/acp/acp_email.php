@@ -227,6 +227,7 @@ class acp_email
 					$used_lang = $email_list[$i][0]['lang'];
 					$used_method = $email_list[$i][0]['method'];
 
+					/** @var \phpbb\messenger\method\base $messenger_method */
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$notify_method = $messenger_method->get_id();
@@ -272,6 +273,7 @@ class acp_email
 
 				if ($use_queue)
 				{
+					/** @var \phpbb\messenger\method\base $messenger_method */
 					foreach ($messenger_collection_iterator as $messenger_method)
 					{
 						$messenger_method->save_queue();
