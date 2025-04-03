@@ -47,7 +47,7 @@ class email extends base
 	protected $from;
 
 	/** @var Headers */
-	protected $headers;
+	public $headers;
 
 	/**
 	 * @var int
