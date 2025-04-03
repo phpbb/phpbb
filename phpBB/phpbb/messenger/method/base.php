@@ -481,4 +481,12 @@ abstract class base implements messenger_interface
 		$this->setup_template();
 		$this->template->set_custom_style($path_name, $paths);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function header(string $header_name, mixed $header_value): void
+	{
+		return;
+	}
 }

@@ -260,16 +260,16 @@ class message
 
 					if (isset($messenger_method->headers) && $messenger_method->headers instanceof \Symfony\Component\Mime\Header\Headers)
 					{
-						$messenger_method->headers->addHeader('X-AntiAbuse', 'Board servername - ' . $this->server_name);
-						$messenger_method->headers->addHeader('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
+						$messenger_method->header('X-AntiAbuse', 'Board servername - ' . $this->server_name);
+						$messenger_method->header('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
 						if ($this->sender_id)
 						{
-							$messenger_method->headers->addHeader('X-AntiAbuse', 'User_id - ' . $this->sender_id);
+							$messenger_method->header('X-AntiAbuse', 'User_id - ' . $this->sender_id);
 						}
 
 						if ($this->sender_username)
 						{
-							$messenger_method->headers->addHeader('X-AntiAbuse', 'Username - ' . $this->sender_username);
+							$messenger_method->header('X-AntiAbuse', 'Username - ' . $this->sender_username);
 						}
 					}
 

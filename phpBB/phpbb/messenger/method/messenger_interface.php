@@ -64,5 +64,16 @@ interface messenger_interface
 	 *
 	 * @return void
 	 */
+
 	public function error(string $msg): void;
+
+	/**
+	 * Add message header
+	 *
+	 * @param string	$header_name	Message header name
+	 * @param mixed		$header_value	Message header value
+	 *
+	 * @return void
+	 */
+	public function header(string $header_name, mixed $header_value): void;
 }
