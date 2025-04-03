@@ -157,9 +157,6 @@ class ucp_resend
 							]);
 
 							$messenger_method->send();
-
-							// Save the queue in the messenger method class (has to be called or these messages could be lost)
-							$messenger_method->save_queue();
 						}
 					}
 				}

@@ -223,6 +223,7 @@ class acp_inactive
 									]);
 
 									$messenger_method->send();
+									$messenger_method->save_queue();
 								}
 							}
 
@@ -230,15 +231,6 @@ class acp_inactive
 							$user_ids[] = (int) $row['user_id'];
 						}
 						while ($row = $db->sql_fetchrow($result));
-
-						/**
-						 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-						 * @psalm-suppress UndefinedMethod
-						 */
-						foreach ($messenger_collection_iterator as $messenger_method)
-						{
-							$messenger_method->save_queue();
-						}
 
 						// Add the remind state to the database and increase activation expiration by one day
 						$sql = 'UPDATE ' . USERS_TABLE . '

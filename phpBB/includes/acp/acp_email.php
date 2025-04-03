@@ -269,22 +269,11 @@ class acp_email
 							}
 
 							$errored = !$messenger_method->send() || $errored;
+							$messenger_method->save_queue();
 						}
 					}
 				}
 				unset($email_list);
-
-				if ($use_queue)
-				{
-					/**
-					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-					 * @psalm-suppress UndefinedMethod
-					 */
-					foreach ($messenger_collection_iterator as $messenger_method)
-					{
-						$messenger_method->save_queue();
-					}
-				}
 
 				if ($generate_log_entry)
 				{
