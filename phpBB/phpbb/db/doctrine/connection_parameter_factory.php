@@ -164,7 +164,7 @@ class connection_parameter_factory
 			],
 		];
 
-		if ($params['driver'] === 'pdo_mysql')
+		if ($params['driver'] === 'pdo_mysql' && extension_loaded('pdo_mysql'))
 		{
 			$enrichment_tags['pdo_mysql'][\PDO::MYSQL_ATTR_FOUND_ROWS] = true;
 		}
