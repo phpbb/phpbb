@@ -15,6 +15,7 @@ namespace phpbb\messenger\method;
 
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as symfony_email;
 use Symfony\Component\Mime\Header\Headers;
@@ -43,10 +44,10 @@ class email extends base
 	/** @var symfony_email */
 	protected $email;
 
-	/** @var Address */
+	/** @var Address From address */
 	protected $from;
 
-	/** @var Headers */
+	/** @var Headers Email headers */
 	protected $headers;
 
 	/**
@@ -124,7 +125,7 @@ class email extends base
 	{
 		if (!empty($user_row['user_email']))
 		{
-			$this->to($user_row['user_email'], $user_row['username'] ?: '');
+			$this->to($user_row['user_email'], $user_row['username'] ?? '');
 		}
 	}
 
@@ -453,9 +454,9 @@ class email extends base
 	/**
 	 * Get mailer transport object
 	 *
-	 * @return \Symfony\Component\Mailer\Transport\TransportInterface Symfony Mailer transport object
+	 * @return ?TransportInterface Symfony Mailer transport object
 	 */
-	public function get_transport(): \Symfony\Component\Mailer\Transport\TransportInterface
+	public function get_transport(): ?TransportInterface
 	{
 		return $this->transport;
 	}
