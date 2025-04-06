@@ -15,6 +15,7 @@ namespace phpbb\messenger\method;
 
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\AbstractTransport;
 use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as symfony_email;
@@ -39,16 +40,16 @@ class email extends base
 	 *
 	 * Symfony Mailer transport DSN
 	 */
-	protected $dsn = '';
+	protected string $dsn = '';
 
 	/** @var symfony_email */
-	protected $email;
+	protected symfony_email $email;
 
 	/** @var Address From address */
-	protected $from;
+	protected Address $from;
 
 	/** @var Headers Email headers */
-	protected $headers;
+	protected Headers $headers;
 
 	/**
 	 * @var int
@@ -60,16 +61,16 @@ class email extends base
 	 * symfony_email::PRIORITY_LOW
 	 * symfony_email::PRIORITY_LOWEST
 	 */
-	protected $mail_priority = symfony_email::PRIORITY_NORMAL;
+	protected int $mail_priority = symfony_email::PRIORITY_NORMAL;
 
 	/** @var \phpbb\messenger\queue */
 	protected $queue;
 
 	/** @var Address */
-	protected $reply_to;
+	protected Address $reply_to;
 
-	/** @var \Symfony\Component\Mailer\Transport\AbstractTransport */
-	protected $transport;
+	/** @var AbstractTransport */
+	protected AbstractTransport $transport;
 
 	/**
 	 * {@inheritDoc}
@@ -454,9 +455,9 @@ class email extends base
 	/**
 	 * Get mailer transport object
 	 *
-	 * @return ?TransportInterface Symfony Mailer transport object
+	 * @return TransportInterface Symfony Mailer transport object
 	 */
-	public function get_transport(): ?TransportInterface
+	public function get_transport(): TransportInterface
 	{
 		return $this->transport;
 	}

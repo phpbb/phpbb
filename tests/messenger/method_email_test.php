@@ -139,7 +139,6 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 	public function test_set_transport()
 	{
-		$this->assertNull($this->method_email->get_transport());
 		$this->assertEmpty($this->method_email->get_dsn());
 
 		$config_values = [
@@ -179,7 +178,6 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->config->set('email_package_size', 100);
 		$email_reflection = new \ReflectionClass($this->method_email);
 		$email_property = $email_reflection->getProperty('email');
-		$this->assertNull($email_property->getValue($this->method_email));
 
 		$use_queue_property = $email_reflection->getProperty('use_queue');
 		$this->assertFalse($use_queue_property->getValue($this->method_email));
