@@ -13,6 +13,8 @@
 
 namespace phpbb\messenger\method;
 
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport\AbstractTransport;
@@ -275,7 +277,6 @@ class email extends base
 	 */
 	protected function build_headers(): void
 	{
-
 		$board_contact = trim($this->config['board_contact']);
 		$contact_name = html_entity_decode($this->config['board_contact_name'], ENT_COMPAT);
 
@@ -317,7 +318,6 @@ class email extends base
 		{
 			$this->header($header, $value);
 		}
-
 	}
 
 	/**
@@ -408,7 +408,7 @@ class email extends base
 
 		$package_size = $queue_data[$queue_object_name]['package_size'] ?? 0;
 		$num_items = (!$package_size || $messages_count < $package_size) ? $messages_count : $package_size;
-		$mailer = new Mailer($this->transport);
+		$mailer = $this->get_mailer();
 
 		for ($i = 0; $i < $num_items; $i++)
 		{
@@ -437,7 +437,7 @@ class email extends base
 				{
 					$mailer->send($email);
 				}
-				catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
+				catch (TransportExceptionInterface $e)
 				{
 					$this->error($e->getDebug());
 					continue;
@@ -450,6 +450,16 @@ class email extends base
 		{
 			unset($queue_data[$queue_object_name]);
 		}
+	}
+
+	/**
+	 * Get mailer object
+	 *
+	 * @return MailerInterface Symfony Mailer object
+	 */
+	protected function get_mailer(): MailerInterface
+	{
+		return new Mailer($this->transport);
 	}
 
 	/**
@@ -506,7 +516,7 @@ class email extends base
 		// Send message ...
 		if (!$this->use_queue)
 		{
-			$mailer = new Mailer($this->transport);
+			$mailer = $this->get_mailer();
 
 			$subject = $this->subject;
 			$msg = $this->msg;
@@ -540,7 +550,7 @@ class email extends base
 			{
 				$mailer->send($this->email);
 			}
-			catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
+			catch (TransportExceptionInterface $e)
 			{
 				$this->error($e->getDebug());
 				return false;
