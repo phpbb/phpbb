@@ -28,6 +28,7 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 	protected config $config;
 	protected $dispatcher;
 	protected $extension_manager;
+	protected email $method_email;
 	protected $language;
 	protected $log;
 	protected $path_helper;
