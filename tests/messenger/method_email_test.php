@@ -576,11 +576,24 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->method_email->to('foo@bar.com');
 		$this->method_email->subject('Test email');
 		$this->method_email->template('test', 'en');
+		$this->method_email->assign_block_vars('foo', ['bar' => 'baz']);
 
 		$this->method_email->send();
 	}
 
-	public function test_send_no_queue()
+	public function email_template_data(): array
+	{
+		return [
+			['test'],
+			['admin_send_email'],
+			['topic_notify'],
+		];
+	}
+
+	/**
+	 * @dataProvider email_template_data
+	 */
+	public function test_send_no_queue($email_template)
 	{
 		global $phpbb_root_path;
 
@@ -636,7 +649,7 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 		$this->method_email->to('foo@bar.com');
 		$this->method_email->subject('Test email');
-		$this->method_email->template('test', 'en');
+		$this->method_email->template($email_template, 'en');
 
 		$this->assertTrue($this->method_email->send());
 		$this->assertEquals(1, $sent_emails);
