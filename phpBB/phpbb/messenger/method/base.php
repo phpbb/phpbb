@@ -216,9 +216,9 @@ abstract class base implements messenger_interface
 	 * @param string	$template_path			Email template path
 	 * @param string	$template_dir_prefix	Email template directory prefix
 	 *
-	 * @return bool
+	 * @return void
 	 */
-	public function template(string $template_file, string $template_lang = '', string $template_path = '', string $template_dir_prefix = ''): bool
+	public function template(string $template_file, string $template_lang = '', string $template_path = '', string $template_dir_prefix = ''): void
 	{
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
@@ -290,8 +290,6 @@ abstract class base implements messenger_interface
 		$this->template->set_filenames([
 			'body'		=> $template_file . '.txt',
 		]);
-
-		return true;
 	}
 
 	/**
@@ -487,6 +485,5 @@ abstract class base implements messenger_interface
 	 */
 	public function header(string $header_name, mixed $header_value): void
 	{
-		return;
 	}
 }
