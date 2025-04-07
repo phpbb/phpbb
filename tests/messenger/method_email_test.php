@@ -277,14 +277,7 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		// Valid address with name
 		$this->method_email->to('bar@foo.com', 'Bar Foo');
 		$this->assertEquals('bar@foo.com', $email->getTo()[1]->getAddress());
-		if (DIRECTORY_SEPARATOR == '\\')
-		{
-			$this->assertEmpty($email->getTo()[1]->getName());
-		}
-		else
-		{
-			$this->assertEquals('Bar Foo', $email->getTo()[1]->getName());
-		}
+		$this->assertEquals('Bar Foo', $email->getTo()[1]->getName());
 	}
 
 	public function test_cc()

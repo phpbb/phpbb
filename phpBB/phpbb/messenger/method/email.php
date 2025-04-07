@@ -146,10 +146,7 @@ class email extends base
 			return;
 		}
 
-		// If empty sendmail_path on windows, PHP changes the to line
-		$windows_empty_sendmail_path = !$this->config['smtp_delivery'] && DIRECTORY_SEPARATOR == '\\';
-
-		$to = new Address($address, $windows_empty_sendmail_path ? '' : trim($realname));
+		$to = new Address($address, trim($realname));
 		$this->email->getTo() ? $this->email->addTo($to) : $this->email->to($to);
 	}
 
