@@ -423,7 +423,7 @@ abstract class base implements messenger_interface
 	 */
 	public function save_queue(): void
 	{
-		if ($this->use_queue && !empty($this->queue))
+		if ($this->use_queue && isset($this->queue))
 		{
 			$this->queue->save();
 		}
