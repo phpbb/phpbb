@@ -13,8 +13,12 @@
 
 namespace phpbb\messenger\method;
 
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport\AbstractTransport;
+use Symfony\Component\Mailer\Transport\TransportInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email as symfony_email;
 use Symfony\Component\Mime\Header\Headers;
@@ -38,16 +42,16 @@ class email extends base
 	 *
 	 * Symfony Mailer transport DSN
 	 */
-	protected $dsn = '';
+	protected string $dsn = '';
 
 	/** @var symfony_email */
-	protected $email;
+	protected symfony_email $email;
 
-	/** @var Address */
-	protected $from;
+	/** @var Address From address */
+	protected Address $from;
 
-	/** @var Headers */
-	protected $headers;
+	/** @var Headers Email headers */
+	protected Headers $headers;
 
 	/**
 	 * @var int
@@ -59,16 +63,16 @@ class email extends base
 	 * symfony_email::PRIORITY_LOW
 	 * symfony_email::PRIORITY_LOWEST
 	 */
-	protected $mail_priority = symfony_email::PRIORITY_NORMAL;
+	protected int $mail_priority = symfony_email::PRIORITY_NORMAL;
 
 	/** @var \phpbb\messenger\queue */
 	protected $queue;
 
 	/** @var Address */
-	protected $reply_to;
+	protected Address $reply_to;
 
-	/** @var \Symfony\Component\Mailer\Transport\AbstractTransport */
-	protected $transport;
+	/** @var AbstractTransport */
+	protected AbstractTransport $transport;
 
 	/**
 	 * {@inheritDoc}
@@ -124,7 +128,7 @@ class email extends base
 	{
 		if (!empty($user_row['user_email']))
 		{
-			$this->to($user_row['user_email'], $user_row['username'] ?: '');
+			$this->to($user_row['user_email'], $user_row['username'] ?? '');
 		}
 	}
 
@@ -142,10 +146,7 @@ class email extends base
 			return;
 		}
 
-		// If empty sendmail_path on windows, PHP changes the to line
-		$windows_empty_sendmail_path = !$this->config['smtp_delivery'] && DIRECTORY_SEPARATOR == '\\';
-
-		$to = new Address($address, $windows_empty_sendmail_path ? '' : trim($realname));
+		$to = new Address($address, trim($realname));
 		$this->email->getTo() ? $this->email->addTo($to) : $this->email->to($to);
 	}
 
@@ -273,7 +274,6 @@ class email extends base
 	 */
 	protected function build_headers(): void
 	{
-
 		$board_contact = trim($this->config['board_contact']);
 		$contact_name = html_entity_decode($this->config['board_contact_name'], ENT_COMPAT);
 
@@ -315,7 +315,6 @@ class email extends base
 		{
 			$this->header($header, $value);
 		}
-
 	}
 
 	/**
@@ -406,7 +405,7 @@ class email extends base
 
 		$package_size = $queue_data[$queue_object_name]['package_size'] ?? 0;
 		$num_items = (!$package_size || $messages_count < $package_size) ? $messages_count : $package_size;
-		$mailer = new Mailer($this->transport);
+		$mailer = $this->get_mailer();
 
 		for ($i = 0; $i < $num_items; $i++)
 		{
@@ -435,7 +434,7 @@ class email extends base
 				{
 					$mailer->send($email);
 				}
-				catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
+				catch (TransportExceptionInterface $e)
 				{
 					$this->error($e->getDebug());
 					continue;
@@ -451,11 +450,21 @@ class email extends base
 	}
 
 	/**
+	 * Get mailer object
+	 *
+	 * @return MailerInterface Symfony Mailer object
+	 */
+	protected function get_mailer(): MailerInterface
+	{
+		return new Mailer($this->transport);
+	}
+
+	/**
 	 * Get mailer transport object
 	 *
-	 * @return \Symfony\Component\Mailer\Transport\TransportInterface Symfony Mailer transport object
+	 * @return TransportInterface Symfony Mailer transport object
 	 */
-	public function get_transport(): \Symfony\Component\Mailer\Transport\TransportInterface
+	public function get_transport(): TransportInterface
 	{
 		return $this->transport;
 	}
@@ -504,7 +513,7 @@ class email extends base
 		// Send message ...
 		if (!$this->use_queue)
 		{
-			$mailer = new Mailer($this->transport);
+			$mailer = $this->get_mailer();
 
 			$subject = $this->subject;
 			$msg = $this->msg;
@@ -538,7 +547,7 @@ class email extends base
 			{
 				$mailer->send($this->email);
 			}
-			catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
+			catch (TransportExceptionInterface $e)
 			{
 				$this->error($e->getDebug());
 				return false;
