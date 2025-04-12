@@ -22,13 +22,13 @@
 			{% endapply %}
 			<!-- EVENT overall_footer_breadcrumb_append -->
 		</li>
-		<!-- IF U_WATCH_FORUM_LINK and not S_IS_BOT -->
+		{% if U_WATCH_FORUM_LINK && !S_IS_BOT %}
 			<li data-last-responsive="true">
-				<a href="{U_WATCH_FORUM_LINK}" title="{S_WATCH_FORUM_TITLE}" data-ajax="toggle_link" data-toggle-class="icon <!-- IF S_WATCHING_FORUM -->fa-check-square-o<!-- ELSE -->fa-square-o<!-- ENDIF --> fa-fw" data-toggle-text="{S_WATCH_FORUM_TOGGLE}" data-toggle-url="{U_WATCH_FORUM_TOGGLE}">
-					<i class="icon <!-- IF S_WATCHING_FORUM -->fa-square-o<!-- ELSE -->fa-check-square-o<!-- ENDIF --> fa-fw" aria-hidden="true"></i><span>{S_WATCH_FORUM_TITLE}</span>
+				<a href="{{ U_WATCH_FORUM_LINK }}" title="{{ S_WATCH_FORUM_TITLE }}" data-ajax="toggle_link" data-toggle-class="icon {{ !S_WATCHING_FORUM ? 'fa-check-square-o' : 'fa-square-o' }} fa-fw" data-toggle-text="{{ S_WATCH_FORUM_TOGGLE }}" data-toggle-url="{{ U_WATCH_FORUM_TOGGLE }}">
+					<i class="icon {{ S_WATCHING_FORUM ? 'fa-check-square-o' : 'fa-square-o' }} fa-fw" aria-hidden="true"></i><span>{{ S_WATCH_FORUM_TITLE }}</span>
 				</a>
 			</li>
-		<!-- ENDIF -->
+		{% endif %}
 
 		<!-- EVENT overall_footer_timezone_before -->
 		<li class="rightside">{S_TIMEZONE}</li>
