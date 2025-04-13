@@ -669,7 +669,6 @@ switch ($mode)
 			'PM_IMG'					=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'L_SEND_EMAIL_USER'			=> $user->lang('SEND_EMAIL_USER', $member['username']),
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
@@ -923,12 +922,6 @@ switch ($mode)
 		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT']);
 		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts');
 
-		if ($config['jab_enable'] && $auth->acl_get('u_sendim'))
-		{
-			$sort_key_text['k'] = $user->lang['JABBER'];
-			$sort_key_sql['k'] = 'u.user_jabber';
-		}
-
 		if ($auth->acl_get('a_user'))
 		{
 			$sort_key_text['e'] = $user->lang['SORT_EMAIL'];
@@ -979,7 +972,6 @@ switch ($mode)
 		{
 			$username	= $request->variable('username', '', true);
 			$email		= strtolower($request->variable('email', ''));
-			$jabber		= $request->variable('jabber', '');
 			$search_group_id	= $request->variable('search_group_id', 0);
 
 			// when using these, make sure that we actually have values defined in $find_key_match
@@ -1019,7 +1011,6 @@ switch ($mode)
 
 			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';
 			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $email)) . ' ' : '';
-			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			if (isset($find_key_match[$joined_select]) && count($joined) == 3)
@@ -1480,7 +1471,6 @@ switch ($mode)
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
-				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
 				'COUNT'		=> $count,

@@ -67,6 +67,7 @@ class remove_jabber extends migration
 				'ACP_JABBER_SETTINGS',
 			]],
 			['permission.remove', ['a_jabber']],
+			['permission.remove', ['u_sendim']],
 		];
 	}
 
@@ -94,6 +95,7 @@ class remove_jabber extends migration
 				],
 			]],
 			['permission.add', ['a_jabber', true]],
+			['permission.add', ['u_sendim', true]],
 		];
 	}
 }

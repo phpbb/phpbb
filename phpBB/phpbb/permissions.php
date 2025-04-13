@@ -253,7 +253,6 @@ class permissions
 		'u_pm_img'		=> array('lang' => 'ACL_U_PM_IMG', 'cat' => 'pm'),
 
 		'u_sendemail'	=> array('lang' => 'ACL_U_SENDEMAIL', 'cat' => 'misc'),
-		'u_sendim'		=> array('lang' => 'ACL_U_SENDIM', 'cat' => 'misc'),
 		'u_ignoreflood'	=> array('lang' => 'ACL_U_IGNOREFLOOD', 'cat' => 'misc'),
 		'u_hideonline'	=> array('lang' => 'ACL_U_HIDEONLINE', 'cat' => 'misc'),
 		'u_viewonline'	=> array('lang' => 'ACL_U_VIEWONLINE', 'cat' => 'misc'),

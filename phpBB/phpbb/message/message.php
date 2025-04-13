@@ -26,27 +26,34 @@ class message
 
 	/** @var string */
 	protected $subject = '';
+
 	/** @var string */
 	protected $body = '';
+
 	/** @var string */
 	protected $template = '';
+
 	/** @var array */
 	protected $template_vars = array();
 
 	/** @var string */
 	protected $sender_ip = '';
+
 	/** @var string */
 	protected $sender_name = '';
+
 	/** @var string */
 	protected $sender_address = '';
+
 	/** @var string */
 	protected $sender_lang = '';
+
 	/** @var string|int */
 	protected $sender_id = '';
+
 	/** @var string */
 	protected $sender_username = '';
-	/** @var string */
-	protected $sender_jabber = '';
+
 	/** @var int */
 	protected $sender_notify_type = messenger_interface::NOTIFY_EMAIL;
 
@@ -120,8 +127,7 @@ class message
 			$user['user_email'],
 			$user['user_lang'],
 			$user['user_notify_type'],
-			$user['username'],
-			$user['user_jabber']
+			$user['username']
 		);
 	}
 
@@ -133,17 +139,15 @@ class message
 	* @param string $recipient_lang
 	* @param int $recipient_notify_type	Used notification methods (Jabber, Email, ...)
 	* @param string $recipient_username	User Name (used for AntiAbuse header)
-	* @param string $recipient_jabber
 	* @return void
 	*/
-	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = messenger_interface::NOTIFY_EMAIL, $recipient_username = '', $recipient_jabber = '')
+	public function add_recipient($recipient_name, $recipient_address, $recipient_lang, $recipient_notify_type = messenger_interface::NOTIFY_EMAIL, $recipient_username = '')
 	{
 		$this->recipients[] = array(
 			'name'			=> $recipient_name,
 			'user_email'	=> $recipient_address,
 			'lang'			=> $recipient_lang,
 			'username'		=> $recipient_username,
-			'user_jabber'	=> $recipient_jabber,
 			'notify_type'	=> $recipient_notify_type,
 			'to_name'		=> $recipient_name,
 		);
@@ -163,8 +167,7 @@ class message
 			$user->data['user_email'],
 			$user->lang_name,
 			$user->data['user_id'],
-			$user->data['username'],
-			$user->data['user_jabber']
+			$user->data['username']
 		);
 
 		$this->set_sender_notify_type($user->data['user_notify_type']);
@@ -179,10 +182,9 @@ class message
 	* @param string $sender_lang
 	* @param int $sender_id				User ID
 	* @param string $sender_username	User Name (used for AntiAbuse header)
-	* @param string $sender_jabber
 	* @return void
 	*/
-	public function set_sender($sender_ip, $sender_name, $sender_address, $sender_lang = '', $sender_id = 0, $sender_username = '', $sender_jabber = '')
+	public function set_sender($sender_ip, $sender_name, $sender_address, $sender_lang = '', $sender_id = 0, $sender_username = '')
 	{
 		$this->sender_ip = $sender_ip;
 		$this->sender_name = $sender_name;
@@ -190,7 +192,6 @@ class message
 		$this->sender_lang = $sender_lang;
 		$this->sender_id = $sender_id;
 		$this->sender_username = $sender_username;
-		$this->sender_jabber = $sender_jabber;
 	}
 
 	/**
@@ -225,7 +226,6 @@ class message
 			'user_email'	=> $this->sender_address,
 			'name'			=> $this->sender_name,
 			'username'		=> $this->sender_username,
-			'user_jabber'	=> $this->sender_jabber,
 			'notify_type'	=> $this->sender_notify_type,
 			'to_name'		=> $this->recipients[0]['to_name'],
 		);

@@ -98,7 +98,6 @@ $lang = array_merge($lang, array(
 	'ACL_U_PM_IMG'		=> 'Can use [img] BBCode tag in private messages',
 
 	'ACL_U_SENDEMAIL'	=> 'Can send emails',
-	'ACL_U_SENDIM'		=> 'Can send instant messages',
 	'ACL_U_IGNOREFLOOD'	=> 'Can ignore flood limit',
 	'ACL_U_HIDEONLINE'	=> 'Can hide online status',
 	'ACL_U_VIEWONLINE'	=> 'Can view hidden online users',
