@@ -185,7 +185,7 @@ class acp_inactive
 						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
+					$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type, user_regdate, user_actkey
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark) . '
 							AND user_inactive_reason';

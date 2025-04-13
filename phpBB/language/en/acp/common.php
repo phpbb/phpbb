@@ -120,8 +120,6 @@ $lang = array_merge($lang, array(
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
 	'ACP_INDEX'					=> 'ACP index',
 
-	'ACP_JABBER_SETTINGS'		=> 'Jabber settings',
-
 	'ACP_LANGUAGE'				=> 'Language management',
 	'ACP_LANGUAGE_PACKS'		=> 'Language packs',
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
@@ -642,7 +640,6 @@ $lang = array_merge($lang, array(
 	'LOG_DOWNLOAD_IP'			=> '<strong>Added IP/hostname to download list</strong><br />» %s',
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<strong>Removed IP/hostname from download list</strong><br />» %s',
 
-	'LOG_ERROR_JABBER'		=> '<strong>Jabber error</strong><br />» %s',
 	'LOG_ERROR_EMAIL'		=> '<strong>Email error</strong><br />» %s',
 	'LOG_ERROR_CAPTCHA'		=> '<strong>CAPTCHA error</strong><br />» %s',
 
@@ -685,11 +682,6 @@ $lang = array_merge($lang, array(
 	'LOG_INSTALL_INSTALLED'	=> '<strong>Installed phpBB %s</strong>',
 
 	'LOG_IP_BROWSER_FORWARDED_CHECK'	=> '<strong>Session IP/browser/X_FORWARDED_FOR check failed</strong><br />»User IP “<em>%1$s</em>” checked against session IP “<em>%2$s</em>”, user browser string “<em>%3$s</em>” checked against session browser string “<em>%4$s</em>” and user X_FORWARDED_FOR string “<em>%5$s</em>” checked against session X_FORWARDED_FOR string “<em>%6$s</em>”.',
-
-	'LOG_JAB_CHANGED'			=> '<strong>Jabber account changed</strong>',
-	'LOG_JAB_PASSCHG'			=> '<strong>Jabber password changed</strong>',
-	'LOG_JAB_REGISTER'			=> '<strong>Jabber account registered</strong>',
-	'LOG_JAB_SETTINGS_CHANGED'	=> '<strong>Jabber settings changed</strong>',
 
 	'LOG_LANGUAGE_PACK_DELETED'		=> '<strong>Deleted language pack</strong><br />» %s',
 	'LOG_LANGUAGE_PACK_INSTALLED'	=> '<strong>Installed language pack</strong><br />» %s',

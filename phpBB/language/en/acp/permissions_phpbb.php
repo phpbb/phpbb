@@ -168,7 +168,6 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACL_A_BOARD'		=> 'Can alter board settings/check for updates',
 	'ACL_A_SERVER'		=> 'Can alter server/communication settings',
-	'ACL_A_JABBER'		=> 'Can alter Jabber settings',
 	'ACL_A_PHPINFO'		=> 'Can view php settings',
 
 	'ACL_A_FORUM'		=> 'Can manage forums',

@@ -76,7 +76,7 @@ class acp_email
 				{
 					// If giving usernames the admin is able to email inactive users too...
 					$sql_ary = array(
-						'SELECT'	=> 'user_id, username, user_email, user_jabber, user_notify_type, user_lang',
+						'SELECT'	=> 'user_id, username, user_email, user_notify_type, user_lang',
 						'FROM'		=> array(
 							USERS_TABLE		=> '',
 						),
@@ -90,7 +90,7 @@ class acp_email
 					if ($group_id)
 					{
 						$sql_ary = array(
-							'SELECT'	=> 'u.user_id, u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type',
+							'SELECT'	=> 'u.user_id, u.user_email, u.username, u.username_clean, u.user_lang, u.user_notify_type',
 							'FROM'		=> array(
 								USERS_TABLE			=> 'u',
 								USER_GROUP_TABLE	=> 'ug',
@@ -106,7 +106,7 @@ class acp_email
 					else
 					{
 						$sql_ary = array(
-							'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type',
+							'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_email, u.user_lang, u.user_notify_type',
 							'FROM'		=> array(
 								USERS_TABLE	=> 'u',
 							),
