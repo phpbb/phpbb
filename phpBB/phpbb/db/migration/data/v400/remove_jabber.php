@@ -55,15 +55,34 @@ class remove_jabber extends migration
 	public function update_data(): array
 	{
 		return [
+			['config.remove', ['jab_enable']],
+			['config.remove', ['jab_host']],
+			['config.remove', ['jab_package_size']],
+			['config.remove', ['jab_password']],
+			['config.remove', ['jab_port']],
+			['config.remove', ['jab_use_ssl']],
+			['config.remove', ['jab_username']],
 			['config.remove', ['jab_verify_peer']],
 			['config.remove', ['jab_verify_peer_name']],
 			['config.remove', ['jab_allow_self_signed']],
+			['module.remove', [
+				'acp',
+				'ACP_CLIENT_COMMUNICATION',
+				'ACP_JABBER_SETTINGS',
+			]],
 		];
 	}
 
 	public function revert_data(): array
 	{
 		return [
+			['config.add', ['jab_enable', 0]],
+			['config.add', ['jab_host', '']],
+			['config.add', ['jab_package_size', 20]],
+			['config.add', ['jab_password', '']],
+			['config.add', ['jab_port', 5222]],
+			['config.add', ['jab_use_ssl', 0]],
+			['config.add', ['jab_username', '']],
 			['config.add', ['jab_verify_peer', 1]],
 			['config.add', ['jab_verify_peer_name', 1]],
 			['config.add', ['jab_allow_self_signed', 0]],
@@ -71,11 +90,10 @@ class remove_jabber extends migration
 				'acp',
 				'ACP_CLIENT_COMMUNICATION',
 				[
-					'module_basename'	=> 'acp_board',
-					'module_langname'	=> 'ACP_WEBPUSH_SETTINGS',
-					'module_mode'		=> 'webpush',
-					'module_auth'		=> 'acl_a_board',
-					'after'				=> ['settings', 'ACP_JABBER_SETTINGS'],
+					'module_basename'	=> 'acp_jabber',
+					'module_langname'	=> 'ACP_JABBER_SETTINGS',
+					'module_mode'		=> 'settings',
+					'module_auth'		=> 'acl_a_jabber',
 				],
 			]],
 		];
