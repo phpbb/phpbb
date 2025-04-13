@@ -2730,7 +2730,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 		case 'approve':
 			// Make sure we only approve those which are pending ;)
-			$sql = 'SELECT u.user_id, u.user_email, u.username, u.username_clean, u.user_notify_type, u.user_jabber, u.user_lang
+			$sql = 'SELECT u.user_id, u.user_email, u.username, u.username_clean, u.user_notify_type, u.user_lang
 				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 				WHERE ug.group_id = ' . $group_id . '
 					AND ug.user_pending = 1

@@ -317,7 +317,6 @@ class permissions
 		// Admin Permissions
 		'a_board'		=> array('lang' => 'ACL_A_BOARD', 'cat' => 'settings'),
 		'a_server'		=> array('lang' => 'ACL_A_SERVER', 'cat' => 'settings'),
-		'a_jabber'		=> array('lang' => 'ACL_A_JABBER', 'cat' => 'settings'),
 		'a_phpinfo'		=> array('lang' => 'ACL_A_PHPINFO', 'cat' => 'settings'),
 
 		'a_forum'		=> array('lang' => 'ACL_A_FORUM', 'cat' => 'forums'),

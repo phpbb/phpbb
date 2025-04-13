@@ -802,7 +802,6 @@ $template->assign_vars(array(
 	'SEARCH_IMG' 		=> $user->img('icon_user_search', 'SEARCH_USER_POSTS'),
 	'PM_IMG' 			=> $user->img('icon_contact_pm', 'SEND_PRIVATE_MESSAGE'),
 	'EMAIL_IMG' 		=> $user->img('icon_contact_email', 'SEND_EMAIL'),
-	'JABBER_IMG'		=> $user->img('icon_contact_jabber', 'JABBER') ,
 	'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_POST'),
 	'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
 	'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
@@ -1423,7 +1422,6 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_image_src'	=> '',
 				'pm'				=> '',
 				'email'				=> '',
-				'jabber'			=> '',
 				'search'			=> '',
 				'age'				=> '',
 
@@ -1493,7 +1491,6 @@ while ($row = $db->sql_fetchrow($result))
 				'contact_user' 		=> $user->lang('CONTACT_USER', get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['username'])),
 
 				'online'		=> false,
-				'jabber'		=> ($config['jab_enable'] && $row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($config['load_search'] && $auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$poster_id&amp;sr=posts") : '',
 
 				'author_full'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour']),
@@ -2068,7 +2065,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
 		'U_PM'			=> $u_pm,
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
-		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
 		'U_APPROVE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p={$row['post_id']}&amp;f={$row['forum_id']}&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']))),
 		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? $phpbb_container->get('controller.helper')->route('phpbb_report_post_controller', array('id' => $row['post_id'])) : '',
@@ -2178,11 +2174,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 			'ID'		=> 'email',
 			'NAME'		=> $user->lang['SEND_EMAIL'],
 			'U_CONTACT'	=> $user_cache[$poster_id]['email'],
-		),
-		array(
-			'ID'		=> 'jabber',
-			'NAME'		=> $user->lang['JABBER'],
-			'U_CONTACT'	=> $user_cache[$poster_id]['jabber'],
 		),
 	);
 

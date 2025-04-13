@@ -54,12 +54,6 @@ class ucp_prefs
 					'allowpm'		=> $request->variable('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
-				if ($data['notifymethod'] == messenger_interface::NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
-				{
-					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
-					$data['notifymethod'] = messenger_interface::NOTIFY_BOTH;
-				}
-
 				/**
 				* Add UCP edit global settings data before they are assigned to the template or submitted
 				*
@@ -218,7 +212,6 @@ class ucp_prefs
 						'options'	=> $timezone_select,
 					],
 					'S_CAN_HIDE_ONLINE'	=> (bool) $auth->acl_get('u_hideonline'),
-					'S_SELECT_NOTIFY'	=> (bool) ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')),
 				]);
 
 			break;

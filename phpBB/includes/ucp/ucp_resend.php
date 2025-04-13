@@ -128,7 +128,7 @@ class ucp_resend
 				// Grab an array of user_id's with a_user permissions ... these users can activate a user
 				$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
-				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
+				$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type
 					FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);

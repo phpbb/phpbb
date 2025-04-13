@@ -20,6 +20,7 @@ class remove_jabber extends migration
 	public static function depends_on(): array
 	{
 		return [
+			'\phpbb\db\migration\data\v31x\add_jabber_ssl_context_config_options',
 			'\phpbb\db\migration\data\v400\dev',
 			'\phpbb\db\migration\data\v400\add_webpush',
 		];

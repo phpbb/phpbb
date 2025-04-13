@@ -232,8 +232,6 @@ $lang = array_merge($lang, array(
 	'ENTER_USERNAME'					=> 'Enter username',
 	'ERR_CHANGING_DIRECTORY'			=> 'Unable to change directory.',
 	'ERR_CONNECTING_SERVER'				=> 'Error connecting to the server.',
-	'ERR_JAB_AUTH'						=> 'Could not authorise on Jabber server.',
-	'ERR_JAB_CONNECT'					=> 'Could not connect to Jabber server.',
 	'ERR_UNABLE_TO_LOGIN'				=> 'The specified username or password is incorrect.',
 	'ERR_UNWATCHING'					=> 'An error occurred while trying to unsubscribe.',
 	'ERR_WATCHING'						=> 'An error occurred while trying to subscribe.',
@@ -372,7 +370,6 @@ $lang = array_merge($lang, array(
 	'IP'						=> 'IP',
 	'IP_BLACKLISTED'			=> 'Your IP %1$s has been blocked because it is blacklisted. For details please see <a href="%2$s">%2$s</a>.',
 
-	'JABBER'				=> 'Jabber',
 	'JOINED'				=> 'Joined',
 	'JUMP_PAGE'				=> 'Enter the page number you wish to go to',
 	'JUMP_TO'				=> 'Jump to',
@@ -801,7 +798,6 @@ $lang = array_merge($lang, array(
 
 	'TOO_LONG_CONFIRM_CODE'			=> 'The confirm code you entered is too long.',
 	'TOO_LONG_DATEFORMAT'			=> 'The date format you entered is too long.',
-	'TOO_LONG_JABBER'				=> 'The Jabber account name you entered is too long.',
 	'TOO_LONG_NEW_PASSWORD'			=> 'The password you entered is too long.',
 	'TOO_LONG_PASSWORD_CONFIRM'		=> 'The password confirmation you entered is too long.',
 	'TOO_LONG_USER_PASSWORD'		=> 'The password you entered is too long.',
@@ -814,7 +810,6 @@ $lang = array_merge($lang, array(
 
 	'TOO_SHORT_CONFIRM_CODE'		=> 'The confirm code you entered is too short.',
 	'TOO_SHORT_DATEFORMAT'			=> 'The date format you entered is too short.',
-	'TOO_SHORT_JABBER'				=> 'The Jabber account name you entered is too short.',
 	'TOO_SHORT_NEW_PASSWORD'		=> 'The password you entered is too short.',
 	'TOO_SHORT_PASSWORD_CONFIRM'	=> 'The password confirmation you entered is too short.',
 	'TOO_SHORT_USER_PASSWORD'		=> 'The password you entered is too short.',
@@ -943,7 +938,6 @@ $lang = array_merge($lang, array(
 	'WRONG_PASSWORD'	=> 'You entered an incorrect password.',
 
 	'WRONG_DATA_COLOUR'			=> 'The colour value you entered is invalid.',
-	'WRONG_DATA_JABBER'			=> 'The name you entered is not a valid Jabber account name.',
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',
 	'WRONG_DATA_POST_SD'		=> 'The post sort direction you specified is not valid.',
 	'WRONG_DATA_POST_SK'		=> 'The post sort option you specified is not valid.',

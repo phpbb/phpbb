@@ -429,7 +429,6 @@ INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_group', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_groupadd', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_groupdel', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_icons', 1);
-INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_jabber', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_language', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_mauth', 1);
 INSERT INTO phpbb_acl_options (auth_option, is_global) VALUES ('a_modules', 1);
@@ -559,7 +558,7 @@ INSERT INTO phpbb_ranks (rank_title, rank_min, rank_special, rank_image) VALUES 
 # -- Roles data
 
 # Standard Admin (a_)
-INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 1, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm', 'a_jabber', 'a_phpinfo', 'a_server', 'a_backup', 'a_styles', 'a_clearlogs', 'a_modules', 'a_language', 'a_email', 'a_bots', 'a_search', 'a_aauth', 'a_roles');
+INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 1, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option NOT IN ('a_switchperm', 'a_phpinfo', 'a_server', 'a_backup', 'a_styles', 'a_clearlogs', 'a_modules', 'a_language', 'a_email', 'a_bots', 'a_search', 'a_aauth', 'a_roles');
 
 # Forum admin (a_)
 INSERT INTO phpbb_acl_roles_data (role_id, auth_option_id, auth_setting) SELECT 2, auth_option_id, 1 FROM phpbb_acl_options WHERE auth_option LIKE 'a_%' AND auth_option IN ('a_', 'a_authgroups', 'a_authusers', 'a_fauth', 'a_forum', 'a_forumadd', 'a_forumdel', 'a_mauth', 'a_prune', 'a_uauth', 'a_viewauth', 'a_viewlogs');
