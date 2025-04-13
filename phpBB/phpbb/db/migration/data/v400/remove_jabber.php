@@ -36,11 +36,6 @@ class remove_jabber extends migration
 		];
 	}
 
-	public function effectively_installed()
-	{
-		return true;
-	}
-
 	public function revert_schema(): array
 	{
 		return [
@@ -70,6 +65,7 @@ class remove_jabber extends migration
 				'ACP_CLIENT_COMMUNICATION',
 				'ACP_JABBER_SETTINGS',
 			]],
+			['permission.remove', ['a_jabber']],
 		];
 	}
 
@@ -96,6 +92,7 @@ class remove_jabber extends migration
 					'module_auth'		=> 'acl_a_jabber',
 				],
 			]],
+			['permission.add', ['a_jabber', true]],
 		];
 	}
 }
