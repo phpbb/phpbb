@@ -239,27 +239,10 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 				], $queue_data['email']);
 				unset($queue_data['email']);
 			});
-		$jabber_method = $this->getMockBuilder('phpbb\messenger\method\jabber')
-			->disableOriginalConstructor()
-			->onlyMethods(['get_queue_object_name', 'process_queue'])
-			->getMock();
-		$jabber_method->method('get_queue_object_name')
-			->willReturn('jabber');
-		$jabber_method->method('process_queue')
-			->willReturnCallback(function(array &$queue_data) {
-				$this->assertEquals([
-					'package_size' => 10,
-					'data' => [
-						['data2'],
-					],
-				], $queue_data['jabber']);
-				unset($queue_data['jabber']);
-			});
 
 		$this->service_collection->method('getIterator')
 			->willReturn(new \ArrayIterator([
 				'email' => $email_method,
-				'jabber' => $jabber_method,
 			]));
 
 		// Process the queue
