@@ -166,32 +166,32 @@
 
 	<target name="prepare-new-version">
 		<!-- select the currently checked out commit (HEAD) for packaging -->
-		<mkdir dir="build/new_version/phpBB3" />
+		<mkdir dir="build/new_version/phpBB" />
 		<phingcall target="export">
 			<property name="revision" value="HEAD" />
-			<property name="dir" value="build/new_version/phpBB3" />
+			<property name="dir" value="build/new_version/phpBB" />
 		</phingcall>
 
 		<!-- copy into directory for diffs -->
-		<exec dir="build" command="cp -rp new_version/phpBB3 old_versions/release-${newversion}" />
+		<exec dir="build" command="cp -rp new_version/phpBB old_versions/release-${newversion}" />
 		<!-- and clean up -->
 		<phingcall target="clean-diff-dir">
 			<property name="dir" value="build/old_versions/release-${newversion}" />
 		</phingcall>
 
 		<!-- create an empty config.php file (not for diffs) -->
-		<touch file="build/new_version/phpBB3/config.php" />
-		<copy file="build/new_version/phpBB3/vendor-ext/.htaccess" tofile="build/new_version/phpBB3/vendor/.htaccess" />
+		<touch file="build/new_version/phpBB/config.php" />
+		<copy file="build/new_version/phpBB/vendor-ext/.htaccess" tofile="build/new_version/phpBB/vendor/.htaccess" />
 
 	</target>
 
 	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
 		<exec dir="build" command="php -f package.php '${versions}' > logs/package.log" escape="false" />
 		<exec dir="build" escape="false"
-			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/language new_version/phpBB3/language >
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/language new_version/phpBB/language >
 				save/phpbb-${prevversion}_to_${newversion}_language.patch" />
 		<exec dir="build" escape="false"
-			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB3/styles/prosilver >
+			command="LC_ALL=C diff -crNEBZbd old_versions/release-${prevversion}/styles/prosilver new_version/phpBB/styles/prosilver >
 				save/phpbb-${prevversion}_to_${newversion}_prosilver.patch" />
 
 		<exec dir="build" escape="false"
