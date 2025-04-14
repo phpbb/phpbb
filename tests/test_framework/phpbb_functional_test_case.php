@@ -407,7 +407,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			]
 		);
-		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang, $phpbb_dispatcher);
 		$container->set('template.twig.extensions.phpbb', $twig_extension);
 
 		$twig_extensions_collection = new \phpbb\di\service_collection($container);
@@ -644,7 +644,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
-		// Wait for extension to be fully enabled
+		// Wait for extension to be fully disabled
 		while (count($meta_refresh))
 		{
 			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
