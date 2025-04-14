@@ -963,7 +963,7 @@ switch ($mode)
 		$select_single 	= $request->variable('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1316,7 +1316,6 @@ switch ($mode)
 			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
-			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
 			'active_select'	=> array('active_select', 'lt'),
@@ -1478,7 +1477,6 @@ switch ($mode)
 
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
-				'S_JABBER_ENABLED'		=> $config['jab_enable'],
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
@@ -1706,7 +1704,6 @@ switch ($mode)
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',

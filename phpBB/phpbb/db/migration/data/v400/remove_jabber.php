@@ -20,6 +20,7 @@ class remove_jabber extends migration
 	public static function depends_on(): array
 	{
 		return [
+			'\phpbb\db\migration\data\v310\notifications_use_full_name',
 			'\phpbb\db\migration\data\v31x\add_jabber_ssl_context_config_options',
 			'\phpbb\db\migration\data\v400\dev',
 			'\phpbb\db\migration\data\v400\add_webpush',
@@ -68,6 +69,7 @@ class remove_jabber extends migration
 			]],
 			['permission.remove', ['a_jabber']],
 			['permission.remove', ['u_sendim']],
+			['custom', [[$this, 'remove_from_user_notifcations']]],
 		];
 	}
 
@@ -97,5 +99,12 @@ class remove_jabber extends migration
 			['permission.add', ['a_jabber', true]],
 			['permission.add', ['u_sendim', true]],
 		];
+	}
+
+	public function remove_from_user_notifcations()
+	{
+		$sql = 'DELETE FROM ' . $this->table_prefix . 'user_notifications
+			WHERE notification_method = ' . $this->db->sql_escape('notification.method.jabber');
+		$this->db->sql_query($sql);
 	}
 }
