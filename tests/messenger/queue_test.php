@@ -202,20 +202,14 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 		// First save queue data
 		$this->assertFileDoesNotExist($this->cache_file);
 		$this->messenger_queue->init('email', 5);
-		$this->messenger_queue->init('jabber', 10);
 		$this->assertEquals([
 			'email' => [
 				'package_size' => 5,
 				'data' => [],
 			],
-			'jabber' => [
-				'package_size' => 10,
-				'data' => [],
-			]
 		], $this->messenger_queue->get_data());
 
 		$this->messenger_queue->put('email', ['data1']);
-		$this->messenger_queue->put('jabber', ['data2']);
 		$this->messenger_queue->save();
 		$this->assertFileExists($this->cache_file);
 		$this->assertEquals([], $this->messenger_queue->get_data());
