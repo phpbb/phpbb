@@ -49,7 +49,9 @@ class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
 			$phpcsFile->addError($error, $stack_pointer, 'FullName');
 		}
 
-		if ($found_name === $short_name)
+		// Check for possible union types like string|MyType|null
+		$types = explode('|', $found_name);
+		if (in_array($short_name, $types, true))
 		{
 			return true;
 		}
