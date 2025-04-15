@@ -70,7 +70,7 @@ class avatar extends AbstractExtension
 	 *
 	 * @return string	The avatar HTML for the specified mode
 	 */
-	public function get_avatar(environment $environment, string $mode, array $row, ?string $alt, ?bool $ignore_config, ?bool $lazy): string
+	public function get_avatar(environment $environment, string $mode, array $row, string|null $alt, bool|null $ignore_config, bool|null $lazy): string
 	{
 		$alt = $alt ?? false;
 		$ignore_config = $ignore_config ?? false;

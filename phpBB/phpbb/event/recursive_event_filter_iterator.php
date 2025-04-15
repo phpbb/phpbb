@@ -39,7 +39,7 @@ class recursive_event_filter_iterator extends \RecursiveFilterIterator
 	*
 	* @return recursive_event_filter_iterator
 	*/
-	public function getChildren(): ?\RecursiveFilterIterator
+	public function getChildren(): \RecursiveFilterIterator|null
 	{
 		$inner_iterator = $this->getInnerIterator();
 		assert($inner_iterator instanceof \RecursiveIterator);

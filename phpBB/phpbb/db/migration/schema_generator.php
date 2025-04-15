@@ -240,7 +240,7 @@ class schema_generator
 	 * @param mixed			$data				Array of values to be set.
 	 * @param callable|null	$value_transform	Callback to transform the value being set.
 	 */
-	private static function set_all(&$schema, $data, ?callable $value_transform = null)
+	private static function set_all(&$schema, $data, callable|null $value_transform = null)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
 		foreach ($data as $key => $change)
@@ -317,7 +317,7 @@ class schema_generator
 	 *
 	 * @return Closure|null The value transformation callback or null if it is not needed.
 	 */
-	private static function get_value_transform(string $change_type, string $schema_type) : ?Closure
+	private static function get_value_transform(string $change_type, string $schema_type) : Closure|null
 	{
 		if ($change_type !== 'add')
 		{

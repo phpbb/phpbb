@@ -15,7 +15,7 @@ namespace phpbb\feed\exception;
 
 class no_feed_exception extends feed_unavailable_exception
 {
-	public function __construct(\Exception $previous = null, $code = 0)
+	public function __construct(\Exception|null $previous = null, $code = 0)
 	{
 		parent::__construct('NO_FEED', array(), $previous, $code);
 	}

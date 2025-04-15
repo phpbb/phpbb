@@ -74,7 +74,7 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function install(array $packages, IOInterface $io = null)
+	public function install(array $packages, IOInterface|null $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -103,7 +103,7 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function pre_install(array $packages, IOInterface $io = null)
+	protected function pre_install(array $packages, IOInterface|null $io = null)
 	{
 	}
 
@@ -114,14 +114,14 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function post_install(array $packages, IOInterface $io = null)
+	protected function post_install(array $packages, IOInterface|null $io = null)
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function update(array $packages, IOInterface $io = null)
+	public function update(array $packages, IOInterface|null $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -148,7 +148,7 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function pre_update(array $packages, IOInterface $io = null)
+	protected function pre_update(array $packages, IOInterface|null $io = null)
 	{
 	}
 
@@ -159,14 +159,14 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function post_update(array $packages, IOInterface $io = null)
+	protected function post_update(array $packages, IOInterface|null $io = null)
 	{
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function remove(array $packages, IOInterface $io = null)
+	public function remove(array $packages, IOInterface|null $io = null)
 	{
 		$packages = $this->normalize_version($packages);
 
@@ -195,7 +195,7 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function pre_remove(array $packages, IOInterface $io = null)
+	protected function pre_remove(array $packages, IOInterface|null $io = null)
 	{
 	}
 
@@ -206,7 +206,7 @@ class manager implements manager_interface
 	 *                        Each entry may be a name or an array associating a version constraint to a name
 	 * @param IOInterface|null $io IO object used for the output
 	 */
-	protected function post_remove(array $packages, IOInterface $io = null)
+	protected function post_remove(array $packages, IOInterface|null $io = null)
 	{
 	}
 

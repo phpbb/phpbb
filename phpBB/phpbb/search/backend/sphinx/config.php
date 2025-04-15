@@ -28,7 +28,7 @@ class config
 	* @param	string 					$name	The name of the section that shall be returned
 	* @return	config_section|null		The section object or null if none was found
 	*/
-	public function get_section_by_name(string $name): ?config_section
+	public function get_section_by_name(string $name): config_section|null
 	{
 		for ($i = 0, $size = count($this->sections); $i < $size; $i++)
 		{

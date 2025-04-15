@@ -47,7 +47,7 @@ class manager
 	* @param \phpbb\cache\service|null $cache A cache instance or null
 	* @param string $cache_name The name of the cache variable, defaults to _ext
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, finder_factory $finder_factory, $extension_table, $phpbb_root_path, \phpbb\cache\service $cache = null, $cache_name = '_ext')
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, finder_factory $finder_factory, $extension_table, $phpbb_root_path, \phpbb\cache\service|null $cache = null, $cache_name = '_ext')
 	{
 		$this->cache = $cache;
 		$this->cache_name = $cache_name;

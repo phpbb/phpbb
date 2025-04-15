@@ -293,7 +293,7 @@ class filesystem implements filesystem_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function mirror($origin_dir, $target_dir, \Traversable $iterator = null, $options = array())
+	public function mirror($origin_dir, $target_dir, \Traversable|null $iterator = null, $options = array())
 	{
 		try
 		{

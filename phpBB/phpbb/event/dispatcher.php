@@ -52,7 +52,7 @@ class dispatcher extends EventDispatcher implements dispatcher_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function dispatch(object $event, string $eventName = null) : object
+	public function dispatch(object $event, string|null $eventName = null) : object
 	{
 		if ($this->disabled)
 		{

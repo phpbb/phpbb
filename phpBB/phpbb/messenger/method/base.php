@@ -119,8 +119,8 @@ abstract class base implements messenger_interface
 		user $user,
 		string $phpbb_root_path,
 		string $template_cache_path,
-		?manager $ext_manager = null,
-		?log_interface $log = null
+		manager|null $ext_manager = null,
+		log_interface|null $log = null
 	)
 	{
 		$this->assets_bag = $assets_bag;
@@ -469,7 +469,7 @@ abstract class base implements messenger_interface
 	 *
 	 * @return void
 	 */
-	protected function set_template_paths(string|array $path_name, string|array $paths): void
+	protected function set_template_paths(array|string $path_name, array|string $paths): void
 	{
 		$this->setup_template();
 		$this->template->set_custom_style($path_name, $paths);

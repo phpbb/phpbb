@@ -58,7 +58,7 @@ class finder
 	* @param string $cache_name The name of the cache variable, defaults to
 	*							_ext_finder
 	*/
-	public function __construct(?service $cache, bool $use_cache, string $phpbb_root_path, string $php_ext, string $cache_name = '_ext_finder')
+	public function __construct(service|null $cache, bool $use_cache, string $phpbb_root_path, string $php_ext, string $cache_name = '_ext_finder')
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->cache = $cache;

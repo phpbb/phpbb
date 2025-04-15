@@ -1621,7 +1621,7 @@ class fulltext_native extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index(int &$post_counter = null): ?array
+	public function delete_index(int|null &$post_counter = null): array|null
 	{
 		$truncate_tables = [
 			$this->search_wordlist_table,
