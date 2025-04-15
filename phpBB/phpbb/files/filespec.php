@@ -103,7 +103,7 @@ class filespec
 	 * @param \phpbb\mimetype\guesser|null	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload|null	$plupload Plupload
 	 */
-	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(\phpbb\filesystem\filesystem_interface $phpbb_filesystem, language $language, \bantu\IniGetWrapper\IniGetWrapper $php_ini, \FastImageSize\FastImageSize $imagesize, $phpbb_root_path, \phpbb\mimetype\guesser|null $mimetype_guesser = null, \phpbb\plupload\plupload|null $plupload = null)
 	{
 		$this->filesystem = $phpbb_filesystem;
 		$this->language = $language;

@@ -37,11 +37,11 @@ class connection_parameter_factory
 	 */
 	public static function get_configuration(
 		string $driver,
-		?string $host = null,
-		?string $user = null,
-		?string $password = null,
-		?string $name = null,
-		?string $port = null) : array
+		string|null $host = null,
+		string|null $user = null,
+		string|null $password = null,
+		string|null $name = null,
+		string|null $port = null) : array
 	{
 		$params = [
 			'driver' => $driver,
@@ -73,11 +73,11 @@ class connection_parameter_factory
 	 */
 	private static function build_connection_parameters(
 		array $params,
-		?string $host = null,
-		?string $user = null,
-		?string $password = null,
-		?string $name = null,
-		?string $port = null) : array
+		string|null $host = null,
+		string|null $user = null,
+		string|null $password = null,
+		string|null $name = null,
+		string|null $port = null) : array
 	{
 		if ($params['driver'] === 'pdo_sqlite')
 		{
@@ -120,7 +120,7 @@ class connection_parameter_factory
 	 *
 	 * @return array Doctrine's DBAL configuration for SQLite.
 	 */
-	private static function build_sqlite_parameters(array $params, string $path, ?string $user, ?string $password) : array
+	private static function build_sqlite_parameters(array $params, string $path, string|null $user, string|null $password) : array
 	{
 		$params['path'] = $path;
 

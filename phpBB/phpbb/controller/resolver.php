@@ -53,7 +53,7 @@ class resolver implements ControllerResolverInterface
 	* @param string $phpbb_root_path Relative path to phpBB root
 	* @param \phpbb\template\template|null $template
 	*/
-	public function __construct(ContainerInterface $container, $phpbb_root_path, \phpbb\template\template $template = null)
+	public function __construct(ContainerInterface $container, $phpbb_root_path, \phpbb\template\template|null $template = null)
 	{
 		$this->container = $container;
 		$this->template = $template;

@@ -215,7 +215,7 @@ function adm_back_link($u_action)
  *
  * @return array
  */
-function build_select(array $options_ary, int|string|bool $option_default = false): array
+function build_select(array $options_ary, bool|int|string $option_default = false): array
 {
 	global $language;
 

@@ -190,7 +190,7 @@ interface filesystem_interface
 	 * 															The filename which triggered the error can be
 	 * 															retrieved by filesystem_exception::get_filename()
 	 */
-	public function mirror($origin_dir, $target_dir, \Traversable $iterator = null, $options = array());
+	public function mirror($origin_dir, $target_dir, \Traversable|null $iterator = null, $options = array());
 
 	/**
 	 * Creates a directory recursively.

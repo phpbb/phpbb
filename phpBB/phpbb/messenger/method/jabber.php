@@ -547,7 +547,7 @@ class jabber extends base
 	 * @param string $xml
 	 * @return int|bool
 	 */
-	public function send_xml(string $xml): int|bool
+	public function send_xml(string $xml): bool|int
 	{
 		if ($this->connected())
 		{
@@ -633,7 +633,7 @@ class jabber extends base
 	 * @param bool $wait Flag indicating if it should wait for the responce until timeout
 	 * @return bool|array Either false for timeout or an array with the received data
 	 */
-	public function listen(int $timeout = 10, bool $wait = false): bool|array
+	public function listen(int $timeout = 10, bool $wait = false): array|bool
 	{
 		if (!$this->connected())
 		{
@@ -687,7 +687,7 @@ class jabber extends base
 	 * @param bool		$unavailable	Set to true to make unavailable status
 	 * @return int|bool
 	 */
-	function send_presence(string $message = '', string $type = '', bool $unavailable = false): int|bool
+	function send_presence(string $message = '', string $type = '', bool $unavailable = false): bool|int
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -1030,7 +1030,7 @@ class jabber extends base
 	 *
 	 * @return int|bool
 	 */
-	public function send_message(string $to, string $text, string $subject = '', string $type = 'normal'): int|bool
+	public function send_message(string $to, string $text, string $subject = '', string $type = 'normal'): bool|int
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -1141,7 +1141,7 @@ class jabber extends base
 	 * @param string $encoding Encoding value
 	 * @return array
 	 */
-	function xmlize(string $data, string|int|bool $skip_white = 1, string $encoding = 'UTF-8'): array
+	function xmlize(string $data, bool|int|string $skip_white = 1, string $encoding = 'UTF-8'): array
 	{
 		$data = trim($data);
 

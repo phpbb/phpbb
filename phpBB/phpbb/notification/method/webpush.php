@@ -101,7 +101,7 @@ class webpush extends base implements extended_method_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function is_available(type_interface $notification_type = null): bool
+	public function is_available(type_interface|null $notification_type = null): bool
 	{
 		return $this->config['webpush_enable']
 			&& $this->config['webpush_vapid_public']

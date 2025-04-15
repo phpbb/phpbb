@@ -31,7 +31,7 @@ class ip extends base
 	/**
 	 * @inheritDoc
 	 */
-	public function get_user_column(): ?string
+	public function get_user_column(): string|null
 	{
 		return null;
 	}

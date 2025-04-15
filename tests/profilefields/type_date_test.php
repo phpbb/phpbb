@@ -221,7 +221,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 		return implode('-', func_get_args());
 	}
 
-	public function create_datetime_callback($time = 'now', \DateTimeZone $timezone = null)
+	public function create_datetime_callback($time = 'now', \DateTimeZone|null $timezone = null)
 	{
 		$timezone = $timezone ?: $this->user->timezone;
 		return new \phpbb\datetime($this->user, $time, $timezone);

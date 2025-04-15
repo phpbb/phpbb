@@ -82,13 +82,13 @@ class search_backend_mock implements search_backend_interface
 		// Nothing
 	}
 
-	public function create_index(int &$post_counter = 0): ?array
+	public function create_index(int &$post_counter = 0): array|null
 	{
 		$this->index_created = true;
 		return null;
 	}
 
-	public function delete_index(int &$post_counter = 0): ?array
+	public function delete_index(int &$post_counter = 0): array|null
 	{
 		$this->index_created = true;
 		return null;

@@ -48,7 +48,7 @@ class class_loader
 	* @param string $php_ext The file extension for PHP files
 	* @param \phpbb\cache\driver\driver_interface|null $cache An implementation of the phpBB cache interface.
 	*/
-	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface $cache = null)
+	public function __construct($namespace, $path, $php_ext = 'php', \phpbb\cache\driver\driver_interface|null $cache = null)
 	{
 		if ($namespace[0] !== '\\')
 		{
@@ -69,7 +69,7 @@ class class_loader
 	*
 	* @param \phpbb\cache\driver\driver_interface|null $cache An implementation of the phpBB cache interface.
 	*/
-	public function set_cache(\phpbb\cache\driver\driver_interface $cache = null)
+	public function set_cache(\phpbb\cache\driver\driver_interface|null $cache = null)
 	{
 		if ($cache)
 		{

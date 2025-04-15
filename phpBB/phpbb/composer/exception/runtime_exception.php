@@ -29,7 +29,7 @@ class runtime_exception extends base
 	 * @param \Exception|null	$previous	The previous runtime_exception used for the runtime_exception chaining.
 	 * @param integer		$code		The Exception code.
 	 */
-	public function __construct($prefix, $message = '', array $parameters = [], \Exception $previous = null, $code = 0)
+	public function __construct($prefix, $message = '', array $parameters = [], \Exception|null $previous = null, $code = 0)
 	{
 		parent::__construct($prefix . $message, $parameters, $previous, $code);
 	}

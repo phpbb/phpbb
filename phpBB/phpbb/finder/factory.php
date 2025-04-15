@@ -33,7 +33,7 @@ class factory
 	* @param string $phpbb_root_path	Path to the phpbb root directory
 	* @param string $php_ext			php file extension
 	*/
-	public function __construct(?service $cache, bool $use_cache, string $phpbb_root_path, string $php_ext)
+	public function __construct(service|null $cache, bool $use_cache, string $phpbb_root_path, string $php_ext)
 	{
 		$this->cache = $cache;
 		$this->use_cache = $use_cache;

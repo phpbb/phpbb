@@ -59,7 +59,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	*											only if the type is provided and if it doesn't provide an email template.
 	* @return bool
 	*/
-	public function is_available(type_interface $notification_type = null)
+	public function is_available(type_interface|null $notification_type = null)
 	{
 		return $notification_type === null || $notification_type->get_email_template() !== false;
 	}

@@ -15,7 +15,7 @@ namespace phpbb\feed\exception;
 
 class unauthorized_forum_exception extends unauthorized_exception
 {
-	public function __construct($forum_id, \Exception $previous = null, $code = 0)
+	public function __construct($forum_id, \Exception|null $previous = null, $code = 0)
 	{
 		parent::__construct('SORRY_AUTH_READ', array($forum_id), $previous, $code);
 	}

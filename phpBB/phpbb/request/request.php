@@ -57,7 +57,7 @@ class request implements request_interface
 	* Initialises the request class, that means it stores all input data in {@link $input input}
 	* and then calls {@link \phpbb\request\deactivated_super_global \phpbb\request\deactivated_super_global}
 	*/
-	public function __construct(\phpbb\request\type_cast_helper_interface $type_cast_helper = null, $disable_super_globals = true)
+	public function __construct(\phpbb\request\type_cast_helper_interface|null $type_cast_helper = null, $disable_super_globals = true)
 	{
 		if ($type_cast_helper)
 		{
