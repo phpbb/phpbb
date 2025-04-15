@@ -1236,12 +1236,11 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $name
 	* @param string $message
 	*
-	* @return null
+	* @return void
 	*/
 	public function assert_checkbox_is_checked($crawler, $name, $message = '')
 	{
-		$this->assertSame(
-			'checked',
+		$this->assertNotNull(
 			$this->assert_find_one_checkbox($crawler, $name)->attr('checked'),
 			$message ?: "Failed asserting that checkbox $name is checked."
 		);
@@ -1255,7 +1254,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $name
 	* @param string $message
 	*
-	* @return null
+	* @return void
 	*/
 	public function assert_checkbox_is_unchecked($crawler, $name, $message = '')
 	{
