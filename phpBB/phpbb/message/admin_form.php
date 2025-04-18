@@ -13,8 +13,6 @@
 
 namespace phpbb\message;
 
-use phpbb\messenger\method\messenger_interface;
-
 /**
 * Class admin_form
 * Displays a message to the user and allows him to send an email

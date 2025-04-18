@@ -13,8 +13,6 @@
 
 namespace phpbb\message;
 
-use phpbb\messenger\method\messenger_interface;
-
 /**
 * Class topic_form
 * Form used to send topics as notification emails
