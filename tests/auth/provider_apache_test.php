@@ -152,7 +152,6 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			'user_post_sortby_dir' => 'a',
 			'user_notify' => 0,
 			'user_notify_pm' => 1,
-			'user_notify_type' => 0,
 			'user_allow_pm' => 1,
 			'user_allow_viewonline' => 1,
 			'user_allow_viewemail' => 1,

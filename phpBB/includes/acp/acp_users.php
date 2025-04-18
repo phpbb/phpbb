@@ -1577,7 +1577,6 @@ class acp_users
 					'viewemail'			=> $request->variable('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> $request->variable('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> $request->variable('hideonline', !$user_row['user_allow_viewonline']),
-					'notifymethod'		=> $request->variable('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> $request->variable('notifypm', $user_row['user_notify_pm']),
 					'allowpm'			=> $request->variable('allowpm', $user_row['user_allow_pm']),
 
@@ -1648,7 +1647,6 @@ class acp_users
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> !$data['hideonline'],
-							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
 							'user_dateformat'		=> $data['dateformat'],

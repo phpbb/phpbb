@@ -357,9 +357,7 @@ class ucp_profile
 
 					if (!count($error))
 					{
-						$sql_ary = array(
-							'user_notify_type'	=> messenger_interface::NOTIFY_EMAIL,
-						);
+						$sql_ary = [];
 
 						if ($config['allow_birthdays'])
 						{
@@ -378,13 +376,17 @@ class ucp_profile
 						$vars = array('cp_data', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+						// Skip query if no data to update
+						if (count($sql_ary))
+						{
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
 
-						// Update Custom Fields
-						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
+							// Update Custom Fields
+							$cp->update_profile_field_data($user->data['user_id'], $cp_data);
+						}
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
