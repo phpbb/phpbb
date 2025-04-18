@@ -131,8 +131,7 @@ class topic_form extends form
 		$this->message->add_recipient(
 			$this->recipient_name,
 			$this->recipient_address,
-			$this->recipient_lang,
-			messenger_interface::NOTIFY_EMAIL
+			$this->recipient_lang
 		);
 
 		parent::submit($messenger);

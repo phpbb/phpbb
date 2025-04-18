@@ -165,8 +165,7 @@ class admin_form extends form
 		$this->message->add_recipient(
 			$this->user->lang['ADMINISTRATOR'],
 			$this->config['board_contact'],
-			$this->config['default_lang'],
-			messenger_interface::NOTIFY_EMAIL
+			$this->config['default_lang']
 		);
 
 		$this->message->set_template_vars(array(
