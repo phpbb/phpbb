@@ -69,7 +69,7 @@ class remove_jabber extends migration
 			]],
 			['permission.remove', ['a_jabber']],
 			['permission.remove', ['u_sendim']],
-			['custom', [[$this, 'remove_from_user_notifcations']]],
+			['custom', [[$this, 'move_jabber_to_email_notifications']]],
 		];
 	}
 
@@ -101,10 +101,15 @@ class remove_jabber extends migration
 		];
 	}
 
-	public function remove_from_user_notifcations()
+	public function move_jabber_to_email_notifications(int $start = 0)
 	{
-		$sql = 'DELETE FROM ' . $this->table_prefix . 'user_notifications
-			WHERE notification_method = ' . $this->db->sql_escape('notification.method.jabber');
-		$this->db->sql_query($sql);
+		$limit = 1000;
+
+		$sql = 'UPDATE ' . $this->tables['user_notifications'] . '
+			SET ' . $this->db->sql_build_array('UPDATE', ['method' => 'notification.method.email']) . "
+			WHERE method = 'notification.method.jabber'";
+		$this->db->sql_query_limit($sql, $limit, $start);
+
+		return $this->db->sql_affectedrows() < $limit ? true : $start + $limit;
 	}
 }

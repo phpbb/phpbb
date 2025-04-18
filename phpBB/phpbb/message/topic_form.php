@@ -134,7 +134,6 @@ class topic_form extends form
 			$this->recipient_lang,
 			messenger_interface::NOTIFY_EMAIL
 		);
-		$this->message->set_sender_notify_type(messenger_interface::NOTIFY_EMAIL);
 
 		parent::submit($messenger);
 	}

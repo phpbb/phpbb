@@ -157,7 +157,6 @@ class admin_form extends form
 			}
 
 			$this->message->set_sender($this->user->ip, $this->sender_name, $this->sender_address, $this->user->lang_name);
-			$this->message->set_sender_notify_type(messenger_interface::NOTIFY_EMAIL);
 		}
 
 		$this->message->set_template('contact_admin');

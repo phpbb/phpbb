@@ -661,7 +661,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	{
 		$post_info = ($pm) ? phpbb_get_pm_data($post_id_list) : phpbb_get_post_data($post_id_list, 'm_report');
 
-		$sql = "SELECT r.report_id, r.$id_column, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_lang, u.user_notify_type
+		$sql = "SELECT r.report_id, r.$id_column, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_lang
 			FROM " . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
 			WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '

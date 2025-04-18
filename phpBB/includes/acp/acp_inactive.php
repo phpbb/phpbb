@@ -185,7 +185,7 @@ class acp_inactive
 						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_type, user_regdate, user_actkey
+					$sql = 'SELECT user_id, username, user_email, user_lang, user_regdate, user_actkey
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark) . '
 							AND user_inactive_reason';
@@ -211,20 +211,17 @@ class acp_inactive
 							 */
 							foreach ($messenger_collection_iterator as $messenger_method)
 							{
-								if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
-								{
-									$messenger_method->template('user_remind_inactive', $row['user_lang']);
-									$messenger_method->set_addresses($row);
-									$messenger_method->anti_abuse_headers($config, $user);
-									$messenger_method->assign_vars([
-										'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
-										'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
-										'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
-									]);
+								$messenger_method->template('user_remind_inactive', $row['user_lang']);
+								$messenger_method->set_addresses($row);
+								$messenger_method->anti_abuse_headers($config, $user);
+								$messenger_method->assign_vars([
+									'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
+									'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
+									'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
+								]);
 
-									$messenger_method->send();
-									$messenger_method->save_queue();
-								}
+								$messenger_method->send();
+								$messenger_method->save_queue();
 							}
 
 							$usernames[] = $row['username'];

@@ -42,7 +42,6 @@ class ucp_prefs
 			case 'personal':
 				add_form_key('ucp_prefs_personal');
 				$data = array(
-					'notifymethod'	=> $request->variable('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> $request->variable('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> basename($request->variable('lang', $user->data['user_lang'])),
 					'user_style'		=> $request->variable('user_style', (int) $user->data['user_style']),
@@ -99,7 +98,6 @@ class ucp_prefs
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
-							'user_notify_type'		=> $data['notifymethod'],
 							'user_options'			=> $user->data['user_options'],
 
 							'user_dateformat'		=> $data['dateformat'],
