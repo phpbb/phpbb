@@ -30,15 +30,33 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
+		$db_tools = $factory->get($this->doctrine_db);
+		$core_tables = self::get_core_tables();
+
+		// Add user_notify_type column for testing this migration and set type
+		$db_tools->sql_column_add($core_tables['users'], 'user_notify_type', ['TINT:4', 0]);
+		$user_notify_type_map = [
+			1 => 0,
+			2 => 0,
+			3 => 1,
+			4 => 1,
+			5 => 2,
+			6 => 2,
+		];
+
+		foreach ($user_notify_type_map as $user_id => $notify_type)
+		{
+			$this->db->sql_query('UPDATE ' . $core_tables['users'] . ' SET user_notify_type = ' . (int) $notify_type . ' WHERE user_id = ' . (int) $user_id);
+		}
 
 		$this->migration = new \phpbb\db\migration\data\v310\notification_options_reconvert(
 			new \phpbb\config\config(array()),
 			$this->db,
-			$factory->get($this->doctrine_db),
+			$db_tools,
 			$phpbb_root_path,
 			$phpEx,
 			'phpbb_',
-			self::get_core_tables()
+			$core_tables
 		);
 	}
 

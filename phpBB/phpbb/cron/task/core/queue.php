@@ -16,7 +16,7 @@ namespace phpbb\cron\task\core;
 use phpbb\config\config;
 
 /**
-* Queue cron task. Sends email and jabber messages queued by other scripts.
+* Queue cron task. Sends email queued by other scripts.
 */
 class queue extends \phpbb\cron\task\base
 {

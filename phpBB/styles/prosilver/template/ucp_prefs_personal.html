@@ -40,16 +40,6 @@
 			</dd>
 		</dl>
 	<!-- ENDIF -->
-	<!-- IF S_SELECT_NOTIFY -->
-		<dl>
-			<dt><label for="notifymethod0">{L_NOTIFY_METHOD}{L_COLON}</label></dt>
-			<dd>
-				<label for="notifymethod0"><input type="radio" name="notifymethod" id="notifymethod0" value="0"<!-- IF S_NOTIFY_EMAIL --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_EMAIL}</label>
-				<label for="notifymethod1"><input type="radio" name="notifymethod" id="notifymethod1" value="1"<!-- IF S_NOTIFY_IM --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_IM}</label>
-				<label for="notifymethod2"><input type="radio" name="notifymethod" id="notifymethod2" value="2"<!-- IF S_NOTIFY_BOTH --> checked="checked"<!-- ENDIF --> /> {L_NOTIFY_METHOD_BOTH}</label>
-			</dd>
-		</dl>
-	<!-- ENDIF -->
 	<!-- IF S_MORE_LANGUAGES -->
 		<dl>
 			<dt><label for="{{ LANG_OPTIONS.id }}">{L_BOARD_LANGUAGE}{L_COLON}</label></dt>

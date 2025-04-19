@@ -13,8 +13,6 @@
 
 namespace phpbb\message;
 
-use phpbb\messenger\method\messenger_interface;
-
 /**
 * Class topic_form
 * Form used to send topics as notification emails
@@ -131,10 +129,8 @@ class topic_form extends form
 		$this->message->add_recipient(
 			$this->recipient_name,
 			$this->recipient_address,
-			$this->recipient_lang,
-			messenger_interface::NOTIFY_EMAIL
+			$this->recipient_lang
 		);
-		$this->message->set_sender_notify_type(messenger_interface::NOTIFY_EMAIL);
 
 		parent::submit($messenger);
 	}

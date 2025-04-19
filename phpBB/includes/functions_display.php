@@ -1681,7 +1681,6 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $user_rank_data['img'],
 		'RANK_IMG_SRC'		=> $user_rank_data['img_src'],
-		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
 		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
 
@@ -1690,10 +1689,6 @@ function phpbb_show_profile($data, $user_notes_enabled = false, $warn_user_enabl
 		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && $can_receive_pm) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
-		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
-
-		'USER_JABBER'		=> ($config['jab_enable'] && $auth->acl_get('u_sendim')) ? $data['user_jabber'] : '',
-		'USER_JABBER_IMG'	=> ($config['jab_enable'] && $auth->acl_get('u_sendim') && $data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
 
 		'L_SEND_EMAIL_USER' => $user->lang('SEND_EMAIL_USER', $username),
 		'L_CONTACT_USER'	=> $user->lang('CONTACT_USER', $username),

@@ -923,7 +923,6 @@ if (!$get_info)
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
-				array('user_jabber',			'',									''),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 

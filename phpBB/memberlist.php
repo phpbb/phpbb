@@ -373,120 +373,6 @@ switch ($mode)
 		);
 	break;
 
-	case 'contact':
-
-		$page_title = $user->lang['IM_USER'];
-		$template_html = 'memberlist_im.html';
-
-		if (!$auth->acl_get('u_sendim'))
-		{
-			send_status_line(403, 'Forbidden');
-			trigger_error('NOT_AUTHORISED');
-		}
-
-		$presence_img = '';
-		switch ($action)
-		{
-			case 'jabber':
-				$lang = 'JABBER';
-				$sql_field = 'user_jabber';
-				$s_select = (@extension_loaded('xml') && $config['jab_enable']) ? 'S_SEND_JABBER' : 'S_NO_SEND_JABBER';
-				$s_action = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=$action&amp;u=$user_id");
-			break;
-
-			default:
-				trigger_error('NO_MODE', E_USER_ERROR);
-			break;
-		}
-
-		// Grab relevant data
-		$sql = "SELECT user_id, username, user_email, user_lang, $sql_field
-			FROM " . USERS_TABLE . "
-			WHERE user_id = $user_id
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$row)
-		{
-			trigger_error('NO_USER');
-		}
-		else if (empty($row[$sql_field]))
-		{
-			trigger_error('IM_NO_DATA');
-		}
-
-		// Post data grab actions
-		switch ($action)
-		{
-			case 'jabber':
-				add_form_key('memberlist_messaging');
-
-				if ($submit && @extension_loaded('xml') && $config['jab_enable'])
-				{
-					if (check_form_key('memberlist_messaging'))
-					{
-
-						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-						$message = $request->variable('message', '', true);
-
-						if (empty($message))
-						{
-							trigger_error('EMPTY_MESSAGE_IM');
-						}
-
-						$jabber = $phpbb_container->get('messenger.method.jabber');
-						$jabber->set_use_queue(false);
-
-						$jabber->template('profile_send_im', $row['user_lang']);
-						$jabber->subject(html_entity_decode($subject, ENT_COMPAT));
-						$jabber->set_addresses($row);
-
-						$jabber->assign_vars([
-							'BOARD_CONTACT'	=> phpbb_get_board_contact($config, $phpEx),
-							'FROM_USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
-							'TO_USERNAME'	=> html_entity_decode($row['username'], ENT_COMPAT),
-							'MESSAGE'		=> html_entity_decode($message, ENT_COMPAT),
-						]);
-
-						$jabber->send();
-
-						$s_select = 'S_SENT_JABBER';
-					}
-					else
-					{
-						trigger_error('FORM_INVALID');
-					}
-				}
-			break;
-		}
-
-		$template->assign_block_vars('navlinks', array(
-			'BREADCRUMB_NAME'	=> $page_title,
-			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=$action&amp;u=$user_id"),
-		));
-
-		// Send vars to the template
-		$template->assign_vars(array(
-			'IM_CONTACT'	=> $row[$sql_field],
-			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
-
-			'USERNAME'		=> $row['username'],
-			'CONTACT_NAME'	=> $row[$sql_field],
-			'SITENAME'		=> $config['sitename'],
-
-			'PRESENCE_IMG'		=> $presence_img,
-
-			'L_SEND_IM_EXPLAIN'	=> $user->lang['IM_' . $lang],
-			'L_IM_SENT_JABBER'	=> sprintf($user->lang['IM_SENT_JABBER'], $row['username']),
-
-			$s_select			=> true,
-			'S_IM_ACTION'		=> $s_action)
-		);
-
-	break;
-
 	case 'viewprofile':
 		// Display a profile
 		if ($user_id == ANONYMOUS && !$username)
@@ -783,7 +669,6 @@ switch ($mode)
 			'PM_IMG'					=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'L_SEND_EMAIL_USER'			=> $user->lang('SEND_EMAIL_USER', $member['username']),
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
@@ -950,8 +835,8 @@ switch ($mode)
 		{
 			// Generate the navlinks based on the selected topic
 			$navlinks_sql_array = [
-				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, 
-					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, 
+				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
+					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
 					f.forum_options, t.topic_title',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
@@ -1037,12 +922,6 @@ switch ($mode)
 		$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'c' => $user->lang['SORT_JOINED'], 'd' => $user->lang['SORT_POST_COUNT']);
 		$sort_key_sql = array('a' => 'u.username_clean', 'c' => 'u.user_regdate', 'd' => 'u.user_posts');
 
-		if ($config['jab_enable'] && $auth->acl_get('u_sendim'))
-		{
-			$sort_key_text['k'] = $user->lang['JABBER'];
-			$sort_key_sql['k'] = 'u.user_jabber';
-		}
-
 		if ($auth->acl_get('a_user'))
 		{
 			$sort_key_text['e'] = $user->lang['SORT_EMAIL'];
@@ -1084,7 +963,7 @@ switch ($mode)
 		$select_single 	= $request->variable('select_single', false);
 
 		// Search URL parameters, if any of these are in the URL we do a search
-		$search_params = array('username', 'email', 'jabber', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
+		$search_params = array('username', 'email', 'search_group_id', 'joined_select', 'active_select', 'count_select', 'joined', 'active', 'count', 'ip');
 
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
@@ -1093,7 +972,6 @@ switch ($mode)
 		{
 			$username	= $request->variable('username', '', true);
 			$email		= strtolower($request->variable('email', ''));
-			$jabber		= $request->variable('jabber', '');
 			$search_group_id	= $request->variable('search_group_id', 0);
 
 			// when using these, make sure that we actually have values defined in $find_key_match
@@ -1133,7 +1011,6 @@ switch ($mode)
 
 			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), utf8_clean_string($username))) : '';
 			$sql_where .= ($auth->acl_get('a_user') && $email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $email)) . ' ' : '';
-			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->get_any_char(), $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count) && isset($find_key_match[$count_select])) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
 			if (isset($find_key_match[$joined_select]) && count($joined) == 3)
@@ -1439,7 +1316,6 @@ switch ($mode)
 			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
-			'jabber'		=> array('jabber', ''),
 			'search_group_id'	=> array('search_group_id', 0),
 			'joined_select'	=> array('joined_select', 'lt'),
 			'active_select'	=> array('active_select', 'lt'),
@@ -1594,7 +1470,6 @@ switch ($mode)
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
-				'JABBER'	=> $jabber,
 				'JOINED'	=> implode('-', $joined),
 				'ACTIVE'	=> implode('-', $active),
 				'COUNT'		=> $count,
@@ -1602,7 +1477,6 @@ switch ($mode)
 
 				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_EMAIL_SEARCH_ALLOWED'=> ($auth->acl_get('a_user')) ? true : false,
-				'S_JABBER_ENABLED'		=> $config['jab_enable'],
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> ($mode == 'searchuser' || ($mode == '' && $submit)),
 				'S_FORM_NAME'			=> $form,
@@ -1830,7 +1704,6 @@ switch ($mode)
 			'PROFILE_IMG'	=> $user->img('icon_user_profile', $user->lang['PROFILE']),
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
 			'EMAIL_IMG'		=> $user->img('icon_contact_email', $user->lang['EMAIL']),
-			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
 			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
