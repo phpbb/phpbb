@@ -74,7 +74,7 @@ abstract class database_task extends task_base
 	 *
 	 * @return Result|null Result of the query.
 	 */
-	protected function query(string $sql) : ?Result
+	protected function query(string $sql) : Result|null
 	{
 		try
 		{
@@ -95,7 +95,7 @@ abstract class database_task extends task_base
 	 *
 	 * @return Statement|null The prepared statement object or null if preparing failed
 	 */
-	protected function create_prepared_stmt(string $sql): ?Statement
+	protected function create_prepared_stmt(string $sql): Statement|null
 	{
 		try
 		{
@@ -155,7 +155,7 @@ abstract class database_task extends task_base
 	 *
 	 * @return int|null The last insert ID.
 	 */
-	protected function get_last_insert_id() : ?int
+	protected function get_last_insert_id() : int|null
 	{
 		try
 		{

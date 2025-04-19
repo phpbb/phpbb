@@ -42,7 +42,7 @@ class datetime extends \DateTime
 	* @param string $time String in a format accepted by strtotime().
 	* @param \DateTimeZone|null $timezone Time zone of the time.
 	*/
-	public function __construct($user, $time = 'now', \DateTimeZone $timezone = null)
+	public function __construct($user, $time = 'now', \DateTimeZone|null $timezone = null)
 	{
 		$this->user	= $user;
 		$timezone	= $timezone ?: $this->user->timezone;

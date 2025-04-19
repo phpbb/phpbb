@@ -38,7 +38,7 @@ trait sequential_task
 	 *
 	 * @throws resource_limit_reached_exception When resources are exhausted.
 	 */
-	protected function execute(config $config, array $data, ?string $counter_name = null) : void
+	protected function execute(config $config, array $data, string|null $counter_name = null) : void
 	{
 		if ($counter_name === null)
 		{

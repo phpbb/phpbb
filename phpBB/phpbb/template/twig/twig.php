@@ -70,9 +70,9 @@ class twig extends \phpbb\template\base
 		\phpbb\template\context $context,
 		environment $twig_environment,
 		$cache_path,
-		\phpbb\user $user = null,
+		\phpbb\user|null $user = null,
 		$extensions = [],
-		\phpbb\extension\manager $extension_manager = null
+		\phpbb\extension\manager|null $extension_manager = null
 	)
 	{
 		$this->path_helper = $path_helper;

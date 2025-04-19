@@ -56,7 +56,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*
 	* @api
 	*/
-	public function get(string $id, int $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE): ?object
+	public function get(string $id, int $invalidBehavior = self::EXCEPTION_ON_INVALID_REFERENCE): object|null
 	{
 		if ($this->has($id))
 		{

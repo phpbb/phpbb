@@ -912,7 +912,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = 0): ?array
+	public function create_index(int &$post_counter = 0): array|null
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
@@ -984,7 +984,7 @@ class fulltext_mysql extends base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index(int &$post_counter = null): ?array
+	public function delete_index(int|null &$post_counter = null): array|null
 	{
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())

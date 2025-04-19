@@ -73,10 +73,10 @@ class connection_factory
 	public static function get_connection_from_params(
 		string $driver,
 		string $host,
-		?string $user = null,
-		?string $password = null,
-		?string $name = null,
-		?string $port = null): Connection
+		string|null $user = null,
+		string|null $password = null,
+		string|null $name = null,
+		string|null $port = null): Connection
 	{
 		$available_drivers = DriverManager::getAvailableDrivers();
 		if (!in_array($driver, $available_drivers))

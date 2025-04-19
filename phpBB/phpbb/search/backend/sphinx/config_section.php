@@ -60,7 +60,7 @@ class config_section extends config_item
 	* @return	config_variable|null	The first variable object from this section with the
 	*										given name or null if none was found
 	*/
-	public function get_variable_by_name(string $name): ?config_variable
+	public function get_variable_by_name(string $name): config_variable|null
 	{
 		for ($i = 0, $size = count($this->variables); $i < $size; $i++)
 		{

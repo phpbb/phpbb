@@ -52,7 +52,7 @@ class form_helper
 	 *
 	 * @return array Array containing form_token and creation_time of form token
 	 */
-	public function get_form_tokens(string $form_name, ?int &$now = 0, ?string &$token_sid = '', ?string &$token = ''): array
+	public function get_form_tokens(string $form_name, int|null &$now = 0, string|null &$token_sid = '', string|null &$token = ''): array
 	{
 		$now = time();
 		$token_sid = ($this->user->data['user_id'] == ANONYMOUS && !empty($this->config['form_token_sid_guests'])) ? $this->user->session_id : '';
@@ -71,7 +71,7 @@ class form_helper
 	 * @param int|null $timespan Lifetime of token or null if default value should be used
 	 * @return bool True if form token is valid, false if not
 	 */
-	public function check_form_tokens(string $form_name, ?int $timespan = null): bool
+	public function check_form_tokens(string $form_name, int|null $timespan = null): bool
 	{
 		if ($timespan === null)
 		{

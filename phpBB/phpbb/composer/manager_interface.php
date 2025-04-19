@@ -30,7 +30,7 @@ interface manager_interface
 	 *
 	 * @throws runtime_exception
 	 */
-	public function install(array $packages, IOInterface $io = null);
+	public function install(array $packages, IOInterface|null $io = null);
 
 	/**
 	 * Updates or installs a set of packages
@@ -41,7 +41,7 @@ interface manager_interface
 	 *
 	 * @throws runtime_exception
 	 */
-	public function update(array $packages, IOInterface $io = null);
+	public function update(array $packages, IOInterface|null $io = null);
 
 	/**
 	 * Removes a set of packages
@@ -52,7 +52,7 @@ interface manager_interface
 	 *
 	 * @throws runtime_exception
 	 */
-	public function remove(array $packages, IOInterface $io = null);
+	public function remove(array $packages, IOInterface|null $io = null);
 
 	/**
 	 * Tells whether or not a package is managed by Composer.

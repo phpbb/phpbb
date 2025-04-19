@@ -24,6 +24,7 @@ use phpbb\template\template;
 use phpbb\user;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Utils;
 
 require_once __DIR__ . '/../../phpBB/includes/functions_acp.php';
 
@@ -266,7 +267,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		$response_mock = $this->createMock(Response::class);
 
 		$client_mock->method('request')->willReturn($response_mock);
-		$response_mock->method('getBody')->willReturn(json_encode(['success' => true]));
+		$response_mock->method('getBody')->willReturn(Utils::streamFor(json_encode(['success' => true])));
 
 		// Mock config values for secret
 		$this->config->method('offsetGet')->willReturn('secret_value');
@@ -354,7 +355,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		$response_mock = $this->createMock(Response::class);
 
 		$client_mock->method('request')->willReturn($response_mock);
-		$response_mock->method('getBody')->willReturn(json_encode(['success' => false]));
+		$response_mock->method('getBody')->willReturn(Utils::streamFor(json_encode(['success' => false])));
 
 		// Mock config values for secret
 		$this->config->method('offsetGet')->willReturn('secret_value');
