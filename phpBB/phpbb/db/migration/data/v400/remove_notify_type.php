@@ -47,18 +47,4 @@ class remove_notify_type extends migration
 			]
 		];
 	}
-
-	public function update_data()
-	{
-		return [
-			['custom', [[$this, 'remove_jabber_user_notifications']]],
-		];
-	}
-
-	protected function remove_jabber_user_notifications(): void
-	{
-		$sql = 'DELETE FROM ' . $this->tables['user_notifications'] . "
-			WHERE method = 'notification.method.jabber'";
-		$this->db->sql_query($sql);
-	}
 }

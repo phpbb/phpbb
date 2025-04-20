@@ -101,7 +101,7 @@ class remove_jabber extends migration
 		];
 	}
 
-	public function move_jabber_to_email_notifications(int $start = 0)
+	public function move_jabber_to_email_notifications(?int $start = 0)
 	{
 		$limit = 1000;
 
