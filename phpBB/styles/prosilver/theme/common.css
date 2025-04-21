@@ -201,9 +201,7 @@ a:hover {
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {
-	background-image: url('images/lighter2.png');
 	border-radius: 0 0 7px 7px;
-	background-size: cover;
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 0.5rem;
