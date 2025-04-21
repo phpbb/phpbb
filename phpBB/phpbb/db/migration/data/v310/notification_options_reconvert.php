@@ -13,8 +13,6 @@
 
 namespace phpbb\db\migration\data\v310;
 
-use phpbb\messenger\method\messenger_interface;
-
 class notification_options_reconvert extends \phpbb\db\migration\migration
 {
 	protected const NOTIFY_EMAIL = 0;
