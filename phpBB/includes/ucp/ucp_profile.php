@@ -383,10 +383,10 @@ class ucp_profile
 								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
-
-							// Update Custom Fields
-							$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 						}
+
+						// Always update custom fields
+						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
