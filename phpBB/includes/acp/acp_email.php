@@ -213,43 +213,38 @@ class acp_email
 				);
 				extract($phpbb_dispatcher->trigger_event('core.acp_email_send_before', compact($vars)));
 
-				/** @var \phpbb\di\service_collection */
-				$messenger = $phpbb_container->get('messenger.method_collection');
-				$messenger_collection_iterator = $messenger->getIterator();
+				/** @var \phpbb\di\service_collection $messenger_collection */
+				$messenger_collection = $phpbb_container->get('messenger.method_collection');
+				/** @var \phpbb\messenger\method\messenger_interface $messenger_method */
+				$messenger_method = $messenger_collection->offsetGet('messenger.method.email');
+
 				for ($i = 0, $size = count($email_list); $i < $size; $i++)
 				{
 					$used_lang = $email_list[$i][0]['lang'];
 
-					/**
-					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-					 * @psalm-suppress UndefinedMethod
-					 */
-					foreach ($messenger_collection_iterator as $messenger_method)
+					$messenger_method->set_use_queue($use_queue);
+					$messenger_method->template($email_template, $used_lang);
+					$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
+					$messenger_method->assign_vars($template_data);
+
+					for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
 					{
-						$messenger_method->set_use_queue($use_queue);
-						$messenger_method->template($email_template, $used_lang);
-						$messenger_method->subject(html_entity_decode($subject, ENT_COMPAT));
-						$messenger_method->assign_vars($template_data);
-
-						for ($j = 0, $list_size = count($email_list[$i]); $j < $list_size; $j++)
+						$email_row = $email_list[$i][$j];
+						if (count($email_list[$i]) == 1)
 						{
-							$email_row = $email_list[$i][$j];
-							if (count($email_list[$i]) == 1)
-							{
-								$messenger_method->to($email_row['email'], $email_row['name']);
-							}
-							else
-							{
-								$messenger_method->bcc($email_row['email'], $email_row['name']);
-							}
+							$messenger_method->to($email_row['email'], $email_row['name']);
 						}
-
-						$messenger_method->anti_abuse_headers($config, $user);
-						$messenger_method->set_mail_priority($priority);
-
-						$errored = !$messenger_method->send() || $errored;
-						$messenger_method->save_queue();
+						else
+						{
+							$messenger_method->bcc($email_row['email'], $email_row['name']);
+						}
 					}
+
+					$messenger_method->anti_abuse_headers($config, $user);
+					$messenger_method->set_mail_priority($priority);
+
+					$errored = !$messenger_method->send() || $errored;
+					$messenger_method->save_queue();
 				}
 				unset($email_list);
 

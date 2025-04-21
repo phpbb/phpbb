@@ -194,9 +194,10 @@ class acp_inactive
 
 					$result = $db->sql_query($sql);
 
-					/** @var \phpbb\di\service_collection */
-					$messenger = $phpbb_container->get('messenger.method_collection');
-					$messenger_collection_iterator = $messenger->getIterator();
+					/** @var \phpbb\di\service_collection $messenger_collection */
+					$messenger_collection = $phpbb_container->get('messenger.method_collection');
+					/** @var \phpbb\messenger\method\messenger_interface $messenger_method */
+					$messenger_method = $messenger_collection->offsetGet('messenger.method.email');
 
 					if ($row = $db->sql_fetchrow($result))
 					{
@@ -205,24 +206,17 @@ class acp_inactive
 
 						do
 						{
-							/**
-							 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-							 * @psalm-suppress UndefinedMethod
-							 */
-							foreach ($messenger_collection_iterator as $messenger_method)
-							{
-								$messenger_method->template('user_remind_inactive', $row['user_lang']);
-								$messenger_method->set_addresses($row);
-								$messenger_method->anti_abuse_headers($config, $user);
-								$messenger_method->assign_vars([
-									'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
-									'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
-									'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
-								]);
+							$messenger_method->template('user_remind_inactive', $row['user_lang']);
+							$messenger_method->set_addresses($row);
+							$messenger_method->anti_abuse_headers($config, $user);
+							$messenger_method->assign_vars([
+								'USERNAME'		=> html_entity_decode($row['username'], ENT_COMPAT),
+								'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
+								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'],
+							]);
 
-								$messenger_method->send();
-								$messenger_method->save_queue();
-							}
+							$messenger_method->send();
+							$messenger_method->save_queue();
 
 							$usernames[] = $row['username'];
 							$user_ids[] = (int) $row['user_id'];
