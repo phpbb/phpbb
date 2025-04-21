@@ -19,9 +19,9 @@ do
 
 	$command "$1.$ext"
 
-	for file in `find phpBB3 -name '.svn' -prune -o -type f -print`
+	for file in `find phpBB -name '.svn' -prune -o -type f -print`
 	do
-		orig_file="${file/#phpBB3/$orig_dir}"
+		orig_file="${file/#phpBB/$orig_dir}"
 		diff_result=`diff $orig_file $file`
 
 		if [ -n "$diff_result" ]
@@ -31,7 +31,7 @@ do
 		fi
 	done
 
-	rm -rf phpBB3
+	rm -rf phpBB
 done
 
 cd ..
