@@ -176,9 +176,6 @@ class ucp_prefs
 				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
-					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == messenger_interface::NOTIFY_EMAIL) ? true : false,
-					'S_NOTIFY_IM'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_IM) ? true : false,
-					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_BOTH) ? true : false,
 					'S_VIEW_EMAIL'		=> $data['viewemail'],
 					'S_MASS_EMAIL'		=> $data['massemail'],
 					'S_ALLOW_PM'		=> $data['allowpm'],

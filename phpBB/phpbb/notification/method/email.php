@@ -136,7 +136,7 @@ class email extends \phpbb\notification\method\messenger_base
 
 		$insert_buffer->flush();
 
-		$this->notify_using_messenger(messenger_interface::NOTIFY_EMAIL);
+		$this->notify_using_messenger('messenger.method.email');
 	}
 
 	/**

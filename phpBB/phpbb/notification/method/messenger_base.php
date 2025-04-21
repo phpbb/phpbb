@@ -67,12 +67,12 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	/**
 	* Notify using phpBB messenger
 	*
-	* @param int $notify_method				Notify method for messenger (e.g. \phpbb\messenger\method\messenger_interface::NOTIFY_IM)
+	* @param string $notify_method			Notify method service for messenger (e.g. 'messenger.method.email'), empty string for all available methods
 	* @param string $template_dir_prefix	Base directory to prepend to the email template name
 	*
 	* @return void
 	*/
-	protected function notify_using_messenger($notify_method, $template_dir_prefix = '')
+	protected function notify_using_messenger(string $notify_method, string $template_dir_prefix = ''): void
 	{
 		if (empty($this->queue))
 		{
@@ -120,7 +120,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			 */
 			foreach ($messenger_collection_iterator as $messenger_method)
 			{
-				if ($messenger_method->get_id() == $notify_method || $notify_method == $messenger_method::NOTIFY_BOTH)
+				if (empty($notify_method) || $messenger_collection_iterator->key() == $notify_method)
 				{
 					$messenger_method->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
 					$messenger_method->set_addresses($user);

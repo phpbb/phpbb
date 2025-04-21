@@ -18,22 +18,6 @@ namespace phpbb\messenger\method;
  */
 interface messenger_interface
 {
-	/** @var int Email notify method used */
-	public const NOTIFY_EMAIL = 0;
-
-	/** @var int Instant messaging (Jabber) notify method used */
-	public const NOTIFY_IM = 1;
-
-	/** @var int Both notify methods used */
-	public const NOTIFY_BOTH = 2;
-
-	/**
-	 * Get messenger method id
-	 *
-	 * @return int
-	 */
-	public function get_id(): int;
-
 	/**
 	 * Check if the messenger method is enabled
 	 *
