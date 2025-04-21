@@ -423,9 +423,6 @@
 		<!-- EVENT viewtopic_body_postrow_back2top_before -->
 		<div class="back2top">
 			<!-- EVENT viewtopic_body_postrow_back2top_prepend -->
-			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
-				{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), false, 'fas c-top-icon') }}
-			</a>
 			<!-- EVENT viewtopic_body_postrow_back2top_append -->
 		</div>
 		<!-- EVENT viewtopic_body_postrow_back2top_after -->
@@ -494,6 +491,12 @@
 			<!-- ENDIF -->
 		</div>
 	<!-- ENDIF -->
+</div>
+
+<div class="to-top-button">
+	<a href="#top" title="{{ lang('BACK_TO_TOP') }}">
+		{{ Icon('font', 'chevron-up', '', false) }}
+	</a>
 </div>
 
 <!-- EVENT viewtopic_body_footer_before -->
