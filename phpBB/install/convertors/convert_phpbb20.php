@@ -923,7 +923,6 @@ if (!$get_info)
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 
-				array('user_jabber',			'',									''),
 				array('user_rank',				'users.user_rank',					'intval'),
 				array('user_permissions',		'',									''),
 
@@ -938,7 +937,6 @@ if (!$get_info)
 				array('user_emailtime',			'users.user_emailtime',				'null_to_zero'),
 				array('user_notify',			'users.user_notify',				'intval'),
 				array('user_notify_pm',			'users.user_notify_pm',				'intval'),
-				array('user_notify_type',		$messenger_method::NOTIFY_EMAIL,	''),
 				array('user_allow_pm',			'users.user_allow_pm',				'intval'),
 				array('user_allow_viewonline',	'users.user_allow_viewonline',		'intval'),
 				array('user_allow_viewemail',	'users.user_viewemail',				'intval'),

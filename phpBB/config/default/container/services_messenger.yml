@@ -38,15 +38,6 @@ services:
         tags:
             - { name: messenger.method }
 
-    messenger.method.jabber:
-        class: phpbb\messenger\method\jabber
-        shared: false
-        parent: messenger.method.base
-        calls:
-            - [init, []]
-        tags:
-            - { name: messenger.method }
-
     messenger.queue:
         class: phpbb\messenger\queue
         shared: false

@@ -1426,7 +1426,6 @@ class acp_users
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
 				$data = array(
-					'jabber'		=> $request->variable('jabber', $user_row['user_jabber'], true),
 					'bday_day'		=> 0,
 					'bday_month'	=> 0,
 					'bday_year'		=> 0,
@@ -1458,9 +1457,6 @@ class acp_users
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'jabber'		=> array(
-							array('string', true, 5, 255),
-							array('jabber')),
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
@@ -1496,7 +1492,6 @@ class acp_users
 					if (!count($error))
 					{
 						$sql_ary = array(
-							'user_jabber'	=> $data['jabber'],
 							'user_birthday'	=> $data['user_birthday'],
 						);
 
@@ -1553,7 +1548,6 @@ class acp_users
 				unset($now);
 
 				$template->assign_vars(array(
-					'JABBER'		=> $data['jabber'],
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
@@ -1583,7 +1577,6 @@ class acp_users
 					'viewemail'			=> $request->variable('viewemail', $user_row['user_allow_viewemail']),
 					'massemail'			=> $request->variable('massemail', $user_row['user_allow_massemail']),
 					'hideonline'		=> $request->variable('hideonline', !$user_row['user_allow_viewonline']),
-					'notifymethod'		=> $request->variable('notifymethod', $user_row['user_notify_type']),
 					'notifypm'			=> $request->variable('notifypm', $user_row['user_notify_pm']),
 					'allowpm'			=> $request->variable('allowpm', $user_row['user_allow_pm']),
 
@@ -1654,7 +1647,6 @@ class acp_users
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> !$data['hideonline'],
-							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 
 							'user_dateformat'		=> $data['dateformat'],
@@ -1787,15 +1779,11 @@ class acp_users
 
 				$user_prefs_data = array(
 					'S_PREFS'			=> true,
-					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 
 					'VIEW_EMAIL'		=> $data['viewemail'],
 					'MASS_EMAIL'		=> $data['massemail'],
 					'ALLOW_PM'			=> $data['allowpm'],
 					'HIDE_ONLINE'		=> $data['hideonline'],
-					'NOTIFY_EMAIL'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_EMAIL) ? true : false,
-					'NOTIFY_IM'			=> ($data['notifymethod'] == messenger_interface::NOTIFY_IM) ? true : false,
-					'NOTIFY_BOTH'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_BOTH) ? true : false,
 					'NOTIFY_PM'			=> $data['notifypm'],
 					'BBCODE'			=> $data['bbcode'],
 					'SMILIES'			=> $data['smilies'],

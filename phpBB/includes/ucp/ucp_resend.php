@@ -128,37 +128,29 @@ class ucp_resend
 				// Grab an array of user_id's with a_user permissions ... these users can activate a user
 				$admin_ary = $auth->acl_get_list(false, 'a_user', false);
 
-				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
+				$sql = 'SELECT user_id, username, user_email, user_lang
 					FROM ' . USERS_TABLE . '
 					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);
 
-				/** @var \phpbb\di\service_collection */
-				$messenger = $phpbb_container->get('messenger.method_collection');
-				$messenger_collection_iterator = $messenger->getIterator();
+				/** @var \phpbb\di\service_collection $messenger_collection */
+				$messenger_collection = $phpbb_container->get('messenger.method_collection');
+				/** @var \phpbb\messenger\method\messenger_interface $messenger_method */
+				$messenger_method = $messenger_collection->offsetGet('messenger.method.email');
+
 				while ($row = $db->sql_fetchrow($result))
 				{
-					/**
-					 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-					 * @psalm-suppress UndefinedMethod
-					 */
-					foreach ($messenger_collection_iterator as $messenger_method)
-					{
-						$messenger_method->set_use_queue(false);
-						if ($messenger_method->get_id() == $row['user_notify_type'] || $row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
-						{
-							$messenger_method->template('admin_activate', $row['user_lang']);
-							$messenger_method->set_addresses($row);
-							$messenger_method->anti_abuse_headers($config, $user);
-							$messenger_method->assign_vars([
-								'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
-								'U_USER_DETAILS'	=> $board_url . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
-								'U_ACTIVATE'		=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
-							]);
+					$messenger_method->set_use_queue(false);
+					$messenger_method->template('admin_activate', $row['user_lang']);
+					$messenger_method->set_addresses($row);
+					$messenger_method->anti_abuse_headers($config, $user);
+					$messenger_method->assign_vars([
+						'USERNAME'			=> html_entity_decode($user_row['username'], ENT_COMPAT),
+						'U_USER_DETAILS'	=> $board_url . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
+						'U_ACTIVATE'		=> $board_url . "/ucp.$phpEx?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}",
+					]);
 
-							$messenger_method->send();
-						}
-					}
+					$messenger_method->send();
 				}
 				$db->sql_freeresult($result);
 			}

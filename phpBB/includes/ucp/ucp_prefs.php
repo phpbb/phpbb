@@ -42,7 +42,6 @@ class ucp_prefs
 			case 'personal':
 				add_form_key('ucp_prefs_personal');
 				$data = array(
-					'notifymethod'	=> $request->variable('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> $request->variable('dateformat', $user->data['user_dateformat'], true),
 					'lang'			=> basename($request->variable('lang', $user->data['user_lang'])),
 					'user_style'		=> $request->variable('user_style', (int) $user->data['user_style']),
@@ -53,12 +52,6 @@ class ucp_prefs
 					'hideonline'	=> $request->variable('hideonline', (bool) !$user->data['user_allow_viewonline']),
 					'allowpm'		=> $request->variable('allowpm', (bool) $user->data['user_allow_pm']),
 				);
-
-				if ($data['notifymethod'] == messenger_interface::NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
-				{
-					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
-					$data['notifymethod'] = messenger_interface::NOTIFY_BOTH;
-				}
 
 				/**
 				* Add UCP edit global settings data before they are assigned to the template or submitted
@@ -105,7 +98,6 @@ class ucp_prefs
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
 							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
-							'user_notify_type'		=> $data['notifymethod'],
 							'user_options'			=> $user->data['user_options'],
 
 							'user_dateformat'		=> $data['dateformat'],
@@ -184,9 +176,6 @@ class ucp_prefs
 				$template->assign_vars([
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
 
-					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == messenger_interface::NOTIFY_EMAIL) ? true : false,
-					'S_NOTIFY_IM'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_IM) ? true : false,
-					'S_NOTIFY_BOTH'		=> ($data['notifymethod'] == messenger_interface::NOTIFY_BOTH) ? true : false,
 					'S_VIEW_EMAIL'		=> $data['viewemail'],
 					'S_MASS_EMAIL'		=> $data['massemail'],
 					'S_ALLOW_PM'		=> $data['allowpm'],
@@ -218,7 +207,6 @@ class ucp_prefs
 						'options'	=> $timezone_select,
 					],
 					'S_CAN_HIDE_ONLINE'	=> (bool) $auth->acl_get('u_hideonline'),
-					'S_SELECT_NOTIFY'	=> (bool) ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')),
 				]);
 
 			break;

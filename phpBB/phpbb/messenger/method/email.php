@@ -77,14 +77,6 @@ class email extends base
 	/**
 	 * {@inheritDoc}
 	 */
-	public function get_id(): int
-	{
-		return self::NOTIFY_EMAIL;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function get_queue_object_name(): string
 	{
 		return 'email';

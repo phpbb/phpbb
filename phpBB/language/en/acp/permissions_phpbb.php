@@ -98,7 +98,6 @@ $lang = array_merge($lang, array(
 	'ACL_U_PM_IMG'		=> 'Can use [img] BBCode tag in private messages',
 
 	'ACL_U_SENDEMAIL'	=> 'Can send emails',
-	'ACL_U_SENDIM'		=> 'Can send instant messages',
 	'ACL_U_IGNOREFLOOD'	=> 'Can ignore flood limit',
 	'ACL_U_HIDEONLINE'	=> 'Can hide online status',
 	'ACL_U_VIEWONLINE'	=> 'Can view hidden online users',
@@ -168,7 +167,6 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACL_A_BOARD'		=> 'Can alter board settings/check for updates',
 	'ACL_A_SERVER'		=> 'Can alter server/communication settings',
-	'ACL_A_JABBER'		=> 'Can alter Jabber settings',
 	'ACL_A_PHPINFO'		=> 'Can view php settings',
 
 	'ACL_A_FORUM'		=> 'Can manage forums',

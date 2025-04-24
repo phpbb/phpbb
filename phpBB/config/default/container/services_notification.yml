@@ -233,19 +233,6 @@ services:
         tags:
             - { name: notification.method }
 
-    notification.method.jabber:
-        class: phpbb\notification\method\jabber
-        shared: false
-        arguments:
-            - '@user_loader'
-            - '@user'
-            - '@config'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-            - '@messenger.method_collection'
-        tags:
-            - { name: notification.method }
-
     notification.method.webpush:
         class: phpbb\notification\method\webpush
         shared: false

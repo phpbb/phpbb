@@ -19,14 +19,13 @@ use phpbb\user_loader;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
-use phpbb\messenger\method\messenger_interface;
 
 /**
 * Email notification method class
 * This class handles sending emails for notifications
 */
 
-class email extends \phpbb\notification\method\messenger_base
+class email extends messenger_base
 {
 	/** @var user */
 	protected $user;
@@ -136,7 +135,7 @@ class email extends \phpbb\notification\method\messenger_base
 
 		$insert_buffer->flush();
 
-		$this->notify_using_messenger(messenger_interface::NOTIFY_EMAIL);
+		$this->notify_using_messenger('messenger.method.email');
 	}
 
 	/**

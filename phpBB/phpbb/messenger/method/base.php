@@ -144,11 +144,6 @@ abstract class base implements messenger_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	abstract public function get_id(): int;
-
-	/**
-	 * {@inheritdoc}
-	 */
 	abstract public function is_enabled(): bool;
 
 	/**

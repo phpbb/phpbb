@@ -35,7 +35,7 @@ class ucp_activate
 		$user_id = $request->variable('u', 0);
 		$key = $request->variable('k', '');
 
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -131,28 +131,20 @@ class ucp_activate
 			$phpbb_notifications = $phpbb_container->get('notification_manager');
 			$phpbb_notifications->delete_notifications('notification.type.admin_activate_user', $user_row['user_id']);
 
-			$messenger = $phpbb_container->get('messenger.method_collection');
-			$messenger_collection_iterator = $messenger->getIterator();
+			/** @var \phpbb\di\service_collection $messenger_collection */
+			$messenger_collection = $phpbb_container->get('messenger.method_collection');
+			/** @var \phpbb\messenger\method\messenger_interface $messenger_method */
+			$messenger_method = $messenger_collection->offsetGet('messenger.method.email');
 
-			/**
-			 * @var \phpbb\messenger\method\messenger_interface $messenger_method
-			 * @psalm-suppress UndefinedMethod
-			 */
-			foreach ($messenger_collection_iterator as $messenger_method)
-			{
-				if ($messenger_method->get_id() == $user_row['user_notify_type'] || $user_row['user_notify_type'] == $messenger_method::NOTIFY_BOTH)
-				{
-					$messenger_method->set_use_queue(false);
-					$messenger_method->template('admin_welcome_activated', $user_row['user_lang']);
-					$messenger_method->set_addresses($user_row);
-					$messenger_method->anti_abuse_headers($config, $user);
-					$messenger_method->assign_vars([
-						'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
-					]);
+			$messenger_method->set_use_queue(false);
+			$messenger_method->template('admin_welcome_activated', $user_row['user_lang']);
+			$messenger_method->set_addresses($user_row);
+			$messenger_method->anti_abuse_headers($config, $user);
+			$messenger_method->assign_vars([
+				'USERNAME'	=> html_entity_decode($user_row['username'], ENT_COMPAT),
+			]);
 
-					$messenger_method->send();
-				}
-			}
+			$messenger_method->send();
 
 			$message = 'ACCOUNT_ACTIVE_ADMIN';
 		}

@@ -119,7 +119,6 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 	public function test_miscellaneous(): void
 	{
-		$this->assertEquals(email::NOTIFY_EMAIL, $this->method_email->get_id());
 		$this->assertEquals('email', $this->method_email->get_queue_object_name());
 		$this->assertFalse($this->method_email->is_enabled());
 		$this->config->offsetSet('email_enable', true);

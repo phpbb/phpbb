@@ -284,9 +284,7 @@ class ucp_profile
 
 				$cp_data = $cp_error = array();
 
-				$data = array(
-					'jabber'		=> $request->variable('jabber', $user->data['user_jabber'], true),
-				);
+				$data = [];
 
 				if ($config['allow_birthdays'])
 				{
@@ -318,11 +316,7 @@ class ucp_profile
 
 				if ($submit)
 				{
-					$validate_array = array(
-						'jabber'		=> array(
-							array('string', true, 5, 255),
-							array('jabber')),
-					);
+					$validate_array = [];
 
 					if ($config['allow_birthdays'])
 					{
@@ -363,19 +357,7 @@ class ucp_profile
 
 					if (!count($error))
 					{
-						$data['notify'] = $user->data['user_notify_type'];
-
-						if ($data['notify'] == messenger_interface::NOTIFY_IM && (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml')))
-						{
-							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
-							// Disable notify by Jabber now for this user.
-							$data['notify'] = messenger_interface::NOTIFY_EMAIL;
-						}
-
-						$sql_ary = array(
-							'user_jabber'	=> $data['jabber'],
-							'user_notify_type'	=> $data['notify'],
-						);
+						$sql_ary = [];
 
 						if ($config['allow_birthdays'])
 						{
@@ -394,12 +376,16 @@ class ucp_profile
 						$vars = array('cp_data', 'data', 'sql_ary');
 						extract($phpbb_dispatcher->trigger_event('core.ucp_profile_info_modify_sql_ary', compact($vars)));
 
-						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
-						$db->sql_query($sql);
+						// Skip query if no data to update
+						if (count($sql_ary))
+						{
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE user_id = ' . $user->data['user_id'];
+							$db->sql_query($sql);
+						}
 
-						// Update Custom Fields
+						// Always update custom fields
 						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 
 						meta_refresh(3, $this->u_action);
@@ -446,8 +432,6 @@ class ucp_profile
 
 				$template->assign_vars(array(
 					'ERROR'				=> (count($error)) ? implode('<br />', $error) : '',
-					'S_JABBER_ENABLED'	=> $config['jab_enable'],
-					'JABBER'			=> $data['jabber'],
 				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'

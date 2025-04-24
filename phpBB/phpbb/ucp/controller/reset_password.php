@@ -176,7 +176,7 @@ class reset_password
 			}
 
 			$sql_array = [
-				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
+				'SELECT'	=> 'user_id, username, user_permissions, user_email, user_type,'
 								. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
 				'FROM'		=> [$this->users_table => 'u'],
 				'WHERE'		=> "user_email = '" . $this->db->sql_escape($email) . "'" .
@@ -308,7 +308,7 @@ class reset_password
 		add_form_key('ucp_reset_password');
 
 		$sql_array = [
-			'SELECT'	=> 'user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type,'
+			'SELECT'	=> 'user_id, username, user_permissions, user_email, user_type,'
 				. ' user_lang, user_inactive_reason, reset_token, reset_token_expiration',
 			'FROM'		=> [$this->users_table => 'u'],
 			'WHERE'		=> 'user_id = ' . $user_id,

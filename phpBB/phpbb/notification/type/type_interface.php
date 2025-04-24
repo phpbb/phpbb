@@ -132,7 +132,7 @@ interface type_interface
 	/**
 	* URL to unsubscribe to this notification
 	*
-	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
+	* @param string|bool $method Method name to unsubscribe from (email|etc), False to unsubscribe from all notifications for this item
 	*/
 	public function get_unsubscribe_url($method);
 
