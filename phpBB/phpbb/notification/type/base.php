@@ -327,10 +327,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 
 	/**
-	* URL to unsubscribe to this notification (fall back)
-	*
-	* @param string|bool $method Method name to unsubscribe from (email|jabber|etc), False to unsubscribe from all notifications for this item
-	* @return false
+	* {@inheritDoc}
 	*/
 	public function get_unsubscribe_url($method = false)
 	{

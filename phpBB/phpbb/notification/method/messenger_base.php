@@ -18,7 +18,7 @@ use phpbb\di\service_collection;
 use phpbb\user_loader;
 
 /**
-* Abstract notification method handling email and jabber notifications
+* Abstract notification method handling messenger notifications
 * using the phpBB messenger.
 */
 abstract class messenger_base extends \phpbb\notification\method\base

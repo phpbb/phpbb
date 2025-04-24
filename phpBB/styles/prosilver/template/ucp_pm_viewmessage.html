@@ -70,7 +70,7 @@
 									<!-- IF REMAINDER eq 0 -->
 										<div>
 									<!-- ENDIF -->
-										<a href="<!-- IF contact.U_CONTACT -->{contact.U_CONTACT}<!-- ELSE -->{contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
+										<a href="<!-- IF contact.U_CONTACT -->{contact.U_CONTACT}<!-- ELSE -->{contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF -->>
 											{% if contact.ID == 'pm' %}
 												{{ Icon('font', 'message', '', true, 'far contact-icon') }}
 											{% elseif contact.ID == 'email' %}
