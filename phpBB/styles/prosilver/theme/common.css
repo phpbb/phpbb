@@ -347,7 +347,7 @@ ul.linklist .dropdown-up .dropdown {
 }
 
 ul.nav-breadcrumbs {
-	margin: var(--ps-line-height) 0;
+	margin: calc(var(--ps-line-height) * 0.75) 0;
 }
 
 /* Bulletin icons for list items

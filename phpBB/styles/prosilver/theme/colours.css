@@ -128,7 +128,7 @@ th a:hover {
 }
 
 .header-profile {
-	text-shadow: 0 0 var(--ps-font-tiny) #eaf8ff;
+	text-shadow: 0 0 1.75rem #eaf8ff;
 }
 
 .panel {
@@ -1126,6 +1126,7 @@ input.disabled {
 
 .dropdown-extended .dropdown-extended-item {
 	border-top-color: #bdbdbd;
+	color: #47536b;
 }
 
 .dropdown-extended .dropdown-extended-item:hover {
