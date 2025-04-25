@@ -356,7 +356,7 @@ class fulltext_sphinx
 				array('read_timeout',				'5'),
 				array('max_children',				'30'),
 				array('pid_file',					$this->config['fulltext_sphinx_data_path'] . 'searchd.pid'),
-				array('binlog_path',				$this->config['fulltext_sphinx_data_path']),
+				array('binlog_path',				rtrim($this->config['fulltext_sphinx_data_path'], '/\\')), // Trim trailing slash
 			),
 		);
 
