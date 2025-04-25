@@ -135,7 +135,7 @@ searchd
 	read_timeout = 5
 	max_children = 30
 	pid_file = $SPHINX_DATA_DIR/searchd.pid
-	binlog_path = $SPHINX_DATA_DIR/
+	binlog_path = $SPHINX_DATA_DIR
 }
 " > $SPHINX_CONF
 
