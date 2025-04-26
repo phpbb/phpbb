@@ -356,7 +356,7 @@ class fulltext_sphinx
 				array('read_timeout',				'5'),
 				array('max_children',				'30'),
 				array('pid_file',					$this->config['fulltext_sphinx_data_path'] . 'searchd.pid'),
-				array('binlog_path',				$this->config['fulltext_sphinx_data_path']),
+				array('binlog_path',				rtrim($this->config['fulltext_sphinx_data_path'], '/\\')), // Trim trailing slash
 			),
 		);
 
@@ -455,9 +455,47 @@ class fulltext_sphinx
 			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
 		}
 
-		if (strlen($keywords) > 0)
+		// Split words
+		$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		$matches = array();
+		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
+		$this->split_words = $matches[1];
+
+		if ($terms == 'any')
 		{
-			$this->search_query = str_replace('"', '&quot;', $keywords);
+			$this->search_query = '';
+			foreach ($this->split_words as $word)
+			{
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0) || (strpos($word, '|') === 0))
+				{
+					$word = substr($word, 1);
+				}
+				$this->search_query .= $word . ' ';
+			}
+		}
+		else
+		{
+			$this->search_query = '';
+			foreach ($this->split_words as $word)
+			{
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0))
+				{
+					$this->search_query .= $word . ' ';
+				}
+				else if (strpos($word, '|') === 0)
+				{
+					$this->search_query .= substr($word, 1) . ' ';
+				}
+				else
+				{
+					$this->search_query .= '+' . $word . ' ';
+				}
+			}
+		}
+
+		if ($this->search_query)
+		{
+			$this->search_query = str_replace('"', '&quot;', $this->search_query);
 			return true;
 		}
 

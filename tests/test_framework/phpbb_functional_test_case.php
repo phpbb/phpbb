@@ -735,6 +735,24 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return $group_id;
 	}
 
+	/**
+	 * Get current board's search type
+	 *
+	 * @return string Current search type setting
+	 */
+	protected function get_search_type()
+	{
+		$db = $this->get_db();
+		$sql = 'SELECT config_value as search_type
+			FROM ' . CONFIG_TABLE . "
+			WHERE config_name = '" . $db->sql_escape('search_type') . "'";
+		$result = $db->sql_query($sql);
+		$search_type = $db->sql_fetchfield('search_type');
+		$db->sql_freeresult($result);
+
+		return $search_type;
+	}
+
 	protected function remove_user_group($group_name, $usernames)
 	{
 		global $db, $cache, $auth, $config, $phpbb_dispatcher, $phpbb_log, $phpbb_container, $user, $phpbb_root_path, $phpEx;
