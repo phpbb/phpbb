@@ -263,7 +263,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually created
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $search_type) . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $search_type) . ' td')->reduce(
+			function ($node, $i) {
+				// Find the value of total posts indexed
+				return (strpos($node->text(), $this->lang('FULLTEXT_MYSQL_TOTAL_POSTS')) !== false  || strpos($node->text(), $this->lang('TOTAL_WORDS')) !== false);
+			})
+		->nextAll()->eq(0)->text();
 		$this->assertTrue($posts_indexed > 0);
 	}
 
@@ -300,7 +305,12 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		// Ensure search index has been actually removed
 		$crawler = self::request('GET', 'adm/index.php?i=acp_search&mode=index&sid=' . $this->sid);
-		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $this->search_backend) . ' td')->eq(1)->text();
+		$posts_indexed = (int) $crawler->filter('#acp_search_index_' . str_replace('\\', '-', $this->search_backend) . ' td')->reduce(
+			function ($node, $i) {
+				// Find the value of total posts indexed
+				return (strpos($node->text(), $this->lang('FULLTEXT_MYSQL_TOTAL_POSTS')) !== false  || strpos($node->text(), $this->lang('TOTAL_WORDS')) !== false);
+			})
+		->nextAll()->eq(0)->text();
 		$this->assertEquals(0, $posts_indexed);
 	}
 }

@@ -27,8 +27,10 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 
 		if (!$backend || $this->search_backend == $backend)
 		{
+			$output = $retval = null;
+
 			// After creating phpBB search index, build Sphinx index
-			exec('sudo -S service sphinxsearch stop', $output, $retval); // Attemtp to stop sphinxsearch service in case it's running
+			exec('sudo -S service sphinxsearch stop', $output, $retval); // Attempt to stop sphinxsearch service in case it's running
 			exec('sudo -S indexer --all', $output, $retval); // Run sphinxsearch indexer
 			exec('sudo -S service sphinxsearch start', $output, $retval); // Attempt to start sphinxsearch service again
 		}
