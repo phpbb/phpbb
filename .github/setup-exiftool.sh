@@ -10,5 +10,4 @@
 #
 set -e
 
-sudo apt-get update
 sudo apt-get install -y parallel libimage-exiftool-perl
