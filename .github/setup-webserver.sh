@@ -11,7 +11,6 @@
 set -e
 set -x
 
-sudo apt-get update --allow-releaseinfo-change
 sudo apt-get install -y nginx coreutils
 
 sudo service nginx stop
