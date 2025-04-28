@@ -10,5 +10,5 @@
 #
 set -e
 
-sudo apt-get update
+sudo apt-get update --allow-releaseinfo-change
 sudo apt-get install -y expect-dev

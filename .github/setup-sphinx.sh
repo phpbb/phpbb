@@ -11,7 +11,7 @@
 set -e
 set -x
 
-sudo apt-get update
+sudo apt-get update --allow-releaseinfo-change
 sudo apt-get install -q -y sphinxsearch
 
 DIR=$(dirname "$0")
