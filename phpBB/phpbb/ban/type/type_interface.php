@@ -33,7 +33,7 @@ interface type_interface
 	 *
 	 * @return string|null
 	 */
-	public function get_user_column(): ?string;
+	public function get_user_column(): string|null;
 
 	/**
 	 * Sets a user object to the ban type to have it excluded

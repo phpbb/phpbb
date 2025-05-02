@@ -86,7 +86,7 @@ class filespec_storage
 	 * @param \phpbb\mimetype\guesser|null	$mimetype_guesser Mime type guesser
 	 * @param \phpbb\plupload\plupload|null	$plupload Plupload
 	 */
-	public function __construct(language $language, \FastImageSize\FastImageSize $imagesize, \phpbb\mimetype\guesser $mimetype_guesser = null, \phpbb\plupload\plupload $plupload = null)
+	public function __construct(language $language, \FastImageSize\FastImageSize $imagesize, \phpbb\mimetype\guesser|null $mimetype_guesser = null, \phpbb\plupload\plupload|null $plupload = null)
 	{
 		$this->language = $language;
 		$this->imagesize = $imagesize;

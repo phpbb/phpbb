@@ -91,7 +91,7 @@ class email extends messenger_base
 	*											method additionally checks if the type provides an email template.
 	* @return bool
 	*/
-	public function is_available(type_interface $notification_type = null)
+	public function is_available(type_interface|null $notification_type = null)
 	{
 		return parent::is_available($notification_type) && $this->config['email_enable'] && !empty($this->user->data['user_email']);
 	}

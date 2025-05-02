@@ -346,7 +346,7 @@ class phpbb_test_case_helpers
 	* @param  string             $styles_path Path to the styles dir
 	* @return ContainerInterface
 	*/
-	public function set_s9e_services(ContainerInterface $container = null, $fixture = null, $styles_path = null)
+	public function set_s9e_services(ContainerInterface|null $container = null, $fixture = null, $styles_path = null)
 	{
 		static $first_run;
 		global $config, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;

@@ -35,7 +35,7 @@ class runtime_exception extends \RuntimeException implements exception_interface
 	 * @param \Exception|null	$previous	The previous runtime_exception used for the runtime_exception chaining.
 	 * @param integer		$code		The Exception code.
 	 */
-	public function __construct($message = "", array $parameters = array(), \Exception $previous = null, $code = 0)
+	public function __construct($message = "", array $parameters = array(), \Exception|null $previous = null, $code = 0)
 	{
 		$this->parameters = $parameters;
 

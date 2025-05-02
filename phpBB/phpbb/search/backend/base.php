@@ -316,7 +316,7 @@ abstract class base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = 0): ?array
+	public function create_index(int &$post_counter = 0): array|null
 	{
 		$max_post_id = $this->get_max_post_id();
 		$forums_indexing_enabled = $this->forum_ids_with_indexing_enabled();
@@ -377,7 +377,7 @@ abstract class base implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function delete_index(int &$post_counter = null): ?array
+	public function delete_index(int|null &$post_counter = null): array|null
 	{
 		$max_post_id = $this->get_max_post_id();
 

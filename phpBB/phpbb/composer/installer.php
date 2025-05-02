@@ -101,7 +101,7 @@ class installer
 	 * @param request		$request	phpBB request object
 	 * @param config|null		$config		Config object
 	 */
-	public function __construct($root_path, filesystem $filesystem, request $request, config $config = null)
+	public function __construct($root_path, filesystem $filesystem, request $request, config|null $config = null)
 	{
 		if ($config)
 		{
@@ -135,7 +135,7 @@ class installer
 	 *
 	 * @throws runtime_exception
 	 */
-	public function install(array $packages, $whitelist, IOInterface $io = null)
+	public function install(array $packages, $whitelist, IOInterface|null $io = null)
 	{
 		$this->wrap(function() use ($packages, $whitelist, $io) {
 			$this->do_install($packages, $whitelist, $io);
@@ -155,7 +155,7 @@ class installer
 	 * @throws runtime_exception
 	 * @throws JsonValidationException
 	 */
-	protected function do_install(array $packages, $whitelist, io\io_interface $io = null)
+	protected function do_install(array $packages, $whitelist, io\io_interface|null $io = null)
 	{
 		if (!$io)
 		{
@@ -232,7 +232,7 @@ class installer
 	 * @return Composer|PartialComposer
 	 * @throws JsonValidationException
 	 */
-	protected function get_composer(?string $config_file): PartialComposer
+	protected function get_composer(string|null $config_file): PartialComposer
 	{
 		static $composer_factory;
 		if (!$composer_factory)

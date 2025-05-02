@@ -48,7 +48,7 @@ class default_resources_locator implements resources_locator_interface
 	 * @param string		$environment		Name of the current environment
 	 * @param manager|null	$extension_manager	Extension manager
 	 */
-	public function __construct($phpbb_root_path, $environment, manager $extension_manager = null)
+	public function __construct($phpbb_root_path, $environment, manager|null $extension_manager = null)
 	{
 		$this->phpbb_root_path		= $phpbb_root_path;
 		$this->environment			= $environment;

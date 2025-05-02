@@ -13,6 +13,7 @@
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem_interface;
 use phpbb\update\get_updates;
@@ -63,13 +64,14 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 
 	public function test_download_success()
 	{
+		$response_mock = $this->createMock(Response::class);
 		$this->http_client->expects($this->once())
 			->method('request')
 			->with('GET', 'http://example.com/update.zip', [
 				'sink' => '/path/to/storage',
 				'allow_redirects' => false
 			])
-			->willReturn(true);
+			->willReturn($response_mock);
 
 		$client_reflection = new \ReflectionProperty($this->update, 'http_client');
 		$client_reflection->setValue($this->update, $this->http_client);
@@ -84,7 +86,7 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 			->method('request')
 			->willReturnCallback(function ($method, $url, $options)
 			{
-				throw new ClientException('bad client', new \GuzzleHttp\Psr7\Request($method, $url));
+				throw new ClientException('bad client', new \GuzzleHttp\Psr7\Request($method, $url), new \GuzzleHttp\Psr7\Response());
 			});
 		$client_reflection = new \ReflectionProperty($this->update, 'http_client');
 		$client_reflection->setValue($this->update, $this->http_client);
