@@ -609,7 +609,6 @@ class fulltext_mysql extends \phpbb\search\base
 		}
 		$this->db->sql_freeresult($result);
 
-		$id_ary = array_unique($id_ary);
 		// if the total result count is not cached yet, retrieve it from the db
 		if (!$result_count && count($id_ary))
 		{
@@ -635,9 +634,9 @@ class fulltext_mysql extends \phpbb\search\base
 				$id_ary[] = (int) $row[$field];
 			}
 			$this->db->sql_freeresult($result);
-
-			$id_ary = array_unique($id_ary);
 		}
+
+		$id_ary = array_unique($id_ary);
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
@@ -896,9 +895,9 @@ class fulltext_mysql extends \phpbb\search\base
 				$id_ary[] = (int) $row[$field];
 			}
 			$this->db->sql_freeresult($result);
-
-			$id_ary = array_unique($id_ary);
 		}
+
+		$id_ary = array_unique($id_ary);
 
 		if (count($id_ary))
 		{

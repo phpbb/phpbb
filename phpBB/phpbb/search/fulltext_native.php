@@ -1012,6 +1012,8 @@ class fulltext_native extends \phpbb\search\base
 			$this->db->sql_freeresult($result);
 		}
 
+		$id_ary = array_unique($id_ary);
+
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, $this->search_query, $author_ary, $total_results, $id_ary, $start, $sort_dir);
 		$id_ary = array_slice($id_ary, 0, (int) $per_page);
@@ -1312,6 +1314,8 @@ class fulltext_native extends \phpbb\search\base
 			}
 			$this->db->sql_freeresult($result);
 		}
+
+		$id_ary = array_unique($id_ary);
 
 		if (count($id_ary))
 		{
