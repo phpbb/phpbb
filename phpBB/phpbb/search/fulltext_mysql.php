@@ -832,6 +832,8 @@ class fulltext_mysql extends \phpbb\search\base
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
+			// For sorting by non-unique columns, add unique sort key to avoid duplicated rows in results
+			$sql_sort .= ', p.post_id' . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 			$sql = "SELECT $sql_select
 				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
 				WHERE $sql_author

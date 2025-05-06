@@ -300,7 +300,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		);
 
 		// Browse the rest of search results pages with new sort direction
-		foreach (range(2, $last_page) as $page_number)
+		$pages = range(2, $last_page);
+		foreach ($pages as $page_number)
 		{
 			$crawler = self::$client->click($pagination->selectLink($page_number)->link());
 			$pagination = $crawler->filter('.pagination')->eq(0);
