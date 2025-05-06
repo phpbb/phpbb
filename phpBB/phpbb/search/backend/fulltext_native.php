@@ -1004,6 +1004,8 @@ class fulltext_native extends base implements search_backend_interface
 			$this->db->sql_freeresult($result);
 		}
 
+		$id_ary = array_unique($id_ary);
+
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
 		$this->save_ids($search_key, $this->search_query, $author_ary, $total_results, $id_ary, $start, $sort_dir);
 		$id_ary = array_slice($id_ary, 0, (int) $per_page);
@@ -1225,6 +1227,8 @@ class fulltext_native extends base implements search_backend_interface
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
+			// For sorting by non-unique columns, add unique sort key to avoid duplicated rows in results
+			$sql_sort .= ', p.post_id' . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 			$sql = "SELECT $select
 				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t' : '') . "
 				WHERE $sql_author
@@ -1288,6 +1292,8 @@ class fulltext_native extends base implements search_backend_interface
 			}
 			$this->db->sql_freeresult($result);
 		}
+
+		$id_ary = array_unique($id_ary);
 
 		if (count($id_ary))
 		{
