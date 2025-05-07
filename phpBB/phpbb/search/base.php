@@ -76,10 +76,16 @@ class base
 				}
 			}
 
-			// If the sort direction differs from the direction in the cache, then reverse the ids array
+			// If the sort direction differs from the direction in the cache, then recalculate array keys
 			if ($reverse_ids)
 			{
-				$stored_ids = array_reverse($stored_ids);
+				$keys = array_keys($stored_ids);
+				array_walk($keys, function (&$value, $key) use ($result_count)
+					{
+						$value = ($value >= 0) ? $result_count - $value - 1 : $value;
+					}
+				);
+				$stored_ids = array_combine($keys, $stored_ids);
 			}
 
 			for ($i = $start, $n = $start + $per_page; ($i < $n) && ($i < $result_count); $i++)
@@ -130,6 +136,8 @@ class base
 		}
 
 		$store_ids = array_slice($id_ary, 0, $length);
+		$id_range = range($start, $start + $length - 1);
+		$store_ids = array_combine($id_range, $store_ids);
 
 		// create a new resultset if there is none for this search_key yet
 		// or add the ids to the existing resultset
@@ -164,29 +172,26 @@ class base
 			$db->sql_query($sql);
 
 			$store = array(-1 => $result_count, -2 => $sort_dir);
-			$id_range = range($start, $start + $length - 1);
 		}
 		else
 		{
 			// we use one set of results for both sort directions so we have to calculate the indizes
-			// for the reversed array and we also have to reverse the ids themselves
+			// for the reversed array
 			if ($store[-2] != $sort_dir)
 			{
-				$store_ids = array_reverse($store_ids);
-				$id_range = range($store[-1] - $start - $length, $store[-1] - $start - 1);
-			}
-			else
-			{
-				$id_range = range($start, $start + $length - 1);
+				$keys = array_keys($store_ids);
+				array_walk($keys, function (&$value, $key) use ($store) {
+					$value = $store[-1] - $value - 1;
+				});
+				$store_ids = array_combine($keys, $store_ids);
 			}
 		}
-
-		$store_ids = array_combine($id_range, $store_ids);
 
 		// append the ids
 		if (is_array($store_ids))
 		{
 			$store += $store_ids;
+			ksort($store);
 
 			// if the cache is too big
 			if (count($store) - 2 > 20 * $config['search_block_size'])
