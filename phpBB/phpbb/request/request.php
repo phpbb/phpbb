@@ -70,12 +70,12 @@ class request implements \phpbb\request\request_interface
 
 		foreach ($this->super_globals as $const => $super_global)
 		{
-			$this->input[$const] = isset($GLOBALS[$super_global]) ? $GLOBALS[$super_global] : array();
+			$this->input[$const] = isset($GLOBALS[$super_global]) ? (array) $GLOBALS[$super_global] : array();
 		}
 
 		// simulate request_order = GP
-		$this->original_request = $this->input[\phpbb\request\request_interface::REQUEST];
-		$this->input[\phpbb\request\request_interface::REQUEST] = $this->input[\phpbb\request\request_interface::POST] + $this->input[\phpbb\request\request_interface::GET];
+		$this->original_request = (array) $this->input[\phpbb\request\request_interface::REQUEST];
+		$this->input[\phpbb\request\request_interface::REQUEST] = (array) $this->input[\phpbb\request\request_interface::POST] + (array) $this->input[\phpbb\request\request_interface::GET];
 
 		if ($disable_super_globals)
 		{
