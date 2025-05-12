@@ -94,6 +94,7 @@ $lang = array_merge($lang, array(
 	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user.',
 	'FIELD_DROPDOWN'			=> 'Dropdown box',
 	'FIELD_ICON'				=> 'Field icon',
+	'FIELD_ICON_COLOR'			=> 'Icon color',
 	'FIELD_ICON_EXPLAIN'		=> 'Enter the name of a Font Awesome icon to use with the field while displaying in the mini-profile on the topic screen. Leave this field blank to use phpBB default contact image icon.',
 	'FIELD_IDENT'				=> 'Field identification',
 	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',

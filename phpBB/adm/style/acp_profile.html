@@ -92,7 +92,8 @@
 			<dd><input class="text medium" type="text" name="field_contact_desc" id="field_contact_desc" value="{FIELD_CONTACT_DESC}" /> <label for="field_contact_desc">{L_FIELD_CONTACT_DESC}</label></dd>
 			<dd><input class="text medium" type="text" name="field_contact_url" id="field_contact_url" value="{FIELD_CONTACT_URL}" /> <label for="field_contact_url">{L_FIELD_CONTACT_URL}</label></dd>
 			<dt><label for="field_icon">{{ lang('FIELD_ICON') ~ lang('COLON') }}</label><br /><span>{{ lang('FIELD_ICON_EXPLAIN') }}</span></dt>
-			<dd><input name="field_icon" id="field_icon" type="text" size="15" maxlength="255" value="{{ FIELD_ICON }}" placeholder="files-o" />{{ Icon('font', FIELD_ICON, '', true, {'style': 'color: #' ~ FIELD_ICON_COLOR}) }}</dd>
+			<dd><input name="field_icon" id="field_icon" type="text" size="15" maxlength="255" value="{{ FIELD_ICON }}" placeholder="files-o" />{{ Icon('font', FIELD_ICON, '', true, '', {'style': 'font-size: 16px; margin:0 6px; vertical-align: middle;' ~ (FIELD_ICON_COLOR ? (' color: #' ~ FIELD_ICON_COLOR ~ ';') : '')}) }}</dd>
+			<dd><input name="field_icon_color" type="text" id="contact_field_icon_bgcolor" value="{{ FIELD_ICON_COLOR }}" size="6" maxlength="6" placeholder="{{ lang('FIELD_ICON_COLOR') }}" /></dd>
 			<!-- EVENT acp_profile_contact_last -->
 		</dl>
 		{% EVENT acp_profile_contact_after %}

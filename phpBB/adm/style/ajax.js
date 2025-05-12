@@ -425,10 +425,15 @@ $(function() {
 * Automatically display custom profile fields FontAwesome icon
 */
 $(function() {
+	var $field_icon = $('#field_icon');
+	if (!$field_icon.next('i').length) {
+		$field_icon.after('<i style="font-size: 16px; margin:0 6px; vertical-align: middle;"></i>');
+	}
+
 	$('#field_icon').on('keyup blur', function() {
 		var input = $(this).val();
 		var $icon = $(this).next('i');
-		$icon.attr('class', 'icon fa-' + input + ' fa-fw');
+		$icon.attr('class', 'o-icon o-icon-font fa-fw fa-' + input + ' fas');
 	});
 
 });
