@@ -194,7 +194,8 @@
 									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF -->>
 										{% EVENT viewtopic_body_contact_icon_prepend %}
 										{% if postrow.contact.ICON %}
-											{{ Icon('font', contact.ICON, '', true, '') }}
+											{% set color = postrow.contact.ICON_COLOR ? ('color: #' ~ contact.ICON_COLOR) : '' %}
+											{{ Icon('font', contact.ICON, '', true, '', '', {'style': color}) }}
 										{% elseif postrow.contact.ID == 'pm' %}
 											{{ Icon('font', 'message', '', true, 'far contact-icon') }}
 										{% elseif postrow.contact.ID == 'email' %}

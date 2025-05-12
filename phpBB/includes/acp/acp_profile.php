@@ -360,7 +360,7 @@ class acp_profile
 					$field_row = array_merge($profile_field->get_default_option_values(), array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string($request->variable('field_ident', '', true))),
 						'field_required'	=> 0,
-						'field_icon'		=> '',
+						'field_icon'		=> json_encode(['name' => '', 'color' => '']),
 						'field_show_novalue'=> 0,
 						'field_hide'		=> 0,
 						'field_show_profile'=> 0,
@@ -428,8 +428,12 @@ class acp_profile
 
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
 
+				$field_icon_data = json_decode($field_row['field_icon'], true);
+				$cp->vars['field_icon']			= json_encode([
+					'name'	=> $request->variable('field_icon', $field_icon_data['name'] ?: ''),
+					'color'	=> $request->variable('field_icon_color', $field_icon_data['color'] ?: ''),
+				]);
 				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string($request->variable('field_ident', $field_row['field_ident'], true)) : $request->variable('field_ident', $field_row['field_ident']);
-				$cp->vars['field_icon']			= $request->variable('field_icon', $field_row['field_icon']);
 				$cp->vars['lang_name']			= $request->variable('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= $request->variable('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= $request->variable('lang_default_value', $field_row['lang_default_value'], true);
@@ -632,6 +636,7 @@ class acp_profile
 				{
 					// Create basic options - only small differences between field types
 					case 1:
+						$field_icon_data = json_decode($cp->vars['field_icon'], true);
 						$template_vars = array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
@@ -650,7 +655,8 @@ class acp_profile
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
 							'FIELD_TYPE'		=> $profile_field->get_name(),
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
-							'FIELD_ICON'		=> $cp->vars['field_icon'],
+							'FIELD_ICON'		=> $field_icon_data['name'],
+							'FIELD_ICON_COLOR'	=> $field_icon_data['color'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
 						);
