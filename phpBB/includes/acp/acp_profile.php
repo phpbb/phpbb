@@ -475,6 +475,41 @@ class acp_profile
 					$cp->vars[$key] = $var;
 				}
 
+				// step 3 - all arrays
+				if ($action == 'edit')
+				{
+					// Get language entries
+					$sql = 'SELECT *
+						FROM ' . PROFILE_FIELDS_LANG_TABLE . '
+						WHERE lang_id <> ' . $this->edit_lang_id . "
+							AND field_id = $field_id
+						ORDER BY option_id ASC";
+					$result = $db->sql_query($sql);
+
+					$l_lang_options = [];
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$l_lang_options[$row['lang_id']][$row['option_id']] = $row['lang_value'];
+					}
+					$db->sql_freeresult($result);
+
+					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
+						FROM ' . PROFILE_LANG_TABLE . '
+						WHERE lang_id <> ' . $this->edit_lang_id . "
+							AND field_id = $field_id
+						ORDER BY lang_id ASC";
+					$result = $db->sql_query($sql);
+
+					$l_lang_name = $l_lang_explain = $l_lang_default_value = [];
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$l_lang_name[$row['lang_id']] = $row['lang_name'];
+						$l_lang_explain[$row['lang_id']] = $row['lang_explain'];
+						$l_lang_default_value[$row['lang_id']] = $row['lang_default_value'];
+					}
+					$db->sql_freeresult($result);
+				}
+
 				foreach ($exclude[3] as $key)
 				{
 					$cp->vars[$key] = $request->variable($key, array(0 => ''), true);

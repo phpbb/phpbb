@@ -69,4 +69,32 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 
 		$this->assertContainsLang('ADDED_PROFILE_FIELD', $crawler->text());
 	}
+
+	public function test_edit_profile_fields()
+	{
+		// Custom profile fields page
+		$crawler = self::request('GET', 'adm/index.php?i=acp_profile&mode=profile&sid=' . $this->sid);
+
+		// Get all profile fields edit URLs
+		$edits = $crawler->filter('td.actions a')
+			->reduce(
+				function ($node, $i) {
+					$url = $node->attr('href');
+					return ((bool) strpos($url, 'action=edit'));
+			})
+			->each(
+				function ($node, $i) {
+					$url = $node->attr('href');
+					return ($url);
+			});
+
+		foreach ($edits as $edit_url)
+		{
+			$crawler = self::request('GET', 'adm/' . $edit_url . '&sid=' . $this->sid);
+			$form = $crawler->selectButton('Save')->form();
+			$crawler= self::submit($form);
+
+			$this->assertContainsLang('CHANGED_PROFILE_FIELD', $crawler->text());
+		}
+	}
 }
