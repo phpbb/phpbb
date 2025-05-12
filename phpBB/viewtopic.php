@@ -2193,9 +2193,11 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 			if ($field_data['S_PROFILE_CONTACT'])
 			{
+				$icon_data = json_decode($field_data['PROFILE_FIELD_ICON'], true);
 				$template->assign_block_vars('postrow.contact', array(
 					'ID'		=> $field_data['PROFILE_FIELD_IDENT'],
-					'ICON'		=> $field_data['PROFILE_FIELD_ICON'],
+					'ICON'		=> $icon_data['name'],
+					'ICON_COLOR'=> $icon_data['color'],
 					'NAME'		=> $field_data['PROFILE_FIELD_NAME'],
 					'U_CONTACT'	=> $field_data['PROFILE_FIELD_CONTACT'],
 				));

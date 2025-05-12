@@ -1,17 +1,17 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
-namespace phpbb\db\migration\data\v330;
+namespace phpbb\db\migration\data\v400;
 
 class custom_profile_field_contact_icon extends \phpbb\db\migration\migration
 {
@@ -22,7 +22,9 @@ class custom_profile_field_contact_icon extends \phpbb\db\migration\migration
 
 	public static function depends_on()
 	{
-		return ['\phpbb\db\migration\data\v330\v330',];
+		return [
+			'\phpbb\db\migration\data\v400\dev',
+		];
 	}
 
 	public function update_schema()
@@ -30,7 +32,7 @@ class custom_profile_field_contact_icon extends \phpbb\db\migration\migration
 		return array(
 			'add_columns'	=> [
 				$this->table_prefix . 'profile_fields'	=> [
-					'field_icon'	=> array('VCHAR:255', ''),
+					'field_icon'	=> array('VCHAR:255', json_encode(['name' => '', 'color' => ''])),
 				],
 			],
 		);
