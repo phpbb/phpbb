@@ -1746,29 +1746,33 @@ overall_header_body_before
 overall_header_breadcrumb_append
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-a1
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add links to the list of breadcrumbs in the header
 
 overall_header_breadcrumb_prepend
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-RC3
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add links to the list of breadcrumbs in the header (after site-home, but before board-index)
 
 overall_header_breadcrumbs_after
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-RC3
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add content after the breadcrumbs (outside of the breadcrumbs container)
 
 overall_header_breadcrumbs_before
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-RC3
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add content before the breadcrumbs (outside of the breadcrumbs container)
 
 overall_header_content_before
@@ -1830,15 +1834,17 @@ overall_header_navigation_prepend
 overall_header_navlink_append
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-b3
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add content after each individual navlink (breadcrumb)
 
 overall_header_navlink_prepend
 ===
 * Locations:
-    + styles/prosilver/template/navbar_header.html
+    + styles/prosilver/template/breadcrumbs.html
 * Since: 3.1.0-b3
+* Changed: 4.0.0-a1 Moved to breadcrumbs.html
 * Purpose: Add content before each individual navlink (breadcrumb)
 
 overall_header_page_body_before
