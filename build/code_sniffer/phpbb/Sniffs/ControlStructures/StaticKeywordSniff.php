@@ -11,6 +11,8 @@
  *
  */
 
+namespace phpbb\Sniffs\ControlStructures;
+
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -18,7 +20,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Checks that the visibility qualifiers are placed after the static keyword
  * according to the coding guidelines
  */
-class phpbb_Sniffs_ControlStructures_StaticKeywordSniff implements Sniff
+class StaticKeywordSniff implements Sniff
 {
 	/**
 	 * Registers the tokens that this sniff wants to listen for.
