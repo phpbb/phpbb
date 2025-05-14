@@ -10,6 +10,7 @@
  * the docs/CREDITS.txt file.
  *
  */
+namespace phpbb\Sniffs\ControlStructures;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -18,7 +19,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Checks that there is exactly one space between the keyword and the opening
  * parenthesis of a control structures.
  */
-class phpbb_Sniffs_ControlStructures_OpeningParenthesisSniff implements Sniff
+class OpeningParenthesisSniff implements Sniff
 {
 	/**
 	 * Registers the tokens that this sniff wants to listen for.

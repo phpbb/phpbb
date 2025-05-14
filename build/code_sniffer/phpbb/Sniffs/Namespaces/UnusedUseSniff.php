@@ -11,13 +11,15 @@
 *
 */
 
+namespace phpbb\Sniffs\Namespaces;
+
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
 /**
 * Checks that each use statement is used.
 */
-class phpbb_Sniffs_Namespaces_UnusedUseSniff implements Sniff
+class UnusedUseSniff implements Sniff
 {
 	const FIND = [
 		T_NS_SEPARATOR,
