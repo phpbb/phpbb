@@ -33,7 +33,7 @@ class loader_resolver implements LoaderResolverInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function resolve($resource, $type = null): false|\Symfony\Component\Config\Loader\LoaderInterface
+	public function resolve($resource, $type = null): \Symfony\Component\Config\Loader\LoaderInterface|false
 	{
 		/** @var \Symfony\Component\Config\Loader\LoaderInterface $loader */
 		foreach ($this->loaders as $loader)
