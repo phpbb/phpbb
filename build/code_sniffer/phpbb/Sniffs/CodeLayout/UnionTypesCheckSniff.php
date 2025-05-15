@@ -81,9 +81,9 @@ class UnionTypesCheckSniff implements Sniff
 			$data  = [$type, $type_hint];
 			$phpcsFile->addError($error, $stack_pointer, 'ShortNullableSyntax', $data);					
 		}
-		else if (($types_array = explode('|', $type_hint)) > 1) // Check union type layout
+		else if ((count($types_array = explode('|', $type_hint))) > 1) // Check union type layout
 		{
-			$types_array_sorted = $types_array_null_less = $types_array;
+			$types_array_null_less = $types_array;
 
 			// Check 'null' to be the last element
 			$null_position = array_search('null', $types_array);
@@ -99,12 +99,17 @@ class UnionTypesCheckSniff implements Sniff
 			{
 				array_splice($types_array_null_less, $null_position, 1);
 			}
-			sort($types_array_sorted);
-			if (!empty(array_diff_assoc($types_array_null_less, $types_array_sorted)))
+
+			if (count($types_array_null_less) > 1)
 			{
-				$error = 'Union type elements must be sorted alphabetically excepting the "null" type hint must be the last if any; found %s';
-				$data  = [implode('|', $types_array)];
-				$phpcsFile->addError($error, $stack_pointer, 'AlphabeticalSort', $data);
+				$types_array_null_less_sorted = $types_array_null_less;
+				sort($types_array_null_less_sorted);
+				if (!empty(array_diff_assoc($types_array_null_less, $types_array_null_less_sorted)))
+				{
+					$error = 'Union type elements must be sorted alphabetically excepting the "null" type hint must be the last if any; found %s';
+					$data  = [implode('|', $types_array)];
+					$phpcsFile->addError($error, $stack_pointer, 'AlphabeticalSort', $data);
+				}
 			}
 		}
 	}
