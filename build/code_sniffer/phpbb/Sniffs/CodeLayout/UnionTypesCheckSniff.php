@@ -38,7 +38,6 @@ class UnionTypesCheckSniff implements Sniff
 	public function process(File $phpcsFile, $stackPtr)
 	{
 		$tokens = $phpcsFile->getTokens();
-
 		if ($tokens[$stackPtr]['type'] === 'T_FUNCTION')
 		{
 			$method_params = $phpcsFile->getMethodParameters($stackPtr);
@@ -53,15 +52,18 @@ class UnionTypesCheckSniff implements Sniff
 		}
 		else if ($tokens[$stackPtr]['type'] === 'T_CLASS')
 		{
-			$class_member_pointer = $phpcsFile->findNext(T_VARIABLE, $stackPtr);
+			$class_token = $tokens[$stackPtr];
+			$class_closer_pointer = $class_token['scope_closer'];
 			$first_method_pointer = $phpcsFile->findNext(T_FUNCTION, $stackPtr);
-			do
+			$class_members_declarations_end_pointer = $first_method_pointer ?: $class_closer_pointer;
+
+			$stack_pointer = $stackPtr;
+			while(($class_member_pointer = $phpcsFile->findNext(T_VARIABLE, $stack_pointer)) !== false && ($class_member_pointer < $class_members_declarations_end_pointer))
 			{
 				$properties = $phpcsFile->getMemberProperties($class_member_pointer);
 				$this->check_union_type($phpcsFile, $class_member_pointer, $properties['type']);
-				$class_member_pointer = $phpcsFile->findNext(T_VARIABLE, $class_member_pointer + 1);
+				$stack_pointer = $class_member_pointer + 1;
 			}
-			while($class_member_pointer !== false && ($class_member_pointer < $first_method_pointer));
 		}
 	}
 
