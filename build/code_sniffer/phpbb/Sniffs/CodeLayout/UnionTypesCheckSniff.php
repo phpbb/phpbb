@@ -22,52 +22,60 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 class UnionTypesCheckSniff implements Sniff
 {
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function register()
 	{
 		return [
-			T_TYPE_UNION,
-			T_NULLABLE,
+			T_FUNCTION,
+			T_CLASS,
 		];
 	}
 
 	/**
-	 * {@inheritdoc}
-	 */
+	* {@inheritdoc}
+	*/
 	public function process(File $phpcsFile, $stackPtr)
 	{
 		$tokens = $phpcsFile->getTokens();
 
-		// Check if nullable type shortcut syntax ('?typehint') is used
-		if ($tokens[$stackPtr]['type'] === 'T_NULLABLE')
+		if ($tokens[$stackPtr]['type'] === 'T_FUNCTION')
 		{
-			$type = $tokens[$stackPtr + 1]['content'];
-			$error = 'Nullable shortcut syntax must not be used. Use union type instead: %2$s|null; found %1$s%2$s';
-			$data  = [trim($tokens[$stackPtr]['content']), $type];
-			$phpcsFile->addError($error, $stackPtr, 'ShortNullableSyntax', $data);
-		}
-
-		// Get the entry before the 1st '|' and all entries after it untill the end of union type declaration
-        if ($tokens[$stackPtr]['type'] === 'T_TYPE_UNION' && $tokens[$stackPtr - 2]['type'] !== 'T_TYPE_UNION')
-		{
-			// Get all the types within the union type declaration
-			$types_array = [];
-			for ($i = $stackPtr - 2; $i++;)
+			$method_params = $phpcsFile->getMethodParameters($stackPtr);
+			$method_params_array = array_column($method_params, 'type_hint', 'token');
+			foreach ($method_params_array as $stack_pointer => $type_hint)
 			{
-				if (in_array($tokens[$i]['type'], ['T_TYPE_UNION', 'T_STRING', 'T_NULL']))
-				{
-					if ($tokens[$i]['type'] != 'T_TYPE_UNION')
-					{
-						$types_array[] = $tokens[$i]['content'];
-					}
-				}
-				else
-				{
-					break;
-				}
+				$this->check_union_type($phpcsFile, $stack_pointer, $type_hint);
 			}
 
+			$method_properties = $phpcsFile->getMethodProperties($stackPtr);
+			$this->check_union_type($phpcsFile, $stackPtr, $method_properties['return_type']);
+		}
+		else if ($tokens[$stackPtr]['type'] === 'T_CLASS')
+		{
+			$class_member_pointer = $phpcsFile->findNext(T_VARIABLE, $stackPtr);
+			$first_method_pointer = $phpcsFile->findNext(T_FUNCTION, $stackPtr);
+			do
+			{
+				$properties = $phpcsFile->getMemberProperties($class_member_pointer);
+				$this->check_union_type($phpcsFile, $class_member_pointer, $properties['type']);
+				$class_member_pointer = $phpcsFile->findNext(T_VARIABLE, $class_member_pointer + 1);
+			}
+			while($class_member_pointer !== false && ($class_member_pointer < $first_method_pointer));
+		}
+	}
+
+	public function check_union_type(File $phpcsFile, $stack_pointer, $type_hint)
+	{
+		if (!strpos($type_hint, '|') && $type_hint[0] == '?') // Check nullable shortcut syntax
+		{
+			$type = substr($type_hint, 1);
+			$error = 'Nullable shortcut syntax must not be used. Use union type instead: %1$s|null; found %2$s';
+			$data  = [$type, $type_hint];
+			$phpcsFile->addError($error, $stack_pointer, 'ShortNullableSyntax', $data);					
+		}
+		else if (($types_array = explode('|', $type_hint)) > 1) // Check union type layout
+		{
 			$types_array_sorted = $types_array_null_less = $types_array;
 
 			// Check 'null' to be the last element
@@ -76,7 +84,7 @@ class UnionTypesCheckSniff implements Sniff
 			{
 				$error = 'The "null" type hint must be the last of the union type elements; found %s';
 				$data  = [implode('|', $types_array)];
-				$phpcsFile->addError($error, $stackPtr, 'NullAlwaysLast', $data);
+				$phpcsFile->addError($error, $stack_pointer, 'NullAlwaysLast', $data);
 			}
 
 			// Check types excepting 'null' to follow alphabetical order
@@ -89,8 +97,8 @@ class UnionTypesCheckSniff implements Sniff
 			{
 				$error = 'Union type elements must be sorted alphabetically excepting the "null" type hint must be the last if any; found %s';
 				$data  = [implode('|', $types_array)];
-				$phpcsFile->addError($error, $stackPtr, 'AlphabeticalSort', $data);
+				$phpcsFile->addError($error, $stack_pointer, 'AlphabeticalSort', $data);
 			}
-        }
+		}
 	}
 }
