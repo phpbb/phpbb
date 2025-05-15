@@ -67,6 +67,11 @@ class UnionTypesCheckSniff implements Sniff
 
 	public function check_union_type(File $phpcsFile, $stack_pointer, $type_hint)
 	{
+		if (empty($type_hint))
+		{
+			return;
+		}
+
 		if (!strpos($type_hint, '|') && $type_hint[0] == '?') // Check nullable shortcut syntax
 		{
 			$type = substr($type_hint, 1);
