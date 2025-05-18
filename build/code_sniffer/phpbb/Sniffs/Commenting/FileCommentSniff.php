@@ -11,6 +11,8 @@
 *
 */
 
+namespace phpbb\Sniffs\Commenting;
+
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -21,7 +23,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
 * @package code_sniffer
 * @author Manuel Pichler <mapi@phpundercontrol.org>
 */
-class phpbb_Sniffs_Commenting_FileCommentSniff implements Sniff
+class FileCommentSniff implements Sniff
 {
 	/**
 	* Returns an array of tokens this test wants to listen for.
