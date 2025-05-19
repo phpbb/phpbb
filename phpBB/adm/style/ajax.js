@@ -430,12 +430,49 @@ $(function() {
 		$field_icon.after('<i style="font-size: 16px; margin:0 6px; vertical-align: middle;"></i>');
 	}
 
-	$('#field_icon').on('keyup blur', function() {
+	$field_icon.on('keyup blur', function() {
 		var input = $(this).val();
 		var $icon = $(this).next('i');
-		$icon.attr('class', 'o-icon o-icon-font fa-fw fa-' + input + ' fas');
+		$icon.attr('class', 'o-icon o-icon-font fa-fw fa-' + input + ' fas acp-icon');
 	});
 
+	const DEFAULT_COLOR = '#000000';
+	const HEX_REGEX = /^#[A-Fa-f0-9]{6}$/;
+	const colorPicker = document.getElementById('field_icon_color_picker');
+
+	if (!colorPicker) {
+		return;
+	}
+
+	const colorText = colorPicker.previousElementSibling;
+
+	if (!colorText || colorText.type !== 'text') {
+		return;
+	}
+
+	const syncColors = (source, target) => {
+		const value = '#' + source.value.trim();
+		target.value = HEX_REGEX.test(value) ? value : DEFAULT_COLOR;
+	};
+
+	const handleInput = ({ target }) => {
+		if (target === colorPicker) {
+			colorText.value = target.value.substring(1);
+		} else {
+			syncColors(colorText, colorPicker);
+		}
+		var icon = $field_icon.next('i');
+		icon.css('color', colorPicker.value);
+	};
+
+	colorPicker.addEventListener("input", handleInput);
+	colorText.addEventListener("input", handleInput);
+	colorText.addEventListener('blur', () => {
+		if (!colorText.value.trim()) {
+			colorPicker.value = DEFAULT_COLOR;
+		}
+	});
+	syncColors(colorText, colorPicker);
 });
 
 })(jQuery); // Avoid conflicts with other libraries
