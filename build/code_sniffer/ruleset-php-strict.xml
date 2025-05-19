@@ -45,4 +45,8 @@
  <!-- There MUST NOT be unused use statements. -->
  <rule ref="./phpbb/Sniffs/Namespaces/UnusedUseSniff.php" />
 
+ <!-- The null type SHALL be the last union type element, other types SHALL follow alphabetical order.
+	No nullable type shortcut syntax should be used. -->
+ <rule ref="./phpbb/Sniffs/CodeLayout/UnionTypesCheckSniff.php" />
+
 </ruleset>
