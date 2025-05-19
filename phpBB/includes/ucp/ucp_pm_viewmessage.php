@@ -373,8 +373,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 			if ($cp_block_row['S_PROFILE_CONTACT'])
 			{
+				$icon_data = json_decode($cp_block_row['PROFILE_FIELD_ICON'], true);
 				$template->assign_block_vars('contact', array(
 					'ID'		=> $cp_block_row['PROFILE_FIELD_IDENT'],
+					'ICON'		=> $icon_data['name'],
+					'ICON_COLOR'=> $icon_data['color'],
 					'NAME'		=> $cp_block_row['PROFILE_FIELD_NAME'],
 					'U_CONTACT'	=> $cp_block_row['PROFILE_FIELD_CONTACT'],
 				));

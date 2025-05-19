@@ -429,9 +429,11 @@ class acp_profile
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
 
 				$field_icon_data = json_decode($field_row['field_icon'], true);
+				$field_icon_name = $request->variable('field_icon', $field_icon_data['name'] ?: '');
+				$field_icon_color = $field_icon_name ? $request->variable('field_icon_color', $field_icon_data['color'] ?: '') : '';
 				$cp->vars['field_icon']			= json_encode([
-					'name'	=> $request->variable('field_icon', $field_icon_data['name'] ?: ''),
-					'color'	=> $request->variable('field_icon_color', $field_icon_data['color'] ?: ''),
+					'name'	=> $field_icon_name,
+					'color'	=> $field_icon_color,
 				]);
 				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string($request->variable('field_ident', $field_row['field_ident'], true)) : $request->variable('field_ident', $field_row['field_ident']);
 				$cp->vars['lang_name']			= $request->variable('lang_name', $field_row['lang_name'], true);
