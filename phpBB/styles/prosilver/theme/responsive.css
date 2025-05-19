@@ -328,7 +328,6 @@
 		vertical-align: bottom;
 		text-overflow: ellipsis;
 		overflow: hidden;
-		max-width: 100px;
 	}
 
 	/* Pagination

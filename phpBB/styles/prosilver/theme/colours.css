@@ -99,23 +99,36 @@ th a:hover {
 }
 
 /* round cornered boxes and backgrounds */
-.headerbar {
-	color: #ffffff;
+.headerbar,
+.headerbar h1 {
+	color: #eaf8ff;
 }
 
 .headerbar,
 .forumbg {
-	background-color: #13a4ec;
+	background-color: #4688ce;
 	background-repeat: repeat-x;
 }
 
 .forabg {
-	background-color: #13a4ec;
+	background-color: #4688ce;
 	background-repeat: repeat-x;
 }
 
 .navbar {
 	background-color: #c9dee8;
+}
+
+.headerbar .navbar a {
+	color: #eaf8ff;
+}
+
+.headerbar .navbar .dropdown a {
+	color: #0f4d8a;
+}
+
+.header-profile {
+	text-shadow: 0 0 1.75rem #eaf8ff;
 }
 
 .panel {
@@ -814,6 +827,10 @@ dd.profile-warnings {
 /*  icon images */
 .site_logo { background-image: url("./images/site_logo.svg"); }
 
+.c-hero-logo-img g {
+	fill: #eaf8ff;
+}
+
 /*	colours and backgrounds for cp.css */
 
 /* main cp box */
@@ -1109,6 +1126,7 @@ input.disabled {
 
 .dropdown-extended .dropdown-extended-item {
 	border-top-color: #bdbdbd;
+	color: #47536b;
 }
 
 .dropdown-extended .dropdown-extended-item:hover {

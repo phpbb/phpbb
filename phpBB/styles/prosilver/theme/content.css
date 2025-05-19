@@ -465,7 +465,7 @@ p.author {
 	clear: left;
 	overflow: hidden;
 	width: 100%;
-	margin-top: calc(var(--ps-font-small) * 1.4);
+	margin: calc(var(--ps-font-small) * 1.4) 0;
 	padding-top: 2px;
 }
 
