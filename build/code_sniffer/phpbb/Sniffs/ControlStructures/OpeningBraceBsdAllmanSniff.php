@@ -11,6 +11,8 @@
 *
 */
 
+namespace phpbb\Sniffs\ControlStructures;
+
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
@@ -18,7 +20,7 @@ use PHP_CodeSniffer\Sniffs\Sniff;
  * Checks that the opening brace of a control structures is on the line after.
  * From Generic_Sniffs_Functions_OpeningFunctionBraceBsdAllmanSniff
  */
-class phpbb_Sniffs_ControlStructures_OpeningBraceBsdAllmanSniff implements Sniff
+class OpeningBraceBsdAllmanSniff implements Sniff
 {
 	/**
 	 * Registers the tokens that this sniff wants to listen for.
