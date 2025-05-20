@@ -28,23 +28,18 @@ class extension extends \Twig\Extension\AbstractExtension
 	/** @var \phpbb\language\language */
 	protected $language;
 
-	/** @var \phpbb\event\dispatcher_interface */
-	protected $phpbb_dispatcher;
-
 	/**
 	* Constructor
 	*
 	* @param \phpbb\template\context $context
 	* @param \phpbb\template\twig\environment $environment
 	* @param \phpbb\language\language $language
-	* @param \phpbb\event\dispatcher_interface $phpbb_dispatcher
 	*/
-	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language, \phpbb\event\dispatcher_interface $phpbb_dispatcher)
+	public function __construct(\phpbb\template\context $context, \phpbb\template\twig\environment $environment, $language)
 	{
 		$this->context = $context;
 		$this->environment = $environment;
 		$this->language = $language;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
 	}
 
 	/**
@@ -69,7 +64,7 @@ class extension extends \Twig\Extension\AbstractExtension
 			new \phpbb\template\twig\tokenparser\includeparser,
 			new \phpbb\template\twig\tokenparser\includejs,
 			new \phpbb\template\twig\tokenparser\includecss,
-			new \phpbb\template\twig\tokenparser\event($this->environment, $this->phpbb_dispatcher),
+			new \phpbb\template\twig\tokenparser\event($this->environment),
 		);
 	}
 

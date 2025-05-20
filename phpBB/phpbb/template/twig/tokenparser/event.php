@@ -29,10 +29,10 @@ class event extends \Twig\TokenParser\AbstractTokenParser
 	*
 	* @param \phpbb\template\twig\environment $environment
 	*/
-	public function __construct(\phpbb\template\twig\environment $environment, \phpbb\event\dispatcher_interface $phpbb_dispatcher = null)
+	public function __construct(\phpbb\template\twig\environment $environment)
 	{
 		$this->environment = $environment;
-		$this->phpbb_dispatcher = $phpbb_dispatcher;
+		$this->phpbb_dispatcher = $this->environment->get_phpbb_dispatcher();
 
 		$template_event_priority_array = [];
 		/**

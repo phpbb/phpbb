@@ -407,7 +407,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			]
 		);
-		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang, $phpbb_dispatcher);
+		$twig_extension = new \phpbb\template\twig\extension($context, $twig, $lang);
 		$container->set('template.twig.extensions.phpbb', $twig_extension);
 
 		$twig_extensions_collection = new \phpbb\di\service_collection($container);

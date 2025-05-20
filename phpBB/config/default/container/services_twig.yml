@@ -40,7 +40,6 @@ services:
             - '@template_context'
             - '@template.twig.environment'
             - '@language'
-            - '@dispatcher'
         tags:
             - { name: twig.extension }
 

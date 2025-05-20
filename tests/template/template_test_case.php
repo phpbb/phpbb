@@ -97,7 +97,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 		$loader = new \phpbb\template\twig\loader('');
 		$log = new \phpbb\log\dummy();
 		$assets_bag = new \phpbb\template\assets_bag();
-		$dispatcher = new \phpbb\event\dispatcher();
 		$twig = new \phpbb\template\twig\environment(
 			$assets_bag,
 			$config,
@@ -106,7 +105,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 			$cache_path,
 			null,
 			$loader,
-			$dispatcher,
+			new \phpbb\event\dispatcher(),
 			array(
 				'cache'			=> false,
 				'debug'			=> false,
@@ -114,8 +113,7 @@ class phpbb_template_template_test_case extends phpbb_test_case
 				'autoescape'	=> false,
 			)
 		);
-
-		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $lang, $dispatcher)));
+		$this->template = new phpbb\template\twig\twig($path_helper, $config, $context, $twig, $cache_path, $this->user, array(new \phpbb\template\twig\extension($context, $twig, $lang)));
 		$twig->setLexer(new \phpbb\template\twig\lexer($twig));
 		$this->template->set_custom_style('tests', $this->template_path);
 	}
