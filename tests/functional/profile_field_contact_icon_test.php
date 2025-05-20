@@ -35,7 +35,7 @@ class phpbb_functional_profile_field_contact_icon_test extends phpbb_functional_
 			->reduce(
 				function ($node, $i) {
 					$text = $node->text();
-					return ((bool) strpos($text, 'phpbb_twitter'));
+					return (strpos($text, 'phpbb_twitter') !== false);
 			});
 
 		$twitter_edit_url = $twitter_field->filter('.actions a')->eq(2)->attr('href');
@@ -62,5 +62,34 @@ class phpbb_functional_profile_field_contact_icon_test extends phpbb_functional_
 		$this->assertEquals('1da1f2', $crawler->filter('#contact_field_icon_bgcolor')->attr('value'));
 		$this->assertEquals(1, $crawler->filter('i.fa-twitter')->count());
 		$this->assertStringContainsString('#1da1f2;', $crawler->filter('i.fa-twitter')->attr('style'));
+	}
+
+	/**
+	 * @depends test_add_contact_field_icon
+	 */
+	public function test_display_field_icon()
+	{
+		$this->add_lang('ucp');
+
+		// Set Twitter profile field
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=profile_info');
+		$this->assertContainsLang('UCP_PROFILE_PROFILE_INFO', $crawler->filter('#cp-main h2')->text());
+
+		$form = $crawler->selectButton('Submit')->form([
+			'pf_phpbb_twitter'	=> 'phpbb_twitter',
+		]);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
+
+		// Ensure Twitter icon displays in topic
+		$crawler = self::request('GET', 'viewtopic.php?t=1');
+		$this->assertEquals('Twitter', $crawler->filter('#profile1 a[title="Twitter"]')->attr('title'));
+		$this->assertStringContainsString('#1da1f2', $crawler->filter('#profile1 a[title="Twitter"] > i.fa-twitter')->attr('style'));
+
+		// Ensure Twitter icon displays on view private message screen
+		$message_id = $this->create_private_message('Self PM', 'Self PM', [2]);
+		$crawler = self::request('GET', 'ucp.php?i=pm&mode=view&p=' . $message_id . '&sid=' . $this->sid);
+		$this->assertEquals('Twitter', $crawler->filter('.profile-contact a[title="Twitter"]')->attr('title'));
+		$this->assertStringContainsString('#1da1f2', $crawler->filter('.profile-contact a[title="Twitter"] > i.fa-twitter')->attr('style'));
 	}
 }
