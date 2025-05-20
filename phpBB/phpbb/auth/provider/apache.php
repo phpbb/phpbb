@@ -21,7 +21,7 @@ use phpbb\request\type_cast_helper;
 use phpbb\user;
 
 /**
-* Apache authentication provider for phpBB3
+* Apache authentication provider for phpBB
 */
 class apache extends base
 {

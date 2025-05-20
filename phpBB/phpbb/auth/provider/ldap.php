@@ -20,7 +20,7 @@ use phpbb\language\language;
 use phpbb\user;
 
 /**
- * Database authentication provider for phpBB3
+ * Database authentication provider for phpBB
  * This is for authentication via the integrated user table
  */
 class ldap extends base

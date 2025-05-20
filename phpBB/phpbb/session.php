@@ -125,10 +125,10 @@ class session
 			$page .= '?' . $query_string;
 		}
 
-		// The script path from the webroot to the current directory (for example: /phpBB3/adm/) : always prefixed with / and ends in /
+		// The script path from the webroot to the current directory (for example: /phpBB/adm/) : always prefixed with / and ends in /
 		$script_path = $symfony_request->getBasePath();
 
-		// The script path from the webroot to the phpBB root (for example: /phpBB3/)
+		// The script path from the webroot to the phpBB root (for example: /phpBB/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -count($page_dirs));
 		$root_script_path = implode('/', $script_dirs) . (count($root_dirs) ? '/' . implode('/', $root_dirs) : '');

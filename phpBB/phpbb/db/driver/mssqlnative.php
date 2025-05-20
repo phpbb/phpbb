@@ -37,7 +37,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		// Test for driver support, to avoid suppressed fatal error
 		if (!function_exists('sqlsrv_connect'))
 		{
-			$this->connect_error = 'Native MS SQL Server driver for PHP is missing or needs to be updated. Version 1.1 or later is required to install phpBB3. You can download the driver from: http://www.microsoft.com/sqlserver/2005/en/us/PHP-Driver.aspx';
+			$this->connect_error = 'Native MS SQL Server driver for PHP is missing or needs to be updated. Version 1.1 or later is required to install phpBB. You can download the driver from: http://www.microsoft.com/sqlserver/2005/en/us/PHP-Driver.aspx';
 			return $this->sql_error('');
 		}
 
