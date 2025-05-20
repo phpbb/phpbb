@@ -86,7 +86,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('confirm_refresh', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('contact_admin_form_enable', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain', '');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name', 'phpbb3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_name', 'phpbb');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_notice', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_path', '/');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_secure', '0');
