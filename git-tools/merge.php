@@ -56,7 +56,7 @@ catch (RuntimeException $e)
 function work($pull_id, $remote)
 {
 	// Get some basic data
-	$pull = get_pull('phpbb', 'phpbb3', $pull_id);
+	$pull = get_pull('phpbb', 'phpbb', $pull_id);
 
 	if (!$pull_id)
 	{
@@ -79,7 +79,7 @@ function work($pull_id, $remote)
 			run("git checkout develop-olympus");
 			run("git pull $remote develop-olympus");
 
-			add_remote($pull_user, 'phpbb3');
+			add_remote($pull_user, 'phpbb');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
 			run("phpBB/vendor/bin/phpunit");
@@ -94,7 +94,7 @@ function work($pull_id, $remote)
 			run("git checkout develop");
 			run("git pull $remote develop");
 
-			add_remote($pull_user, 'phpbb3');
+			add_remote($pull_user, 'phpbb');
 			run("git fetch $pull_user");
 			run("git merge --no-ff $pull_user/$pull_branch");
 			run("phpBB/vendor/bin/phpunit");
