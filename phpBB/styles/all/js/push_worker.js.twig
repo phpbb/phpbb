@@ -38,7 +38,7 @@ self.addEventListener('push', event => {
 		return;
 	}
 
-	event.waitUntil((async () => {
+	event.waitUntil((async() => {
 		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
 		const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
 
