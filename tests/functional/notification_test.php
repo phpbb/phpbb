@@ -65,7 +65,7 @@ class phpbb_functional_notification_test extends phpbb_functional_test_case
 		$this->login('notificationtestuser');
 
 		// Post a new post that needs approval
-		$this->create_post(2, 1, 'Re: Welcome to phpBB3', 'This is a test [b]post[/b] posted by notificationtestuser.', array(), 'POST_STORED_MOD');
+		$this->create_post(2, 1, 'Re: Welcome to phpBB', 'This is a test [b]post[/b] posted by notificationtestuser.', array(), 'POST_STORED_MOD');
 		$crawler = self::request('GET', "viewtopic.php?t=1&sid={$this->sid}");
 		$this->assertStringNotContainsString('This is a test post posted by notificationtestuser.', $crawler->filter('html')->text());
 

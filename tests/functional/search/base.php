@@ -193,13 +193,13 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 
 		foreach (['', 'a', 't', 'f', 'i', 's'] as $sort_key)
 		{
-			$this->assert_search_found('phpbb3+installation', 1, 4, $sort_key);
+			$this->assert_search_found('phpbb+installation', 1, 4, $sort_key);
 			$this->assert_search_found('foosubject+barsearch', 1, 2, $sort_key);
 			$this->assert_search_found('barsearch-testing', 1, 2, $sort_key); // test hyphen ignored
 			$this->assert_search_found('barsearch+-+testing', 1, 2, $sort_key); // test hyphen wrapped with space ignored
 			$this->assert_search_found('multiple+results+count', 3, 15, $sort_key); // test multiple results count - posts
 			$this->assert_search_found_topics('multiple+results+count', 2, $sort_key); // test multiple results count - topics
-			$this->assert_search_found_topics('phpbb3+installation', 1, $sort_key);
+			$this->assert_search_found_topics('phpbb+installation', 1, $sort_key);
 			$this->assert_search_found_topics('foosubject+barsearch', 1, $sort_key);
 
 			$this->assert_search_in_forum(2, 'multiple+search+results', 3, $sort_key); // test multiple results count - forum search - posts
@@ -346,11 +346,11 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		// Get cached post ids data
 		$cache = $this->get_cache_driver();
 		$post_ids_cached = $cache->get($cache_varname);
-		
+
 		$cached_results_count = count($post_ids_cached) - 2; // Don't count '-1' and '-2' indexes
 
 		$post_ids_cached_backup = $post_ids_cached;
-		
+
 		// Cached data still should have initial 'd' sort direction
 		$this->assertTrue($post_ids_cached[-2] === 'd', $this->search_backend);
 
