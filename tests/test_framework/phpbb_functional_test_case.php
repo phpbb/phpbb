@@ -644,7 +644,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 
-		// Wait for extension to be fully enabled
+		// Wait for extension to be fully disabled
 		while (count($meta_refresh))
 		{
 			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);

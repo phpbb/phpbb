@@ -162,6 +162,16 @@ class environment extends \Twig\Environment
 	}
 
 	/**
+	 * Gets the event dispatcher instance
+	 *
+	 * @return dispatcher_interface
+	 */
+	public function get_phpbb_dispatcher()
+	{
+		return $this->phpbb_dispatcher;
+	}
+
+	/**
 	* Get the namespace look up order
 	*
 	* @return array
