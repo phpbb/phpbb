@@ -23,7 +23,7 @@ class template_event_order implements EventSubscriberInterface
 	static public function getSubscribedEvents()
 	{
 		return array(
-			'core.twig_tokenparser_constructor'	=> 'set_template_event_priority',
+			'core.twig_event_tokenparser_constructor'	=> 'set_template_event_priority',
 		);
 	}
 

@@ -42,7 +42,7 @@ class event extends \Twig\TokenParser\AbstractTokenParser
 		 * In case of equal priority values, corresponding template event listeners will be handled in default compilation order.
 		 * If not set, template event listener priority will be assigned to the value of 0.
 		 *
-		 * @event core.twig_tokenparser_constructor
+		 * @event core.twig_event_tokenparser_constructor
 		 * @var	array	template_event_priority_array	Array with template event priority assignments per extension namespace
 		 *		Usage:
 		 *		'<author>_<extension_name>' => [
@@ -50,17 +50,31 @@ class event extends \Twig\TokenParser\AbstractTokenParser
 		 *		],
 		 *
 		 *		Example:
-		 *		'phpbb_viglink' => [
-		 *			'event/acp_help_phpbb_stats_after'	=> 80,
-		 *			'event/overall_footer_after'		=> 100,
-		 *		],
+		 *		class template_event_order implements EventSubscriberInterface
+		 *		{
+		 *			static public function getSubscribedEvents()
+		 *			{
+		 *				return [
+		 *					'core.twig_event_tokenparser_constructor'	=> 'set_template_event_priority',
+		 *				];
+		 *			}
+		 *
+		 *			public function set_template_event_priority($event)
+		 *			{
+		 *				$template_event_priority_array = $event['template_event_priority_array'];
+		 *				$template_event_priority_array['vendor_name'] = [
+		 *					'event/navbar_header_quick_links_after' => -1,
+		 *				];
+		 *				$event['template_event_priority_array'] = $template_event_priority_array;
+		 *			}
+		 *		}
 		 *
 		 * @since 4.0.0-a1
 		 */
 		if ($this->phpbb_dispatcher)
 		{
 			$vars = ['template_event_priority_array'];
-			extract($this->phpbb_dispatcher->trigger_event('core.twig_tokenparser_constructor', compact($vars)));
+			extract($this->phpbb_dispatcher->trigger_event('core.twig_event_tokenparser_constructor', compact($vars)));
 		}
 
 		$this->template_event_priority_array = $template_event_priority_array;
