@@ -408,7 +408,7 @@ class database
 			switch ($dbms)
 			{
 				case 'sqlite3':
-					if (version_compare($db->sql_server_info(true), '3.6.15', '<'))
+					if (version_compare($db->sql_server_info(true), '3.8.3', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_SQLITE3',
