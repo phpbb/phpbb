@@ -39,7 +39,7 @@ class database
 		// Note: php 5.5 alpha 2 deprecated mysql.
 		// Keep mysqli before mysql in this list.
 		'mysqli'	=> array(
-			'LABEL'			=> 'MySQL with MySQLi Extension',
+			'LABEL'			=> 'MySQL',
 			'SCHEMA'		=> 'mysql_41',
 			'MODULE'		=> 'mysqli',
 			'DOCTRINE'		=> ['pdo_mysql'],
@@ -59,7 +59,7 @@ class database
 			'2.0.x'			=> true,
 		),
 		'mssqlnative'	=> array(
-			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
+			'LABEL'			=> 'MS SQL Server [ Native ]',
 			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
 			'DOCTRINE'		=> ['pdo_sqlsrv'],
@@ -78,7 +78,7 @@ class database
 			'2.0.x'			=> false,
 		),
 		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 8.3+',
+			'LABEL'			=> 'PostgreSQL',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
 			'DOCTRINE'		=> ['pdo_pgsql'],
@@ -405,10 +405,19 @@ class database
 			}
 
 			// Check if database version is supported
+			$db_server_version = $doctrine_db->getWrappedConnection()->getServerVersion();
 			switch ($dbms)
 			{
+				case 'mysqli':
+					if (version_compare($db_server_version, '5.6', '<'))
+					{
+						$errors[] = array(
+							'title' => 'INST_ERR_DB_NO_MYSQLI',
+						);
+					}
+				break;
 				case 'sqlite3':
-					if (version_compare($db->sql_server_info(true), '3.8.3', '<'))
+					if (version_compare($db_server_version, '3.8.3', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_SQLITE3',
@@ -416,20 +425,7 @@ class database
 					}
 				break;
 				case 'oracle':
-					$sql = "SELECT *
-						FROM NLS_DATABASE_PARAMETERS
-						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-							OR PARAMETER = 'NLS_CHARACTERSET'";
-					$result = $db->sql_query($sql);
-
-					$stats = [];
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$stats[$row['parameter']] = $row['value'];
-					}
-					$db->sql_freeresult($result);
-
-					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					if (version_compare($db_server_version, '12.1.0.2', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_ORACLE',
@@ -437,15 +433,33 @@ class database
 					}
 				break;
 				case 'postgres':
-					$sql = "SHOW server_encoding;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+					if (version_compare($db_server_version, '9.4', '<'))
 					{
 						$errors[] = array(
 							'title' => 'INST_ERR_DB_NO_POSTGRES',
+						);
+					}
+					else
+					{
+						$sql = "SHOW server_encoding;";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+						{
+							$errors[] = array(
+								'title' => 'INST_ERR_DB_NO_POSTGRES_UTF8',
+							);
+						}
+					}
+				break;
+				case 'mssqlnative':
+				case 'mssql_odbc':
+					if (version_compare($db_server_version, '11.0.2100.60', '<'))
+					{
+						$errors[] = array(
+							'title' => 'INST_ERR_DB_NO_MSSQL',
 						);
 					}
 				break;

@@ -184,9 +184,9 @@ $lang = array_merge($lang, array(
 	'TABLE_PREFIX_EXPLAIN'	=> 'The prefix must start with a letter and must only contain letters, numbers and underscores.',
 
 	// Database options
-	'DB_OPTION_MSSQL_ODBC'	=> 'MSSQL Server 2000+ via ODBC',
-	'DB_OPTION_MSSQLNATIVE'	=> 'MSSQL Server 2005+ [ Native ]',
-	'DB_OPTION_MYSQLI'		=> 'MySQL with MySQLi Extension',
+	'DB_OPTION_MSSQL_ODBC'	=> 'MSSQL Server via ODBC',
+	'DB_OPTION_MSSQLNATIVE'	=> 'MSSQL Server [ Native ]',
+	'DB_OPTION_MYSQLI'		=> 'MySQL',
 	'DB_OPTION_ORACLE'		=> 'Oracle',
 	'DB_OPTION_POSTGRES'	=> 'PostgreSQL',
 	'DB_OPTION_SQLITE3'		=> 'SQLite 3',
@@ -202,7 +202,8 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_WRITABLE'		=> 'Both the database and the directory containing it must be writable.',
 	'INST_ERR_DB_NO_ERROR'			=> 'No error message given.',
 	'INST_ERR_PREFIX'				=> 'Tables with the specified prefix already exist, please choose an alternative.',
-	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is incompatible with the “MySQL with MySQLi Extension” option you have selected. Please try the “MySQL” option instead.',
+	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 5.6.',
+	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2012 (11.0.2100.60)',
 	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.8.3.',
 	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed is too old, it must be upgraded to at least 12.1.0.2.',
 	'INST_ERR_DB_NO_POSTGRES'		=> 'The version of the PostgreSQL you have installed is too old, it must be upgraded to at least 9.4.',
