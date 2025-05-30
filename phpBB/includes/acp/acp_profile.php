@@ -360,6 +360,7 @@ class acp_profile
 					$field_row = array_merge($profile_field->get_default_option_values(), array(
 						'field_ident'		=> str_replace(' ', '_', utf8_clean_string($request->variable('field_ident', '', true))),
 						'field_required'	=> 0,
+						'field_icon'		=> json_encode(['name' => '', 'color' => '']),
 						'field_show_novalue'=> 0,
 						'field_hide'		=> 0,
 						'field_show_profile'=> 0,
@@ -381,7 +382,7 @@ class acp_profile
 
 				// $exclude contains the data we gather in each step
 				$exclude = array(
-					1	=> array('field_ident', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_on_ml', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view', 'field_is_contact', 'field_contact_desc', 'field_contact_url'),
+					1	=> array('field_ident', 'field_icon', 'field_icon_color', 'lang_name', 'lang_explain', 'field_option_none', 'field_show_on_reg', 'field_show_on_pm', 'field_show_on_vt', 'field_show_on_ml', 'field_required', 'field_show_novalue', 'field_hide', 'field_show_profile', 'field_no_view', 'field_is_contact', 'field_contact_desc', 'field_contact_url'),
 					2	=> array('field_length', 'field_maxlen', 'field_minlen', 'field_validation', 'field_novalue', 'field_default_value'),
 					3	=> array('l_lang_name', 'l_lang_explain', 'l_lang_default_value', 'l_lang_options')
 				);
@@ -427,6 +428,13 @@ class acp_profile
 
 				$options = $profile_field->prepare_options_form($exclude, $visibility_ary);
 
+				$field_icon_data = json_decode($field_row['field_icon'], true);
+				$field_icon_name = $request->variable('field_icon', $field_icon_data['name'] ?: '');
+				$field_icon_color = $field_icon_name ? $request->variable('field_icon_color', $field_icon_data['color'] ?: '') : '';
+				$cp->vars['field_icon']			= json_encode([
+					'name'	=> $field_icon_name,
+					'color'	=> $field_icon_color,
+				]);
 				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string($request->variable('field_ident', $field_row['field_ident'], true)) : $request->variable('field_ident', $field_row['field_ident']);
 				$cp->vars['lang_name']			= $request->variable('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= $request->variable('lang_explain', $field_row['lang_explain'], true);
@@ -630,6 +638,7 @@ class acp_profile
 				{
 					// Create basic options - only small differences between field types
 					case 1:
+						$field_icon_data = json_decode($cp->vars['field_icon'], true);
 						$template_vars = array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
@@ -648,6 +657,8 @@ class acp_profile
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
 							'FIELD_TYPE'		=> $profile_field->get_name(),
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
+							'FIELD_ICON'		=> $field_icon_data['name'],
+							'FIELD_ICON_COLOR'	=> $field_icon_data['color'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
 						);
@@ -984,6 +995,7 @@ class acp_profile
 			'field_is_contact'		=> $cp->vars['field_is_contact'],
 			'field_contact_desc'	=> $cp->vars['field_contact_desc'],
 			'field_contact_url'		=> $cp->vars['field_contact_url'],
+			'field_icon'			=> $cp->vars['field_icon'],
 		);
 
 		$field_data = $cp->vars;
