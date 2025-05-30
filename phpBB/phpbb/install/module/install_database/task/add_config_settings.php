@@ -173,7 +173,7 @@ class add_config_settings extends database_task
 		}
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
-		$cookie_name = 'phpbb3_';
+		$cookie_name = 'phpbb_';
 		$rand_str = md5(mt_rand());
 		$rand_str = str_replace('0', 'z', base_convert($rand_str, 16, 35));
 		$rand_str = substr($rand_str, 0, 5);

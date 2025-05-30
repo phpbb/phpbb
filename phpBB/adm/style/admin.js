@@ -1,7 +1,7 @@
 /* global phpbb */
 
 /**
-* phpBB3 ACP functions
+* phpBB ACP functions
 */
 
 /**

@@ -31,7 +31,7 @@ use phpbb\request\request_interface;
 use phpbb\user;
 
 /**
- * OAuth authentication provider for phpBB3
+ * OAuth authentication provider for phpBB
  */
 class oauth extends base
 {

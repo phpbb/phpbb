@@ -165,7 +165,7 @@ phpBB allows you to write such tests.
 Running
 -------
 
-Running the tests requires your phpBB3 repository to be accessible through a
+Running the tests requires your phpBB repository to be accessible through a
 local web server. You will need to supply the URL to the webserver in
 the 'tests/test_config.php' file. This is as simple as defining the
 '$phpbb_functional_url' variable, which contains the URL for the directory containing
@@ -173,7 +173,7 @@ the board. Make sure you include the trailing slash. Note that without extensive
 changes to the test framework, you cannot use a board outside of the repository
 on which to run tests.
 
-    $phpbb_functional_url = 'http://localhost/phpBB3/';
+    $phpbb_functional_url = 'http://localhost/phpBB/';
 
 Functional tests are automatically run, if '$phpbb_functional_url' is configured.
 If you only want the functional tests, run:

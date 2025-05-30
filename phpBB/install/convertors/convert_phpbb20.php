@@ -103,7 +103,7 @@ $tables = array(
 * In either of the latter cases 'table_name' indicates the name of the table in the database
 *
 * 'settings' is an array which maps the name of the config directive in the source forum
-* to the config directive in phpBB3. It can either be a direct mapping or use a function.
+* to the config directive in phpBB. It can either be a direct mapping or use a function.
 * Please note that the contents of the old config value are passed to the function, therefore
 * an in-built function requiring the variable passed by reference is not able to be used. Since
 * empty() is such a function we created the function is_empty() to be used instead.
@@ -332,7 +332,7 @@ if (!$get_info)
 //		if (defined("MOD_ATTACHMENT")) { import_attachment_files(); phpbb_copy_thumbnails(); }
 
 		// phpBB2 allowed some similar usernames to coexist which would have the same
-		// username_clean in phpBB3 which is not possible, so we'll give the admin a list
+		// username_clean in phpBB which is not possible, so we'll give the admin a list
 		// of user ids and usernames and let him deicde what he wants to do with them
 		'execute_first'	=> '
 			phpbb_create_userconv_table();

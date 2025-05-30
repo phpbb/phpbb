@@ -352,11 +352,11 @@ class phpbb_event_php_exporter_test extends phpbb_test_case
 				array(
 					"\t/**",
 					"\t*/",
-					"\t\$vars = array('_Strange123', 'phpBB3_Test');",
+					"\t\$vars = array('_Strange123', 'phpBB_Test');",
 					"\t\$this->dispatcher->dispatch('test');",
 				),
 				3,
-				array('_Strange123', 'phpBB3_Test'),
+				array('_Strange123', 'phpBB_Test'),
 			),
 		);
 	}

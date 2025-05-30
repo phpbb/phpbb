@@ -1176,7 +1176,7 @@ function phpbb_convert_group_type($group_type)
 		break;
 	}
 
-	// Never return GROUP_SPECIAL here, because only phpBB3's default groups are allowed to have this type set.
+	// Never return GROUP_SPECIAL here, because only phpBB's default groups are allowed to have this type set.
 	return GROUP_HIDDEN;
 }
 
@@ -1735,7 +1735,7 @@ function phpbb_disallowed_username($username)
 
 /**
 * Checks whether there are any usernames on the old board that would map to the same
-* username_clean on phpBB3. Prints out a list if any exist and exits.
+* username_clean on phpBB. Prints out a list if any exist and exits.
 */
 function phpbb_create_userconv_table()
 {

@@ -23,11 +23,11 @@
 		"classmap": [""]
 	},
 	"require": {
-		"php": ">=5.4"
+		"php": "^8.1"
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "3.3.x-dev"
+			"dev-master": "4.0.x-dev"
 		}
 	}
 }

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="keywords" content="" />
-<meta name="description" content="phpBB 3.3.x Installation, updating and conversion information" />
+<meta name="description" content="phpBB Installation, updating and conversion information" />
 <title>phpBB &bull; Install</title>
 
 <link href="assets/css/stylesheet.css" rel="stylesheet" type="text/css" media="screen" />
@@ -21,8 +21,8 @@
 
 			<div id="doc-description">
 				<a href="../index.php" id="logo"><span class="site_logo"></span></a>
-				<h1>phpBB 3.3.x Install</h1>
-				<p>phpBB 3.3.x Installation, updating and conversion information</p>
+				<h1>phpBB Install</h1>
+				<p>phpBB Installation, updating and conversion information</p>
 				<p style="display: none;"><a href="#start_here">Skip</a></p>
 			</div>
 
@@ -109,7 +109,7 @@
 		<li>Change the permissions on config.php to be writable by all (666 or -rw-rw-rw- within your FTP Client)</li>
 		<li>Change the permissions on the following directories to be writable by all (777 or -rwxrwxrwx within your FTP Client):<br />
 			<code>store/</code>, <code>cache/</code>, <code>files/</code> and <code>images/avatars/upload/</code>.</li>
-		<li>Point your web browser to the location where you uploaded the phpBB files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB3/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
+		<li>Point your web browser to the location where you uploaded the phpBB files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
 		<li>Click the <strong><em>INSTALL</em></strong> tab, follow the steps and fill out all the requested information.</li>
 		<li>Change the permissions on config.php to be writable only by yourself (644 or -rw-r--r-- within your FTP Client)</li>
 		<li>phpBB should now be available, please <strong>MAKE SURE</strong> you read at least <a href="#postinstall">Section 6</a> below for important, security related post-installation instructions, and also take note of <a href="#anti_spam">Section 7</a> regarding anti-spam measures.</li>
@@ -191,7 +191,7 @@
 
 	<p>phpBB comes supplied with British English as its standard language. However, a number of separate packs for different languages are available. If you are not a native English speaker you may wish to install one or more of these packages before continuing. The installation process below will allow you to select a default language from those available (you can, of course, change this default at a later stage). For more details on language packs, where to obtain them and how to install them please see the <a href="README.html#i18n">README</a>.</p>
 
-	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB3</code> off your web root you would enter <code>http://www.example.com/phpBB3/install/</code> or (alternatively) <code>http://www.example.com/phpBB3/install/app.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
+	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB</code> off your web root you would enter <code>http://www.example.com/phpBB/install/</code> or (alternatively) <code>http://www.example.com/phpBB/install/app.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
 
 	<h4>Introduction:</h4>
 
@@ -313,7 +313,7 @@
 		<li>Go to the <a href="https://www.phpbb.com/downloads/">downloads page</a> and download the latest update package listed there, matching your current version.</li>
 		<li>Upload the uncompressed archive contents to your phpBB installation - only the <code>install/</code> and <code>vendor/</code> folders are required. Upload these folders in their entirety, retaining the file structure.</li>
 		<li>After the install folder is present, phpBB will go offline automatically.</li>
-		<li>Point your browser to the install directory, for example <code>http://www.example.com/phpBB3/install/</code></li>
+		<li>Point your browser to the install directory, for example <code>http://www.example.com/phpBB/install/</code></li>
 		<li>Choose the "Update" Tab and follow the instructions</li>
 	</ul>
 
@@ -407,7 +407,7 @@
 
 	<p>After verifying the settings in the ACP, you can delete the install directory to enable the board. The board will stay disabled until you do so.</p>
 
-	<p>Once you are pleased with your new installation, you may want to give it the name of your old installation, changing the directory name. With phpBB3 this is possible without any problems, but you may still want to check your cookie settings within the administration panel; in case your cookie path needs to be adjusted prior to renaming.</p>
+	<p>Once you are pleased with your new installation, you may want to give it the name of your old installation, changing the directory name. With phpBB this is possible without any problems, but you may still want to check your cookie settings within the administration panel; in case your cookie path needs to be adjusted prior to renaming.</p>
 
 <a name="convprob"></a><h3>5.iv. Common conversion problems</h3>
 
@@ -417,7 +417,7 @@
 
 	<p><strong>Password conversion</strong> Due to the utf-8 based handling of passwords in phpBB 3.x, it is not always possible to transfer all passwords. For passwords "lost in translation" the easiest workaround is to use the <em>I forgot my password</em> link on the login page.</p>
 
-	<p><strong>Path to your former board</strong> The convertor expects the relative path to your old board's files. So, for instance, if the old board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB 3.x installation is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
+	<p><strong>Path to your former board</strong> The convertor expects the relative path to your old board's files. So, for instance, if the old board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB installation is located at <code>http://www.yourdomain.com/phpBB</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
 
 	<p><strong>Missing images</strong> If your default board language's language pack does not include all images, then some images might be missing in your installation. Always use a complete language pack as default language.</p>
 
