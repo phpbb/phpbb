@@ -79,7 +79,7 @@ class connection_parameter_factory
 		string|null $name = null,
 		string|null $port = null) : array
 	{
-		if ($params['driver'] === 'pdo_sqlite')
+		if (in_array($params['driver'], ['pdo_sqlite', 'sqlite3']))
 		{
 			return self::enrich_parameters(
 				self::build_sqlite_parameters($params, $host, $user, $password)
