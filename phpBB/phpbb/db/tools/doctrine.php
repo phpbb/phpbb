@@ -289,6 +289,12 @@ class doctrine implements tools_interface
 
 		if (count($primary_key_indexes))
 		{
+			// For PostgreSQL, drop primary index first to avoid "Dependent objects still exist" error
+			if (stripos($this->get_schema_manager()->getDatabasePlatform()->getname(), 'postgresql') !== false)
+			{
+				$this->get_schema_manager()->dropIndex('"primary"', $table_name);
+			}
+
 			$ret = $this->alter_schema(
 				function (Schema $schema) use ($table_name, $column_name): void
 				{
@@ -478,7 +484,7 @@ class doctrine implements tools_interface
 		catch (Exception $e)
 		{
 			// @todo: check if it makes sense to properly handle the exception
-			return $e->getMessage();
+			return [$e->getMessage()];
 		}
 	}
 
