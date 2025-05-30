@@ -1,0 +1,69 @@
+	</div>
+
+	<div class="copyright" role="contentinfo">
+		<p class="footer-row">
+			<span class="footer-copyright">{{ CREDIT_LINE }}</span>
+		</p>
+		{% if TRANSLATION_INFO %}
+			<p class="footer-row">
+				<span class="footer-copyright">{{ TRANSLATION_INFO }}</span>
+			</p>
+		{% endif %}
+		{% if DEBUG_OUTPUT %}
+			<p class="footer-row">
+				<span class="footer-info">{{ DEBUG_OUTPUT }}</span>
+			</p>
+		{% endif %}
+	</div>
+
+	<div id="darkenwrapper" class="darkenwrapper" data-ajax-error-title="{L_AJAX_ERROR_TITLE}" data-ajax-error-text="{L_AJAX_ERROR_TEXT}" data-ajax-error-text-abort="{L_AJAX_ERROR_TEXT_ABORT}" data-ajax-error-text-timeout="{L_AJAX_ERROR_TEXT_TIMEOUT}" data-ajax-error-text-parsererror="{L_AJAX_ERROR_TEXT_PARSERERROR}">
+		<div id="darken" class="darken">&nbsp;</div>
+	</div>
+	<div id="loading_indicator" class="loading_indicator">
+		<div class="loader">
+			<svg class="spinner" width="48px" height="48px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg" aria-labelledby="loader-title" role="img">
+				<title id="loader-title">{L_LOADING}</title>
+				<circle class="spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
+			</svg>
+		</div>
+	</div>
+	<div id="phpbb_alert" class="phpbb_alert" data-l-err="{L_ERROR}" data-l-timeout-processing-req="{L_TIMEOUT_PROCESSING_REQ}">
+		<a href="#" class="alert_close">
+			{{ Icon('font', 'circle-xmark', '', true) }}
+		</a>
+		<h3 class="alert_title">&nbsp;</h3><p class="alert_text"></p>
+	</div>
+	<div id="phpbb_confirm" class="phpbb_confirm phpbb_alert">
+		<a href="#" class="alert_close">
+			{{ Icon('font', 'circle-xmark', '', true) }}
+		</a>
+		<div class="alert_text"></div>
+	</div>
+</div>
+
+<script src="{T_JQUERY_LINK}"></script>
+<!-- IF S_ALLOW_CDN --><script>window.jQuery || document.write('\x3Cscript src="{T_ASSETS_PATH}/javascript/jquery-3.7.1.min.js?assets_version={T_ASSETS_VERSION}">\x3C/script>');</script><!-- ENDIF -->
+<script src="{T_ASSETS_PATH}/javascript/core.js?assets_version={T_ASSETS_VERSION}"></script>
+<!-- INCLUDEJS forum_fn.js -->
+<!-- INCLUDEJS ajax.js -->
+{% if S_ALLOW_CDN %}
+<script>
+	(function($){
+		const $fa_cdn = $('head').find('link[rel="stylesheet"]').first(),
+			$span = $('<span class="fa" style="display:none"></span>').appendTo('body');
+		if ($span.css('fontFamily') !== '"Font Awesome 6 Free"') {
+			$fa_cdn.after('<link href="{{ T_ASSETS_PATH ~ '/css/font-awesome.min.css' }}" rel="stylesheet">');
+			$fa_cdn.remove();
+		}
+		$span.remove();
+	})(jQuery);
+</script>
+{% endif %}
+
+<!-- EVENT simple_footer_after -->
+{$SCRIPTS}
+
+{% EVENT simple_footer_body_after %}
+
+</body>
+</html>
