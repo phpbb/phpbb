@@ -202,6 +202,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_WRITABLE'		=> 'Both the database and the directory containing it must be writable.',
 	'INST_ERR_DB_NO_ERROR'			=> 'No error message given.',
 	'INST_ERR_PREFIX'				=> 'Tables with the specified prefix already exist, please choose an alternative.',
+	'INST_ERR_DB_NO_MARIADB'		=> 'The version of MariaDB installed on this machine is too old, it must be upgraded to at least 10.2.7.',
 	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 5.6.',
 	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2012 (11.0.2100.60)',
 	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.8.3.',

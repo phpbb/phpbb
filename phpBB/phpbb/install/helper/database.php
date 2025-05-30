@@ -410,11 +410,20 @@ class database
 			switch ($dbms)
 			{
 				case 'mysqli':
-					if (version_compare($db_server_version, '5.6', '<'))
+					if (stripos($db->sql_server_info(), 'mariadb') !== false && version_compare($db_server_version, '10.2.7', '<'))
 					{
 						$errors[] = array(
-							'title' => 'INST_ERR_DB_NO_MYSQLI',
+							'title' => 'INST_ERR_DB_NO_MARIADB',
 						);
+					}
+					else
+					{
+						if (version_compare($db_server_version, '5.6', '<'))
+						{
+							$errors[] = array(
+								'title' => 'INST_ERR_DB_NO_MYSQLI',
+							);
+						}
 					}
 				break;
 				case 'sqlite3':
