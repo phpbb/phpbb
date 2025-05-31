@@ -6,55 +6,6 @@
 	"directories": {
 		"doc": "docs"
 	},
-	"eslintConfig": {
-		"extends": "xo",
-		"ignorePatterns": [
-			"phpBB/assets/javascript/cropper.js",
-			"phpBB/assets/javascript/hermite.js",
-			"phpBB/assets/javascript/jquery-cropper.js",
-			"phpBB/ext/**/*.js",
-			"phpBB/**/*.min.js",
-			"phpBB/vendor/**/*.js",
-			"phpBB/vendor-ext/**/*.js",
-			"phpBB/phpbb/**/*.js",
-			"phpBB/tests/**/*.js"
-		],
-		"rules": {
-			"quotes": [
-				"error",
-				"single"
-			],
-			"comma-dangle": [
-				"error",
-				"always-multiline"
-			],
-			"block-spacing": "error",
-			"array-bracket-spacing": [
-				"error",
-				"always"
-			],
-			"multiline-comment-style": "off",
-			"computed-property-spacing": "off",
-			"space-before-function-paren": [
-				"error",
-				"never"
-			],
-			"space-in-parens": "off",
-			"capitalized-comments": "off",
-			"object-curly-spacing": [
-				"error",
-				"always"
-			],
-			"no-lonely-if": "off",
-			"unicorn/prefer-module": "off"
-		},
-		"env": {
-			"es6": true,
-			"browser": true,
-			"node": true,
-			"jquery": true
-		}
-	},
 	"browserslist": [
 		"> 1%",
 		"not ie 11",
@@ -91,8 +42,12 @@
 	"devDependencies": {
 		"autoprefixer": "^10.4.4",
 		"cssnano": "^5.1.7",
-		"eslint": "^8.13.0",
-		"eslint-config-xo": "^0.40.0",
+		"eslint": "^9.28.0",
+		"eslint-plugin-import": "^2.31.0",
+		"eslint-plugin-n": "^17.18.0",
+		"eslint-plugin-promise": "^7.2.1",
+		"eslint-plugin-unicorn": "^59.0.1",
+		"globals": "^16.2.0",
 		"gulp": "^5.0.0",
 		"gulp-concat": "^2.6.1",
 		"gulp-postcss": "^9.0.1",
