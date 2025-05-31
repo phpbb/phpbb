@@ -33,7 +33,7 @@ export default [
 
 	// 🌐 Main config for your source files
 	{
-		files: ['**/*.js'],
+		files: ['**/*.js', '**/*.js.twig'],
 		linterOptions: {
 			reportUnusedDisableDirectives: false,
 		},

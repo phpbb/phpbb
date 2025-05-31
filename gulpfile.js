@@ -7,6 +7,7 @@ const postcss = require('gulp-postcss');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const sorting = require('postcss-sorting');
+
 const sortOrder = require('./.postcss-sorting.json');
 
 // Config
