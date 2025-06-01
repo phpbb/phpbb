@@ -5,7 +5,6 @@ const IGNORED_FILES = [
 	'phpBB/assets/javascript/cropper.js',
 	'phpBB/assets/javascript/hermite.js',
 	'phpBB/assets/javascript/jquery-cropper.js',
-	'phpBB/ext/**/*.js',
 	'phpBB/**/*.min.js',
 	'phpBB/vendor/**/*.js',
 	'phpBB/vendor-ext/**/*.js',
