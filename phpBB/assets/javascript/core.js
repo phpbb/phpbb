@@ -1,13 +1,14 @@
 /* global bbfontstyle */
+/* eslint no-var: 0 */
 
-const phpbb = {};
+var phpbb = {};
 phpbb.alertTime = 100;
 
 (function($) { // Avoid conflicts with other libraries
 	'use strict';
 
 	// define a couple constants for keydown functions.
-	const keymap = {
+	var keymap = {
 		TAB: 9,
 		ENTER: 13,
 		ESC: 27,
@@ -15,9 +16,9 @@ phpbb.alertTime = 100;
 		ARROW_DOWN: 40,
 	};
 
-	const $dark = $('#darkenwrapper');
-	let $loadingIndicator;
-	let phpbbAlertTimer = null;
+	var $dark = $('#darkenwrapper');
+	var $loadingIndicator;
+	var phpbbAlertTimer = null;
 
 	phpbb.isTouch = (window && typeof window.ontouchstart !== 'undefined');
 
@@ -54,7 +55,7 @@ phpbb.alertTime = 100;
 	 * Show timeout message
 	 */
 	phpbb.showTimeoutMessage = function() {
-		const $alert = $('#phpbb_alert');
+		var $alert = $('#phpbb_alert');
 
 		if ($loadingIndicator.is(':visible')) {
 			phpbb.alert($alert.attr('data-l-err'), $alert.attr('data-l-timeout-processing-req'));
@@ -93,7 +94,7 @@ phpbb.alertTime = 100;
 	 * @returns {object} Returns the div created.
 	 */
 	phpbb.alert = function(title, msg) {
-		const $alert = $('#phpbb_alert');
+		var $alert = $('#phpbb_alert');
 		$alert.find('.alert_title').html(title);
 		$alert.find('.alert_text').html(msg);
 
@@ -156,7 +157,7 @@ phpbb.alertTime = 100;
 	* @param {bool} fadedark Whether to remove dark background.
 	*/
 	phpbb.alert.close = function($alert, fadedark) {
-		const $fade = (fadedark) ? $dark : $alert;
+		var $fade = (fadedark) ? $dark : $alert;
 
 		$fade.fadeOut(phpbb.alertTime, () => {
 			$alert.hide();
@@ -180,13 +181,13 @@ phpbb.alertTime = 100;
 	 * @returns {object} Returns the div created.
 	 */
 	phpbb.confirm = function(msg, callback, fadedark) {
-		const $confirmDiv = $('#phpbb_confirm');
+		var $confirmDiv = $('#phpbb_confirm');
 		$confirmDiv.find('.alert_text').html(msg);
 		fadedark = typeof fadedark === 'undefined' ? true : fadedark;
 
 		$(document).on('keydown.phpbb.alert', e => {
 			if (e.keyCode === keymap.ENTER || e.keyCode === keymap.ESC) {
-				const name = (e.keyCode === keymap.ENTER) ? 'confirm' : 'cancel';
+				var name = (e.keyCode === keymap.ENTER) ? 'confirm' : 'cancel';
 
 				$('input[name="' + name + '"]').trigger('click');
 				e.preventDefault();
@@ -195,7 +196,7 @@ phpbb.alertTime = 100;
 		});
 
 		$confirmDiv.find('input[type="button"]').one('click.phpbb.confirmbox', function(e) {
-			const confirmed = this.name === 'confirm';
+			var confirmed = this.name === 'confirm';
 
 			callback(confirmed);
 			$confirmDiv.find('input[type="button"]').off('click.phpbb.confirmbox');
@@ -217,9 +218,9 @@ phpbb.alertTime = 100;
 	* @returns {object} The object created.
 	*/
 	phpbb.parseQuerystring = function(string) {
-		const params = {};
-		let i;
-		let split;
+		var params = {};
+		var i;
+		var split;
 
 		string = string.split('&');
 		for (i = 0; i < string.length; i++) {
@@ -244,13 +245,13 @@ phpbb.alertTime = 100;
 	* @param {object} options Options.
 	*/
 	phpbb.ajaxify = function(options) {
-		const $elements = $(options.selector);
-		let { refresh } = options;
-		const { callback } = options;
-		const overlay = typeof options.overlay === 'undefined' ? true : options.overlay;
-		const isForm = $elements.is('form');
-		const isText = $elements.is('input[type="text"], textarea');
-		let eventName;
+		var $elements = $(options.selector);
+		var refresh = options.refresh;
+		var callback = options.callback;
+		var overlay = typeof options.overlay === 'undefined' ? true : options.overlay;
+		var isForm = $elements.is('form');
+		var isText = $elements.is('input[type="text"], textarea');
+		var eventName;
 
 		if (isForm) {
 			eventName = 'submit';
@@ -261,12 +262,12 @@ phpbb.alertTime = 100;
 		}
 
 		$elements.on(eventName, function(event) {
-			let action;
-			let method;
-			let data;
-			let submit;
-			const that = this;
-			const $this = $(this);
+			var action;
+			var method;
+			var data;
+			var submit;
+			var that = this;
+			var $this = $(this);
 
 			if ($this.find('input[type="submit"][data-clicked]').attr('data-ajax') === 'false') {
 				return;
@@ -281,8 +282,8 @@ phpbb.alertTime = 100;
 				}
 
 				phpbb.clearLoadingTimeout();
-				let responseText;
-				let errorText = false;
+				var responseText;
+				var errorText = false;
 				try {
 					responseText = JSON.parse(jqXHR.responseText);
 					responseText = responseText.message;
@@ -313,7 +314,7 @@ phpbb.alertTime = 100;
 			 * @param {object} res The object sent back by the server.
 			 */
 			function returnHandler(res) {
-				let alert;
+				var alert;
 
 				phpbb.clearLoadingTimeout();
 
@@ -380,7 +381,7 @@ phpbb.alertTime = 100;
 
 			// If the element is a form, POST must be used and some extra data must
 			// be taken from the form.
-			const runFilter = (typeof options.filter === 'function');
+			var runFilter = (typeof options.filter === 'function');
 			data = {};
 
 			if (isForm) {
@@ -396,7 +397,7 @@ phpbb.alertTime = 100;
 					});
 				}
 			} else if (isText) {
-				const name = $this.attr('data-name') || this.name;
+				var name = $this.attr('data-name') || this.name;
 				action = $this.attr('data-url').replace('&amp;', '&');
 				data[name] = this.value;
 				method = 'POST';
@@ -406,13 +407,13 @@ phpbb.alertTime = 100;
 				method = 'GET';
 			}
 
-			const sendRequest = function() {
-				const dataOverlay = $this.attr('data-overlay');
+			var sendRequest = function() {
+				var dataOverlay = $this.attr('data-overlay');
 				if (overlay && (typeof dataOverlay === 'undefined' || dataOverlay === 'true')) {
 					phpbb.loadingIndicator();
 				}
 
-				const request = $.ajax({
+				var request = $.ajax({
 					url: action,
 					type: method,
 					data,
@@ -440,7 +441,7 @@ phpbb.alertTime = 100;
 
 		if (isForm) {
 			$elements.find('input:submit').click(function() {
-				const $this = $(this);
+				var $this = $(this);
 
 				// Remove data-clicked attribute from any submit button of form
 				$this.parents('form:first').find('input:submit[data-clicked]').removeAttr('data-clicked');
@@ -522,7 +523,7 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.search.getKeyword = function($input, keyword, multiline) {
 		if (multiline) {
-			const line = phpbb.search.getKeywordLine($input);
+			var line = phpbb.search.getKeywordLine($input);
 			keyword = keyword.split('\n').splice(line, 1);
 		}
 
@@ -537,7 +538,7 @@ phpbb.alertTime = 100;
 	* @returns {int} The line number.
 	*/
 	phpbb.search.getKeywordLine = function($textarea) {
-		const { selectionStart } = $textarea.get(0);
+		var { selectionStart } = $textarea.get(0);
 		return $textarea.val().substr(0, selectionStart).split('\n').length - 1;
 	};
 
@@ -551,8 +552,8 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.search.setValue = function($input, value, multiline) {
 		if (multiline) {
-			const line = phpbb.search.getKeywordLine($input);
-			const lines = $input.val().split('\n');
+			var line = phpbb.search.getKeywordLine($input);
+			var lines = $input.val().split('\n');
 			lines[line] = value;
 			value = lines.join('\n');
 		}
@@ -589,14 +590,14 @@ phpbb.alertTime = 100;
 	* @returns {boolean} Returns false.
 	*/
 	phpbb.search.filter = function(data, event, sendRequest) {
-		const $this = $(this);
-		const dataName = $this.attr('data-name') === undefined ? $this.attr('name') : $this.attr('data-name');
-		const minLength = parseInt($this.attr('data-min-length'), 10);
-		const searchID = $this.attr('data-results');
-		const keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline'));
-		const cache = phpbb.search.cache.get(searchID);
-		const key = event.keyCode || event.which;
-		let proceed = true;
+		var $this = $(this);
+		var dataName = $this.attr('data-name') === undefined ? $this.attr('name') : $this.attr('data-name');
+		var minLength = parseInt($this.attr('data-min-length'), 10);
+		var searchID = $this.attr('data-results');
+		var keyword = phpbb.search.getKeyword($this, data[dataName], $this.attr('data-multiline'));
+		var cache = phpbb.search.cache.get(searchID);
+		var key = event.keyCode || event.which;
+		var proceed = true;
 		data[dataName] = keyword;
 
 		// No need to search if enter was pressed
@@ -609,7 +610,7 @@ phpbb.alertTime = 100;
 			clearTimeout(cache.timeout);
 		}
 
-		const timeout = setTimeout(function() {
+		var timeout = setTimeout(function() {
 		// Check min length and existence of cache.
 			if (minLength > keyword.length) {
 				proceed = false;
@@ -620,7 +621,7 @@ phpbb.alertTime = 100;
 				} else {
 				// Do we already have results for this?
 					if (cache.results[keyword]) {
-						const response = {
+						var response = {
 							keyword,
 							results: cache.results[keyword],
 						};
@@ -660,8 +661,8 @@ phpbb.alertTime = 100;
 			return;
 		}
 
-		const searchID = $input.attr('data-results');
-		const $container = $(searchID);
+		var searchID = $input.attr('data-results');
+		var $container = $(searchID);
 
 		if (this.cache.get(searchID).callback) {
 			callback = this.cache.get(searchID).callback;
@@ -686,7 +687,7 @@ phpbb.alertTime = 100;
 	* @param {function} callback	Optional callback to run when assigning each search result.
 	*/
 	phpbb.search.showResults = function(results, $input, $container, callback) {
-		const $resultContainer = $('.search-results', $container);
+		var $resultContainer = $('.search-results', $container);
 		this.clearResults($resultContainer);
 
 		if (!results.length) {
@@ -694,9 +695,9 @@ phpbb.alertTime = 100;
 			return;
 		}
 
-		const searchID = $container.attr('id');
-		let tpl;
-		let row;
+		var searchID = $container.attr('id');
+		var tpl;
+		var row;
 
 		if (!this.tpl[searchID]) {
 			tpl = $('.search-result-tpl', $container);
@@ -754,14 +755,14 @@ phpbb.alertTime = 100;
 	// Rebind it, to ensure the event is 'dynamic'.
 		$input.off('.phpbb.search');
 		$input.on('keydown.phpbb.search', event => {
-			const key = event.keyCode || event.which;
-			const $active = $resultContainer.children('.active');
+			var key = event.keyCode || event.which;
+			var $active = $resultContainer.children('.active');
 
 			if (key === keymap.ESC) {
 				phpbb.search.closeResults($input, $container);
 			} else if (key === keymap.ENTER) {
 				if ($active.length) {
-					const value = $active.find('.search-result > span').text();
+					var value = $active.find('.search-result > span').text();
 
 					phpbb.search.setValue($input, value, $input.attr('data-multiline'));
 				}
@@ -771,8 +772,8 @@ phpbb.alertTime = 100;
 				// Do not submit the form
 				event.preventDefault();
 			} else if (key === keymap.ARROW_DOWN || key === keymap.ARROW_UP) {
-				const up = key === keymap.ARROW_UP;
-				const $children = $resultContainer.children();
+				var up = key === keymap.ARROW_UP;
+				var $children = $resultContainer.children();
 
 				if (!$active.length) {
 					if (up) {
@@ -805,7 +806,7 @@ phpbb.alertTime = 100;
 	};
 
 	$('#phpbb').click(function() {
-		const $this = $(this);
+		var $this = $(this);
 
 		if (!$this.is('.live-search') && !$this.parents().is('.live-search')) {
 			phpbb.search.closeResults($('input, textarea'), $('.live-search'));
@@ -834,7 +835,7 @@ phpbb.alertTime = 100;
 	* @param {object} [obj]		Optional state object.
 	*/
 	phpbb.history.alterUrl = function(mode, url, title, obj) {
-		const fn = mode + 'State';
+		var fn = mode + 'State';
 
 		if (!url || !phpbb.history.isSupported(fn)) {
 			return;
@@ -880,10 +881,10 @@ phpbb.alertTime = 100;
 	* 	user be forced to repick one.
 	*/
 	phpbb.timezoneSwitchDate = function(keepSelection) {
-		const $timezoneCopy = $('#timezone_copy');
-		const $timezone = $('#timezone');
-		const $tzDate = $('#tz_date');
-		const $tzSelectDateSuggest = $('#tz_select_date_suggest');
+		var $timezoneCopy = $('#timezone_copy');
+		var $timezone = $('#timezone');
+		var $tzDate = $('#tz_date');
+		var $tzSelectDateSuggest = $('#tz_select_date_suggest');
 
 		if ($timezoneCopy.length === 0) {
 		// We make a backup of the original dropdown, so we can remove optgroups
@@ -909,7 +910,7 @@ phpbb.alertTime = 100;
 			$tzSelectDateSuggest.css('display', 'inline');
 		}
 
-		const $tzOptions = $timezone.children('optgroup[data-tz-value="' + $tzDate.val() + '"]').children('option');
+		var $tzOptions = $timezone.children('optgroup[data-tz-value="' + $tzDate.val() + '"]').children('option');
 
 		if ($tzOptions.length === 1) {
 		// If there is only one timezone for the selected date, we just select that automatically.
@@ -918,7 +919,7 @@ phpbb.alertTime = 100;
 		}
 
 		if (typeof keepSelection !== 'undefined' && !keepSelection) {
-			const $timezoneOptions = $timezone.find('optgroup option');
+			var $timezoneOptions = $timezone.find('optgroup option');
 			if ($timezoneOptions.filter(':selected').length <= 0) {
 				$timezoneOptions.filter(':first').prop('selected', true);
 			}
@@ -939,16 +940,16 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.timezonePreselectSelect = function(forceSelector) {
 	// The offset returned here is in minutes and negated.
-		let offset = (new Date()).getTimezoneOffset();
-		let sign = '-';
+		var offset = (new Date()).getTimezoneOffset();
+		var sign = '-';
 
 		if (offset < 0) {
 			sign = '+';
 			offset = -offset;
 		}
 
-		let minutes = offset % 60;
-		let hours = (offset - minutes) / 60;
+		var minutes = offset % 60;
+		var hours = (offset - minutes) / 60;
 
 		if (hours === 0) {
 			hours = '00';
@@ -965,15 +966,15 @@ phpbb.alertTime = 100;
 			minutes = minutes.toString();
 		}
 
-		const prefix = 'UTC' + sign + hours + ':' + minutes;
-		const prefixLength = prefix.length;
-		const selectorOptions = $('option', '#tz_date');
-		let i;
+		var prefix = 'UTC' + sign + hours + ':' + minutes;
+		var prefixLength = prefix.length;
+		var selectorOptions = $('option', '#tz_date');
+		var i;
 
-		const $tzSelectDateSuggest = $('#tz_select_date_suggest');
+		var $tzSelectDateSuggest = $('#tz_select_date_suggest');
 
 		for (i = 0; i < selectorOptions.length; ++i) {
-			const option = selectorOptions[i];
+			var option = selectorOptions[i];
 
 			if (option.value.substring(0, prefixLength) === prefix) {
 				if ($('#tz_date').val() !== option.value && !forceSelector) {
@@ -987,7 +988,7 @@ phpbb.alertTime = 100;
 					$tzSelectDateSuggest.css('display', 'none');
 				}
 
-				const suggestion = $tzSelectDateSuggest.attr('data-l-suggestion');
+				var suggestion = $tzSelectDateSuggest.attr('data-l-suggestion');
 
 				$tzSelectDateSuggest.attr('title', suggestion.replace('%s', option.innerHTML));
 				$tzSelectDateSuggest.attr('value', suggestion.replace('%s', option.innerHTML.substring(0, 9)));
@@ -1030,9 +1031,9 @@ phpbb.alertTime = 100;
 	* current text so that the process can be repeated.
 	*/
 	phpbb.addAjaxCallback('alt_text', function() {
-		let $anchor;
-		const updateAll = $(this).data('update-all');
-		let altText;
+		var $anchor;
+		var updateAll = $(this).data('update-all');
+		var altText;
 
 		if (updateAll !== undefined && updateAll.length) {
 			$anchor = $(updateAll);
@@ -1041,7 +1042,7 @@ phpbb.alertTime = 100;
 		}
 
 		$anchor.each(function() {
-			const $this = $(this);
+			var $this = $(this);
 			altText = $this.attr('data-alt-text');
 			$this.attr('data-alt-text', $.trim($this.text()));
 			$this.attr('title', altText);
@@ -1059,10 +1060,10 @@ phpbb.alertTime = 100;
 	* and changes the link itself.
 	*/
 	phpbb.addAjaxCallback('toggle_link', function() {
-		let $anchor;
-		const updateAll = $(this).data('update-all');
-		let toggleText;
-		let toggleUrl;
+		var $anchor;
+		var updateAll = $(this).data('update-all');
+		var toggleText;
+		var toggleUrl;
 
 		if (updateAll !== undefined && updateAll.length) {
 			$anchor = $(updateAll);
@@ -1071,7 +1072,7 @@ phpbb.alertTime = 100;
 		}
 
 		$anchor.each(function() {
-			const $this = $(this);
+			var $this = $(this);
 
 			// Toggle link text
 			toggleText = $.trim($this.attr('data-toggle-text'));
@@ -1113,7 +1114,7 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.resizeTextArea = function($items, options) {
 	// Configuration
-		let configuration = {
+		var configuration = {
 			minWindowHeight: 500,
 			minHeight: 200,
 			maxHeight: 500,
@@ -1131,7 +1132,7 @@ phpbb.alertTime = 100;
 		}
 
 		function resetAutoResize(item) {
-			const $item = $(item);
+			var $item = $(item);
 			if ($item.hasClass('auto-resized')) {
 				$(item)
 					.css({ height: '', resize: '' })
@@ -1149,20 +1150,20 @@ phpbb.alertTime = 100;
 				configuration.resizeCallback.call(item, $item);
 			}
 
-			const windowHeight = $(window).height();
+			var windowHeight = $(window).height();
 
 			if (windowHeight < configuration.minWindowHeight) {
 				resetAutoResize(item);
 				return;
 			}
 
-			const maxHeight = Math.min(
+			var maxHeight = Math.min(
 				Math.max(windowHeight - configuration.heightDiff, configuration.minHeight),
 				configuration.maxHeight,
 			);
-			const $item = $(item);
-			const height = parseInt($item.innerHeight(), 10);
-			const scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
+			var $item = $(item);
+			var height = parseInt($item.innerHeight(), 10);
+			var scrollHeight = (item.scrollHeight) ? item.scrollHeight : 0;
 
 			if (height < 0) {
 				return;
@@ -1202,20 +1203,20 @@ phpbb.alertTime = 100;
 	* @returns {boolean} True if cursor is in bbcode tag
 	*/
 	phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
-		const start = textarea.selectionStart;
-		let lastEnd = -1;
-		let lastStart = -1;
-		let i;
-		let index;
+		var start = textarea.selectionStart;
+		var lastEnd = -1;
+		var lastStart = -1;
+		var i;
+		var index;
 
 		if (typeof start !== 'number') {
 			return false;
 		}
 
-		const value = textarea.value.toLowerCase();
+		var value = textarea.value.toLowerCase();
 
 		for (i = 0; i < startTags.length; i++) {
-			const tagLength = startTags[i].length;
+			var tagLength = startTags[i].length;
 			if (start >= tagLength) {
 				index = value.lastIndexOf(startTags[i], start - tagLength);
 				lastStart = Math.max(lastStart, index);
@@ -1250,9 +1251,9 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.applyCodeEditor = function(textarea) {
 	// list of allowed start and end bbcode code tags, in lower case
-		const startTags = [ '[code]', '[code=' ];
-		const startTagsEnd = ']';
-		const endTags = [ '[/code]' ];
+		var startTags = [ '[code]', '[code=' ];
+		var startTagsEnd = ']';
+		var endTags = [ '[/code]' ];
 
 		if (!textarea || typeof textarea.selectionStart !== 'number') {
 			return;
@@ -1275,17 +1276,17 @@ phpbb.alertTime = 100;
 	* @returns {string} Line of text
 	*/
 		function getLastLine(stripCodeStart) {
-			const start = textarea.selectionStart;
-			let { value } = textarea;
-			let index = value.lastIndexOf('\n', start - 1);
+			var start = textarea.selectionStart;
+			var value = textarea.value;
+			var index = value.lastIndexOf('\n', start - 1);
 
 			value = value.substring(index + 1, start);
 
 			if (stripCodeStart) {
-				for (let i = 0; i < startTags.length; i++) {
+				for (var i = 0; i < startTags.length; i++) {
 					index = value.lastIndexOf(startTags[i]);
 					if (index >= 0) {
-						const tagLength = startTags[i].length;
+						var tagLength = startTags[i].length;
 
 						value = value.substring(index + tagLength);
 						if (startTags[i].lastIndexOf(startTagsEnd) !== tagLength) {
@@ -1309,9 +1310,9 @@ phpbb.alertTime = 100;
 	* @param {string} text Text to append
 	*/
 		function appendText(text) {
-			const start = textarea.selectionStart;
-			const end = textarea.selectionEnd;
-			const { value } = textarea;
+			var start = textarea.selectionStart;
+			var end = textarea.selectionEnd;
+			var value = textarea.value;
 
 			textarea.value = value.substr(0, start) + text + value.substr(end);
 			textarea.selectionStart = start + text.length;
@@ -1319,7 +1320,7 @@ phpbb.alertTime = 100;
 		}
 
 		$(textarea).data('code-editor', true).on('keydown', event => {
-			const key = event.keyCode || event.which;
+			var key = event.keyCode || event.which;
 
 			// intercept tabs
 			if (key === keymap.TAB
@@ -1337,8 +1338,8 @@ phpbb.alertTime = 100;
 			// intercept new line characters
 			if (key === keymap.ENTER) {
 				if (inTag()) {
-					const lastLine = getLastLine(true);
-					const code = String(/^\s*/g.exec(lastLine));
+					var lastLine = getLastLine(true);
+					var code = String(/^\s*/g.exec(lastLine));
 
 					if (code.length > 0) {
 						appendText('\n' + code);
@@ -1389,11 +1390,11 @@ phpbb.alertTime = 100;
 	* This handler is used by phpBB.registerDropdown() and other functions
 	*/
 	phpbb.toggleDropdown = function(event_) {
-		const $this = $(this);
-		const options = $this.data('dropdown-options');
-		const { parent } = options;
-		const visible = parent.hasClass('dropdown-visible');
-		let direction;
+		var $this = $(this);
+		var options = $this.data('dropdown-options');
+		var parent = options.parent;
+		var visible = parent.hasClass('dropdown-visible');
+		var direction;
 
 		if (!visible) {
 		// Prevent link default action
@@ -1404,8 +1405,8 @@ phpbb.alertTime = 100;
 
 			// Figure out direction of dropdown
 			direction = options.direction;
-			let { verticalDirection } = options;
-			const offset = $this.offset();
+			var verticalDirection = options.verticalDirection;
+			var offset = $this.offset();
 
 			if (direction === 'auto') {
 				if (($(window).width() - $this.outerWidth(true)) / 2 > offset.left) {
@@ -1419,8 +1420,8 @@ phpbb.alertTime = 100;
 				.toggleClass(options.rightClass, direction === 'right');
 
 			if (verticalDirection === 'auto') {
-				const height = $(window).height();
-				const top = offset.top - $(window).scrollTop();
+				var height = $(window).height();
+				var top = offset.top - $(window).scrollTop();
 
 				verticalDirection = (top < height * 0.7) ? 'down' : 'up';
 			}
@@ -1436,10 +1437,10 @@ phpbb.alertTime = 100;
 		// Check dimensions when showing dropdown
 		// !visible because variable shows state of dropdown before it was toggled
 		if (!visible) {
-			const windowWidth = $(window).width();
+			var windowWidth = $(window).width();
 
 			options.dropdown.find('.dropdown-contents').each(function() {
-				const $this = $(this);
+				var $this = $(this);
 
 				$this.css({
 					marginLeft: 0,
@@ -1448,8 +1449,8 @@ phpbb.alertTime = 100;
 					maxWidth: (windowWidth - 4) + 'px',
 				});
 
-				const offset = $this.offset().left;
-				const width = $this.outerWidth(true);
+				var offset = $this.offset().left;
+				var width = $this.outerWidth(true);
 
 				if (offset < 2) {
 					$this.css('left', (2 - offset) + 'px');
@@ -1460,22 +1461,22 @@ phpbb.alertTime = 100;
 				// Check whether the vertical scrollbar is present.
 				$this.toggleClass('dropdown-nonscroll', this.scrollHeight === $this.innerHeight());
 			});
-			const freeSpace = parent.offset().left - 4;
+			var freeSpace = parent.offset().left - 4;
 
 			if (direction === 'left') {
 				options.dropdown.css('margin-left', '-' + freeSpace + 'px');
 
 				// Try to position the notification dropdown correctly in RTL-responsive mode
 				if (options.dropdown.hasClass('dropdown-extended')) {
-					let contentWidth;
-					const fullFreeSpace = freeSpace + parent.outerWidth();
+					var contentWidth;
+					var fullFreeSpace = freeSpace + parent.outerWidth();
 
 					options.dropdown.find('.dropdown-contents').each(function() {
 						contentWidth = parseInt($(this).outerWidth(), 10);
 						$(this).css({ marginLeft: 0, left: 0 });
 					});
 
-					const maxOffset = Math.min(contentWidth, fullFreeSpace) + 'px';
+					var maxOffset = Math.min(contentWidth, fullFreeSpace) + 'px';
 					options.dropdown.css({
 						width: maxOffset,
 						marginLeft: -maxOffset,
@@ -1490,7 +1491,7 @@ phpbb.alertTime = 100;
 		if (arguments.length > 0) {
 			try {
 				// eslint-disable-next-line prefer-rest-params
-				const e = arguments[0];
+				var e = arguments[0];
 				e.preventDefault();
 				e.stopPropagation();
 			} catch { }
@@ -1516,7 +1517,7 @@ phpbb.alertTime = 100;
 	* @param {Object} options List of options. Optional.
 	*/
 	phpbb.registerDropdown = function(toggle, dropdown, options) {
-		let ops = {
+		var ops = {
 			parent: toggle.parent(), // Parent item to add classes to
 			direction: 'auto', // Direction of dropdown menu. Possible values: auto, left, right
 			verticalDirection: 'auto', // Vertical direction. Possible values: auto, up, down
@@ -1549,12 +1550,12 @@ phpbb.alertTime = 100;
 	* @param {int} height Palette cell height.
 	*/
 	phpbb.colorPalette = function(dir, width, height) {
-		let r;
-		let g;
-		let b;
-		const numberList = new Array(6);
-		let color = '';
-		let html = '';
+		var r;
+		var g;
+		var b;
+		var numberList = new Array(6);
+		var color = '';
+		var html = '';
 
 		numberList[0] = '00';
 		numberList[1] = '40';
@@ -1562,7 +1563,7 @@ phpbb.alertTime = 100;
 		numberList[3] = 'BF';
 		numberList[4] = 'FF';
 
-		const tableClass = (dir === 'h') ? 'horizontal-palette' : 'vertical-palette';
+		var tableClass = (dir === 'h') ? 'horizontal-palette' : 'vertical-palette';
 		html += '<table class="not-responsive colour-palette ' + tableClass + '" style="width: auto;">';
 
 		for (r = 0; r < 5; r++) {
@@ -1604,10 +1605,10 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.registerPalette = function(el) {
 		const	orientation	= el.attr('data-color-palette') || el.attr('data-orientation'); // data-orientation kept for backwards compat.
-		const height		= el.attr('data-height');
-		const width		= el.attr('data-width');
-		const target		= el.attr('data-target');
-		const bbcode		= el.attr('data-bbcode');
+		var height		= el.attr('data-height');
+		var width		= el.attr('data-width');
+		var target		= el.attr('data-target');
+		var bbcode		= el.attr('data-bbcode');
 
 		// Insert the palette HTML into the container.
 		el.html(phpbb.colorPalette(orientation, width, height));
@@ -1620,7 +1621,7 @@ phpbb.alertTime = 100;
 
 		// Attach event handler when a palette cell is clicked.
 		$(el).on('click', 'a', function(e) {
-			const color = $(this).attr('data-color');
+			var color = $(this).attr('data-color');
 
 			if (bbcode) {
 				bbfontstyle('[color=#' + color + ']', '[/color]');
@@ -1646,9 +1647,9 @@ phpbb.alertTime = 100;
 			type = 'block';
 		}
 
-		const $element = $('#' + id);
+		var $element = $('#' + id);
 
-		const display = $element.css('display');
+		var display = $element.css('display');
 		if (!action) {
 			action = (display === '' || display === type) ? -1 : 1;
 		}
@@ -1664,8 +1665,8 @@ phpbb.alertTime = 100;
 	*/
 	phpbb.toggleSelectSettings = function(el) {
 		el.children().each(function() {
-			const $this = $(this);
-			const $setting = $($this.data('toggle-setting'));
+			var $this = $(this);
+			var $setting = $($this.data('toggle-setting'));
 			$setting.toggle($this.is(':selected'));
 
 			// Disable any input elements that are not visible right now
@@ -1685,11 +1686,11 @@ phpbb.alertTime = 100;
 	* @returns function
 	*/
 	phpbb.getFunctionByName = function(functionName) {
-		const namespaces = functionName.split('.');
-		const func = namespaces.pop();
-		let context = window;
+		var namespaces = functionName.split('.');
+		var func = namespaces.pop();
+		var context = window;
 
-		for (let i = 0; i < namespaces.length; i++) {
+		for (var i = 0; i < namespaces.length; i++) {
 			context = context[namespaces[i]];
 		}
 
@@ -1725,17 +1726,17 @@ phpbb.alertTime = 100;
 	* Register page dropdowns.
 	*/
 	phpbb.registerPageDropdowns = function() {
-		const $body = $('body');
+		var $body = $('body');
 
 		$body.find('.dropdown-container').each(function() {
-			const $this = $(this);
-			let $trigger = $this.find('.dropdown-trigger:first');
-			let $contents = $this.find('.dropdown');
-			const options = {
+			var $this = $(this);
+			var $trigger = $this.find('.dropdown-trigger:first');
+			var $contents = $this.find('.dropdown');
+			var options = {
 				direction: 'auto',
 				verticalDirection: 'auto',
 			};
-			let data;
+			var data;
 
 			if (!$trigger.length) {
 				data = $this.attr('data-dropdown-trigger');
@@ -1772,7 +1773,7 @@ phpbb.alertTime = 100;
 
 		// Hide active dropdowns when click event happens outside
 		$body.click(e => {
-			const $parents = $(e.target).parents();
+			var $parents = $(e.target).parents();
 			if (!$parents.is(phpbb.dropdownVisibleContainers)) {
 				$(phpbb.dropdownHandles).each(phpbb.toggleDropdown);
 			}
@@ -1784,7 +1785,7 @@ phpbb.alertTime = 100;
 	 */
 	phpbb.lazyLoadAvatars = () => {
 		$('.avatar[data-src]').each(function() {
-			const $avatar = $(this);
+			var $avatar = $(this);
 
 			$avatar
 				.attr('src', $avatar.data('src'))
@@ -1922,7 +1923,7 @@ phpbb.alertTime = 100;
 
 		// Hide settings that are not selected via select element.
 		$('select[data-togglable-settings]').each(function() {
-			const $this = $(this);
+			var $this = $(this);
 
 			$this.change(() => {
 				phpbb.toggleSelectSettings($this);

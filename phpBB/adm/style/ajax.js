@@ -1,25 +1,25 @@
 /* global phpbb, statsData */
+/* eslint no-var: 0 */
 
 (function($) { // Avoid conflicts with other libraries
 	'use strict';
 
 	phpbb.prepareSendStats = function() {
-		const $form = $('#acp_help_phpbb');
-		const $dark = $('#darkenwrapper');
-		let $loadingIndicator;
+		var $form = $('#acp_help_phpbb');
+		var $dark = $('#darkenwrapper');
+		var $loadingIndicator;
 
 		$form.on('submit', function(event) {
-			const $this = $(this);
-			const currentTime = Math.floor(new Date().getTime() / 1000);
-			const statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
+			var $this = $(this);
+			var currentTime = Math.floor(new Date().getTime() / 1000);
+			var statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
 
 			event.preventDefault();
 			$this.unbind('submit');
 
 			// Skip ajax request if form is submitted too early or send stats
 			// checkbox is not checked
-			if (!$this.find('input[name=help_send_statistics]').is(':checked')
-			|| statsTime > currentTime) {
+			if (!$this.find('input[name=help_send_statistics]').is(':checked') || statsTime > currentTime) {
 				$form.find('input[type=submit]').click();
 				setTimeout(() => {
 					$form.find('input[type=submit]').click();
@@ -36,7 +36,7 @@
 				}
 
 				phpbb.clearLoadingTimeout();
-				let errorText = '';
+				var errorText = '';
 
 				if (typeof errorThrown === 'string' && errorThrown.length > 0) {
 					errorText = errorThrown;
@@ -71,7 +71,7 @@
 					$loadingIndicator.fadeOut(phpbb.alertTime);
 				}
 
-				const $sendStatisticsSuccess = $('<input />', {
+				var $sendStatisticsSuccess = $('<input />', {
 					type: 'hidden',
 					name: 'send_statistics_response',
 					value: JSON.stringify(res),
@@ -110,8 +110,8 @@
 			return;
 		}
 
-		const $firstTr = $(this).parents('tr');
-		const $secondTr = $firstTr.next();
+		var $firstTr = $(this).parents('tr');
+		var $secondTr = $firstTr.next();
 
 		$firstTr.insertAfter($secondTr);
 	});
@@ -121,8 +121,8 @@
 			return;
 		}
 
-		const $secondTr = $(this).parents('tr');
-		const $firstTr = $secondTr.prev();
+		var $secondTr = $(this).parents('tr');
+		var $firstTr = $secondTr.prev();
 
 		$secondTr.insertBefore($firstTr);
 	});
@@ -133,8 +133,8 @@
 	* in the href with "deactivate", and vice versa.
 	*/
 	phpbb.addAjaxCallback('activate_deactivate', function(res) {
-		const $this = $(this);
-		let newHref = $this.attr('href');
+		var $this = $(this);
+		var newHref = $this.attr('href');
 
 		$this.text(res.text);
 
@@ -211,19 +211,19 @@
 	* This call will submit permissions forms in chunks of 5 fieldsets.
 	*/
 	function submitPermissions() {
-		const $form = $('form#set-permissions');
-		let fieldsetList = $form.find('fieldset[id^=perm]');
-		const formDataSets = [];
-		let dataSetIndex = 0;
-		const $submitAllButton = $form.find('input[type=submit][name^=action]')[0];
-		const $submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
+		var $form = $('form#set-permissions');
+		var fieldsetList = $form.find('fieldset[id^=perm]');
+		var formDataSets = [];
+		var dataSetIndex = 0;
+		var $submitAllButton = $form.find('input[type=submit][name^=action]')[0];
+		var $submitButton = $form.find('input[type=submit][data-clicked=true]')[0];
 
 		// Set proper start values for handling refresh of page
-		let permissionSubmitSize = 0;
-		let permissionRequestCount = 0;
-		const forumIds = [];
-		let permissionSubmitFailed = false;
-		let clearIndicator = true;
+		var permissionSubmitSize = 0;
+		var permissionRequestCount = 0;
+		var forumIds = [];
+		var permissionSubmitFailed = false;
+		var clearIndicator = true;
 
 		if ($submitAllButton !== $submitButton) {
 			fieldsetList = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id);
@@ -231,7 +231,7 @@
 
 		$.each(fieldsetList, (key, value) => {
 			dataSetIndex = Math.floor(key / 5);
-			const $fieldset = $('fieldset#' + value.id);
+			var $fieldset = $('fieldset#' + value.id);
 			if (key % 5 === 0) {
 				formDataSets[dataSetIndex] = $fieldset.find('select:visible, input:not([data-name])').serialize();
 			} else {
@@ -239,7 +239,7 @@
 			}
 
 			// Find proper role value
-			const roleInput = $fieldset.find('input[name^=role][data-name]');
+			var roleInput = $fieldset.find('input[name^=role][data-name]');
 			if (roleInput.val()) {
 				formDataSets[dataSetIndex] += '&' + roleInput.attr('name') + '=' + roleInput.val();
 			} else {
@@ -257,7 +257,7 @@
 			}
 		});
 
-		const $loadingIndicator = phpbb.loadingIndicator();
+		var $loadingIndicator = phpbb.loadingIndicator();
 
 		/**
 		 * Handler for submitted permissions form chunk
@@ -266,7 +266,7 @@
 		 */
 		function handlePermissionReturn(res) {
 			permissionRequestCount++;
-			const $dark = $('#darkenwrapper');
+			var $dark = $('#darkenwrapper');
 
 			if (res.S_USER_WARNING) {
 				phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
@@ -276,8 +276,8 @@
 				if (permissionRequestCount >= permissionSubmitSize) {
 					clearIndicator = true;
 
-					const $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
-					const $alertBoxLink = $alert.find('p.alert_text > a');
+					var $alert = phpbb.alert(res.MESSAGE_TITLE, res.MESSAGE_TEXT);
+					var $alertBoxLink = $alert.find('p.alert_text > a');
 
 					// Create form to submit instead of normal "Back to previous page" link
 					if ($alertBoxLink) {
@@ -370,11 +370,11 @@
 	}
 
 	$('[data-ajax]').each(function() {
-		const $this = $(this);
-		const ajax = $this.attr('data-ajax');
+		var $this = $(this);
+		var ajax = $this.attr('data-ajax');
 
 		if (ajax !== 'false') {
-			const fn = (ajax === 'true') ? null : ajax;
+			var fn = (ajax === 'true') ? null : ajax;
 			phpbb.ajaxify({
 				selector: this,
 				refresh: $this.attr('data-refresh') !== undefined,
@@ -389,7 +389,7 @@
 	$(() => {
 		phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), { minHeight: 75 });
 
-		const $setPermissionsForm = $('form#set-permissions');
+		var $setPermissionsForm = $('form#set-permissions');
 		if ($setPermissionsForm.length) {
 			$setPermissionsForm.on('submit', e => {
 				submitPermissions();

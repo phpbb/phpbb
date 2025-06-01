@@ -1,6 +1,7 @@
 /* global phpbb */
 /* eslint camelcase: 0 */
 /* eslint no-unused-vars: 0 */
+/* eslint no-var:0 */
 
 /**
 * phpBB3 forum functions
@@ -36,10 +37,10 @@ function popup(url, width, height, name) {
 function pageJump(item) {
 	'use strict';
 
-	const page = parseInt(item.val(), 10);
-	const perPage = item.attr('data-per-page');
-	const baseUrl = item.attr('data-base-url');
-	const startName = item.attr('data-start-name');
+	var page = parseInt(item.val(), 10);
+	var perPage = item.attr('data-per-page');
+	var baseUrl = item.attr('data-base-url');
+	var startName = item.attr('data-start-name');
 
 	if (page !== null && !isNaN(page) && page === Math.floor(page) && page > 0) {
 		if (baseUrl.indexOf('?') === -1) {
@@ -58,7 +59,7 @@ function marklist(id, name, state) {
 	'use strict';
 
 	jQuery('#' + id + ' input[type=checkbox][name]').each(function() {
-		const $this = jQuery(this);
+		var $this = jQuery(this);
 		if ($this.attr('name').substr(0, name.length) === name && !$this.prop('disabled')) {
 			$this.prop('checked', state);
 		}
@@ -103,11 +104,11 @@ jQuery($ => {
 	'use strict';
 
 	$('.sub-panels').each(function() {
-		const $childNodes = $('a[data-subpanel]', this);
-		const panels = $childNodes.map(function() {
+		var $childNodes = $('a[data-subpanel]', this);
+		var panels = $childNodes.map(function() {
 			return this.getAttribute('data-subpanel');
 		});
-		const showPanel = this.getAttribute('data-show-panel');
+		var showPanel = this.getAttribute('data-show-panel');
 
 		if (panels.length) {
 			activateSubPanel(showPanel, panels);
@@ -125,8 +126,8 @@ jQuery($ => {
 function activateSubPanel(p, panels) {
 	'use strict';
 
-	let i;
-	let showPanel;
+	var i;
+	var showPanel;
 
 	if (typeof p === 'string') {
 		showPanel = p;
@@ -150,16 +151,16 @@ function selectCode(a) {
 	'use strict';
 
 	// Get ID of code block
-	const e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
-	let s;
-	let r;
+	var e = a.parentNode.parentNode.getElementsByTagName('CODE')[0];
+	var s;
+	var r;
 
 	// Not IE and IE9+
 	if (window.getSelection) {
 		s = window.getSelection();
 		// Safari and Chrome
 		if (s.setBaseAndExtent) {
-			const l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
+			var l = (e.innerText.length > 1) ? e.innerText.length - 1 : 1;
 			try {
 				s.setBaseAndExtent(e, 0, e, l);
 			} catch (error) {
@@ -195,8 +196,8 @@ function selectCode(a) {
 	}
 }
 
-let inAutocomplete = false;
-let lastKeyEntered = '';
+var inAutocomplete = false;
+var lastKeyEntered = '';
 
 /**
 * Check event key
@@ -234,7 +235,7 @@ jQuery($ => {
 	'use strict';
 
 	$('form input[type=text], form input[type=password]').on('keypress', function(e) {
-		const defaultButton = $(this).parents('form').find('input[type=submit].default-submit-action');
+		var defaultButton = $(this).parents('form').find('input[type=submit].default-submit-action');
 
 		if (!defaultButton || defaultButton.length <= 0) {
 			return true;
@@ -259,10 +260,10 @@ jQuery($ => {
 function insertUser(formId, value) {
 	'use strict';
 
-	const $form = jQuery(formId);
-	const formName = $form.attr('data-form-name');
-	const fieldName = $form.attr('data-field-name');
-	const item = opener.document.forms[formName][fieldName];
+	var $form = jQuery(formId);
+	var formName = $form.attr('data-form-name');
+	var fieldName = $form.attr('data-field-name');
+	var item = opener.document.forms[formName][fieldName];
 
 	if (item.value.length && item.type === 'textarea') {
 		value = item.value + '\n' + value;
@@ -294,9 +295,9 @@ function insert_single_user(formId, user) {
 function parseDocument($container) {
 	'use strict';
 
-	const test = document.createElement('div');
-	const oldBrowser = (typeof test.style.borderRadius === 'undefined');
-	const $body = $('body');
+	var test = document.createElement('div');
+	var oldBrowser = (typeof test.style.borderRadius === 'undefined');
+	var $body = $('body');
 
 	/**
 	* Reset avatar dimensions when changing URL or EMAIL
@@ -309,7 +310,7 @@ function parseDocument($container) {
 	* Pagination
 	*/
 	$container.find('.pagination .page-jump-form :button').click(function() {
-		const $input = $(this).siblings('input.inputbox');
+		var $input = $(this).siblings('input.inputbox');
 		pageJump($input);
 	});
 
@@ -321,7 +322,7 @@ function parseDocument($container) {
 	});
 
 	$container.find('.pagination .dropdown-trigger').click(function() {
-		const $dropdownContainer = $(this).parent();
+		var $dropdownContainer = $(this).parent();
 		// Wait a little bit to make sure the dropdown has activated
 		setTimeout(() => {
 			if ($dropdownContainer.hasClass('dropdown-visible')) {
@@ -334,27 +335,27 @@ function parseDocument($container) {
 	* Resize navigation (breadcrumbs) block to keep all links on same line
 	*/
 	$container.find('.navlinks').each(function() {
-		const $this = $(this);
-		const $left = $this.children().not('.rightside');
-		const $right = $this.children('.rightside');
+		var $this = $(this);
+		var $left = $this.children().not('.rightside');
+		var $right = $this.children('.rightside');
 
 		if ($left.length !== 1 || !$right.length) {
 			return;
 		}
 
 		function resize() {
-			let width = 0;
-			const diff = $left.outerWidth(true) - $left.width();
-			const minWidth = Math.max($this.width() / 3, 240);
+			var width = 0;
+			var diff = $left.outerWidth(true) - $left.width();
+			var minWidth = Math.max($this.width() / 3, 240);
 
 			$right.each(function() {
-				const $this = $(this);
+				var $this = $(this);
 				if ($this.is(':visible')) {
 					width += $this.outerWidth(true);
 				}
 			});
 
-			const maxWidth = $this.width() - width - diff;
+			var maxWidth = $this.width() - width - diff;
 			$left.css('max-width', Math.floor(Math.max(maxWidth, minWidth)) + 'px');
 		}
 
@@ -366,25 +367,25 @@ function parseDocument($container) {
 	* Makes breadcrumbs responsive
 	*/
 	$container.find('.breadcrumbs:not([data-skip-responsive])').each(function() {
-		const $this = $(this);
-		const $links = $this.find('.crumb');
-		const { length } = $links;
-		const classes = [ 'wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny' ];
-		const classesLength = classes.length;
-		let maxHeight = 0;
-		let lastWidth = false;
-		let wrapped = false;
+		var $this = $(this);
+		var $links = $this.find('.crumb');
+		var { length } = $links;
+		var classes = [ 'wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny' ];
+		var classesLength = classes.length;
+		var maxHeight = 0;
+		var lastWidth = false;
+		var wrapped = false;
 
 		// Set tooltips
 		$this.find('a').each(function() {
-			const $link = $(this);
+			var $link = $(this);
 			$link.attr('title', $link.text());
 		});
 
 		// Function that checks breadcrumbs
 		function check() {
-			const height = $this.height();
-			let width;
+			var height = $this.height();
+			var width;
 
 			// Test max-width set in code for .navlinks above
 			width = parseInt($this.css('max-width'), 10);
@@ -420,8 +421,8 @@ function parseDocument($container) {
 				return;
 			}
 
-			for (let i = 0; i < classesLength; i++) {
-				for (let j = length - 1; j >= 0; j--) {
+			for (var i = 0; i < classesLength; i++) {
+				for (var j = length - 1; j >= 0; j--) {
 					$links.eq(j).addClass('wrapped ' + classes[i]);
 					if ($this.height() <= maxHeight) {
 						return;
@@ -455,9 +456,9 @@ function parseDocument($container) {
 	* responsive-show-all to list of classes
 	*/
 	$container.find('.topiclist.responsive-show-all > li > dl').each(function() {
-		const $this = $(this);
-		let $block = $this.find('dt .responsive-show:last-child');
-		let first = true;
+		var $this = $(this);
+		var $block = $this.find('dt .responsive-show:last-child');
+		var first = true;
 
 		// Create block that is visible only on mobile devices
 		if ($block.length) {
@@ -469,9 +470,9 @@ function parseDocument($container) {
 
 		// Copy contents of each column
 		$this.find('dd').not('.mark').each(function() {
-			const column = $(this);
-			const $children = column.children();
-			let html = column.html();
+			var column = $(this);
+			var $children = column.children();
+			var html = column.html();
 
 			if ($children.length === 1 && $children.text() === column.text()) {
 				html = $children.html();
@@ -491,9 +492,9 @@ function parseDocument($container) {
 	* responsive-show-columns to list of classes
 	*/
 	$container.find('.topiclist.responsive-show-columns').each(function() {
-		const $list = $(this);
-		const headers = [];
-		let headersLength = 0;
+		var $list = $(this);
+		var headers = [];
+		var headersLength = 0;
 
 		// Find all headers, get contents
 		$list.prev('.topiclist').find('li.header dd').not('.mark').each(function() {
@@ -507,9 +508,9 @@ function parseDocument($container) {
 
 		// Parse each row
 		$list.find('dl').each(function() {
-			const $this = $(this);
-			let $block = $this.find('dt .responsive-show:last-child');
-			let first = true;
+			var $this = $(this);
+			var $block = $this.find('dt .responsive-show:last-child');
+			var first = true;
 
 			// Create block that is visible only on mobile devices
 			if ($block.length) {
@@ -521,9 +522,9 @@ function parseDocument($container) {
 
 			// Copy contents of each column
 			$this.find('dd').not('.mark').each(function(i) {
-				const column = $(this);
-				const children = column.children();
-				let html = column.html();
+				var column = $(this);
+				var children = column.children();
+				var html = column.html();
 
 				if (children.length === 1 && children.text() === column.text()) {
 					html = children.html();
@@ -545,18 +546,18 @@ function parseDocument($container) {
 	* Responsive tables
 	*/
 	$container.find('table.table1').not('.not-responsive').each(function() {
-		const $this = $(this);
-		const $th = $this.find('thead > tr > th');
-		const headers = [];
-		let totalHeaders = 0;
-		let i;
+		var $this = $(this);
+		var $th = $this.find('thead > tr > th');
+		var headers = [];
+		var totalHeaders = 0;
+		var i;
 
 		// Find each header
 		$th.each(function(column) {
-			const cell = $(this);
-			let colspan = parseInt(cell.attr('colspan'), 10);
-			const dfn = cell.attr('data-dfn');
-			const text = dfn ? dfn : cell.text();
+			var cell = $(this);
+			var colspan = parseInt(cell.attr('colspan'), 10);
+			var dfn = cell.attr('data-dfn');
+			var text = dfn ? dfn : cell.text();
 
 			colspan = isNaN(colspan) || colspan < 1 ? 1 : colspan;
 
@@ -571,7 +572,7 @@ function parseDocument($container) {
 			}
 		});
 
-		const headersLength = headers.length;
+		var headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>
 		$this.addClass('responsive');
@@ -582,9 +583,9 @@ function parseDocument($container) {
 		}
 
 		$this.find('tbody > tr').each(function() {
-			const row = $(this);
-			const cells = row.children('td');
-			let column = 0;
+			var row = $(this);
+			var cells = row.children('td');
+			var column = 0;
 
 			if (cells.length === 1) {
 				row.addClass('big-column');
@@ -592,9 +593,9 @@ function parseDocument($container) {
 			}
 
 			cells.each(function() {
-				const cell = $(this);
-				let colspan = parseInt(cell.attr('colspan'), 10);
-				const text = $.trim(cell.text());
+				var cell = $(this);
+				var colspan = parseInt(cell.attr('colspan'), 10);
+				var text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;
@@ -618,7 +619,7 @@ function parseDocument($container) {
 	* Hide empty responsive tables
 	*/
 	$container.find('table.responsive > tbody').not('.responsive-skip-empty').each(function() {
-		const $items = $(this).children('tr');
+		var $items = $(this).children('tr');
 		if (!$items.length) {
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
@@ -628,24 +629,24 @@ function parseDocument($container) {
 	* Responsive tabs
 	*/
 	$container.find('#tabs, #minitabs').not('[data-skip-responsive]').each(function() {
-		const $this = $(this);
-		const $ul = $this.children();
-		const $tabs = $ul.children().not('[data-skip-responsive]');
-		const $links = $tabs.children('a');
-		const $item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
-		const $menu = $item.find('.dropdown-contents');
-		let maxHeight = 0;
-		let lastWidth = false;
-		let responsive = false;
+		var $this = $(this);
+		var $ul = $this.children();
+		var $tabs = $ul.children().not('[data-skip-responsive]');
+		var $links = $tabs.children('a');
+		var $item = $ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
+		var $menu = $item.find('.dropdown-contents');
+		var maxHeight = 0;
+		var lastWidth = false;
+		var responsive = false;
 
 		$links.each(function() {
-			const $this = $(this);
+			var $this = $(this);
 			maxHeight = Math.max(maxHeight, Math.max($this.outerHeight(true), $this.parent().outerHeight(true)));
 		});
 
 		function check() {
-			const width = $body.width();
-			let height = $this.height();
+			var width = $body.width();
+			var height = $this.height();
 
 			if (!arguments.length && (!responsive || width <= lastWidth) && height <= maxHeight) {
 				return;
@@ -668,10 +669,10 @@ function parseDocument($container) {
 			$item.show();
 			$menu.html('');
 
-			const $availableTabs = $tabs.filter(':not(.activetab, .responsive-tab)');
-			const total = $availableTabs.length;
-			let i;
-			let $tab;
+			var $availableTabs = $tabs.filter(':not(.activetab, .responsive-tab)');
+			var total = $availableTabs.length;
+			var i;
+			var $tab;
 
 			for (i = total - 1; i >= 0; i--) {
 				$tab = $availableTabs.eq(i);
@@ -690,7 +691,7 @@ function parseDocument($container) {
 			});
 		}
 
-		const $tabLink = $item.find('a.responsive-tab-link');
+		var $tabLink = $item.find('a.responsive-tab-link');
 		phpbb.registerDropdown($tabLink, $item.find('.dropdown'), {
 			visibleClass: 'activetab',
 		});
@@ -703,7 +704,7 @@ function parseDocument($container) {
 	 * Hide UCP/MCP navigation if there is only 1 item
 	 */
 	$container.find('#navigation').each(function() {
-		const $items = $(this).children('ol, ul').children('li');
+		var $items = $(this).children('ol, ul').children('li');
 		if ($items.length === 1) {
 			$(this).addClass('responsive-hide');
 		}
@@ -713,10 +714,10 @@ function parseDocument($container) {
 	* Replace responsive text
 	*/
 	$container.find('[data-responsive-text]').each(function() {
-		const $this = $(this);
-		const fullText = $this.text();
-		const responsiveText = $this.attr('data-responsive-text');
-		let responsive = false;
+		var $this = $(this);
+		var fullText = $this.text();
+		var responsiveText = $this.attr('data-responsive-text');
+		var responsive = false;
 
 		function check() {
 			if ($(window).width() > 700) {

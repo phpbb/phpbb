@@ -2,6 +2,10 @@
 /* eslint camelcase: 0 */
 /* eslint no-undef: 0 */
 /* eslint no-unused-vars: 0 */
+/* eslint no-var: 0 */
+
+var form_name = 'postform';
+var text_name = 'message';
 
 /**
 * bbCode control by subBlue design [ www.subBlue.com ]
@@ -9,25 +13,25 @@
 */
 
 // Startup variables
-const imageTag = false;
-let theSelection = false;
-const bbcodeEnabled = true;
+var imageTag = false;
+var theSelection = false;
+var bbcodeEnabled = true;
 
 // Check for Browser & Platform for PC & IE specific bits
 // More details from: http://www.mozilla.org/docs/web-developer/sniffer/browser_type.html
-const clientPC = navigator.userAgent.toLowerCase(); // Get client info
-const clientVer = parseInt(navigator.appVersion, 10); // Get browser version
+var clientPC = navigator.userAgent.toLowerCase(); // Get client info
+var clientVer = parseInt(navigator.appVersion, 10); // Get browser version
 
-const is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
-const is_win = ((clientPC.indexOf('win') !== -1) || (clientPC.indexOf('16bit') !== -1));
-let baseHeight;
+var is_ie = ((clientPC.indexOf('msie') !== -1) && (clientPC.indexOf('opera') === -1));
+var is_win = ((clientPC.indexOf('win') !== -1) || (clientPC.indexOf('16bit') !== -1));
+var baseHeight;
 
 /**
 * Fix a bug involving the TextRange object. From
 * http://www.frostjedi.com/terra/scripts/demo/caretBug.html
 */
 function initInsertions() {
-	let doc;
+	var doc;
 
 	if (document.forms[form_name]) {
 		doc = document;
@@ -35,7 +39,7 @@ function initInsertions() {
 		doc = opener.document;
 	}
 
-	const textarea = doc.forms[form_name].elements[text_name];
+	var textarea = doc.forms[form_name].elements[text_name];
 
 	if (is_ie && typeof (baseHeight) !== 'number') {
 		textarea.focus();
@@ -65,7 +69,7 @@ function bbstyle(bbnumber) {
 function bbfontstyle(bbopen, bbclose) {
 	theSelection = false;
 
-	const textarea = document.forms[form_name].elements[text_name];
+	var textarea = document.forms[form_name].elements[text_name];
 
 	textarea.focus();
 
@@ -88,8 +92,8 @@ function bbfontstyle(bbopen, bbclose) {
 	}
 
 	// The new position for the cursor after adding the bbcode
-	const caret_pos = getCaretPosition(textarea).start;
-	const new_pos = caret_pos + bbopen.length;
+	var caret_pos = getCaretPosition(textarea).start;
+	var new_pos = caret_pos + bbopen.length;
 
 	// Open tag
 	insert_text(bbopen + bbclose);
@@ -101,7 +105,7 @@ function bbfontstyle(bbopen, bbclose) {
 		textarea.selectionEnd = new_pos;
 	} else if (document.selection) {
 		// IE
-		const range = textarea.createTextRange();
+		var range = textarea.createTextRange();
 		range.move('character', new_pos);
 		range.select();
 		storeCaret(textarea);
@@ -114,7 +118,7 @@ function bbfontstyle(bbopen, bbclose) {
 * Insert text at position
 */
 function insert_text(text, spaces, popup) {
-	let textarea;
+	var textarea;
 
 	if (popup) {
 		textarea = opener.document.forms[form_name].elements[text_name];
@@ -129,8 +133,8 @@ function insert_text(text, spaces, popup) {
 	// Since IE9, IE also has textarea.selectionStart, but it still needs to be treated the old way.
 	// Therefore we simply add a !is_ie here until IE fixes the text-selection completely.
 	if (!isNaN(textarea.selectionStart) && !is_ie) {
-		const sel_start = textarea.selectionStart;
-		const sel_end = textarea.selectionEnd;
+		var sel_start = textarea.selectionStart;
+		var sel_end = textarea.selectionEnd;
 
 		mozWrap(textarea, text, '');
 		textarea.selectionStart = sel_start + text.length;
@@ -141,7 +145,7 @@ function insert_text(text, spaces, popup) {
 			storeCaret(textarea);
 		}
 
-		const caret_pos = textarea.caretPos;
+		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) === ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 	} else {
 		textarea.value += text;
@@ -164,10 +168,10 @@ function attachInline(index, filename) {
 * Add quote text to message
 */
 function addquote(post_id, username, l_wrote, attributes) {
-	const message_name = 'message_' + post_id;
-	let theSelection = '';
-	let divarea = false;
-	let i;
+	var message_name = 'message_' + post_id;
+	var theSelection = '';
+	var divarea = false;
+	var i;
 
 	if (l_wrote === undefined) {
 		// Backwards compatibility
@@ -217,7 +221,7 @@ function addquote(post_id, username, l_wrote, attributes) {
 			insert_text(generateQuote(theSelection, attributes));
 		} else {
 			insert_text(username + ' ' + l_wrote + ':\n');
-			const lines = split_lines(theSelection);
+			var lines = split_lines(theSelection);
 			for (i = 0; i < lines.length; i++) {
 				insert_text('> ' + lines[i] + '\n');
 			}
@@ -240,22 +244,22 @@ function addquote(post_id, username, l_wrote, attributes) {
 */
 function generateQuote(text, attributes) {
 	text = text.replace(/^\s+/, '').replace(/\s+$/, '');
-	let quote = '[quote';
+	var quote = '[quote';
 	if (attributes.author) {
 		// Add the author as the BBCode's default attribute
 		quote += '=' + formatAttributeValue(attributes.author);
 		delete attributes.author;
 	}
 
-	for (const name in attributes) {
+	for (var name in attributes) {
 		if (Object.hasOwn(attributes, name)) {
-			const value = attributes[name];
+			var value = attributes[name];
 			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
 		}
 	}
 
 	quote += ']';
-	const newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
+	var newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
 	quote += newline + text + newline + '[/quote]';
 
 	return quote;
@@ -277,25 +281,25 @@ function formatAttributeValue(str) {
 		return str;
 	}
 
-	const singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'';
-	const doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+	var singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'';
+	var doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
 
 	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
 }
 
 function split_lines(text) {
-	const lines = text.split('\n');
-	const splitLines = [];
-	let j = 0;
-	let i;
+	var lines = text.split('\n');
+	var splitLines = [];
+	var j = 0;
+	var i;
 
 	for (i = 0; i < lines.length; i++) {
 		if (lines[i].length <= 80) {
 			splitLines[j] = lines[i];
 			j++;
 		} else {
-			let line = lines[i];
-			let splitAt;
+			var line = lines[i];
+			var splitAt;
 			do {
 				splitAt = line.indexOf(' ', 80);
 
@@ -319,14 +323,14 @@ function split_lines(text) {
 * From http://www.massless.org/mozedit/
 */
 function mozWrap(txtarea, open, close) {
-	const selLength = (typeof (txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
-	const selStart = txtarea.selectionStart;
-	const selEnd = txtarea.selectionEnd;
-	const { scrollTop } = txtarea;
+	var selLength = (typeof (txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
+	var selStart = txtarea.selectionStart;
+	var selEnd = txtarea.selectionEnd;
+	var scrollTop = txtarea.scrollTop;
 
-	const s1 = (txtarea.value).substring(0, selStart);
-	const s2 = (txtarea.value).substring(selStart, selEnd);
-	const s3 = (txtarea.value).substring(selEnd, selLength);
+	var s1 = (txtarea.value).substring(0, selStart);
+	var s2 = (txtarea.value).substring(selStart, selEnd);
+	var s3 = (txtarea.value).substring(selEnd, selLength);
 
 	txtarea.value = s1 + open + s2 + close + s3;
 	txtarea.selectionStart = selStart + open.length;
@@ -349,15 +353,15 @@ function storeCaret(textEl) {
 * Caret Position object
 */
 function caretPosition() {
-	const start = null;
-	const end = null;
+	var start = null;
+	var end = null;
 }
 
 /**
 * Get the caret position in an textarea
 */
 function getCaretPosition(txtarea) {
-	const caretPos = new caretPosition();
+	var caretPos = new caretPosition();
 
 	// simple Gecko/Opera way
 	if (txtarea.selectionStart || txtarea.selectionStart === 0) {
@@ -366,14 +370,14 @@ function getCaretPosition(txtarea) {
 	} else if (document.selection) {
 		// dirty and slow IE way
 		// get current selection
-		const range = document.selection.createRange();
+		var range = document.selection.createRange();
 
 		// a new selection of the whole textarea
-		const range_all = document.body.createTextRange();
+		var range_all = document.body.createTextRange();
 		range_all.moveToElementText(txtarea);
 
 		// calculate selection start point by moving beginning of range_all to beginning of range
-		let sel_start;
+		var sel_start;
 		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++) {
 			range_all.moveStart('character', 1);
 		}

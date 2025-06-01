@@ -1,4 +1,5 @@
 /* global phpbb */
+/* eslint no-var: 0 */
 
 /*
 javascript for Bubble Tooltips by Alessandro Fulciniti
@@ -15,7 +16,7 @@ phpBB Development Team:
 (function($) { // Avoid conflicts with other libraries
 	'use strict';
 
-	const tooltips = [];
+	var tooltips = [];
 
 	/**
 	* Enable tooltip replacements for selects
@@ -24,9 +25,9 @@ phpBB Development Team:
 	* @param {string} [subId] Sub ID that should only be using tooltips (optional)
 	*/
 	phpbb.enableTooltipsSelect = function(id, headline, subId) {
-		let $links;
+		var $links;
 
-		const hold = $('<span />', {
+		var hold = $('<span />', {
 			id:	'_tooltip_container',
 			css: {
 				position: 'absolute',
@@ -42,7 +43,7 @@ phpBB Development Team:
 		}
 
 		$links.each(function() {
-			const $this = $(this);
+			var $this = $(this);
 
 			if (subId) {
 				if ($this.parent().attr('id').substr(0, subId.length) === subId) {
@@ -61,13 +62,13 @@ phpBB Development Team:
 	* @param {string} headText Text heading to display
 	*/
 	phpbb.prepareTooltips = function($element, headText) {
-		const text = $element.attr('data-title');
+		var text = $element.attr('data-title');
 
 		if (text === null || text.length === 0) {
 			return;
 		}
 
-		const $title = $('<span />', {
+		var $title = $('<span />', {
 			class: 'top',
 			css: {
 				display:	'block',
@@ -75,7 +76,7 @@ phpBB Development Team:
 		})
 			.append(document.createTextNode(headText));
 
-		const $desc = $('<span />', {
+		var $desc = $('<span />', {
 			class: 'bottom',
 			html: text,
 			css: {
@@ -83,7 +84,7 @@ phpBB Development Team:
 			},
 		});
 
-		const $tooltip = $('<span />', {
+		var $tooltip = $('<span />', {
 			class: 'tooltip',
 			css: {
 				display: 'block',
@@ -103,7 +104,7 @@ phpBB Development Team:
 	* @param {object} $element Element passed by .on()
 	*/
 	phpbb.showTooltip = function($element) {
-		const $this = $($element.target);
+		var $this = $($element.target);
 		$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
 		phpbb.positionTooltip($this);
 	};
@@ -112,7 +113,7 @@ phpBB Development Team:
 	* Hide tooltip
 	*/
 	phpbb.hideTooltip = function() {
-		const d = document.getElementById('_tooltip_container');
+		var d = document.getElementById('_tooltip_container');
 		if (d.childNodes.length > 0) {
 			d.removeChild(d.firstChild);
 		}
@@ -125,7 +126,7 @@ phpBB Development Team:
 	*/
 	phpbb.positionTooltip = function($element) {
 		$element = $element.parent();
-		const offset = $element.offset();
+		var offset = $element.offset();
 
 		if ($('body').hasClass('rtl')) {
 			$('#_tooltip_container').css({
@@ -144,13 +145,13 @@ phpBB Development Team:
 	* Prepare roles drop down select
 	*/
 	phpbb.prepareRolesDropdown = function() {
-		const $options = $('.roles-options li');
+		var $options = $('.roles-options li');
 
 		// Display span and hide select
 		$('.roles-options > span').css('display', 'block');
 		$('.roles-options > select').hide();
 		$('.roles-options > input[type=hidden]').each(function() {
-			const $this = $(this);
+			var $this = $(this);
 
 			if ($this.attr('data-name') && !$this.attr('name')) {
 				$this.attr('name', $this.attr('data-name'));
@@ -159,9 +160,9 @@ phpBB Development Team:
 
 		// Prepare highlighting of select options and settings update
 		$options.each(function() {
-			const $this = $(this);
-			const $rolesOptions = $this.closest('.roles-options');
-			const $span = $rolesOptions.children('span');
+			var $this = $(this);
+			var $rolesOptions = $this.closest('.roles-options');
+			var $span = $rolesOptions.children('span');
 
 			// Correctly show selected option
 			if (typeof $this.attr('data-selected') !== 'undefined') {
@@ -185,12 +186,12 @@ phpBB Development Team:
 			}
 
 			$this.on('mouseover', function() {
-				const $this = $(this);
+				var $this = $(this);
 				$options.removeClass('roles-highlight');
 				$this.addClass('roles-highlight');
 			}).on('click', function() {
-				const $this = $(this);
-				const $rolesOptions = $this.closest('.roles-options');
+				var $this = $(this);
+				var $rolesOptions = $this.closest('.roles-options');
 
 				// Update settings
 				// eslint-disable-next-line no-undef

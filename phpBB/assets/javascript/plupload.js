@@ -1,5 +1,6 @@
 /* global phpbb, plupload, attachInline, activateSubPanel */
 /* eslint camelcase: 0 */
+/* eslint no-var: 0 */
 
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
@@ -53,8 +54,8 @@ phpbb.plupload.ids = [];
 	* begin with 'attachment_data['
 	*/
 	phpbb.plupload.clearParams = function() {
-		const obj = phpbb.plupload.uploader.settings.multipart_params;
-		for (const key in obj) {
+		var obj = phpbb.plupload.uploader.settings.multipart_params;
+		for (var key in obj) {
 			if (!Object.prototype.hasOwnProperty.call(obj, key) || key.indexOf('attachment_data[') !== 0) {
 				continue;
 			}
@@ -69,7 +70,7 @@ phpbb.plupload.ids = [];
 	* @param {object} obj
 	*/
 	phpbb.plupload.updateMultipartParams = function(obj) {
-		const { settings } = phpbb.plupload.uploader;
+		var { settings } = phpbb.plupload.uploader;
 		settings.multipart_params = $.extend(settings.multipart_params, obj);
 	};
 
@@ -80,10 +81,10 @@ phpbb.plupload.ids = [];
 	* 	expected by the server
 	*/
 	phpbb.plupload.getSerializedData = function() {
-		const obj = {};
-		for (let i = 0; i < phpbb.plupload.data.length; i++) {
-			const datum = phpbb.plupload.data[i];
-			for (const key in datum) {
+		var obj = {};
+		for (var i = 0; i < phpbb.plupload.data.length; i++) {
+			var datum = phpbb.plupload.data[i];
+			for (var key in datum) {
 				if (!Object.prototype.hasOwnProperty.call(datum, key)) {
 					continue;
 				}
@@ -93,7 +94,7 @@ phpbb.plupload.ids = [];
 		}
 
 		// Insert form data
-		const $pluploadForm = $(phpbb.plupload.config.form_hook).first();
+		var $pluploadForm = $(phpbb.plupload.config.form_hook).first();
 		obj.creation_time = $pluploadForm.find('input[type=hidden][name="creation_time"]').val();
 		obj.form_token = $pluploadForm.find('input[type=hidden][name="form_token"]').val();
 
@@ -108,7 +109,7 @@ phpbb.plupload.ids = [];
 	* @returns {bool|int} Index of the file if exists, otherwise false.
 	*/
 	phpbb.plupload.getIndex = function(attachId) {
-		const index = $.inArray(Number(attachId), phpbb.plupload.ids);
+		var index = $.inArray(Number(attachId), phpbb.plupload.ids);
 		return index === -1 ? false : index;
 	};
 
@@ -124,7 +125,7 @@ phpbb.plupload.ids = [];
 		phpbb.plupload.data = [];
 		phpbb.plupload.data = data;
 
-		for (let i = 0; i < data.length; i++) {
+		for (var i = 0; i < data.length; i++) {
 			phpbb.plupload.ids.push(Number(data[i].attach_id));
 		}
 	};
@@ -151,7 +152,7 @@ phpbb.plupload.ids = [];
 	* @param {Array} downloadUrl Optional array of download urls to update.
 	*/
 	phpbb.plupload.updateRows = function(downloadUrl) {
-		for (let i = 0; i < phpbb.plupload.ids.length; i++) {
+		for (var i = 0; i < phpbb.plupload.ids.length; i++) {
 			phpbb.plupload.updateRow(i, downloadUrl);
 		}
 	};
@@ -165,7 +166,7 @@ phpbb.plupload.ids = [];
 	* @param {object} file Plupload file object for the new attachment.
 	*/
 	phpbb.plupload.insertRow = function(file) {
-		const row = $(phpbb.plupload.rowTpl);
+		var row = $(phpbb.plupload.rowTpl);
 
 		row.attr('id', file.id);
 		row.find('.file-name').html(plupload.xmlEncode(file.name));
@@ -185,13 +186,13 @@ phpbb.plupload.ids = [];
 	* @param {Array} downloadUrl Optional array of download urls to update.
 	*/
 	phpbb.plupload.updateRow = function(index, downloadUrl) {
-		const attach = phpbb.plupload.data[index];
-		const row = $('[data-attach-id="' + attach.attach_id + '"]');
+		var attach = phpbb.plupload.data[index];
+		var row = $('[data-attach-id="' + attach.attach_id + '"]');
 
 		// Add the link to the file
 		if (typeof downloadUrl !== 'undefined' && typeof downloadUrl[index] !== 'undefined') {
-			const url = downloadUrl[index].replace('&amp;', '&');
-			const link = $('<a></a>');
+			var url = downloadUrl[index].replace('&amp;', '&');
+			var link = $('<a></a>');
 
 			link.attr('href', url).html(attach.real_filename);
 			row.find('.file-name').html(link);
@@ -211,12 +212,12 @@ phpbb.plupload.ids = [];
 	phpbb.plupload.updateHiddenData = function(row, attach, index) {
 		row.find('input[type="hidden"]').remove();
 
-		for (const key in attach) {
+		for (var key in attach) {
 			if (!Object.prototype.hasOwnProperty.call(attach, key)) {
 				continue;
 			}
 
-			const input = $('<input />')
+			var input = $('<input />')
 				.attr('type', 'hidden')
 				.attr('name', 'attachment_data[' + index + '][' + key + ']')
 				.attr('value', attach[key]);
@@ -236,7 +237,7 @@ phpbb.plupload.ids = [];
 	phpbb.plupload.deleteFile = function(row, attachId) {
 	// If there's no attach id, then the file hasn't been uploaded. Simply delete the row.
 		if (typeof attachId === 'undefined') {
-			const file = phpbb.plupload.uploader.getFile(row.attr('id'));
+			var file = phpbb.plupload.uploader.getFile(row.attr('id'));
 			phpbb.plupload.uploader.removeFile(file);
 
 			row.slideUp(100, () => {
@@ -245,21 +246,21 @@ phpbb.plupload.ids = [];
 			});
 		}
 
-		const index = phpbb.plupload.getIndex(attachId);
+		var index = phpbb.plupload.getIndex(attachId);
 		row.find('.file-status').toggleClass('file-uploaded file-working');
 
 		if (index === false) {
 			return;
 		}
 
-		const fields = {};
+		var fields = {};
 		fields['delete_file[' + index + ']'] = 1;
 
-		const always = function() {
+		var always = function() {
 			row.find('.file-status').removeClass('file-working');
 		};
 
-		const done = function(response) {
+		var done = function(response) {
 			if (typeof response !== 'object') {
 				return;
 			}
@@ -288,7 +289,7 @@ phpbb.plupload.ids = [];
 			phpbb.plupload.handleMaxFilesReached();
 
 			if (row.attr('id')) {
-				const file = phpbb.plupload.uploader.getFile(row.attr('id'));
+				var file = phpbb.plupload.uploader.getFile(row.attr('id'));
 				phpbb.plupload.uploader.removeFile(file);
 			}
 
@@ -329,8 +330,8 @@ phpbb.plupload.ids = [];
 	*/
 	phpbb.plupload.updateBbcode = function(action, index) {
 		const	textarea = $('#message', phpbb.plupload.form);
-		let text = textarea.val();
-		const removal = (action === 'removal');
+		var text = textarea.val();
+		var removal = (action === 'removal');
 
 		// Return if the bbcode isn't used at all.
 		if (text.indexOf('[attachment=') === -1) {
@@ -338,21 +339,21 @@ phpbb.plupload.ids = [];
 		}
 
 		function runUpdate(i) {
-			const regex = new RegExp('\\[attachment=' + i + '\\](.*?)\\[\\/attachment\\]', 'g');
+			var regex = new RegExp('\\[attachment=' + i + '\\](.*?)\\[\\/attachment\\]', 'g');
 			text = text.replace(regex, (_, fileName) => {
 			// Remove the bbcode if the file was removed.
 				if (removal && index === i) {
 					return '';
 				}
 
-				const newIndex = i + ((removal) ? -1 : 1);
+				var newIndex = i + ((removal) ? -1 : 1);
 				return '[attachment=' + newIndex + ']' + fileName + '[/attachment]';
 			});
 		}
 
 		// Loop forwards when removing and backwards when adding ensures we don't
 		// corrupt the bbcode index.
-		let i;
+		var i;
 		if (removal) {
 			for (i = index; i < phpbb.plupload.ids.length; i++) {
 				runUpdate(i);
@@ -375,7 +376,7 @@ phpbb.plupload.ids = [];
 	* @returns {Array} The Plupload file objects matching the status.
 	*/
 	phpbb.plupload.getFilesByStatus = function(status) {
-		const files = [];
+		var files = [];
 
 		$.each(phpbb.plupload.uploader.files, (i, file) => {
 			if (file.status === status) {
@@ -438,7 +439,7 @@ phpbb.plupload.ids = [];
 	* @param {string} error Error message to present to the user.
 	*/
 	phpbb.plupload.markQueuedFailed = function(error) {
-		const files = phpbb.plupload.getFilesByStatus(plupload.QUEUED);
+		var files = phpbb.plupload.getFilesByStatus(plupload.QUEUED);
 
 		$.each(files, (i, file) => {
 			$('#' + file.id).find('.file-progress').hide();
@@ -511,14 +512,14 @@ phpbb.plupload.ids = [];
 		}
 	});
 
-	const $fileList = $('#file-list');
+	var $fileList = $('#file-list');
 
 	/**
 	* Insert inline attachment bbcode.
 	*/
 	$fileList.on('click', '.file-inline-bbcode', function(e) {
-		const attachId = $(this).parents('.attach-row').attr('data-attach-id');
-		const index = phpbb.plupload.getIndex(attachId);
+		var attachId = $(this).parents('.attach-row').attr('data-attach-id');
+		var index = phpbb.plupload.getIndex(attachId);
 
 		attachInline(index, phpbb.plupload.data[index].real_filename);
 		e.preventDefault();
@@ -528,8 +529,8 @@ phpbb.plupload.ids = [];
 	* Delete a file.
 	*/
 	$fileList.on('click', '.file-delete', function(e) {
-		const row = $(this).parents('.attach-row');
-		const attachId = row.attr('data-attach-id');
+		var row = $(this).parents('.attach-row');
+		var attachId = row.attr('data-attach-id');
 
 		phpbb.plupload.deleteFile(row, attachId);
 		e.preventDefault();
@@ -590,7 +591,7 @@ phpbb.plupload.ids = [];
 			return;
 		}
 
-		let json = {};
+		var json = {};
 		try {
 			json = $.parseJSON(response.response);
 		} catch {
@@ -637,7 +638,7 @@ phpbb.plupload.ids = [];
 		}
 
 		// Show the file list if there aren't any files currently.
-		const $fileListContainer = $('#file-list-container');
+		var $fileListContainer = $('#file-list-container');
 		if (!$fileListContainer.is(':visible')) {
 			$fileListContainer.show(100);
 		}
@@ -670,9 +671,9 @@ phpbb.plupload.ids = [];
 	* @param {string} response	The response string from the server
 	*/
 	phpbb.plupload.uploader.bind('FileUploaded', (up, file, response) => {
-		let json = {};
-		const row = $('#' + file.id);
-		let error;
+		var json = {};
+		var row = $('#' + file.id);
+		var error;
 
 		// Hide the progress indicator.
 		row.find('.file-progress').hide();

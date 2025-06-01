@@ -1,4 +1,5 @@
 /* global phpbb */
+/* eslint no-var: 0 */
 
 /**
 * phpBB3 ACP functions
@@ -8,15 +9,15 @@
 * Parse document block
 */
 function parseDocument(container) {
-	const test = document.createElement('div');
+	var test = document.createElement('div');
 	test.remove();
 
 	/**
 	* Navigation
 	*/
 	container.find('#menu').each(function() {
-		const menu = $(this);
-		const blocks = menu.children('.menu-block');
+		var menu = $(this);
+		var blocks = menu.children('.menu-block');
 
 		if (!blocks.length) {
 			return;
@@ -24,7 +25,7 @@ function parseDocument(container) {
 
 		// Set onclick event
 		blocks.children('a.header').click(function() {
-			const parent = $(this).parent();
+			var parent = $(this).parent();
 			if (!parent.hasClass('active')) {
 				parent.siblings().removeClass('active');
 			}
@@ -45,22 +46,22 @@ function parseDocument(container) {
 	* Responsive tables
 	*/
 	container.find('table').not('.not-responsive').each(function() {
-		const $this = $(this);
-		const th = $this.find('thead > tr > th');
-		const headers = [];
-		let totalHeaders = 0;
-		let i;
+		var $this = $(this);
+		var th = $this.find('thead > tr > th');
+		var headers = [];
+		var totalHeaders = 0;
+		var i;
 
 		// Find columns
 		$this.find('colgroup:first').children().each(function(i) {
-			const column = $(this);
+			var column = $(this);
 			$this.find('td:nth-child(' + (i + 1) + ')').addClass(column.prop('className'));
 		});
 
 		// Styles table
 		if ($this.hasClass('styles')) {
 			$this.find('td:first-child[style]').each(function() {
-				const style = $(this).attr('style');
+				var style = $(this).attr('style');
 				if (style.length) {
 					$(this).parent('tr').attr('style', style.toLowerCase().replace('padding', 'margin')).addClass('responsive-style-row');
 				}
@@ -70,10 +71,10 @@ function parseDocument(container) {
 		// Find each header
 		if (!$this.data('no-responsive-header')) {
 			th.each(function(column) {
-				const cell = $(this);
-				let colspan = parseInt(cell.attr('colspan'), 10);
-				const dfn = cell.attr('data-dfn');
-				let text = dfn ? dfn : $.trim(cell.text());
+				var cell = $(this);
+				var colspan = parseInt(cell.attr('colspan'), 10);
+				var dfn = cell.attr('data-dfn');
+				var text = dfn ? dfn : $.trim(cell.text());
 
 				if (text === '&nbsp;') {
 					text = '';
@@ -93,7 +94,7 @@ function parseDocument(container) {
 			});
 		}
 
-		const headersLength = headers.length;
+		headersLength = headers.length;
 
 		// Add header text to each cell as <dfn>
 		$this.addClass('responsive');
@@ -104,9 +105,9 @@ function parseDocument(container) {
 		}
 
 		$this.find('tbody > tr').each(function() {
-			const row = $(this);
-			const cells = row.children('td');
-			let column = 0;
+			var row = $(this);
+			var cells = row.children('td');
+			var column = 0;
 
 			if (cells.length === 1) {
 				row.addClass('big-column');
@@ -114,9 +115,9 @@ function parseDocument(container) {
 			}
 
 			cells.each(function() {
-				const cell = $(this);
-				let colspan = parseInt(cell.attr('colspan'), 10);
-				const text = $.trim(cell.text());
+				var cell = $(this);
+				var colspan = parseInt(cell.attr('colspan'), 10);
+				var text = $.trim(cell.text());
 
 				if (headersLength <= column) {
 					return;
@@ -143,7 +144,7 @@ function parseDocument(container) {
 	* Hide empty responsive tables
 	*/
 	container.find('table.responsive > tbody').each(function() {
-		const items = $(this).children('tr');
+		var items = $(this).children('tr');
 		if (!items.length) {
 			$(this).parent('table:first').addClass('responsive-hide');
 		}
@@ -153,7 +154,7 @@ function parseDocument(container) {
 	* Fieldsets with empty <span>
 	*/
 	container.find('fieldset dt > span:last-child').each(function() {
-		const $this = $(this);
+		var $this = $(this);
 		if ($this.html() === '&nbsp;') {
 			$this.addClass('responsive-hide');
 		}
@@ -164,7 +165,7 @@ function parseDocument(container) {
 	 */
 	container.find('#sitename_short').each(function() {
 		const $this = this;
-		const { maxLength } = $this;
+		const maxLength = $this.maxLength;
 		$this.maxLength = maxLength * 2;
 		$this.addEventListener('input', () => {
 			const inputChars = Array.from($this.value);
@@ -178,25 +179,25 @@ function parseDocument(container) {
 	* Responsive tabs
 	*/
 	container.find('#tabs').not('[data-skip-responsive]').each(function() {
-		const $this = $(this);
-		const $body = $('body');
-		const ul = $this.children();
-		const tabs = ul.children().not('[data-skip-responsive]');
-		const links = tabs.children('a');
-		const item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
-		const menu = item.find('.dropdown-contents');
-		let maxHeight = 0;
-		let lastWidth = false;
-		let responsive = false;
+		var $this = $(this);
+		var $body = $('body');
+		var ul = $this.children();
+		var tabs = ul.children().not('[data-skip-responsive]');
+		var links = tabs.children('a');
+		var item = ul.append('<li class="tab responsive-tab" style="display:none;"><a href="javascript:void(0);" class="responsive-tab-link">&nbsp;</a><div class="dropdown tab-dropdown" style="display: none;"><div class="pointer"><div class="pointer-inner"></div></div><ul class="dropdown-contents" /></div></li>').find('li.responsive-tab');
+		var menu = item.find('.dropdown-contents');
+		var maxHeight = 0;
+		var lastWidth = false;
+		var responsive = false;
 
 		links.each(function() {
-			const link = $(this);
+			var link = $(this);
 			maxHeight = Math.max(maxHeight, Math.max(link.outerHeight(true), link.parent().outerHeight(true)));
 		});
 
 		function check() {
-			const width = $body.width();
-			let height = $this.height();
+			var width = $body.width();
+			var height = $this.height();
 
 			if (!arguments.length && (!responsive || width <= lastWidth) && height <= maxHeight) {
 				return;
@@ -220,10 +221,10 @@ function parseDocument(container) {
 			item.show();
 			menu.html('');
 
-			const availableTabs = tabs.filter(':not(.activetab, .responsive-tab)');
-			const total = availableTabs.length;
-			let i;
-			let tab;
+			var availableTabs = tabs.filter(':not(.activetab, .responsive-tab)');
+			var total = availableTabs.length;
+			var i;
+			var tab;
 
 			for (i = total - 1; i >= 0; i--) {
 				tab = availableTabs.eq(i);
@@ -265,10 +266,10 @@ function parseDocument(container) {
 		parseDocument($('body'));
 
 		$('#questionnaire-form').css('display', 'none');
-		const $triggerConfiglist = $('#trigger-configlist');
+		var $triggerConfiglist = $('#trigger-configlist');
 
 		$triggerConfiglist.on('click', function() {
-			const $configlist = $('#configlist');
+			var $configlist = $('#configlist');
 			$configlist.closest('.send-stats-data-row').toggleClass('send-stats-data-hidden');
 			$configlist.closest('.send-stats-row').find('.send-stats-data-row:first-child').toggleClass('send-stats-data-only-row');
 			$(this).find('i').toggleClass('fa-angle-down fa-angle-up');
