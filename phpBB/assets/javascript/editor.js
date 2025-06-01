@@ -348,7 +348,7 @@ function storeCaret(textEl) {
 /**
 * Caret Position object
 */
-function CaretPosition() {
+function caretPosition() {
 	const start = null;
 	const end = null;
 }
@@ -357,7 +357,7 @@ function CaretPosition() {
 * Get the caret position in an textarea
 */
 function getCaretPosition(txtarea) {
-	const caretPos = new CaretPosition();
+	const caretPos = new caretPosition();
 
 	// simple Gecko/Opera way
 	if (txtarea.selectionStart || txtarea.selectionStart === 0) {
