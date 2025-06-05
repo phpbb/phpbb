@@ -1812,6 +1812,18 @@ switch ($mode)
 					$memberrow = array_merge($memberrow, $cp_row['row']);
 				}
 
+				/**
+				 * Modify the memberrow data before template variables are assigned.
+				 *
+				 * @event core.memberlist_memberrow_template_vars_before
+				 * @var integer	user_id		The current user ID.
+				 * @var array	row			Array of raw user data.
+				 * @var array	memberrow	Array of member template variables.
+				 * @since 3.3.16-B1
+				 */
+				$vars = array('user_id', 'row', 'memberrow');
+				extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_template_vars_before', compact($vars)));
+
 				$template->assign_block_vars('memberrow', $memberrow);
 
 				if (isset($cp_row['blockrow']) && count($cp_row['blockrow']))
