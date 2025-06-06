@@ -1821,7 +1821,7 @@ switch ($mode)
 				 * @var array	memberrow	Array of member template variables.
 				 * @since 3.3.16-RC1
 				 */
-				$vars = array('user_id', 'row', 'memberrow');
+				$vars = ['user_id', 'row', 'memberrow'];
 				extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_template_vars_before', compact($vars)));
 
 				$template->assign_block_vars('memberrow', $memberrow);
