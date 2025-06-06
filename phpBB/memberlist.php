@@ -1819,7 +1819,7 @@ switch ($mode)
 				 * @var integer	user_id		The current user ID.
 				 * @var array	row			Array of raw user data.
 				 * @var array	memberrow	Array of member template variables.
-				 * @since 3.3.16-B1
+				 * @since 3.3.16-RC1
 				 */
 				$vars = array('user_id', 'row', 'memberrow');
 				extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_template_vars_before', compact($vars)));
