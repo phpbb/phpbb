@@ -406,6 +406,42 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Returns an array of the table index names and relevant data in format
+	 * [
+	 *		[$index_name] = [
+	 *			'columns'	=> (array) $index_columns,
+	 *			'flags'		=> (array) $index_flags,
+	 *			'options'	=> (array) $index_options,
+	 *			'is_primary'=> (bool) $isPrimary,
+	 *			'is_unique'	=> (bool) $isUnique,
+	 *			'is_simple'	=> (bool) $isSimple,
+	 *		]
+	 *
+	 * @param string $table_name
+	 *
+	 * @return array
+	 */
+	public function sql_get_table_index_data(string $table_name): array
+	{
+		$schema = $this->get_schema();
+		$table = $schema->getTable($table_name);
+		$indexes = [];
+		foreach ($table->getIndexes() as $index)
+		{
+			$indexes[$index->getName()] = [
+				'columns'	=> array_map('strtolower', $index->getUnquotedColumns()),
+				'flags'		=> $index->getFlags(),
+				'options'	=> $index->getOptions(),
+				'is_primary'=> $index->isPrimary(),
+				'is_unique'	=> $index->isUnique(),
+				'is_simple'	=> $index->isSimpleIndex(),
+			];
+		}
+
+		return $indexes;
+	}
+
+	/**
 	 * Returns an array of indices for either unique and primary keys, or simple indices.
 	 *
 	 * @param string $table_name    The name of the table.
@@ -992,8 +1028,8 @@ class doctrine implements tools_interface
 					return $parts[1];
 				}
 				return $column;
-			}, $columns);	
-		}			
+			}, $columns);
+		}
 	}
 
 	/**
