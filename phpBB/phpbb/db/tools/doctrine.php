@@ -390,13 +390,9 @@ class doctrine implements tools_interface
 	 *			'is_simple'	=> (bool) $isSimple,
 	 *		]
 	 *
-	 * @param Schema $schema
 	 * @param string $table_name
-	 * @param string $column_name
-	 * @param array  $column_data
-	 * @param bool   $safe_check
 	 *
-	 * @throws SchemaException
+	 * @return array
 	 */
 	public function sql_get_table_index_data(string $table_name): array
 	{
