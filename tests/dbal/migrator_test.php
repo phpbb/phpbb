@@ -420,14 +420,16 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertTrue(isset($index_data_row['i_auth']));
 
 		$is_mysql = $this->db->get_sql_layer() === 'mysqli'; // Key 'lengths' option only applies to MySQL indexes
-		$is_mssql = in_array($this->db->get_sql_layer(), ['mssqlnative', 'mssql_odbc']); // MSSQL primary index key has 'clustered' flag
+		// MSSQL primary index key has 'clustered' flag, 'nonclustered' otherwise
+		// See https://learn.microsoft.com/en-us/sql/relational-databases/indexes/clustered-and-nonclustered-indexes-described?view=sql-server-ver17#indexes-and-constraints 
+		$is_mssql = in_array($this->db->get_sql_layer(), ['mssqlnative', 'mssql_odbc']);
 		foreach ($index_data_row as $index_name => $index_data)
 		{
 			switch ($index_name)
 			{
 				case 'i_simple':
 					$this->assertEquals(['user_id', 'endpoint'], $index_data['columns']);
-					$this->assertEmpty($index_data['flags']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
 					$this->assertFalse($index_data['is_unique']);
 					$this->assertTrue($index_data['is_simple']);
@@ -437,7 +439,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				break;
 				case 'i_uniq':
 					$this->assertEquals(['expiration_time', 'p256dh'], $index_data['columns']);
-					$this->assertEmpty($index_data['flags']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
 					$this->assertTrue($index_data['is_unique']);
 					$this->assertFalse($index_data['is_simple']);
@@ -447,7 +449,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				break;
 				case 'i_auth':
 					$this->assertEquals(['auth'], $index_data['columns']);
-					$this->assertEmpty($index_data['flags']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
 					$this->assertFalse($index_data['is_unique']);
 					$this->assertTrue($index_data['is_simple']);
