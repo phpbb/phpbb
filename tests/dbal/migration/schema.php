@@ -26,9 +26,9 @@ class phpbb_dbal_migration_schema extends \phpbb\db\migration\migration
 					'COLUMNS' => [
 						'module_id'			=> ['UINT:3', NULL, 'auto_increment'],
 						'user_id'			=> ['ULINT', 0],
-						'endpoint'			=> ['TEXT', ''],
+						'endpoint'			=> ['VCHAR:220', ''],
 						'expiration_time'	=> ['TIMESTAMP', 0],
-						'p256dh'			=> ['VCHAR', ''],
+						'p256dh'			=> ['VCHAR:200', ''],
 						'auth'				=> ['VCHAR:100', ''],
 					],
 					'PRIMARY_KEY'	=> 'module_id',
