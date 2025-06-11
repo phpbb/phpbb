@@ -414,7 +414,12 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_foobar'));
 
 		$index_data_row = $this->db_tools->sql_get_table_index_data('phpbb_foobar');
-		$is_mysql = $this->db->get_sql_layer() === 'mysqli'; // Index length only applies to MySQL indexes
+		$this->assertEquals(4, count($index_data_row));
+		$this->assertTrue(isset($index_data_row['i_simple']));
+		$this->assertTrue(isset($index_data_row['i_uniq']));
+		$this->assertTrue(isset($index_data_row['i_auth']));
+
+		$is_mysql = $this->db->get_sql_layer() === 'mysqli'; // Key 'lengths' option only applies to MySQL indexes
 		$is_mssql = in_array($this->db->get_sql_layer(), ['mssqlnative', 'mssql_odbc']); // MSSQL primary index key has 'clustered' flag
 		foreach ($index_data_row as $index_name => $index_data)
 		{
