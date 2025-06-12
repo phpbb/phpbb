@@ -23,10 +23,7 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 	{
 		global $phpbb_root_path;
 
-		// Test the engine can be used
 		$this->setup_engine([], $phpbb_root_path . 'styles/all/template');
-
-		$this->template->clear_cache();
 
 		global $phpbb_filesystem;
 
@@ -38,8 +35,6 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 		$this->wrapper = new \phpbb\cron\task\wrapper(
 			$this->task,
 			$this->routing_helper,
-			'/phpbb/',
-			'php',
 			$this->template
 		);
 	}
@@ -62,8 +57,6 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 		$this->wrapper = new \phpbb\cron\task\wrapper(
 			$this->task,
 			$this->routing_helper,
-			'/phpbb/',
-			'php',
 			$this->template
 		);
 
@@ -100,8 +93,6 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 		$this->wrapper = new \phpbb\cron\task\wrapper(
 			$this->task,
 			$this->routing_helper,
-			'/phpbb/',
-			'php',
 			$this->template
 		);
 
@@ -127,8 +118,6 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 		$this->wrapper = new \phpbb\cron\task\wrapper(
 			$this->task,
 			$this->routing_helper,
-			'/phpbb/',
-			'php',
 			$this->template
 		);
 		$this->task->expects($this->once())
