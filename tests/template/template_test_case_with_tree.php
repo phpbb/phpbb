@@ -15,7 +15,7 @@ require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_template_test_case_with_tree extends phpbb_template_template_test_case
 {
-	protected function setup_engine(array $new_config = array())
+	protected function setup_engine(array $new_config = array(), string $template_path = '')
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
