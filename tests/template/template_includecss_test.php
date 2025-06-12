@@ -21,7 +21,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 	/** @var string */
 	protected $parent_template_path;
 
-	protected function setup_engine(array $new_config = array())
+	protected function setup_engine(array $new_config = array(), string $template_path = '')
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
