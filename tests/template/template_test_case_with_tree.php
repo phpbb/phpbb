@@ -21,7 +21,7 @@ class phpbb_template_template_test_case_with_tree extends phpbb_template_templat
 	/** @var string */
 	protected $parent_template_path;
 
-	protected function setup_engine(array $new_config = array())
+	protected function setup_engine(array $new_config = [], string $template_path = '')
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
