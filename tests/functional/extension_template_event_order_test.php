@@ -1,19 +1,19 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 /**
-* @group functional
-*/
+ * @group functional
+ */
 class phpbb_functional_extension_template_event_order_test extends phpbb_functional_test_case
 {
 	static private $helper;
@@ -58,9 +58,9 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 	}
 
 	/**
-	* Check a controller for extension foo/bar.
-	*/
-	public function test_template_event_order()
+	 * Check extensions template event listener prioritizing
+	 */
+	public function test_different_template_event_priority()
 	{
 		global $phpbb_root_path;
 
@@ -87,5 +87,19 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 		// Ensure foo/foo template event goes before foo/bar one
 		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 4)->filter('span')->text());
 		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 3)->filter('span')->text());
+	}
+
+	/**
+	 * Check extensions template event listener equal (default - 0) priority rendering
+	 * Should render in the order of reading listener files from the filesystem
+	 */
+	public function test_same_template_event_priority()
+	{
+		global $phpbb_root_path;
+
+		$crawler = self::request('GET', 'index.php');
+		// Ensure foo/bar template event goes before foo/foo one (assuming they have been read from the filesystem in alphabetical order)
+		$this->assertStringContainsString('FOO_BAR_FORUMLIST_BODY_BEFORE', $crawler->filter('p[id*="forumlist_body_before"]')->eq(0)->text());
+		$this->assertStringContainsString('FOO_FOO_FORUMLIST_BODY_BEFORE', $crawler->filter('p[id*="forumlist_body_before"]')->eq(1)->text());
 	}
 }

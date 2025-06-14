@@ -46,49 +46,47 @@ class event extends \Twig\Node\Node
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
 
-		$template_events = [];
+		$template_event_listeners = [];
 
 		// Group and sort extension template events in according to their priority (0 by default if not set)
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
-			$priority_key = $this->template_event_priority_array[$ext_namespace][$location] ?? 0;
-			$template_events[$priority_key][] = $ext_namespace;
+			$priority_key = intval($this->template_event_priority_array[$ext_namespace][$location] ?? 0);
+			$template_event_listeners[$priority_key][] = $ext_namespace;
 		}
-		krsort($template_events);
+		krsort($template_event_listeners);
 
-		foreach ($template_events as $events)
+		$template_event_listeners = array_merge(...$template_event_listeners);
+		foreach ($template_event_listeners as $ext_namespace)
 		{
-			foreach ($events as $ext_namespace)
+			if ($this->environment->isDebug())
 			{
-				if ($this->environment->isDebug())
-				{
-					// If debug mode is enabled, lets check for new/removed EVENT
-					//  templates on page load rather than at compile. This is
-					//  slower, but makes developing extensions easier (no need to
-					//  purge the cache when a new event template file is added)
-					$compiler
-						->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
-						->indent();
-				}
+				// If debug mode is enabled, lets check for new/removed EVENT
+				//  templates on page load rather than at compile. This is
+				//  slower, but makes developing extensions easier (no need to
+				//  purge the cache when a new event template file is added)
+				$compiler
+					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
+					->indent();
+			}
 
-				if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
-				{
-					$compiler
-						->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
+			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
+			{
+				$compiler
+					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
-						// We set the namespace lookup order to be this extension first, then the main path
-						->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
-						->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
-						->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
-				}
+					// We set the namespace lookup order to be this extension first, then the main path
+					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
+					->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
+					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
+			}
 
-				if ($this->environment->isDebug())
-				{
-					$compiler
-						->outdent()
-						->write("}\n\n");
-				}
+			if ($this->environment->isDebug())
+			{
+				$compiler
+					->outdent()
+					->write("}\n\n");
 			}
 		}
 	}
