@@ -34,41 +34,48 @@ self.addEventListener('push', event => {
 		notificationVersion = parseInt(notificationData.version, 10);
 		pushToken = notificationData.token;
 	} catch {
-		self.registration.showNotification(event.data.text());
+		event.waitUntil(self.registration.showNotification(event.data.text()));
 		return;
 	}
 
-	const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
-	const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
+	event.waitUntil((async() => {
+		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
+		const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
 
-	// Force update if versions differ
-	if (assetsVersion !== notificationVersion) {
-		self.registration.update();
-	}
+		// Force update if versions differ
+		if (assetsVersion !== notificationVersion) {
+			await self.registration.update();
+		}
 
-	const formData = new FormData();
-	formData.append('item_id', itemId.toString(10));
-	formData.append('type_id', typeId.toString(10));
-	formData.append('user_id', userId.toString(10));
-	formData.append('token', pushToken);
+		const formData = new FormData();
+		formData.append('item_id', itemId.toString(10));
+		formData.append('type_id', typeId.toString(10));
+		formData.append('user_id', userId.toString(10));
+		formData.append('token', pushToken);
 
-	fetch(getNotificationUrl, {
-		method: 'POST',
-		headers: {
-			'X-Requested-With': 'XMLHttpRequest',
-		},
-		body: formData,
-	})
-		.then(response => response.json())
-		.then(response => {
-			const responseBody = response.title + '\n' + response.text;
+		try {
+			const response = await fetch(getNotificationUrl, {
+				method: 'POST',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				},
+				body: formData,
+			});
+
+			const responseData = await response.json();
+
+			const responseBody = responseData.title + '\n' + responseData.text;
 			const options = {
 				body: responseBody,
-				data: response,
-				icon: response.avatar.src,
+				data: responseData,
+				icon: responseData.avatar.src,
 			};
-			self.registration.showNotification(response.heading, options);
-		});
+
+			await self.registration.showNotification(responseData.heading, options);
+		} catch (e) {
+			console.error('Push error:', e);
+		}
+	})());
 });
 
 /**
