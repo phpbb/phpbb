@@ -339,6 +339,14 @@ class helper
 	protected function render_language_select($selected_language = null)
 	{
 		$langs = $this->lang_helper->get_available_languages();
+
+		// The first language will be selected by default. Unless a user has consciously included
+		// other languages in the installation process, it will be British English anyway.
+		if ($selected_language === null && count($langs))
+		{
+			$selected_language = $langs[0]['iso'];
+		}
+
 		foreach ($langs as $lang)
 		{
 			$this->template->assign_block_vars('language_select_item', array(

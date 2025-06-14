@@ -67,6 +67,18 @@ class language_file_helper
 			);
 		}
 
+		usort($available_languages, [$this, 'sort_by_local_name']);
+
 		return $available_languages;
+	}
+
+	/**
+	 * Sorts the languages by their name instead of iso code
+	 *
+	 * @return array
+	 */
+	private static function sort_by_local_name($a, $b)
+	{
+		return $a['local_name'] > $b['local_name'];
 	}
 }
