@@ -17,8 +17,6 @@ require_once __DIR__ . '/../../phpBB/includes/acp/acp_modules.php';
 */
 class phpbb_functional_extension_module_test extends phpbb_functional_test_case
 {
-	protected $phpbb_extension_manager;
-
 	private static $helper;
 
 	protected static $fixtures = array(
