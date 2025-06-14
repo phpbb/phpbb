@@ -36,7 +36,7 @@
 		"composer/composer": "^2.0",
 		"composer/installers": "^1.9",
 		"composer/package-versions-deprecated": "^1.11",
-		"doctrine/dbal": "~3.3.6",
+		"doctrine/dbal": "^3.9",
 		"google/recaptcha": "~1.1",
 		"guzzlehttp/guzzle": " ^7.0",
 		"marc1706/fast-image-size": "^1.1",

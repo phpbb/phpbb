@@ -15,7 +15,7 @@ namespace phpbb\db\driver;
 
 /**
 * SQLite3 Database Abstraction Layer
-* Minimum Requirement: 3.6.15+
+* Minimum Requirement: 3.8.3+
 */
 class sqlite3 extends \phpbb\db\driver\driver
 {
