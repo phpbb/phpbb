@@ -1,4 +1,8 @@
 /* global phpbb */
+/* eslint camelcase: 0 */
+/* eslint no-undef: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint no-var: 0 */
 
 /**
 * Hide and show all checkboxes
@@ -9,12 +13,11 @@ function display_checkboxes(status) {
 	var cb = document.getElementsByTagName('input');
 	var display;
 
-	//show
 	if (status) {
+		// show
 		display = 'inline';
-	}
-	//hide
-	else {
+	} else {
+		// hide
 		display = 'none';
 	}
 
@@ -31,10 +34,10 @@ function display_checkboxes(status) {
 * value = 0 (hidden) till 10 (fully visible)
 */
 function set_opacity(e, value) {
-	e.style.opacity = value/10;
+	e.style.opacity = value / 10;
 
-	//IE opacity currently turned off, because of its astronomical stupidity
-	//e.style.filter = 'alpha(opacity=' + value*10 + ')';
+	// IE opacity currently turned off, because of its astronomical stupidity
+	// e.style.filter = 'alpha(opacity=' + value*10 + ')';
 }
 
 /**
@@ -72,11 +75,11 @@ function reset_opacity(status, except_id) {
 		}
 	}
 
-	if (typeof(except_id) !== 'undefined') {
+	if (typeof (except_id) !== 'undefined') {
 		set_opacity(document.getElementById('perm' + except_id), 10);
 	}
 
-	//reset checkboxes too
+	// reset checkboxes too
 	marklist('set-permissions', 'inherit', !status);
 }
 
@@ -86,13 +89,14 @@ function reset_opacity(status, except_id) {
 * rb = array of radiobuttons
 */
 function get_radio_status(index, rb) {
-	for (var i = index; i < rb.length; i = i + 3 ) {
+	for (var i = index; i < rb.length; i += 3 ) {
 		if (rb[i].checked !== true) {
 			if (i > index) {
-				//at least one is true, but not all (custom)
+				// at least one is true, but not all (custom)
 				return 2;
 			}
-			//first one is not true
+
+			// first one is not true
 			return 0;
 		}
 	}
@@ -111,7 +115,7 @@ function set_colours(id, init, quick) {
 	var table = document.getElementById('table' + id);
 	var tab = document.getElementById('tab' + id);
 
-	if (typeof(quick) !== 'undefined') {
+	if (typeof (quick) !== 'undefined') {
 		tab.className = 'permissions-preset-' + quick + ' activetab';
 		return;
 	}
@@ -161,7 +165,7 @@ function init_colours(block_id) {
 		}
 	}
 
-	tab.className = tab.className + ' activetab';
+	tab.className += ' activetab';
 }
 
 /**
@@ -170,11 +174,12 @@ function init_colours(block_id) {
 * adv = we are opening advanced permissions
 * view = called from view permissions
 */
+// eslint-disable-next-line max-params
 function swap_options(pmask, fmask, cat, adv, view) {
 	id = pmask + fmask + cat;
 	active_option = active_pmask + active_fmask + active_cat;
 
-	var	old_tab = document.getElementById('tab' + active_option);
+	var old_tab = document.getElementById('tab' + active_option);
 	var new_tab = document.getElementById('tab' + id);
 	var adv_block = document.getElementById('advanced' + pmask + fmask);
 
@@ -196,14 +201,14 @@ function swap_options(pmask, fmask, cat, adv, view) {
 		display_checkboxes(true);
 		reset_opacity(1);
 	} else if (adv) {
-		//Checkbox might have been clicked, but we need full visibility
+		// Checkbox might have been clicked, but we need full visibility
 		display_checkboxes(true);
 		reset_opacity(1);
 	}
 
 	// set active tab
-	old_tab.className = old_tab.className.replace(/\ activetab/g, '');
-	new_tab.className = new_tab.className + ' activetab';
+	old_tab.className = old_tab.className.replace(/ activetab/g, '');
+	new_tab.className += ' activetab';
 
 	if (id === active_option && adv !== true) {
 		return;
@@ -211,7 +216,7 @@ function swap_options(pmask, fmask, cat, adv, view) {
 
 	phpbb.toggleDisplay('options' + active_option, -1);
 
-	//hiding and showing the checkbox
+	// hiding and showing the checkbox
 	if (document.getElementById('checkbox' + active_pmask + active_fmask)) {
 		phpbb.toggleDisplay('checkbox' + pmask + fmask, -1);
 
@@ -227,6 +232,7 @@ function swap_options(pmask, fmask, cat, adv, view) {
 	if (!view) {
 		phpbb.toggleDisplay('advanced' + pmask + fmask, 1);
 	}
+
 	phpbb.toggleDisplay('options' + id, 1);
 
 	active_pmask = pmask;
@@ -248,7 +254,7 @@ function mark_options(id, s) {
 	var rb = t.getElementsByTagName('input');
 
 	for (var r = 0; r < rb.length; r++) {
-		if (rb[r].id.substr(rb[r].id.length-1) === s) {
+		if (rb[r].id.substr(rb[r].id.length - 1) === s) {
 			rb[r].checked = true;
 		}
 	}
@@ -264,7 +270,7 @@ function mark_one_option(id, field_name, s) {
 	var rb = t.getElementsByTagName('input');
 
 	for (var r = 0; r < rb.length; r++) {
-		if (rb[r].id.substr(rb[r].id.length-field_name.length-3, field_name.length) === field_name && rb[r].id.substr(rb[r].id.length-1) === s) {
+		if (rb[r].id.substr(rb[r].id.length - field_name.length - 3, field_name.length) === field_name && rb[r].id.substr(rb[r].id.length - 1) === s) {
 			rb[r].checked = true;
 		}
 	}
@@ -287,10 +293,10 @@ function reset_role(id) {
 	}
 
 	// Before resetting the role dropdown, try and match any permission role
-	var parent = t.parentNode,
-		roleId = match_role_settings(id.replace('role', 'perm')),
-		text = no_role_assigned,
-		index = 0;
+	var parent = t.parentNode;
+	var roleId = match_role_settings(id.replace('role', 'perm'));
+	var text = no_role_assigned;
+	var index = 0;
 
 	// If a role permissions was matched, grab that option's value and index
 	if (roleId) {
@@ -326,7 +332,9 @@ function set_role_settings(role_id, target_id) {
 	mark_options(target_id, 'u');
 
 	for (var r in settings) {
-		mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
+		if (Object.prototype.hasOwnProperty.call(settings, r)) {
+			mark_one_option(target_id, r, (settings[r] === 1) ? 'y' : 'n');
+		}
 	}
 }
 
@@ -337,9 +345,9 @@ function set_role_settings(role_id, target_id) {
  * @return {number}			The permission role identifier
  */
 function match_role_settings(id) {
-	var fieldset = document.getElementById(id),
-		radios = fieldset.getElementsByTagName('input'),
-		set = {};
+	var fieldset = document.getElementById(id);
+	var radios = fieldset.getElementsByTagName('input');
+	var set = {};
 
 	// Iterate over all the radio buttons
 	for (var i = 0; i < radios.length; i++) {
@@ -355,8 +363,7 @@ function match_role_settings(id) {
 	set = sort_and_stringify(set);
 
 	// Iterate over the available role options and return the first match
-	for (var r in role_options)
-	{
+	for (var r in role_options) {
 		if (sort_and_stringify(role_options[r]) === set) {
 			return parseInt(r, 10);
 		}
@@ -372,7 +379,7 @@ function match_role_settings(id) {
  * @return {string}			The sorted object as a string
  */
 function sort_and_stringify(obj) {
-	return JSON.stringify(Object.keys(obj).sort().reduce(function (result, key) {
+	return JSON.stringify(Object.keys(obj).sort().reduce((result, key) => {
 		result[key] = obj[key];
 		return result;
 	}, {}));

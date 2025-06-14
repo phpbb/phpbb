@@ -2,6 +2,9 @@
  * Installer's AJAX frontend handler
  */
 
+/* eslint no-prototype-builtins: 0 */
+/* eslint no-var: 0 */
+
 (function($) { // Avoid conflicts with other libraries
 	'use strict';
 
@@ -46,7 +49,10 @@
 		var $warningContainer = $('#warning-container');
 		var $logContainer = $('#log-container');
 
-		var $title, $description, $msgElement, arraySize = messages.length;
+		var $title;
+		var $description;
+		var $msgElement;
+		var arraySize = messages.length;
 		for (var i = 0; i < arraySize; i++) {
 			$msgElement = $('<div />');
 			$title = $('<strong />');
@@ -59,24 +65,19 @@
 				$msgElement.append($description);
 			}
 
-			switch (type) {
-				case 'error':
-					$msgElement.addClass('errorbox');
-					$errorContainer.append($msgElement);
-					break;
-				case 'warning':
-					$msgElement.addClass('warningbox');
-					$warningContainer.append($msgElement);
-					break;
-				case 'log':
-					$msgElement.addClass('log');
-					$logContainer.prepend($msgElement);
-					$logContainer.addClass('show_log_container');
-					break;
-				case 'success':
-					$msgElement.addClass('successbox');
-					$errorContainer.prepend($msgElement);
-					break;
+			if (type === 'error') {
+				$msgElement.addClass('errorbox');
+				$errorContainer.append($msgElement);
+			} else if (type === 'warning') {
+				$msgElement.addClass('warningbox');
+				$warningContainer.append($msgElement);
+			} else if (type === 'log') {
+				$msgElement.addClass('log');
+				$logContainer.prepend($msgElement);
+				$logContainer.addClass('show_log_container');
+			} else if (type === 'success') {
+				$msgElement.addClass('successbox');
+				$errorContainer.prepend($msgElement);
 			}
 		}
 	}
@@ -84,10 +85,12 @@
 	/**
 	 * Render a download box
 	 */
-	function addDownloadBox(downloadArray)
-	{
+	function addDownloadBox(downloadArray) {
 		var $downloadContainer = $('#download-wrapper');
-		var $downloadBox, $title, $content, $link;
+		var $downloadBox;
+		var $title;
+		var $content;
+		var $link;
 
 		for (var i = 0; i < downloadArray.length; i++) {
 			$downloadBox = $('<div />');
@@ -116,8 +119,7 @@
 	/**
 	 * Render update files' status
 	 */
-	function addUpdateFileStatus(fileStatus)
-	{
+	function addUpdateFileStatus(fileStatus) {
 		var $statusContainer = $('#file-status-wrapper');
 		$statusContainer.html(fileStatus);
 	}
@@ -140,8 +142,10 @@
 	 * @param navObj
 	 */
 	function updateNavbarStatus(navObj) {
-		var navID, $stage, $stageListItem, $active;
-		$active = $('#activemenu');
+		var navID;
+		var $stage;
+		var $stageListItem;
+		var $active = $('#activemenu');
 
 		if (navObj.hasOwnProperty('finished')) {
 			// This should be an Array
@@ -179,7 +183,11 @@
 	 * @param progressObject
 	 */
 	function setProgress(progressObject) {
-		var $statusText, $progressBar, $progressText, $progressFiller, $progressFillerText;
+		var $statusText;
+		var $progressBar;
+		var $progressText;
+		var $progressFiller;
+		var $progressFillerText;
 
 		if (progressObject.task_name.length) {
 			if (!progressBarTriggered) {
@@ -246,8 +254,8 @@
 	}
 
 	// Redirects user
-	function redirect(url, use_ajax) {
-		if (use_ajax) {
+	function redirect(url, useAjax) {
+		if (useAjax) {
 			resetPolling();
 
 			var xhReq = createXhrObject();
@@ -276,6 +284,7 @@
 			if (window.console) {
 				console.log('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
 			} else {
+				// eslint-disable-next-line no-alert
 				alert('Failed to parse JSON object\n\nMessage: ' + err.message + '\n\nServer Response: ' + messageJSON);
 			}
 
@@ -358,12 +367,14 @@
 			setTimeout(queryInstallerStatus, 5000);
 		} else {
 			$('#loading_indicator').css('display', 'none');
-			addMessage('error',
-				[{
+			addMessage('error', [
+				{
+					// eslint-disable-next-line no-undef
 					title: installLang.title,
-					description: installLang.msg
-				}]
-			);
+					// eslint-disable-next-line no-undef
+					description: installLang.msg,
+				},
+			]);
 		}
 	}
 
@@ -385,7 +396,7 @@
 		}
 
 		url = url.substring(0, position) + lookUp + '/installer/status';
-		$.getJSON(url, function(data) {
+		$.getJSON(url, data => {
 			processTimeoutResponse(data.status);
 		});
 	}
@@ -398,7 +409,10 @@
 	function pollContent(xhReq) {
 		var messages = xhReq.responseText;
 		var msgSeparator = '}\n\n';
-		var unprocessed, messageEndIndex, endOfMessageIndex, message;
+		var unprocessed;
+		var messageEndIndex;
+		var endOfMessageIndex;
+		var message;
 
 		do {
 			unprocessed = messages.substring(nextReadPosition);
@@ -466,7 +480,7 @@
 		currentProgress = Math.floor(progressStart);
 
 		clearInterval(progressTimer);
-		progressTimer = setInterval(function() {
+		progressTimer = setInterval(() => {
 			incrementFiller($progressText, $progressFiller, $progressFillerText, progressLimit);
 		}, 10);
 	}
@@ -487,7 +501,7 @@
 	function startPolling(xhReq) {
 		resetPolling();
 		transmissionOver = false;
-		pollTimer = setInterval(function () {
+		pollTimer = setInterval(() => {
 			pollContent(xhReq);
 		}, 250);
 	}
@@ -605,11 +619,13 @@
 	function interceptFormSubmit($form) {
 		if (!$form.length) {
 			return;
-		} else if ($form.find('input[name="admin_name"]').length > 0) {
+		}
+
+		if ($form.find('input[name="admin_name"]').length > 0) {
 			setAdminTimezone($form);
 		}
 
-		$form.find(':submit').bind('click', function (event) {
+		$form.find(':submit').bind('click', function(event) {
 			event.preventDefault();
 			submitForm($form, $(this));
 		});
@@ -623,7 +639,8 @@
 	function setAdminTimezone($form) {
 		// Set admin timezone if it does not exist yet
 		if ($form.find('input[name="admin_timezone"]').length === 0) {
-			const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+			// eslint-disable-next-line new-cap
+			const { timeZone } = Intl.DateTimeFormat().resolvedOptions();
 
 			// Add timezone as form entry
 			const timezoneEntry = $('<input type="hidden" name="admin_timezone" value="' + timeZone + '">');
