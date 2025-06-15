@@ -280,7 +280,9 @@ class installer
 		}
 		catch (\Exception $e)
 		{
-			$this->iohandler->add_error_message($e->getMessage());
+			$stack_trace = phpbb_filter_root_path(str_replace("\n", '<br>', $e->getTraceAsString()));
+			$message = $e->getMessage();
+			$this->iohandler->add_error_message($message, $stack_trace);
 			$this->iohandler->send_response(true);
 			$fail_cleanup = true;
 		}

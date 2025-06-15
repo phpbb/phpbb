@@ -276,6 +276,12 @@ class acp_extensions
 				{
 					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
 				}
+				catch (\Exception $e)
+				{
+					$stack_trace = phpbb_filter_root_path(str_replace("\n", '<br>', $e->getTraceAsString()));
+					$message = $e->getMessage();
+					$this->template->assign_var('MIGRATOR_ERROR', '<b>' . $message . '</b><br><br>' . $stack_trace);
+				}
 
 				$this->tpl_name = 'acp_ext_enable';
 
