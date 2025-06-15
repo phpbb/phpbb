@@ -65,6 +65,8 @@ class language_file_helper
 			$available_languages[] = $this->get_language_data_from_json($data);
 		}
 
+		usort($available_languages, [$this, 'sort_by_local_name']);
+
 		return $available_languages;
 	}
 
@@ -122,5 +124,15 @@ class language_file_helper
 			'recaptcha_lang'	=> $data['extra']['recaptcha-lang'],
 			'turnstile_lang'	=> $data['extra']['turnstile-lang'] ?? '',
 		];
+	}
+
+	/**
+	 * Sorts the languages by their name instead of iso code
+	 *
+	 * @return array
+	 */
+	private static function sort_by_local_name($a, $b)
+	{
+		return $a['local_name'] > $b['local_name'];
 	}
 }
