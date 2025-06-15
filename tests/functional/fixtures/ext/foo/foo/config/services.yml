@@ -1,3 +1,8 @@
 services:
     foo_foo.controller:
         class: foo\foo\controller\controller
+
+    foo_foo.listener.template_event_order:
+        class: foo\foo\event\template_event_order
+        tags:
+            - { name: event.listener }

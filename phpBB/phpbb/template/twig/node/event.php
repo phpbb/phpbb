@@ -24,9 +24,13 @@ class event extends \Twig\Node\Node
 	/** @var \phpbb\template\twig\environment */
 	protected $environment;
 
-	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null)
+	/** @var array */
+	protected $template_event_priority_array;
+
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null, $template_event_priority_array = [])
 	{
 		$this->environment = $environment;
+		$this->template_event_priority_array = $template_event_priority_array;
 
 		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
 	}
@@ -42,10 +46,20 @@ class event extends \Twig\Node\Node
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
 
+		$template_event_listeners = [];
+
+		// Group and sort extension template events in according to their priority (0 by default if not set)
 		foreach ($this->environment->get_phpbb_extensions() as $ext_namespace => $ext_path)
 		{
 			$ext_namespace = str_replace('/', '_', $ext_namespace);
+			$priority_key = intval($this->template_event_priority_array[$ext_namespace][$location] ?? 0);
+			$template_event_listeners[$priority_key][] = $ext_namespace;
+		}
+		krsort($template_event_listeners);
 
+		$template_event_listeners = array_merge(...$template_event_listeners);
+		foreach ($template_event_listeners as $ext_namespace)
+		{
 			if ($this->environment->isDebug())
 			{
 				// If debug mode is enabled, lets check for new/removed EVENT
@@ -54,8 +68,7 @@ class event extends \Twig\Node\Node
 				//  purge the cache when a new event template file is added)
 				$compiler
 					->write("if (\$this->env->getLoader()->exists('@{$ext_namespace}/{$location}.html')) {\n")
-					->indent()
-				;
+					->indent();
 			}
 
 			if ($this->environment->isDebug() || $this->environment->getLoader()->exists('@' . $ext_namespace . '/' . $location . '.html'))
@@ -66,16 +79,14 @@ class event extends \Twig\Node\Node
 					// We set the namespace lookup order to be this extension first, then the main path
 					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
 					->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
-					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n")
-				;
+					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
 			}
 
 			if ($this->environment->isDebug())
 			{
 				$compiler
 					->outdent()
-					->write("}\n\n")
-				;
+					->write("}\n\n");
 			}
 		}
 	}
