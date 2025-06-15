@@ -129,10 +129,23 @@ class language_file_helper
 	/**
 	 * Sorts the languages by their name instead of iso code
 	 *
-	 * @return array
+	 * @param mixed $a First language data
+	 * @param mixed $b Second language data
+	 * @return int
 	 */
-	private static function sort_by_local_name($a, $b)
+	private static function sort_by_local_name(mixed $a, mixed $b): int
 	{
-		return $a['local_name'] > $b['local_name'];
+		if ($a['local_name'] > $b['local_name'])
+		{
+			return 1;
+		}
+		else if ($a['local_name'] < $b['local_name'])
+		{
+			return -1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 }
