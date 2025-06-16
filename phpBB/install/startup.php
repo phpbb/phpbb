@@ -107,7 +107,7 @@ function installer_msg_handler($errno, $msg_text, $errfile, $errline): bool
 				{
 					/** @var \phpbb\install\helper\iohandler\iohandler_interface $iohandler */
 					$iohandler = $phpbb_installer_container->get('installer.helper.iohandler');
-					$iohandler->add_error_message($msg);
+					$iohandler->add_error_message($msg, get_backtrace());
 					$iohandler->send_response(true);
 					exit();
 				}

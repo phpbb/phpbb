@@ -458,34 +458,26 @@ class doctrine implements tools_interface
 	 */
 	protected function alter_schema(callable $callback)
 	{
-		try
+		$current_schema = $this->get_schema();
+		$new_schema = clone $current_schema;
+		call_user_func($callback, $new_schema);
+
+		$comparator = new comparator();
+		$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
+		$queries = $schemaDiff->toSql($this->get_schema_manager()->getDatabasePlatform());
+
+		if ($this->return_statements)
 		{
-			$current_schema = $this->get_schema();
-			$new_schema = clone $current_schema;
-			call_user_func($callback, $new_schema);
-
-			$comparator = new comparator();
-			$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
-			$queries = $schemaDiff->toSql($this->get_schema_manager()->getDatabasePlatform());
-
-			if ($this->return_statements)
-			{
-				return $queries;
-			}
-
-			foreach ($queries as $query)
-			{
-				// executeQuery() must be used here because $query might return a result set, for instance REPAIR does
-				$this->connection->executeQuery($query);
-			}
-
-			return true;
+			return $queries;
 		}
-		catch (Exception $e)
+
+		foreach ($queries as $query)
 		{
-			// @todo: check if it makes sense to properly handle the exception
-			return [$e->getMessage()];
+			// executeQuery() must be used here because $query might return a result set, for instance REPAIR does
+			$this->connection->executeQuery($query);
 		}
+
+		return true;
 	}
 
 	/**
