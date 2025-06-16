@@ -408,6 +408,61 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
 		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_foobar'));
 
+		$index_data_row = $this->db_tools->sql_get_table_index_data('phpbb_foobar');
+		$this->assertEquals(4, count($index_data_row));
+		$this->assertTrue(isset($index_data_row['i_simple']));
+		$this->assertTrue(isset($index_data_row['i_uniq']));
+		$this->assertTrue(isset($index_data_row['i_auth']));
+
+		$is_mysql = $this->db->get_sql_layer() === 'mysqli'; // Key 'lengths' option only applies to MySQL indexes
+		// MSSQL primary index key has 'clustered' flag, 'nonclustered' otherwise
+		// See https://learn.microsoft.com/en-us/sql/relational-databases/indexes/clustered-and-nonclustered-indexes-described?view=sql-server-ver17#indexes-and-constraints 
+		$is_mssql = in_array($this->db->get_sql_layer(), ['mssqlnative', 'mssql_odbc']);
+		foreach ($index_data_row as $index_name => $index_data)
+		{
+			switch ($index_name)
+			{
+				case 'i_simple':
+					$this->assertEquals(['user_id', 'endpoint'], $index_data['columns']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
+					$this->assertFalse($index_data['is_primary']);
+					$this->assertFalse($index_data['is_unique']);
+					$this->assertTrue($index_data['is_simple']);
+					$this->assertEquals(2, count($index_data['options']['lengths']));
+					$this->assertEmpty($index_data['options']['lengths'][0]);
+					$this->assertEquals($is_mysql ? 191 : null, $index_data['options']['lengths'][1]);
+				break;
+				case 'i_uniq':
+					$this->assertEquals(['expiration_time', 'p256dh'], $index_data['columns']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
+					$this->assertFalse($index_data['is_primary']);
+					$this->assertTrue($index_data['is_unique']);
+					$this->assertFalse($index_data['is_simple']);
+					$this->assertEquals(2, count($index_data['options']['lengths']));
+					$this->assertEmpty($index_data['options']['lengths'][0]);
+					$this->assertEquals($is_mysql ? 100 : null, $index_data['options']['lengths'][1]);
+				break;
+				case 'i_auth':
+					$this->assertEquals(['auth'], $index_data['columns']);
+					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
+					$this->assertFalse($index_data['is_primary']);
+					$this->assertFalse($index_data['is_unique']);
+					$this->assertTrue($index_data['is_simple']);
+					$this->assertEquals(1, count($index_data['options']['lengths']));
+					$this->assertEmpty($index_data['options']['lengths'][0]);
+				break;
+				default: // Primary key
+					$this->assertEquals(['module_id'], $index_data['columns']);
+					$this->assertEquals($is_mssql ? ['clustered'] : [], $index_data['flags']);
+					$this->assertTrue($index_data['is_primary']);
+					$this->assertTrue($index_data['is_unique']);
+					$this->assertFalse($index_data['is_simple']);
+					$this->assertEquals(1, count($index_data['options']['lengths']));
+					$this->assertEmpty($index_data['options']['lengths'][0]);
+				break;
+			}
+		}
+
 		while ($this->migrator->migration_state('phpbb_dbal_migration_schema'))
 		{
 			$this->migrator->revert('phpbb_dbal_migration_schema');
