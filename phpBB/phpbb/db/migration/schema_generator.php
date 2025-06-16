@@ -187,6 +187,7 @@ class schema_generator
 			'add_index'			=> 'KEYS',
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
+			'rename_index'		=> 'KEYS',
 		];
 
 		$schema_changes = $migration->update_schema();
@@ -206,6 +207,7 @@ class schema_generator
 			{
 				case 'add':
 				case 'change':
+				case 'rename':
 					$action = function(&$value, $changes, $value_transform = null) {
 						self::set_all($value, $changes, $value_transform);
 					};
@@ -347,7 +349,7 @@ class schema_generator
 	 */
 	private static function get_value_transform(string $change_type, string $schema_type) : Closure|null
 	{
-		if ($change_type !== 'add')
+		if (!in_array($change_type, ['add', 'rename']))
 		{
 			return null;
 		}
@@ -355,6 +357,23 @@ class schema_generator
 		switch ($schema_type)
 		{
 			case 'index':
+				if ($change_type == 'rename')
+				{
+					return function(&$value, $key, $change) {
+						if (isset($value[$key]))
+						{
+							$data_backup = $value[$key];
+							unset($value[$key]);
+							$value[$change] = $data_backup;
+							unset($data_backup);
+						}
+						else
+						{
+							return null;
+						}
+					};
+				}
+
 				return function(&$value, $key, $change) {
 					$value[$key] = ['INDEX', $change];
 				};

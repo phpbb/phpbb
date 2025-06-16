@@ -27,14 +27,74 @@ class rename_auth_role_id_index extends migration
 	public function update_schema()
 	{
 		return [
-			'drop_keys' => [
-				$this->table_prefix . 'acl_users' => [
-					'auth_role_id',
+			'rename_index' => [
+				$this->table_prefix . 'acl_groups' => [
+					'auth_role_id' => 'aclgrps_auth_role_id',
+					'group_id' => 'aclgrps_group_id',
 				],
-			],
-			'add_index'	=> [
 				$this->table_prefix . 'acl_users' => [
-					'usr_auth_role_id'	=> ['auth_role_id'],
+					'auth_role_id' => 'aclusrs_auth_role_id',
+					'user_id' => 'aclusrs_user_id',
+				],
+				$this->table_prefix . 'attachments' => [
+					'poster_id' => 'attchmnts_poster_id',
+					'topic_id' => 'attchmnts_topic_id',
+				],
+				$this->table_prefix . 'forums_watch' => [
+					'forum_id' => 'frmswtch_forum_id',
+					'user_id' => 'frmswtch_user_id',
+				],
+				$this->table_prefix . 'log' => [
+					'forum_id' => 'log_forum_id',
+					'topic_id' => 'log_topic_id',
+					'user_id' => 'log_user_id',
+				],
+				$this->table_prefix . 'login_attempts' => [
+					'user_id' => 'lgnatmpts_user_id',
+				],
+				$this->table_prefix . 'moderator_cache' => [
+					'forum_id' => 'mdrtrcch_forum_id',
+				],
+				$this->table_prefix . 'oauth_states' => [
+					'user_id' => 'oauthsts_user_id',
+				],
+				$this->table_prefix . 'oauth_tokens' => [
+					'user_id' => 'oauthtkns_user_id',
+				],
+				$this->table_prefix . 'poll_options' => [
+					'topic_id' => 'pllopts_topic_id',
+				],
+				$this->table_prefix . 'poll_votes' => [
+					'topic_id' => 'pllvts_topic_id',
+				],
+				$this->table_prefix . 'posts' => [
+					'forum_id' => 'psts_forum_id',
+					'poster_id' => 'psts_poster_id',
+					'topic_id' => 'psts_topic_id',
+				],
+				$this->table_prefix . 'privmsgs_folder' => [
+					'user_id' => 'pmfldr_user_id',
+				],
+				$this->table_prefix . 'privmsgs_rules' => [
+					'user_id' => 'pmrls_user_id',
+				],
+				$this->table_prefix . 'topics' => [
+					'forum_id' => 'tpcs_forum_id',
+				],
+				$this->table_prefix . 'topics_track' => [
+					'forum_id' => 'tpcstrk_forum_id',
+					'topic_id' => 'tpcstrk_topic_id',
+				],
+				$this->table_prefix . 'topics_watch' => [
+					'topic_id' => 'tpcswtch_topic_id',
+					'user_id' => 'tpcswtch_user_id',
+				],
+				$this->table_prefix . 'user_group' => [
+					'group_id' => 'usrgrp_group_id',
+					'user_id' => 'usrgrp_user_id',
+				],
+				$this->table_prefix . 'user_notifications' => [
+					'user_id' => 'usrntf_user_id',
 				],
 			],
 		];
@@ -42,17 +102,11 @@ class rename_auth_role_id_index extends migration
 
 	public function revert_schema()
 	{
-		return [
-			'drop_keys' => [
-				$this->table_prefix . 'acl_users' => [
-					'usr_auth_role_id',
-				],
-			],
-			'add_index'	=> [
-				$this->table_prefix . 'acl_users' => [
-					'auth_role_id'	=> ['auth_role_id'],
-				],
-			],
-		];
+		$schema = $this->update_schema();
+		array_walk($schema['rename_index'], function (&$index_data, $table_name) {
+		  $index_data = array_flip($index_data);
+		});
+
+		return $schema;
 	}
 }

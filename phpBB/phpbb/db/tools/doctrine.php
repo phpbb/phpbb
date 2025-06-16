@@ -333,6 +333,19 @@ class doctrine implements tools_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function sql_rename_index(string $table_name, string $index_name_old, string $index_name_new)
+	{
+		return $this->alter_schema(
+			function (Schema $schema) use ($table_name, $index_name_old, $index_name_new): void
+			{
+				$this->schema_rename_index($schema, $table_name, $index_name_old, $index_name_new);
+			}
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function sql_index_drop(string $table_name, string $index_name)
 	{
 		return $this->alter_schema(
@@ -542,6 +555,11 @@ class doctrine implements tools_interface
 			],
 			'add_index' => [
 				'method' => 'schema_create_index',
+				'use_key' => true,
+				'per_table' => true,
+			],
+			'rename_index' => [
+				'method' => 'schema_rename_index',
 				'use_key' => true,
 				'per_table' => true,
 			],
@@ -829,6 +847,27 @@ class doctrine implements tools_interface
 		}
 
 		$table->addIndex($columns, $index_name);
+	}
+
+	/**
+	 * @param Schema $schema
+	 * @param string $table_name
+	 * @param string $index_name_old
+	 * @param string $index_name_new
+	 * @param bool   $safe_check
+	 *
+	 * @throws SchemaException
+	 */
+	protected function schema_rename_index(Schema $schema, string $table_name, string $index_name_old, string $index_name_new, bool $safe_check = false): void
+	{
+		$table = $schema->getTable($table_name);
+
+		if ($safe_check && !$table->hasIndex($index_name_old))
+		{
+			return;
+		}
+
+		$table->renameIndex($index_name_old, $index_name_new);
 	}
 
 	/**
