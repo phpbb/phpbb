@@ -135,17 +135,6 @@ class language_file_helper
 	 */
 	private static function sort_by_local_name(mixed $a, mixed $b): int
 	{
-		if ($a['local_name'] > $b['local_name'])
-		{
-			return 1;
-		}
-		else if ($a['local_name'] < $b['local_name'])
-		{
-			return -1;
-		}
-		else
-		{
-			return 0;
-		}
+		return $a['local_name'] <=> $b['local_name'];
 	}
 }
