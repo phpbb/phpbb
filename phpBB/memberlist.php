@@ -1815,14 +1815,14 @@ switch ($mode)
 				/**
 				 * Modify the memberrow data before template variables are assigned.
 				 *
-				 * @event core.memberlist_memberrow_template_vars_before
-				 * @var integer	user_id		The current user ID.
+				 * @event core.memberlist_modify_memberrow
+				 * @var int		user_id		The current user ID.
 				 * @var array	row			Array of raw user data.
 				 * @var array	memberrow	Array of member template variables.
 				 * @since 3.3.16-RC1
 				 */
 				$vars = ['user_id', 'row', 'memberrow'];
-				extract($phpbb_dispatcher->trigger_event('core.memberlist_memberrow_template_vars_before', compact($vars)));
+				extract($phpbb_dispatcher->trigger_event('core.memberlist_modify_memberrow', compact($vars)));
 
 				$template->assign_block_vars('memberrow', $memberrow);
 
