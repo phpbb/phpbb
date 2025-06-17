@@ -24,6 +24,7 @@ require_once __DIR__ . '/migration/revert_table_with_dependency.php';
 require_once __DIR__ . '/migration/fail.php';
 require_once __DIR__ . '/migration/installed.php';
 require_once __DIR__ . '/migration/schema.php';
+require_once __DIR__ . '/migration/schema_index.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -415,5 +416,28 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
 		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar'));
+	}
+
+	public function test_rename_index()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_schema_index'));
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar1', 'fbr1_user_id'));
+		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar1', 'fbr1_username'));
+		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar2', 'fbr2_ban_userid'));
+		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar2', 'fbr2_ban_data'));
+
+		while ($this->migrator->migration_state('phpbb_dbal_migration_schema_index'))
+		{
+			$this->migrator->revert('phpbb_dbal_migration_schema_index');
+		}
+
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar1'));
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar2'));
 	}
 }
