@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\migration;
 
-class rename_auth_role_id_index extends migration
+class rename_duplicated_index_names extends migration
 {
 	public static function depends_on()
 	{
