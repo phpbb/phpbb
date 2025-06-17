@@ -99,7 +99,10 @@ class twig extends \phpbb\template\base
 
 		foreach ($extensions as $extension)
 		{
-			$this->twig->addExtension($extension);
+			if (!$this->twig->hasExtension(get_class($extension)))
+			{
+				$this->twig->addExtension($extension);
+			}
 		}
 
 		// Add admin namespace
