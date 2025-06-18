@@ -1,4 +1,11 @@
 /* global phpbb */
+/* eslint camelcase: 0 */
+/* eslint no-undef: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint no-var: 0 */
+
+var form_name = 'postform';
+var text_name = 'message';
 
 /**
 * bbCode control by subBlue design [ www.subBlue.com ]
@@ -34,7 +41,7 @@ function initInsertions() {
 
 	var textarea = doc.forms[form_name].elements[text_name];
 
-	if (is_ie && typeof(baseHeight) !== 'number') {
+	if (is_ie && typeof (baseHeight) !== 'number') {
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
 
@@ -48,11 +55,11 @@ function initInsertions() {
 * bbstyle
 */
 function bbstyle(bbnumber) {
-	if (bbnumber !== -1) {
-		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
-	} else {
+	if (bbnumber === -1) {
 		insert_text('[*]');
 		document.forms[form_name].elements[text_name].focus();
+	} else {
+		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber + 1]);
 	}
 }
 
@@ -84,7 +91,7 @@ function bbfontstyle(bbopen, bbclose) {
 		return;
 	}
 
-	//The new position for the cursor after adding the bbcode
+	// The new position for the cursor after adding the bbcode
 	var caret_pos = getCaretPosition(textarea).start;
 	var new_pos = caret_pos + bbopen.length;
 
@@ -96,11 +103,10 @@ function bbfontstyle(bbopen, bbclose) {
 	if (!isNaN(textarea.selectionStart)) {
 		textarea.selectionStart = new_pos;
 		textarea.selectionEnd = new_pos;
-	}
-	// IE
-	else if (document.selection) {
+	} else if (document.selection) {
+		// IE
 		var range = textarea.createTextRange();
-		range.move("character", new_pos);
+		range.move('character', new_pos);
 		range.select();
 		storeCaret(textarea);
 	}
@@ -114,10 +120,10 @@ function bbfontstyle(bbopen, bbclose) {
 function insert_text(text, spaces, popup) {
 	var textarea;
 
-	if (!popup) {
-		textarea = document.forms[form_name].elements[text_name];
-	} else {
+	if (popup) {
 		textarea = opener.document.forms[form_name].elements[text_name];
+	} else {
+		textarea = document.forms[form_name].elements[text_name];
 	}
 
 	if (spaces) {
@@ -142,7 +148,7 @@ function insert_text(text, spaces, popup) {
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) === ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 	} else {
-		textarea.value = textarea.value + text;
+		textarea.value += text;
 	}
 
 	if (!popup) {
@@ -171,6 +177,7 @@ function addquote(post_id, username, l_wrote, attributes) {
 		// Backwards compatibility
 		l_wrote = 'wrote';
 	}
+
 	if (typeof attributes !== 'object') {
 		attributes = {};
 	}
@@ -195,10 +202,10 @@ function addquote(post_id, username, l_wrote, attributes) {
 		if (divarea.innerHTML) {
 			theSelection = divarea.innerHTML.replace(/<br>/ig, '\n');
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
-			theSelection = theSelection.replace(/&lt\;/ig, '<');
-			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');
-			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
+			theSelection = theSelection.replace(/&lt;/ig, '<');
+			theSelection = theSelection.replace(/&gt;/ig, '>');
+			theSelection = theSelection.replace(/&amp;/ig, '&');
+			theSelection = theSelection.replace(/&nbsp;/ig, ' ');
 		} else if (document.all) {
 			theSelection = divarea.innerText;
 		} else if (divarea.textContent) {
@@ -213,7 +220,7 @@ function addquote(post_id, username, l_wrote, attributes) {
 			attributes.author = username;
 			insert_text(generateQuote(theSelection, attributes));
 		} else {
-			insert_text(username + ' ' + l_wrote + ':' + '\n');
+			insert_text(username + ' ' + l_wrote + ':\n');
 			var lines = split_lines(theSelection);
 			for (i = 0; i < lines.length; i++) {
 				insert_text('> ' + lines[i] + '\n');
@@ -243,12 +250,14 @@ function generateQuote(text, attributes) {
 		quote += '=' + formatAttributeValue(attributes.author);
 		delete attributes.author;
 	}
+
 	for (var name in attributes) {
-		if (attributes.hasOwnProperty(name)) {
+		if (Object.hasOwn(attributes, name)) {
 			var value = attributes[name];
 			quote += ' ' + name + '=' + formatAttributeValue(value.toString());
 		}
 	}
+
 	quote += ']';
 	var newline = ((quote + text + '[/quote]').length > 80 || text.indexOf('\n') > -1) ? '\n' : '';
 	quote += newline + text + newline + '[/quote]';
@@ -271,19 +280,20 @@ function formatAttributeValue(str) {
 		// Return as-is if it contains none of: space, ' " \ or ]
 		return str;
 	}
-	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
-		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
+
+	var singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'';
+	var doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
 
 	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
 }
 
 function split_lines(text) {
 	var lines = text.split('\n');
-	var splitLines = new Array();
+	var splitLines = [];
 	var j = 0;
 	var i;
 
-	for(i = 0; i < lines.length; i++) {
+	for (i = 0; i < lines.length; i++) {
 		if (lines[i].length <= 80) {
 			splitLines[j] = lines[i];
 			j++;
@@ -302,9 +312,10 @@ function split_lines(text) {
 					j++;
 				}
 			}
-			while(splitAt !== -1);
+			while (splitAt !== -1);
 		}
 	}
+
 	return splitLines;
 }
 
@@ -312,12 +323,12 @@ function split_lines(text) {
 * From http://www.massless.org/mozedit/
 */
 function mozWrap(txtarea, open, close) {
-	var selLength = (typeof(txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
+	var selLength = (typeof (txtarea.textLength) === 'undefined') ? txtarea.value.length : txtarea.textLength;
 	var selStart = txtarea.selectionStart;
 	var selEnd = txtarea.selectionEnd;
 	var scrollTop = txtarea.scrollTop;
 
-	var s1 = (txtarea.value).substring(0,selStart);
+	var s1 = (txtarea.value).substring(0, selStart);
 	var s2 = (txtarea.value).substring(selStart, selEnd);
 	var s3 = (txtarea.value).substring(selEnd, selLength);
 
@@ -326,8 +337,6 @@ function mozWrap(txtarea, open, close) {
 	txtarea.selectionEnd = selEnd + open.length;
 	txtarea.focus();
 	txtarea.scrollTop = scrollTop;
-
-	return;
 }
 
 /**
@@ -358,9 +367,8 @@ function getCaretPosition(txtarea) {
 	if (txtarea.selectionStart || txtarea.selectionStart === 0) {
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
-	}
-	// dirty and slow IE way
-	else if (document.selection) {
+	} else if (document.selection) {
+		// dirty and slow IE way
 		// get current selection
 		var range = document.selection.createRange();
 
@@ -404,7 +412,7 @@ function getCaretPosition(txtarea) {
 			phpbb.showDragNDrop(textarea);
 		}
 
-		$('textarea').on('keydown', function (e) {
+		$('textarea').on('keydown', function(e) {
 			if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
 				$(this).closest('form').find(':submit').click();
 			}
