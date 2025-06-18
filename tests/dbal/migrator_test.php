@@ -25,6 +25,7 @@ require_once __DIR__ . '/migration/fail.php';
 require_once __DIR__ . '/migration/installed.php';
 require_once __DIR__ . '/migration/schema.php';
 require_once __DIR__ . '/migration/schema_index.php';
+require_once __DIR__ . '/migration/schema_add_autoincrement.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -501,5 +502,25 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 				$this->assertEquals(0, strpos($key_name, $index_prefix), "$key_name does not contain $index_prefix");
 			}
 		}
+	}
+
+	public function test_add_autoincrement_column()
+	{
+		$this->migrator->set_migrations(['schema_add_autoincrement']);
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_noid'));
+		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_noid', 'id'));
+
+		while ($this->migrator->migration_state('schema_add_autoincrement'))
+		{
+			$this->migrator->revert('schema_add_autoincrement');
+		}
+
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_noid'));
 	}
 }
