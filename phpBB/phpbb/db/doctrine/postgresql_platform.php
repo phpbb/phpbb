@@ -18,6 +18,7 @@ use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\IntegerType;
 use Doctrine\DBAL\Types\SmallIntType;
@@ -76,6 +77,36 @@ class postgresql_platform extends PostgreSQL94Platform
 		}
 
 		return AbstractPlatform::getDefaultValueDeclarationSQL($column);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getAlterTableSQL(TableDiff $diff)
+	{
+		$sql = parent::getAlterTableSQL($diff);
+		$table_name = $diff->getOldTable()->getName();
+		$columns = $diff->getAddedColumns();
+		$post_sql = $sequence_sql = [];
+
+		foreach ($columns as $column)
+		{
+			$column_name = $column->getName();
+			if (!empty($column->getAutoincrement()))
+			{
+				$sequence = new Sequence($this->getIdentitySequenceName($table_name, $column_name));
+				$sequence_sql[] = $this->getCreateSequenceSQL($sequence);
+				$post_sql[] = 'ALTER SEQUENCE '.$sequence->getName().' OWNED BY ' . $table_name . '.' . $column_name;
+			}
+		}
+		$sql = array_merge($sequence_sql, $sql, $post_sql);
+
+		foreach ($sql as $i => $query)
+		{
+			$sql[$i] = str_replace('{{placeholder_sequence}}', "nextval('{$table_name}_seq')", $query);
+		}
+
+		return $sql;
 	}
 
 	/**
