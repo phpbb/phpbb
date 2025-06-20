@@ -79,14 +79,14 @@ class postgresql_platform extends PostgreSQL94Platform
 		return AbstractPlatform::getDefaultValueDeclarationSQL($column);
 	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getAlterTableSQL(TableDiff $diff)
-    {
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getAlterTableSQL(TableDiff $diff)
+	{
 		$sql = parent::getAlterTableSQL($diff);
 		$table_name = $diff->getOldTable()->getName();
-		$columns = array_merge($diff->getAddedColumns(), $diff->getModifiedColumns());
+		$columns = $diff->getAddedColumns();
 		$post_sql = $sequence_sql = [];
 
 		foreach ($columns as $column)
