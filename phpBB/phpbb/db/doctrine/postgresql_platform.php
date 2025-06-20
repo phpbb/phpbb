@@ -18,6 +18,7 @@ use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\IntegerType;
 use Doctrine\DBAL\Types\SmallIntType;
