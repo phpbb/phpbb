@@ -145,31 +145,29 @@ class check_filesystem extends \phpbb\install\task_base
 		// Try to create file if it does not exists
 		if (!file_exists($path))
 		{
-			$fp = @fopen($path, 'w');
-			@fclose($fp);
-			try
+			if (!is_resource($fp = @fopen($path, 'w')))
 			{
-				$this->filesystem->phpbb_chmod($path,
-					\phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE
-				);
-				$exists = true;
+				$exists = $writable = false;
 			}
-			catch (\phpbb\filesystem\exception\filesystem_exception $e)
+			else
 			{
-				// Do nothing
-			}
-		}
-
-		if (file_exists($path))
-		{
-			if (!$this->filesystem->is_writable($path))
-			{
-				$writable = false;
+				@fclose($fp);
+				try
+				{
+					$this->filesystem->phpbb_chmod($path,
+						\phpbb\filesystem\filesystem_interface::CHMOD_READ | \phpbb\filesystem\filesystem_interface::CHMOD_WRITE
+					);
+					$exists = true;
+				}
+				catch (\phpbb\filesystem\exception\filesystem_exception $e)
+				{
+					$writable = false;
+				}
 			}
 		}
-		else
+		else if (!$this->filesystem->is_writable($path))
 		{
-			$exists = $writable = false;
+			$writable = false;
 		}
 
 		$this->set_test_passed(($exists && $writable) || $failable);
