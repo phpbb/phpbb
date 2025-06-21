@@ -167,9 +167,7 @@ class check_filesystem extends \phpbb\install\task_base
 		}
 		else if (!$this->filesystem->is_writable($path))
 		{
-			{
-				$writable = false;
-			}
+			$writable = false;
 		}
 
 		$this->set_test_passed(($exists && $writable) || $failable);
