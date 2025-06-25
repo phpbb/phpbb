@@ -130,11 +130,12 @@ class table_helper
 	 * @param array $table_prefix		Tables prefix.
 	 *
 	 * @return array<string, string>	Pairs of table names and their short name representations.
+	 * @psalm-return array{string, string}
 	 */
 	public static function map_short_table_names(array $additional_tables = [], string $table_prefix = ''): array
 	{
 		$short_table_names_map = [
-			"{$table_prefix}acl_groups"	=> 'aclgrps',
+			"{$table_prefix}acl_groups"			=> 'aclgrps',
 			"{$table_prefix}acl_options"		=> 'aclopts',
 			"{$table_prefix}acl_roles"			=> 'aclrls',
 			"{$table_prefix}acl_roles_data"		=> 'aclrlsdt',

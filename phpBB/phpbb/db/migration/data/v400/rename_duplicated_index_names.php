@@ -28,12 +28,11 @@ class rename_duplicated_index_names extends migration
 	public function update_schema()
 	{
 		$rename_index = $table_keys = [];
-		$db_table_schema = json_decode(file_get_contents($this->phpbb_root_path . 'store/schema.json'), true);
+		$db_table_schema = $this->get_schema();
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
 			if (isset($table_data['KEYS']))
 			{
-				$table_name = $this->table_prefix . $table_name;
 				foreach ($table_data['KEYS'] as $key_name => $key_data)
 				{
 					$table_keys[$table_name][] = $key_name;
@@ -65,5 +64,28 @@ class rename_duplicated_index_names extends migration
 		});
 
 		return $schema;
+	}
+
+	protected function get_schema()
+	{
+		$self_classname = '\\' . str_replace('/', '\\', self::class);
+		$finder_factory = new \phpbb\finder\factory(null, false, $this->phpbb_root_path, $this->php_ext);
+		$finder = $finder_factory->get();
+		$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
+		$self_class_index = array_search($self_classname, $migrator_classes);
+		unset($migrator_classes[$self_class_index]);
+
+		$schema_generator = new \phpbb\db\migration\schema_generator(
+			$migrator_classes,
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			$this->phpbb_root_path,
+			$this->php_ext,
+			$this->table_prefix,
+			$this->tables
+		);
+
+		return $schema_generator->get_schema();
 	}
 }
