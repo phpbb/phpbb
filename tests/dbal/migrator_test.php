@@ -440,4 +440,59 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar1'));
 		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar2'));
 	}
+
+	public function test_schema_generator(): array
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
+		$finder = $finder_factory->get();
+		$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
+
+		$schema_generator = new \phpbb\db\migration\schema_generator(
+			$migrator_classes,
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			$phpbb_root_path,
+			$phpEx,
+			'phpbb_',
+			self::get_core_tables()
+		);
+		$db_table_schema = $schema_generator->get_schema();
+
+		$this->assertNotEmpty($db_table_schema);
+
+		return $db_table_schema;
+	}
+
+    /**
+     * @depends test_schema_generator
+     */
+	public function test_table_indexes(array $db_table_schema)
+	{
+		$table_keys = [];
+		foreach ($db_table_schema as $table_name => $table_data)
+		{
+			if (isset($table_data['KEYS']))
+			{
+				foreach ($table_data['KEYS'] as $key_name => $key_data)
+				{
+					$table_keys[$table_name][] = $key_name;
+				}
+			}
+		}
+
+		$this->assertNotEmpty($table_keys);
+
+		$short_table_names = \phpbb\db\doctrine\table_helper::map_short_table_names([], 'phpbb_');
+		foreach ($table_keys as $table_name => $key_names)
+		{
+			$index_prefix = $short_table_names[$table_name] . '_';
+			foreach ($key_names as $key_name)
+			{
+				$this->assertFalse(strpos($key_name, $index_prefix), "$key_name does not contain $index_prefix");
+			}
+		}
+	}
 }

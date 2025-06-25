@@ -127,7 +127,7 @@ class table_helper
 	 * Maps short table names for the purpose of prefixing tables' index names.
 	 *
 	 * @param array $additional_tables	Additional table names without prefix to add to the map.
-	 * @param array $table_prefix		Tables prefix.
+	 * @param string $table_prefix		Tables prefix.
 	 *
 	 * @return array<string, string>	Pairs of table names and their short name representations.
 	 * @psalm-return array{string, string}
