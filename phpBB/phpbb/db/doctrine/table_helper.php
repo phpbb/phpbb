@@ -214,7 +214,7 @@ class table_helper
 		];
 
 		// Add table prefix to additional tables
-		if (!empty($table_prefix && !empty($additional_tables)))
+		if (!empty($table_prefix) && !empty($additional_tables))
 		{
 			foreach ($additional_tables as $key => $value)
 			{

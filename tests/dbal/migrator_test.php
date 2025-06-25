@@ -491,7 +491,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$index_prefix = $short_table_names[$table_name] . '_';
 			foreach ($key_names as $key_name)
 			{
-				$this->assertFalse(strpos($key_name, $index_prefix), "$key_name does not contain $index_prefix");
+				$this->assertEquals(0, strpos($key_name, $index_prefix), "$key_name does not contain $index_prefix");
 			}
 		}
 	}
