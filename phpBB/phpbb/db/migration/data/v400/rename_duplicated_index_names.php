@@ -14,6 +14,7 @@
 namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\migration;
+use phpbb\db\doctrine\table_helper;
 
 class rename_duplicated_index_names extends migration
 {
@@ -26,105 +27,33 @@ class rename_duplicated_index_names extends migration
 
 	public function update_schema()
 	{
+		$rename_index = $table_keys = [];
+		$db_table_schema = json_decode(file_get_contents($this->phpbb_root_path . 'store/schema.json'), true);
+		foreach ($db_table_schema as $table_name => $table_data)
+		{
+			if (isset($table_data['KEYS']))
+			{
+				$table_name = $this->table_prefix . $table_name;
+				foreach ($table_data['KEYS'] as $key_name => $key_data)
+				{
+					$table_keys[$table_name][] = $key_name;
+				}
+			}
+		}
+
+		$short_table_names = table_helper::map_short_table_names([], $this->table_prefix);
+		foreach ($table_keys as $table_name => $key_names)
+		{
+			$key_name_new = $short_table_names[$table_name] . '_' . $key_name;
+			foreach ($key_names as $key_name)
+			{
+				$rename_index[$table_name][$key_name] = $key_name_new;
+				$rename_index[$table_name][$table_name . '_' . $key_name] = $key_name_new;
+			}
+		}
+
 		return [
-			'rename_index' => [
-				$this->table_prefix . 'acl_groups' => [
-					'auth_role_id' => 'aclgrps_auth_role_id',
-					'group_id' => 'aclgrps_group_id',
-				],
-				$this->table_prefix . 'acl_users' => [
-					'auth_role_id' => 'aclusrs_auth_role_id',
-					'user_id' => 'aclusrs_user_id',
-				],
-				$this->table_prefix . 'attachments' => [
-					'poster_id' => 'attchmnts_poster_id',
-					'topic_id' => 'attchmnts_topic_id',
-				],
-				$this->table_prefix . 'bbcodes' => [
-					'display_on_post' => 'bbcds_display_on_post',
-				],
-				$this->table_prefix . 'forums' => [
-					'left_right_id' => 'frms_left_right_id',
-				],
-				$this->table_prefix . 'forums_watch' => [
-					'forum_id' => 'frmswtch_forum_id',
-					'notify_stat' => 'frmswtch_notify_stat',
-					'user_id' => 'frmswtch_user_id',
-				],
-				$this->table_prefix . 'log' => [
-					'forum_id' => 'log_forum_id',
-					'topic_id' => 'log_topic_id',
-					'user_id' => 'log_user_id',
-				],
-				$this->table_prefix . 'login_attempts' => [
-					'user_id' => 'lgnatmpts_user_id',
-				],
-				$this->table_prefix . 'moderator_cache' => [
-					'forum_id' => 'mdrtrcch_forum_id',
-				],
-				$this->table_prefix . 'modules' => [
-					'left_right_id' => 'mdls_left_right_id',
-				],
-				$this->table_prefix . 'oauth_states' => [
-					'provider' => 'oauthsts_provider',
-					'user_id' => 'oauthsts_user_id',
-				],
-				$this->table_prefix . 'oauth_tokens' => [
-					'provider' => 'oauthtkns_provider',
-					'user_id' => 'oauthtkns_user_id',
-				],
-				$this->table_prefix . 'poll_options' => [
-					'topic_id' => 'pllopts_topic_id',
-				],
-				$this->table_prefix . 'poll_votes' => [
-					'topic_id' => 'pllvts_topic_id',
-				],
-				$this->table_prefix . 'posts' => [
-					'forum_id' => 'psts_forum_id',
-					'poster_id' => 'psts_poster_id',
-					'topic_id' => 'psts_topic_id',
-				],
-				$this->table_prefix . 'privmsgs' => [
-					'author_id' => 'pms_author_id',
-				],
-				$this->table_prefix . 'privmsgs_folder' => [
-					'user_id' => 'pmsfldr_user_id',
-				],
-				$this->table_prefix . 'privmsgs_rules' => [
-					'user_id' => 'pmsrls_user_id',
-				],
-				$this->table_prefix . 'privmsgs_to' => [
-					'author_id' => 'pmsto_author_id',
-				],
-				$this->table_prefix . 'reports' => [
-					'post_id' => 'rprts_post_id',
-				],
-				$this->table_prefix . 'search_wordmatch' => [
-					'post_id' => 'wrdmtch_post_id',
-				],
-				$this->table_prefix . 'smilies' => [
-					'display_on_post' => 'smls_display_on_post',
-				],
-				$this->table_prefix . 'topics' => [
-					'forum_id' => 'tpcs_forum_id',
-				],
-				$this->table_prefix . 'topics_track' => [
-					'forum_id' => 'tpcstrk_forum_id',
-					'topic_id' => 'tpcstrk_topic_id',
-				],
-				$this->table_prefix . 'topics_watch' => [
-					'topic_id' => 'tpcswtch_topic_id',
-					'notify_stat' => 'tpcswtch_notify_stat',
-					'user_id' => 'tpcswtch_user_id',
-				],
-				$this->table_prefix . 'user_group' => [
-					'group_id' => 'usrgrp_group_id',
-					'user_id' => 'usrgrp_user_id',
-				],
-				$this->table_prefix . 'user_notifications' => [
-					'user_id' => 'usrntf_user_id',
-				],
-			],
+			'rename_index' => $rename_index,
 		];
 	}
 
