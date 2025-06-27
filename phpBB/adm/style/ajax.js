@@ -1,16 +1,17 @@
 /* global phpbb, statsData */
+/* eslint no-var: 0 */
 
 (function($) {  // Avoid conflicts with other libraries
 
 'use strict';
 
 
-phpbb.prepareSendStats = function () {
+phpbb.prepareSendStats = function() {
 	var $form = $('#acp_help_phpbb');
 	var $dark = $('#darkenwrapper');
 	var $loadingIndicator;
 
-	$form.on('submit', function (event) {
+	$form.on('submit', function(event) {
 		var $this = $(this),
 			currentTime = Math.floor(new Date().getTime() / 1000),
 			statsTime = parseInt($this.find('input[name=help_send_statistics_time]').val(), 10);
@@ -23,7 +24,7 @@ phpbb.prepareSendStats = function () {
 		if (!$this.find('input[name=help_send_statistics]').is(':checked') ||
 			statsTime > currentTime) {
 			$form.find('input[type=submit]').click();
-			setTimeout(function () {
+			setTimeout(function() {
 				$form.find('input[type=submit]').click();
 			}, 300);
 			return;
@@ -74,7 +75,7 @@ phpbb.prepareSendStats = function () {
 			var $sendStatisticsSuccess = $('<input />', {
 				type: 'hidden',
 				name: 'send_statistics_response',
-				value: JSON.stringify(res)
+				value: JSON.stringify(res),
 			});
 			$sendStatisticsSuccess.appendTo('p.submit-buttons');
 
@@ -90,7 +91,7 @@ phpbb.prepareSendStats = function () {
 			data: statsData,
 			success: returnHandler,
 			error: errorHandler,
-			cache: false
+			cache: false,
 		}).always(function() {
 			if ($loadingIndicator && $loadingIndicator.is(':visible')) {
 				$loadingIndicator.fadeOut(phpbb.alertTime);
@@ -176,7 +177,7 @@ phpbb.addAjaxCallback('generate_vapid_keys', () => {
 					namedCurve: 'P-256',
 				},
 				true,
-				['deriveKey', 'deriveBits']
+				[ 'deriveKey', 'deriveBits' ],
 			);
 
 			const privateKeyJwk = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
@@ -187,7 +188,7 @@ phpbb.addAjaxCallback('generate_vapid_keys', () => {
 
 			return {
 				privateKey: privateKeyString,
-				publicKey: publicKeyString
+				publicKey: publicKeyString,
 			};
 		} catch (error) {
 			console.error('Error generating keys with SubtleCrypto:', error);
@@ -203,8 +204,8 @@ phpbb.addAjaxCallback('generate_vapid_keys', () => {
 		const privateKeyInput = document.querySelector('#webpush_vapid_private');
 		publicKeyInput.value = keyPair.publicKey;
 		privateKeyInput.value = keyPair.privateKey;
-	})
-})
+	});
+});
 
 /**
  * Handler for submitting permissions form in chunks
@@ -230,7 +231,7 @@ function submitPermissions() {
 		fieldsetList = $form.find('fieldset#' + $submitButton.closest('fieldset.permissions').id);
 	}
 
-	$.each(fieldsetList, function (key, value) {
+	$.each(fieldsetList, function(key, value) {
 		dataSetIndex = Math.floor(key / 5);
 		var $fieldset = $('fieldset#' + value.id);
 		if (key % 5 === 0) {
@@ -252,7 +253,7 @@ function submitPermissions() {
 	permissionSubmitSize = formDataSets.length;
 
 	// Add each forum ID to forum ID list to preserve selected forums
-	$.each($form.find('input[type=hidden][name^=forum_id]'), function (key, value) {
+	$.each($form.find('input[type=hidden][name^=forum_id]'), function(key, value) {
 		if (value.name.match(/^forum_id\[([0-9]+)\]$/)) {
 			forumIds.push(value.value);
 		}
@@ -286,18 +287,18 @@ function submitPermissions() {
 					$alertBoxLink.attr('href', $alertBoxLink.attr('href').replace(/(&forum_id\[\]=[0-9]+)/g, ''));
 					const $previousPageForm = $('<form>').attr({
 						action: $alertBoxLink.attr('href'),
-						method: 'post'
+						method: 'post',
 					});
 
-					$.each(forumIds, function (key, value) {
+					$.each(forumIds, function(key, value) {
 						$previousPageForm.append($('<input>').attr({
 							type: 'text',
 							name: 'forum_id[]',
-							value: value
+							value: value,
 						}));
 					});
 
-					$alertBoxLink.on('click', function (e) {
+					$alertBoxLink.on('click', function(e) {
 						$('body').append($previousPageForm);
 						e.preventDefault();
 						$previousPageForm.submit();
@@ -309,19 +310,19 @@ function submitPermissions() {
 				$alert.find('.alert_close').hide();
 
 				if (typeof res.REFRESH_DATA !== 'undefined') {
-					setTimeout(function () {
+					setTimeout(function() {
 						// Create forum to submit using POST. This will prevent
 						// exceeding the maximum length of URLs
 						const $form = $('<form>').attr({
 							action: res.REFRESH_DATA.url.replace(/(&forum_id\[\]=[0-9]+)/g, ''),
-							method: 'post'
+							method: 'post',
 						});
 
-						$.each(forumIds, function (key, value) {
+						$.each(forumIds, function(key, value) {
 							$form.append($('<input>').attr({
 								type: 'text',
 								name: 'forum_id[]',
-								value: value
+								value: value,
 							}));
 						});
 
@@ -329,7 +330,7 @@ function submitPermissions() {
 
 						// Hide the alert even if we refresh the page, in case the user
 						// presses the back button.
-						$dark.fadeOut(phpbb.alertTime, function () {
+						$dark.fadeOut(phpbb.alertTime, function() {
 							if (typeof $alert !== 'undefined') {
 								$alert.hide();
 							}
@@ -355,7 +356,7 @@ function submitPermissions() {
 	}
 
 	// Create AJAX request for each form data set
-	$.each(formDataSets, function (key, formData) {
+	$.each(formDataSets, function(key, formData) {
 		$.ajax({
 			url: $form.action,
 			type: 'POST',
@@ -365,7 +366,7 @@ function submitPermissions() {
 				'&' + $form.children('input[type=hidden]').serialize() +
 				'&' + $form.find('input[type=checkbox][name^=inherit]').serialize(),
 			success: handlePermissionReturn,
-			error: handlePermissionReturn
+			error: handlePermissionReturn,
 		});
 	});
 }
@@ -379,7 +380,7 @@ $('[data-ajax]').each(function() {
 		phpbb.ajaxify({
 			selector: this,
 			refresh: $this.attr('data-refresh') !== undefined,
-			callback: fn
+			callback: fn,
 		});
 	}
 });
@@ -388,11 +389,11 @@ $('[data-ajax]').each(function() {
 * Automatically resize textarea
 */
 $(function() {
-	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), {minHeight: 75});
+	phpbb.resizeTextArea($('textarea:not(.no-auto-resize)'), { minHeight: 75 });
 
 	var $setPermissionsForm = $('form#set-permissions');
 	if ($setPermissionsForm.length) {
-		$setPermissionsForm.on('submit', function (e) {
+		$setPermissionsForm.on('submit', function(e) {
 			submitPermissions();
 			e.preventDefault();
 		});
@@ -412,7 +413,7 @@ $(function() {
 			} else {
 				dateoptionInput.value = this.value;
 			}
-		})
+		});
 	}
 
 	if ($('#acp_help_phpbb')) {

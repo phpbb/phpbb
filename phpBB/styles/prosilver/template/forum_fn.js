@@ -1,4 +1,7 @@
 /* global phpbb */
+/* eslint camelcase: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint no-var:0 */
 
 /**
 * phpBB3 forum functions
@@ -103,14 +106,14 @@ jQuery(function($) {
 	$('.sub-panels').each(function() {
 
 		var $childNodes = $('a[data-subpanel]', this),
-			panels = $childNodes.map(function () {
+			panels = $childNodes.map(function() {
 				return this.getAttribute('data-subpanel');
 			}),
 			showPanel = this.getAttribute('data-show-panel');
 
 		if (panels.length) {
 			activateSubPanel(showPanel, panels);
-			$childNodes.click(function () {
+			$childNodes.click(function() {
 				activateSubPanel(this.getAttribute('data-subpanel'), panels);
 				return false;
 			});
@@ -232,7 +235,7 @@ function phpbbCheckKey(event) {
 jQuery(function($) {
 	'use strict';
 
-	$('form input[type=text], form input[type=password]').on('keypress', function (e) {
+	$('form input[type=text], form input[type=password]').on('keypress', function(e) {
 		var defaultButton = $(this).parents('form').find('input[type=submit].default-submit-action');
 
 		if (!defaultButton || defaultButton.length <= 0) {
@@ -369,7 +372,7 @@ function parseDocument($container) {
 		var $this = $(this),
 			$links = $this.find('.crumb'),
 			length = $links.length,
-			classes = ['wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny'],
+			classes = [ 'wrapped-max', 'wrapped-wide', 'wrapped-medium', 'wrapped-small', 'wrapped-tiny' ],
 			classesLength = classes.length,
 			maxHeight = 0,
 			lastWidth = false,
@@ -496,7 +499,7 @@ function parseDocument($container) {
 
 		// Find all headers, get contents
 		$list.prev('.topiclist').find('li.header dd').not('.mark').each(function() {
-			headers.push($("<div>").text($(this).text()).html());
+			headers.push($('<div>').text($(this).text()).html());
 			headersLength++;
 		});
 
@@ -600,7 +603,7 @@ function parseDocument($container) {
 
 				if ((text.length && text !== '-') || cell.children().length) {
 					if (headers[column].length) {
-						cell.prepend($("<dfn>").css('display', 'none').text(headers[column]));
+						cell.prepend($('<dfn>').css('display', 'none').text(headers[column]));
 					}
 				} else {
 					cell.addClass('empty');
@@ -687,7 +690,7 @@ function parseDocument($container) {
 
 		var $tabLink = $item.find('a.responsive-tab-link');
 		phpbb.registerDropdown($tabLink, $item.find('.dropdown'), {
-			visibleClass: 'activetab'
+			visibleClass: 'activetab',
 		});
 
 		check(true);

@@ -1,4 +1,5 @@
 /* global phpbb */
+/* eslint no-var: 0 */
 
 /*
 javascript for Bubble Tooltips by Alessandro Fulciniti
@@ -24,14 +25,14 @@ var tooltips = [];
  * @param {string} headline Text that should appear on top of tooltip
  * @param {string} [subId] Sub ID that should only be using tooltips (optional)
 */
-phpbb.enableTooltipsSelect = function (id, headline, subId) {
+phpbb.enableTooltipsSelect = function(id, headline, subId) {
 	var $links, hold;
 
 	hold = $('<span />', {
 		id:		'_tooltip_container',
 		css: {
-			position: 'absolute'
-		}
+			position: 'absolute',
+		},
 	});
 
 	$('body').append(hold);
@@ -42,7 +43,7 @@ phpbb.enableTooltipsSelect = function (id, headline, subId) {
 		$links = $('.roles-options li', '#' + id);
 	}
 
-	$links.each(function () {
+	$links.each(function() {
 		var $this = $(this);
 
 		if (subId) {
@@ -61,7 +62,7 @@ phpbb.enableTooltipsSelect = function (id, headline, subId) {
  * @param {jQuery} $element Element to prepare for tooltips
  * @param {string} headText Text heading to display
 */
-phpbb.prepareTooltips = function ($element, headText) {
+phpbb.prepareTooltips = function($element, headText) {
 	var $tooltip, text, $desc, $title;
 
 	text = $element.attr('data-title');
@@ -73,8 +74,8 @@ phpbb.prepareTooltips = function ($element, headText) {
 	$title = $('<span />', {
 		class: 'top',
 		css: {
-			display:	'block'
-		}
+			display:	'block',
+		},
 	})
 		.append(document.createTextNode(headText));
 
@@ -82,15 +83,15 @@ phpbb.prepareTooltips = function ($element, headText) {
 		class: 'bottom',
 		html: text,
 		css: {
-			display: 'block'
-		}
+			display: 'block',
+		},
 	});
 
 	$tooltip = $('<span />', {
 		class: 'tooltip',
 		css: {
-			display: 'block'
-		}
+			display: 'block',
+		},
 	})
 		.append($title)
 		.append($desc);
@@ -105,7 +106,7 @@ phpbb.prepareTooltips = function ($element, headText) {
  *
  * @param {object} $element Element passed by .on()
 */
-phpbb.showTooltip = function ($element) {
+phpbb.showTooltip = function($element) {
 	var $this = $($element.target);
 	$('#_tooltip_container').append(tooltips[$this.attr('data-id')]);
 	phpbb.positionTooltip($this);
@@ -114,7 +115,7 @@ phpbb.showTooltip = function ($element) {
 /**
  * Hide tooltip
 */
-phpbb.hideTooltip = function () {
+phpbb.hideTooltip = function() {
 	var d = document.getElementById('_tooltip_container');
 	if (d.childNodes.length > 0) {
 		d.removeChild(d.firstChild);
@@ -126,7 +127,7 @@ phpbb.hideTooltip = function () {
  *
  * @param {jQuery} $element Tooltip element that should be positioned
 */
-phpbb.positionTooltip = function ($element) {
+phpbb.positionTooltip = function($element) {
 	var offset;
 
 	$element = $element.parent();
@@ -135,12 +136,12 @@ phpbb.positionTooltip = function ($element) {
 	if ($('body').hasClass('rtl')) {
 		$('#_tooltip_container').css({
 			top: offset.top + 30,
-			left: offset.left + 255
+			left: offset.left + 255,
 		});
 	} else {
 		$('#_tooltip_container').css({
 			top: offset.top + 30,
-			left: offset.left - 205
+			left: offset.left - 205,
 		});
 	}
 };
@@ -148,13 +149,13 @@ phpbb.positionTooltip = function ($element) {
 /**
  * Prepare roles drop down select
  */
-phpbb.prepareRolesDropdown = function () {
+phpbb.prepareRolesDropdown = function() {
 	var $options = $('.roles-options li');
 
 	// Display span and hide select
 	$('.roles-options > span').css('display', 'block');
 	$('.roles-options > select').hide();
-	$('.roles-options > input[type=hidden]').each(function () {
+	$('.roles-options > input[type=hidden]').each(function() {
 		var $this = $(this);
 
 		if ($this.attr('data-name') && !$this.attr('name')) {
@@ -163,7 +164,7 @@ phpbb.prepareRolesDropdown = function () {
 	});
 
 	// Prepare highlighting of select options and settings update
-	$options.each(function () {
+	$options.each(function() {
 		var $this = $(this);
 		var $rolesOptions = $this.closest('.roles-options');
 		var $span = $rolesOptions.children('span');
@@ -182,18 +183,18 @@ phpbb.prepareRolesDropdown = function () {
 			}
 
 			// Prepare resetting drop down on form reset
-			$this.closest('form').on('reset', function () {
+			$this.closest('form').on('reset', function() {
 				$span.text($span.attr('data-default'));
 				$rolesOptions.children('input[type=hidden]')
 					.val($span.attr('data-default-val'));
 			});
 		}
 
-		$this.on('mouseover', function () {
+		$this.on('mouseover', function() {
 			var $this = $(this);
 			$options.removeClass('roles-highlight');
 			$this.addClass('roles-highlight');
-		}).on('click', function () {
+		}).on('click', function() {
 			var $this = $(this);
 			var $rolesOptions = $this.closest('.roles-options');
 

@@ -2,6 +2,9 @@
  * Installer's AJAX frontend handler
  */
 
+/* eslint no-prototype-builtins: 0 */
+/* eslint no-var: 0 */
+
 (function($) { // Avoid conflicts with other libraries
 	'use strict';
 
@@ -359,10 +362,10 @@
 		} else {
 			$('#loading_indicator').css('display', 'none');
 			addMessage('error',
-				[{
+				[ {
 					title: installLang.title,
-					description: installLang.msg
-				}]
+					description: installLang.msg,
+				} ],
 			);
 		}
 	}
@@ -487,7 +490,7 @@
 	function startPolling(xhReq) {
 		resetPolling();
 		transmissionOver = false;
-		pollTimer = setInterval(function () {
+		pollTimer = setInterval(function() {
 			pollContent(xhReq);
 		}, 250);
 	}
@@ -609,7 +612,7 @@
 			setAdminTimezone($form);
 		}
 
-		$form.find(':submit').bind('click', function (event) {
+		$form.find(':submit').bind('click', function(event) {
 			event.preventDefault();
 			submitForm($form, $(this));
 		});
