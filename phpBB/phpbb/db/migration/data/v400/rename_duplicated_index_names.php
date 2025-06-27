@@ -21,7 +21,7 @@ class rename_duplicated_index_names extends migration
 	public static function depends_on()
 	{
 		return [
-			'\phpbb\db\migration\data\v400\dev',
+			'\phpbb\db\migration\data\v400\storage_track_index',
 		];
 	}
 
@@ -43,9 +43,9 @@ class rename_duplicated_index_names extends migration
 		$short_table_names = table_helper::map_short_table_names([], $this->table_prefix);
 		foreach ($table_keys as $table_name => $key_names)
 		{
-			$key_name_new = $short_table_names[$table_name] . '_' . $key_name;
 			foreach ($key_names as $key_name)
 			{
+				$key_name_new = $short_table_names[$table_name] . '_' . $key_name;
 				$rename_index[$table_name][$key_name] = $key_name_new;
 				$rename_index[$table_name][$table_name . '_' . $key_name] = $key_name_new;
 			}
