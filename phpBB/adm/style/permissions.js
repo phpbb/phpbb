@@ -1,4 +1,8 @@
 /* global phpbb */
+/* eslint camelcase: 0 */
+/* eslint no-undef: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint no-var: 0 */
 
 /**
 * Hide and show all checkboxes
@@ -372,7 +376,7 @@ function match_role_settings(id) {
  * @return {string}			The sorted object as a string
  */
 function sort_and_stringify(obj) {
-	return JSON.stringify(Object.keys(obj).sort().reduce(function (result, key) {
+	return JSON.stringify(Object.keys(obj).sort().reduce(function(result, key) {
 		result[key] = obj[key];
 		return result;
 	}, {}));

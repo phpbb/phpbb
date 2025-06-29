@@ -1,4 +1,6 @@
 /* global bbfontstyle */
+/* eslint no-var: 0 */
+/* eslint no-unused-vars: 0 */
 
 var phpbb = {};
 phpbb.alertTime = 100;
@@ -13,7 +15,7 @@ var keymap = {
 	ENTER: 13,
 	ESC: 27,
 	ARROW_UP: 38,
-	ARROW_DOWN: 40
+	ARROW_DOWN: 40,
 };
 
 var $dark = $('#darkenwrapper');
@@ -54,7 +56,7 @@ phpbb.loadingIndicator = function() {
 /**
  * Show timeout message
  */
-phpbb.showTimeoutMessage = function () {
+phpbb.showTimeoutMessage = function() {
 	var $alert = $('#phpbb_alert');
 
 	if ($loadingIndicator.is(':visible')) {
@@ -363,7 +365,7 @@ phpbb.ajaxify = function(options) {
 						type: 'POST',
 						data: data + '&confirm=' + res.YES_VALUE + '&' + $('form', '#phpbb_confirm').serialize(),
 						success: returnHandler,
-						error: errorHandler
+						error: errorHandler,
 					});
 				}, false);
 			}
@@ -383,7 +385,7 @@ phpbb.ajaxify = function(options) {
 				submit = $this.find('input[type="submit"][data-clicked]');
 				data.push({
 					name: submit.attr('name'),
-					value: submit.val()
+					value: submit.val(),
 				});
 			}
 		} else if (isText) {
@@ -409,7 +411,7 @@ phpbb.ajaxify = function(options) {
 				data: data,
 				success: returnHandler,
 				error: errorHandler,
-				cache: false
+				cache: false,
 			});
 
 			request.always(function() {
@@ -430,7 +432,7 @@ phpbb.ajaxify = function(options) {
 	});
 
 	if (isForm) {
-		$elements.find('input:submit').click(function () {
+		$elements.find('input:submit').click(function() {
 			var $this = $(this);
 
 			// Remove data-clicked attribute from any submit button of form
@@ -445,10 +447,10 @@ phpbb.ajaxify = function(options) {
 
 phpbb.search = {
 	cache: {
-		data: []
+		data: [],
 	},
 	tpl: [],
-	container: []
+	container: [],
 };
 
 /**
@@ -524,7 +526,7 @@ phpbb.search.getKeyword = function($input, keyword, multiline) {
  * @param {jQuery} $textarea Search textarea.
  * @returns {int} The line number.
  */
-phpbb.search.getKeywordLine = function ($textarea) {
+phpbb.search.getKeywordLine = function($textarea) {
 	var selectionStart = $textarea.get(0).selectionStart;
 	return $textarea.val().substr(0, selectionStart).split('\n').length - 1;
 };
@@ -609,7 +611,7 @@ phpbb.search.filter = function(data, event, sendRequest) {
 				if (cache.results[keyword]) {
 					var response = {
 						keyword: keyword,
-						results: cache.results[keyword]
+						results: cache.results[keyword],
 					};
 					phpbb.search.handleResponse(response, $this, true);
 					proceed = false;
@@ -1079,7 +1081,7 @@ phpbb.addAjaxCallback('toggle_link', function() {
 		$this.attr('href', toggleUrl);
 
 		// Toggle Icon
-		$this.children().first().toggleClass('is-active').next().toggleClass('is-active')
+		$this.children().first().toggleClass('is-active').next().toggleClass('is-active');
 	});
 });
 
@@ -1113,7 +1115,7 @@ phpbb.resizeTextArea = function($items, options) {
 		maxHeight: 500,
 		heightDiff: 200,
 		resizeCallback: function() {},
-		resetCallback: function() {}
+		resetCallback: function() {},
 	};
 
 	if (phpbb.isTouch) {
@@ -1152,7 +1154,7 @@ phpbb.resizeTextArea = function($items, options) {
 
 		var maxHeight = Math.min(
 				Math.max(windowHeight - configuration.heightDiff, configuration.minHeight),
-				configuration.maxHeight
+				configuration.maxHeight,
 			),
 			$item = $(item),
 			height = parseInt($item.innerHeight(), 10),
@@ -1243,9 +1245,9 @@ phpbb.inBBCodeTag = function(textarea, startTags, endTags) {
 */
 phpbb.applyCodeEditor = function(textarea) {
 	// list of allowed start and end bbcode code tags, in lower case
-	var startTags = ['[code]', '[code='],
+	var startTags = [ '[code]', '[code=' ],
 		startTagsEnd = ']',
-		endTags = ['[/code]'];
+		endTags = [ '[/code]' ];
 
 	if (!textarea || typeof textarea.selectionStart !== 'number') {
 		return;
@@ -1353,12 +1355,12 @@ phpbb.showDragNDrop = function(textarea) {
 		return;
 	}
 
-	$('body').on('dragenter dragover', function () {
+	$('body').on('dragenter dragover', function() {
 		$(textarea).addClass('drag-n-drop');
 	}).on('dragleave dragout dragend drop', function() {
 		$(textarea).removeClass('drag-n-drop');
 	});
-	$(textarea).on('dragenter dragover', function () {
+	$(textarea).on('dragenter dragover', function() {
 		$(textarea).addClass('drag-n-drop-highlight');
 	}).on('dragleave dragout dragend drop', function() {
 		$(textarea).removeClass('drag-n-drop-highlight');
@@ -1434,7 +1436,7 @@ phpbb.toggleDropdown = function(event_) {
 				marginLeft: 0,
 				left: 0,
 				marginRight: 0,
-				maxWidth: (windowWidth - 4) + 'px'
+				maxWidth: (windowWidth - 4) + 'px',
 			});
 
 			var offset = $this.offset().left,
@@ -1468,7 +1470,7 @@ phpbb.toggleDropdown = function(event_) {
 				var maxOffset = Math.min(contentWidth, fullFreeSpace) + 'px';
 				options.dropdown.css({
 					width: maxOffset,
-					marginLeft: -maxOffset
+					marginLeft: -maxOffset,
 				});
 			}
 		} else {
@@ -1512,7 +1514,7 @@ phpbb.registerDropdown = function(toggle, dropdown, options) {
 			leftClass: 'dropdown-left', // Class to add to parent item when dropdown opens to left side
 			rightClass: 'dropdown-right', // Class to add to parent item when dropdown opens to right side
 			upClass: 'dropdown-up', // Class to add to parent item when dropdown opens above menu item
-			downClass: 'dropdown-down' // Class to add to parent item when dropdown opens below menu item
+			downClass: 'dropdown-down', // Class to add to parent item when dropdown opens below menu item
 		};
 	if (options) {
 		ops = $.extend(ops, options);
@@ -1666,7 +1668,7 @@ phpbb.toggleSelectSettings = function(el) {
 * @param {string} functionName Function to get.
 * @returns function
 */
-phpbb.getFunctionByName = function (functionName) {
+phpbb.getFunctionByName = function(functionName) {
 	var namespaces = functionName.split('.'),
 		func = namespaces.pop(),
 		context = window;
@@ -1716,7 +1718,7 @@ phpbb.registerPageDropdowns = function() {
 			$contents = $this.find('.dropdown'),
 			options = {
 				direction: 'auto',
-				verticalDirection: 'auto'
+				verticalDirection: 'auto',
 			},
 			data;
 
@@ -1763,7 +1765,7 @@ phpbb.registerPageDropdowns = function() {
  * Handle avatars to be lazy loaded.
  */
 phpbb.lazyLoadAvatars = function loadAvatars() {
-	$('.avatar[data-src]').each(function () {
+	$('.avatar[data-src]').each(function() {
 		var $avatar = $(this);
 
 		$avatar
@@ -1795,7 +1797,7 @@ phpbb.getEditorTextArea = function(formName, textareaName) {
 	}
 
 	return doc.forms[formName].elements[textareaName];
-}
+};
 
 phpbb.recaptcha = {
 	button: null,
@@ -1826,7 +1828,7 @@ phpbb.recaptcha = {
 				if (phpbb.recaptcha.v3.length) {
 					grecaptcha.execute(
 						phpbb.recaptcha.v3.data('recaptcha-v3'),
-						{action: phpbb.recaptcha.v3.val()}
+						{ action: phpbb.recaptcha.v3.val() },
 					).then(function(token) {
 						// Place the token inside the form
 						phpbb.recaptcha.token.val(token);
@@ -1860,7 +1862,7 @@ phpbb.recaptcha = {
 
 			phpbb.recaptcha.form.submit();
 		}
-	}
+	},
 };
 
 // reCAPTCHA v2 doesn't accept callback functions nested inside objects

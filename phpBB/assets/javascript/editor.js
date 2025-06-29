@@ -1,4 +1,8 @@
 /* global phpbb */
+/* eslint camelcase: 0 */
+/* eslint no-undef: 0 */
+/* eslint no-unused-vars: 0 */
+/* eslint no-var: 0 */
 
 /**
 * bbCode control by subBlue design [ www.subBlue.com ]
@@ -100,7 +104,7 @@ function bbfontstyle(bbopen, bbclose) {
 	// IE
 	else if (document.selection) {
 		var range = textarea.createTextRange();
-		range.move("character", new_pos);
+		range.move('character', new_pos);
 		range.select();
 		storeCaret(textarea);
 	}
@@ -271,7 +275,7 @@ function formatAttributeValue(str) {
 		// Return as-is if it contains none of: space, ' " \ or ]
 		return str;
 	}
-	var singleQuoted = "'" + str.replace(/[\\']/g, '\\$&') + "'",
+	var singleQuoted = '\'' + str.replace(/[\\']/g, '\\$&') + '\'',
 		doubleQuoted = '"' + str.replace(/[\\"]/g, '\\$&') + '"';
 
 	return (singleQuoted.length < doubleQuoted.length) ? singleQuoted : doubleQuoted;
@@ -404,7 +408,7 @@ function getCaretPosition(txtarea) {
 			phpbb.showDragNDrop(textarea);
 		}
 
-		$('textarea').on('keydown', function (e) {
+		$('textarea').on('keydown', function(e) {
 			if (e.which === 13 && (e.metaKey || e.ctrlKey)) {
 				$(this).closest('form').find(':submit').click();
 			}

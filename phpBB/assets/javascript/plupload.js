@@ -1,4 +1,7 @@
 /* global phpbb, plupload, attachInline */
+/* eslint camelcase: 0 */
+/* eslint no-var: 0 */
+/* eslint no-unused-vars: 0 */
 
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
@@ -21,7 +24,7 @@ phpbb.plupload.initialize = function() {
 	// Only execute if Plupload initialized successfully.
 	phpbb.plupload.uploader.bind('Init', function() {
 		phpbb.plupload.form = $(phpbb.plupload.config.form_hook)[0];
-		let $attachRowTemplate = $('#attach-row-tpl');
+		const $attachRowTemplate = $('#attach-row-tpl');
 		$attachRowTemplate.removeClass('attach-row-tpl');
 		phpbb.plupload.rowTpl = $attachRowTemplate[0].outerHTML;
 
@@ -300,7 +303,7 @@ phpbb.plupload.deleteFile = function(row, attachId) {
 	$.ajax(phpbb.plupload.config.url, {
 		type: 'POST',
 		data: $.extend(fields, phpbb.plupload.getSerializedData()),
-		headers: phpbb.plupload.config.headers
+		headers: phpbb.plupload.config.headers,
 	})
 	.always(always)
 	.done(done);
@@ -452,7 +455,7 @@ phpbb.plupload.fileError = function(file, error) {
 		.addClass('file-error')
 		.attr({
 			'data-error-title': phpbb.plupload.lang.ERROR,
-			'data-error-message': error
+			'data-error-message': error,
 		});
 };
 
@@ -469,14 +472,14 @@ phpbb.plupload.initialize();
 plupload.addFileFilter('mime_types_max_file_size', function(types, file, callback) {
 	if (file.size !== 'undefined') {
 		$(types).each(function(i, type) {
-			let extensions = [],
+			const extensions = [],
 				extsArray = type.extensions.split(',');
 
 			$(extsArray).each(function(i, extension) {
-				/^\s*\*\s*$/.test(extension) ? extensions.push("\\.*") : extensions.push("\\." + extension.replace(new RegExp("[" + "/^$.*+?|()[]{}\\".replace(/./g, "\\$&") + "]", "g"), "\\$&"));
+				/^\s*\*\s*$/.test(extension) ? extensions.push('\\.*') : extensions.push('\\.' + extension.replace(new RegExp('[' + '/^$.*+?|()[]{}\\'.replace(/./g, '\\$&') + ']', 'g'), '\\$&'));
 			});
 
-			let regex = new RegExp("(" + extensions.join("|") + ")$", "i");
+			const regex = new RegExp('(' + extensions.join('|') + ')$', 'i');
 
 			if (regex.test(file.name)) {
 				if (type.max_file_size !== 'undefined' && type.max_file_size) {
@@ -484,7 +487,7 @@ plupload.addFileFilter('mime_types_max_file_size', function(types, file, callbac
 						phpbb.plupload.uploader.trigger('Error', {
 							code: plupload.FILE_SIZE_ERROR,
 							message: plupload.translate('File size error.'),
-							file: file
+							file: file,
 						});
 
 						callback(false);
@@ -587,9 +590,9 @@ phpbb.plupload.uploader.bind('ChunkUploaded', function(up, file, response) {
 		up.trigger('FileUploaded', file, {
 			response: JSON.stringify({
 				error: {
-					message: 'Error parsing server response.'
-				}
-			})
+					message: 'Error parsing server response.',
+				},
+			}),
 		});
 	}
 
@@ -603,9 +606,9 @@ phpbb.plupload.uploader.bind('ChunkUploaded', function(up, file, response) {
 		up.trigger('FileUploaded', file, {
 			response: JSON.stringify({
 				error: {
-					message: json.error.message
-				}
-			})
+					message: json.error.message,
+				},
+			}),
 		});
 	}
 });
@@ -692,7 +695,7 @@ phpbb.plupload.uploader.bind('FileUploaded', function(up, file, response) {
 		row.attr('data-attach-id', file.attachment_data.attach_id);
 		row.find('.file-inline-bbcode').show();
 		row.find('.file-status').addClass('file-uploaded');
-		phpbb.plupload.update(json.data, 'addition', 0, [json.download_url]);
+		phpbb.plupload.update(json.data, 'addition', 0, [ json.download_url ]);
 	}
 });
 
