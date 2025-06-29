@@ -166,6 +166,17 @@ interface tools_interface
 	public function sql_create_index(string $table_name, string $index_name, $column);
 
 	/**
+	 * Rename index
+	 *
+	 * @param string $table_name     Table to modify
+	 * @param string $index_name_old Name of the index to rename
+	 * @param string $index_name_new New name of the index being renamed
+	 *
+	 * @return bool|string[]    True if the statements have been executed
+	 */
+	public function sql_rename_index(string $table_name, string $index_name_old, string $index_name_new);
+
+	/**
 	 * Drop Index
 	 *
 	 * @param string $table_name Table to modify

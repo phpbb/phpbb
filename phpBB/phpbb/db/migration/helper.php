@@ -42,6 +42,7 @@ class helper
 			'add_primary_keys'	=> 2, // perform_schema_changes only uses one level, but second is in the function
 			'add_unique_index'	=> 2,
 			'add_index'			=> 2,
+			'rename_index'		=> 1,
 		);
 
 		foreach ($nested_level as $change_type => $data_depth)
