@@ -13,10 +13,10 @@
 
 namespace phpbb\db\migration\data\v400;
 
-use phpbb\db\migration\migration;
+use phpbb\db\migration\container_aware_migration;
 use phpbb\db\doctrine\table_helper;
 
-class rename_duplicated_index_names extends migration
+class rename_duplicated_index_names extends container_aware_migration
 {
 	public static function depends_on()
 	{
@@ -27,27 +27,25 @@ class rename_duplicated_index_names extends migration
 
 	public function update_schema()
 	{
-		$rename_index = $table_keys = [];
-		$db_table_schema = $this->get_schema();
-		foreach ($db_table_schema as $table_name => $table_data)
-		{
-			if (isset($table_data['KEYS']))
-			{
-				foreach ($table_data['KEYS'] as $key_name => $key_data)
-				{
-					$table_keys[$table_name][] = $key_name;
-				}
-			}
-		}
+		$rename_index = [];
+		$is_prefixed_index = false;
+		$tables_index_names = $this->get_tables_index_names();
+		$short_table_names = table_helper::map_short_table_names(array_keys($tables_index_names), $this->table_prefix);
 
-		$short_table_names = table_helper::map_short_table_names([], $this->table_prefix);
-		foreach ($table_keys as $table_name => $key_names)
+		foreach ($tables_index_names as $table_name => $key_names)
 		{
 			foreach ($key_names as $key_name)
 			{
-				$key_name_new = $short_table_names[$table_name] . '_' . $key_name;
-				$rename_index[$table_name][$key_name] = $key_name_new;
-				$rename_index[$table_name][$table_name . '_' . $key_name] = $key_name_new;
+				$prefixless_table_name = strpos($table_name, $this->table_prefix) === 0 ? substr($table_name, strlen($this->table_prefix)) : $table_name;
+
+				// Check if there's at least one index name is prefixed, otherwise we operate on generated database schema
+				$is_prefixed_index = $is_prefixed_index || (strpos($key_name, $table_name) === 0);
+
+				// If key name is prefixed by its table name (with or without tables prefix), remove that key name prefix.
+				$cleaned_key_name = !$is_prefixed_index ? $key_name : str_replace(strpos($key_name, $table_name) === 0 ? $table_name . '_' : $prefixless_table_name . '_', '', $key_name);
+
+				$key_name_new = $short_table_names[$table_name] . '_' . $cleaned_key_name;
+				$rename_index[$table_name][$key_name !== $cleaned_key_name ? $key_name : $cleaned_key_name] = $key_name_new;
 			}
 		}
 
@@ -87,5 +85,46 @@ class rename_duplicated_index_names extends migration
 		);
 
 		return $schema_generator->get_schema();
+	}
+
+	public function get_tables_index_names()
+	{
+		$table_keys = [];
+		$doctrine = $this->container->get('dbal.conn.doctrine');
+		$schema_manager = $doctrine->createSchemaManager();
+		$table_names = $schema_manager->listTableNames();
+
+		if (!empty($table_names))
+		{
+			foreach ($table_names as $table_name)
+			{
+				$indices = $schema_manager->listTableIndexes($table_name);
+
+				$index_names = array_keys(
+					array_filter($indices, function (\Doctrine\DBAL\Schema\Index $index)
+					{
+						return !$index->isPrimary();
+					})
+				);
+
+				if (!empty($index_names))
+				{
+					$table_keys[$table_name] = $index_names;
+				}
+			}
+		}
+		else
+		{
+			$db_table_schema = $this->get_schema();
+			foreach ($db_table_schema as $table_name => $table_data)
+			{
+				if (isset($table_data['KEYS']))
+				{
+					$table_keys[$table_name] = array_keys($table_data['KEYS']);
+				}
+			}
+		}
+
+		return $table_keys;
 	}
 }

@@ -124,107 +124,51 @@ class table_helper
 	}
 
 	/**
-	 * Maps short table names for the purpose of prefixing tables' index names.
+	 * Maps table names to thair short names for the purpose of prefixing tables' index names.
 	 *
-	 * @param array $additional_tables	Additional table names without prefix to add to the map.
-	 * @param string $table_prefix		Tables prefix.
+	 * @param array $table_names	Table names with prefix to add to the map.
+	 * @param string $table_prefix	Tables prefix.
 	 *
 	 * @return array<string, string>	Pairs of table names and their short name representations.
 	 * @psalm-return array{string, string}
 	 */
-	public static function map_short_table_names(array $additional_tables = [], string $table_prefix = ''): array
+	public static function map_short_table_names(array $table_names = [], string $table_prefix = ''): array
 	{
-		$short_table_names_map = [
-			"{$table_prefix}acl_groups"			=> 'aclgrps',
-			"{$table_prefix}acl_options"		=> 'aclopts',
-			"{$table_prefix}acl_roles"			=> 'aclrls',
-			"{$table_prefix}acl_roles_data"		=> 'aclrlsdt',
-			"{$table_prefix}acl_users"			=> 'aclusrs',
-			"{$table_prefix}attachments"		=> 'atchmnts',
-			"{$table_prefix}backups"			=> 'bckps',
-			"{$table_prefix}bans"				=> 'bans',
-			"{$table_prefix}bbcodes"			=> 'bbcds',
-			"{$table_prefix}bookmarks"			=> 'bkmrks',
-			"{$table_prefix}bots"				=> 'bots',
-			"{$table_prefix}captcha_answers"	=> 'cptchans',
-			"{$table_prefix}captcha_questions"	=> 'cptchqs',
-			"{$table_prefix}config"				=> 'cnfg',
-			"{$table_prefix}config_text"		=> 'cnfgtxt',
-			"{$table_prefix}confirm"			=> 'cnfrm',
-			"{$table_prefix}disallow"			=> 'dslw',
-			"{$table_prefix}drafts"				=> 'drfts',
-			"{$table_prefix}ext"				=> 'ext',
-			"{$table_prefix}extension_groups"	=> 'extgrps',
-			"{$table_prefix}extensions"			=> 'exts',
-			"{$table_prefix}forums"				=> 'frms',
-			"{$table_prefix}forums_access"		=> 'frmsacs',
-			"{$table_prefix}forums_track"		=> 'frmstrck',
-			"{$table_prefix}forums_watch"		=> 'frmswtch',
-			"{$table_prefix}groups"				=> 'grps',
-			"{$table_prefix}icons"				=> 'icns',
-			"{$table_prefix}lang"				=> 'lang',
-			"{$table_prefix}log"				=> 'log',
-			"{$table_prefix}login_attempts"		=> 'lgnatmpts',
-			"{$table_prefix}migrations"			=> 'mgrtns',
-			"{$table_prefix}moderator_cache"	=> 'mdrtche',
-			"{$table_prefix}modules"			=> 'mdls',
-			"{$table_prefix}notification_emails"=> 'ntfemls',
-			"{$table_prefix}notification_push"	=> 'ntfpsh',
-			"{$table_prefix}notification_types"	=> 'ntftps',
-			"{$table_prefix}notifications"		=> 'nftcns',
-			"{$table_prefix}oauth_accounts"		=> 'oauthacnts',
-			"{$table_prefix}oauth_states"		=> 'oauthsts',
-			"{$table_prefix}oauth_tokens"		=> 'oauthtkns',
-			"{$table_prefix}poll_options"		=> 'pllopts',
-			"{$table_prefix}poll_votes"			=> 'pllvts',
-			"{$table_prefix}posts"				=> 'psts',
-			"{$table_prefix}privmsgs"			=> 'pms',
-			"{$table_prefix}privmsgs_folder"	=> 'pmsfldr',
-			"{$table_prefix}privmsgs_rules"		=> 'pmsrls',
-			"{$table_prefix}privmsgs_to"		=> 'pmsto',
-			"{$table_prefix}profile_fields"		=> 'prflds',
-			"{$table_prefix}profile_fields_data"=> 'prfldt',
-			"{$table_prefix}profile_fields_lang"=> 'prfldlng',
-			"{$table_prefix}profile_lang"		=> 'prflng',
-			"{$table_prefix}push_subscriptions"	=> 'pshsbscrs',
-			"{$table_prefix}qa_confirm"			=> 'qacnfm',
-			"{$table_prefix}ranks"				=> 'rnks',
-			"{$table_prefix}reports"			=> 'rprts',
-			"{$table_prefix}reports_reasons"	=> 'rprtrsns',
-			"{$table_prefix}search_results"		=> 'srchrslts',
-			"{$table_prefix}search_wordlist"	=> 'wrdlst',
-			"{$table_prefix}search_wordmatch"	=> 'wrdmtch',
-			"{$table_prefix}sessions"			=> 'ssns',
-			"{$table_prefix}sessions_keys"		=> 'ssnkeys',
-			"{$table_prefix}sitelist"			=> 'sitelst',
-			"{$table_prefix}smilies"			=> 'smls',
-			"{$table_prefix}sphinx"				=> 'sphnx',
-			"{$table_prefix}storage"			=> 'strg',
-			"{$table_prefix}styles"				=> 'stls',
-			"{$table_prefix}teampage"			=> 'teampg',
-			"{$table_prefix}topics"				=> 'tpcs',
-			"{$table_prefix}topics_posted"		=> 'tpcspstd',
-			"{$table_prefix}topics_track"		=> 'tpcstrck',
-			"{$table_prefix}topics_watch"		=> 'tpkswtch',
-			"{$table_prefix}user_group"			=> 'usrgrp',
-			"{$table_prefix}user_notifications"	=> 'usrntfs',
-			"{$table_prefix}users"				=> 'usrs',
-			"{$table_prefix}warnings"			=> 'wrns',
-			"{$table_prefix}words"				=> 'wrds',
-			"{$table_prefix}zebra"				=> 'zbra',
-		];
-
-		// Add table prefix to additional tables
-		if (!empty($table_prefix) && !empty($additional_tables))
+		$short_table_names_map = [];
+		foreach ($table_names as $table_name)
 		{
-			foreach ($additional_tables as $key => $value)
-			{
-				$additional_tables["{$table_prefix}{$key}"] = $value;
-				unset($additional_tables[$key]);
-			}
+			$short_table_names_map[$table_name] = self::generate_shortname(str_replace($table_prefix, '', $table_name));
 		}
 
-		return array_merge($short_table_names_map, $additional_tables);
+		return $short_table_names_map;
+	}
+
+	/**
+	 * Generates short table names for the purpose of prefixing tables' index names.
+	 *
+	 * @param string $table_name	Table name with prefix to generate its short name.
+	 *
+	 * @return string	Short table name.
+	 */
+	public static function generate_shortname(string $table_name = ''): string
+	{
+		// Only shorten actually long names
+		if (strlen($table_name) > 4)
+		{
+			// Remove vowels
+			$table_name = preg_replace('/([^aeiou_])([aeiou]+)/i', '$1', $table_name);
+
+			// Remove underscores
+			$table_name = str_replace('_', '', $table_name);
+
+			// Remove repeated consonants and their combinations (like 'ss', 'flfl' and similar)
+			$table_name = preg_replace('/(.+)\\1+/i', '$1', $table_name);
+
+			// Restrict short name length to 10 chars
+			$table_name = substr($table_name, 0, 10);
+		}
+
+		return $table_name;
 	}
 
 	/**
