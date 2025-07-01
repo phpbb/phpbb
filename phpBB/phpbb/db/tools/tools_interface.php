@@ -226,4 +226,11 @@ interface tools_interface
 	 * @return void
 	 */
 	public function sql_truncate_table(string $table_name): void;
+
+	/**
+	 * Gets current Doctrine DBAL connection
+	 *
+	 * @return \Doctrine\DBAL\Connection
+	 */
+	public function get_connection(): \Doctrine\DBAL\Connection;
 }

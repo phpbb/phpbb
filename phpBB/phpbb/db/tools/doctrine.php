@@ -62,7 +62,7 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * @return Connection
+	 * {@inheritDoc}
 	 */
 	public function get_connection(): Connection
 	{

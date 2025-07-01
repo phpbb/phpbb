@@ -485,9 +485,10 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertNotEmpty($table_keys);
 
-		$short_table_names = \phpbb\db\doctrine\table_helper::map_short_table_names(['custom_table' => 'cstmtbl'], 'phpbb_');
-		$this->assertEquals('phpbb_custom_table', array_search('cstmtbl', $short_table_names));
-		$this->assertEquals($short_table_names['phpbb_custom_table'], 'cstmtbl');
+		$table_names = array_merge(array_keys($db_table_schema), ['phpbb_custom_table']);
+		$short_table_names = \phpbb\db\doctrine\table_helper::map_short_table_names($table_names, 'phpbb_');
+		$this->assertEquals('phpbb_custom_table', array_search(\phpbb\db\doctrine\table_helper::generate_shortname('custom_table'), $short_table_names));
+		$this->assertEquals($short_table_names['phpbb_custom_table'], \phpbb\db\doctrine\table_helper::generate_shortname('custom_table'));
 
 		foreach ($table_keys as $table_name => $key_names)
 		{
