@@ -146,7 +146,7 @@ class table_helper
 	/**
 	 * Generates short table names for the purpose of prefixing tables' index names.
 	 *
-	 * @param string $table_name	Table name with prefix to generate its short name.
+	 * @param string $table_name	Table name without prefix to generate its short name.
 	 *
 	 * @return string	Short table name.
 	 */

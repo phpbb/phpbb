@@ -168,6 +168,7 @@ class doctrine implements tools_interface
 	 */
 	public function sql_index_exists(string $table_name, string $index_name): bool
 	{
+		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, true));
 	}
 
@@ -176,6 +177,7 @@ class doctrine implements tools_interface
 	 */
 	public function sql_unique_index_exists(string $table_name, string $index_name): bool
 	{
+		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, false));
 	}
 
@@ -330,6 +332,7 @@ class doctrine implements tools_interface
 	 */
 	public function sql_create_index(string $table_name, string $index_name, $column)
 	{
+		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
@@ -343,6 +346,8 @@ class doctrine implements tools_interface
 	 */
 	public function sql_rename_index(string $table_name, string $index_name_old, string $index_name_new)
 	{
+		$index_name_old = self::normalize_index_name($table_name, $index_name_old);
+		$index_name_new = self::normalize_index_name($table_name, $index_name_new);
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name_old, $index_name_new): void
 			{
@@ -356,6 +361,7 @@ class doctrine implements tools_interface
 	 */
 	public function sql_index_drop(string $table_name, string $index_name)
 	{
+		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name): void
 			{
@@ -369,6 +375,7 @@ class doctrine implements tools_interface
 	 */
 	public function sql_create_unique_index(string $table_name, string $index_name, $column)
 	{
+		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $index_name, $column): void
 			{
@@ -403,6 +410,43 @@ class doctrine implements tools_interface
 		{
 			return;
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public static function normalize_index_name(string $table_name, string $index_name, bool $remove_prefix = false): string
+	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name));
+		if (!self::is_prefixed($index_name, $short_table_name . '_'))
+		{
+			$index_name = $short_table_name . '_' . $index_name;
+		}
+		else if ($remove_prefix)
+		{
+			$index_name = remove_prefix($index_name);
+		}
+
+		return $index_name;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public static function remove_prefix(string $name): string
+	{
+		$prefix_end_pos = strpos($name, '_');
+		$prefixless_name = substr($name, $prefix_end_pos + 1);
+
+		return $prefixless_name;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public static function is_prefixed(string $name, string $prefix): bool
+	{
+		return strpos($name, $prefix) === 0;
 	}
 
 	/**
@@ -848,6 +892,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
+		$index_name = self::normalize_index_name($table_name, $index_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -869,6 +914,8 @@ class doctrine implements tools_interface
 	protected function schema_rename_index(Schema $schema, string $table_name, string $index_name_old, string $index_name_new, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
+		$index_name_old = self::normalize_index_name($table_name, $index_name_old);
+		$index_name_new = self::normalize_index_name($table_name, $index_name_new);
 
 		if ($safe_check && !$table->hasIndex($index_name_old))
 		{
@@ -891,6 +938,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
+		$index_name = self::normalize_index_name($table_name, $index_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -911,6 +959,7 @@ class doctrine implements tools_interface
 	protected function schema_index_drop(Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
+		$index_name = self::normalize_index_name($table_name, $index_name);
 
 		if ($safe_check && !$table->hasIndex($index_name))
 		{

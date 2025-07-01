@@ -233,4 +233,34 @@ interface tools_interface
 	 * @return \Doctrine\DBAL\Connection
 	 */
 	public function get_connection(): \Doctrine\DBAL\Connection;
+
+	/**
+	 * Adds short table name prefix to the index name if needed
+	 *
+	 * @param string	$table_name		Table name with tables prefix
+	 * @param string	$index_name		Index name
+	 * @param bool		$remove_prefix	Flag indicating to remove short table name prefix if exists
+	 *
+	 * @return string	Prefixed index name
+	 */
+	public static function normalize_index_name(string $table_name, string $index_name, bool $remove_prefix = false): string;
+
+	/**
+	 * Removes prefix from string if exists
+	 *
+	 * @param string	$name	String to remove the prefix from
+	 *
+	 * @return string	Prefixless string
+	 */
+	public static function remove_prefix(string $name): string;
+
+	/**
+	 * Tests if a string is prefixed with the prefix defined
+	 *
+	 * @param string	$name		String to test vs prefix
+	 * @param string	$prefix		Prefix name
+	 *
+	 * @return bool	True if a string id prefixed with the prefix defined, false otherwise
+	 */
+	public static function is_prefixed(string $name, string $prefix): bool;
 }
