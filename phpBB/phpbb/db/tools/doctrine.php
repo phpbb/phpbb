@@ -424,7 +424,7 @@ class doctrine implements tools_interface
 		}
 		else if ($remove_prefix)
 		{
-			$index_name = remove_prefix($index_name);
+			$index_name = self::remove_prefix($index_name);
 		}
 
 		return $index_name;
@@ -697,6 +697,7 @@ class doctrine implements tools_interface
 			foreach ($table_data['KEYS'] as $key_name => $key_data)
 			{
 				$columns = (is_array($key_data[1])) ? $key_data[1] : [$key_data[1]];
+				$key_name = self::normalize_index_name($table_name, $key_name);
 
 				// Supports key columns defined with there length
 				$columns = array_map(function (string $column)
