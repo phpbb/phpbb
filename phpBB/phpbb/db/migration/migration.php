@@ -28,9 +28,6 @@ abstract class migration implements migration_interface
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var \Doctrine\DBAL\Connection */
-	protected $db_doctrine;
-
 	/** @var \phpbb\db\tools\tools_interface */
 	protected $db_tools;
 
@@ -75,9 +72,6 @@ abstract class migration implements migration_interface
 		$this->php_ext = $php_ext;
 
 		$this->errors = array();
-
-		$phpbb_config_php_file = new \phpbb\config_php_file($phpbb_root_path, $php_ext);
-		$this->db_doctrine = \phpbb\db\doctrine\connection_factory::get_connection($phpbb_config_php_file);
 	}
 
 	/**

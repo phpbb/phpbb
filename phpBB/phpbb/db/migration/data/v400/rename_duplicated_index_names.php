@@ -90,7 +90,7 @@ class rename_duplicated_index_names extends migration
 	public function get_tables_index_names()
 	{
 		$table_keys = [];
-		$schema_manager = $this->db_doctrine->createSchemaManager();
+		$schema_manager = $this->db_tools->get_connection()->createSchemaManager();
 		$table_names = $schema_manager->listTableNames();
 
 		if (!empty($table_names))

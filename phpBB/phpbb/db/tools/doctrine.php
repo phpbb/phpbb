@@ -62,6 +62,14 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * @return Connection
+	 */
+	public function get_connection(): Connection
+	{
+		return $this->connection;
+	}
+
+	/**
 	 * @return AbstractSchemaManager
 	 *
 	 * @throws Exception
