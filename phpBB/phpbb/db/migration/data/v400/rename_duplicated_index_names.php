@@ -13,10 +13,10 @@
 
 namespace phpbb\db\migration\data\v400;
 
-use phpbb\db\migration\container_aware_migration;
+use phpbb\db\migration\migration;
 use phpbb\db\doctrine\table_helper;
 
-class rename_duplicated_index_names extends container_aware_migration
+class rename_duplicated_index_names extends migration
 {
 	public static function depends_on()
 	{
@@ -90,8 +90,7 @@ class rename_duplicated_index_names extends container_aware_migration
 	public function get_tables_index_names()
 	{
 		$table_keys = [];
-		$doctrine = $this->container->get('dbal.conn.doctrine');
-		$schema_manager = $doctrine->createSchemaManager();
+		$schema_manager = $this->db_doctrine->createSchemaManager();
 		$table_names = $schema_manager->listTableNames();
 
 		if (!empty($table_names))
