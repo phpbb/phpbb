@@ -417,8 +417,12 @@ class doctrine implements tools_interface
 	 */
 	public static function normalize_index_name(string $table_name, string $index_name, bool $remove_prefix = false): string
 	{
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name));
-		if (!self::is_prefixed($index_name, $short_table_name . '_'))
+		$prefixless_table_name = self::remove_prefix($table_name);
+		$short_table_name = table_helper::generate_shortname($prefixless_table_name);
+		if (!self::is_prefixed($index_name, $short_table_name . '_')
+			&& !self::is_prefixed($index_name, $prefixless_table_name . '_')
+			&& !self::is_prefixed($index_name, $table_name . '_')
+		)
 		{
 			$index_name = $short_table_name . '_' . $index_name;
 		}
@@ -915,7 +919,6 @@ class doctrine implements tools_interface
 	protected function schema_rename_index(Schema $schema, string $table_name, string $index_name_old, string $index_name_new, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
-		$index_name_old = self::normalize_index_name($table_name, $index_name_old);
 		$index_name_new = self::normalize_index_name($table_name, $index_name_new);
 
 		if ($safe_check && !$table->hasIndex($index_name_old))
