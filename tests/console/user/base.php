@@ -32,7 +32,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $auth, $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
+		global $auth, $db, $cache, $config, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx, $table_prefix;
 
 		$phpbb_dispatcher = new \phpbb\event\dispatcher();
 		$phpbb_container = new phpbb_mock_container_builder();
@@ -141,6 +141,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$factory = new \phpbb\db\tools\factory();
 		$db_doctrine = $this->new_doctrine_dbal();
 		$db_tools = $factory->get($db_doctrine);
+		$db_tools->set_table_prefix($table_prefix);
 		$migrator = new \phpbb\db\migrator(
 			$phpbb_container,
 			$config,

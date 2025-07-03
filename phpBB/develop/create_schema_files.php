@@ -58,6 +58,7 @@ $db_doctrine = $ref->newInstanceWithoutConstructor();
 
 $factory = new \phpbb\db\tools\factory();
 $db_tools = $factory->get($db_doctrine, true);
+$db_tools->set_table_prefix($table_prefix);
 
 $tables_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
 $tables = [];

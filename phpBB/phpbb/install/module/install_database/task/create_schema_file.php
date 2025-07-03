@@ -145,6 +145,7 @@ class create_schema_file extends \phpbb\install\task_base
 			$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db_doctrine, true);
+			$db_tools->set_table_prefix($table_prefix);
 			$tables_data = \Symfony\Component\Yaml\Yaml::parseFile($this->phpbb_root_path . '/config/default/container/tables.yml');
 			$tables = [];
 			foreach ($tables_data['parameters'] as $parameter => $table)

@@ -53,12 +53,15 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
+		global $table_prefix;
+
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->doctrine_db);
+		$this->db_tools->set_table_prefix($table_prefix);
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 

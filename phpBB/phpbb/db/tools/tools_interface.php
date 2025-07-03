@@ -235,24 +235,25 @@ interface tools_interface
 	public function get_connection(): \Doctrine\DBAL\Connection;
 
 	/**
-	 * Adds short table name prefix to the index name if needed
+	 * Adds prefix to a string if needed
 	 *
-	 * @param string	$table_name		Table name with tables prefix
-	 * @param string	$index_name		Index name
-	 * @param bool		$remove_prefix	Flag indicating to remove short table name prefix if exists
+	 * @param string	$name		Table name with tables prefix
+	 * @param string	$prefix		Prefix to add
 	 *
-	 * @return string	Prefixed index name
+	 * @return string	Prefixed name
 	 */
-	public static function normalize_index_name(string $table_name, string $index_name, bool $remove_prefix = false): string;
+	public static function add_prefix(string $name, string $prefix): string;
 
 	/**
-	 * Removes prefix from string if exists
+	 * Removes prefix from string if exists. If prefix is empty,
+	 * the first part of the string ending with underscore will be removed.
 	 *
-	 * @param string	$name	String to remove the prefix from
+	 * @param string	$name		String to remove the prefix from
+	 * @param string	$prefix		Prefix to remove
 	 *
 	 * @return string	Prefixless string
 	 */
-	public static function remove_prefix(string $name): string;
+	public static function remove_prefix(string $name, string $prefix = ''): string;
 
 	/**
 	 * Tests if a string is prefixed with the prefix defined
@@ -263,4 +264,13 @@ interface tools_interface
 	 * @return bool	True if a string id prefixed with the prefix defined, false otherwise
 	 */
 	public static function is_prefixed(string $name, string $prefix): bool;
+
+	/**
+	 * Sets table prefix
+	 *
+	 * @param string	$table_prefix	String to test vs prefix
+	 *
+	 * @return void
+	 */
+	public function set_table_prefix(string $table_prefix): void;
 }

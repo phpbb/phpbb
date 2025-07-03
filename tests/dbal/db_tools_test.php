@@ -35,12 +35,15 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
+
 		parent::setUp();
 
+		$table_prefix = 'prefix_';
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$this->tools = $factory->get($this->doctrine_db);
+		$this->tools->set_table_prefix($table_prefix);
 
 		$this->table_data = array(
 			'COLUMNS'		=> array(

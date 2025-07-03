@@ -15,9 +15,15 @@ namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\migration;
 use phpbb\db\doctrine\table_helper;
+use phpbb\db\tools\doctrine as doctrine_dbtools;
 
 class rename_duplicated_index_names extends migration
 {
+	/**
+	 * @var array
+	 */
+	protected $table_keys = [];
+
 	public static function depends_on()
 	{
 		return [
@@ -28,24 +34,33 @@ class rename_duplicated_index_names extends migration
 	public function update_schema()
 	{
 		$rename_index = [];
-		$is_prefixed_index = false;
-		$tables_index_names = $this->get_tables_index_names();
-		$short_table_names = table_helper::map_short_table_names(array_keys($tables_index_names), $this->table_prefix);
-
-		foreach ($tables_index_names as $table_name => $key_names)
+		if (empty($this->table_keys))
 		{
+			$this->get_tables_index_names();
+		}
+		$short_table_names = table_helper::map_short_table_names(array_keys($this->table_keys), $this->table_prefix);
+
+		foreach ($this->table_keys as $table_name => $key_names)
+		{
+			$prefixless_table_name = doctrine_dbtools::remove_prefix($table_name, $this->table_prefix);
 			foreach ($key_names as $key_name)
 			{
-				$prefixless_table_name = strpos($table_name, $this->table_prefix) === 0 ? substr($table_name, strlen($this->table_prefix)) : $table_name;
+				// If 'old' key name is already new format, do not rename it
+				if (doctrine_dbtools::is_prefixed($key_name, $short_table_names[$table_name]))
+				{
+					continue;
+				}
 
-				// Check if there's at least one index name is prefixed, otherwise we operate on generated database schema
-				$is_prefixed_index = $is_prefixed_index || (strpos($key_name, $table_name) === 0);
-
-				// If key name is prefixed by its table name (with or without tables prefix), remove that key name prefix.
-				$cleaned_key_name = !$is_prefixed_index ? $key_name : str_replace(strpos($key_name, $table_name) === 0 ? $table_name . '_' : $prefixless_table_name . '_', '', $key_name);
-
+				// If 'old' key name is prefixed by its table name with and/or without table name common prefix
+				// (f.e. 'phpbb_log_log_time'), remove it to prefix with the relevant table's short name
+				$cleaned_key_name = $key_name;
+				foreach ([$table_name, $prefixless_table_name] as $prefix)
+				{
+					$cleaned_key_name = doctrine_dbtools::remove_prefix($cleaned_key_name, $prefix);
+				}
 				$key_name_new = $short_table_names[$table_name] . '_' . $cleaned_key_name;
-				$rename_index[$table_name][$key_name !== $cleaned_key_name ? $key_name : $cleaned_key_name] = $key_name_new;
+
+				$rename_index[$table_name][$key_name] = $key_name_new;
 			}
 		}
 
@@ -89,7 +104,6 @@ class rename_duplicated_index_names extends migration
 
 	public function get_tables_index_names()
 	{
-		$table_keys = [];
 		$schema_manager = $this->db_tools->get_connection()->createSchemaManager();
 		$table_names = $schema_manager->listTableNames();
 
@@ -98,32 +112,28 @@ class rename_duplicated_index_names extends migration
 			foreach ($table_names as $table_name)
 			{
 				$indices = $schema_manager->listTableIndexes($table_name);
-
-				$index_names = array_keys(
-					array_filter($indices, function (\Doctrine\DBAL\Schema\Index $index)
+				$indices = array_keys(array_filter($indices,
+					function (\Doctrine\DBAL\Schema\Index $index)
 					{
 						return !$index->isPrimary();
 					})
 				);
 
-				if (!empty($index_names))
+				if (!empty($indices))
 				{
-					$table_keys[$table_name] = $index_names;
+					$this->table_keys[$table_name] = $indices;
 				}
 			}
 		}
 		else
 		{
-			$db_table_schema = $this->get_schema();
-			foreach ($db_table_schema as $table_name => $table_data)
+			foreach ($this->get_schema() as $table_name => $table_data)
 			{
 				if (isset($table_data['KEYS']))
 				{
-					$table_keys[$table_name] = array_keys($table_data['KEYS']);
+					$this->table_keys[$table_name] = array_keys($table_data['KEYS']);
 				}
 			}
 		}
-
-		return $table_keys;
 	}
 }

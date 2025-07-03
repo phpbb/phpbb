@@ -55,6 +55,10 @@ class migrations_check_config_added_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
+		$this->table_prefix = 'phpbb_';
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+
 		$this->config = new \phpbb\config\config([
 			'search_type'		=> '\phpbb\search\fulltext_mysql',
 		]);
@@ -63,9 +67,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 		$this->db_doctrine = $this->createMock(\Doctrine\DBAL\Connection::class);
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->db_doctrine);
-		$this->table_prefix = 'phpbb_';
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
+		$this->db_tools->set_table_prefix($this->table_prefix);
 
 		$tools = [
 			new \phpbb\db\migration\tool\config($this->config),

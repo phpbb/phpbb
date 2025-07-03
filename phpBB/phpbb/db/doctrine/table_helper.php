@@ -13,6 +13,7 @@
 namespace phpbb\db\doctrine;
 
 use InvalidArgumentException;
+use phpbb\db\tools\doctrine as doctrine_dbtools;
 
 class table_helper
 {
@@ -137,7 +138,7 @@ class table_helper
 		$short_table_names_map = [];
 		foreach ($table_names as $table_name)
 		{
-			$short_table_names_map[$table_name] = self::generate_shortname(str_replace($table_prefix, '', $table_name));
+			$short_table_names_map[$table_name] = self::generate_shortname(doctrine_dbtools::remove_prefix($table_name, $table_prefix));
 		}
 
 		return $short_table_names_map;

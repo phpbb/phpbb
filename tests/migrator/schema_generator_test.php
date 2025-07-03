@@ -30,14 +30,16 @@ class schema_generator_test extends phpbb_test_case
 
 		parent::setUp();
 
+		$this->table_prefix = 'phpbb_';
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
+
 		$this->config = new \phpbb\config\config(array());
 		$this->db = new \phpbb\db\driver\sqlite3();
 		$this->doctrine_db = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->doctrine_db);
-		$this->table_prefix = 'phpbb_';
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
+		$this->db_tools->set_table_prefix($this->table_prefix);
 	}
 
 	protected function get_schema_generator(array $class_names)

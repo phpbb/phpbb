@@ -37,6 +37,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
+		$this->table_prefix = 'phpbb_';
 		$this->config = new \phpbb\config\config(array(
 			'version'		=> '3.1.0',
 		));
@@ -45,13 +46,13 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->db_doctrine);
+		$this->db_tools->set_table_prefix($this->table_prefix);
 		$finder_factory = $this->createMock('\phpbb\finder\factory');
 		$this->phpbb_root_path = __DIR__ . '/';
 		$this->phpEx = 'php';
 
 		$this->cache =  new \phpbb\cache\service(new phpbb_mock_cache(), $this->config, $this->db, $phpbb_dispatcher, $this->phpbb_root_path, $this->phpEx);
 
-		$this->table_prefix = 'phpbb_';
 
 		$container = new phpbb_mock_container_builder();
 		$cache_path = $this->phpbb_root_path . 'cache/twig';

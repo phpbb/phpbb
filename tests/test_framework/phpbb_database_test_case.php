@@ -88,6 +88,7 @@ abstract class phpbb_database_test_case extends TestCase
 			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($doctrine, true);
+			$db_tools->set_table_prefix($table_prefix);
 
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, self::get_core_tables());
 			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));

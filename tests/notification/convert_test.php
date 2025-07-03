@@ -25,12 +25,13 @@ class phpbb_notification_convert_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_root_path, $phpEx, $table_prefix;
 
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$db_tools = $factory->get($this->doctrine_db);
+		$db_tools->set_table_prefix($table_prefix);
 		$core_tables = self::get_core_tables();
 
 		// Add user_notify_type column for testing this migration and set type

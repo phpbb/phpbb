@@ -327,6 +327,8 @@ class phpbb_database_test_connection_manager
 	*/
 	protected function load_schema_from_file($directory, \phpbb\db\driver\driver_interface $db, \Doctrine\DBAL\Connection $doctrine)
 	{
+		global $table_prefix;
+
 		$schema = $this->dbms['SCHEMA'];
 
 		if ($this->config['dbms'] == 'phpbb\db\driver\mysql')
@@ -363,7 +365,7 @@ class phpbb_database_test_connection_manager
 		}
 		else
 		{
-			global $phpbb_root_path, $phpEx, $table_prefix;
+			global $phpbb_root_path, $phpEx;
 
 			$finder = new \phpbb\finder\finder(null, false, $phpbb_root_path, $phpEx);
 			$classes = $finder->core_path('phpbb/db/migration/data/')
@@ -373,6 +375,7 @@ class phpbb_database_test_connection_manager
 			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($doctrine, true);
+			$db_tools->set_table_prefix($table_prefix);
 			$tables = phpbb_database_test_case::get_core_tables();
 
 			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, $tables);
@@ -381,6 +384,7 @@ class phpbb_database_test_connection_manager
 
 		$factory = new \phpbb\db\tools\factory();
 		$db_tools = $factory->get($doctrine);
+		$db_tools->set_table_prefix($table_prefix);
 		foreach ($db_table_schema as $table_name => $table_data)
 		{
 			$db_tools->sql_create_table(

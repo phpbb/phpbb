@@ -25,7 +25,7 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $db, $request, $phpbb_container;
+		global $db, $request, $phpbb_container, $table_prefix;
 
 		$db = $this->new_dbal();
 		$db_doctrine = $this->new_doctrine_dbal();
@@ -35,7 +35,9 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 		$request = new \phpbb_mock_request();
 		$phpbb_container = new \phpbb_mock_container_builder();
 		$factory = new \phpbb\db\tools\factory();
-		$phpbb_container->set('dbal.tools', $factory->get($db_doctrine));
+		$db_tools = $factory->get($db_doctrine);
+		$db_tools->set_table_prefix($table_prefix);
+		$phpbb_container->set('dbal.tools', $db_tools);
 		$this->qa = new \phpbb\captcha\plugins\qa('phpbb_captcha_questions', 'phpbb_captcha_answers', 'phpbb_qa_confirm');
 	}
 

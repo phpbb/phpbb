@@ -98,6 +98,7 @@ class add_tables extends task_base
 		$this->schema_file_path	= $phpbb_root_path . 'store/schema.json';
 		$this->table_prefix		= $this->config->get('table_prefix');
 		$this->change_prefix	= $this->config->get('change_table_prefix', true);
+		$this->db_tools->set_table_prefix($this->table_prefix);
 
 		parent::__construct(true);
 	}
