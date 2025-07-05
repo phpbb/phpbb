@@ -20,7 +20,7 @@ use Doctrine\DBAL\Schema\TableDiff;
  * MySQL specific schema handling.
  *
  * While adding auto_increment column to MySQL, it must be indexed.
- * If it's indexed as primary key, it ahould be declared as NOT NULL
+ * If it's indexed as primary key, it should be declared as NOT NULL
  * because MySQL primary key columns cannot be NULL.
  */
 class mysql_platform extends AbstractMySQLPlatform
