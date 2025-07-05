@@ -398,7 +398,7 @@ class doctrine implements tools_interface
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column): void
 			{
-				$this->schema_create_primary_key($schema, $column, $table_name);
+				$this->schema_create_primary_key($schema, $table_name, $column);
 			}
 		);
 	}
@@ -990,7 +990,6 @@ class doctrine implements tools_interface
 	/**
 	 * Creates primary key for a table
 	 *
-	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param array|string $column_name
