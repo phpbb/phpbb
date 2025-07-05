@@ -101,15 +101,11 @@ class remove_jabber extends migration
 		];
 	}
 
-	public function move_jabber_to_email_notifications(int|null $start)
+	public function move_jabber_to_email_notifications()
 	{
-		$limit = 1000;
-
 		$sql = 'UPDATE ' . $this->tables['user_notifications'] . '
 			SET ' . $this->db->sql_build_array('UPDATE', ['method' => 'notification.method.email']) . "
 			WHERE method = 'notification.method.jabber'";
-		$this->db->sql_query_limit($sql, $limit, $start ?: 0);
-
-		return $this->db->sql_affectedrows() < $limit ? true : $start + $limit;
+		$this->db->sql_query($sql);
 	}
 }
