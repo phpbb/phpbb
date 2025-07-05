@@ -39,7 +39,10 @@ class remove_jabber extends migration
 				$this->table_prefix . 'user_notifications' => [
 					'id' => ['ULINT', null, 'auto_increment'],
 				],
-			]
+			],
+			'add_primary_keys' => [
+				$this->table_prefix . 'user_notifications' => ['id'],
+			],
 		];
 	}
 

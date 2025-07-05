@@ -993,13 +993,14 @@ class doctrine implements tools_interface
 	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name
+	 * @param array|string $column_name
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
 	 */
-	protected function schema_create_primary_key(Schema $schema, $column, string $table_name, bool $safe_check = false): void
+	protected function schema_create_primary_key(Schema $schema, string $table_name, array|string $column_name, bool $safe_check = false): void
 	{
-		$columns = (is_array($column)) ? $column : [$column];
+		$columns = (is_array($column_name)) ? $column_name : [$column_name];
 		$table = $schema->getTable($table_name);
 		$table->dropPrimaryKey();
 		$table->setPrimaryKey($columns);
