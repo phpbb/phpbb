@@ -154,6 +154,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$php_ext = 'php';
+		$table_prefix = 'phpbb_';
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
@@ -162,7 +163,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $php_ext);
 		$db_tools = $factory->get($db_doctrine);
-		$table_prefix = 'phpbb_';
+		$db_tools->set_table_prefix($table_prefix);
 
 		$container = new phpbb_mock_container_builder();
 

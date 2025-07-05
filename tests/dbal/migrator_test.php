@@ -24,6 +24,7 @@ require_once __DIR__ . '/migration/revert_table_with_dependency.php';
 require_once __DIR__ . '/migration/fail.php';
 require_once __DIR__ . '/migration/installed.php';
 require_once __DIR__ . '/migration/schema.php';
+require_once __DIR__ . '/migration/schema_index.php';
 
 class phpbb_dbal_migrator_test extends phpbb_database_test_case
 {
@@ -52,12 +53,15 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
+		global $table_prefix;
+
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->doctrine_db);
+		$this->db_tools->set_table_prefix($table_prefix);
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 
@@ -415,5 +419,87 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
 		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar'));
+	}
+
+	public function test_rename_index()
+	{
+		$this->migrator->set_migrations(array('phpbb_dbal_migration_schema_index'));
+
+		while (!$this->migrator->finished())
+		{
+			$this->migrator->update();
+		}
+
+		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar1', 'fbr1_user_id'));
+		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar1', 'fbr1_username'));
+		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar2', 'fbr2_ban_userid'));
+		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar2', 'fbr2_ban_data'));
+
+		while ($this->migrator->migration_state('phpbb_dbal_migration_schema_index'))
+		{
+			$this->migrator->revert('phpbb_dbal_migration_schema_index');
+		}
+
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar1'));
+		$this->assertFalse($this->db_tools->sql_table_exists('phpbb_foobar2'));
+	}
+
+	public function test_schema_generator(): array
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
+		$finder = $finder_factory->get();
+		$migrator_classes = $finder->core_path('phpbb/db/migration/data/')->get_classes();
+
+		$schema_generator = new \phpbb\db\migration\schema_generator(
+			$migrator_classes,
+			$this->config,
+			$this->db,
+			$this->db_tools,
+			$phpbb_root_path,
+			$phpEx,
+			'phpbb_',
+			self::get_core_tables()
+		);
+		$db_table_schema = $schema_generator->get_schema();
+
+		$this->assertNotEmpty($db_table_schema);
+
+		return $db_table_schema;
+	}
+
+    /**
+     * @depends test_schema_generator
+     */
+	public function test_table_indexes(array $db_table_schema)
+	{
+		$table_keys = [];
+		foreach ($db_table_schema as $table_name => $table_data)
+		{
+			if (isset($table_data['KEYS']))
+			{
+				foreach ($table_data['KEYS'] as $key_name => $key_data)
+				{
+					$table_keys[$table_name][] = $key_name;
+				}
+			}
+		}
+
+		$this->assertNotEmpty($table_keys);
+
+		$table_names = array_merge(array_keys($db_table_schema), ['phpbb_custom_table']);
+		$short_table_names = \phpbb\db\doctrine\table_helper::map_short_table_names($table_names, 'phpbb_');
+		$this->assertEquals('phpbb_custom_table', array_search(\phpbb\db\doctrine\table_helper::generate_shortname('custom_table'), $short_table_names));
+		$this->assertEquals($short_table_names['phpbb_custom_table'], \phpbb\db\doctrine\table_helper::generate_shortname('custom_table'));
+
+		foreach ($table_keys as $table_name => $key_names)
+		{
+			$index_prefix = $short_table_names[$table_name] . '_';
+			foreach ($key_names as $key_name)
+			{
+				$this->assertEquals(0, strpos($key_name, $index_prefix), "$key_name does not contain $index_prefix");
+			}
+		}
 	}
 }

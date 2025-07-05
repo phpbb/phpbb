@@ -286,6 +286,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
 		$db_tools = $factory->get($db_doctrine);
+		$db_tools->set_table_prefix(self::$config['table_prefix']);
 
 		$container = new phpbb_mock_container_builder();
 		$migrator = new \phpbb\db\migrator(

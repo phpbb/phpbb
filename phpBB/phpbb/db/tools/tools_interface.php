@@ -166,6 +166,17 @@ interface tools_interface
 	public function sql_create_index(string $table_name, string $index_name, $column);
 
 	/**
+	 * Rename index
+	 *
+	 * @param string $table_name     Table to modify
+	 * @param string $index_name_old Name of the index to rename
+	 * @param string $index_name_new New name of the index being renamed
+	 *
+	 * @return bool|string[]    True if the statements have been executed
+	 */
+	public function sql_rename_index(string $table_name, string $index_name_old, string $index_name_new);
+
+	/**
 	 * Drop Index
 	 *
 	 * @param string $table_name Table to modify
@@ -215,4 +226,41 @@ interface tools_interface
 	 * @return void
 	 */
 	public function sql_truncate_table(string $table_name): void;
+
+	/**
+	 * Gets current Doctrine DBAL connection
+	 *
+	 * @return \Doctrine\DBAL\Connection
+	 */
+	public function get_connection(): \Doctrine\DBAL\Connection;
+
+	/**
+	 * Adds prefix to a string if needed
+	 *
+	 * @param string	$name		Table name with tables prefix
+	 * @param string	$prefix		Prefix to add
+	 *
+	 * @return string	Prefixed name
+	 */
+	public static function add_prefix(string $name, string $prefix): string;
+
+	/**
+	 * Removes prefix from string if exists. If prefix is empty,
+	 * the first part of the string ending with underscore will be removed.
+	 *
+	 * @param string	$name		String to remove the prefix from
+	 * @param string	$prefix		Prefix to remove
+	 *
+	 * @return string	Prefixless string
+	 */
+	public static function remove_prefix(string $name, string $prefix = ''): string;
+
+	/**
+	 * Sets table prefix
+	 *
+	 * @param string	$table_prefix	String to test vs prefix
+	 *
+	 * @return void
+	 */
+	public function set_table_prefix(string $table_prefix): void;
 }

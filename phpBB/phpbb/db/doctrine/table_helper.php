@@ -13,6 +13,7 @@
 namespace phpbb\db\doctrine;
 
 use InvalidArgumentException;
+use phpbb\db\tools\doctrine as doctrine_dbtools;
 
 class table_helper
 {
@@ -121,6 +122,54 @@ class table_helper
 			default:
 				throw new InvalidArgumentException('Invalid schema name.');
 		}
+	}
+
+	/**
+	 * Maps table names to their short names for the purpose of prefixing tables' index names.
+	 *
+	 * @param array $table_names	Table names with prefix to add to the map.
+	 * @param string $table_prefix	Tables prefix.
+	 *
+	 * @return array<string, string>	Pairs of table names and their short name representations.
+	 * @psalm-return array{string, string}
+	 */
+	public static function map_short_table_names(array $table_names = [], string $table_prefix = ''): array
+	{
+		$short_table_names_map = [];
+		foreach ($table_names as $table_name)
+		{
+			$short_table_names_map[$table_name] = self::generate_shortname(doctrine_dbtools::remove_prefix($table_name, $table_prefix));
+		}
+
+		return $short_table_names_map;
+	}
+
+	/**
+	 * Generates short table names for the purpose of prefixing tables' index names.
+	 *
+	 * @param string $table_name	Table name without prefix to generate its short name.
+	 *
+	 * @return string	Short table name.
+	 */
+	public static function generate_shortname(string $table_name = ''): string
+	{
+		// Only shorten actually long names
+		if (strlen($table_name) > 4)
+		{
+			// Remove vowels
+			$table_name = preg_replace('/([^aeiou_])([aeiou]+)/i', '$1', $table_name);
+
+			// Remove underscores
+			$table_name = str_replace('_', '', $table_name);
+
+			// Remove repeated consonants and their combinations (like 'ss', 'flfl' and similar)
+			$table_name = preg_replace('/(.+)\\1+/i', '$1', $table_name);
+
+			// Restrict short name length to 10 chars
+			$table_name = substr($table_name, 0, 10);
+		}
+
+		return $table_name;
 	}
 
 	/**

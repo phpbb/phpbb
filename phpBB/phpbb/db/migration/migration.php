@@ -72,6 +72,8 @@ abstract class migration implements migration_interface
 		$this->php_ext = $php_ext;
 
 		$this->errors = array();
+
+		$this->db_tools->set_table_prefix($this->table_prefix);
 	}
 
 	/**
