@@ -25,7 +25,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $config, $cache, $table_prefix;
+		global $phpbb_root_path, $phpEx, $config, $cache;
 
 		parent::setUp();
 
@@ -41,7 +41,6 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$this->db = $this->new_dbal();
 		$tools_factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $tools_factory->get($this->new_doctrine_dbal());
-		$this->db_tools->set_table_prefix($table_prefix);
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_native');
 		$config['fulltext_native_min_chars'] = 2;

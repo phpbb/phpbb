@@ -423,7 +423,7 @@ class doctrine implements tools_interface
 	 */
 	public static function add_prefix(string $name, string $prefix): string
 	{
-		return strpos($prefix, '_', -1) ? $prefix . $name : $prefix . '_' . $name;
+		return str_ends_with($prefix, '_') ? $prefix . $name : $prefix . '_' . $name;
 	}
 
 	/**
@@ -431,16 +431,8 @@ class doctrine implements tools_interface
 	 */
 	public static function remove_prefix(string $name, string $prefix = ''): string
 	{
-		$prefix = strpos($prefix, '_', -1) ? $prefix : $prefix . '_';
-		return $prefix && self::is_prefixed($name, $prefix) ? substr($name, strlen($prefix)) : $name;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public static function is_prefixed(string $name, string $prefix): bool
-	{
-		return strpos($name, $prefix) === 0;
+		$prefix = str_ends_with($prefix, '_') ? $prefix : $prefix . '_';
+		return $prefix && str_starts_with($name, $prefix) ? substr($name, strlen($prefix)) : $name;
 	}
 
 	/**
@@ -692,7 +684,7 @@ class doctrine implements tools_interface
 			foreach ($table_data['KEYS'] as $key_name => $key_data)
 			{
 				$columns = (is_array($key_data[1])) ? $key_data[1] : [$key_data[1]];
-				$key_name = !self::is_prefixed($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
+				$key_name = !str_starts_with($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
 
 				// Supports key columns defined with there length
 				$columns = array_map(function (string $column)
@@ -725,6 +717,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Removes a table
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param bool   $safe_check
@@ -742,6 +736,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Adds column to a table
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $column_name
@@ -772,6 +768,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Alters column properties
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $column_name
@@ -802,6 +800,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Alters column properties or adds a column
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $column_name
@@ -824,6 +824,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Removes a column in a table
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $column_name
@@ -876,6 +878,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Creates non-unique index for a table
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
@@ -889,7 +893,7 @@ class doctrine implements tools_interface
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !self::is_prefixed($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -900,6 +904,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Renames table index
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name_old
@@ -915,9 +921,9 @@ class doctrine implements tools_interface
 
 		if (!$table->hasIndex($index_name_old))
 		{
-			$index_name_old = !self::is_prefixed($index_name_old, $short_table_name) ? self::add_prefix($index_name_old, $short_table_name) : self::remove_prefix($index_name_old, $short_table_name);
+			$index_name_old = !str_starts_with($index_name_old, $short_table_name) ? self::add_prefix($index_name_old, $short_table_name) : self::remove_prefix($index_name_old, $short_table_name);
 		}
-		$index_name_new = !self::is_prefixed($index_name_new, $short_table_name) ? self::add_prefix($index_name_new, $short_table_name) : $index_name_new;
+		$index_name_new = !str_starts_with($index_name_new, $short_table_name) ? self::add_prefix($index_name_new, $short_table_name) : $index_name_new;
 
 		if ($safe_check && !$table->hasIndex($index_name_old))
 		{
@@ -928,6 +934,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Creates unique (non-primary) index for a table
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
@@ -941,7 +949,7 @@ class doctrine implements tools_interface
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !self::is_prefixed($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -952,6 +960,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Removes table index
+	 *
 	 * @param Schema $schema
 	 * @param string $table_name
 	 * @param string $index_name
@@ -966,7 +976,7 @@ class doctrine implements tools_interface
 
 		if (!$table->hasIndex($index_name))
 		{
-			$index_name = !self::is_prefixed($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : self::remove_prefix($index_name, $short_table_name);
+			$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : self::remove_prefix($index_name, $short_table_name);
 		}
 
 		if ($safe_check && !$table->hasIndex($index_name))
@@ -978,6 +988,8 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Creates primary key for a table
+	 *
 	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name

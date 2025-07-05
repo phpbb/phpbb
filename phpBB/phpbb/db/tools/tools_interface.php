@@ -256,16 +256,6 @@ interface tools_interface
 	public static function remove_prefix(string $name, string $prefix = ''): string;
 
 	/**
-	 * Tests if a string is prefixed with the prefix defined
-	 *
-	 * @param string	$name		String to test vs prefix
-	 * @param string	$prefix		Prefix name
-	 *
-	 * @return bool	True if a string id prefixed with the prefix defined, false otherwise
-	 */
-	public static function is_prefixed(string $name, string $prefix): bool;
-
-	/**
 	 * Sets table prefix
 	 *
 	 * @param string	$table_prefix	String to test vs prefix

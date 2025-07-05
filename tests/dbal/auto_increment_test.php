@@ -26,10 +26,9 @@ class phpbb_dbal_auto_increment_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $table_prefix;
-
 		parent::setUp();
 
+		$table_prefix = 'prefix_';
 		$this->db = $this->new_dbal();
 		$this->db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();

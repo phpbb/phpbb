@@ -11,6 +11,7 @@
 		<div class="errorbox">
 			<p><strong>{{ lang('MIGRATION_EXCEPTION_ERROR') }}</strong></p>
 			<p>{{ MIGRATOR_ERROR }}</p>
+			{% if MIGRATOR_ERROR_STACK_TRACE %}<p>{{ MIGRATOR_ERROR_STACK_TRACE|nl2br }}</p>{% endif %}
 			<p><a href="{{ U_RETURN }}">{{ lang('RETURN_TO_EXTENSION_LIST') }}</a></p>
 		</div>
 	{% elseif S_PRE_STEP %}

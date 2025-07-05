@@ -278,9 +278,8 @@ class acp_extensions
 				}
 				catch (\Exception $e)
 				{
-					$stack_trace = phpbb_filter_root_path(str_replace("\n", '<br>', $e->getTraceAsString()));
-					$message = $e->getMessage();
-					$this->template->assign_var('MIGRATOR_ERROR', '<b>' . $message . '</b><br><br>' . $stack_trace);
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getMessage());
+					$this->template->assign_var('MIGRATOR_ERROR_STACK_TRACE', phpbb_filter_root_path($e->getTraceAsString()));
 				}
 
 				$this->tpl_name = 'acp_ext_enable';
@@ -368,6 +367,11 @@ class acp_extensions
 				catch (\phpbb\db\migration\exception $e)
 				{
 					$this->template->assign_var('MIGRATOR_ERROR', $e->getLocalisedMessage($this->user));
+				}
+				catch (\Exception $e)
+				{
+					$this->template->assign_var('MIGRATOR_ERROR', $e->getMessage());
+					$this->template->assign_var('MIGRATOR_ERROR_STACK_TRACE', phpbb_filter_root_path($e->getTraceAsString()));
 				}
 
 				$this->tpl_name = 'acp_ext_delete_data';

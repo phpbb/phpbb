@@ -52,7 +52,7 @@ class rename_duplicated_index_names extends migration
 				foreach ($key_names as $key_name)
 				{
 					// If 'old' key name is already new format, do not rename it
-					if (doctrine_dbtools::is_prefixed($key_name, $short_table_names[$table_name]))
+					if (str_starts_with($key_name, $short_table_names[$table_name]))
 					{
 						continue;
 					}

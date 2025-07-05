@@ -125,7 +125,7 @@ class table_helper
 	}
 
 	/**
-	 * Maps table names to thair short names for the purpose of prefixing tables' index names.
+	 * Maps table names to their short names for the purpose of prefixing tables' index names.
 	 *
 	 * @param array $table_names	Table names with prefix to add to the map.
 	 * @param string $table_prefix	Tables prefix.
