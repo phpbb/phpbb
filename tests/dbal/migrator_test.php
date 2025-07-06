@@ -47,6 +47,9 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
+	/** @var string */
+	protected $table_prefix;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator.xml');
@@ -58,11 +61,12 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 
 		parent::setUp();
 
+		$this->table_prefix = $table_prefix;
 		$this->db = $this->new_dbal();
 		$this->doctrine_db = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $factory->get($this->doctrine_db);
-		$this->db_tools->set_table_prefix($table_prefix);
+		$this->db_tools->set_table_prefix($this->table_prefix);
 
 		$this->config = new \phpbb\config\db($this->db, new phpbb_mock_cache, 'phpbb_config');
 
@@ -413,21 +417,24 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_config', 'test_column1'));
 		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_foobar'));
 
+		$short_table_name = \phpbb\db\doctrine\table_helper::generate_shortname('foobar');
 		$index_data_row = $this->db_tools->sql_get_table_index_data('phpbb_foobar');
 		$this->assertEquals(4, count($index_data_row));
-		$this->assertTrue(isset($index_data_row['i_simple']));
-		$this->assertTrue(isset($index_data_row['i_uniq']));
-		$this->assertTrue(isset($index_data_row['i_auth']));
+		$this->assertTrue(isset($index_data_row[$short_table_name . '_i_simple']));
+		$this->assertTrue(isset($index_data_row[$short_table_name . '_i_uniq']));
+		$this->assertTrue(isset($index_data_row[$short_table_name . '_i_auth']));
 
 		$is_mysql = $this->db->get_sql_layer() === 'mysqli'; // Key 'lengths' option only applies to MySQL indexes
+
 		// MSSQL primary index key has 'clustered' flag, 'nonclustered' otherwise
 		// See https://learn.microsoft.com/en-us/sql/relational-databases/indexes/clustered-and-nonclustered-indexes-described?view=sql-server-ver17#indexes-and-constraints 
 		$is_mssql = in_array($this->db->get_sql_layer(), ['mssqlnative', 'mssql_odbc']);
+
 		foreach ($index_data_row as $index_name => $index_data)
 		{
 			switch ($index_name)
 			{
-				case 'i_simple':
+				case $short_table_name . '_i_simple':
 					$this->assertEquals(['user_id', 'endpoint'], $index_data['columns']);
 					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
@@ -437,7 +444,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 					$this->assertEmpty($index_data['options']['lengths'][0]);
 					$this->assertEquals($is_mysql ? 191 : null, $index_data['options']['lengths'][1]);
 				break;
-				case 'i_uniq':
+				case $short_table_name . '_i_uniq':
 					$this->assertEquals(['expiration_time', 'p256dh'], $index_data['columns']);
 					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
@@ -447,7 +454,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 					$this->assertEmpty($index_data['options']['lengths'][0]);
 					$this->assertEquals($is_mysql ? 100 : null, $index_data['options']['lengths'][1]);
 				break;
-				case 'i_auth':
+				case $short_table_name . '_i_auth':
 					$this->assertEquals(['auth'], $index_data['columns']);
 					$this->assertEquals($is_mssql ? ['nonclustered'] : [], $index_data['flags']);
 					$this->assertFalse($index_data['is_primary']);
