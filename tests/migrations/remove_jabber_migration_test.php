@@ -32,9 +32,9 @@ class phpbb_migrations_remove_jabber_migration_test extends phpbb_migration_test
 			WHERE config_name = 'jab_enable'";
 		$this->assertNotFalse($this->db->sql_query($sql));
 
-		$sql = "SELECT auth_option FROM phpbb_acl_options
-			WHERE auth_option = 'a_jabber'";
-		$this->assertNotFalse($this->db->sql_query($sql));
+		$this->assertTrue($this->tools['permission']->exists('a_jabber'));
+		$this->assertTrue($this->tools['permission']->exists('u_sendim'));
+		$this->assertTrue($this->tools['module']->exists('acp', 'ACP_CLIENT_COMMUNICATION', 'ACP_JABBER_SETTINGS'));
 
 		$this->apply_migration();
 
@@ -55,10 +55,9 @@ class phpbb_migrations_remove_jabber_migration_test extends phpbb_migration_test
 		$this->db->sql_query($sql);
 		$this->assertFalse($this->db->sql_fetchfield('config_name'));
 
-		$sql = "SELECT auth_option FROM phpbb_acl_options
-			WHERE auth_option = 'a_jabber'";
-		$this->db->sql_query($sql);
-		$this->assertFalse($this->db->sql_fetchfield('auth_option'));
+		$this->assertFalse($this->tools['permission']->exists('a_jabber'));
+		$this->assertFalse($this->tools['permission']->exists('u_sendim'));
+		$this->assertFalse($this->tools['module']->exists('acp', 'ACP_CLIENT_COMMUNICATION', 'ACP_JABBER_SETTINGS'));
 
 		$this->revert_migration();
 
@@ -67,9 +66,8 @@ class phpbb_migrations_remove_jabber_migration_test extends phpbb_migration_test
 		$this->db->sql_query($sql);
 		$this->assertEquals('jab_enable', $this->db->sql_fetchfield('config_name'));
 
-		$sql = "SELECT auth_option FROM phpbb_acl_options
-			WHERE auth_option = 'a_jabber'";
-		$this->db->sql_query($sql);
-		$this->assertEquals('a_jabber', $this->db->sql_fetchfield('auth_option'));
+		$this->assertTrue($this->tools['permission']->exists('a_jabber'));
+		$this->assertTrue($this->tools['permission']->exists('u_sendim'));
+		$this->assertTrue($this->tools['module']->exists('acp', 'ACP_CLIENT_COMMUNICATION', 'ACP_JABBER_SETTINGS'));
 	}
 }

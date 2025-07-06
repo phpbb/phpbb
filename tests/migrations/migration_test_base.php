@@ -59,10 +59,10 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 		$this->cache = new phpbb_mock_cache();
 		$this->auth = new \phpbb\auth\auth();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
-		$cache = $this->cache_service = new \phpbb\cache\service(new \phpbb\cache\driver\dummy(), new \phpbb\config\config(array()), $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
-
 		$this->config = new \phpbb\config\db($this->db, $this->cache, 'phpbb_config');
 		$this->config->initialise($this->cache);
+		$cache = $this->cache_service = new \phpbb\cache\service($this->cache, $this->config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
+
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
@@ -86,11 +86,11 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 
 		$module_manager = new \phpbb\module\module_manager($this->cache, $this->db, $this->extension_manager, 'phpbb_modules', $phpbb_root_path, $phpEx);
 
-		$tools = array(
-			new \phpbb\db\migration\tool\config($this->config),
-			new \phpbb\db\migration\tool\config_text(new \phpbb\config\db_text($this->db, 'phpbb_config_text')),
-			new \phpbb\db\migration\tool\module($this->db, $this->user, $module_manager, 'phpbb_modules'),
-			new \phpbb\db\migration\tool\permission($this->db, $this->cache_service, $this->auth, $phpbb_root_path, $phpEx),
+		$this->tools = array(
+			'config'		=> new \phpbb\db\migration\tool\config($this->config),
+			'config_text'	=> new \phpbb\db\migration\tool\config_text(new \phpbb\config\db_text($this->db, 'phpbb_config_text')),
+			'module'		=> new \phpbb\db\migration\tool\module($this->db, $this->user, $module_manager, 'phpbb_modules'),
+			'permission'	=> new \phpbb\db\migration\tool\permission($this->db, $this->cache_service, $this->auth, $phpbb_root_path, $phpEx),
 		);
 
 		$this->migrator = new \phpbb\db\migrator(
@@ -103,7 +103,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 			'php',
 			'phpbb_',
 			self::get_core_tables(),
-			$tools,
+			$this->tools,
 			new \phpbb\db\migration\helper()
 		);
 		$container->set('migrator', $this->migrator);

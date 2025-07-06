@@ -84,7 +84,7 @@
 			<value>1</value>
 			<value></value>
 			<value>acp</value>
-			<value>0</value>
+			<value>1</value>
 			<value>48</value>
 			<value>59</value>
 			<value>ACP_CLIENT_COMMUNICATION</value>
@@ -120,7 +120,7 @@
 		</row>
 		<row>
 			<value>121</value>
-			<value>u_sendim	</value>
+			<value>u_sendim</value>
 			<value>1</value>
 			<value>0</value>
 			<value>0</value>
