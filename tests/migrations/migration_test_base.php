@@ -134,7 +134,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 
 	protected function revert_migration()
 	{
-		while ($this->migrator->migration_state($this->migration_class))
+		while ($this->migrator->migration_state($this->migration_class) !== false)
 		{
 			try
 			{

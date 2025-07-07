@@ -69,5 +69,8 @@ class phpbb_migrations_remove_jabber_migration_test extends phpbb_migration_test
 		$this->assertTrue($this->tools['permission']->exists('a_jabber'));
 		$this->assertTrue($this->tools['permission']->exists('u_sendim'));
 		$this->assertTrue($this->tools['module']->exists('acp', 'ACP_CLIENT_COMMUNICATION', 'ACP_JABBER_SETTINGS'));
+
+		// Apply migration back
+		$this->apply_migration();
 	}
 }

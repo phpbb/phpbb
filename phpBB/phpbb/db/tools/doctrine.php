@@ -300,34 +300,10 @@ class doctrine implements tools_interface
 	 */
 	public function sql_column_remove(string $table_name, string $column_name)
 	{
-		// Check if this column is part of a primary key. If yes, remove the primary key.
-		$primary_key_indexes = $this->get_filtered_index_list($table_name, false);
-
-		$primary_key_indexes = array_filter($primary_key_indexes, function($index) use ($column_name) {
-			$index_columns = array_map('strtolower', $index->getUnquotedColumns());
-			return in_array($column_name, $index_columns, true) && $index->isPrimary();
-		});
-
-		if (count($primary_key_indexes))
+		$return = $this->schema_drop_primary_key($table_name, $column_name);
+		if ($return !== true)
 		{
-			// For PostgreSQL, drop primary index first to avoid "Dependent objects still exist" error
-			if (stripos($this->get_schema_manager()->getDatabasePlatform()->getname(), 'postgresql') !== false)
-			{
-				$this->get_schema_manager()->dropIndex('"primary"', $table_name);
-			}
-
-			$ret = $this->alter_schema(
-				function (Schema $schema) use ($table_name, $column_name): void
-				{
-					$table = $schema->getTable($table_name);
-					$table->dropPrimaryKey();
-				}
-			);
-
-			if ($ret !== true)
-			{
-				return $ret;
-			}
+			return $return;
 		}
 
 		return $this->alter_schema(
@@ -835,6 +811,8 @@ class doctrine implements tools_interface
 	 */
 	protected function schema_column_remove(Schema $schema, string $table_name, string $column_name, bool $safe_check = false): void
 	{
+		$this->schema_drop_primary_key($table_name, $column_name);
+
 		$this->alter_table(
 			$schema,
 			$table_name,
@@ -1006,6 +984,47 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Removes primary key from a table
+	 *
+	 * @param string $table_name
+	 * @param string $column_name
+	 *
+	 * @return bool|string[]
+	 *
+	 * @throws SchemaException
+	 */
+	protected function schema_drop_primary_key(string $table_name, string $column_name): array|bool
+	{
+		// Check if this column is part of a primary key. If yes, remove the primary key.
+		$primary_key_indexes = $this->get_filtered_index_list($table_name, false);
+
+		$primary_key_indexes = array_filter($primary_key_indexes, function($index) use ($column_name) {
+			$index_columns = array_map('strtolower', $index->getUnquotedColumns());
+			return in_array($column_name, $index_columns, true) && $index->isPrimary();
+		});
+
+		$return = true;
+		if (count($primary_key_indexes))
+		{
+			// For PostgreSQL, drop primary index first to avoid "Dependent objects still exist" error
+			if (stripos($this->get_schema_manager()->getDatabasePlatform()->getname(), 'postgresql') !== false)
+			{
+				$this->get_schema_manager()->dropIndex('"primary"', $table_name);
+			}
+
+			$return = $this->alter_schema(
+				function (Schema $schema) use ($table_name, $column_name): void
+				{
+					$table = $schema->getTable($table_name);
+					$table->dropPrimaryKey();
+				}
+			);
+		}
+
+		return $return;
+	}
+
+	/**
 	 * Recreate an index of a table
 	 *
 	 * @param Table $table
@@ -1016,40 +1035,43 @@ class doctrine implements tools_interface
 	 */
 	protected function recreate_index(Table $table, Index $index, array $new_columns): void
 	{
-		if ($index->isPrimary())
+		if (!empty($new_columns))
 		{
-			$table->dropPrimaryKey();
-		}
-		else
-		{
-			$table->dropIndex($index->getName());
-		}
+			if ($table->hasPrimaryKey() && $index->isPrimary())
+			{
+				$table->dropPrimaryKey();
+			}
+			else if ($table->hasIndex($index->getName()))
+			{
+				$table->dropIndex($index->getName());
+			}
 
-		if (count($new_columns) > 0)
-		{
-			if ($index->isPrimary())
+			if (count($new_columns) > 0)
 			{
-				$table->setPrimaryKey(
-					$new_columns,
-					$index->getName(),
-				);
-			}
-			else if ($index->isUnique())
-			{
-				$table->addUniqueIndex(
-					$new_columns,
-					$index->getName(),
-					$index->getOptions(),
-				);
-			}
-			else
-			{
-				$table->addIndex(
-					$new_columns,
-					$index->getName(),
-					$index->getFlags(),
-					$index->getOptions(),
-				);
+				if ($index->isPrimary())
+				{
+					$table->setPrimaryKey(
+						$new_columns,
+						$index->getName(),
+					);
+				}
+				else if ($index->isUnique())
+				{
+					$table->addUniqueIndex(
+						$new_columns,
+						$index->getName(),
+						$index->getOptions(),
+					);
+				}
+				else
+				{
+					$table->addIndex(
+						$new_columns,
+						$index->getName(),
+						$index->getFlags(),
+						$index->getOptions(),
+					);
+				}
 			}
 		}
 	}
