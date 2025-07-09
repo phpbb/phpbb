@@ -96,7 +96,7 @@ class doctrine implements tools_interface
 	 */
 	protected function get_schema(): Schema
 	{
-		return	$this->get_schema_manager()->introspectSchema();
+		return $this->get_schema_manager()->introspectSchema();
 	}
 
 	/**
@@ -645,7 +645,7 @@ class doctrine implements tools_interface
 				? [$table_data['PRIMARY_KEY']]
 				: $table_data['PRIMARY_KEY'];
 
-			$table->setPrimaryKey($table_data['PRIMARY_KEY'], false);
+			$table->setPrimaryKey($table_data['PRIMARY_KEY']);
 		}
 
 		if (array_key_exists('KEYS', $table_data))
@@ -807,7 +807,7 @@ class doctrine implements tools_interface
 		$this->alter_table(
 			$schema,
 			$table_name,
-			function (Table $table) use (&$schema, $table_name, $column_name, $safe_check): void
+			function (Table $table) use ($schema, $table_name, $column_name, $safe_check): void
 			{
 				if ($safe_check && !$table->hasColumn($column_name))
 				{
