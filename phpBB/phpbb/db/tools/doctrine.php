@@ -96,7 +96,7 @@ class doctrine implements tools_interface
 	 */
 	protected function get_schema(): Schema
 	{
-		return $this->get_schema_manager()->createSchema();
+		return	$this->get_schema_manager()->introspectSchema();
 	}
 
 	/**
@@ -380,7 +380,7 @@ class doctrine implements tools_interface
 	{
 		try
 		{
-			$this->connection->executeQuery($this->get_schema_manager()->getDatabasePlatform()->getTruncateTableSQL($table_name));
+			$this->connection->executeQuery($this->connection->getDatabasePlatform()->getTruncateTableSQL($table_name));
 		}
 		catch (Exception $e)
 		{
@@ -485,7 +485,7 @@ class doctrine implements tools_interface
 
 		$comparator = new comparator();
 		$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
-		$queries = $schemaDiff->toSql($this->get_schema_manager()->getDatabasePlatform());
+		$queries = $schemaDiff->toSql($this->connection->getDatabasePlatform());
 
 		if ($this->return_statements)
 		{
@@ -497,7 +497,6 @@ class doctrine implements tools_interface
 			// executeQuery() must be used here because $query might return a result set, for instance REPAIR does
 			$this->connection->executeQuery($query);
 		}
-
 		return true;
 	}
 
@@ -629,7 +628,7 @@ class doctrine implements tools_interface
 
 		$table = $schema->createTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+		$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -646,7 +645,7 @@ class doctrine implements tools_interface
 				? [$table_data['PRIMARY_KEY']]
 				: $table_data['PRIMARY_KEY'];
 
-			$table->setPrimaryKey($table_data['PRIMARY_KEY']);
+			$table->setPrimaryKey($table_data['PRIMARY_KEY'], false);
 		}
 
 		if (array_key_exists('KEYS', $table_data))
@@ -728,7 +727,7 @@ class doctrine implements tools_interface
 					return false;
 				}
 
-				$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+				$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$table->addColumn($column_name, $type, $options);
@@ -760,7 +759,7 @@ class doctrine implements tools_interface
 					return;
 				}
 
-				$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+				$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$options['type'] = Type::getType($type);
@@ -805,13 +804,10 @@ class doctrine implements tools_interface
 	 */
 	protected function schema_column_remove(Schema $schema, string $table_name, string $column_name, bool $safe_check = false): void
 	{
-	//	$this->schema_drop_primary_key($table_name, $column_name);
-	//	$this->schema_drop_unique_key($table_name, $column_name);
-
 		$this->alter_table(
 			$schema,
 			$table_name,
-			function (Table $table) use ($schema, $table_name, $column_name, $safe_check): void
+			function (Table $table) use (&$schema, $table_name, $column_name, $safe_check): void
 			{
 				if ($safe_check && !$table->hasColumn($column_name))
 				{
@@ -991,15 +987,7 @@ class doctrine implements tools_interface
 	{
 		if ($index->isPrimary())
 		{
-			// For PostgreSQL, drop primary index first to avoid "Dependent objects still exist" error
-			if (stripos($this->connection->getDatabasePlatform()->getname(), 'postgresql') !== false)
-			{
-				$this->get_schema_manager()->dropUniqueConstraint($table->getPrimaryKey()->getName(), $table->getName());
-			}
-			else
-			{
-				$table->dropPrimaryKey();
-			}
+			$table->dropPrimaryKey();
 		}
 		else
 		{

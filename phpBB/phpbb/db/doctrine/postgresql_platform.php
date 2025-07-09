@@ -14,8 +14,7 @@
 namespace phpbb\db\doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use Doctrine\DBAL\Platforms\PostgreSQL94Platform;
-use Doctrine\DBAL\Schema\Index;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableDiff;
@@ -32,7 +31,7 @@ use Doctrine\DBAL\Types\Type;
  * to stay compatible with the existing DB we have to change its
  * naming and not ours.
  */
-class postgresql_platform extends PostgreSQL94Platform
+class postgresql_platform extends PostgreSQLPlatform
 {
 	/**
 	 * {@inheritdoc}
@@ -188,31 +187,19 @@ class postgresql_platform extends PostgreSQL94Platform
 	{
 		// If we have a primary or a unique index, we need to drop the constraint
 		// instead of the index itself or postgreSQL will reject the query.
-		if ($index instanceof Index)
+		if (is_string($index) && $table !== null && $index === $this->tableName($table) . '_pkey')
 		{
-			if ($index->isPrimary())
-			{
-				if ($table instanceof Table)
-				{
-					$table = $table->getQuotedName($this);
-				}
-				else if (!is_string($table))
-				{
-					throw new \InvalidArgumentException(
-						__METHOD__ . '() expects $table parameter to be string or ' . Table::class . '.'
-					);
-				}
-
-				return 'ALTER TABLE '.$table.' DROP CONSTRAINT '.$index->getQuotedName($this);
-			}
-		}
-		else if (! is_string($index))
-		{
-			throw new \InvalidArgumentException(
-				__METHOD__ . '() expects $index parameter to be string or ' . Index::class . '.'
-			);
+			return $this->getDropConstraintSQL($index, $this->tableName($table));
 		}
 
 		return parent::getDropIndexSQL($index, $table);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	private function tableName($table)
+	{
+		return $table instanceof Table ? $table->getName() : (string) $table;
 	}
 }
