@@ -164,12 +164,14 @@
 		</row>
 	</table>
 	<table name="phpbb_user_notifications">
+		<column>id</column>
 		<column>item_type</column>
 		<column>item_id</column>
 		<column>user_id</column>
 		<column>method</column>
 		<column>notify</column>
 		<row>
+			<value>1</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>2</value>
@@ -177,6 +179,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>3</value>
@@ -184,6 +187,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>3</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>4</value>
@@ -191,6 +195,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>4</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>5</value>
@@ -198,6 +203,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>5</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>6</value>
@@ -205,6 +211,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>6</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>7</value>
@@ -212,6 +219,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>7</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>8</value>
@@ -219,6 +227,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>8</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>2</value>
@@ -226,6 +235,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>9</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>3</value>
@@ -233,6 +243,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>10</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>4</value>
@@ -240,6 +251,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>11</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>5</value>
@@ -247,6 +259,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>12</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>6</value>
@@ -254,6 +267,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>13</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>7</value>
@@ -261,6 +275,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>14</value>
 			<value>notification.type.forum</value>
 			<value>0</value>
 			<value>8</value>

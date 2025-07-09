@@ -185,6 +185,7 @@ class schema_generator
 			'drop_columns'		=> 'COLUMNS',
 			'change_columns'	=> 'COLUMNS',
 			'add_index'			=> 'KEYS',
+			'add_primary_keys'	=> 'PRIMARY_KEY',
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
