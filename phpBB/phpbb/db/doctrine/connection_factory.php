@@ -13,12 +13,17 @@
 
 namespace phpbb\db\doctrine;
 
+use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Type;
 use InvalidArgumentException;
 use phpbb\config_php_file;
+use phpbb\db\middleware\mysql\phpbb_mysql_middleware;
+use phpbb\db\middleware\oracle\phpbb_oracle_middleware;
+use phpbb\db\middleware\postgresql\phpbb_postgresql_middleware;
+use phpbb\db\middleware\sqlsrv\phpbb_sqlsrv_middleware;
 use phpbb\exception\runtime_exception;
 
 /**
@@ -94,9 +99,21 @@ class connection_factory
 			$port
 		);
 
+		$middleware = match($driver)
+		{
+			'pdo_mysql', 'mysqli'	=> [new phpbb_mysql_middleware()],
+			'pdo_oci', 'oci8'		=> [new phpbb_oracle_middleware()],
+			'pdo_pgsql', 'pgsql'	=> [new phpbb_postgresql_middleware()],
+			'pdo_sqlsrv', 'sqlsrv'	=> [new phpbb_sqlsrv_middleware()],
+			default	=> [],
+		};
+
 		try
 		{
-			$connection = DriverManager::getConnection($params);
+			$connection_config = new Configuration();
+			$connection_config->setMiddlewares($middleware);
+
+			$connection = DriverManager::getConnection($params, $connection_config);
 			if (!Type::hasType(case_insensitive_string::CASE_INSENSITIVE_STRING))
 			{
 				Type::addType(case_insensitive_string::CASE_INSENSITIVE_STRING, case_insensitive_string::class);

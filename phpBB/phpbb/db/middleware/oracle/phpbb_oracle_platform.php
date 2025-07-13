@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\doctrine;
+namespace phpbb\db\middleware\oracle;
 
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\Identifier;
@@ -21,7 +21,7 @@ use Doctrine\DBAL\Schema\Table;
 /**
  * Oracle specific schema restrictions for BC.
  */
-class oracle_platform extends OraclePlatform
+class phpbb_oracle_platform extends OraclePlatform
 {
 	/**
 	 * {@inheritDoc}

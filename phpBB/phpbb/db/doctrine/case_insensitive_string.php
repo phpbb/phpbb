@@ -15,6 +15,8 @@ namespace phpbb\db\doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use phpbb\db\middleware\postgresql\phpbb_postgresql_platform;
+use phpbb\db\middleware\oracle\phpbb_oracle_platform;
 
 /**
  * Case-insensitive string type (only supported by Postgres).
@@ -28,7 +30,7 @@ class case_insensitive_string extends Type
 	 */
 	public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
 	{
-		if ($platform instanceof postgresql_platform)
+		if ($platform instanceof phpbb_postgresql_platform)
 		{
 			return 'varchar_ci';
 		}
@@ -37,7 +39,7 @@ class case_insensitive_string extends Type
 		// we used 3 times larger capacity for strings on oracle for unicode strings
 		// as on other platforms. This is not the case with varchar_ci, which uses
 		// the same length as other platforms.
-		if ($platform instanceof oracle_platform)
+		if ($platform instanceof phpbb_oracle_platform)
 		{
 			return $platform->getAsciiStringTypeDeclarationSQL($column);
 		}

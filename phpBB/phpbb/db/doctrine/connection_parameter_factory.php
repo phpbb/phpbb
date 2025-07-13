@@ -14,7 +14,6 @@
 namespace phpbb\db\doctrine;
 
 use InvalidArgumentException;
-use phpbb\db\doctrine\oci8\driver as oci8_driver;
 
 /**
  * Helper class to generate Doctrine DBAL configuration.
@@ -146,37 +145,17 @@ class connection_parameter_factory
 	 */
 	private static function enrich_parameters(array $params) : array
 	{
-		$enrichment_tags = [
-			'pdo_mysql' => [
-				'charset' => 'UTF8',
-				'platform' => new mysql_platform(),
-			],
-			'oci8' => [
-				'charset' => 'UTF8',
-				'platform' => new oracle_platform(),
-				'driverClass' => oci8_driver::class,
-			],
-			'pdo_pgsql' => [
-				'charset' => 'UTF8',
-				'platform' => new postgresql_platform(),
-			],
-			'pdo_sqlsrv' => [
-				'platform' => new sqlsrv_platform(),
-			],
-		];
+		if (in_array($params['driver'], ['mysqli', 'pdo_mysql', 'pgsql', 'pdo_pgsql', 'oci8', 'pdo_oci']))
+		{
+			$params['charset'] = 'UTF8';
+		}
 
 		if ($params['driver'] === 'pdo_mysql' && extension_loaded('pdo_mysql'))
 		{
-			$enrichment_tags['pdo_mysql'][\PDO::MYSQL_ATTR_FOUND_ROWS] = true;
+			$params[\PDO::MYSQL_ATTR_FOUND_ROWS] = true;
 		}
 
-		$driver = $params['driver'];
-		if (!array_key_exists($driver, $enrichment_tags))
-		{
-			return $params;
-		}
-
-		return array_merge($params, $enrichment_tags[$driver]);
+		return $params;
 	}
 
 	/*

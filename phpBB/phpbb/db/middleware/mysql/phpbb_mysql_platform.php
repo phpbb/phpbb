@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\doctrine;
+namespace phpbb\db\middleware\mysql;
 
 use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
 use Doctrine\DBAL\Schema\TableDiff;
@@ -23,7 +23,7 @@ use Doctrine\DBAL\Schema\TableDiff;
  * If it's indexed as primary key, it should be declared as NOT NULL
  * because MySQL primary key columns cannot be NULL.
  */
-class mysql_platform extends AbstractMySQLPlatform
+class phpbb_mysql_platform extends AbstractMySQLPlatform
 {
 	/**
 	 * {@inheritDoc}

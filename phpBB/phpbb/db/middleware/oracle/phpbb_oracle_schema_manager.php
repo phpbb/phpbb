@@ -11,14 +11,14 @@
  *
  */
 
-namespace phpbb\db\doctrine\oci8;
+namespace phpbb\db\middleware\oracle;
 
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\OracleSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 
-class schema_manager extends OracleSchemaManager
+class phpbb_oracle_schema_manager extends OracleSchemaManager
 {
 	/**
 	 * {@inheritdoc}

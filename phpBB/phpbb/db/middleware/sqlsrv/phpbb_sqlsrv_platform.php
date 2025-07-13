@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\doctrine;
+namespace phpbb\db\middleware\sqlsrv;
 
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\Identifier;
@@ -20,7 +20,7 @@ use Doctrine\DBAL\Schema\TableDiff;
 /**
  * SQLServer specific schema restrictions for BC.
  */
-class sqlsrv_platform extends SQLServerPlatform
+class phpbb_sqlsrv_platform extends SQLServerPlatform
 {
 	/**
 	 * {@inheritDoc}
