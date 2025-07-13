@@ -95,7 +95,7 @@ class postgresql_platform extends PostgreSQLPlatform
 			{
 				$sequence = new Sequence($this->getIdentitySequenceName($table_name, $column_name));
 				$sequence_sql[] = $this->getCreateSequenceSQL($sequence);
-				$post_sql[] = 'ALTER SEQUENCE '.$sequence->getName().' OWNED BY ' . $table_name . '.' . $column_name;
+				$post_sql[] = 'ALTER SEQUENCE ' . $sequence->getName() . ' OWNED BY ' . $table_name . '.' . $column_name;
 			}
 		}
 		$sql = array_merge($sequence_sql, $sql, $post_sql);
