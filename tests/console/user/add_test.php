@@ -62,7 +62,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 				return $response;
 			};
 			$helper = $this->getMockBuilder('\Symfony\Component\Console\Helper\QuestionHelper')
-				->setMethods(['ask'])
+				->onlyMethods(['ask'])
 				->disableOriginalConstructor()
 				->getMock();
 			$helper->expects($this->any())

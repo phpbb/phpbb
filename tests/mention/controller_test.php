@@ -546,13 +546,13 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 	{
 		$this->request->expects($this->atLeast(2))
 			->method('variable')
-			->withConsecutive(
-				['keyword', '', true],
-				['topic_id', 0])
-			->willReturnOnConsecutiveCalls(
-				$keyword,
-				$topic_id
-			);
+			->willReturnCallback(function() use ($keyword, $topic_id) {
+				$args = func_get_args();
+				return match($args) {
+				['keyword', '', true, \phpbb\request\request_interface::REQUEST] => $keyword,
+				['topic_id', 0, false, \phpbb\request\request_interface::REQUEST] => $topic_id,
+			};});
+			
 		$data = json_decode($this->controller->handle()->getContent(), true);
 		$this->assertEquals($expected_result, $data);
 	}

@@ -13,7 +13,7 @@
 
 require_once __DIR__ . '/../../phpBB/includes/functions_acp.php';
 
-class phpbb_functions_acp_built_select_test extends phpbb_test_case
+class phpbb_functions_acp_build_select_test extends phpbb_test_case
 {
 	protected function setUp(): void
 	{

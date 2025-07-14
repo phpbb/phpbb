@@ -78,18 +78,20 @@ class phpbb_help_manager_test extends phpbb_test_case
 
 		$this->language->expects($this->exactly(count($questions)*2 + 1))
 			->method('lang')
-			->withConsecutive([$block_name], ...$question_ary)
-			->will($this->onConsecutiveCalls(strtoupper($block_name), ...$question_ary_upper));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
-		$this->template->expects($this->exactly(count($questions) + 1))
+		$matcher = $this->exactly(count($questions) + 1);
+		$this->template->expects($matcher)
 			->method('assign_block_vars')
-			->withConsecutive(
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name),
-					'SWITCH_COLUMN' => $switch_expected,
-				]],
-				...$template_call_args
-			);
+			->willReturnCallback(function ($arg1, $arg2) use ($matcher, $block_name, $switch_expected, $template_call_args) {
+				$callNr = $matcher->numberOfInvocations();
+				match (true) {
+					$callNr == 1 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
+							'BLOCK_TITLE' => strtoupper($block_name),
+							'SWITCH_COLUMN' => $switch_expected,
+						]]),
+					$callNr > 1 => $this->assertEquals([$arg1, $arg2], $template_call_args[$callNr - 2]),
+				};});
 
 		$this->manager->add_block($block_name, $switch, $questions);
 
@@ -114,11 +116,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 	{
 		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->withConsecutive(
-				[$question],
-				[$answer]
-			)
-			->will($this->onConsecutiveCalls(strtoupper($question), strtoupper($answer)));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
 		$this->template->expects($this->once())
 			->method('assign_block_vars')
@@ -137,22 +135,23 @@ class phpbb_help_manager_test extends phpbb_test_case
 
 		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->withConsecutive([$block_name[0]], [$block_name[1]])
-			->will($this->onConsecutiveCalls(strtoupper($block_name[0]), strtoupper($block_name[1])));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
-		$this->template->expects($this->exactly(2))
+		$matcher = $this->exactly(2);
+		$this->template->expects($matcher)
 			->method('assign_block_vars')
-			->withConsecutive(
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name[0]),
-					'SWITCH_COLUMN' => $switch_expected[0],
-				]],
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name[1]),
-					'SWITCH_COLUMN' => $switch_expected[1],
-				]]
-		
-			);
+			->willReturnCallback(function ($arg1, $arg2) use ($matcher, $block_name, $switch_expected) {
+				$callNr = $matcher->numberOfInvocations();
+				match (true) {
+					$callNr == 1 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
+							'BLOCK_TITLE' => strtoupper($block_name[0]),
+							'SWITCH_COLUMN' => $switch_expected[0],
+						]]),
+					$callNr == 2 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
+							'BLOCK_TITLE' => strtoupper($block_name[1]),
+							'SWITCH_COLUMN' => $switch_expected[1],
+						]]),
+				};});
 
 		$this->manager->add_block($block_name[0], true);
 		$this->assertTrue($this->manager->switched_column());

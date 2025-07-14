@@ -124,97 +124,97 @@ class phpbb_functions_content_get_context_test extends TestCase
 	public function data_get_context_unicode(): array
 	{
 		return [
-			'text contains words and length greater than text' => [
+			'text contains words and length greater than text unicode' => [
 				'text' => 'Это пример текста, содержащего разнообразные слова, включая пример, текст и слова.',
 				'words' => ['пример', 'слова'],
 				'length' => 100,
 				'expected' => 'Это пример текста, содержащего разнообразные слова, включая пример, текст и слова.',
 			],
-			'text contains words and length less than text' => [
+			'text contains words and length less than text unicode' => [
 				'text' => 'Это пример текста, содержащего разнообразные слова, включая шаблон, текст и слова.',
 				'words' => ['пример', 'слова'],
 				'length' => 50,
 				'expected' => 'Это пример текста, содержащего разнообразные слова ...',
 			],
-			'text does not contain words' => [
+			'text does not contain words unicode' => [
 				'text' => 'Это пример текста, содержащего разнообразные слова, но ни одно из них не совпадает с искомыми.',
 				'words' => ['nonexistent'],
 				'length' => 50,
 				'expected' => 'Это пример текста, содержащего разнообразные слова ...',
 			],
-			'desired length equal to text length' => [
+			'desired length equal to text length unicode' => [
 				'text' => 'Текст точной длины.',
 				'words' => ['Текст', 'точной'],
 				'length' => 19,
 				'expected' => 'Текст точной длины.',
 			],
-			'text with html entities' => [
+			'text with html entities unicode' => [
 				'text' => 'Это пример текста, содержащего &amp; и &lt; и &gt; лексемы.',
 				'words' => ['пример', 'содержащего'],
 				'length' => 40,
 				'expected' => 'Это пример текста, содержащего &amp; и &lt; и ...',
 			],
-			'text with html entities and contains last word' => [
+			'text with html entities and contains last word unicode' => [
 				'text' => 'Это пример текста, содержащего &amp; и &lt; и &gt; лексемы.',
 				'words' => ['пример', 'лексемы'],
 				'length' => 40,
 				'expected' => 'Это пример текста ... и &lt; и &gt; лексемы.',
 			],
-			'text with multiple spaces and special characters' => [
+			'text with multiple spaces and special characters unicode' => [
 				'text' => 'Это    пример   текста, содержащего    разнообразные   слова.',
 				'words' => ['пример', 'разнообразные'],
 				'length' => 50,
 				'expected' => 'Это пример текста, содержащего разнообразные слова.',
 			],
-			'empty text' => [
+			'empty text unicode' => [
 				'text' => '',
 				'words' => ['пример', 'слова'],
 				'length' => 50,
 				'expected' => '',
 			],
-			'empty words array' => [
+			'empty words array unicode' => [
 				'text' => 'Это пример текста, содержащего разнообразные слова.',
 				'words' => [],
 				'length' => 50,
 				'expected' => 'Это пример текста, содержащего разнообразные слова.',
 			],
-			'zero length' => [
+			'zero length unicode' => [
 				'text' => 'Это пример текста.',
 				'words' => ['пример'],
 				'length' => 0,
 				'expected' => 'Это пример текста.',
 			],
-			'negative length' => [
+			'negative length unicode' => [
 				'text' => 'Это пример текста.',
 				'words' => ['sample'],
 				'length' => -10,
 				'expected' => 'Это пример текста.',
 			],
-			'ellipses_beginning' => [
+			'ellipses_beginning unicode' => [
 				'text' => 'раз раз раз раз раз раз раз раз два',
 				'words' => ['два'],
 				'length' => 10,
 				'expected' => '... раз раз два',
 			],
-			'ellipsis_end' => [
+			'ellipsis_end unicode' => [
 				'text' => 'два раз раз раз раз раз раз раз раз',
 				'words' => ['два'],
 				'length' => 10,
 				'expected' => 'два раз раз ...',
 			],
-			'ellipsis_middle' => [
+			'ellipsis_middle unicode' => [
 				'text' => 'раз слово1 раз раз раз раз раз раз раз раз раз слово2 раз',
 				'words' => ['слово1', 'слово2'],
 				'length' => 15,
 				'expected' => '... слово1 ... слово2 ...',
 			],
-			'ellipsis_middle2' => [
+			'ellipsis_middle2 unicode' => [
 				'text' => 'слово1 foo foo foo foo foo foo foo foo foo слово2',
 				'words' => ['слово1', 'слово2'],
 				'length' => 10,
 				'expected' => 'слово1 ... слово2',
 			],
-			'fruits_spanish' => [
+			'fruits_spanish unicode' => [
 				'text' => 'Manzana,plátano,naranja,fresa,mango,uva,piña,pera,kiwi,cereza,sandía,melón,papaya,arándano,durazno',
 				'words' => ['piña'],
 				'length' => 20,

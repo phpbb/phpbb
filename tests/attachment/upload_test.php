@@ -365,7 +365,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 	public function test_image_upload($is_image, $plupload_active, $config_data, $expected)
 	{
 		$filespec = $this->getMockBuilder('\phpbb\files\filespec_storage')
-			->setMethods(array(
+			->onlyMethods(array(
 				'init_error',
 				'is_image',
 				'move_file',

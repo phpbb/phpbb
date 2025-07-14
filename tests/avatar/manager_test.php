@@ -12,6 +12,7 @@
 */
 
 require_once __DIR__ . '/driver/foobar.php';
+require_once __DIR__ . '/driver/barfoo.php';
 
 class phpbb_avatar_manager_test extends \phpbb_database_test_case
 {
@@ -62,15 +63,15 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 
 		// $this->avatar_foobar will be needed later on
 		$this->avatar_foobar = $this->getMockBuilder('\phpbb\avatar\driver\foobar')
-			->setMethods(array('get_name'))
+			->onlyMethods(array('get_name'))
 			->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
 			->getMock();
 		$this->avatar_foobar->expects($this->any())
 			->method('get_name')
 			->will($this->returnValue('avatar.driver.foobar'));
-		// barfoo driver can't be mocked with constructor arguments
 		$this->avatar_barfoo = $this->getMockBuilder('\phpbb\avatar\driver\barfoo')
-			->setMethods(array('get_name', 'get_config_name'))
+			->onlyMethods(array('get_name', 'get_config_name'))
+			->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
 			->getMock();
 		$this->avatar_barfoo->expects($this->any())
 			->method('get_name')
@@ -89,14 +90,14 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			if ($driver !== 'upload')
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
-					->setMethods(array('get_name'))
+					->onlyMethods(array('get_name'))
 					->setConstructorArgs(array($this->config, $imagesize, $phpbb_root_path, $phpEx, $path_helper, $cache))
 					->getMock();
 			}
 			else
 			{
 				$cur_avatar = $this->getMockBuilder('\phpbb\avatar\driver\\' . $driver)
-				->setMethods(array('get_name'))
+				->onlyMethods(array('get_name'))
 				->setConstructorArgs(array($this->config, $phpbb_root_path, $phpEx, $storage, $path_helper, $routing_helper, $dispatcher, $files_factory, $php_ini))
 				->getMock();
 			}
@@ -302,7 +303,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$user = $this->getMockBuilder('\phpbb\user')
-			->setMethods(array())
+			->onlyMethods(['lang'])
 			->setConstructorArgs(array(new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)), '\phpbb\datetime'))
 			->getMock();
 		$lang_array = array(

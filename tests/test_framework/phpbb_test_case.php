@@ -17,11 +17,9 @@ class phpbb_test_case extends TestCase
 {
 	protected $test_case_helpers;
 
-	public function __construct($name = NULL, array $data = array(), $dataName = '')
+	protected function setUp(): void
 	{
-		parent::__construct($name, $data, $dataName);
-
-		$this->backupStaticAttributesExcludeList += [
+		$this->setBackupStaticPropertiesExcludeList([
 			'SebastianBergmann\CodeCoverage\CodeCoverage' => ['instance'],
 			'SebastianBergmann\CodeCoverage\Filter' => ['instance'],
 			'SebastianBergmann\CodeCoverage\Util' => ['ignoredLines', 'templateMethods'],
@@ -30,7 +28,7 @@ class phpbb_test_case extends TestCase
 			'PHP_Token_Stream_CachingFactory' => ['cache'],
 
 			'phpbb_database_test_case' => ['already_connected', 'last_post_timestamp'],
-		];
+		]);
 	}
 
 	public function get_test_case_helpers()

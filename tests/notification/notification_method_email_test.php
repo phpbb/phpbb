@@ -120,7 +120,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				$phpbb_container->getParameter('tables.notification_emails'),
 				$phpbb_container->get('messenger.method_collection')
 			])
-			->setMethods(['notify_using_messenger'])
+			->onlyMethods(['notify_using_messenger'])
 			->getMock();
 		$notification_method_email = $this->notification_method_email;
 

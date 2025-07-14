@@ -11,7 +11,7 @@
 *
 */
 
-class exception_listener extends phpbb_test_case
+class exception_listener_test extends phpbb_test_case
 {
 	public function phpbb_exception_data()
 	{

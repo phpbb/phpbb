@@ -35,7 +35,7 @@ class phpbb_template_asset_test extends phpbb_test_case
 	{
 		$path_helper = $this->getMockBuilder('\phpbb\path_helper')
 			->disableOriginalConstructor()
-			->setMethods(array())
+			->onlyMethods(['get_phpbb_root_path'])
 			->getMock();
 
 		$path_helper->method('get_phpbb_root_path')

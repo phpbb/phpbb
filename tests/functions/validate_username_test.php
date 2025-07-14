@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_user.php';
 require_once __DIR__ . '/../mock/cache.php';
 require_once __DIR__ . '/validate_data_helper.php';
 
-class phpbb_functions_validate_data_test extends phpbb_database_test_case
+class phpbb_functions_validate_username_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $cache;

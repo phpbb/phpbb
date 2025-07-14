@@ -113,7 +113,7 @@ class phpbb_plupload_test extends phpbb_test_case
 		$config = new \phpbb\config\config([]);
 
 		$ini_wrapper = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
-			->setMethods(['getBytes'])
+			->onlyMethods(['getBytes'])
 			->getMock();
 		$ini_wrapper->method('getBytes')
 			->will($this->returnValueMap([

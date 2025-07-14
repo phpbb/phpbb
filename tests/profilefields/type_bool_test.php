@@ -33,12 +33,12 @@ class phpbb_profilefield_type_bool_test extends phpbb_test_case
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
 
 		$lang = $this->getMockBuilder('\phpbb\profilefields\lang_helper')
-			->setMethods(array('get_options_lang', 'is_set', 'get'))
+			->onlyMethods(array('load_option_lang', 'is_set', 'get'))
 			->setConstructorArgs(array($db, LANG_TABLE))
 			->getMock();
 
 		$lang->expects($this->any())
-			->method('get_options_lang');
+			->method('load_option_lang');
 
 		$lang->expects($this->any())
 			->method('is_set')

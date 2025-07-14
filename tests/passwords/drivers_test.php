@@ -11,7 +11,7 @@
 *
 */
 
-class phpbb_passwords_helper_test extends \phpbb_test_case
+class phpbb_passwords_drivers_test extends \phpbb_test_case
 {
 	/** @var array */
 	protected $passwords_drivers = [];

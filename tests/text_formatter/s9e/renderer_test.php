@@ -421,15 +421,22 @@ class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 			$dispatcher
 		);
 
+		$matcher = $this->exactly(2);
 		$dispatcher
-			->expects($this->exactly(2))
+			->expects($matcher)
 			->method('trigger_event')
-			->withConsecutive(
-				['core.text_formatter_s9e_render_before', $this->callback(array($this, 'render_before_event_callback'))],
-				['core.text_formatter_s9e_render_after', $this->callback(array($this, 'render_after_event_callback'))]
-			)
-			->will($this->returnArgument(1));
-
+			->willReturnCallback(function($event, $vars) use ($matcher) {
+				$callNr = $matcher->numberOfInvocations();
+				match($callNr) {
+					1 => $this->assertEquals('core.text_formatter_s9e_render_before', $event),
+					2 => $this->assertEquals('core.text_formatter_s9e_render_after', $event),
+				};
+				match($callNr) {
+					1 => $this->assertTrue($this->render_before_event_callback($vars)),
+					2 => $this->assertTrue($this->render_after_event_callback($vars)),
+				};
+				return $vars;
+			});
 		$renderer->render('<t>...</t>');
 	}
 

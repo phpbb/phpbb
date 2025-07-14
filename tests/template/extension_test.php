@@ -38,7 +38,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$user->data['user_id'] = 2;
 		$auth = $this->getMockBuilder('phpbb\auth\auth')
 			->disableOriginalConstructor()
-			->setMethods(['acl_get'])
+			->onlyMethods(['acl_get'])
 			->getMock();
 		$auth->method('acl_get')
 			->willReturn(true);

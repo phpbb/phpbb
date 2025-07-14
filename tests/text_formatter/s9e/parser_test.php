@@ -101,20 +101,19 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 	public function test_options($adapter_method, $adapter_arg, $concrete_method, $concrete_arg)
 	{
 		$mock = $this->getMockBuilder('s9e\\TextFormatter\\Parser')
-		             ->setMethods([$concrete_method])
+		             ->onlyMethods([$concrete_method])
 		             ->disableOriginalConstructor()
 		             ->getMock();
 
 		$concrete_args = (array) $concrete_arg;
-		array_walk($concrete_args, function(&$value)
-			{
-				$value = (array) $value;
-			}
-		);
-		$mock->expects($this->exactly(count($concrete_args)))
+		$matcher = $this->exactly(count($concrete_args));
+		$mock->expects($matcher)
 			->method($concrete_method)
-			->withConsecutive(...$concrete_args);
-
+			->willReturnCallback(function ($arg) use ($concrete_args, $matcher) {
+				$callNr = $matcher->numberOfInvocations();
+				$this->assertEquals($arg, $concrete_args[$callNr - 1]);
+			});
+			
 		$cache = new phpbb_mock_cache;
 		$cache->put('_foo_parser', $mock);
 
@@ -219,15 +218,22 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 			$dispatcher
 		);
 
+		$matcher = $this->exactly(2);
 		$dispatcher
-			->expects($this->exactly(2))
+			->expects($matcher)
 			->method('trigger_event')
-			->withConsecutive(
-				['core.text_formatter_s9e_parse_before', $this->callback(array($this, 'parse_before_event_callback'))],
-				['core.text_formatter_s9e_parse_after', $this->callback(array($this, 'parse_after_event_callback'))]
-			)
-			->will($this->returnArgument(1));
-
+			->willReturnCallback(function($event, $vars) use ($matcher) {
+				$callNr = $matcher->numberOfInvocations();
+				match($callNr) {
+					1 => $this->assertEquals('core.text_formatter_s9e_parse_before', $event),
+					2 => $this->assertEquals('core.text_formatter_s9e_parse_after', $event),
+				};
+				match($callNr) {
+					1 => $this->assertTrue($this->parse_before_event_callback($vars)),
+					2 => $this->assertTrue($this->parse_after_event_callback($vars)),
+				};
+				return $vars;
+			});
 		$parser->parse('...');
 	}
 

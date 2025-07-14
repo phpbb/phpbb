@@ -112,7 +112,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'php',
 				'adm/'
 			])
-			->setMethods(['get_web_root_path'])
+			->onlyMethods(['get_web_root_path'])
 			->getMock();
 		$path_helper->method('get_web_root_path')
 			->willReturn('/var/www/phpbb/app.php/');
@@ -257,7 +257,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'php',
 				'adm/'
 			])
-			->setMethods(['get_web_root_path'])
+			->onlyMethods(['get_web_root_path'])
 			->getMock();
 		$path_helper->method('get_web_root_path')
 			->willReturn('/var/www/phpbb/');
@@ -462,7 +462,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		$symfony_request = $this->getMockBuilder('\phpbb\symfony_request')
 			->setConstructorArgs([new phpbb_mock_request()])
-			->setMethods(['get', 'getSchemeAndHttpHost', 'getBasePath', 'getPathInfo'])
+			->onlyMethods(['get', 'getSchemeAndHttpHost', 'getBasePath', 'getPathInfo'])
 			->getMock();
 		$symfony_request->method('getSchemeAndHttpHost')
 			->willReturn('http://www.phpbb.com');
@@ -630,7 +630,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		$symfony_request = $this->getMockBuilder('\phpbb\symfony_request')
 			->setConstructorArgs([new phpbb_mock_request()])
-			->setMethods(['getScriptName'])
+			->onlyMethods(['getScriptName'])
 			->getMock();
 		$symfony_request->method('getScriptName')
 			->willReturn($script_name);

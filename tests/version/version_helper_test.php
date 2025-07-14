@@ -208,7 +208,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
-			->setMethods(array(
+			->onlyMethods(array(
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(
@@ -324,7 +324,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
-			->setMethods(array(
+			->onlyMethods(array(
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(
@@ -581,7 +581,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
-			->setMethods(array(
+			->onlyMethods(array(
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(
@@ -958,7 +958,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 		$version_helper = $this
 			->getMockBuilder('\phpbb\version_helper')
-			->setMethods(array(
+			->onlyMethods(array(
 				'get_versions_matching_stability',
 			))
 			->setConstructorArgs(array(

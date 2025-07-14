@@ -35,12 +35,12 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 		$template = $this->createMock('\phpbb\template\template');
 
 		$lang = $this->getMockBuilder('\phpbb\profilefields\lang_helper')
-			->setMethods(array('get_options_lang', 'is_set', 'get'))
+			->onlyMethods(array('load_option_lang', 'is_set', 'get'))
 			->setConstructorArgs(array($db, LANG_TABLE))
 			->getMock();
 
 		$lang->expects($this->any())
-			 ->method('get_options_lang');
+			 ->method('load_option_lang');
 
 		$lang->expects($this->any())
 			 ->method('is_set')
