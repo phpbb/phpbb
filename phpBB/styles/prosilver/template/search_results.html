@@ -80,15 +80,15 @@
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="row-item {searchresults.TOPIC_IMG_STYLE}">
 					<dt<!-- IF searchresults.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-						<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT --><a href="{searchresults.U_NEWEST_POST}" class="row-item-link"></a><!-- ENDIF -->
+						{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}<a href="{searchresults.U_NEWEST_POST}" class="row-item-link"></a>{% endif %}
 						<div class="list-inner">
 							<!-- EVENT topiclist_row_prepend -->
-							<!-- IF searchresults.S_UNREAD_TOPIC and not S_IS_BOT -->
+							{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
 								<a class="unread" href="{searchresults.U_NEWEST_POST}">
 									<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{L_NEW_POST}</span>
 								</a>
-							<!-- ENDIF -->
-							<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>
+							{% endif %}
+							{% if searchresults.U_VIEW_TOPIC %}<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>{% else %}{searchresults.TOPIC_TITLE}{% endif %}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
 									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>
@@ -146,11 +146,11 @@
 					<dd class="views">{searchresults.TOPIC_VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 					<dd class="lastpost">
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT search_results_last_post_author_username_prepend -->{searchresults.LAST_POST_AUTHOR_FULL}<!-- EVENT search_results_last_post_author_username_append -->
-							<!-- IF not S_IS_BOT -->
+							{% if not S_IS_BOT and searchresults.U_LAST_POST %}
 								<a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 									<i class="icon fa-external-link-square fa-fw icon-lightgray icon-md" aria-hidden="true"></i><span class="sr-only">{VIEW_LATEST_POST}</span>
 								</a>
-							<!-- ENDIF -->
+							{% endif %}
 							<br /><time datetime="{searchresults.LAST_POST_TIME_RFC3339}">{searchresults.LAST_POST_TIME}</time>
 						</span>
 					</dd>
