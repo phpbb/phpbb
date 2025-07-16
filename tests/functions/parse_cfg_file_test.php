@@ -13,7 +13,7 @@
 
 class phpbb_functions_parse_cfg_file_test extends phpbb_test_case
 {
-	public function parse_cfg_file_data()
+	public static function parse_cfg_file_data()
 	{
 		return array(
 			array(

@@ -35,7 +35,7 @@ class phpbb_controller_helper_route_slash_test extends phpbb_controller_common_h
 		return 'app.php';
 	}
 
-	protected function path_to_app()
+	protected static function path_to_app()
 	{
 		return 'phpBB/';
 	}

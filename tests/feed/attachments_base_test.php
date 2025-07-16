@@ -76,7 +76,7 @@ class phpbb_feed_attachments_base_test extends phpbb_database_test_case
 		);
 	}
 
-	public function data_fetch_attachments()
+	public static function data_fetch_attachments()
 	{
 		return array(
 			array(array(0), array(0)),

@@ -16,7 +16,7 @@
 */
 class functional_permission_roles_test extends phpbb_functional_test_case
 {
-	public function data_permission_roles()
+	public static function data_permission_roles()
 	{
 		return array(
 			array(

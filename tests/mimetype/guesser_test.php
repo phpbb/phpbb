@@ -50,7 +50,7 @@ class guesser_test extends \phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
-	public function data_guess_files()
+	public static function data_guess_files()
 	{
 		return array(
 			array('image/gif', 'gif'),
@@ -76,7 +76,7 @@ class guesser_test extends \phpbb_test_case
 		$this->assertEquals($expected, $this->guesser->guess($this->path . '/../upload/fixture/' . $file));
 	}
 
-	public function data_guess_files_no_fileinfo()
+	public static function data_guess_files_no_fileinfo()
 	{
 		return array(
 			array('application/octet-stream', 'gif'),
@@ -112,7 +112,7 @@ class guesser_test extends \phpbb_test_case
 		$this->assertEquals('application/octet-stream', $guesser->guess($this->jpg_file));
 	}
 
-	public function data_incorrect_guessers()
+	public static function data_incorrect_guessers()
 	{
 		return array(
 			array(array(new \phpbb\mimetype\incorrect_guesser)),
@@ -130,7 +130,7 @@ class guesser_test extends \phpbb_test_case
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 	}
 
-	public function data_content_guesser()
+	public static function data_content_guesser()
 	{
 		return array(
 			array(
@@ -210,7 +210,7 @@ class guesser_test extends \phpbb_test_case
 		$this->assertInstanceOf('\phpbb\mimetype\extension_guesser', $guessers[3]);
 	}
 
-	public function data_choose_mime_type()
+	public static function data_choose_mime_type()
 	{
 		return array(
 			array('application/octet-stream', 'application/octet-stream', null),

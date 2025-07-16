@@ -13,7 +13,7 @@
 
 class phpbb_get_install_redirect_test extends phpbb_test_case
 {
-	public function data_redirect(): array
+	public static function data_redirect(): array
 	{
 		return [
 			[

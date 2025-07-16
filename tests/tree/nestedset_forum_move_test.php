@@ -15,7 +15,7 @@ require_once __DIR__ . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nestedset_forum_base
 {
-	public function move_data()
+	public static function move_data()
 	{
 		return array(
 			array('Move first item up',
@@ -132,7 +132,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function move_down_data()
+	public static function move_down_data()
 	{
 		return array(
 			array('Move last item down',
@@ -179,7 +179,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function move_up_data()
+	public static function move_up_data()
 	{
 		return array(
 			array('Move first item up',
@@ -226,7 +226,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function move_children_data()
+	public static function move_children_data()
 	{
 		return array(
 			array('Item has no children',
@@ -376,7 +376,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function move_children_throws_item_data()
+	public static function move_children_throws_item_data()
 	{
 		return array(
 			array('Item 0 does not exist', 0, 5),
@@ -394,7 +394,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->set->move_children($forum_id, $target_id);
 	}
 
-	public function move_children_throws_parent_data()
+	public static function move_children_throws_parent_data()
 	{
 		return array(
 			array('New parent is child', 4, 5),
@@ -413,7 +413,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->set->move_children($forum_id, $target_id);
 	}
 
-	public function change_parent_data()
+	public static function change_parent_data()
 	{
 		return array(
 			array('Move single child up',
@@ -530,7 +530,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function change_parent_throws_item_data()
+	public static function change_parent_throws_item_data()
 	{
 		return array(
 			array('Item 0 does not exist', 0, 5),
@@ -548,7 +548,7 @@ class phpbb_tests_tree_nestedset_forum_move_test extends phpbb_tests_tree_nested
 		$this->set->change_parent($forum_id, $target_id);
 	}
 
-	public function change_parent_throws_parent_data()
+	public static function change_parent_throws_parent_data()
 	{
 		return array(
 			array('New parent is child', 4, 5),

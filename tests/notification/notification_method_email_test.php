@@ -178,7 +178,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$this->notifications->set_var('notification_methods', $methods);
 	}
 
-	public function data_notification_email()
+	public static function data_notification_email()
 	{
 		return [
 			/**

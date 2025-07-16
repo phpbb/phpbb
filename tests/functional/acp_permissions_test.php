@@ -48,7 +48,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$this->assertStringContainsString($this->lang('ACL_SET'), $crawler->filter('h1')->eq(1)->text());
 	}
 
-	public function permissions_data()
+	public static function permissions_data()
 	{
 		return array(
 			// description

@@ -14,7 +14,7 @@
 class phpbb_session_append_sid_test extends phpbb_test_case
 {
 
-	public function append_sid_data()
+	public static function append_sid_data()
 	{
 		return array(
 			array('viewtopic.php?t=1&amp;f=2', false, true, false, 'viewtopic.php?t=1&amp;f=2', 'parameters in url-argument'),

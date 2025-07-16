@@ -19,7 +19,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_posting.php';
 
 abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
-	protected $notifications, $db, $container, $user, $config, $auth, $cache;
+//	protected $notifications, $db, $container, $user, $config, $auth, $cache;
 
 	protected $item_type = '';
 
@@ -52,9 +52,9 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 	protected function setUp(): void
 	{
-		parent::setUp();
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
 
-		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader;
+		parent::setUp();
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -103,15 +103,15 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$storage = $this->createMock('\phpbb\storage\storage');
 
 		// User
-		$user = $this->createMock('\phpbb\user');
+		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
+		$lang = new \phpbb\language\language($lang_loader);
+		$user = new \phpbb\user($lang, '\phpbb\datetime');
 		$user->ip = '';
-		$user->data = array(
-			'user_id'		=> 2,
-			'username'		=> 'user-name',
-			'is_registered'	=> true,
-			'user_colour'	=> '',
-			'user_lastmark'	=> 0,
-		);
+		$user->data['user_id'] = 2;
+		$user->data['username'] = 'user-name';
+		$user->data['is_registered'] = true;
+		$user->data['user_colour'] = '';
+		$user->data['user_lastmark'] = 0;
 
 		// Request
 		$request = new phpbb_mock_request();
@@ -122,6 +122,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$user_loader = new \phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$phpbb_log = new \phpbb\log\log($db, $user, $auth, $phpbb_dispatcher, $phpbb_root_path, 'adm/', $phpEx, LOG_TABLE);
 
 		// Container
 		$phpbb_container = new ContainerBuilder();
@@ -190,6 +191,14 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 	*/
 	public function test_submit_post($additional_post_data, $expected_before, $expected_after)
 	{
+		global $db, $auth, $user, $config, $phpEx, $phpbb_root_path, $phpbb_container, $phpbb_dispatcher, $phpbb_log, $request;
+
+		if (isset($additional_post_data['message']))
+		{
+			$parser = $this->get_test_case_helpers()->set_s9e_services($phpbb_container)->get('text_formatter.parser');
+			$additional_post_data['message'] = $parser->parse($additional_post_data['message']);
+		}
+
 		$sql = 'SELECT user_id, item_id, item_parent_id
 			FROM ' . NOTIFICATIONS_TABLE . ' n, ' . NOTIFICATION_TYPES_TABLE . " nt
 			WHERE nt.notification_type_name = '" . $this->item_type . "'

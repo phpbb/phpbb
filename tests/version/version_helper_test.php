@@ -37,7 +37,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 		);
 	}
 
-	public function is_stable_data()
+	public static function is_stable_data()
 	{
 		return array(
 			array(
@@ -87,7 +87,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $this->version_helper->is_stable($version));
 	}
 
-	public function get_suggested_updates_data()
+	public static function get_suggested_updates_data()
 	{
 		return array(
 			array(
@@ -229,7 +229,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $version_helper->get_suggested_updates());
 	}
 
-	public function get_latest_on_current_branch_data()
+	public static function get_latest_on_current_branch_data()
 	{
 		return array(
 			array(
@@ -345,7 +345,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $version_helper->get_latest_on_current_branch());
 	}
 
-	public function get_update_on_branch_data()
+	public static function get_update_on_branch_data()
 	{
 		return array(
 			array(
@@ -602,7 +602,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $version_helper->get_update_on_branch());
 	}
 
-	public function get_ext_update_on_branch_data()
+	public static function get_ext_update_on_branch_data()
 	{
 		return array(
 			// Single branch, check version for current branch

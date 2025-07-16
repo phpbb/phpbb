@@ -113,7 +113,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$this->assertSame($warn_msg, $message_parser->warn_msg);
 	}
 
-	public function get_test_polls()
+	public static function get_test_polls()
 	{
 		return array(
 			array(
@@ -183,7 +183,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$this->assertSame($warn_msg, $message_parser->warn_msg);
 	}
 
-	public function get_test_cases()
+	public static function get_test_cases()
 	{
 		return array(
 			array(

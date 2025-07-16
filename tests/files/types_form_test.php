@@ -71,7 +71,7 @@ class phpbb_files_types_form_test extends phpbb_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
-	public function data_upload_form()
+	public static function data_upload_form()
 	{
 		return array(
 			array(

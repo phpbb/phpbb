@@ -16,7 +16,7 @@ require_once __DIR__ . '/../../phpBB/includes/message_parser.php';
 
 class phpbb_bbcode_parser_test extends \phpbb_test_case
 {
-	public function bbcode_firstpass_data()
+	public static function bbcode_firstpass_data()
 	{
 		return array(
 			// Default bbcodes from in their simplest way
@@ -249,10 +249,18 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 			$this->markTestIncomplete($incomplete);
 		}
 
-		global $user, $request, $symfony_request;
+		global $user, $request, $symfony_request, $phpbb_dispatcher, $config, $phpEx, $request, $symfony_request;
+		$phpEx = 'php';
+		$config = new \phpbb\config\config([
+			'max_post_font_size' => 0,
+			'force_server_vars' => 0,
+			'server_name' => 'testhost',
+		]);
 		$user = new phpbb_mock_user;
+		$user->lang['UNAUTHORISED_BBCODE'] = 'UNAUTHORISED_BBCODE';
 		$request = new phpbb_mock_request;
 		$symfony_request = new \phpbb\symfony_request($request);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$bbcode = new bbcode_firstpass();
 		$bbcode->mode = 'post';

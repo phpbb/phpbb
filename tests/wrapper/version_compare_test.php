@@ -97,7 +97,7 @@ class phpbb_wrapper_version_compare_test extends phpbb_test_case
 		);
 	}
 
-	public function equality_test_data()
+	public static function equality_test_data()
 	{
 		return array(
 			array('1.1.0-A2', '1.1.0-a2'),
@@ -118,7 +118,7 @@ class phpbb_wrapper_version_compare_test extends phpbb_test_case
 		
 	}
 
-	public function alpha_beta_test_data()
+	public static function alpha_beta_test_data()
 	{
 		return array(
 			array(-1, '1.1.0-A2', '1.1.0-B1'),

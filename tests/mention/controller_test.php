@@ -161,7 +161,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$this->controller = new \phpbb\mention\controller\mention($mention_sources_array, $request, $phpbb_root_path, $phpEx);
 	}
 
-	public function handle_data()
+	public static function handle_data()
 	{
 		/**
 		 * NOTE:

@@ -15,7 +15,7 @@ require_once __DIR__ . '/../mock/lang.php';
 
 class phpbb_datetime_from_format_test extends phpbb_test_case
 {
-	public function from_format_data()
+	public static function from_format_data()
 	{
 		return array(
 			array(
@@ -58,7 +58,7 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		$this->assertEquals($expected, $user->format_date($timestamp, $format, true));
 	}
 
-	public function relative_format_date_data()
+	public static function relative_format_date_data()
 	{
 		// If the current time is too close to the testing time,
 		// the relative time will use "x minutes ago" instead of "today ..."

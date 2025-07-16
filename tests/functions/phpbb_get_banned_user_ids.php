@@ -61,7 +61,7 @@ class phpbb_get_banned_user_ids_test extends phpbb_database_test_case
 		$phpbb_container->set('ban.manager', $ban_manager);
 	}
 
-	public function phpbb_get_banned_user_ids_data()
+	public static function phpbb_get_banned_user_ids_data()
 	{
 		return array(
 			// Input to phpbb_get_banned_user_ids (user_id list, ban_end)

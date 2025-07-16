@@ -33,7 +33,7 @@ class phpbb_text_processing_decode_message_test extends phpbb_test_case
 		$this->assertSame($expected, $actual);
 	}
 
-	public function get_legacy_tests()
+	public static function get_legacy_tests()
 	{
 		return array(
 			array(
@@ -86,7 +86,7 @@ class phpbb_text_processing_decode_message_test extends phpbb_test_case
 		$this->assertSame($expected, $actual);
 	}
 
-	public function get_text_formatter_tests()
+	public static function get_text_formatter_tests()
 	{
 		return array(
 			array(

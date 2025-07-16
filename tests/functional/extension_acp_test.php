@@ -255,6 +255,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		$form = $crawler->selectButton('Submit')->form();
 		$form['minimum_stability']->select('dev');
+		$form['enable_packagist']->select('1');
 		$form['repositories'] = 'https://satis.phpbb.com/';
 		$crawler = self::submit($form);
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('div[class="successbox"] > p')->text());

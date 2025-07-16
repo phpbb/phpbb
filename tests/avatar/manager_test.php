@@ -148,7 +148,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$this->assertEquals('avatar.driver.foobar', $drivers['avatar.driver.foobar']);
 	}
 
-	public function get_driver_data_enabled()
+	public static function get_driver_data_enabled()
 	{
 		return array(
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
@@ -169,7 +169,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$this->assertEquals($expected, ($driver === null) ? null : $driver->get_name());
 	}
 
-	public function get_driver_data_all()
+	public static function get_driver_data_all()
 	{
 		return array(
 			array('avatar.driver.foobar', 'avatar.driver.foobar'),
@@ -205,7 +205,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		$this->assertEquals($expected_settings, $avatar_settings);
 	}
 
-	public function database_row_data()
+	public static function database_row_data()
 	{
 		return array(
 			array(
@@ -327,7 +327,7 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 		)));
 	}
 
-	public function data_handle_avatar_delete()
+	public static function data_handle_avatar_delete()
 	{
 		return array(
 			array(

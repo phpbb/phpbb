@@ -36,7 +36,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 		);
 	}
 
-	public function add_block_data()
+	public static function add_block_data()
 	{
 		return array(
 			array('abc', false, array(), false),
@@ -98,7 +98,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 		$this->assertEquals($switch_expected, $this->manager->switched_column());
 	}
 
-	public function add_question_data()
+	public static function add_question_data()
 	{
 		return array(
 			array('question1', 'answer1'),

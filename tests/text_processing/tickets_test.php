@@ -44,7 +44,7 @@ class phpbb_text_processing_tickets_test extends phpbb_test_case
 		}
 	}
 
-	public function get_tickets_data()
+	public static function get_tickets_data()
 	{
 		$tests = array();
 

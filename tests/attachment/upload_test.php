@@ -165,7 +165,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		);
 	}
 
-	public function data_upload()
+	public static function data_upload()
 	{
 		return array(
 			array('foobar', 1, false,
@@ -280,7 +280,7 @@ class phpbb_attachment_upload_test extends \phpbb_database_test_case
 		), $filedata);
 	}
 
-	public function data_image_upload()
+	public static function data_image_upload()
 	{
 		return array(
 			array(false, false, array(),

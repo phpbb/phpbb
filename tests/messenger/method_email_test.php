@@ -580,7 +580,7 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->method_email->send();
 	}
 
-	public function email_template_data(): array
+	public static function email_template_data(): array
 	{
 		return [
 			['test'],

@@ -19,6 +19,8 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 
 	protected function setUp(): void
 	{
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
+
 		parent::setUp();
 
 		global $auth;
@@ -62,7 +64,7 @@ class phpbb_notification_submit_post_type_post_in_queue_test extends phpbb_notif
 	* submit_post() $mode = 'reply'
 	* Notification item_type = 'post_in_queue'
 	*/
-	public function submit_post_data()
+	public static function submit_post_data()
 	{
 		return array(
 			/**

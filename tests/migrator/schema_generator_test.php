@@ -68,7 +68,7 @@ class schema_generator_test extends phpbb_test_case
 		$this->assertArrayHasKey('phpbb_users', $this->generator->get_schema());
 	}
 
-	public function column_add_after_data()
+	public static function column_add_after_data()
 	{
 		return array(
 			array(

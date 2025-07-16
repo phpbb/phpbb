@@ -124,7 +124,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertTrue($filespec->init_error());
 	}
 
-	public function additional_checks_variables()
+	public static function additional_checks_variables()
 	{
 		// False here just indicates the file is too large and fails the
 		// filespec::additional_checks method because of it. All other code
@@ -165,7 +165,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertSame(array('WRONG_SIZE'), $filespec->error);
 	}
 
-	public function check_content_variables()
+	public static function check_content_variables()
 	{
 		// False here indicates that a file is non-binary and contains
 		// disallowed content that makes IE report the mimetype incorrectly.
@@ -190,7 +190,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertEquals(true, $filespec->check_content(array()));
 	}
 
-	public function clean_filename_variables()
+	public static function clean_filename_variables()
 	{
 		$chunks = str_split('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ\'\\" /:*?<>|[];(){},#+=-_`', 8);
 		return array(
@@ -252,7 +252,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		}
 	}
 
-	public function data_clean_filename_avatar()
+	public static function data_clean_filename_avatar()
 	{
 		return array(
 			array(false, false, ''),
@@ -285,7 +285,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertSame($expected, $filespec->get('realname'));
 	}
 
-	public function get_extension_variables()
+	public static function get_extension_variables()
 	{
 		return array(
 			array('file.png', 'png'),
@@ -305,7 +305,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertEquals($expected, \phpbb\files\filespec::get_extension($filename));
 	}
 
-	public function is_image_variables()
+	public static function is_image_variables()
 	{
 		return array(
 			array('gif', 'image/gif', true),
@@ -328,7 +328,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
-	public function is_image_get_mimetype()
+	public static function is_image_get_mimetype()
 	{
 		return array(
 			array('gif', 'image/gif', true),
@@ -357,7 +357,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
-	public function move_file_variables()
+	public static function move_file_variables()
 	{
 		return array(
 			array('gif_copy', 'gif_moved', 'image/gif', 'gif', false, true),
@@ -408,7 +408,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertFalse($filespec->move_file('foo'));
 	}
 
-	public function data_move_file_copy()
+	public static function data_move_file_copy()
 	{
 		return array(
 			array('gif_copy', true, false, array()),
@@ -451,7 +451,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->assertSame($expected_error, $filespec->error);
 	}
 
-	public function data_move_file_imagesize()
+	public static function data_move_file_imagesize()
 	{
 		return array(
 			array(

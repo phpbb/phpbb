@@ -249,7 +249,7 @@ jobs:
                   DB: ${{steps.database-type.outputs.db}}
               if: ${{ matrix.SLOWTESTS != 1 && matrix.NOTESTS != 1 }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --display-all-issues --stop-on-error
 
             - name: Slow tests
               env:
@@ -378,7 +378,7 @@ jobs:
               env:
                   DB: ${{steps.database-type.outputs.db}}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --display-all-issues --stop-on-error
 
     # Other database types, namely sqlite3 and mssql
     other-tests:
@@ -606,8 +606,8 @@ jobs:
             - name: Run unit tests
               if: ${{ matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --stop-on-error --exclude-group functional,slow
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --display-all-issues --stop-on-error --exclude-group functional,slow
             - name: Run functional tests
               if: ${{ matrix.type == 'functional' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --stop-on-error --group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --display-all-issues --stop-on-error --group functional

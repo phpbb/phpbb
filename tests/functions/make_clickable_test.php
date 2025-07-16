@@ -25,7 +25,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	* "postlink" for the rest of URLs
 	* empty for email addresses
 	**/
-	public function data_test_make_clickable_url_positive()
+	public static function data_test_make_clickable_url_positive()
 	{
 		return [
 			[
@@ -82,7 +82,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 		];
 	}
 
-	public function data_test_make_clickable_url_idn()
+	public static function data_test_make_clickable_url_idn()
 	{
 		return [
 			[
@@ -135,7 +135,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 		];
 	}
 
-	public function data_test_make_clickable_local_url_idn()
+	public static function data_test_make_clickable_local_url_idn()
 	{
 		return [
 			[
@@ -154,7 +154,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 		];
 	}
 
-	public function data_test_make_clickable_custom_classes()
+	public static function data_test_make_clickable_custom_classes()
 	{
 		return [
 			[
@@ -200,7 +200,11 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $user, $request, $symfony_request;
+		global $user, $request, $symfony_request, $config;
+		$config = new \phpbb\config\config([
+			'force_server_vars' => 0,
+			'server_name' => 'testhost',
+		]);
 		$user = new phpbb_mock_user();
 		$request = new phpbb_mock_request();
 		$symfony_request = new \phpbb\symfony_request($request);
@@ -212,6 +216,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	 */
 	public function test_urls_matching_positive($url, $expected)
 	{
+		global $user, $request, $symfony_request, $config;
 		$this->assertSame($expected, make_clickable($url));
 	}
 
@@ -220,6 +225,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	 */
 	public function test_local_urls_matching_idn($url, $expected)
 	{
+		global $user, $request, $symfony_request, $config;
 		$this->assertSame($expected, make_clickable($url, "http://www.домен.рф"));
 	}
 
@@ -228,6 +234,7 @@ class phpbb_functions_make_clickable_test extends phpbb_test_case
 	 */
 	public function test_make_clickable_custom_classes($url, $server_url, $class, $expected)
 	{
+		global $user, $request, $symfony_request, $config;
 		$this->assertSame($expected, make_clickable($url, $server_url, $class));
 	}
 }

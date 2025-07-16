@@ -25,7 +25,7 @@ class phpbb_functional_acp_groups_test extends phpbb_functional_common_groups_te
 		return 'adm/index.php?i=groups&mode=manage&action=edit';
 	}
 
-	public function acp_group_test_data()
+	public static function acp_group_test_data()
 	{
 		return array(
 			'both_yes' => array(

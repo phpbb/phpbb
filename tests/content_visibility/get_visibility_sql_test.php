@@ -18,7 +18,7 @@ class phpbb_content_visibility_get_visibility_sql_test extends phpbb_database_te
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/get_visibility_sql.xml');
 	}
 
-	public function get_visibility_sql_data()
+	public static function get_visibility_sql_data()
 	{
 		return array(
 			// data set 0: display_unapproved_posts=false, moderator, can see all posts

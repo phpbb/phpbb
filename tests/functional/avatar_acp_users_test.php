@@ -23,7 +23,7 @@ class phpbb_functional_avatar_acp_users_test extends phpbb_functional_common_ava
 		return 'adm/index.php?i=acp_users&u=2&mode=avatar';
 	}
 
-	public function avatar_acp_users_data()
+	public static function avatar_acp_users_data()
 	{
 		return array(
 			// Gravatar with incorrect email

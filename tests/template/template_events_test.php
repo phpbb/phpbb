@@ -15,7 +15,7 @@ require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_template_events_test extends phpbb_template_template_test_case
 {
-	public function template_data()
+	public static function template_data()
 	{
 		return array(
 			/*

@@ -21,7 +21,7 @@ class phpbb_filesystem_helper_clean_path_test extends phpbb_test_case
 		parent::setUp();
 	}
 
-	public function clean_path_data()
+	public static function clean_path_data()
 	{
 		yield ['foo', 'foo'];
 		yield ['foo/bar', 'foo/bar'];

@@ -102,7 +102,7 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		$this->auth_admin = new \auth_admin();
 	}
 
-	public function data_test_new_role_exists()
+	public static function data_test_new_role_exists()
 	{
 		return [
 			['ROLE_ADMIN_NEW', true],
@@ -119,7 +119,7 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 		$this->assertEquals($expected, (bool) $this->tool->role_exists($role_name));
 	}
 
-	public function data_test_permission_assign_new_roles()
+	public static function data_test_permission_assign_new_roles()
 	{
 		return [
 			[

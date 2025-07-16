@@ -91,7 +91,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		);
 	}
 
-	public function data_notification_exceptions(): array
+	public static function data_notification_exceptions(): array
 	{
 		return [
 			'not_ajax' => [

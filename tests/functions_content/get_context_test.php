@@ -20,7 +20,7 @@ class phpbb_functions_content_get_context_test extends TestCase
 	 *
 	 * @return array
 	 */
-	public function data_get_context(): array
+	public static function data_get_context(): array
 	{
 		return [
 			'text contains words and length greater than text' => [
@@ -121,7 +121,7 @@ class phpbb_functions_content_get_context_test extends TestCase
 	 *
 	 * @return array
 	 */
-	public function data_get_context_unicode(): array
+	public static function data_get_context_unicode(): array
 	{
 		return [
 			'text contains words and length greater than text unicode' => [

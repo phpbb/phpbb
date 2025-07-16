@@ -84,7 +84,7 @@ class version_helper_remote_test extends \phpbb_test_case
 		$this->user->add_lang('acp/common');
 	}
 
-	public function provider_get_versions()
+	public static function provider_get_versions()
 	{
 		return array(
 			array('', false, '', 'VERSIONCHECK_FAIL'),

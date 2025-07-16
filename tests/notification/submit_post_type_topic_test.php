@@ -19,9 +19,9 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 
 	protected function setUp(): void
 	{
-		parent::setUp();
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
 
-		global $auth, $phpbb_log;
+		parent::setUp();
 
 		// Add additional permissions
 		$auth->expects($this->any())
@@ -41,8 +41,6 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 					),
 				),
 			)));
-
-		$phpbb_log = $this->createMock('\phpbb\log\dummy');
 	}
 
 	/**
@@ -51,7 +49,7 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 	* submit_post() $mode = 'post'
 	* Notification item_type = 'topic'
 	*/
-	public function submit_post_data()
+	public static function submit_post_data()
 	{
 		return array(
 			/**
@@ -97,6 +95,8 @@ class phpbb_notification_submit_post_type_topic_test extends phpbb_notification_
 	 */
 	public function test_submit_post($additional_post_data, $expected_before, $expected_after)
 	{
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
+
 		$sql = 'SELECT user_id, item_id, item_parent_id
 			FROM ' . NOTIFICATIONS_TABLE . ' n, ' . NOTIFICATION_TYPES_TABLE . " nt
 			WHERE nt.notification_type_name = '" . $this->item_type . "'

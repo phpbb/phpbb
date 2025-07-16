@@ -60,7 +60,7 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 		}
 	}
 
-	public function get_urls()
+	public static function get_urls()
 	{
 		return array(
 			array('posting.php?mode=reply&t=1'),

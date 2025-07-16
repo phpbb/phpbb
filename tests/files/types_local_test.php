@@ -96,7 +96,7 @@ class phpbb_files_types_local_test extends phpbb_test_case
 		$this->assertInstanceOf('\phpbb\files\filespec', $file);
 	}
 
-	public function data_upload_form()
+	public static function data_upload_form()
 	{
 		return array(
 			array(

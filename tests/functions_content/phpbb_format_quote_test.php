@@ -31,7 +31,7 @@ class phpbb_functions_content_phpbb_format_quote_test extends phpbb_test_case
 		parent::setUp();
 	}
 
-	public function data_phpbb_format_quote()
+	public static function data_phpbb_format_quote()
 	{
 		return [
 			[true, ['author' => 'admin', 'user_id' => 2], '[quote=&quot;username&quot;]quoted[/quote]', '', "[quote=admin user_id=2][quote=&quot;username&quot;]quoted[/quote][/quote]\n\n"],

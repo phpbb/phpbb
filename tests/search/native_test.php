@@ -43,13 +43,15 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$this->db_tools = $tools_factory->get($this->new_doctrine_dbal());
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$class = self::get_search_wrapper('\phpbb\search\backend\fulltext_native');
-		$config['fulltext_native_min_chars'] = 2;
-		$config['fulltext_native_max_chars'] = 14;
-		$config['max_num_search_keywords'] = 10;
+		$config = new \phpbb\config\config([
+			'fulltext_native_min_chars' => 2,
+			'fulltext_native_max_chars' => 14,
+			'max_num_search_keywords' => 10,
+		]);
 		$this->search = new $class($config, $this->db, $this->db_tools, $phpbb_dispatcher, $language, $user, SEARCH_RESULTS_TABLE, SEARCH_WORDLIST_TABLE, SEARCH_WORDMATCH_TABLE, $phpbb_root_path, $phpEx);
 	}
 
-	public function keywords()
+	public static function keywords()
 	{
 		return array(
 			// keywords
@@ -268,7 +270,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 		$this->assert_array_content_equals($common, $this->search->get_common_words());
 	}
 
-	public function data_split_keywords_max(): array
+	public static function data_split_keywords_max(): array
 	{
 		return [
 			'character count within limits separated by more spaces' => [

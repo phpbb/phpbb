@@ -25,7 +25,7 @@ class phpbb_functions_acp_build_select_test extends phpbb_test_case
 		$user->lang = new phpbb_mock_lang();
 	}
 
-	public function build_select_data()
+	public static function build_select_data()
 	{
 		return array(
 			array(

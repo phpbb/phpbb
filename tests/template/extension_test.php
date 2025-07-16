@@ -142,7 +142,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		]);
 	}
 
-	public function data_template_extensions()
+	public static function data_template_extensions()
 	{
 		return [
 			[
@@ -333,7 +333,7 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 		$this->run_template($file, $vars, $block_vars, $destroy_array, $expected, $lang_vars);
 	}
 
-	public function data_template_icon_extension()
+	public static function data_template_icon_extension()
 	{
 		return [
 			/** Font: default */

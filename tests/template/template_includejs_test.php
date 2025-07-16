@@ -15,10 +15,8 @@ require_once __DIR__ . '/template_test_case_with_tree.php';
 
 class phpbb_template_template_includejs_test extends phpbb_template_template_test_case_with_tree
 {
-	public function template_data()
+	public static function template_data()
 	{
-		$this->setup_engine();
-
 		return array(
 			/*
 			array(

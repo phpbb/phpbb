@@ -31,7 +31,7 @@ class phpbb_tests_tree_nestedset_forum_regenerate_test extends phpbb_tests_tree_
 		array('forum_id' => 11, 'parent_id' => 7, 'left_id' => 20, 'right_id' => 21, 'forum_parents' => ''),
 	);
 
-	public function regenerate_left_right_ids_data()
+	public static function regenerate_left_right_ids_data()
 	{
 		return array(
 			array('UPDATE phpbb_forums

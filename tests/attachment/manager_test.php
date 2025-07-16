@@ -38,7 +38,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 		return new \phpbb\attachment\manager($this->delete, $this->resync, $this->upload);
 	}
 
-	public function data_manager()
+	public static function data_manager()
 	{
 		return array(
 			array(

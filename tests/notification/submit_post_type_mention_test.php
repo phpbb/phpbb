@@ -11,7 +11,7 @@
 *
 */
 
-require_once dirname(__FILE__) . '/submit_post_base.php';
+require_once __DIR__ . '/submit_post_base.php';
 
 class phpbb_notification_submit_post_type_mention_test extends phpbb_notification_submit_post_base
 {
@@ -19,9 +19,9 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 
 	public function setUp(): void
 	{
-		parent::setUp();
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
 
-		global $auth;
+		parent::setUp();
 
 		// Add additional permissions
 		$auth->expects($this->any())
@@ -53,11 +53,8 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 	* submit_post() $mode = 'reply'
 	* Notification item_type = 'mention'
 	*/
-	public function submit_post_data()
+	public static function submit_post_data()
 	{
-		// The new mock container is needed because the data providers may be executed before phpunit call setUp()
-		$parser = $this->get_test_case_helpers()->set_s9e_services(new phpbb_mock_container_builder())->get('text_formatter.parser');
-
 		return array(
 			/**
 			* Normal post
@@ -73,7 +70,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 			*/
 			array(
 				array(
-					'message'			=> $parser->parse(implode(' ', array(
+					'message'			=> implode(' ', array(
 						'[mention=u:2]poster[/mention] poster should not be notified',
 						'[mention=u:3]test[/mention] test should be notified',
 						'[mention=u:4]unauthorized[/mention] unauthorized to read, should not receive a notification',
@@ -83,7 +80,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 						'[mention=g:1]normal group[/mention] group members of a normal group shoud receive a notification',
 						'[mention=g:2]hidden group[/mention] group members of a hidden group shoud not receive a notification from a non-member',
 						'[mention=u:10]doesn\'t exist[/mention] user does not exist, should not receive a notification',
-					))),
+					)),
 					'bbcode_uid'		=> 'uid',
 				),
 				array(
@@ -105,7 +102,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 			*/
 			array(
 				array(
-					'message'			=> $parser->parse(implode(' ', array(
+					'message'			=> implode(' ', array(
 						'[mention=u:2]poster[/mention] poster should not be notified',
 						'[mention=u:3]test[/mention] test should be notified',
 						'[mention=u:4]unauthorized[/mention] unauthorized to read, should not receive a notification',
@@ -113,7 +110,7 @@ class phpbb_notification_submit_post_type_mention_test extends phpbb_notificatio
 						'[mention=u:6]disabled[/mention] option disabled, should not receive a notification',
 						'[mention=u:7]default[/mention] option set to default, should receive a notification',
 						'[mention=u:8]doesn\'t exist[/mention] user does not exist, should not receive a notification',
-					))),
+					)),
 					'bbcode_uid'		=> 'uid',
 					'force_approved_state' => false,
 				),

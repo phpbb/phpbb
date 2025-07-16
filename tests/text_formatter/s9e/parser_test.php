@@ -131,7 +131,7 @@ class phpbb_textformatter_s9e_parser_test extends phpbb_test_case
 		call_user_func_array(array($parser, $adapter_method), (array) $adapter_arg);
 	}
 
-	public function get_options_tests()
+	public static function get_options_tests()
 	{
 		return array(
 			array(

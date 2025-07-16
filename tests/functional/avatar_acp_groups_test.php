@@ -23,7 +23,7 @@ class phpbb_functional_avatar_acp_groups_test extends phpbb_functional_common_av
 		return 'adm/index.php?i=acp_groups&mode=manage&action=edit&g=5';
 	}
 
-	public function avatar_acp_groups_data()
+	public static function avatar_acp_groups_data()
 	{
 		return array(
 			// Correct Gravatar

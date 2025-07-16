@@ -17,20 +17,20 @@ class phpbb_path_helper_test extends phpbb_test_case
 {
 	/** @var \phpbb\path_helper */
 	protected $path_helper;
-	protected $phpbb_root_path = '';
+	protected static $phpbb_root_path = '';
 
 	protected function setUp(): void
 	{
 		parent::setUp();
 
-		$this->set_phpbb_root_path();
+		self::set_phpbb_root_path();
 
 		$this->path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
 				new phpbb_mock_request()
 			),
 			$this->createMock('\phpbb\request\request'),
-			$this->phpbb_root_path,
+			self::$phpbb_root_path,
 			'php',
 			'adm/'
 		);
@@ -44,17 +44,17 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*	any time we wish to use it in one of these functions (and
 	*	also in general for everything else)
 	*/
-	public function set_phpbb_root_path()
+	public static function set_phpbb_root_path()
 	{
-		$this->phpbb_root_path = filesystem_helper::clean_path(__DIR__ . '/../../phpBB/');
+		self::$phpbb_root_path = filesystem_helper::clean_path(__DIR__ . '/../../phpBB/');
 	}
 
 	public function test_get_web_root_path()
 	{
-		$this->assertEquals($this->phpbb_root_path, $this->path_helper->get_web_root_path());
+		$this->assertEquals(self::$phpbb_root_path, $this->path_helper->get_web_root_path());
 
 		// Second call will use class property
-		$this->assertEquals($this->phpbb_root_path, $this->path_helper->get_web_root_path());
+		$this->assertEquals(self::$phpbb_root_path, $this->path_helper->get_web_root_path());
 	}
 
 	public function test_get_adm_relative_path()
@@ -67,9 +67,9 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertSame('php', $this->path_helper->get_php_ext());
 	}
 
-	public function basic_update_web_root_path_data()
+	public static function basic_update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path();
+		self::set_phpbb_root_path();
 
 		return [
 			[
@@ -78,16 +78,16 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'/',
 			],
 			[
-				$this->phpbb_root_path . 'test.php',
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 			],
 			[
 				'test.php',
 				'test.php',
 			],
 			[
-				$this->phpbb_root_path . $this->phpbb_root_path . 'test.php',
-				filesystem_helper::clean_path($this->phpbb_root_path . $this->phpbb_root_path . 'test.php'),
+				self::$phpbb_root_path . self::$phpbb_root_path . 'test.php',
+				filesystem_helper::clean_path(self::$phpbb_root_path . self::$phpbb_root_path . 'test.php'),
 			],
 		];
 	}
@@ -108,7 +108,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 					new phpbb_mock_request()
 				),
 				$this->createMock('\phpbb\request\request'),
-				$this->phpbb_root_path,
+				self::$phpbb_root_path,
 				'php',
 				'adm/'
 			])
@@ -116,44 +116,44 @@ class phpbb_path_helper_test extends phpbb_test_case
 			->getMock();
 		$path_helper->method('get_web_root_path')
 			->willReturn('/var/www/phpbb/app.php/');
-		$this->assertEquals('/var/www/phpbb/app.php/foo', $path_helper->update_web_root_path($this->phpbb_root_path . 'app.php/foo'));
+		$this->assertEquals('/var/www/phpbb/app.php/foo', $path_helper->update_web_root_path(self::$phpbb_root_path . 'app.php/foo'));
 	}
 
-	public function update_web_root_path_data()
+	public static function update_web_root_path_data()
 	{
-		$this->set_phpbb_root_path();
+		self::set_phpbb_root_path();
 
 		return array(
 			array(
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 				'/',
 				'',
 				'',
 				'',
 			),
 			array(
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 				'//',
 				'foo/bar.php',
 				'bar.php',
 				'./../',
 			),
 			array(
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/app.php/foo/template',
 				'/phpbb-fork/phpBB/app.php',
 				'./../../',
 			),
 			array(
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/foo/template',
 				'/phpbb-fork/phpBB/app.php',
 				'./../',
 			),
 			array(
-				$this->phpbb_root_path . 'test.php',
+				self::$phpbb_root_path . 'test.php',
 				'/',
 				'/phpbb-fork/phpBB/app.php/',
 				'/phpbb-fork/phpBB/app.php',
@@ -162,35 +162,35 @@ class phpbb_path_helper_test extends phpbb_test_case
 
 			// No correction if the path is already prepend by the web root path
 			array(
-				'./../' . $this->phpbb_root_path . 'test.php',
+				'./../' . self::$phpbb_root_path . 'test.php',
 				'//',
 				'foo/bar.php',
 				'bar.php',
 				'',
 			),
 			array(
-				'./../../' . $this->phpbb_root_path . 'test.php',
+				'./../../' . self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/app.php/foo/template',
 				'/phpbb-fork/phpBB/app.php',
 				'',
 			),
 			array(
-				'./../' . $this->phpbb_root_path . 'test.php',
+				'./../' . self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/foo/template',
 				'/phpbb-fork/phpBB/app.php',
 				'',
 			),
 			array(
-				'./../'.$this->phpbb_root_path . 'test.php',
+				'./../'.self::$phpbb_root_path . 'test.php',
 				'/',
 				'/phpbb-fork/phpBB/app.php/',
 				'/phpbb-fork/phpBB/app.php',
 				'',
 			),
 			array(
-				'./../'.$this->phpbb_root_path . 'test.php',
+				'./../'.self::$phpbb_root_path . 'test.php',
 				'',
 				'/phpbb-fork/phpBB/foo',
 				'/phpbb-fork/phpBB/app.php',
@@ -218,17 +218,16 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			$this->createMock('\phpbb\request\request'),
-			$this->phpbb_root_path,
+			self::$phpbb_root_path,
 			'php'
 		);
 
 		$this->assertEquals($correction . $input, $path_helper->update_web_root_path($input));
 	}
 
-	public function remove_web_root_path_data()
+	public static function remove_web_root_path_data()
 	{
-		$filesystem = new \phpbb\filesystem\filesystem();
-		$this->set_phpbb_root_path($filesystem);
+		self::set_phpbb_root_path();
 
 		return [
 			[
@@ -237,7 +236,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 			],
 			[
 				'/var/www/phpbb/test.php',
-				$this->phpbb_root_path . 'test.php'
+				self::$phpbb_root_path . 'test.php'
 			]
 		];
 	}
@@ -253,7 +252,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 					new phpbb_mock_request()
 				),
 				$this->createMock('\phpbb\request\request'),
-				$this->phpbb_root_path,
+				self::$phpbb_root_path,
 				'php',
 				'adm/'
 			])
@@ -265,7 +264,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $path_helper->remove_web_root_path($input));
 	}
 
-	public function clean_url_data()
+	public static function clean_url_data()
 	{
 		return array(
 			array('', ''),
@@ -288,7 +287,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $this->path_helper->clean_url($input));
 	}
 
-	public function glue_url_params_data()
+	public static function glue_url_params_data()
 	{
 		return array(
 			array(
@@ -326,7 +325,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $this->path_helper->glue_url_params($params));
 	}
 
-	public function get_url_parts_data()
+	public static function get_url_parts_data()
 	{
 		return array(
 			array(
@@ -390,7 +389,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $this->path_helper->get_url_parts($url, $is_amp));
 	}
 
-	public function strip_url_params_data()
+	public static function strip_url_params_data()
 	{
 		return array(
 			array(
@@ -428,7 +427,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $this->path_helper->strip_url_params($url, $strip, $is_amp));
 	}
 
-	public function append_url_params_data()
+	public static function append_url_params_data()
 	{
 		return array(
 			array(
@@ -484,12 +483,12 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			$request,
-			$this->phpbb_root_path,
+			self::$phpbb_root_path,
 			'php',
 			'adm/'
 		);
 
-		$this->assertEquals($this->phpbb_root_path . '../../', $path_helper->get_web_root_path());
+		$this->assertEquals(self::$phpbb_root_path . '../../', $path_helper->get_web_root_path());
 	}
 
 	/**
@@ -500,7 +499,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $this->path_helper->append_url_params($url, $params, $is_amp));
 	}
 
-	public function get_web_root_path_from_ajax_referer_data()
+	public static function get_web_root_path_from_ajax_referer_data()
 	{
 		return [
 			[
@@ -581,10 +580,10 @@ class phpbb_path_helper_test extends phpbb_test_case
 	*/
 	public function test_get_web_root_path_from_ajax_referer($referer_url, $board_url, $expected)
 	{
-		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_web_root_path_from_ajax_referer($referer_url, $board_url));
+		$this->assertEquals(self::$phpbb_root_path . $expected, $this->path_helper->get_web_root_path_from_ajax_referer($referer_url, $board_url));
 	}
 
-	public function data_get_valid_page()
+	public static function data_get_valid_page()
 	{
 		return array(
 			// array( current page , mod_rewrite setting , expected output )
@@ -606,10 +605,10 @@ class phpbb_path_helper_test extends phpbb_test_case
 	 */
 	public function test_get_valid_page($page, $mod_rewrite, $expected)
 	{
-		$this->assertEquals($this->phpbb_root_path . $expected, $this->path_helper->get_valid_page($page, $mod_rewrite));
+		$this->assertEquals(self::$phpbb_root_path . $expected, $this->path_helper->get_valid_page($page, $mod_rewrite));
 	}
 
-	public function is_router_used_data()
+	public static function is_router_used_data()
 	{
 		return [
 			[
@@ -638,7 +637,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 		$path_helper = new \phpbb\path_helper(
 			$symfony_request,
 			$this->createMock('\phpbb\request\request'),
-			$this->phpbb_root_path,
+			self::$phpbb_root_path,
 			'php',
 			'adm/'
 		);

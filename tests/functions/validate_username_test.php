@@ -35,7 +35,7 @@ class phpbb_functions_validate_username_test extends phpbb_database_test_case
 		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
-	public function validate_username_data()
+	public static function validate_username_data()
 	{
 		return array(
 			array('USERNAME_CHARS_ANY', array(

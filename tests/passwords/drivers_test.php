@@ -16,6 +16,14 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 	/** @var array */
 	protected $passwords_drivers = [];
 
+	// Initialize argon2 default options
+	public static $argon2_default_cost_options =
+	[
+		'memory_cost'	=> 65536,
+		'time_cost'		=> 4,
+		'threads'		=> 2
+	];
+
 	protected function setUp(): void
 	{
 		// Prepare dependencies for drivers
@@ -24,13 +32,6 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->driver_helper = new \phpbb\passwords\driver\helper($config);
 		$phpbb_root_path = __DIR__ . '/../../phpBB/';
 		$php_ext = 'php';
-
-		// Initialize argon2 default options
-		$this->argon2_default_cost_options = [
-			'memory_cost' => 65536,
-			'time_cost'   => 4,
-			'threads'     => 2
-		];
 
 		$this->passwords_drivers = array(
 			'passwords.driver.bcrypt_2y'	=> new \phpbb\passwords\driver\bcrypt_2y($config, $this->driver_helper, 10),
@@ -52,17 +53,17 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		if (defined('PASSWORD_ARGON2I') && $pwhash_supported)
 		{
 			$this->passwords_drivers['passwords.driver.argon2i'] = new \phpbb\passwords\driver\argon2i($config, $this->driver_helper);
-			$this->argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2i']->get_options();
+			self::$argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2i']->get_options();
 		}
 
 		if (defined('PASSWORD_ARGON2ID') && $pwhash_supported)
 		{
 			$this->passwords_drivers['passwords.driver.argon2id'] = new \phpbb\passwords\driver\argon2id($config, $this->driver_helper);
-			$this->argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2id']->get_options();
+			self::$argon2_default_cost_options = $this->passwords_drivers['passwords.driver.argon2id']->get_options();
 		}
 	}
 
-	public function data_helper_encode64()
+	public static function data_helper_encode64()
 	{
 		return array(
 			array('foobars', 6, 'axqPW3aQ'),
@@ -80,7 +81,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame($output, $return);
 	}
 
-	public function data_get_random_salt()
+	public static function data_get_random_salt()
 	{
 		return array(
 			array(24, false),
@@ -118,7 +119,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertEquals(false, $this->passwords_drivers['passwords.driver.salted_md5']->get_hash_settings(false));
 	}
 
-	public function data_hash_sha1_smf()
+	public static function data_hash_sha1_smf()
 	{
 		return array(
 			array(false, 'test', array()),
@@ -135,7 +136,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame($expected, $this->passwords_drivers['passwords.driver.sha1_smf']->hash($password, $user_row));
 	}
 
-	public function data_get_settings()
+	public static function data_get_settings()
 	{
 		return array(
 			array(false, '6f9e2a1899e1f15708fd2e554103480eb53e8b57', 'passwords.driver.sha1_smf'),
@@ -150,7 +151,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame($expected, $this->passwords_drivers[$driver]->get_settings_only($hash));
 	}
 
-	public function data_md5_phpbb2_check()
+	public static function data_md5_phpbb2_check()
 	{
 		return array(
 			array(false, 'foobar', 'ae2fc75e20ee25d4520766788fbc96ae'),
@@ -158,8 +159,8 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 			array(false, 'fööbar', 'ae2fc75e20ee25d4520766788fbc96ae'),
 			array(true, 'fööbar', 'ae2fc75e20ee25d4520766788fbc96ae', utf8_decode('fööbar')),
 			array(true, 'fööbar', '$H$966CepJh9RC3hFIm7aKywR6jEn0kpA0', utf8_decode('fööbar')),
-			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', $this->utf8_to_cp1252(utf8_decode('fööbar'))),
-			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', $this->utf8_to_cp1252('fööbar')),
+			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', self::utf8_to_cp1252(utf8_decode('fööbar'))),
+			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', self::utf8_to_cp1252('fööbar')),
 		);
 	}
 
@@ -194,7 +195,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1']->hash('foobar'));
 	}
 
-	public function data_md5_mybb_check()
+	public static function data_md5_mybb_check()
 	{
 		return array(
 			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd'),
@@ -216,7 +217,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_mybb']->hash('foobar'));
 	}
 
-	public function data_md5_vb_check()
+	public static function data_md5_vb_check()
 	{
 		return array(
 			array(false, 'foobar', '083d11daea8675b1b4b502c7e55f8dbd'),
@@ -240,7 +241,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.md5_vb']->hash('foobar'));
 	}
 
-	public function data_sha1_wcf1_check()
+	public static function data_sha1_wcf1_check()
 	{
 		return array(
 			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
@@ -262,7 +263,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha1_wcf1']->hash('foobar'));
 	}
 
-	public function data_bcrypt_wcf2_check()
+	public static function data_bcrypt_wcf2_check()
 	{
 		return array(
 			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
@@ -284,7 +285,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.bcrypt_wcf2']->hash('foobar'));
 	}
 
-	public function data_sha_xf1_check()
+	public static function data_sha_xf1_check()
 	{
 		return array(
 			array(false, 'foobar', 'fc46b9d9386167ce365ea3b891bf5dc31ddcd3ff'),
@@ -307,7 +308,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		$this->assertSame(false, $this->passwords_drivers['passwords.driver.sha_xf1']->hash('foobar'));
 	}
 
-	protected function utf8_to_cp1252($string)
+	protected static function utf8_to_cp1252($string)
 	{
 		static $transform = array(
 			"\xE2\x82\xAC" => "\x80",
@@ -437,36 +438,24 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 		return strtr($string, $transform);
 	}
 
-	public function data_needs_rehash()
+	public static function data_needs_rehash()
 	{
-		$data_array = [
+		return [
 			array('passwords.driver.bcrypt_2y', '$2y$10$somerandomhash', false),
 			array('passwords.driver.bcrypt', '$2a$10$somerandomhash', false),
 			array('passwords.driver.salted_md5', 'foobar', false),
 			array('passwords.driver.bcrypt_2y', '$2y$9$somerandomhash', true),
 			array('passwords.driver.bcrypt', '$2a$04$somerandomhash', true),
+
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=' . self::$argon2_default_cost_options['memory_cost'] . ',t=' . self::$argon2_default_cost_options['time_cost'] . ',p=' . self::$argon2_default_cost_options['threads'] . '$NEF0S1JSN04yNGQ1UVRKdA$KYGNI9CbjoKh1UEu1PpdlqbuLbveGwkMcwcT2Un9pPM', false),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
+			array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
+
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=' . self::$argon2_default_cost_options['memory_cost'] . ',t=' . self::$argon2_default_cost_options['time_cost'] . ',p=' . self::$argon2_default_cost_options['threads'] . '$MXB4OW5sczE5TnFPYkEuYQ$2bxaMIp8+9x37O6v8zkqpBU72ohCibUrtgVZw7vyr5Q', false),
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=128,t=2,p=2$RWV2VFAuWXk5bTVjbktOLg$Nt7Z7koa25SVRSKr3RKqjwKz26FENDuU+aL1DfMcWRo', true),
+			array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=1,p=2$Rmw5M21IUFZDVEltYU0uTA$GIObGbHV6sOw5OQEtF8z+2ESztT96OWhCk17sUlwLAY', true),
 		];
-
-		if (isset($this->passwords_drivers['passwords.driver.argon2i']))
-		{
-			$data_array = array_merge($data_array, [
-				array('passwords.driver.argon2i', '$argon2i$v=19$m=' . $this->argon2_default_cost_options['memory_cost'] . ',t=' . $this->argon2_default_cost_options['time_cost'] . ',p=' . $this->argon2_default_cost_options['threads'] . '$NEF0S1JSN04yNGQ1UVRKdA$KYGNI9CbjoKh1UEu1PpdlqbuLbveGwkMcwcT2Un9pPM', false),
-				array('passwords.driver.argon2i', '$argon2i$v=19$m=128,t=2,p=2$M29GUi51QjdKLjIzbC9scQ$6h1gZDqn7JTmVdQ0lJh1x5nyvgO/DaJWUKOFJ0itCJ0', true),
-				array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=1,p=2$UnFHb2F4NER3M0xWWmxMUQ$u3javvoAZJeIyR1P3eg0tb8VjEeXvQPagqwetonq1NA', true),
-				array('passwords.driver.argon2i', '$argon2i$v=19$m=1024,t=2,p=1$bm5SeGJ3R3ZRY1A0YXJPNg$v1A9m4sJW+ge0RBtpJ4w9861+J9xkguKBAsZHrG8LQU', true),
-			]);
-		}
-
-		if (isset($this->passwords_drivers['passwords.driver.argon2id']))
-		{
-			$data_array = array_merge($data_array, [
-				array('passwords.driver.argon2id', '$argon2id$v=19$m=' . $this->argon2_default_cost_options['memory_cost'] . ',t=' . $this->argon2_default_cost_options['time_cost'] . ',p=' . $this->argon2_default_cost_options['threads'] . '$MXB4OW5sczE5TnFPYkEuYQ$2bxaMIp8+9x37O6v8zkqpBU72ohCibUrtgVZw7vyr5Q', false),
-				array('passwords.driver.argon2id', '$argon2id$v=19$m=128,t=2,p=2$RWV2VFAuWXk5bTVjbktOLg$Nt7Z7koa25SVRSKr3RKqjwKz26FENDuU+aL1DfMcWRo', true),
-				array('passwords.driver.argon2id', '$argon2id$v=19$m=1024,t=1,p=2$Rmw5M21IUFZDVEltYU0uTA$GIObGbHV6sOw5OQEtF8z+2ESztT96OWhCk17sUlwLAY', true),
-			]);
-		}
-
-		return $data_array;
 	}
 
 	/**
@@ -474,7 +463,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 	 */
 	public function test_needs_rehash($driver, $hash, $expected)
 	{
-		if (!$this->passwords_drivers[$driver]->is_supported())
+		if (!isset($this->passwords_drivers[$driver]) || !$this->passwords_drivers[$driver]->is_supported())
 		{
 			$this->markTestSkipped($driver . ' is not supported');
 		}

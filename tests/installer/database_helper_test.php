@@ -76,7 +76,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	}
 
 	// Data provider for the remove comments function
-	public function comment_string_provider()
+	public static function comment_string_provider()
 	{
 		return array(
 			array(
@@ -99,7 +99,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	}
 
 	// Data provider for the sql file splitter function
-	public function sql_file_string_provider()
+	public static function sql_file_string_provider()
 	{
 		return array(
 			array(
@@ -116,7 +116,7 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 	}
 
 	// Test data for prefix test
-	public function prefix_test_case_provider()
+	public static function prefix_test_case_provider()
 	{
 		return array(
 			array(
