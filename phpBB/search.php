@@ -247,29 +247,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 	}
 
-	// There are two exceptional scenarios we want to consider if there are any forums where an read forum = no, can read topics = yes 
-	// In these cases, the user should see the topic title in the search results but not the link to the topic (or any posts) because
-	// they don't have the permissions for that.
-	$show_topic_title_only = false;
-
-	// Firstly, is someone doing a quick search from the viewforum page? If so, force it to be a topic-only search for that one forum
-	// We know if this is the case due to the presence of this request var
-	$forum_quick_search = $request->variable('viewforum', 0);
-	if ($forum_quick_search && $auth->acl_get('f_list_topics', $forum_quick_search) && !$auth->acl_get('f_read', $forum_quick_search))
+	// Consider if there are any forums where can read forum = no, can read topics = yes 
+	// In these cases, the user should see the topic title in the search results but not the link to the topic (or any posts) because they don't have the permissions
+	if ($request->variable('sr', '') == 'topics' && $search_fields == 'titleonly')
 	{
-		$show_topic_title_only = true;
-	}
-
-	// Secondly, is someone doing a topic search from the main search page? If so, we will strip the topic links while still showing the name
-	else if ($request->variable('sr', '') == 'topics' && $search_fields == 'titleonly')
-	{
-		// We will allow the 'can read topics = yes' forums back in to the search
-		$show_topic_title_only = true;
-	}
-
-	if ($show_topic_title_only)
-	{
-		// Remove from $ex_fid_ary any of the 'can read topics' forums (meaning they will not be excluded from the search)
+		// The user could get here from a quick search through the viewforum page, or by doing a main search displayed by topics and searching only the topic titles.
+		// Allow the 'can read topics = yes' forums back in to the search by removing from $ex_fid_ary any of the 'can read topics' forums
 		$ex_fid_ary = array_diff($ex_fid_ary, array_keys($auth->acl_getf('f_list_topics', true)));
 	}
 
@@ -373,11 +356,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		// if it is an author search we want to show topics by default
 		$show_results = ($topic_id) ? 'posts' : $request->variable('sr', ($search_id == 'egosearch') ? 'topics' : 'posts');
 		$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
-	}
-
-	if ($show_topic_title_only)
-	{
-		$show_results = 'topics';
 	}
 
 	// define some variables needed for retrieving post_id/topic_id information

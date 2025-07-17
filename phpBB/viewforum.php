@@ -384,11 +384,17 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-// Send the forum id and send a parameter to make it clear it's a quick search
+// Send the forum id... and maybe some other fields, depending on permissions
 $s_search_hidden_fields = [
 	'fid' => [$forum_id],
-	'viewforum' => $forum_id,
 ];
+
+if ($auth->acl_get('f_list_topics', $forum_id) && !$auth->acl_get('f_read', $forum_id))
+{
+	// If the user has list access but not read access, then force the search to only be a topic title search
+	$s_search_hidden_fields['sr'] = 'topics';
+	$s_search_hidden_fields['sf'] = 'titleonly';
+}
 
 if ($_SID)
 {
