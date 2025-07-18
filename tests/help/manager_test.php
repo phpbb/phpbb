@@ -80,18 +80,22 @@ class phpbb_help_manager_test extends phpbb_test_case
 			->method('lang')
 			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
-		$matcher = $this->exactly(count($questions) + 1);
-		$this->template->expects($matcher)
+		$expected_calls = [
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name),
+				'SWITCH_COLUMN' => $switch_expected,
+			]],
+			...$template_call_args
+		];
+
+		$this->template->expects($this->exactly(count($questions) + 1))
 			->method('assign_block_vars')
-			->willReturnCallback(function ($arg1, $arg2) use ($matcher, $block_name, $switch_expected, $template_call_args) {
-				$callNr = $matcher->numberOfInvocations();
-				match (true) {
-					$callNr == 1 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
-							'BLOCK_TITLE' => strtoupper($block_name),
-							'SWITCH_COLUMN' => $switch_expected,
-						]]),
-					$callNr > 1 => $this->assertEquals([$arg1, $arg2], $template_call_args[$callNr - 2]),
-				};});
+			->willReturnCallback(function($blockName, $blockVars) use (&$expected_calls) {
+				static $call = 0;
+				$this->assertEquals($expected_calls[$call][0], $blockName);
+				$this->assertEquals($expected_calls[$call][1], $blockVars);
+				$call++;
+			});
 
 		$this->manager->add_block($block_name, $switch, $questions);
 
@@ -137,21 +141,25 @@ class phpbb_help_manager_test extends phpbb_test_case
 			->method('lang')
 			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
-		$matcher = $this->exactly(2);
-		$this->template->expects($matcher)
+		$expected_calls = [
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name[0]),
+				'SWITCH_COLUMN' => $switch_expected[0],
+			]],
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name[1]),
+				'SWITCH_COLUMN' => $switch_expected[1],
+			]]
+		];
+
+		$this->template->expects($this->exactly(count($expected_calls)))
 			->method('assign_block_vars')
-			->willReturnCallback(function ($arg1, $arg2) use ($matcher, $block_name, $switch_expected) {
-				$callNr = $matcher->numberOfInvocations();
-				match (true) {
-					$callNr == 1 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
-							'BLOCK_TITLE' => strtoupper($block_name[0]),
-							'SWITCH_COLUMN' => $switch_expected[0],
-						]]),
-					$callNr == 2 => $this->assertEquals([$arg1, $arg2], ['faq_block', [
-							'BLOCK_TITLE' => strtoupper($block_name[1]),
-							'SWITCH_COLUMN' => $switch_expected[1],
-						]]),
-				};});
+			->willReturnCallback(function($blockName, $blockVars) use (&$expected_calls) {
+				static $call = 0;
+				$this->assertEquals($expected_calls[$call][0], $blockName);
+				$this->assertEquals($expected_calls[$call][1], $blockVars);
+				$call++;
+			});
 
 		$this->manager->add_block($block_name[0], true);
 		$this->assertTrue($this->manager->switched_column());
