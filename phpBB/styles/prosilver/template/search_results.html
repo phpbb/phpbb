@@ -80,7 +80,7 @@
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="row-item {searchresults.TOPIC_IMG_STYLE}">
 					<dt<!-- IF searchresults.TOPIC_ICON_IMG --> style="background-image: url({T_ICONS_PATH}{searchresults.TOPIC_ICON_IMG}); background-repeat: no-repeat;"<!-- ENDIF --> title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-						{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}<a href="{searchresults.U_NEWEST_POST}" class="row-item-link"></a>{% endif %}
+						{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}<a href="{{ searchresults.U_NEWEST_POST }}" class="row-item-link"></a>{% endif %}
 						<div class="list-inner">
 							<!-- EVENT topiclist_row_prepend -->
 							{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
@@ -88,7 +88,7 @@
 									<i class="icon fa-file fa-fw icon-red icon-md" aria-hidden="true"></i><span class="sr-only">{L_NEW_POST}</span>
 								</a>
 							{% endif %}
-							{% if searchresults.U_VIEW_TOPIC %}<a href="{searchresults.U_VIEW_TOPIC}" class="topictitle">{searchresults.TOPIC_TITLE}</a>{% else %}{searchresults.TOPIC_TITLE}{% endif %}
+							{% if searchresults.U_VIEW_TOPIC %}<a href="{{ searchresults.U_VIEW_TOPIC }}" class="topictitle">{{ searchresults.TOPIC_TITLE }}</a>{% else %}{{ searchresults.TOPIC_TITLE }}{% endif %}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
 									<i class="icon fa-question fa-fw icon-blue" aria-hidden="true"></i><span class="sr-only">{L_TOPIC_UNAPPROVED}</span>

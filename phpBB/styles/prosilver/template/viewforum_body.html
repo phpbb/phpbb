@@ -158,7 +158,7 @@
 			<!-- EVENT viewforum_body_topic_row_prepend -->
 			<dl class="row-item {topicrow.TOPIC_IMG_STYLE}">
 				<dt<!-- IF topicrow.TOPIC_ICON_IMG and S_TOPIC_ICONS --> style="background-image: url('{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}'); background-repeat: no-repeat;"<!-- ENDIF --> title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-					{% if topicrow.U_NEWEST_POST and topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}<a href="{topicrow.U_NEWEST_POST}" class="row-item-link"></a>{% endif %}
+					{% if topicrow.U_NEWEST_POST and topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}<a href="{{ topicrow.U_NEWEST_POST }}" class="row-item-link"></a>{% endif %}
 					<div class="list-inner">
 						<!-- EVENT topiclist_row_prepend -->
 						{% if topicrow.U_NEWEST_POST and topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}

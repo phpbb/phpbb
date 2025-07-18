@@ -247,7 +247,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 	}
 
-	// Consider if there are any forums where can read forum = no, can read topics = yes 
+	// Consider if there are any forums where can read forum = no, can read topics = yes
 	// In these cases, the user should see the topic title in the search results but not the link to the topic (or any posts) because they don't have the permissions
 	if ($request->variable('sr', '') == 'topics' && $search_fields == 'titleonly')
 	{
