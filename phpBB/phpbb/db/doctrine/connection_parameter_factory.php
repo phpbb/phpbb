@@ -149,6 +149,7 @@ class connection_parameter_factory
 		$enrichment_tags = [
 			'pdo_mysql' => [
 				'charset' => 'UTF8',
+				'platform' => new mysql_platform(),
 			],
 			'oci8' => [
 				'charset' => 'UTF8',

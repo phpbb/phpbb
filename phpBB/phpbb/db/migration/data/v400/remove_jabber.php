@@ -34,7 +34,15 @@ class remove_jabber extends migration
 				$this->table_prefix . 'users' => [
 					'user_jabber',
 				],
-			]
+			],
+			'add_columns' => [
+				$this->table_prefix . 'user_notifications' => [
+					'id' => ['ULINT', null, 'auto_increment'],
+				],
+			],
+			'add_primary_keys' => [
+				$this->table_prefix . 'user_notifications' => ['id'],
+			],
 		];
 	}
 
@@ -45,7 +53,12 @@ class remove_jabber extends migration
 				$this->table_prefix . 'users' => [
 					'user_jabber' => ['VCHAR_UNI', ''],
 				],
-			]
+			],
+			'drop_columns' => [
+				$this->table_prefix . 'user_notifications' => [
+					'id',
+				],
+			],
 		];
 	}
 
@@ -105,11 +118,22 @@ class remove_jabber extends migration
 	{
 		$limit = 1000;
 
-		$sql = 'UPDATE ' . $this->tables['user_notifications'] . '
-			SET ' . $this->db->sql_build_array('UPDATE', ['method' => 'notification.method.email']) . "
-			WHERE method = 'notification.method.jabber'";
-		$this->db->sql_query_limit($sql, $limit, $start ?: 0);
+		$sql = 'SELECT id FROM ' . $this->tables['user_notifications'] . "
+			WHERE method = 'notification.method.jabber'
+			ORDER BY id ASC";
+		$result = $this->db->sql_query_limit($sql, $limit, $start ?: 0);
+		$rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+		$ids_array = array_column($rowset, 'id');
 
-		return $this->db->sql_affectedrows() < $limit ? true : $start + $limit;
+		if (count($ids_array))
+		{
+			$sql = 'UPDATE ' . $this->tables['user_notifications'] . '
+				SET ' . $this->db->sql_build_array('UPDATE', ['method' => 'notification.method.email']) . '
+				WHERE ' . $this->db->sql_in_set('id', $ids_array);
+			$this->db->sql_query($sql);
+		}
+
+		return count($ids_array) < $limit ? true : $start + $limit;
 	}
 }

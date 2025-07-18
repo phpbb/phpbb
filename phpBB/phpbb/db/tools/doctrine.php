@@ -96,7 +96,7 @@ class doctrine implements tools_interface
 	 */
 	protected function get_schema(): Schema
 	{
-		return $this->get_schema_manager()->createSchema();
+		return $this->get_schema_manager()->introspectSchema();
 	}
 
 	/**
@@ -300,36 +300,6 @@ class doctrine implements tools_interface
 	 */
 	public function sql_column_remove(string $table_name, string $column_name)
 	{
-		// Check if this column is part of a primary key. If yes, remove the primary key.
-		$primary_key_indexes = $this->get_filtered_index_list($table_name, false);
-
-		$primary_key_indexes = array_filter($primary_key_indexes, function($index) use ($column_name) {
-			$index_columns = array_map('strtolower', $index->getUnquotedColumns());
-			return in_array($column_name, $index_columns, true) && $index->isPrimary();
-		});
-
-		if (count($primary_key_indexes))
-		{
-			// For PostgreSQL, drop primary index first to avoid "Dependent objects still exist" error
-			if (stripos($this->get_schema_manager()->getDatabasePlatform()->getname(), 'postgresql') !== false)
-			{
-				$this->get_schema_manager()->dropIndex('"primary"', $table_name);
-			}
-
-			$ret = $this->alter_schema(
-				function (Schema $schema) use ($table_name, $column_name): void
-				{
-					$table = $schema->getTable($table_name);
-					$table->dropPrimaryKey();
-				}
-			);
-
-			if ($ret !== true)
-			{
-				return $ret;
-			}
-		}
-
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column_name): void
 			{
@@ -398,7 +368,7 @@ class doctrine implements tools_interface
 		return $this->alter_schema(
 			function (Schema $schema) use ($table_name, $column): void
 			{
-				$this->schema_create_primary_key($schema, $column, $table_name);
+				$this->schema_create_primary_key($schema, $table_name, $column);
 			}
 		);
 	}
@@ -410,7 +380,7 @@ class doctrine implements tools_interface
 	{
 		try
 		{
-			$this->connection->executeQuery($this->get_schema_manager()->getDatabasePlatform()->getTruncateTableSQL($table_name));
+			$this->connection->executeQuery($this->connection->getDatabasePlatform()->getTruncateTableSQL($table_name));
 		}
 		catch (Exception $e)
 		{
@@ -515,7 +485,7 @@ class doctrine implements tools_interface
 
 		$comparator = new comparator();
 		$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
-		$queries = $schemaDiff->toSql($this->get_schema_manager()->getDatabasePlatform());
+		$queries = $schemaDiff->toSql($this->connection->getDatabasePlatform());
 
 		if ($this->return_statements)
 		{
@@ -527,7 +497,6 @@ class doctrine implements tools_interface
 			// executeQuery() must be used here because $query might return a result set, for instance REPAIR does
 			$this->connection->executeQuery($query);
 		}
-
 		return true;
 	}
 
@@ -659,7 +628,7 @@ class doctrine implements tools_interface
 
 		$table = $schema->createTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+		$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -758,7 +727,7 @@ class doctrine implements tools_interface
 					return false;
 				}
 
-				$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+				$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$table->addColumn($column_name, $type, $options);
@@ -790,7 +759,7 @@ class doctrine implements tools_interface
 					return;
 				}
 
-				$dbms_name = $this->get_schema_manager()->getDatabasePlatform()->getName();
+				$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$options['type'] = Type::getType($type);
@@ -990,16 +959,16 @@ class doctrine implements tools_interface
 	/**
 	 * Creates primary key for a table
 	 *
-	 * @param        $column
 	 * @param Schema $schema
 	 * @param string $table_name
+	 * @param array|string $column_name
 	 * @param bool   $safe_check
 	 *
 	 * @throws SchemaException
 	 */
-	protected function schema_create_primary_key(Schema $schema, $column, string $table_name, bool $safe_check = false): void
+	protected function schema_create_primary_key(Schema $schema, string $table_name, array|string $column_name, bool $safe_check = false): void
 	{
-		$columns = (is_array($column)) ? $column : [$column];
+		$columns = (is_array($column_name)) ? $column_name : [$column_name];
 		$table = $schema->getTable($table_name);
 		$table->dropPrimaryKey();
 		$table->setPrimaryKey($columns);
