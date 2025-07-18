@@ -25,9 +25,9 @@ class phpbb_installer_config_test extends phpbb_test_case
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
 		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
-			->setMethods(array('getInt', 'getBytes'))
+			->onlyMethods(array('getNumeric', 'getBytes'))
 			->getMock();
-		$php_ini->method('getInt')
+		$php_ini->method('getNumeric')
 			->willReturn(-1);
 		$php_ini->method('getBytes')
 			->willReturn(-1);

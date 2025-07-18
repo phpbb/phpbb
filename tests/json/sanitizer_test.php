@@ -15,7 +15,7 @@ use phpbb\json\sanitizer as json_sanitizer;
 
 class phpbb_json_sanitizer_test extends phpbb_test_case
 {
-	public function data_decode()
+	public static function data_decode()
 	{
 		return [
 			[false, []],

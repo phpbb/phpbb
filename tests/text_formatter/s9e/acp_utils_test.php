@@ -26,7 +26,7 @@ class phpbb_textformatter_s9e_acp_utils_test extends phpbb_test_case
 		$this->assertEquals($expected, $actual);
 	}
 
-	public function get_analyse_bbcode_tests()
+	public static function get_analyse_bbcode_tests()
 	{
 		return [
 			[

@@ -111,7 +111,8 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 	{
 		$this->task = $this->getMockBuilder(\phpbb\cron\task\task::class)
 			->disableOriginalConstructor()
-			->setMethods(['get_name', 'run', 'is_runnable', 'should_run', 'some_method'])
+			->onlyMethods(['get_name', 'run', 'is_runnable', 'should_run'])
+			->addMethods(['some_method'])
 			->getMock();
 		$this->routing_helper = $this->createMock(\phpbb\routing\helper::class);
 

@@ -70,7 +70,7 @@ class phpbb_notification_user_list_trim_test extends phpbb_database_test_case
 		);
 	}
 
-	public function user_list_trim_data()
+	public static function user_list_trim_data()
 	{
 		return array(
 			array(

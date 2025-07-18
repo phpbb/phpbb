@@ -21,15 +21,15 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 	{
 		$this->delete = $this->getMockBuilder('\phpbb\attachment\delete')
 			->disableOriginalConstructor()
-			->setMethods(['delete', 'unlink_attachment'])
+			->onlyMethods(['delete', 'unlink_attachment'])
 			->getMock();
 		$this->resync = $this->getMockBuilder('\phpbb\attachment\resync')
 			->disableOriginalConstructor()
-			->setMethods(['resync'])
+			->onlyMethods(['resync'])
 			->getMock();
 		$this->upload = $this->getMockBuilder('\phpbb\attachment\upload')
 			->disableOriginalConstructor()
-			->setMethods(['upload'])
+			->onlyMethods(['upload'])
 			->getMock();
 	}
 
@@ -38,7 +38,7 @@ class phpbb_attachment_manager_test extends \phpbb_test_case
 		return new \phpbb\attachment\manager($this->delete, $this->resync, $this->upload);
 	}
 
-	public function data_manager()
+	public static function data_manager()
 	{
 		return array(
 			array(

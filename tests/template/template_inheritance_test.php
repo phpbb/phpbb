@@ -18,7 +18,7 @@ class phpbb_template_template_inheritance_test extends phpbb_template_template_t
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public function template_data()
+	public static function template_data()
 	{
 		return array(
 			// First element of the array is test name - keep them distinct

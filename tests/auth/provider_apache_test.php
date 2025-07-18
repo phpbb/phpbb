@@ -74,8 +74,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 		$this->request->expects($this->exactly(2))
 			->method('server')
-			->withConsecutive(['PHP_AUTH_USER'], ['PHP_AUTH_PW'])
-			->will($this->onConsecutiveCalls($this->returnValue('foobar'), $this->returnValue('example')));
+			->willReturnCallback(fn(string $arg) => match(true) {
+				$arg === 'PHP_AUTH_USER' => 'foobar',
+				$arg === 'PHP_AUTH_PW' => 'example',
+			});
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,
@@ -102,8 +104,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 		$this->request->expects($this->exactly(2))
 			->method('server')
-			->withConsecutive(['PHP_AUTH_USER'], ['PHP_AUTH_PW'])
-			->will($this->onConsecutiveCalls($this->returnValue('foobar'), $this->returnValue('example')));
+			->willReturnCallback(fn(string $arg) => match(true) {
+				$arg === 'PHP_AUTH_USER' => 'foobar',
+				$arg === 'PHP_AUTH_PW' => 'example',
+			});
 
 		$expected = array(
 			'user_id' => 1,

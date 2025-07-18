@@ -76,7 +76,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 		));
 
 		$mock_router = $this->getMockBuilder('\phpbb\routing\router')
-			->setMethods(array('setContext', 'generate'))
+			->onlyMethods(array('setContext', 'generate'))
 			->disableOriginalConstructor()
 			->getMock();
 		$mock_router->method('setContext')

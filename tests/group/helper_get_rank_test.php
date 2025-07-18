@@ -15,7 +15,7 @@ require_once __DIR__ . '/helper_test_case.php';
 
 class phpbb_group_helper_get_rank_test extends phpbb_group_helper_test_case
 {
-	public function get_rank_data()
+	public static function get_rank_data()
 	{
 		global $phpbb_root_path;
 

@@ -13,7 +13,7 @@
 
 class short_ipv6__test extends phpbb_test_case
 {
-	public function data_short_ipv6(): array
+	public static function data_short_ipv6(): array
 	{
 		return [
 			['::1', 0, ''],

@@ -14,7 +14,7 @@
 /*
 * @group slow
 */
-class phpbb_version_helper_fetch_test extends phpbb_test_case
+class phpbb_version_fetch_test extends phpbb_test_case
 {
 	protected $cache, $version_helper;
 

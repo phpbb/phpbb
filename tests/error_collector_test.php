@@ -24,7 +24,7 @@ class phpbb_error_collector_test extends phpbb_test_case
 
 	public function test_collection()
 	{
-		$collector = new \phpbb\error_collector(E_ALL | E_STRICT); // php set_error_handler() default
+		$collector = new \phpbb\error_collector(E_ALL | E_NOTICE); // php set_error_handler() default
 		$collector->install();
 
 		// Cause a warning

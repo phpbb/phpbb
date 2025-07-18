@@ -15,13 +15,16 @@ class phpbb_build_url_test extends phpbb_test_case
 {
 	protected function setUp(): void
 	{
-		global $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpbb_path_helper;
+		global $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpbb_path_helper, $config;
 
 		parent::setUp();
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$user = new phpbb_mock_user();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$config = new \phpbb\config\config([
+			'enable_mod_rewrite' => 0,
+		]);
 
 		$phpbb_path_helper = new \phpbb\path_helper(
 			new \phpbb\symfony_request(
@@ -33,7 +36,7 @@ class phpbb_build_url_test extends phpbb_test_case
 		);
 		$phpbb_container->set('path_helper', $phpbb_path_helper);
 	}
-	public function build_url_test_data()
+	public static function build_url_test_data()
 	{
 		return array(
 			array(
@@ -79,8 +82,9 @@ class phpbb_build_url_test extends phpbb_test_case
 	*/
 	public function test_build_url($page, $strip_vars, $expected)
 	{
-		global $user;
+		global $config, $user, $phpbb_path_helper, $phpbb_dispatcher, $_SID;
 
+		$_SID = '';
 		$user->page['page'] = $page;
 		$output = build_url($strip_vars);
 

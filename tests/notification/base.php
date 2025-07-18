@@ -21,7 +21,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 {
 	/** @var phpbb_notification_manager_helper */
 	protected $notifications;
-	protected $db, $container, $user, $config, $auth, $cache;
+	protected $db, $container, $user, $config, $auth, $cache, $user_loader, $phpbb_dispatcher;
 
 	protected function get_notification_types()
 	{

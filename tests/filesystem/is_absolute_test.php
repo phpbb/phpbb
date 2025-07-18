@@ -23,7 +23,7 @@ class phpbb_filesystem_is_absolute_test extends phpbb_test_case
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
-	static public function is_absolute_data()
+	public static function is_absolute_data()
 	{
 		return array(
 			// Empty

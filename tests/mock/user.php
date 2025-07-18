@@ -24,6 +24,9 @@ class phpbb_mock_user
 	public $style = [];
 	public $data = [];
 	public $lang = [];
+	public $ip = '';
+	public $module;
+	public $session_id;
 
 	private $options = array();
 	public function optionget($item, $data = false)

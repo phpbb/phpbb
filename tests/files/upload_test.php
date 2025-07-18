@@ -96,7 +96,7 @@ class phpbb_files_upload_test extends phpbb_test_case
 		$this->assertFalse($upload->is_valid('foobar'));
 	}
 
-	public function data_internal_error()
+	public static function data_internal_error()
 	{
 		return array(
 			array(UPLOAD_ERR_INI_SIZE, 'PHP_SIZE_OVERRUN'),

@@ -85,7 +85,7 @@ class phpbb_template_template_includecss_test extends phpbb_template_template_te
 		$this->template->set_custom_style('tests', array($this->template_path, $this->parent_template_path));
 	}
 
-	public function template_data()
+	public static function template_data()
 	{
 		return array(
 			/*

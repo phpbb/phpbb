@@ -32,7 +32,7 @@ class phpbb_attachment_resync_test extends \phpbb_database_test_case
 		$this->resync = new \phpbb\attachment\resync($this->db);
 	}
 
-	public function data_resync()
+	public static function data_resync()
 	{
 		return array(
 			array('', array(1), 'post_id', POSTS_TABLE, array('post_attachment' => '1'), array('post_attachment' => '1')),

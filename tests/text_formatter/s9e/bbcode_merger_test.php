@@ -34,7 +34,7 @@ class phpbb_textformatter_s9e_bbcode_merger_test extends phpbb_test_case
 		$this->assertSame($expected_template, $merged['template']);
 	}
 
-	public function get_merge_bbcodes_tests()
+	public static function get_merge_bbcodes_tests()
 	{
 		return [
 			[

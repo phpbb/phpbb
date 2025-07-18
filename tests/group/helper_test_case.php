@@ -101,7 +101,7 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 		// Set up path helper
 		$path_helper = $this->getMockBuilder('\phpbb\path_helper')
 			->disableOriginalConstructor()
-			->setMethods(array())
+			->onlyMethods(['get_phpbb_root_path', 'get_php_ext', 'update_web_root_path'])
 			->getMock();
 		$path_helper->method('get_phpbb_root_path')
 			->willReturn($phpbb_root_path);

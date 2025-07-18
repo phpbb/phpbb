@@ -30,7 +30,7 @@ class phpbb_functions_user_whois_test extends phpbb_test_case
 			->getMock();
 	}
 
-	public function ips_data()
+	public static function ips_data()
 	{
 		return [
 			['2001:4860:4860::8888'], // Google public DNS

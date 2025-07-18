@@ -20,7 +20,7 @@ class phpbb_regex_ipv4_test extends phpbb_test_case
 		$this->regex = get_preg_expression('ipv4');
 	}
 
-	public function positive_match_data()
+	public static function positive_match_data()
 	{
 		return array(
 			array('0.0.0.0'),
@@ -30,7 +30,7 @@ class phpbb_regex_ipv4_test extends phpbb_test_case
 		);
 	}
 
-	public function negative_match_data()
+	public static function negative_match_data()
 	{
 		return array(
 			// IPv6 addresses

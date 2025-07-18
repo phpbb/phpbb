@@ -29,7 +29,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	/**
 	* Data sets that don't throw an error.
 	*/
-	public function validate_config_vars_fit_data()
+	public static function validate_config_vars_fit_data()
 	{
 		return array(
 			array(
@@ -86,7 +86,7 @@ class phpbb_functions_acp_validate_config_vars_test extends phpbb_test_case
 	/**
 	* Data sets that throw the error.
 	*/
-	public function validate_config_vars_error_data()
+	public static function validate_config_vars_error_data()
 	{
 		return array(
 			array(

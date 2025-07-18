@@ -27,7 +27,7 @@ class phpbb_functions_insert_config_array_test extends phpbb_test_case
 		);
 	}
 
-	public function insert_config_array_data()
+	public static function insert_config_array_data()
 	{
 		return array(
 			array( // Add a new config after 1st array item

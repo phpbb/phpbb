@@ -18,7 +18,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(__DIR__.'/fixtures/three_users.xml');
 	}
 
-	public function return_on_error_select_data()
+	public static function return_on_error_select_data()
 	{
 		return array(
 			array('phpbb_users', "username_clean = 'bertie'", array(array('username_clean' => 'bertie'))),
@@ -45,7 +45,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public function fetchrow_data()
+	public static function fetchrow_data()
 	{
 		return array(
 			array('', array(array('username_clean' => 'barfoo'),
@@ -96,7 +96,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public function fetchfield_data()
+	public static function fetchfield_data()
 	{
 		return array(
 			array('', array('barfoo', 'foobar', 'bertie')),
@@ -126,7 +126,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	static public function fetchfield_seek_data()
+	public static function fetchfield_seek_data()
 	{
 		return array(
 			array(1, 'foobar'),
@@ -152,7 +152,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $field);
 	}
 
-	static public function query_limit_data()
+	public static function query_limit_data()
 	{
 		return array(
 			array(0, 0, array(array('username_clean' => 'barfoo'),
@@ -193,7 +193,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $ary);
 	}
 
-	public function like_expression_data()
+	public static function like_expression_data()
 	{
 		// * = any_char; # = one_char
 		return array(
@@ -230,7 +230,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public function not_like_expression_data()
+	public static function not_like_expression_data()
 	{
 		// * = any_char; # = one_char
 		return array(
@@ -290,7 +290,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public function in_set_data()
+	public static function in_set_data()
 	{
 		return array(
 			array('user_id', 3, false, false, array(array('username_clean' => 'bertie'))),
@@ -364,7 +364,7 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 		$db->sql_freeresult($result);
 	}
 
-	public function build_array_data()
+	public static function build_array_data()
 	{
 		return array(
 			array(array('username_clean' => 'barfoo'), array(array('username_clean' => 'barfoo'))),

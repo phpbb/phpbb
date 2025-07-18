@@ -13,7 +13,7 @@
 
 class phpbb_functions_content_phpbb_clean_search_string_test extends phpbb_test_case
 {
-	public function phpbb_clean_search_string_data()
+	public static function phpbb_clean_search_string_data()
 	{
 		return array(
 			array('*', ''),

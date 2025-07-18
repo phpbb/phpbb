@@ -16,7 +16,7 @@ require_once __DIR__ . '/helper_test_case.php';
 class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_case
 {
 
-	public function get_name_string_profile_data()
+	public static function get_name_string_profile_data()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -35,7 +35,7 @@ class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_ca
 		$this->assertEquals($expected, $this->group_helper->get_name_string('profile', $group_id, $group_name, $group_colour, $custom_profile_url));
 	}
 
-	public function get_name_string_group_name_data()
+	public static function get_name_string_group_name_data()
 	{
 		return array(
 			// Should be fine
@@ -57,7 +57,7 @@ class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_ca
 		$this->assertEquals($expected, $this->group_helper->get_name_string('group_name', $group_id, $group_name, $group_colour, $custom_profile_url));
 	}
 
-	public function get_name_string_colour_data()
+	public static function get_name_string_colour_data()
 	{
 		return array(
 			array(0, '', '', false, ''),
@@ -75,7 +75,7 @@ class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_ca
 		$this->assertEquals($expected, $this->group_helper->get_name_string('colour', $group_id, $group_name, $group_colour, $custom_profile_url));
 	}
 
-	public function get_name_string_full_data()
+	public static function get_name_string_full_data()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -95,7 +95,7 @@ class phpbb_group_helper_get_name_string_test extends phpbb_group_helper_test_ca
 		$this->assertEquals($expected, $this->group_helper->get_name_string('full', $group_id, $group_name, $group_colour, $custom_profile_url));
 	}
 
-	public function get_name_string_no_profile_data()
+	public static function get_name_string_no_profile_data()
 	{
 		return array(
 			array(0, 'BOTS', '000000', false, '<span class="username-coloured" style="color: #000000;">Bots</span>'),

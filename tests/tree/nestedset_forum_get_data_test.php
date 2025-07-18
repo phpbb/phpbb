@@ -15,7 +15,7 @@ require_once __DIR__ . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_nestedset_forum_base
 {
-	public function get_path_and_subtree_data_data()
+	public static function get_path_and_subtree_data_data()
 	{
 		return array(
 			array(1, true, true, array(1, 2, 3)),
@@ -43,7 +43,7 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 		$this->assertEquals($expected, array_keys($this->set->get_path_and_subtree_data($forum_id, $order_asc, $include_item)));
 	}
 
-	public function get_path_data_data()
+	public static function get_path_data_data()
 	{
 		return array(
 			array(1, true, true, array(1)),
@@ -71,7 +71,7 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 		$this->assertEquals($expected, array_keys($this->set->get_path_data($forum_id, $order_asc, $include_item)));
 	}
 
-	public function get_subtree_data_data()
+	public static function get_subtree_data_data()
 	{
 		return array(
 			array(1, true, true, array(1, 2, 3)),
@@ -99,7 +99,7 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 		$this->assertEquals($expected, array_keys($this->set->get_subtree_data($forum_id, $order_asc, $include_item)));
 	}
 
-	public function get_path_basic_data_data()
+	public static function get_path_basic_data_data()
 	{
 		return array(
 			array(1, '', array()),
@@ -121,7 +121,7 @@ class phpbb_tests_tree_nestedset_forum_get_data_test extends phpbb_tests_tree_ne
 		$this->assertEquals($expected, array_keys($this->set->get_path_basic_data($forum_data)));
 	}
 
-	public function get_all_tree_data_data()
+	public static function get_all_tree_data_data()
 	{
 		return array(
 			array(true, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)),

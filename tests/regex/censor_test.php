@@ -13,7 +13,7 @@
 
 class phpbb_regex_censor_test extends phpbb_test_case
 {
-	public function censor_test_data()
+	public static function censor_test_data()
 	{
 		return array(
 			array('bad*word', 'bad word'),

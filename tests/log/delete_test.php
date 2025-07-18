@@ -37,7 +37,7 @@ class phpbb_log_delete_test extends phpbb_database_test_case
 		parent::setUp();
 	}
 
-	public function log_delete_data()
+	public static function log_delete_data()
 	{
 		return array(
 			array(

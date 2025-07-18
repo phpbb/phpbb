@@ -34,7 +34,7 @@ class phpbb_functional_forum_password_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 	}
 
-	public function data_enter_forum_with_password()
+	public static function data_enter_forum_with_password()
 	{
 		return array(
 			array('foowrong', 'WRONG_PASSWORD'),

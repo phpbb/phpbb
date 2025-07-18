@@ -53,7 +53,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->attachment_delete = new \phpbb\attachment\delete($this->config, $this->db, $this->dispatcher, $this->resync, $this->storage);
 	}
 
-	public function data_attachment_delete()
+	public static function data_attachment_delete()
 	{
 		return array(
 			array('attach', '', false, false),
@@ -83,7 +83,7 @@ class phpbb_attachment_delete_test extends \phpbb_database_test_case
 		$this->assertSame($expected, $this->attachment_delete->delete($mode, $ids, $resync));
 	}
 
-	public function data_attachment_unlink()
+	public static function data_attachment_unlink()
 	{
 		return array(
 			array(true, true),

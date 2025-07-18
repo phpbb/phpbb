@@ -20,7 +20,7 @@ class phpbb_regex_ipv6_test extends phpbb_test_case
 		$this->regex = get_preg_expression('ipv6');
 	}
 
-	public function positive_match_data()
+	public static function positive_match_data()
 	{
 		return array(
 			// Full length IPv6 address
@@ -97,7 +97,7 @@ class phpbb_regex_ipv6_test extends phpbb_test_case
 		);
 	}
 
-	public function negative_match_data()
+	public static function negative_match_data()
 	{
 		return array(
 			// Empty address

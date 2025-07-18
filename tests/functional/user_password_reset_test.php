@@ -102,7 +102,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->login(self::TEST_USER);
 	}
 
-	public function data_reset_user_password()
+	public static function data_reset_user_password()
 	{
 		return [
 			['RESET_TOKEN_EXPIRED_OR_INVALID', 0, 'abcdef'],

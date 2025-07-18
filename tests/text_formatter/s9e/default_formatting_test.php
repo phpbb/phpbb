@@ -45,7 +45,7 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 		$this->assertSame($expected, $renderer->render($parsed_text));
 	}
 
-	public function get_default_formatting_tests()
+	public static function get_default_formatting_tests()
 	{
 		return array(
 			array(

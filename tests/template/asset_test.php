@@ -15,7 +15,7 @@ use phpbb\template\asset;
 
 class phpbb_template_asset_test extends phpbb_test_case
 {
-	public function set_path_data()
+	public static function set_path_data()
 	{
 		return array(
 			// array(phpbb_root_path, given path, expected path),
@@ -35,7 +35,7 @@ class phpbb_template_asset_test extends phpbb_test_case
 	{
 		$path_helper = $this->getMockBuilder('\phpbb\path_helper')
 			->disableOriginalConstructor()
-			->setMethods(array())
+			->onlyMethods(['get_phpbb_root_path'])
 			->getMock();
 
 		$path_helper->method('get_phpbb_root_path')

@@ -32,7 +32,7 @@ class phpbb_cache_redis_driver_test extends \phpbb_cache_common_test_case
 		$config = phpbb_test_case_helpers::get_test_config();
 		if (isset($config['redis_host']) || isset($config['redis_port']))
 		{
-			$host = isset($config['redis_host']) ? $config['redis_host'] : 'localhost';
+			$host = isset($config['redis_host']) ? $config['redis_host'] : '0.0.0.0';
 			$port = isset($config['redis_port']) ? $config['redis_port'] : 6379;
 			self::$config = array('host' => $host, 'port' => $port);
 		}
@@ -46,12 +46,14 @@ class phpbb_cache_redis_driver_test extends \phpbb_cache_common_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpbb_container;
+		global $phpbb_root_path, $phpbb_container, $dbname, $table_prefix;
 
 		parent::setUp();
 
 		$phpbb_container = new phpbb_mock_container_builder();
 		$phpbb_container->setParameter('core.cache_dir', $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
+		$config = phpbb_test_case_helpers::get_test_config();
+		$dbname = $config['dbname'];
 		$this->driver = new \phpbb\cache\driver\redis(self::$config['host'], self::$config['port']);
 		$this->driver->purge();
 	}

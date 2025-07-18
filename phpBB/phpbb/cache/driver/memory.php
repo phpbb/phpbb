@@ -48,6 +48,30 @@ abstract class memory extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
+	function purge()
+	{
+		unset($this->vars);
+		unset($this->sql_rowset);
+		unset($this->sql_row_pointer);
+
+		if (function_exists('opcache_reset'))
+		{
+			@opcache_reset();
+		}
+
+		$this->vars = [];
+		$this->sql_rowset = [];
+		$this->sql_row_pointer = [];
+
+		$this->is_modified = true;
+
+		// We save here to let the following cache hits succeed
+		$this->save();
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function load()
 	{
 		// grab the global cache

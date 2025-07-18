@@ -30,7 +30,7 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 		$this->db = $this->new_dbal();
 	}
 
-	public function data_get_num_ips()
+	public static function data_get_num_ips()
 	{
 		return array(
 			array(2, 1),
@@ -47,7 +47,7 @@ class phpbb_mcp_post_ip_test extends phpbb_database_test_case
 		$this->assertSame($expected, phpbb_get_num_ips_for_poster($this->db, $poster_id));
 	}
 
-	public function data_get_num_posters()
+	public static function data_get_num_posters()
 	{
 		return array(
 			array(2, '127.0.0.1'),

@@ -30,7 +30,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 		parent::setUp();
 	}
 
-	public function realpath_resolve_absolute_without_symlinks_data()
+	public static function realpath_resolve_absolute_without_symlinks_data()
 	{
 		// Constant data
 		yield [__DIR__, __DIR__];
@@ -42,7 +42,7 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 		yield [__FILE__ . '../', false];
 	}
 
-	public function realpath_resolve_relative_without_symlinks_data()
+	public static function realpath_resolve_relative_without_symlinks_data()
 	{
 		if (!function_exists('getcwd'))
 		{

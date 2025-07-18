@@ -18,7 +18,7 @@ class phpbb_content_visibility_get_forums_visibility_sql_test extends phpbb_data
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/get_forums_visibility_sql.xml');
 	}
 
-	public function get_forums_visibility_sql_data()
+	public static function get_forums_visibility_sql_data()
 	{
 		return array(
 			array(

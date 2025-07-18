@@ -16,7 +16,7 @@ require_once __DIR__ . '/base.php';
 
 class phpbb_security_extract_current_page_test extends phpbb_security_test_base
 {
-	public function security_variables()
+	public static function security_variables()
 	{
 		return array(
 			array('mark=forums&x="><script>alert(/XSS/);</script>', 'mark=forums&x=%22%3E%3Cscript%3Ealert%28%2FXSS%2F%29%3B%3C%2Fscript%3E'),

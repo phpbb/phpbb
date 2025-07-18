@@ -18,7 +18,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
-	public function template_data()
+	public static function template_data()
 	{
 		return array(
 			/*
@@ -637,7 +637,7 @@ class phpbb_template_template_test extends phpbb_template_template_test_case
 		$this->assertEquals(array('POSITION' => 'O3M2', 'ONE' => true, 'TWO' => 'two', 'THREE' => 3), $this->template->retrieve_block_vars('outer[2].middle[1]', array()), 'Retrieve all vars from a block in the template');
 	}
 
-	public function alter_block_array_data()
+	public static function alter_block_array_data()
 	{
 		return array(
 			array(
@@ -1030,7 +1030,7 @@ EOT
 		$this->assertEquals($expect, str_replace(array("\n", "\r", "\t"), '', $this->display('test')), 'Inserting another inner block in the same place');
 	}
 
-	public function assign_block_vars_array_data()
+	public static function assign_block_vars_array_data()
 	{
 		return array(
 			array(

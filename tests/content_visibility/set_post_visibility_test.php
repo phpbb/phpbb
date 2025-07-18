@@ -21,7 +21,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/set_post_visibility.xml');
 	}
 
-	public function set_post_visibility_data()
+	public static function set_post_visibility_data()
 	{
 		return array(
 			array(
@@ -155,7 +155,7 @@ class phpbb_content_visibility_set_post_visibility_test extends phpbb_database_t
 		}
 	}
 
-	public function set_post_soft_deleted_data()
+	public static function set_post_soft_deleted_data()
 	{
 		return array(
 			array(

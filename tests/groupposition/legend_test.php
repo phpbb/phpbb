@@ -18,7 +18,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/legend.xml');
 	}
 
-	public function get_group_value_data()
+	public static function get_group_value_data()
 	{
 		return array(
 			array(1, 0, ''),
@@ -57,7 +57,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals(2, $test_class->get_group_count());
 	}
 
-	public function add_group_data()
+	public static function add_group_data()
 	{
 		return array(
 			array(
@@ -101,7 +101,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public function delete_group_data()
+	public static function delete_group_data()
 	{
 		return array(
 			array(
@@ -187,7 +187,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public function move_up_data()
+	public static function move_up_data()
 	{
 		return array(
 			array(
@@ -240,7 +240,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public function move_down_data()
+	public static function move_down_data()
 	{
 		return array(
 			array(
@@ -293,7 +293,7 @@ class phpbb_groupposition_legend_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $db->sql_fetchrowset($result));
 	}
 
-	public function move_data()
+	public static function move_data()
 	{
 		return array(
 			array(

@@ -14,13 +14,14 @@
 define('IN_PHPBB', true);
 define('PHPBB_ENVIRONMENT', 'test');
 
+global $phpbb_class_loader, $phpbb_class_loader_mock, $phpbb_class_loader_ext, $phpbb_class_loader_tests;
+global $phpbb_root_path, $phpEx, $table_prefix;
+
 $phpbb_root_path = 'phpBB/';
 $phpEx = 'php';
-
-global $table_prefix;
-require_once $phpbb_root_path . 'includes/startup.php';
-
 $table_prefix = 'phpbb_';
+
+require_once $phpbb_root_path . 'includes/startup.php';
 require_once $phpbb_root_path . 'includes/constants.php';
 require_once $phpbb_root_path . 'phpbb/class_loader.' . $phpEx;
 require_once $phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx;

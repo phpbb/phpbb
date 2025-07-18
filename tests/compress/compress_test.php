@@ -120,7 +120,7 @@ class phpbb_compress_test extends phpbb_test_case
 		}
 	}
 
-	public function tar_archive_list()
+	public static function tar_archive_list()
 	{
 		return array(
 			array('archive.tar', '.tar', array()),

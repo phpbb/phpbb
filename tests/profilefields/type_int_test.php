@@ -51,7 +51,7 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 		);
 	}
 
-	public function profile_value_data()
+	public static function profile_value_data()
 	{
 		return array(
 			array(
@@ -118,7 +118,7 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
-	public function validate_profile_field_data()
+	public static function validate_profile_field_data()
 	{
 		return array(
 			array(
@@ -172,7 +172,7 @@ class phpbb_profilefield_type_int_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
-	public function profile_value_raw_data()
+	public static function profile_value_raw_data()
 	{
 		return array(
 			array(

@@ -19,6 +19,8 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 
 	protected function setUp(): void
 	{
+		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
+
 		parent::setUp();
 
 		global $auth;
@@ -49,11 +51,8 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 	* submit_post() $mode = 'reply'
 	* Notification item_type = 'quote'
 	*/
-	public function submit_post_data()
+	public static function submit_post_data()
 	{
-		// The new mock container is needed because the data providers may be executed before phpunit call setUp()
-		$parser = $this->get_test_case_helpers()->set_s9e_services(new phpbb_mock_container_builder())->get('text_formatter.parser');
-
 		return array(
 			/**
 			* Normal post
@@ -68,7 +67,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
-					'message'			=> $parser->parse(implode(' ', array(
+					'message'			=> implode(' ', array(
 						'[quote="poster"]poster should not be notified[/quote]',
 						'[quote="test"]test should be notified[/quote]',
 						'[quote="unauthorized"]unauthorized to read, should not receive a notification[/quote]',
@@ -76,7 +75,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 						'[quote="disabled"]option disabled, should not receive a notification[/quote]',
 						'[quote="default"]option set to default, should receive a notification[/quote]',
 						'[quote="doesn\'t exist"]user does not exist, should not receive a notification[/quote]',
-					))),
+					)),
 					'bbcode_uid'		=> 'uid',
 				),
 				array(
@@ -97,7 +96,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 			*/
 			array(
 				array(
-					'message'			=> $parser->parse(implode(' ', array(
+					'message'			=> implode(' ', array(
 						'[quote="poster"]poster should not be notified[/quote]',
 						'[quote="test"]test should be notified[/quote]',
 						'[quote="unauthorized"]unauthorized to read, should not receive a notification[/quote]',
@@ -105,7 +104,7 @@ class phpbb_notification_submit_post_type_quote_test extends phpbb_notification_
 						'[quote="disabled"]option disabled, should not receive a notification[/quote]',
 						'[quote="default"]option set to default, should receive a notification[/quote]',
 						'[quote="doesn\'t exist"]user does not exist, should not receive a notification[/quote]',
-					))),
+					)),
 					'bbcode_uid'		=> 'uid',
 					'force_approved_state' => false,
 				),

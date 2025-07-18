@@ -50,7 +50,7 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 		return new CommandTester($command);
 	}
 
-	public function activate_test_data()
+	public static function activate_test_data()
 	{
 		return array(
 			// Test an inactive user

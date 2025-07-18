@@ -21,7 +21,7 @@ class phpbb_filesystem_clean_path_test extends phpbb_test_case
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 	}
 
-	public function clean_path_data()
+	public static function clean_path_data()
 	{
 		return array(
 			array('foo', 'foo'),

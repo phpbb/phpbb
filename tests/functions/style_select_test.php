@@ -18,7 +18,7 @@ class phpbb_functions_style_select_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(__DIR__.'/fixtures/style_select.xml');
 	}
 
-	static public function style_select_data()
+	public static function style_select_data()
 	{
 		return [
 			[

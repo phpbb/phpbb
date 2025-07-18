@@ -29,7 +29,7 @@ class phpbb_generate_string_list_test extends phpbb_test_case
 		$this->user->add_lang('common');
 	}
 
-	public function generate_string_list_data()
+	public static function generate_string_list_data()
 	{
 		return array(
 			array(

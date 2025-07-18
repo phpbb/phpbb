@@ -301,7 +301,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		);
 	}
 
-	public function nonexistent_post_id_data()
+	public static function nonexistent_post_id_data()
 	{
 		$nonexistent_post_id = 999999; // Random value
 		return [

@@ -21,9 +21,10 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 {
 	protected $cache_dir;
 	protected $cache;
+	protected $config;
 	protected $db;
 	protected $db_tools;
-	protected $config;
+	protected $language;
 	protected $user;
 
 	protected function setUp(): void

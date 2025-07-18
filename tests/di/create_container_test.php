@@ -15,7 +15,7 @@ namespace
 {
 	require_once __DIR__ . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
-	class phpbb_di_container_test extends \phpbb_test_case
+	class phpbb_di_create_container_test extends \phpbb_test_case
 	{
 		protected $config_php;
 
@@ -73,7 +73,8 @@ namespace
 
 			// Checks the construction of a dumped container
 			$container = $this->builder->get_container();
-			$this->assertInstanceOf('phpbb_cache_container', $container);
+			$this->assertEquals('phpbb_cache_container', $container::class);
+			$this->assertInstanceOf('Symfony\Component\DependencyInjection\Container', $container);
 			$this->assertTrue($container->isCompiled());
 		}
 
@@ -100,7 +101,8 @@ namespace
 
 			// Checks the construction of a dumped container
 			$container = $this->builder->get_container();
-			$this->assertNotInstanceOf('phpbb_cache_container', $container);
+			$this->assertNotEquals('phpbb_cache_container', $container::class);
+			$this->assertEquals('Symfony\Component\DependencyInjection\ContainerBuilder', $container::class);
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 			$this->assertTrue($container->isCompiled());
 		}

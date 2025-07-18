@@ -16,6 +16,8 @@
 */
 class phpbb_functional_jumpbox_test extends phpbb_functional_test_case
 {
+	protected $crawler;
+
 	public function test_jumpbox()
 	{
 		$this->login();

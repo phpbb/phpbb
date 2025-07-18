@@ -41,7 +41,7 @@ class version_helper_remote_test extends \phpbb_test_case
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$db = new \phpbb\db\driver\factory($container);
 		$this->cache = $this->getMockBuilder('\phpbb\cache\service')
-			->setMethods(array('get'))
+			->addMethods(array('get'))
 			->setConstructorArgs(array(new \phpbb\cache\driver\dummy(), $config, $db, $phpbb_dispatcher, '../../', 'php'))
 			->getMock();
 
@@ -84,7 +84,7 @@ class version_helper_remote_test extends \phpbb_test_case
 		$this->user->add_lang('acp/common');
 	}
 
-	public function provider_get_versions()
+	public static function provider_get_versions()
 	{
 		return array(
 			array('', false, '', 'VERSIONCHECK_FAIL'),

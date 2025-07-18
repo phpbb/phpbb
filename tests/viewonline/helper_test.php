@@ -26,7 +26,7 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 		$this->viewonline_helper = new \phpbb\viewonline_helper($db);
 	}
 
-	public function session_pages_data()
+	public static function session_pages_data()
 	{
 		return array(
 			array('index.php', 'index'),

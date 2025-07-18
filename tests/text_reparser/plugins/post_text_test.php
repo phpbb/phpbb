@@ -24,7 +24,7 @@ class phpbb_textreparser_post_text_test extends phpbb_textreparser_test_row_base
 		return new \phpbb\textreparser\plugins\post_text($this->db, POSTS_TABLE);
 	}
 
-	public function data_reparse_url(): array
+	public static function data_reparse_url(): array
 	{
 		return [
 			[ // Reparse the same

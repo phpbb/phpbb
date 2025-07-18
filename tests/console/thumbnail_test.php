@@ -23,6 +23,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	protected $db;
 	protected $config;
 	protected $cache;
+	protected $language;
 	protected $user;
 	protected $storage;
 	protected $temp;

@@ -33,7 +33,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		);
 	}
 
-	static public function obtain_guest_count_data()
+	public static function obtain_guest_count_data()
 	{
 		return array(
 			array(0, 2),
@@ -53,7 +53,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		$this->assertEquals($expected, obtain_guest_count($forum_id));
 	}
 
-	static public function obtain_users_online_data()
+	public static function obtain_users_online_data()
 	{
 		return array(
 			array(0, false, array(
@@ -123,7 +123,7 @@ class phpbb_functions_obtain_online_test extends phpbb_database_test_case
 		$this->assertEquals($expected, obtain_users_online($forum_id));
 	}
 
-	static public function obtain_users_online_string_data()
+	public static function obtain_users_online_string_data()
 	{
 		return array(
 			array(0, false, array(

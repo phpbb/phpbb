@@ -43,7 +43,7 @@ class context_test extends phpbb_test_case
 		}
 	}
 
-	public function retrieve_block_vars_data()
+	public static function retrieve_block_vars_data()
 	{
 		return array(
 			array('foo', array(), array()), // non-existent top-level block

@@ -25,7 +25,7 @@ class phpbb_functional_acp_profile_field_test extends phpbb_functional_test_case
 		$this->add_lang('acp/profile');
 	}
 
-	public function data_add_profile_field()
+	public static function data_add_profile_field()
 	{
 		return array(
 			array('profilefields.type.bool',

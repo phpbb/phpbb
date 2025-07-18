@@ -21,7 +21,7 @@ class phpbb_filesystem_helper_is_absolute_test extends phpbb_test_case
 		parent::setUp();
 	}
 
-	static public function is_absolute_data()
+	public static function is_absolute_data()
 	{
 		// Empty
 		yield ['', false];

@@ -18,7 +18,7 @@ class phpbb_security_redirect_test extends phpbb_security_test_base
 {
 	protected $path_helper;
 
-	public function provider()
+	public static function provider()
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
 		return array(

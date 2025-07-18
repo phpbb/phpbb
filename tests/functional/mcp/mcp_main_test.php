@@ -72,7 +72,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		return $post;
 	}
 
-	public function mcp_view_forum_actions_data()
+	public static function mcp_view_forum_actions_data()
 	{
 		// action, success message, require_confirmation
 		return [
@@ -181,7 +181,7 @@ class phpbb_functional_mcp_main_test extends phpbb_functional_test_case
 		$this->assertStringContainsString($this->lang('TOPICS_DELETED_SUCCESS'), $crawler->filter('#message p')->text());
 	}
 
-	public function mcp_view_topic_actions_data()
+	public static function mcp_view_topic_actions_data()
 	{
 		// action, success message, require_confirmation
 		return [

@@ -14,7 +14,9 @@ require_once __DIR__ . '/../mock/sql_insert_buffer.php';
 
 class phpbb_notification_convert_test extends phpbb_database_test_case
 {
-	protected $notifications, $db, $doctrine_db, $container, $user, $config, $auth, $cache;
+	protected $db;
+	protected $doctrine_db;
+	protected $migration;
 
 	public function getDataSet()
 	{

@@ -24,7 +24,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 		$this->assertSame($expected, $utils->unparse($original));
 	}
 
-	public function get_unparse_tests()
+	public static function get_unparse_tests()
 	{
 		return array(
 			array(
@@ -53,7 +53,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 		$this->assertSame($expected, $utils->clean_formatting($original));
 	}
 
-	public function get_clean_formatting_tests()
+	public static function get_clean_formatting_tests()
 	{
 		return array(
 			array(
@@ -87,7 +87,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 		$this->assertSame($expected, $utils->get_outermost_quote_authors($parser->parse($original)));
 	}
 
-	public function get_outermost_quote_authors_tests()
+	public static function get_outermost_quote_authors_tests()
 	{
 		return array(
 			array(
@@ -124,7 +124,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 		$this->assertSame($expected, $utils->generate_quote($text, $params));
 	}
 
-	public function get_generate_quote_tests()
+	public static function get_generate_quote_tests()
 	{
 		return array(
 			array(
@@ -248,7 +248,7 @@ class phpbb_textformatter_s9e_utils_test extends phpbb_test_case
 		$this->assertSame($expected, $actual);
 	}
 
-	public function get_remove_bbcode_tests()
+	public static function get_remove_bbcode_tests()
 	{
 		return array(
 			array(

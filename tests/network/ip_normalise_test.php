@@ -13,7 +13,7 @@
 
 class phpbb_network_ip_normalise_test extends phpbb_test_case
 {
-	public function data_provider()
+	public static function data_provider()
 	{
 		return array(
 			// From: A Recommendation for IPv6 Address Text Representation

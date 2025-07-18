@@ -65,7 +65,7 @@ class phpbb_functional_acp_bbcodes_test extends phpbb_functional_test_case
 		$this->assertStringContainsString($error, $text);
 	}
 
-	public function get_bbcode_error_tests()
+	public static function get_bbcode_error_tests()
 	{
 		return [
 			[

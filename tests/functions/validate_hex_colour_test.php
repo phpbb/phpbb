@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_functions_validate_hex_colour_test extends phpbb_test_case
 {
-	public function positive_match_data()
+	public static function positive_match_data()
 	{
 		return array(
 			array('a00'),
@@ -27,7 +27,7 @@ class phpbb_functions_validate_hex_colour_test extends phpbb_test_case
 		);
 	}
 
-	public function negative_match_data()
+	public static function negative_match_data()
 	{
 		return array(
 			// Invalid prefix
@@ -53,7 +53,7 @@ class phpbb_functions_validate_hex_colour_test extends phpbb_test_case
 		);
 	}
 
-	public function optional_only_data()
+	public static function optional_only_data()
 	{
 		return array(
 			// The empty colour, i.e. "no colour".
@@ -61,19 +61,19 @@ class phpbb_functions_validate_hex_colour_test extends phpbb_test_case
 		);
 	}
 
-	public function strict_negative_match_data()
+	public static function strict_negative_match_data()
 	{
 		return array_merge(
-			$this->negative_match_data(),
-			$this->optional_only_data()
+			self::negative_match_data(),
+			self::optional_only_data()
 		);
 	}
 
-	public function nonstrict_positive_match_data()
+	public static function nonstrict_positive_match_data()
 	{
 		return array_merge(
-			$this->positive_match_data(),
-			$this->optional_only_data()
+			self::positive_match_data(),
+			self::optional_only_data()
 		);
 	}
 

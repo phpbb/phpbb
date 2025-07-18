@@ -31,15 +31,23 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 		// Failure to connect results in a trigger_error call in dbal.
 		// phpunit converts triggered errors to exceptions.
 		// In particular there should be no fatals here.
-		try
+		
+
+		if ($db->get_sql_layer() === 'mysqli')
 		{
-			$db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']);
-			$this->assertFalse(true);
+				$this->setExpectedTriggerError(E_WARNING);
 		}
-		catch (Exception $e)
+		else if ($db->get_sql_layer() !== 'sqlite3')
 		{
-			// should have a legitimate message
-			$this->assertNotEmpty($e->getMessage());
+			$this->setExpectedTriggerError(E_USER_ERROR);
+		}
+
+		// For SQLite3, connection will be successful anyway as phpBB driver uses SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE flags
+		$result = $db->sql_connect($config['dbhost'], 'phpbbogus', 'phpbbogus', 'phpbbogus', $config['dbport']);
+
+		if ($db->get_sql_layer() === 'sqlite3')
+		{
+			$this->assertTrue($result);
 		}
 	}
 }

@@ -174,7 +174,7 @@ class phpbb_extension_modules_test extends phpbb_test_case
 			), $acp_modules);
 	}
 
-	public function module_auth_test_data()
+	public static function module_auth_test_data()
 	{
 		return array(
 			// module_auth, expected result

@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_user.php';
 
 class phpbb_password_complexity_test extends phpbb_test_case
 {
-	public function password_complexity_test_data_positive()
+	public static function password_complexity_test_data_positive()
 	{
 		return array(
 			array('12345', 'PASS_TYPE_ANY'),
@@ -33,7 +33,7 @@ class phpbb_password_complexity_test extends phpbb_test_case
 		);
 	}
 
-	public function password_complexity_test_data_negative()
+	public static function password_complexity_test_data_negative()
 	{
 		return array(
 			array('qwerty', 'PASS_TYPE_CASE'),

@@ -28,7 +28,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	/**
 	* Data sets that don't throw an error.
 	*/
-	public function validate_range_data_fit()
+	public static function validate_range_data_fit()
 	{
 		return array(
 			array(array(array('column_type' => 'BOOL', 'lang' => 'TEST', 'value' => 0))),
@@ -74,7 +74,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	/**
 	* Data sets that throw the SETTING_TOO_LOW-error.
 	*/
-	public function validate_range_data_too_low()
+	public static function validate_range_data_too_low()
 	{
 		return array(
 			array(array(array('column_type' => 'BOOL', 'lang' => 'TEST', 'value' => -1))),
@@ -109,7 +109,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	/**
 	* Data sets that throw the SETTING_TOO_BIG-error.
 	*/
-	public function validate_range_data_too_big()
+	public static function validate_range_data_too_big()
 	{
 		return array(
 			array(array(array('column_type' => 'BOOL', 'lang' => 'TEST', 'value' => 2))),
@@ -144,7 +144,7 @@ class phpbb_functions_acp_validate_range_test extends phpbb_test_case
 	/**
 	* Data sets that throw the SETTING_TOO_LONG-error.
 	*/
-	public function validate_range_data_too_long()
+	public static function validate_range_data_too_long()
 	{
 		return array(
 			array(array(array('column_type' => 'VCHAR', 'lang' => 'TEST', 'value' => str_repeat('a', 256)))),

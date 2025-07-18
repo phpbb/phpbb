@@ -13,7 +13,7 @@
 
 class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
 {
-	public function cleanable_strings()
+	public static function cleanable_strings()
 	{
 		return array(
 			array('MiXed CaSe', 'mixed case', 'Checking case folding'),

@@ -20,7 +20,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 		$this->regex = '#^' . get_preg_expression('email') . '$#i';
 	}
 
-	public function positive_match_data()
+	public static function positive_match_data()
 	{
 		return array(
 			array('nobody@phpbb.com'),
@@ -60,7 +60,7 @@ class phpbb_regex_email_test extends phpbb_test_case
 		);
 	}
 
-	public function negative_match_data()
+	public static function negative_match_data()
 	{
 		return array(
 			array('foo.example.com'),			// @ is missing

@@ -31,7 +31,7 @@ class phpbb_text_processing_generate_text_for_edit_test extends phpbb_test_case
 		$this->assertSame($expected, $return['text']);
 	}
 
-	public function get_legacy_tests()
+	public static function get_legacy_tests()
 	{
 		return array(
 			array(
@@ -69,7 +69,7 @@ class phpbb_text_processing_generate_text_for_edit_test extends phpbb_test_case
 		$this->assertSame($expected, $return['text']);
 	}
 
-	public function get_text_formatter_tests()
+	public static function get_text_formatter_tests()
 	{
 		return array(
 			array(

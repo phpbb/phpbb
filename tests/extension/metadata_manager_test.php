@@ -163,7 +163,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		$this->assertEquals($metadata, $json);
 	}
 
-	public function validator_non_existing_data()
+	public static function validator_non_existing_data()
 	{
 		return array(
 			array('name'),
@@ -223,7 +223,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 	}
 
-	public function validator_invalid_data()
+	public static function validator_invalid_data()
 	{
 		return array(
 			array('name', 'asdf'),
@@ -281,7 +281,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 	}
 
-	public function validator_requirements_data()
+	public static function validator_requirements_data()
 	{
 		return array(
 			array(

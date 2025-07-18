@@ -28,12 +28,14 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx;
+		global $cache, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $config;
 
 		parent::setUp();
 
 		$phpbb_container = new phpbb_mock_container_builder();
-		$config = new \phpbb\config\config([]);
+		$config = new \phpbb\config\config([
+			'allow_emailreuse' => 0,
+		]);
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$language = new phpbb\language\language(new phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
@@ -99,6 +101,8 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 	*/
 	public function test_validate_user_email($case, $errors, $email)
 	{
+		global $config, $db, $user;
+
 		$this->set_validation_prerequisites(false);
 
 		$this->helper->assert_valid_data(array(
@@ -124,6 +128,8 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 	*/
 	public function test_validate_user_email_mx($case, $errors, $email)
 	{
+		global $config, $db, $user;
+
 		$this->set_validation_prerequisites(true);
 
 		$this->helper->assert_valid_data(array(

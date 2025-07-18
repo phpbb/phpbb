@@ -43,6 +43,9 @@ class migrations_check_config_added_test extends phpbb_test_case
 	/** @var string */
 	protected $php_ext;
 
+	/** @var string */
+	protected $schema_data;
+
 	protected function setUp(): void
 	{
 		global $phpbb_root_path;
@@ -51,7 +54,7 @@ class migrations_check_config_added_test extends phpbb_test_case
 		$this->schema_data = file_get_contents($phpbb_root_path . 'install/schemas/schema_data.sql');
 	}
 
-	public function get_config_options_from_migrations()
+	protected function get_config_names()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -154,18 +157,18 @@ class migrations_check_config_added_test extends phpbb_test_case
 
 		// Drop configuration options which were removed by config.remove
 		$config_names = array_diff_key($config_names, $config_removed);
-		return $config_names;
+
+		return array_combine(array_column($config_names, 0), array_column($config_names, 1));
 	}
 
-	/**
-	* @dataProvider get_config_options_from_migrations
-	*/
-	public function test_config_option_exists_in_schema_data($config_name, $class)
+	public function test_config_option_exists_in_schema_data()
 	{
 		$message = 'Migration: %1$s, config_name: %2$s; not added to schema_data.sql';
-
-		$this->assertNotFalse(strpos($this->schema_data, $config_name),
-			sprintf($message, $class, $config_name)
-		);
+		foreach ($this->get_config_names() as $config_name => $class)
+		{
+			$this->assertNotFalse(strpos($this->schema_data, $config_name),
+				sprintf($message, $class, $config_name)
+			);
+		}
 	}
 }

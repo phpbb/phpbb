@@ -15,6 +15,10 @@ require_once __DIR__ . '/../template/template_test_case.php';
 
 class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 {
+	protected $config;
+	protected $helper;
+	protected $routing_helper;
+	protected $pagination;
 	protected $test_path = 'tests/pagination';
 
 	public function return_callback_implode()
@@ -82,7 +86,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->pagination = new \phpbb\pagination($this->template, $this->user, $this->helper, $phpbb_dispatcher);
 	}
 
-	public function generate_template_pagination_data()
+	public static function generate_template_pagination_data()
 	{
 		return array(
 			array(
@@ -229,7 +233,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals(str_replace("\t", '', $expect), $this->display('test'));
 	}
 
-	public function on_page_data()
+	public static function on_page_data()
 	{
 		return array(
 			array(
@@ -255,7 +259,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals($expect_return, $this->pagination->on_page($num_items, $per_page, $start_item));
 	}
 
-	public function validate_start_data()
+	public static function validate_start_data()
 	{
 		return array(
 			array(
@@ -304,7 +308,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals($expect, $this->pagination->validate_start($start, 10, $num_items));
 	}
 
-	public function reverse_start_data()
+	public static function reverse_start_data()
 	{
 		return array(
 			array(
@@ -330,7 +334,7 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$this->assertEquals($expect, $this->pagination->reverse_start($start, $limit, $num_items));
 	}
 
-	public function reverse_limit_data()
+	public static function reverse_limit_data()
 	{
 		return array(
 			array(

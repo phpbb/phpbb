@@ -231,7 +231,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->notifications->set_var('notification_methods', $methods);
 	}
 
-	public function data_notification_webpush()
+	public static function data_notification_webpush()
 	{
 		return [
 			/**
@@ -656,7 +656,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertCount(0, $cur_notifications, 'Assert that no notifications have been pruned');
 	}
 
-	public function data_set_endpoint_padding(): array
+	public static function data_set_endpoint_padding(): array
 	{
 		return [
 			[

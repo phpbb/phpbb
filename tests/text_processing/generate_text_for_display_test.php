@@ -46,7 +46,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$this->assertSame($expected, $actual);
 	}
 
-	public function get_legacy_tests()
+	public static function get_legacy_tests()
 	{
 		return array(
 			array(
@@ -132,7 +132,7 @@ class phpbb_text_processing_generate_text_for_display_test extends phpbb_test_ca
 		$this->assertSame($expected, generate_text_for_display($original, '', '', 0, $censor_text));
 	}
 
-	public function get_text_formatter_tests()
+	public static function get_text_formatter_tests()
 	{
 		return array(
 			array(

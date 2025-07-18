@@ -434,7 +434,7 @@ class phpbb_test_case_helpers
 			->disallowMockingUnknownTypes()
 			->getMock();
 		$mb = $this->test_case->getMockBuilder('phpbb\\textformatter\\data_access');
-		$mb->setMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
+		$mb->onlyMethods(array('get_bbcodes', 'get_censored_words', 'get_smilies', 'get_styles'));
 		$mb->setConstructorArgs(array(
 			$db_driver,
 			'phpbb_bbcodes',
@@ -488,7 +488,7 @@ class phpbb_test_case_helpers
 		{
 			$path_helper = $this->test_case->getMockBuilder('phpbb\\path_helper')
 				->disableOriginalConstructor()
-				->setMethods(array('get_web_root_path'))
+				->onlyMethods(array('get_web_root_path'))
 				->getMock();
 			$path_helper->expects($this->test_case->any())
 				->method('get_web_root_path')
@@ -578,7 +578,7 @@ class phpbb_test_case_helpers
 
 			$user = $this->test_case->getMockBuilder('\phpbb\user')
 					->setConstructorArgs(array($lang, '\phpbb\datetime'))
-					->setMethods(array('format_date'))
+					->onlyMethods(array('format_date'))
 					->getMock();
 			$user->expects($this->test_case->any())
 			     ->method('format_date')

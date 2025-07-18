@@ -89,7 +89,7 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 		$this->template_data = array_merge($this->template_data, $data);
 	}
 
-	public function data_prepare_form(): array
+	public static function data_prepare_form(): array
 	{
 		return [
 			[

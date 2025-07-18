@@ -13,7 +13,7 @@
 
 class phpbb_get_formatted_filesize_test extends phpbb_test_case
 {
-	public function get_formatted_filesize_test_data()
+	public static function get_formatted_filesize_test_data()
 	{
 		return array(
 			// exact powers of 2
