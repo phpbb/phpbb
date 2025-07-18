@@ -13,23 +13,38 @@
 
 abstract class phpbb_migration_test_base extends phpbb_database_test_case
 {
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
+	/** @var \phpbb\auth\auth */
+	protected $auth;
 
-	/** @var \Doctrine\DBAL\Connection */
-	protected $doctrine_db;
+	/** @var \phpbb\cache\driver\driver_interface */
+	protected $cache;
 
-	/** @var \phpbb\db\tools\tools_interface */
-	protected $db_tools;
-
-	/** @var \phpbb\db\migrator */
-	protected $migrator;
+	/** @var \phpbb\cache\service */
+	protected $cache_service;
 
 	/** @var \phpbb\config\config */
 	protected $config;
 
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\db\tools\tools_interface */
+	protected $db_tools;
+
+	/** @var \Doctrine\DBAL\Connection */
+	protected $doctrine_db;
+
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
+
+	/** @var \phpbb\db\migrator */
+	protected $migrator;
+
+	/** @var \phpbb\db\migration\tool\tool_interface */
+	protected $tools;
+
+	/** @var \phpbb\user */
+	protected $user;
 
 	/** @var string */
 	protected $fixture;
