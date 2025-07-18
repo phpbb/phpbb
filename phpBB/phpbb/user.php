@@ -27,7 +27,7 @@ class user extends \phpbb\session
 	protected $language;
 
 	var $style = array();
-	var $date_format;
+	var $date_format = '';
 
 	/**
 	* DateTimeZone object holding the timezone of the user
@@ -627,12 +627,12 @@ class user extends \phpbb\session
 	* Format user date
 	*
 	* @param int $gmepoch unix timestamp
-	* @param string|false $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
+	* @param string $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
 	* @param bool $forcedate force non-relative date format.
 	*
 	* @return mixed translated date
 	*/
-	function format_date($gmepoch, $format = false, $forcedate = false)
+	function format_date($gmepoch, $format = '', $forcedate = false)
 	{
 		global $phpbb_dispatcher;
 		static $utc;

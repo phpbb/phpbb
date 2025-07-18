@@ -43,6 +43,9 @@ class migrations_check_config_added_test extends phpbb_test_case
 	/** @var string */
 	protected $php_ext;
 
+	/** @var string */
+	protected $schema_data;
+
 	protected function setUp(): void
 	{
 		global $phpbb_root_path;

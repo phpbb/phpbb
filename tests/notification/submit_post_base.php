@@ -19,8 +19,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_posting.php';
 
 abstract class phpbb_notification_submit_post_base extends phpbb_database_test_case
 {
-//	protected $notifications, $db, $container, $user, $config, $auth, $cache;
-
+	protected $db;
 	protected $item_type = '';
 
 	protected $poll_data = array();

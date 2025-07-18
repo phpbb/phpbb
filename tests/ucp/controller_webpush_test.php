@@ -70,6 +70,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request = $this->createMock(\phpbb\request\request_interface::class);
 		$this->template = $this->createMock(\Twig\Environment::class);
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
+
 		$user = $this->user;
 		$this->user_loader = new \phpbb\user_loader($this->avatar_helper, $this->db, $this->phpbb_root_path, $this->php_ext, 'phpbb_users');
 		$this->path_helper = new \phpbb\path_helper($symfony_request, $this->request, $phpbb_root_path, $phpEx);
@@ -216,9 +217,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 			'user_id'		=> 2,
 			'user_options'	=> 230271,
 		];
-		$this->user->lang = [
-			'GUEST'		=> 'Guest',
-		];
 
 		$json_response = $this->controller->notification();
 
@@ -273,9 +271,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 			'user_type'		=> USER_NORMAL,
 			'user_id'		=> ANONYMOUS,
 			'user_options'	=> 230271,
-		];
-		$this->user->lang = [
-			'GUEST'		=> 'Guest',
 		];
 
 		$json_response = $this->controller->notification();
@@ -332,9 +327,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 			'user_id'		=> ANONYMOUS,
 			'user_options'	=> 230271,
 		];
-		$this->user->lang = [
-			'GUEST'		=> 'Guest',
-		];
 
 		$this->expectException(http_exception::class);
 		$this->expectExceptionMessage('NO_AUTH_OPERATION');
@@ -381,9 +373,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 			'user_type'		=> USER_NORMAL,
 			'user_id'		=> 2,
 			'user_options'	=> 230271,
-		];
-		$this->user->lang = [
-			'GUEST'		=> 'Guest',
 		];
 
 		$json_response = $this->controller->notification();

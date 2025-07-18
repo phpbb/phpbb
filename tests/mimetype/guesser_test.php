@@ -27,6 +27,12 @@ class guesser_test extends \phpbb_test_case
 
 	protected $fileinfo_supported = false;
 
+	protected $guesser;
+	protected $guesser_no_fileinfo;
+	protected $path;
+	protected $jpg_file;
+	protected $phpbb_root_path;
+
 	protected function setUp(): void
 	{
 		global $phpbb_root_path;

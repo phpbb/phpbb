@@ -15,6 +15,10 @@ require_once __DIR__ . '/../template/template_test_case.php';
 
 class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 {
+	protected $config;
+	protected $helper;
+	protected $routing_helper;
+	protected $pagination;
 	protected $test_path = 'tests/pagination';
 
 	public function return_callback_implode()

@@ -70,11 +70,11 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**
 	* Redirects isset to the correct request class call.
 	*
-	* @param	string	$offset	The key of the super global being accessed.
+	* @param	mixed	$offset	The key of the super global being accessed.
 	*
 	* @return	bool	Whether the key on the super global exists.
 	*/
-	public function offsetExists($offset): bool
+	public function offsetExists(mixed $offset): bool
 	{
 		return $this->request->is_set($offset, $this->super_global);
 	}
@@ -82,17 +82,17 @@ class deactivated_super_global implements \ArrayAccess, \Countable, \IteratorAgg
 	/**#@+
 	* Part of the \ArrayAccess implementation, will always result in a FATAL error.
 	*/
-	public function offsetGet($offset): void
+	#[\ReturnTypeWillChange] public function offsetGet($offset): void
 	{
 		$this->error();
 	}
 
-	public function offsetSet($offset, $value): void
+	#[\ReturnTypeWillChange] public function offsetSet($offset, $value): void
 	{
 		$this->error();
 	}
 
-	public function offsetUnset($offset): void
+	#[\ReturnTypeWillChange] public function offsetUnset($offset): void
 	{
 		$this->error();
 	}

@@ -21,8 +21,29 @@ require_once __DIR__ . '/../dbal/migration/dummy_order_5.php';
 
 class schema_generator_test extends phpbb_test_case
 {
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\db\tools\doctrine */
+	protected $db_tools;
+
+	/** @var \Doctrine\DBAL\Connection */
+	protected $doctrine_db;
+
 	/** @var \phpbb\db\migration\schema_generator */
 	protected $generator;
+
+	/** @var string */
+	protected $table_prefix;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ext;
 
 	protected function setUp(): void
 	{

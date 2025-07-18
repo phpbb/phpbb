@@ -34,10 +34,11 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 			->will($this->returnCallback(array($this, 'create_datetime_callback')));
 
 		$this->user->timezone = new DateTimeZone('UTC');
-		$this->user->lang = array(
-			'datetime' => array(),
-			'DATE_FORMAT' => 'm/d/Y',
-		);
+		$this->user->expects($this->any())
+			->method('__get')->with('lang')->willReturn([
+				'datetime' => [],
+				'DATE_FORMAT' => 'm/d/Y',
+			]);
 
 		$request = $this->createMock('\phpbb\request\request');
 		$template = $this->createMock('\phpbb\template\template');

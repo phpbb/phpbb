@@ -19,6 +19,9 @@ class phpbb_email_parsing_test extends phpbb_test_case
 	/** @var \ReflectionProperty */
 	protected $reflection_template_property;
 
+	/** @var \phpbb\messenger\method\email */
+	protected $email;
+
 	protected function setUp(): void
 	{
 		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user;

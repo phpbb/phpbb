@@ -13,6 +13,10 @@
 
 class phpbb_dbal_migrator_tool_config_text_test extends phpbb_database_test_case
 {
+	protected $db;
+	protected $config_text;
+	protected $tool;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator_config_text.xml');

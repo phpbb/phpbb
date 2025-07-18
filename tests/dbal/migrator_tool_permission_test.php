@@ -16,6 +16,12 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\cache\service */
+	protected $cache;
+
 	/** @var \phpbb\db\migration\tool\permission */
 	protected $tool;
 

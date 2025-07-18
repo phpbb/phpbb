@@ -37,6 +37,8 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 	protected $twig_extensions_collection;
 	protected $twig_lexer;
 	protected $user;
+	protected $filesystem;
+	protected $symfony_request;
 
 	public function setUp(): void
 	{

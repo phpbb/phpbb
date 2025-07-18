@@ -17,6 +17,7 @@ class phpbb_search_native_test extends phpbb_search_test_case
 {
 	protected $db;
 	protected $db_tools;
+	protected $search;
 
 	public function getDataSet()
 	{

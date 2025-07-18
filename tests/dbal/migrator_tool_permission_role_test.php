@@ -22,6 +22,12 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 	/** @var \phpbb\db\migration\tool\permission */
 	protected $tool;
 
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\cache\service */
+	protected $cache;
+
 	public $group_ids = [
 		'REGISTERED' => 2,
 		'GLOBAL_MODERATORS' => 4,

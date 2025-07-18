@@ -31,6 +31,7 @@ class phpbb_session_testable_factory
 	protected $config;
 	protected $cache;
 	protected $request;
+	protected $server_data;
 
 	/**
 	* Initialises the factory with a set of default config and cache values.

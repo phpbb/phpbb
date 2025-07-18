@@ -16,6 +16,11 @@ require_once __DIR__ . '/ext/foo/bar/ucp/ucp_test_info.php';
 
 class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 {
+	protected $db;
+	protected $cache;
+	protected $user;
+	protected $tool;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator_module.xml');

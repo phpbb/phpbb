@@ -15,6 +15,7 @@ class phpbb_migrator_convert_timezones_test extends phpbb_database_test_case
 {
 	protected $db;
 	protected $db_doctrine;
+	protected $migration;
 
 	public function getDataSet()
 	{
