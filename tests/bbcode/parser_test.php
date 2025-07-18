@@ -249,7 +249,7 @@ class phpbb_bbcode_parser_test extends \phpbb_test_case
 			$this->markTestIncomplete($incomplete);
 		}
 
-		global $user, $request, $symfony_request, $phpbb_dispatcher, $config, $phpEx, $request, $symfony_request;
+		global $user, $request, $symfony_request, $phpbb_dispatcher, $config, $phpEx;
 		$phpEx = 'php';
 		$config = new \phpbb\config\config([
 			'max_post_font_size' => 0,
