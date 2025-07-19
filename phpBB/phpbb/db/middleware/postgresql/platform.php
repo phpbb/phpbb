@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\doctrine;
+namespace phpbb\db\middleware\postgresql;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
@@ -31,7 +31,7 @@ use Doctrine\DBAL\Types\Type;
  * to stay compatible with the existing DB we have to change its
  * naming and not ours.
  */
-class postgresql_platform extends PostgreSQLPlatform
+class platform extends PostgreSQLPlatform
 {
 	/**
 	 * {@inheritdoc}
