@@ -13,8 +13,6 @@
 
 namespace phpbb\db\doctrine;
 
-use InvalidArgumentException;
-
 /**
  * Helper class to generate Doctrine DBAL configuration.
  */
@@ -32,7 +30,7 @@ class connection_parameter_factory
 	 *
 	 * @return array Doctrine DBAL connection parameters.
 	 *
-	 * @throws InvalidArgumentException If a required parameter is empty or null.
+	 * @throws \InvalidArgumentException If a required parameter is empty or null.
 	 */
 	public static function get_configuration(
 		string $driver,
@@ -68,7 +66,7 @@ class connection_parameter_factory
 	 *
 	 * @return array Doctrine's DBAL configuration for SQLite.
 	 *
-	 * @throws InvalidArgumentException If a required parameter is empty or null.
+	 * @throws \InvalidArgumentException If a required parameter is empty or null.
 	 */
 	private static function build_connection_parameters(
 		array $params,
@@ -87,7 +85,7 @@ class connection_parameter_factory
 
 		if (empty($user) || empty($name))
 		{
-			throw new InvalidArgumentException('Required database parameter is not set.');
+			throw new \InvalidArgumentException('Required database parameter is not set.');
 		}
 
 		$params = array_merge($params, [

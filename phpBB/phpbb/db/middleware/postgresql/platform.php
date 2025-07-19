@@ -31,7 +31,7 @@ use Doctrine\DBAL\Types\Type;
  * to stay compatible with the existing DB we have to change its
  * naming and not ours.
  */
-class phpbb_postgresql_platform extends PostgreSQLPlatform
+class platform extends PostgreSQLPlatform
 {
 	/**
 	 * {@inheritdoc}

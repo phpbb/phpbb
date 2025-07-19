@@ -21,14 +21,14 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
  * Oracle Doctrine driver middleware.
  * Makes use of phpBB's Oracle specific platform.
  */
-class phpbb_oracle_driver extends AbstractDriverMiddleware
+class driver extends AbstractDriverMiddleware
 {
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getSchemaManager(DoctrineConnection $conn, AbstractPlatform $platform)
 	{
-		return new phpbb_oracle_schema_manager($conn, $platform);
+		return new schema_manager($conn, $platform);
 	}
 
 	/**
@@ -36,6 +36,6 @@ class phpbb_oracle_driver extends AbstractDriverMiddleware
 	 */
 	public function createDatabasePlatformForVersion($version)
 	{
-		return new phpbb_oracle_platform();
+		return new platform();
 	}
 }

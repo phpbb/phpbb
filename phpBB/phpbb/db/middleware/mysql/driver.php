@@ -13,16 +13,19 @@
 
 namespace phpbb\db\middleware\mysql;
 
-use Doctrine\DBAL\Driver;
+use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
 
 /**
- * MySQL Doctrine middleware.
+ * MySQL Doctrine driver middleware.
  * Makes use of phpBB's MySQL specific platform.
  */
-class phpbb_mysql_middleware implements Driver\Middleware
+class driver extends AbstractDriverMiddleware
 {
-	public function wrap(Driver $driver): Driver
+	/**
+	 * {@inheritDoc}
+	 */
+	public function createDatabasePlatformForVersion($version)
 	{
-		return new phpbb_mysql_driver($driver);
+		return new platform();
 	}
 }

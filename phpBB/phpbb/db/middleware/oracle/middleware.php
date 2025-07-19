@@ -14,15 +14,16 @@
 namespace phpbb\db\middleware\oracle;
 
 use Doctrine\DBAL\Driver;
+use phpbb\db\middleware\oracle\driver as oracle_driver;
 
 /**
  * Oracle Doctrine middleware.
  * Makes use of phpBB's Oracle specific platform.
  */
-class phpbb_oracle_middleware implements Driver\Middleware
+class middleware implements Driver\Middleware
 {
 	public function wrap(Driver $driver): Driver
 	{
-		return new phpbb_oracle_driver($driver);
+		return new oracle_driver($driver);
 	}
 }

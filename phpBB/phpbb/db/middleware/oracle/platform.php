@@ -21,7 +21,7 @@ use Doctrine\DBAL\Schema\Table;
 /**
  * Oracle specific schema restrictions for BC.
  */
-class phpbb_oracle_platform extends OraclePlatform
+class platform extends OraclePlatform
 {
 	/**
 	 * {@inheritDoc}

@@ -20,7 +20,7 @@ use Doctrine\DBAL\Schema\TableDiff;
 /**
  * SQLServer specific schema restrictions for BC.
  */
-class phpbb_sqlsrv_platform extends SQLServerPlatform
+class platform extends SQLServerPlatform
 {
 	/**
 	 * {@inheritDoc}

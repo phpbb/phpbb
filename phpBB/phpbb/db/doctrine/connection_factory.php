@@ -20,10 +20,10 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Types\Type;
 use InvalidArgumentException;
 use phpbb\config_php_file;
-use phpbb\db\middleware\mysql\phpbb_mysql_middleware;
-use phpbb\db\middleware\oracle\phpbb_oracle_middleware;
-use phpbb\db\middleware\postgresql\phpbb_postgresql_middleware;
-use phpbb\db\middleware\sqlsrv\phpbb_sqlsrv_middleware;
+use phpbb\db\middleware\mysql\middleware as mysql_middleware;
+use phpbb\db\middleware\oracle\middleware as oracle_middleware;
+use phpbb\db\middleware\postgresql\middleware as postgresql_middleware;
+use phpbb\db\middleware\sqlsrv\middleware as sqlsrv_middleware;
 use phpbb\exception\runtime_exception;
 
 /**
@@ -101,10 +101,10 @@ class connection_factory
 
 		$middleware = match($driver)
 		{
-			'pdo_mysql', 'mysqli'	=> [new phpbb_mysql_middleware()],
-			'pdo_oci', 'oci8'		=> [new phpbb_oracle_middleware()],
-			'pdo_pgsql', 'pgsql'	=> [new phpbb_postgresql_middleware()],
-			'pdo_sqlsrv', 'sqlsrv'	=> [new phpbb_sqlsrv_middleware()],
+			'pdo_mysql', 'mysqli'	=> [new mysql_middleware()],
+			'pdo_oci', 'oci8'		=> [new oracle_middleware()],
+			'pdo_pgsql', 'pgsql'	=> [new postgresql_middleware()],
+			'pdo_sqlsrv', 'sqlsrv'	=> [new sqlsrv_middleware()],
 			default	=> [],
 		};
 

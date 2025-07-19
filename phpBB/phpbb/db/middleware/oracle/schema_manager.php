@@ -18,7 +18,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\OracleSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 
-class phpbb_oracle_schema_manager extends OracleSchemaManager
+class schema_manager extends OracleSchemaManager
 {
 	/**
 	 * {@inheritdoc}

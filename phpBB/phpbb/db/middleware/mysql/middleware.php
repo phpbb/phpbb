@@ -11,18 +11,19 @@
  *
  */
 
-namespace phpbb\db\middleware\sqlsrv;
+namespace phpbb\db\middleware\mysql;
 
 use Doctrine\DBAL\Driver;
+use phpbb\db\middleware\mysql\driver as mysql_driver;
 
 /**
- * Microsoft SQL server Doctrine middleware.
- * Makes use of phpBB's SQL Server specific platform.
+ * MySQL Doctrine middleware.
+ * Makes use of phpBB's MySQL specific platform.
  */
-class phpbb_sqlsrv_middleware implements Driver\Middleware
+class middleware implements Driver\Middleware
 {
 	public function wrap(Driver $driver): Driver
 	{
-		return new phpbb_sqlsrv_driver($driver);
+		return new mysql_driver($driver);
 	}
 }

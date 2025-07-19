@@ -11,18 +11,19 @@
  *
  */
 
-namespace phpbb\db\middleware\postgresql;
+namespace phpbb\db\middleware\sqlsrv;
 
 use Doctrine\DBAL\Driver;
+use phpbb\db\middleware\sqlsrv\driver as sqlsrv_driver;
 
 /**
- * PostgreSQL Doctrine middleware.
- * Makes use of phpBB's PostgreSQL specific platform.
+ * Microsoft SQL server Doctrine middleware.
+ * Makes use of phpBB's SQL Server specific platform.
  */
-class phpbb_postgresql_middleware implements Driver\Middleware
+class middleware implements Driver\Middleware
 {
 	public function wrap(Driver $driver): Driver
 	{
-		return new phpbb_postgresql_driver($driver);
+		return new sqlsrv_driver($driver);
 	}
 }

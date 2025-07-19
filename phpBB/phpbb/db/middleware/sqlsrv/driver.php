@@ -11,21 +11,21 @@
  *
  */
 
-namespace phpbb\db\middleware\postgresql;
+namespace phpbb\db\middleware\sqlsrv;
 
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
 
 /**
- * PostgreSQL Doctrine driver middleware.
- * Makes use of phpBB's PostgreSQL specific platform.
+ * Microsoft SQL server Doctrine driver middleware.
+ * Makes use of phpBB's SQL Server specific platform.
  */
-class phpbb_postgresql_driver extends AbstractDriverMiddleware
+class driver extends AbstractDriverMiddleware
 {
 	/**
 	 * {@inheritDoc}
 	 */
 	public function createDatabasePlatformForVersion($version)
 	{
-		return new phpbb_postgresql_platform();
+		return new platform();
 	}
 }
