@@ -15,6 +15,8 @@ namespace phpbb\db\doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
+use phpbb\db\middleware\oracle\platform as oracle_platform;
+use phpbb\db\middleware\postgresql\platform as postgresql_platform;
 
 /**
  * Case-insensitive string type (only supported by Postgres).

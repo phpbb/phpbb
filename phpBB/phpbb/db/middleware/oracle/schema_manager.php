@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\db\doctrine\oci8;
+namespace phpbb\db\middleware\oracle;
 
 use Doctrine\DBAL\Platforms\OraclePlatform;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
