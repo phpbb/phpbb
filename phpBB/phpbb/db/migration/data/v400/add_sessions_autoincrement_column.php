@@ -20,7 +20,7 @@ class add_sessions_autoincrement_column extends migration
 	public static function depends_on(): array
 	{
 		return [
-			'\phpbb\db\migration\data\v400\rename_duplicated_index_names',
+			'\phpbb\db\migration\data\v400\dev',
 		];
 	}
 
