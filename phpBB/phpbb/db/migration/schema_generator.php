@@ -185,10 +185,11 @@ class schema_generator
 			'drop_columns'		=> 'COLUMNS',
 			'change_columns'	=> 'COLUMNS',
 			'add_index'			=> 'KEYS',
-			'add_primary_keys'	=> 'PRIMARY_KEY',
+			'add_primary_keys'	=> null,
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
+			'drop_primary_keys'	=> 'PRIMARY_KEY',
 		];
 
 		$schema_changes = $migration->update_schema();
@@ -257,7 +258,15 @@ class schema_generator
 			$target = &$this->tables[$table];
 			if ($column !== null)
 			{
-				$target = &$target[$column];
+				if (isset($target[$column]))
+				{
+					$target = &$target[$column];
+				}
+				else if (is_string($values) && null !== $this->tables[$values])
+				{
+					$target = &$this->tables[$values];
+					$values = $column;
+				}
 			}
 
 			$callback($target, $values, $value_transform);
@@ -387,6 +396,11 @@ class schema_generator
 			case 'columns':
 				return function(&$value, $key, $change) {
 					self::handle_add_column($value, $key, $change);
+				};
+
+			case 'primary_keys':
+				return function(&$value, $key, $change) {
+					$value['PRIMARY_KEY'] = $change;
 				};
 		}
 
