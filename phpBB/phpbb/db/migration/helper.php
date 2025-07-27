@@ -45,11 +45,11 @@ class helper
 			'rename_index'		=> 1,
 		);
 
-		foreach ($nested_level as $change_type => $data_depth)
+		foreach ($schema_changes as $change_type => $schema_change)
 		{
-			if (!empty($schema_changes[$change_type]))
+			if (!empty($data_depth = $nested_level[$change_type]))
 			{
-				foreach ($schema_changes[$change_type] as $key => $value)
+				foreach ($schema_change as $key => $value)
 				{
 					if ($data_depth === 1)
 					{
