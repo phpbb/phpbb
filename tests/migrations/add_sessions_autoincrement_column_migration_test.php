@@ -43,7 +43,7 @@ class add_sessions_autoincrement_column_migration_test extends phpbb_migration_t
 				'session_user_id' => ['INDEX', 'session_user_id'],
 				'session_forum_id' => ['INDEX', 'session_forum_id'],
 			],
-		],
+		];
 		$this->tools->sql_create_table('phpbb_sessions', $phpbb_sessions_table_data);
 
 		$this->assertTrue($this->tools->sql_table_exists('phpbb_sessions'));
