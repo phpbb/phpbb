@@ -376,6 +376,19 @@ class doctrine implements tools_interface
 	/**
 	 * {@inheritDoc}
 	 */
+	public function sql_drop_primary_key(string $table_name)
+	{
+		return $this->alter_schema(
+			function (Schema $schema) use ($table_name): void
+			{
+				$this->schema_drop_primary_key($schema, $table_name);
+			}
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function sql_truncate_table(string $table_name): void
 	{
 		try
@@ -550,6 +563,10 @@ class doctrine implements tools_interface
 				'method' => 'schema_index_drop',
 				'use_key' => false,
 				'per_table' => true,
+			],
+			'drop_primary_keys' => [
+				'method' => 'schema_drop_primary_key',
+				'use_key' => false,
 			],
 			'add_primary_keys' => [
 				'method' => 'schema_create_primary_key',
@@ -954,6 +971,27 @@ class doctrine implements tools_interface
 		}
 
 		$table->dropIndex($index_name);
+	}
+
+	/**
+	 * Drops primary key from a table
+	 *
+	 * @param Schema $schema
+	 * @param string $table_name
+	 * @param bool   $safe_check
+	 *
+	 * @throws SchemaException
+	 */
+	protected function schema_drop_primary_key(Schema $schema, string $table_name, bool $safe_check = false): void
+	{
+		$table = $schema->getTable($table_name);
+
+		if ($safe_check && !$table->getPrimaryKey())
+		{
+			return;
+		}
+
+		$table->dropPrimaryKey();
 	}
 
 	/**
