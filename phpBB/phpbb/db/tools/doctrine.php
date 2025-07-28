@@ -181,6 +181,8 @@ class doctrine implements tools_interface
 	 */
 	public function sql_index_exists(string $table_name, string $index_name): bool
 	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, true));
 	}
 
@@ -189,6 +191,8 @@ class doctrine implements tools_interface
 	 */
 	public function sql_unique_index_exists(string $table_name, string $index_name): bool
 	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, false));
 	}
 
