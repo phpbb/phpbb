@@ -189,7 +189,7 @@ class schema_generator
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
-			'drop_primary_keys'	=> 'PRIMARY_KEY',
+			'drop_primary_keys'	=> null,
 		];
 
 		$schema_changes = $migration->update_schema();
@@ -217,7 +217,7 @@ class schema_generator
 
 				case 'drop':
 					$action = function(&$value, $changes, $value_transform = null) {
-						self::unset_all($value, $changes);
+						self::unset_all($value, $changes, $value_transform);
 					};
 				break;
 
@@ -258,15 +258,7 @@ class schema_generator
 			$target = &$this->tables[$table];
 			if ($column !== null)
 			{
-				if (isset($target[$column]))
-				{
-					$target = &$target[$column];
-				}
-				else if (is_string($values) && null !== $this->tables[$values])
-				{
-					$target = &$this->tables[$values];
-					$values = $column;
-				}
+				$target = &$target[$column];
 			}
 
 			$callback($target, $values, $value_transform);
@@ -301,13 +293,21 @@ class schema_generator
 	 *
 	 * @param mixed $schema						Reference to the schema entry.
 	 * @param mixed $data						Array of values to be removed.
+	 * @param callable|null	$value_transform	Callback to transform the value being set.
 	 */
-	private static function unset_all(&$schema, $data)
+	private static function unset_all(&$schema, $data, callable|null $value_transform = null)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
-		foreach ($data as $key)
+		foreach ($data as $key => $change)
 		{
-			unset($schema[$key]);
+			if (is_callable($value_transform))
+			{
+				$value_transform($schema, $key, $change);
+			}
+			else
+			{
+				unset($schema[$change]);
+			}
 		}
 	}
 
@@ -359,6 +359,13 @@ class schema_generator
 	 */
 	private static function get_value_transform(string $change_type, string $schema_type) : Closure|null
 	{
+		if ($change_type == 'drop' && $schema_type == 'primary_keys')
+		{
+				return function(&$value, $key, $change) {
+					unset($value['PRIMARY_KEY']);
+				};
+		}
+
 		if (!in_array($change_type, ['add', 'rename']))
 		{
 			return null;

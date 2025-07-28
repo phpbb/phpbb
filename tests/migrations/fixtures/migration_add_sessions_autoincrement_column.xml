@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_migrations">
+		<column>migration_name</column>
+		<column>migration_depends_on</column>
+		<column>migration_schema_done</column>
+		<column>migration_data_done</column>
+		<column>migration_data_state</column>
+		<column>migration_start_time</column>
+		<column>migration_end_time</column>
+	</table>
+</dataset>
