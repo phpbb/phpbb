@@ -13,11 +13,13 @@
         </row>
     </table>
     <table name="phpbb_sessions">
+        <column>id</column>
         <column>session_id</column>
         <column>session_user_id</column>
         <column>session_ip</column>
         <column>session_browser</column>
         <row>
+            <value>1</value>
             <value>bar_session000000000000000000000</value>
             <value>4</value>
             <value>127.0.0.1</value>
