@@ -431,7 +431,7 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 			$this->migrator->update();
 		}
 
-		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar1', 'fbr1_user_id'));
+		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar1', 'user_id'));
 		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar1', 'username'));
 		$this->assertTrue($this->db_tools->sql_unique_index_exists('phpbb_foobar2', 'ban_userid'));
 		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_foobar2', 'ban_data'));
