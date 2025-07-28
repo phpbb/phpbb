@@ -162,4 +162,9 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 
 		return !$this->migrator->migration_state($this->migration_class);
 	}
+
+	protected function get_schema()
+	{
+		return $this->doctrine_db->createSchemaManager()->introspectSchema();
+	}
 }

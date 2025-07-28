@@ -29,8 +29,7 @@ class add_sessions_autoincrement_column_migration_test extends phpbb_migration_t
 		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_sessions', 'session_id'));
 		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_sessions', 'id'));
 		
-		$schema = $this->doctrine_db->createSchemaManager()->introspectSchema();
-		$table = $schema->getTable('phpbb_sessions');
+		$table = $this->get_schema()->getTable('phpbb_sessions');
 		$primary_key = $table->getPrimaryKey();
 		$this->assertTrue($primary_key instanceof \Doctrine\DBAL\Schema\Index);
 		$columns = $primary_key->getColumns();
@@ -38,21 +37,19 @@ class add_sessions_autoincrement_column_migration_test extends phpbb_migration_t
 
 		$this->apply_migration();
 
-		$schema = $this->doctrine_db->createSchemaManager()->introspectSchema();
-		$table = $schema->getTable('phpbb_sessions');
+		$table = $this->get_schema()->getTable('phpbb_sessions');
 		$primary_key = $table->getPrimaryKey();
 		$this->assertTrue($primary_key instanceof \Doctrine\DBAL\Schema\Index);
 		$columns = $primary_key->getColumns();
 		$this->assertEquals('id', $columns[0]);
-		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_sessions', 'sns_session_id'));
+		$this->assertTrue($this->db_tools->sql_index_exists('phpbb_sessions', 'session_id'));
 
 		$this->revert_migration();
 
 		$this->assertFalse($this->db_tools->sql_column_exists('phpbb_sessions', 'id'));
-		$this->assertFalse($this->db_tools->sql_index_exists('phpbb_sessions', 'sns_session_id'));
+		$this->assertFalse($this->db_tools->sql_index_exists('phpbb_sessions', 'session_id'));
 
-		$schema = $this->doctrine_db->createSchemaManager()->introspectSchema();
-		$table = $schema->getTable('phpbb_sessions');
+		$table = $this->get_schema()->getTable('phpbb_sessions');
 		$primary_key = $table->getPrimaryKey();
 		$this->assertTrue($primary_key instanceof \Doctrine\DBAL\Schema\Index);
 		$columns = $primary_key->getColumns();
