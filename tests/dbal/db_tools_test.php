@@ -235,25 +235,23 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_column_change_with_index()
 	{
-		$short_table_name = \phpbb\db\doctrine\table_helper::generate_shortname('table_name');
-
 		// Create column
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
 		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012', array('DECIMAL', 0)));
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
 
 		// Create index over the column
-		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_i_bug_12012'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
 		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'i_bug_12012', array('c_bug_12012', 'c_bool')));
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_i_bug_12012'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
 
 		// Change type from int to string
 		$this->assertTrue($this->tools->sql_column_change('prefix_table_name', 'c_bug_12012', array('VCHAR:100', '')));
 
 		// Remove the index
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_i_bug_12012'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
 		$this->assertTrue($this->tools->sql_index_drop('prefix_table_name', 'i_bug_12012'));
-		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_i_bug_12012'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'i_bug_12012'));
 
 		// Remove the column
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012'));
@@ -306,21 +304,19 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_column_remove_with_index()
 	{
-		$short_table_name = \phpbb\db\doctrine\table_helper::generate_shortname('table_name');
-
 		// Create column
 		$this->assertFalse($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
 		$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_bug_12012_2', array('UINT', 4)));
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
 
 		// Create index over the column
-		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_bug_12012_2'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_2'));
 		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'bug_12012_2', array('c_bug_12012_2', 'c_bool')));
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_bug_12012_2'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_2'));
 
-		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_bug_12012_3'));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_3'));
 		$this->assertTrue($this->tools->sql_create_index('prefix_table_name', 'bug_12012_3', array('c_bug_12012_2')));
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_bug_12012_3'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'bug_12012_3'));
 
 		// Remove the column
 		$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_bug_12012_2'));
@@ -465,7 +461,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 	public function test_index_exists()
 	{
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', \phpbb\db\doctrine\table_helper::generate_shortname('table_name') . '_i_simple'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'i_simple'));
 	}
 
 	public function test_unique_index_exists()
@@ -476,7 +472,7 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 	public function test_create_index_against_index_exists()
 	{
 		$this->tools->sql_create_index('prefix_table_name', 'fookey', array('c_timestamp', 'c_decimal'));
-		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', \phpbb\db\doctrine\table_helper::generate_shortname('table_name') . '_fookey'));
+		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', 'fookey'));
 	}
 
 	public function test_create_unique_index_against_unique_index_exists()
@@ -515,28 +511,27 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 
 		$table_suffix = str_repeat('a', 25 - strlen($table_prefix));
 		$table_name = $table_prefix . $table_suffix;
-		$short_table_name = \phpbb\db\doctrine\table_helper::generate_shortname($table_suffix);
 
 		$this->tools->sql_create_table($table_name, $this->table_data);
 
 		// Index name and table suffix and table prefix have > maximum index length chars in total.
 		// Index name and table suffix have <= maximum index length chars in total.
 		$long_index_name = str_repeat('i', $max_index_length - strlen($table_suffix));
-		$this->assertFalse($this->tools->sql_index_exists($table_name, $short_table_name . '_' . $long_index_name));
+		$this->assertFalse($this->tools->sql_index_exists($table_name, $long_index_name));
 		$this->assertTrue($this->tools->sql_create_index($table_name, $long_index_name, array('c_timestamp')));
-		$this->assertTrue($this->tools->sql_index_exists($table_name, $short_table_name . '_' . $long_index_name));
+		$this->assertTrue($this->tools->sql_index_exists($table_name, $long_index_name));
 
 		// Index name and table suffix have > maximum index length chars in total.
 		$very_long_index_name = str_repeat('i', $max_index_length);
-		$this->assertFalse($this->tools->sql_index_exists($table_name, $short_table_name . '_' . $very_long_index_name));
+		$this->assertFalse($this->tools->sql_index_exists($table_name, $very_long_index_name));
 		$this->assertTrue($this->tools->sql_create_index($table_name, $very_long_index_name, array('c_timestamp')));
-		$this->assertTrue($this->tools->sql_index_exists($table_name, $short_table_name . '_' . $very_long_index_name));
+		$this->assertTrue($this->tools->sql_index_exists($table_name, $very_long_index_name));
 
 		$this->tools->sql_table_drop($table_name);
 
 		// Index name has > maximum index length chars - that should not be possible.
 		$too_long_index_name = str_repeat('i', $max_index_length + 1);
-		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $short_table_name . '_' . $too_long_index_name));
+		$this->assertFalse($this->tools->sql_index_exists('prefix_table_name', $too_long_index_name));
 		$this->setExpectedTriggerError(E_USER_ERROR); // TODO: Do we want to keep this limitation, if yes reimplement the user check
 		/* https://github.com/phpbb/phpbb/blob/aee5e373bca6cd20d44b99585d3b758276a2d7e6/phpBB/phpbb/db/tools/tools.php#L1488-L1517 */
 		$this->tools->sql_create_index('prefix_table_name', $too_long_index_name, array('c_timestamp'));
