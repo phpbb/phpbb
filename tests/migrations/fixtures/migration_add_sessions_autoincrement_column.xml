@@ -9,11 +9,11 @@
 		<column>migration_start_time</column>
 		<column>migration_end_time</column>
 	</table>
-    <table name="phpbb_sessions">
-        <column>id</column>
-        <column>session_id</column>
-        <column>session_user_id</column>
-        <column>session_ip</column>
-        <column>session_browser</column>
-    </table>
+	<table name="phpbb_sessions">
+		<column>id</column>
+		<column>session_id</column>
+		<column>session_user_id</column>
+		<column>session_ip</column>
+		<column>session_browser</column>
+	</table>
 </dataset>
