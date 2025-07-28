@@ -40,6 +40,7 @@ class rename_duplicated_index_names extends migration
 	{
 		if (!isset(self::$rename_index))
 		{
+			self::$rename_index = [];
 			if (!isset(self::$table_keys))
 			{
 				$this->get_tables_index_names();

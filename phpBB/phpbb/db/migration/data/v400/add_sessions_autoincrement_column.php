@@ -28,12 +28,15 @@ class add_sessions_autoincrement_column extends migration
 	{
 		return [
 			'drop_primary_keys' => [
-				$this->table_prefix . 'sessions',
+				$this->table_prefix . 'sessions' => ['id'],
 			],
 			'add_columns' => [
 				$this->table_prefix . 'sessions' => [
 					'id' => ['BINT', null, 'auto_increment'],
 				],
+			],
+			'add_primary_keys' => [
+				$this->table_prefix . 'sessions' => ['id'],
 			],
 			'add_index'	=> [
 				$this->table_prefix . 'sessions' => [
