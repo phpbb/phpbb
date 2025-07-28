@@ -50,18 +50,7 @@ abstract class memory extends \phpbb\cache\driver\base
 	*/
 	function purge()
 	{
-		unset($this->vars);
-		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
-
-		if (function_exists('opcache_reset'))
-		{
-			@opcache_reset();
-		}
-
-		$this->vars = [];
-		$this->sql_rowset = [];
-		$this->sql_row_pointer = [];
+		parent::purge();
 
 		$this->is_modified = true;
 

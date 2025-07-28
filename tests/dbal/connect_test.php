@@ -35,7 +35,7 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 
 		if ($db->get_sql_layer() === 'mysqli')
 		{
-				$this->setExpectedTriggerError(E_WARNING);
+			$this->setExpectedTriggerError(E_WARNING);
 		}
 		else if ($db->get_sql_layer() !== 'sqlite3')
 		{

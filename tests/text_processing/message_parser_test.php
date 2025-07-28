@@ -61,7 +61,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$user->style = array('style_id' => 1);
 
 		$user->expects($this->any())
-			-> method('__get')->with('lang')->willReturn([
+			->method('__get')->with('lang')->willReturn([
 				'NO_POLL_TITLE' => 'You have to enter a poll title.',
 				'POLL_TITLE_TOO_LONG' => 'The poll title must contain fewer than 100 characters.',
 				'POLL_TITLE_COMP_TOO_LONG' => 'The parsed size of your poll title is too large, consider removing BBCodes or smilies.',

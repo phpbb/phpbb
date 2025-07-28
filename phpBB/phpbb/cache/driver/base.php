@@ -31,32 +31,32 @@ abstract class base implements \phpbb\cache\driver\driver_interface
 		try
 		{
 			$iterator = new \DirectoryIterator($this->cache_dir);
+
+			foreach ($iterator as $fileInfo)
+			{
+				if ($fileInfo->isDot())
+				{
+					continue;
+				}
+				$filename = $fileInfo->getFilename();
+				if ($fileInfo->isDir())
+				{
+					$this->remove_dir($fileInfo->getPathname());
+				}
+				else if (strpos($filename, 'container_') === 0 ||
+					strpos($filename, 'autoload_') === 0 ||
+					strpos($filename, 'url_matcher') === 0 ||
+					strpos($filename, 'url_generator') === 0 ||
+					strpos($filename, 'sql_') === 0 ||
+					strpos($filename, 'data_') === 0)
+				{
+					$this->remove_file($fileInfo->getPathname());
+				}
+			}
 		}
 		catch (\Exception $e)
 		{
-			return;
-		}
-
-		foreach ($iterator as $fileInfo)
-		{
-			if ($fileInfo->isDot())
-			{
-				continue;
-			}
-			$filename = $fileInfo->getFilename();
-			if ($fileInfo->isDir())
-			{
-				$this->remove_dir($fileInfo->getPathname());
-			}
-			else if (strpos($filename, 'container_') === 0 ||
-				strpos($filename, 'autoload_') === 0 ||
-				strpos($filename, 'url_matcher') === 0 ||
-				strpos($filename, 'url_generator') === 0 ||
-				strpos($filename, 'sql_') === 0 ||
-				strpos($filename, 'data_') === 0)
-			{
-				$this->remove_file($fileInfo->getPathname());
-			}
+			// Do not return, to purge vars cached in memory
 		}
 
 		unset($this->vars);

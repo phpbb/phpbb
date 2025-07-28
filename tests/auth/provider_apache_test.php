@@ -74,10 +74,10 @@ class phpbb_auth_provider_apache_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 		$this->request->expects($this->exactly(2))
 			->method('server')
-			->willReturnCallback(fn(string $arg) => match(true) {
-				$arg === 'PHP_AUTH_USER' => 'foobar',
-				$arg === 'PHP_AUTH_PW' => 'example',
-			});
+			->willReturnMap([
+				['PHP_AUTH_USER', 'foobar'],
+				['PHP_AUTH_PW', 'example']
+			]);
 
 		$expected = array(
 			'status'		=> LOGIN_SUCCESS,
