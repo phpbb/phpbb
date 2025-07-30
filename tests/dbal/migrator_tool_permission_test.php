@@ -16,6 +16,12 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/** @var \phpbb\cache\service */
+	protected $cache;
+
 	/** @var \phpbb\db\migration\tool\permission */
 	protected $tool;
 
@@ -45,7 +51,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		$this->tool = new \phpbb\db\migration\tool\permission($this->db, $this->cache, $this->auth, $phpbb_root_path, $phpEx);
 	}
 
-	public function exists_data()
+	public static function exists_data()
 	{
 		return array(
 			array(
@@ -170,7 +176,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		$this->assertFalse($this->tool->exists('global_test', true));
 	}
 
-	public function data_test_permission_set()
+	public static function data_test_permission_set()
 	{
 		return array(
 			array(
@@ -226,7 +232,7 @@ class phpbb_dbal_migrator_tool_permission_test extends phpbb_database_test_case
 		}
 	}
 
-	public function data_test_permission_role_exists()
+	public static function data_test_permission_role_exists()
 	{
 		return array(
 			array('ROLE_MOD_FULL', true),

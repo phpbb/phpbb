@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 {
-	public function make_clickable_data()
+	public static function make_clickable_data()
 	{
 		// value => whether it should work
 		$prefix_texts = array(
@@ -101,7 +101,7 @@ class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 		$this->assertEquals($expected, $result, $label);
 	}
 
-	public function make_clickable_mixed_serverurl_data()
+	public static function make_clickable_mixed_serverurl_data()
 	{
 		$urls = array(
 			'http://thisdomain.org' => array('tag' => 'm', 'url' => false, 'text' => false),

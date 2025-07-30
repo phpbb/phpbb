@@ -404,11 +404,19 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 
 		// drop tables
-		$db_tools->expects($this->exactly(2))->method('schema_drop_table')
-			->withConsecutive(
-				[$this->isInstanceOf(Schema::class), 'dropped_table_1', true],
-				[$this->isInstanceOf(Schema::class), 'dropped_table_2', true]
-			);
+		$matcher = $this->exactly(2);
+		$db_tools->expects($matcher)->method('schema_drop_table')
+			->willReturnCallback(function() use ($matcher) {
+				$args = func_get_args();
+				$schema = array_shift($args);
+				$this->assertInstanceOf(\Doctrine\DBAL\Schema\Schema::class, $schema);
+				match($matcher->numberOfInvocations())
+				{
+					1 => $this->assertEquals($args, ['dropped_table_1', true]),
+					2 => $this->assertEquals($args, ['dropped_table_2', true]),
+				};
+			}
+		);
 
 		$db_tools->perform_schema_changes(array(
 			'drop_tables' => array(
@@ -432,11 +440,18 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 			->will($this->returnValue(true));
 
 		// drop columns
-		$db_tools->expects($this->exactly(2))->method('schema_column_remove')
-			->withConsecutive(
-				[$this->isInstanceOf(Schema::class), 'existing_table', 'dropped_column_1', true],
-				[$this->isInstanceOf(Schema::class), 'existing_table', 'dropped_column_2', true]
-			);
+		$matcher = $this->exactly(2);
+		$db_tools->expects($matcher)->method('schema_column_remove')
+			->willReturnCallback(function() use ($matcher) {
+				$args = func_get_args();
+				$schema = array_shift($args);
+				$this->assertInstanceOf(\Doctrine\DBAL\Schema\Schema::class, $schema);
+				match($matcher->numberOfInvocations()) {
+					1 => $this->assertEquals($args, ['existing_table', 'dropped_column_1', true]),
+					2 => $this->assertEquals($args, ['existing_table', 'dropped_column_2', true]),
+				};
+			}
+		);
 
 		$db_tools->perform_schema_changes(array(
 			'drop_columns' => array(

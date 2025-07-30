@@ -30,7 +30,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		$user->lang['GUEST'] = 'Guest';
 	}
 
-	public function get_username_string_profile_data()
+	public static function get_username_string_profile_data()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -49,7 +49,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		$this->assertEquals($expected, get_username_string('profile', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
 	}
 
-	public function get_username_string_username_data()
+	public static function get_username_string_username_data()
 	{
 		return array(
 			array(ANONYMOUS, '', '', false, false, 'Guest'),
@@ -68,7 +68,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		$this->assertEquals($expected, get_username_string('username', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
 	}
 
-	public function get_username_string_colour_data()
+	public static function get_username_string_colour_data()
 	{
 		return array(
 			array(0, '', '', false, false, ''),
@@ -86,7 +86,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		$this->assertEquals($expected, get_username_string('colour', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
 	}
 
-	public function get_username_string_full_data()
+	public static function get_username_string_full_data()
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -107,7 +107,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 		$this->assertEquals($expected, get_username_string('full', $user_id, $username, $user_colour, $guest_username, $custom_profile_url));
 	}
 
-	public function get_username_string_no_profile_data()
+	public static function get_username_string_no_profile_data()
 	{
 		return array(
 			array(ANONYMOUS, 'Anonymous', '', false, false, '<span class="username">Anonymous</span>'),

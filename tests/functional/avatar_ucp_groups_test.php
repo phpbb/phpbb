@@ -22,7 +22,7 @@ class phpbb_functional_avatar_ucp_groups_test extends phpbb_functional_common_av
 		return 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5';
 	}
 
-	public function avatar_ucp_groups_data()
+	public static function avatar_ucp_groups_data()
 	{
 		return array(
 			// Gravatar with incorrect email

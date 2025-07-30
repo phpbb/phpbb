@@ -85,7 +85,7 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 		$this->assertEquals($expected, $this->get_rows($ids));
 	}
 
-	public function get_reparse_tests()
+	public static function get_reparse_tests()
 	{
 		return array(
 			array(

@@ -76,7 +76,7 @@ class mention_helper_test extends phpbb_database_test_case
 		$this->mention_helper = $phpbb_container->get('text_formatter.s9e.mention_helper');
 	}
 
-	public function inject_metadata_data()
+	public static function inject_metadata_data()
 	{
 		return [
 			[
@@ -99,7 +99,7 @@ class mention_helper_test extends phpbb_database_test_case
 		$this->assertStringContainsString($expected_profile_substring, $result);
 	}
 
-	public function get_mentioned_user_ids_data()
+	public static function get_mentioned_user_ids_data()
 	{
 		return [
 			[

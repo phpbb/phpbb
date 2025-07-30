@@ -15,7 +15,7 @@ require_once __DIR__ . '/nestedset_forum_base.php';
 
 class pphpbb_tests_tree_nestedset_forum_test extends phpbb_tests_tree_nestedset_forum_base
 {
-	public function forum_constructor_data()
+	public static function forum_constructor_data()
 	{
 		return array(
 			array(array(
@@ -47,7 +47,7 @@ class pphpbb_tests_tree_nestedset_forum_test extends phpbb_tests_tree_nestedset_
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function get_sql_where_data()
+	public static function get_sql_where_data()
 	{
 		return array(
 			array('SELECT forum_id

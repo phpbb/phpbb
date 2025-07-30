@@ -34,10 +34,11 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 			->will($this->returnCallback(array($this, 'create_datetime_callback')));
 
 		$this->user->timezone = new DateTimeZone('UTC');
-		$this->user->lang = array(
-			'datetime' => array(),
-			'DATE_FORMAT' => 'm/d/Y',
-		);
+		$this->user->expects($this->any())
+			->method('__get')->with('lang')->willReturn([
+				'datetime' => [],
+				'DATE_FORMAT' => 'm/d/Y',
+			]);
 
 		$request = $this->createMock('\phpbb\request\request');
 		$template = $this->createMock('\phpbb\template\template');
@@ -60,7 +61,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 		);
 	}
 
-	public function profile_value_data()
+	public static function profile_value_data()
 	{
 		return array(
 			array(
@@ -96,7 +97,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
-	public function validate_profile_field_data()
+	public static function validate_profile_field_data()
 	{
 		return array(
 			array(
@@ -180,7 +181,7 @@ class phpbb_profilefield_type_date_test extends phpbb_test_case
 		$this->assertSame($expected, $result, $description);
 	}
 
-	public function profile_value_raw_data()
+	public static function profile_value_raw_data()
 	{
 		return array(
 			array(

@@ -18,6 +18,7 @@ use phpbb\messenger\queue;
 class phpbb_messenger_queue_test extends phpbb_test_case
 {
 	protected $config;
+	protected $cache_file;
 	protected $dispatcher;
 	protected $service_collection;
 

@@ -57,7 +57,7 @@ class phpbb_extension_finder_test extends phpbb_test_case
 		);
 	}
 
-	public function set_extensions_data()
+	public static function set_extensions_data()
 	{
 		return array(
 			array(

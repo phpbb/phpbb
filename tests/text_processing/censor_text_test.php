@@ -13,7 +13,7 @@
 
 class phpbb_text_processing_censor_text_test extends phpbb_test_case
 {
-	public function censor_text_data()
+	public static function censor_text_data()
 	{
 		global $cache, $user;
 		$cache = new phpbb_mock_cache;

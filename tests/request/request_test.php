@@ -146,7 +146,7 @@ class phpbb_request_test extends phpbb_test_case
 		$this->assertTrue($this->request->is_ajax());
 	}
 
-	public function data_is_secure()
+	public static function data_is_secure()
 	{
 		return array(
 			array(

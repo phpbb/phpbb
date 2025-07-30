@@ -23,7 +23,7 @@ class phpbb_functional_avatar_ucp_users_test extends phpbb_functional_common_ava
 		return 'ucp.php?i=ucp_profile&mode=avatar';
 	}
 
-	public function avatar_ucp_groups_data()
+	public static function avatar_ucp_groups_data()
 	{
 		return array(
 			// Gravatar with correct settings

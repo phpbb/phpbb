@@ -13,7 +13,7 @@
 
 class phpbb_regex_url_test extends phpbb_test_case
 {
-	public function url_test_data()
+	public static function url_test_data()
 	{
 		return array(
 			array('http://www.phpbb.com/community/', 1),

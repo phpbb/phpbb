@@ -454,7 +454,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 			->expects($matcher)
 			->method('assign_vars')
 			->willReturnCallback(function ($template_data) use ($matcher, $expected) {
-				$callNr = $matcher->getInvocationCount();
+				$callNr = $matcher->numberOfInvocations();
 				$this->assertEquals($expected[$callNr], $template_data);
 			});
 

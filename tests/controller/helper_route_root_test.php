@@ -13,7 +13,7 @@
 
 require_once __DIR__ . '/common_helper_route.php';
 
-class phpbb_controller_helper_route_test extends phpbb_controller_common_helper_route
+class phpbb_controller_helper_route_root_test extends phpbb_controller_common_helper_route
 {
 	protected function get_phpbb_root_path()
 	{

@@ -58,7 +58,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->manager = new \phpbb\passwords\manager($config, $this->passwords_drivers, $this->helper, array_keys($this->passwords_drivers));
 	}
 
-	public function hash_password_data()
+	public static function hash_password_data()
 	{
 		return array(
 			array('', '2y', 60),
@@ -94,7 +94,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		}
 	}
 
-	public function check_password_data()
+	public static function check_password_data()
 	{
 		return array(
 			array('passwords.driver.bcrypt_2y'),
@@ -126,7 +126,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 	}
 
 
-	public function check_hash_exceptions_data()
+	public static function check_hash_exceptions_data()
 	{
 		return array(
 			array('3858f62230ac3c915f300c664312c63f', true),
@@ -164,7 +164,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->assertEquals($expected, $this->manager->check($password, $hash, $user_row));
 	}
 
-	public function data_hash_password_length()
+	public static function data_hash_password_length()
 	{
 		return array(
 			array('passwords.driver.bcrypt', false),
@@ -188,7 +188,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->assertNotEquals(false, $this->manager->hash('foobar𝄞', 'passwords.driver.bcrypt_2y'));
 	}
 
-	public function combined_hash_data()
+	public static function combined_hash_data()
 	{
 		return array(
 			array(
@@ -276,7 +276,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->assertLessThanOrEqual(5, time() - $start_time);
 	}
 
-	public function data_test_string_compare()
+	public static function data_test_string_compare()
 	{
 		return array(
 			array('foo', 'bar', false),
@@ -294,7 +294,7 @@ class phpbb_passwords_manager_test extends \phpbb_test_case
 		$this->assertSame($expected, $this->driver_helper->string_compare($a, $b));
 	}
 
-	public function data_driver_interface_driver()
+	public static function data_driver_interface_driver()
 	{
 		return array(
 			array(false, false, false),

@@ -20,7 +20,7 @@ class phpbb_functions_user_group_user_attributes_test extends phpbb_database_tes
 		return $this->createXMLDataSet(__DIR__.'/fixtures/group_user_attributes.xml');
 	}
 
-	public function group_user_attributes_data()
+	public static function group_user_attributes_data()
 	{
 		return array(
 			array(

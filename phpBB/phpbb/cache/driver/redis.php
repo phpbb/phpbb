@@ -141,7 +141,7 @@ class redis extends \phpbb\cache\driver\memory
 	 */
 	protected function _delete(string $var): bool
 	{
-		if ($this->redis->delete($var) > 0)
+		if ($this->redis->del($var) > 0)
 		{
 			return true;
 		}

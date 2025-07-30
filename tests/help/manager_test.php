@@ -36,7 +36,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 		);
 	}
 
-	public function add_block_data()
+	public static function add_block_data()
 	{
 		return array(
 			array('abc', false, array(), false),
@@ -78,25 +78,31 @@ class phpbb_help_manager_test extends phpbb_test_case
 
 		$this->language->expects($this->exactly(count($questions)*2 + 1))
 			->method('lang')
-			->withConsecutive([$block_name], ...$question_ary)
-			->will($this->onConsecutiveCalls(strtoupper($block_name), ...$question_ary_upper));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
+
+		$expected_calls = [
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name),
+				'SWITCH_COLUMN' => $switch_expected,
+			]],
+			...$template_call_args
+		];
 
 		$this->template->expects($this->exactly(count($questions) + 1))
 			->method('assign_block_vars')
-			->withConsecutive(
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name),
-					'SWITCH_COLUMN' => $switch_expected,
-				]],
-				...$template_call_args
-			);
+			->willReturnCallback(function($blockName, $blockVars) use (&$expected_calls) {
+				static $call = 0;
+				$this->assertEquals($expected_calls[$call][0], $blockName);
+				$this->assertEquals($expected_calls[$call][1], $blockVars);
+				$call++;
+			});
 
 		$this->manager->add_block($block_name, $switch, $questions);
 
 		$this->assertEquals($switch_expected, $this->manager->switched_column());
 	}
 
-	public function add_question_data()
+	public static function add_question_data()
 	{
 		return array(
 			array('question1', 'answer1'),
@@ -114,11 +120,7 @@ class phpbb_help_manager_test extends phpbb_test_case
 	{
 		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->withConsecutive(
-				[$question],
-				[$answer]
-			)
-			->will($this->onConsecutiveCalls(strtoupper($question), strtoupper($answer)));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
 		$this->template->expects($this->once())
 			->method('assign_block_vars')
@@ -137,22 +139,27 @@ class phpbb_help_manager_test extends phpbb_test_case
 
 		$this->language->expects($this->exactly(2))
 			->method('lang')
-			->withConsecutive([$block_name[0]], [$block_name[1]])
-			->will($this->onConsecutiveCalls(strtoupper($block_name[0]), strtoupper($block_name[1])));
+			->willReturnCallback(fn(string $arg) => strtoupper($arg));
 
-		$this->template->expects($this->exactly(2))
+		$expected_calls = [
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name[0]),
+				'SWITCH_COLUMN' => $switch_expected[0],
+			]],
+			['faq_block', [
+				'BLOCK_TITLE' => strtoupper($block_name[1]),
+				'SWITCH_COLUMN' => $switch_expected[1],
+			]]
+		];
+
+		$this->template->expects($this->exactly(count($expected_calls)))
 			->method('assign_block_vars')
-			->withConsecutive(
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name[0]),
-					'SWITCH_COLUMN' => $switch_expected[0],
-				]],
-				['faq_block', [
-					'BLOCK_TITLE' => strtoupper($block_name[1]),
-					'SWITCH_COLUMN' => $switch_expected[1],
-				]]
-		
-			);
+			->willReturnCallback(function($blockName, $blockVars) use (&$expected_calls) {
+				static $call = 0;
+				$this->assertEquals($expected_calls[$call][0], $blockName);
+				$this->assertEquals($expected_calls[$call][1], $blockVars);
+				$call++;
+			});
 
 		$this->manager->add_block($block_name[0], true);
 		$this->assertTrue($this->manager->switched_column());

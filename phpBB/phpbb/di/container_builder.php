@@ -573,7 +573,7 @@ class container_builder
 		}
 
 		$config_data = $this->config_php_file->get_all();
-		if (!empty($config_data))
+		if (!empty($config_data) && !empty($config_data['dbms']))
 		{
 			if ($this->dbal_connection === null)
 			{
@@ -591,6 +591,10 @@ class container_builder
 				);
 			}
 			$this->container->set('dbal.conn.driver', $this->dbal_connection);
+		}
+		else
+		{
+			return;
 		}
 	}
 

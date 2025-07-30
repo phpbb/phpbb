@@ -27,7 +27,7 @@ class phpbb_upload_imagesize_test extends \phpbb_test_case
 		$this->path = __DIR__ . '/fixture/';
 	}
 
-	public function data_get_imagesize()
+	public static function data_get_imagesize()
 	{
 		return array(
 			array('foobar', 'image/bmp', false),

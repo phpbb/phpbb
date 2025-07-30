@@ -60,14 +60,15 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		);
 		$user->style = array('style_id' => 1);
 
-		$user->lang = array(
-			'NO_POLL_TITLE' => 'You have to enter a poll title.',
-			'POLL_TITLE_TOO_LONG' => 'The poll title must contain fewer than 100 characters.',
-			'POLL_TITLE_COMP_TOO_LONG' => 'The parsed size of your poll title is too large, consider removing BBCodes or smilies.',
-			'TOO_FEW_POLL_OPTIONS' => 'You must enter at least two poll options.',
-			'TOO_MANY_POLL_OPTIONS' => 'You have tried to enter too many poll options.',
-			'TOO_MANY_USER_OPTIONS' => 'You cannot specify more options per user than existing poll options.',
-		);
+		$user->expects($this->any())
+			->method('__get')->with('lang')->willReturn([
+				'NO_POLL_TITLE' => 'You have to enter a poll title.',
+				'POLL_TITLE_TOO_LONG' => 'The poll title must contain fewer than 100 characters.',
+				'POLL_TITLE_COMP_TOO_LONG' => 'The parsed size of your poll title is too large, consider removing BBCodes or smilies.',
+				'TOO_FEW_POLL_OPTIONS' => 'You must enter at least two poll options.',
+				'TOO_MANY_POLL_OPTIONS' => 'You have tried to enter too many poll options.',
+				'TOO_MANY_USER_OPTIONS' => 'You cannot specify more options per user than existing poll options.',
+			]);
 
 		$phpbb_container = new phpbb_mock_container_builder;
 		$phpbb_container->set('user', $user);
@@ -113,7 +114,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$this->assertSame($warn_msg, $message_parser->warn_msg);
 	}
 
-	public function get_test_polls()
+	public static function get_test_polls()
 	{
 		return array(
 			array(
@@ -183,7 +184,7 @@ class phpbb_text_processing_message_parser_test extends phpbb_test_case
 		$this->assertSame($warn_msg, $message_parser->warn_msg);
 	}
 
-	public function get_test_cases()
+	public static function get_test_cases()
 	{
 		return array(
 			array(

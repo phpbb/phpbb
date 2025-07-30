@@ -51,7 +51,7 @@ class phpbb_captcha_qa_test extends \phpbb_database_test_case
 		$this->assertSame('foobar', $this->qa->get_service_name());
 	}
 
-	public function data_acp_get_question_input()
+	public static function data_acp_get_question_input()
 	{
 		return array(
 			array("foobar\ntest\nyes", array(

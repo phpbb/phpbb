@@ -58,7 +58,7 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 			$container);
 	}
 
-	public function data_test_suffix_get_classes()
+	public static function data_test_suffix_get_classes()
 	{
 		return array(
 			array(

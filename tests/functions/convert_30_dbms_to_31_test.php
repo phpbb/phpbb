@@ -13,7 +13,7 @@
 
 class phpbb_convert_30_dbms_to_31_test extends phpbb_test_case
 {
-	public function convert_30_dbms_to_31_data()
+	public static function convert_30_dbms_to_31_data()
 	{
 		return array(
 			array('mssql_odbc'),

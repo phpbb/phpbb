@@ -15,7 +15,7 @@ require_once __DIR__ . '/nestedset_forum_base.php';
 
 class phpbb_tests_tree_nestedset_forum_add_remove_test extends phpbb_tests_tree_nestedset_forum_base
 {
-	public function delete_data()
+	public static function delete_data()
 	{
 		return array(
 			array(1, array(1, 2, 3), array(
@@ -56,7 +56,7 @@ class phpbb_tests_tree_nestedset_forum_add_remove_test extends phpbb_tests_tree_
 		$this->assertEquals($expected, $this->db->sql_fetchrowset($result));
 	}
 
-	public function delete_throws_data()
+	public static function delete_throws_data()
 	{
 		return array(
 			array('Not an item', 0),
@@ -74,7 +74,7 @@ class phpbb_tests_tree_nestedset_forum_add_remove_test extends phpbb_tests_tree_
 		$this->set->delete($forum_id);
 	}
 
-	public function insert_data()
+	public static function insert_data()
 	{
 		return array(
 			array(array(

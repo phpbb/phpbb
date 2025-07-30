@@ -15,7 +15,7 @@ require_once __DIR__ . '/../../phpBB/includes/functions_acp.php';
 
 class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 {
-	public function build_cfg_template_text_data()
+	public static function build_cfg_template_text_data()
 	{
 		return array(
 			array(
@@ -84,7 +84,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_dimension_data()
+	public static function build_cfg_template_dimension_data()
 	{
 		return array(
 			array(
@@ -154,7 +154,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_number_data()
+	public static function build_cfg_template_number_data()
 	{
 		return array(
 			array(
@@ -222,7 +222,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_textarea_data()
+	public static function build_cfg_template_textarea_data()
 	{
 		return array(
 			array(
@@ -257,7 +257,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_radio_data()
+	public static function build_cfg_template_radio_data()
 	{
 		return [
 			[
@@ -492,7 +492,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_append_data()
+	public static function build_cfg_template_append_data()
 	{
 		return array(
 			array(
@@ -528,7 +528,7 @@ class phpbb_functions_acp_build_cfg_template_test extends phpbb_test_case
 		$this->assertEquals($expected, phpbb_build_cfg_template($tpl_type, $key, $new, $config_key, $vars));
 	}
 
-	public function build_cfg_template_select_data()
+	public static function build_cfg_template_select_data()
 	{
 		return [
 			[

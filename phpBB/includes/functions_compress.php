@@ -556,6 +556,7 @@ class compress_tar extends compress
 {
 	var $isgz = false;
 	var $isbz = false;
+	var $file = '';
 	var $filename = '';
 	var $mode = '';
 	var $type = '';

@@ -25,7 +25,7 @@ class phpbb_text_processing_smilies_test extends phpbb_test_case
 		$this->assertSame($expected, $renderer->render($parser->parse($original)));
 	}
 
-	public function get_text_formatter_tests()
+	public static function get_text_formatter_tests()
 	{
 		return array(
 			array(

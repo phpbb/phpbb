@@ -108,7 +108,7 @@ class phpbb_request_var_test extends phpbb_test_case
 		$this->assertEquals($expected, $result);
 	}
 
-	public function deep_access()
+	public static function deep_access()
 	{
 		return array(
 			// array(path, default, expected result)
@@ -119,7 +119,7 @@ class phpbb_request_var_test extends phpbb_test_case
 		);
 	}
 
-	public function request_variables()
+	public static function request_variables()
 	{
 		return array(
 			// strings

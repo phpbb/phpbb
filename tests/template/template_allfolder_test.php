@@ -15,6 +15,9 @@ require_once __DIR__ . '/template_test_case.php';
 
 class phpbb_template_allfolder_test extends phpbb_template_template_test_case
 {
+	protected $extension_manager;
+	protected $ext_template_path;
+
 	public function test_allfolder()
 	{
 		$this->setup_engine_for_allfolder();

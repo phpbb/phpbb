@@ -21,7 +21,7 @@ class phpbb_content_visibility_set_topic_visibility_test extends phpbb_database_
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/set_topic_visibility.xml');
 	}
 
-	public function set_topic_visibility_data()
+	public static function set_topic_visibility_data()
 	{
 		return array(
 			array(

@@ -17,7 +17,7 @@ abstract class phpbb_search_common_test_case extends phpbb_search_test_case
 {
 	protected $search;
 
-	public function keywords()
+	public static function keywords()
 	{
 		return array(
 			// keywords

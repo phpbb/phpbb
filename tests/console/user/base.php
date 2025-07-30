@@ -15,12 +15,14 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 {
 	protected $db;
 	protected $config;
+	protected $email;
 	protected $user;
 	protected $language;
 	protected $log;
 	protected $passwords_manager;
 	/** @var Symfony\Component\Console\Helper\QuestionHelper */
 	protected $question;
+	protected $command_name;
 	protected $user_loader;
 	protected $phpbb_root_path;
 	protected $php_ext;

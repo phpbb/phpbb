@@ -13,7 +13,7 @@
 
 class phpbb_plupload_test extends phpbb_test_case
 {
-	public function generate_resize_string_data()
+	public static function generate_resize_string_data()
 	{
 		return array(
 			array(
@@ -61,7 +61,7 @@ class phpbb_plupload_test extends phpbb_test_case
 		$this->assertEquals($expected, $plupload->generate_resize_string());
 	}
 
-	public function data_get_chunk_size()
+	public static function data_get_chunk_size()
 	{
 		return [
 			[[
@@ -113,7 +113,7 @@ class phpbb_plupload_test extends phpbb_test_case
 		$config = new \phpbb\config\config([]);
 
 		$ini_wrapper = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
-			->setMethods(['getBytes'])
+			->onlyMethods(['getBytes'])
 			->getMock();
 		$ini_wrapper->method('getBytes')
 			->will($this->returnValueMap([

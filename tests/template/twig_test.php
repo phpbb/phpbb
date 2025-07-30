@@ -100,7 +100,7 @@ class twig_test extends \phpbb_test_case
 		$run_set_user_closure($this->user);
 	}
 
-	public function data_get_user_style(): array
+	public static function data_get_user_style(): array
 	{
 		return [
 			[['style_path' => 'prosilver', 'style_parent_id' => 0], ['prosilver']],

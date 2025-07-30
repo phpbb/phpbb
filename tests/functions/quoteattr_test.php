@@ -13,7 +13,7 @@
 
 class phpbb_quoteattr_test extends phpbb_test_case
 {
-	public function quoteattr_test_data()
+	public static function quoteattr_test_data()
 	{
 		return array(
 			array('foo', null, '"foo"'),

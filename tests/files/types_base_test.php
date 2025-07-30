@@ -54,7 +54,7 @@ class phpbb_files_types_base_test extends phpbb_test_case
 		$this->factory = new \phpbb\files\factory($this->container);
 	}
 
-	public function data_check_upload_size()
+	public static function data_check_upload_size()
 	{
 		return array(
 			array('foo', '500KB', array()),

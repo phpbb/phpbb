@@ -23,7 +23,7 @@ class reverse_update_data_test extends phpbb_test_case
 		$this->helper = new \phpbb\db\migration\helper();
 	}
 
-	public function update_data_provider()
+	public static function update_data_provider()
 	{
 		return array(
 			array(
@@ -34,7 +34,7 @@ class reverse_update_data_test extends phpbb_test_case
 						array('permission.add', array('some_data')),
 					)),
 					array('config.remove', array('foobar')),
-					array('custom', array(array($this, 'foo_bar'))),
+					array('custom', array(array(self::class, 'foo_bar'))),
 					array('tool.method', array('test_data')),
 				),
 				array(

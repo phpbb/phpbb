@@ -48,6 +48,19 @@ abstract class memory extends \phpbb\cache\driver\base
 	/**
 	* {@inheritDoc}
 	*/
+	function purge()
+	{
+		parent::purge();
+
+		$this->is_modified = true;
+
+		// We save here to let the following cache hits succeed
+		$this->save();
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
 	function load()
 	{
 		// grab the global cache

@@ -57,7 +57,7 @@ abstract class phpbb_functional_common_groups_test_case extends phpbb_functional
 		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->text());
 	}
 
-	public function groups_manage_test_data()
+	public static function groups_manage_test_data()
 	{
 		return array(
 			array('', 'GROUP_UPDATED'),

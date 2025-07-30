@@ -17,7 +17,11 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 	{
 		parent::setUp();
 
-		global $user, $request, $symfony_request;
+		global $user, $request, $symfony_request, $config;
+		$config = new \phpbb\config\config([
+			'force_server_vars' => 0,
+			'server_name' => 'testhost',
+		]);
 		$user = new phpbb_mock_user();
 		$request = new phpbb_mock_request();
 		$symfony_request = new \phpbb\symfony_request($request);
@@ -26,7 +30,7 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 	/**
 	* 'e' tag for email addresses html
 	**/
-	public function data_test_make_clickable_email_positive()
+	public static function data_test_make_clickable_email_positive()
 	{
 		return array(
 			array(
@@ -147,7 +151,7 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 		);
 	}
 
-	public function data_test_make_clickable_email_negative()
+	public static function data_test_make_clickable_email_negative()
 	{
 		return array(
 			array('foo.example.com'),			// @ is missing
@@ -206,6 +210,7 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 	 */
 	public function test_email_matching_positive($email, $expected)
 	{
+		global $config, $user, $request, $symfony_request;
 		$this->assertSame($expected, make_clickable($email));
 	}
 
@@ -214,6 +219,7 @@ class phpbb_functions_make_clickable_email_test extends phpbb_test_case
 	 */
 	public function test_email_matching_negative($email, $expected = null)
 	{
+		global $config, $user, $request, $symfony_request;
 		$expected = ($expected) ?: $email;
 		$this->assertSame($expected, make_clickable($email));
 	}

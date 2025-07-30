@@ -13,6 +13,8 @@
 
 class get_schema_steps_test extends phpbb_test_case
 {
+	protected $helper;
+
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -20,7 +22,7 @@ class get_schema_steps_test extends phpbb_test_case
 		$this->helper = new \phpbb\db\migration\helper();
 	}
 
-	public function schema_provider()
+	public static function schema_provider()
 	{
 		return array(
 			array(

@@ -16,6 +16,11 @@ require_once __DIR__ . '/ext/foo/bar/ucp/ucp_test_info.php';
 
 class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 {
+	protected $db;
+	protected $cache;
+	protected $user;
+	protected $tool;
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__.'/fixtures/migrator_module.xml');
@@ -51,7 +56,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$this->tool = new \phpbb\db\migration\tool\module($this->db, $this->user, $module_manager, 'phpbb_modules');
 	}
 
-	public function exists_data_acp()
+	public static function exists_data_acp()
 	{
 		return array(
 			// Test the existing category
@@ -184,7 +189,7 @@ class phpbb_dbal_migrator_tool_module_test extends phpbb_database_test_case
 		$this->assertEquals($expected, $this->tool->exists('acp', $parent, $module, $lazy));
 	}
 
-	public function exists_data_ucp()
+	public static function exists_data_ucp()
 	{
 		return array(
 			// Test the existing category

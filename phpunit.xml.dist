@@ -1,22 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         backupGlobals="true"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         bootstrap="tests/bootstrap.php"
->
-  <coverage>
-    <include>
-      <directory suffix=".php">./phpBB/includes/</directory>
-      <directory suffix=".php">./phpBB/phpbb/</directory>
-    </include>
-  </coverage>
+		xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+		backupGlobals="true"
+		colors="true"
+		processIsolation="false"
+		stopOnFailure="false"
+		bootstrap="tests/bootstrap.php"
+		cacheDirectory=".phpunit.cache"
+		backupStaticProperties="false">
   <testsuites>
     <testsuite name="phpBB Test Suite">
       <directory suffix="_test.php">./tests</directory>
@@ -35,4 +26,10 @@
       <group>slow</group>
     </exclude>
   </groups>
+  <source>
+    <include>
+      <directory suffix=".php">./phpBB/includes/</directory>
+      <directory suffix=".php">./phpBB/phpbb/</directory>
+    </include>
+  </source>
 </phpunit>

@@ -14,7 +14,7 @@
 class phpbb_text_processing_strip_bbcode_test extends phpbb_test_case
 {
 
-	public function data_strip_bbcode()
+	public static function data_strip_bbcode()
 	{
 		return [
 			['[b:20m4ill1]bold[/b:20m4ill1]', ' bold '],

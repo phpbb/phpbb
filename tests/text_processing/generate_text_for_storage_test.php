@@ -48,7 +48,7 @@ class phpbb_text_processing_generate_text_for_storage_test extends phpbb_test_ca
 		$this->assertSame($expected, $actual);
 	}
 
-	public function get_text_formatter_tests()
+	public static function get_text_formatter_tests()
 	{
 		return array(
 			array(

@@ -87,6 +87,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::setUp();
 
+		$this->setBackupStaticPropertiesExcludeList([
+			'phpbb_functional_test_case' => ['config', 'already_installed'],
+		]);
+
 		if (!self::$install_success)
 		{
 			$this->fail('Installing phpBB has failed.');
@@ -97,6 +101,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$cookieJar = new CookieJar;
 		// Force native client on windows platform
 		self::$http_client = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? new NativeHttpClient() : HttpClient::create();
+		self::$http_client->withOptions([
+			'timeout' => 60,
+		]);
 		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
@@ -216,15 +223,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 	}
 
-	public function __construct($name = NULL, array $data = [], $dataName = '')
-	{
-		parent::__construct($name, $data, $dataName);
-
-		$this->backupStaticAttributesExcludeList += [
-			'phpbb_functional_test_case' => ['config', 'already_installed'],
-		];
-	}
-
 	/**
 	 * @return \phpbb\db\driver\driver_interface
 	 */
@@ -307,7 +305,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$container->set('event_dispatcher', $phpbb_dispatcher);
 		$cache = $this->getMockBuilder('\phpbb\cache\service')
 			->setConstructorArgs([$this->get_cache_driver(), $config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx])
-			->setMethods(['deferred_purge'])
+			->onlyMethods(['deferred_purge'])
 			->getMock();
 		$cache->method('deferred_purge')
 			->willReturnCallback([$cache, 'purge']);
@@ -550,7 +548,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('script_path', $parseURL['path']);
 		$iohandler->set_input('submit_server', 'submit');
 
-		$installer->run();
+		try
+		{
+			$installer->run();
+		}
+		catch (\Throwable $e)
+		{
+			// Do nothing but catch the exception as PHPUnit here throws
+			// "PHPUnit\Event\Code\NoTestCaseObjectOnCallStackException: Cannot find TestCase object on call stack"
+		}
 
 		copy($config_file, $config_file_test);
 
@@ -568,7 +574,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 
 		global $phpbb_container;
-		$phpbb_container->reset();
+		if (!empty($phpbb_container))
+		{
+			$phpbb_container->reset();
+		}
 
 		// Purge cache to remove cached files
 		$phpbb_container = new phpbb_mock_container_builder();

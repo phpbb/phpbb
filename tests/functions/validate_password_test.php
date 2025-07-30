@@ -25,7 +25,7 @@ class phpbb_functions_validate_password_test extends phpbb_test_case
 		$this->helper = new phpbb_functions_validate_data_helper($this);
 	}
 
-	public function validate_password_data()
+	public static function validate_password_data()
 	{
 		return array(
 			array('PASS_TYPE_ANY', array(

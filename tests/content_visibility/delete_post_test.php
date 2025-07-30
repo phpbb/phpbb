@@ -21,7 +21,7 @@ class phpbb_content_visibility_delete_post_test extends phpbb_database_test_case
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/delete_post.xml');
 	}
 
-	public function delete_post_data()
+	public static function delete_post_data()
 	{
 		$info_data = array(
 			'topic_first_post_id'	=> 1,
