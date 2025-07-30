@@ -31,8 +31,6 @@ class phpbb_dbal_connect_test extends phpbb_database_test_case
 		// Failure to connect results in a trigger_error call in dbal.
 		// phpunit converts triggered errors to exceptions.
 		// In particular there should be no fatals here.
-		
-
 		if ($db->get_sql_layer() === 'mysqli')
 		{
 			$this->setExpectedTriggerError(E_WARNING);
