@@ -2673,13 +2673,6 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 	// Begin bumping
 	$db->sql_transaction('begin');
 
-	// Update the topic's last post post_time
-	$sql = 'UPDATE ' . POSTS_TABLE . "
-		SET post_time = $bump_time
-		WHERE post_id = {$post_data['topic_last_post_id']}
-			AND topic_id = $topic_id";
-	$db->sql_query($sql);
-
 	// Sync the topic's last post time, the rest of the topic's last post data isn't changed
 	$sql = 'UPDATE ' . TOPICS_TABLE . "
 		SET topic_last_post_time = $bump_time,
