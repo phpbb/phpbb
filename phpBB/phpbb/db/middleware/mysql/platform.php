@@ -31,26 +31,34 @@ class platform extends AbstractMySQLPlatform
 	public function getAlterTableSQL(TableDiff $diff)
 	{
 		$sql = parent::getAlterTableSQL($diff);
-		$table = $diff->getOldTable();
-		$columns = $diff->getAddedColumns();
 
-		foreach ($columns as $column)
+		if ($table = $diff->getOldTable())
 		{
-			$column_name = $column->getName();
-			if (!empty($column->getAutoincrement()) && $table)
-			{
-				foreach ($sql as $i => $query)
+			$primary_key_dropped = array_filter($diff->getDroppedIndexes(), function($val, $key)
 				{
-					if (stripos($query, "add $column_name"))
+					return $val->isPrimary();
+				},
+				ARRAY_FILTER_USE_BOTH
+			);
+			$columns = $diff->getAddedColumns();
+			foreach ($columns as $column)
+			{
+				$column_name = $column->getName();
+				if (!empty($column->getAutoincrement()))
+				{
+					foreach ($sql as $i => $query)
 					{
-						if (!$table->getPrimaryKey())
+						if (stripos($query, "add $column_name"))
 						{
-							$sql[$i] = str_replace(' DEFAULT NULL', '', $sql[$i]);
-							$sql[$i] .= ' PRIMARY KEY';
-						}
-						else
-						{
-							$sql[$i] .= ", ADD KEY ($column_name)";
+							if (!$table->getPrimaryKey() || $primary_key_dropped)
+							{
+								$sql[$i] = str_replace(' DEFAULT NULL', '', $sql[$i]);
+								$sql[$i] .= ' PRIMARY KEY';
+							}
+							else
+							{
+								$sql[$i] .= ", ADD KEY ($column_name)";
+							}
 						}
 					}
 				}
