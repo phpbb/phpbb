@@ -458,6 +458,7 @@ class container_builder
 			}
 
 			$extensions = $ext_container->get('ext.manager')->all_enabled();
+			$resources = [];
 
 			// Load each extension found
 			$autoloaders = '<?php
@@ -480,6 +481,11 @@ class container_builder
 
 				$this->container_extensions[] = new $extension_class($ext_name, $path);
 
+				if (is_dir($path))
+				{
+					$resources[] = new \Symfony\Component\Config\Resource\DirectoryResource($path);
+				}
+
 				// Load extension autoloader
 				$filename = $path . 'vendor/autoload.php';
 				if (file_exists($filename))
@@ -489,7 +495,7 @@ class container_builder
 			}
 
 			$configCache = new ConfigCache($this->get_autoload_filename(), false);
-			$configCache->write($autoloaders);
+			$configCache->write($autoloaders, $resources);
 
 			require($this->get_autoload_filename());
 		}
