@@ -24,8 +24,11 @@ use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\mimetype\extension_guesser;
 use phpbb\request\request;
+use phpbb\storage\provider\local;
 use phpbb\storage\storage;
 use phpbb\user;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,10 +38,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /**
  * Controller for /download/attachment/{id} routes
  */
-class attachment extends controller
+class attachment
 {
 	/** @var auth */
 	protected $auth;
+
+	/** @var service */
+	protected $cache;
 
 	/** @var config */
 	protected $config;
@@ -46,14 +52,26 @@ class attachment extends controller
 	/** @var content_visibility */
 	protected $content_visibility;
 
+	/** @var driver_interface */
+	protected $db;
+
 	/** @var dispatcher_interface */
 	protected $dispatcher;
+
+	/** @var extension_guesser */
+	protected $extension_guesser;
 
 	/** @var language */
 	protected $language;
 
 	/** @var request */
 	protected $request;
+
+	/** @var storage */
+	protected $storage;
+
+	/** @var symfony_request */
+	protected $symfony_request;
 
 	/** @var user */
 	protected $user;
@@ -76,14 +94,17 @@ class attachment extends controller
 	 */
 	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, extension_guesser $extension_guesser, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
-		parent::__construct($cache, $db, $extension_guesser, $storage, $symfony_request);
-
 		$this->auth = $auth;
+		$this->cache = $cache;
 		$this->config = $config;
 		$this->content_visibility = $content_visibility;
+		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->extension_guesser = $extension_guesser;
 		$this->language = $language;
 		$this->request = $request;
+		$this->storage = $storage;
+		$this->symfony_request = $symfony_request;
 		$this->user = $user;
 	}
 
@@ -252,21 +273,19 @@ class attachment extends controller
 		);
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
-		// TODO: The next lines should go better in prepare, also the mimetype is handled by the storage table
-		// so probably can be removed
-
-		$response = new StreamedResponse();
-
-		// Content-type header
-		$response->headers->set('Content-Type', $attachment['mimetype']);
+		// Correct the mime type - we force application/octet-stream for all files, except images
+		if ($display_cat != attachment_category::IMAGE || !str_starts_with($attachment['mimetype'], 'image'))
+		{
+			$attachment['mimetype'] = 'application/octet-stream';
+		}
 
 		// Display file types in browser and force download for others
-		if (strpos($attachment['mimetype'], 'image') !== false
-			|| strpos($attachment['mimetype'], 'audio') !== false
-			|| strpos($attachment['mimetype'], 'video') !== false
+		if (str_contains($attachment['mimetype'], 'image')
+			|| str_contains($attachment['mimetype'], 'audio')
+			|| str_contains($attachment['mimetype'], 'video')
 		)
 		{
-			$disposition = $response->headers->makeDisposition(
+			$disposition = HeaderUtils::makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
@@ -274,20 +293,56 @@ class attachment extends controller
 		}
 		else
 		{
-			$disposition = $response->headers->makeDisposition(
+			$disposition = HeaderUtils::makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
 			);
 		}
 
+		if ($this->config['storage\\attachment\\provider'] === local::class)
+		{
+			$response = new BinaryFileResponse($this->config['storage\\attachment\\config\\path'] . '/' . $attachment['physical_filename']);
+		}
+		else
+		{
+			$response = new StreamedResponse();
+
+			$fp = $this->storage->read($attachment['physical_filename']);
+
+			$output = fopen('php://output', 'w+b');
+
+			$response->setCallback(function () use ($fp, $output) {
+				stream_copy_to_stream($fp, $output);
+				fclose($fp);
+				fclose($output);
+				flush();
+
+				// Terminate script to avoid the execution of terminate events
+				// This avoid possible errors with db connection closed
+				exit;
+			});
+		}
+
+		// Close db connection
+		$this->file_gc();
+
+		$response->setPrivate();
+
+		// Content-type header
+		$response->headers->set('Content-Type', $attachment['mimetype']);
+
 		$response->headers->set('Content-Disposition', $disposition);
+
+		$response->isNotModified($this->symfony_request);
 
 		// Set expires header for browser cache
 		$time = new \DateTime();
 		$response->setExpires($time->modify('+1 year'));
 
-		return parent::handle($attachment['physical_filename']);
+		@set_time_limit(0);
+
+		return $response;
 	}
 
 	/**
@@ -298,16 +353,6 @@ class attachment extends controller
 		$filename = (string) preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
 
 		return !empty($filename) ? $filename : 'File';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function prepare(StreamedResponse $response, string $file): void
-	{
-		$response->setPrivate();	// By default, should be private, but make sure of it
-
-		parent::prepare($response, $file);
 	}
 
 	/**
@@ -538,5 +583,14 @@ class attachment extends controller
 		}
 
 		return $allowed;
+	}
+
+	/**
+	 * Garbage Collection
+	 */
+	protected function file_gc(): void
+	{
+		$this->cache->unload(); // Equivalent to $this->cache->get_driver()->unload();
+		$this->db->sql_close();
 	}
 }
