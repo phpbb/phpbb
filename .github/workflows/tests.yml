@@ -495,7 +495,7 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
-        runs-on: windows-latest
+        runs-on: windows-2025
         strategy:
             matrix:
                 type: ['unit', 'functional']
