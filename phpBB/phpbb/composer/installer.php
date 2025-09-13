@@ -390,22 +390,22 @@ class installer
 				}
 			}
 
-			foreach ($compatible_packages as $name => $versions)
+			foreach ($compatible_packages as $package_name => $package_versions)
 			{
 				// Determine the highest version of the package
 				/** @var CompletePackage|CompleteAliasPackage $highest_version */
 				$highest_version = null;
 
 				// Sort the versions array in descending order
-				usort($versions, function ($a, $b)
+				usort($package_versions, function ($a, $b)
 				{
 					return version_compare($b->getVersion(), $a->getVersion());
 				});
 
 				// The first element in the sorted array is the highest version
-				if (!empty($versions))
+				if (!empty($package_versions))
 				{
-					$highest_version = $versions[0];
+					$highest_version = $package_versions[0];
 
 					// If highest version is a non-numeric dev branch, it's an instance of CompleteAliasPackage,
 					// so we need to get the package being aliased in order to show the true non-numeric version.
@@ -416,23 +416,23 @@ class installer
 				}
 
 				// Generates the entry
-				$available[$name] = [];
-				$available[$name]['name'] = $highest_version->getPrettyName();
-				$available[$name]['display_name'] = $highest_version->getExtra()['display-name'];
-				$available[$name]['composer_name'] = $highest_version->getName();
-				$available[$name]['version'] = $highest_version->getPrettyVersion();
+				$available[$package_name] = [];
+				$available[$package_name]['name'] = $highest_version->getPrettyName();
+				$available[$package_name]['display_name'] = $highest_version->getExtra()['display-name'];
+				$available[$package_name]['composer_name'] = $highest_version->getName();
+				$available[$package_name]['version'] = $highest_version->getPrettyVersion();
 
 				if ($highest_version instanceof CompletePackage)
 				{
-					$available[$name]['description'] = $highest_version->getDescription();
-					$available[$name]['url'] = $highest_version->getHomepage();
-					$available[$name]['authors'] = $highest_version->getAuthors();
+					$available[$package_name]['description'] = $highest_version->getDescription();
+					$available[$package_name]['url'] = $highest_version->getHomepage();
+					$available[$package_name]['authors'] = $highest_version->getAuthors();
 				}
 				else
 				{
-					$available[$name]['description'] = '';
-					$available[$name]['url'] = '';
-					$available[$name]['authors'] = [];
+					$available[$package_name]['description'] = '';
+					$available[$package_name]['url'] = '';
+					$available[$package_name]['authors'] = [];
 				}
 			}
 
