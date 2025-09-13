@@ -27,7 +27,7 @@ class rename_duplicated_index_names extends migration
 	/**
 	 * @var array
 	 */
-	protected static $rename_index;
+	protected static $rename_index = [];
 
 	public static function depends_on()
 	{
