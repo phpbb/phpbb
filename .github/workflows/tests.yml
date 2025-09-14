@@ -145,6 +145,10 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.4'
                       db: "mariadb:10.3"
+                    - php: '8.5'
+                      db: "mysql:8.0"
+                    - php: '8.5'
+                      db: "mariadb:10.3"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -285,6 +289,8 @@ jobs:
                     - php: '8.3'
                       db: "postgres:9.5"
                     - php: '8.4'
+                      db: "postgres:9.5"
+                    - php: '8.5'
                       db: "postgres:9.5"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
