@@ -97,11 +97,21 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	{
 		parent::tearDown();
 
-		unlink($this->phpbb_root_path . 'files/test_png_1');
-		unlink($this->phpbb_root_path . 'files/test_png_2');
-		unlink($this->phpbb_root_path . 'files/test_txt');
-		unlink($this->phpbb_root_path . 'files/thumb_test_png_1');
-		unlink($this->phpbb_root_path . 'files/thumb_test_png_2');
+		$delete_files = [
+			$this->phpbb_root_path . 'files/test_png_1',
+			$this->phpbb_root_path . 'files/test_png_2',
+			$this->phpbb_root_path . 'files/test_txt',
+			$this->phpbb_root_path . 'files/thumb_test_png_1',
+			$this->phpbb_root_path . 'files/thumb_test_png_2'
+		];
+
+		foreach ($delete_files as $file)
+		{
+			if (file_exists($file))
+			{
+				unlink($file);
+			}
+		}
 	}
 
 	public function test_thumbnails()

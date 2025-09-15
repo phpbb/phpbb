@@ -72,7 +72,7 @@ class rename_duplicated_index_names extends migration
 		}
 
 		return [
-			'rename_index' => self::$rename_index,
+			'rename_index' => self::$rename_index ?? [],
 		];
 	}
 
