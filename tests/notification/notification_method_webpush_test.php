@@ -680,7 +680,6 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 	public function test_set_endpoint_padding($endpoint, $expected_padding): void
 	{
 		$web_push_reflection = new \ReflectionMethod($this->notification_method_webpush, 'set_endpoint_padding');
-		$web_push_reflection->setAccessible(true);
 
 		$auth = [
 			'VAPID' => [

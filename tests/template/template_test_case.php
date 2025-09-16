@@ -35,7 +35,6 @@ class phpbb_template_template_test_case extends phpbb_test_case
 
 		$reflection = new ReflectionClass('\phpbb\language\language');
 		self::$language_reflection_lang = $reflection->getProperty('lang');
-		self::$language_reflection_lang->setAccessible(true);
 	}
 
 	protected function display($handle)

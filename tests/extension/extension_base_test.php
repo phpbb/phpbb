@@ -27,7 +27,6 @@ class phpbb_extension_extension_base_test extends phpbb_test_case
 
 		$reflection_class = new ReflectionClass('\phpbb\extension\base');
 		self::$reflection_method_get_migration_file_list = $reflection_class->getMethod('get_migration_file_list');
-		self::$reflection_method_get_migration_file_list->setAccessible(true);
 	}
 
 	protected function setUp(): void

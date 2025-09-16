@@ -87,12 +87,10 @@ class phpbb_group_helper_test_case extends phpbb_test_case
 
 		// Set default language files loaded flag to true
 		$loaded_flag = $reflection_class->getProperty('common_language_files_loaded');
-		$loaded_flag->setAccessible(true);
 		$loaded_flag->setValue($lang, true);
 
 		// Set up test language data
 		$lang_array = $reflection_class->getProperty('lang');
-		$lang_array->setAccessible(true);
 		$lang_array->setValue($lang, $this->get_test_language_data_set());
 
 		// Set up event dispatcher
