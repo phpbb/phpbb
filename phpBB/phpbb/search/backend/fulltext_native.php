@@ -1577,7 +1577,7 @@ class fulltext_native extends base implements search_backend_interface
 		// Remove common words
 		if ($this->config['num_posts'] >= 100 && $this->config['fulltext_native_common_thres'])
 		{
-			$common_threshold = ((double) $this->config['fulltext_native_common_thres']) / 100.0;
+			$common_threshold = ((float) $this->config['fulltext_native_common_thres']) / 100.0;
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id, word_text
 				FROM ' . $this->search_wordlist_table . '
@@ -2034,14 +2034,14 @@ class fulltext_native extends base implements search_backend_interface
 		</dl>
 		<dl>
 			<dt><label for="fulltext_native_common_thres">' . $this->language->lang('COMMON_WORD_THRESHOLD') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('COMMON_WORD_THRESHOLD_EXPLAIN') . '</span></dt>
-			<dd><input id="fulltext_native_common_thres" type="text" name="config[fulltext_native_common_thres]" value="' . (double) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
+			<dd><input id="fulltext_native_common_thres" type="text" name="config[fulltext_native_common_thres]" value="' . (float) $this->config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';
 
 		// These are fields required in the config table
 		return array(
 			'tpl'		=> $tpl,
-			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255', 'fulltext_native_common_thres' => 'double:0:100')
+			'config'	=> array('fulltext_native_load_upd' => 'bool', 'fulltext_native_min_chars' => 'integer:0:255', 'fulltext_native_max_chars' => 'integer:0:255', 'fulltext_native_common_thres' => 'float:0:100')
 		);
 	}
 }

@@ -150,7 +150,18 @@ class connection_parameter_factory
 
 		if ($params['driver'] === 'pdo_mysql' && extension_loaded('pdo_mysql'))
 		{
-			$params[\PDO::MYSQL_ATTR_FOUND_ROWS] = true;
+			// Constant PDO::MYSQL_ATTR_FOUND_ROWS is deprecated since 8.5, use Pdo\Mysql::ATTR_FOUND_ROWS instead
+			if (class_exists('\Pdo\Mysql'))
+			{
+				/**
+				 * @psalm-suppress UndefinedClass
+				 */
+				$params[\Pdo\Mysql::ATTR_FOUND_ROWS] = true;
+			}
+			else
+			{
+				$params[\PDO::MYSQL_ATTR_FOUND_ROWS] = true;
+			}
 		}
 
 		return $params;
