@@ -158,8 +158,26 @@
 			<!-- EVENT viewforum_body_topic_row_prepend -->
 			<dl class="row-item">
 				<dt>
-					<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
-						{{ Icon('svg', {
+					{% if topicrow.U_NEWEST_POST and topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}
+						{% set topicrow.U_ITEM_LINK = topicrow.U_NEWEST_POST %}
+					{% elseif topicrow.U_VIEW_TOPIC %}
+						{% set topicrow.U_ITEM_LINK = topicrow.U_VIEW_TOPIC %}
+					{% endif %}
+					{% if topicrow.U_ITEM_LINK is defined %}
+						<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+							{{ Icon('svg', {
+								'globe' : topicrow.S_POST_GLOBAL,
+								'bullhorn' : topicrow.S_POST_ANNOUNCE,
+								'thumbtack' : topicrow.S_POST_STICKY,
+								'lock' : topicrow.S_TOPIC_LOCKED,
+								'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
+								'fire' : topicrow.S_TOPIC_HOT,
+								'file-document-outline' : true,
+							}, '', true, 'c-forum-row-icon') }}
+						</a>
+					{% else %}
+						<span class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+							{{ Icon('svg', {
 							'globe' : topicrow.S_POST_GLOBAL,
 							'bullhorn' : topicrow.S_POST_ANNOUNCE,
 							'thumbtack' : topicrow.S_POST_STICKY,
@@ -167,8 +185,9 @@
 							'arrow-right-bold' : topicrow.S_TOPIC_MOVED,
 							'fire' : topicrow.S_TOPIC_HOT,
 							'file-document-outline' : true,
-						}, '', true, 'c-forum-row-icon') }}
-					</a>
+							}, '', true, 'c-forum-row-icon') }}
+						</span>
+					{% endif %}
 					{% if lang(topicrow.TOPIC_AUTHOR) == S_USERNAME %}
 						<span class="row-item-link-mine"></span>
 					{% endif%}
@@ -177,7 +196,7 @@
 					{% endif %}
 					<div class="list-inner">
 						<!-- EVENT topiclist_row_prepend -->
-						{% if topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}
+						{% if topicrow.U_NEWEST_POST and  topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}
 							<a href="{{ topicrow.U_NEWEST_POST }}" class="topictitle unread">{{ topicrow.TOPIC_TITLE }}</a>
 						{% elseif topicrow.U_VIEW_TOPIC %}
 							<a href="{{ topicrow.U_VIEW_TOPIC }}" class="topictitle">{{ topicrow.TOPIC_TITLE }}</a>
