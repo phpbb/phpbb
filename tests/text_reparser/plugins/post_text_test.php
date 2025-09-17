@@ -74,7 +74,6 @@ class phpbb_textreparser_post_text_test extends phpbb_textreparser_test_row_base
 			// Call reparse_record via reflection
 			$reparser = $this->get_reparser();
 			$reparser_reflection = new \ReflectionMethod($reparser, 'reparse_record');
-			$reparser_reflection->setAccessible(true);
 			$reparser_reflection->invoke($reparser, $record);
 
 			// Retrieve reparsed post text and compare with expectec

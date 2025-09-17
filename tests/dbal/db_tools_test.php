@@ -509,7 +509,6 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		if ($this->tools instanceof \phpbb\db\tools\mssql)
 		{
 			$max_length_method = new ReflectionMethod('\phpbb\db\tools\mssql', 'get_max_index_name_length');
-			$max_length_method->setAccessible(true);
 			$max_index_length = $max_length_method->invoke($this->tools);
 		}
 

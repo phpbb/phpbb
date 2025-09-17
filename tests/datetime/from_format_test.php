@@ -32,11 +32,9 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 		$reflection_class = new ReflectionClass('\phpbb\language\language');
 		// Set default language files loaded flag to true
 		$common_language_files_loaded_flag = $reflection_class->getProperty('common_language_files_loaded');
-		$common_language_files_loaded_flag->setAccessible(true);
 		$common_language_files_loaded_flag->setValue($this->lang, true);
 		// Set up test language data
 		$lang_array = $reflection_class->getProperty('lang');
-		$lang_array->setAccessible(true);
 		$lang_array->setValue($this->lang, [
 			'datetime' => [
 				'TODAY'		=> 'Today',

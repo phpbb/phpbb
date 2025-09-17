@@ -137,7 +137,6 @@ class get_callable_from_step_test extends phpbb_database_test_case
 	{
 		$class = new ReflectionClass($this->migrator);
 		$method = $class->getMethod('get_callable_from_step');
-		$method->setAccessible(true);
 		return $method->invokeArgs($this->migrator, array($step));
 	}
 }

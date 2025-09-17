@@ -146,7 +146,6 @@ class phpbb_files_types_local_test extends phpbb_test_case
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
 			)));
 		$filespec_local = new ReflectionProperty($filespec, 'local');
-		$filespec_local->setAccessible(true);
 		$filespec_local->setValue($filespec, true);
 		$this->container->set('files.filespec', $filespec);
 		$this->factory = new \phpbb\files\factory($this->container);

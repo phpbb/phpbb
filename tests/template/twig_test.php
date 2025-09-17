@@ -128,7 +128,6 @@ class twig_test extends \phpbb_test_case
 		// Get loader instance
 		$template_reflection = new \ReflectionObject($this->template);
 		$loader_reflection = $template_reflection->getProperty('loader');
-		$loader_reflection->setAccessible(true);
 		/** @var \phpbb\template\twig\loader $loader */
 		$loader = $loader_reflection->getValue($this->template);
 

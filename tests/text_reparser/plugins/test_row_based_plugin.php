@@ -27,7 +27,6 @@ abstract class phpbb_textreparser_test_row_based_plugin extends phpbb_database_t
 
 		$reflection_reparser = new ReflectionClass(get_class($reparser));
 		$table_property = $reflection_reparser->getProperty('table');
-		$table_property->setAccessible(true);
 
 		$sql = 'SELECT ' . $columns['id'] . ' AS id, ' . $columns['text'] . ' AS text
 			FROM ' . $table_property->getValue($reparser) . '

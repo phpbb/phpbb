@@ -68,7 +68,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$filename = "{$this->cache_dir}unreadable.$phpEx";
 		@chmod($filename, 0000);
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertFalse($readReflection->invoke($this->cache_file, 'unreadable'));
 		@chmod($filename, 0600);
 		$this->assertNotFalse($readReflection->invoke($this->cache_file, 'unreadable'));
@@ -79,11 +78,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		global $phpEx;
 
 		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
-		$reflectionCacheVars->setAccessible(true);
 		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
 
 		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
-		$reflectionCacheVarExpires->setAccessible(true);
 		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
 
 		// Create file in invalid format
@@ -95,7 +92,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		file_put_contents($filename, $cache_data);
 
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
@@ -104,11 +100,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		global $phpEx;
 
 		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
-		$reflectionCacheVars->setAccessible(true);
 		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
 
 		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
-		$reflectionCacheVarExpires->setAccessible(true);
 		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
 
 		// Create file in invalid format
@@ -120,7 +114,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		file_put_contents($filename, $cache_data);
 
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
@@ -129,11 +122,9 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		global $phpEx;
 
 		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
-		$reflectionCacheVars->setAccessible(true);
 		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
 
 		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
-		$reflectionCacheVarExpires->setAccessible(true);
 		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() + 86400]);
 
 		// Create file in invalid format
@@ -145,18 +136,15 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		file_put_contents($filename, $cache_data);
 
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertFalse($readReflection->invoke($this->cache_file, 'data_global'));
 	}
 
 	public function test_read_data_global_expired()
 	{
 		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
-		$reflectionCacheVars->setAccessible(true);
 		$reflectionCacheVars->setValue($this->cache_file, ['foo' => 'bar']);
 
 		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
-		$reflectionCacheVarExpires->setAccessible(true);
 		$reflectionCacheVarExpires->setValue($this->cache_file, ['foo' => time() - 86400]);
 
 		// Create file in invalid format
@@ -167,7 +155,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$reflectionCacheVarExpires->setValue($this->cache_file, []);
 
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertTrue($readReflection->invoke($this->cache_file, 'data_global'));
 
 		// Check data, should be empty
@@ -177,12 +164,10 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 	public function test_read_data_global()
 	{
 		$reflectionCacheVars = new \ReflectionProperty($this->cache_file, 'vars');
-		$reflectionCacheVars->setAccessible(true);
 		$expectedVars = ['foo' => 'bar'];
 		$reflectionCacheVars->setValue($this->cache_file, $expectedVars);
 
 		$reflectionCacheVarExpires = new \ReflectionProperty($this->cache_file, 'var_expires');
-		$reflectionCacheVarExpires->setAccessible(true);
 		$expectedVarExpires = ['foo' => time() + 86400];
 		$reflectionCacheVarExpires->setValue($this->cache_file, $expectedVarExpires);
 
@@ -196,7 +181,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$this->assertEquals([], $reflectionCacheVarExpires->getValue($this->cache_file));
 
 		$readReflection = new \ReflectionMethod($this->cache_file, '_read');
-		$readReflection->setAccessible(true);
 		$this->assertTrue($readReflection->invoke($this->cache_file, 'data_global'));
 
 		// Check data, should be empty

@@ -386,7 +386,7 @@ class post extends \phpbb\notification\type\base
 
 		// Topics can be "read" before they are public (while awaiting approval).
 		// Make sure that if the user has read the topic, it's marked as read in the notification
-		if ($this->inherit_read_status && isset($pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
+		if ($this->inherit_read_status && isset($this->user_id, $pre_create_data[$this->user_id]) && $pre_create_data[$this->user_id] >= $this->notification_time)
 		{
 			$this->notification_read = true;
 		}

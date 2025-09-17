@@ -244,7 +244,6 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 	{
 		$this->turnstile->set_name('custom_service');
 		$service_name_property = new \ReflectionProperty($this->turnstile, 'service_name');
-		$service_name_property->setAccessible(true);
 		$this->assertEquals('custom_service', $service_name_property->getValue($this->turnstile));
 	}
 
@@ -275,7 +274,6 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		// Use reflection to inject the mocked client into the turnstile class
 		$reflection = new \ReflectionClass($this->turnstile);
 		$client_property = $reflection->getProperty('client');
-		$client_property->setAccessible(true);
 		$client_property->setValue($this->turnstile, $client_mock);
 
 		// Validate that the CAPTCHA was solved successfully
@@ -301,7 +299,6 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		// Use reflection to inject the mocked client into the turnstile class
 		$reflection = new \ReflectionClass($this->turnstile);
 		$client_property = $reflection->getProperty('client');
-		$client_property->setAccessible(true);
 		$client_property->setValue($this->turnstile, $client_mock);
 
 		// Validatation fails due to guzzle exception
@@ -333,9 +330,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 	{
 		$turnstile_reflection = new \ReflectionClass($this->turnstile);
 		$get_client_method = $turnstile_reflection->getMethod('get_client');
-		$get_client_method->setAccessible(true);
 		$client_property = $turnstile_reflection->getProperty('client');
-		$client_property->setAccessible(true);
 
 		$this->assertFalse($client_property->isInitialized($this->turnstile));
 		$client = $get_client_method->invoke($this->turnstile);
@@ -363,7 +358,6 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		// Use reflection to inject the mocked client into the turnstile class
 		$reflection = new \ReflectionClass($this->turnstile);
 		$client_property = $reflection->getProperty('client');
-		$client_property->setAccessible(true);
 		$client_property->setValue($this->turnstile, $client_mock);
 
 		// Validate that the CAPTCHA was not solved
@@ -374,7 +368,6 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 	{
 		// Mock is_solved to return false
 		$is_solved_property = new \ReflectionProperty($this->turnstile, 'solved');
-		$is_solved_property->setAccessible(true);
 		$is_solved_property->setValue($this->turnstile, false);
 
 		// Mock the template assignments

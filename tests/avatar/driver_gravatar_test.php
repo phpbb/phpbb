@@ -166,13 +166,11 @@ class phpbb_avatar_driver_gravatar_test extends \phpbb_database_test_case
 			->willReturn([]);
 
 		$requestInputReflection = new \ReflectionProperty($request, 'input');
-		$requestInputReflection->setAccessible(true);
 		$request_data[request_interface::GET] = $request_data[request_interface::GET] ?? [];
 		$request_data[request_interface::POST] = $request_data[request_interface::POST] ?? [];
 		$request_data[request_interface::REQUEST] = $request_data[request_interface::GET] + $request_data[request_interface::POST];
 		$requestInputReflection->setValue($request, $request_data);
 		$requestTypeCastHelperReflection = new \ReflectionProperty($request, 'type_cast_helper');
-		$requestTypeCastHelperReflection->setAccessible(true);
 		$requestTypeCastHelperReflection->setValue($request, new \phpbb\request\type_cast_helper());
 
 		$this->gravatar->prepare_form($request, $this->template, $this->user, $row, $error);

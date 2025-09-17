@@ -126,7 +126,6 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 		$class = new ReflectionClass($notification_method_email);
 		$empty_queue_method = $class->getMethod('empty_queue');
-		$empty_queue_method->setAccessible(true);
 
 		$this->notification_method_email->method('notify_using_messenger')
 			->will($this->returnCallback(function () use ($notification_method_email, $empty_queue_method) {
