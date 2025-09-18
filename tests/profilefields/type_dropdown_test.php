@@ -225,7 +225,7 @@ class phpbb_profilefield_type_dropdown_test extends phpbb_test_case
 
 	public function is_set_callback($field_id, $lang_id, $field_value)
 	{
-		return isset($this->dropdown_options[$field_value]);
+		return isset($field_value, $this->dropdown_options[$field_value]);
 	}
 
 	public function get($field_id, $lang_id, $field_value)

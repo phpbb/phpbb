@@ -145,6 +145,10 @@ jobs:
                       db: "mysql:8.0"
                     - php: '8.4'
                       db: "mariadb:10.3"
+                    - php: '8.5'
+                      db: "mysql:8.0"
+                    - php: '8.5'
+                      db: "mariadb:10.3"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -285,6 +289,8 @@ jobs:
                     - php: '8.3'
                       db: "postgres:9.5"
                     - php: '8.4'
+                      db: "postgres:9.5"
+                    - php: '8.5'
                       db: "postgres:9.5"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -495,11 +501,11 @@ jobs:
 
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
-        runs-on: windows-latest
+        runs-on: windows-2025
         strategy:
             matrix:
                 type: ['unit', 'functional']
-                php: ['8.1', '8.2', '8.3']
+                php: ['8.4']
                 db: ['postgres']
 
         name: Windows - ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -516,7 +522,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, intl, gd, exif, iconv, pgsql, pdo_pgsql, sodium
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, intl, gd, exif, iconv, pgsql, pdo_pgsql, sodium, bz2, fileinfo
                   ini-values: upload_tmp_dir=${{ runner.temp }}, sys_temp_dir=${{ runner.temp }}
                   coverage: none
 

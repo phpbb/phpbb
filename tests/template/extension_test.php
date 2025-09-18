@@ -84,7 +84,6 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 
 		$class = new ReflectionClass('\phpbb\avatar\manager');
 		$enabled_drivers = $class->getProperty('enabled_drivers');
-		$enabled_drivers->setAccessible(true);
 		$enabled_drivers->setValue($class, false);
 		$avatar_helper = new phpbb\avatar\helper(
 			$config,

@@ -191,7 +191,6 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 		$filesystem->method('phpbb_chmod')
 			->will($this->throwException(new filesystem_exception('Chmod failed')));
 		$filesystem_reflection = new \ReflectionProperty(queue::class, 'filesystem');
-		$filesystem_reflection->setAccessible(true);
 		$filesystem_reflection->setValue($this->messenger_queue, $filesystem);
 
 		// Process the queue
@@ -312,7 +311,6 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 		$filesystem->method('phpbb_chmod')
 			->will($this->throwException(new filesystem_exception('Chmod failed')));
 		$filesystem_reflection = new \ReflectionProperty(queue::class, 'filesystem');
-		$filesystem_reflection->setAccessible(true);
 		$filesystem_reflection->setValue($this->messenger_queue, $filesystem);
 
 		$this->messenger_queue->save();

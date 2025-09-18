@@ -763,8 +763,6 @@ function create_thumbnail($source, $destination, $mimetype)
 					imagewebp($new_image, $destination);
 				break;
 			}
-
-			imagedestroy($new_image);
 		}
 		else
 		{

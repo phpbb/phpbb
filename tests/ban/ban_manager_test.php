@@ -411,7 +411,6 @@ class ban_manager_test extends \phpbb_session_test_case
 
 		$ban_type_ip_reflection = new \ReflectionClass($ban_type_ip);
 		$get_excluded_reflection = $ban_type_ip_reflection->getMethod('get_excluded');
-		$get_excluded_reflection->setAccessible(true);
 		$this->assertFalse($get_excluded_reflection->invoke($ban_type_ip));
 	}
 

@@ -26,10 +26,16 @@
       <group>slow</group>
     </exclude>
   </groups>
-  <source>
+  <source restrictDeprecations="true">
     <include>
-      <directory suffix=".php">./phpBB/includes/</directory>
-      <directory suffix=".php">./phpBB/phpbb/</directory>
+      <directory suffix=".php">./phpBB/</directory>
+      <directory suffix=".php">./tests/</directory>
     </include>
+    <exclude>
+      <directory suffix=".php">./phpBB/vendor/</directory>
+      <directory suffix=".php">./phpBB/cache/</directory>
+      <directory suffix=".php">./phpBB/develop/</directory>
+      <directory suffix=".php">./phpBB/store/</directory>
+    </exclude>
   </source>
 </phpunit>

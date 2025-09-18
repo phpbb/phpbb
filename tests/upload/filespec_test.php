@@ -83,7 +83,6 @@ class phpbb_filespec_test extends phpbb_test_case
 	private function set_reflection_property($class, $property_name, $value)
 	{
 		$property = new ReflectionProperty($class, $property_name);
-		$property->setAccessible(true);
 		$property->setValue($class, $value);
 	}
 
@@ -538,7 +537,6 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec = new \phpbb\files\filespec($this->filesystem, $this->language, new \bantu\IniGetWrapper\IniGetWrapper, new \FastImageSize\FastImageSize(), $this->phpbb_root_path, null);
 		$reflection_filespec = new ReflectionClass($filespec);
 		$plupload_property = $reflection_filespec->getProperty('plupload');
-		$plupload_property->setAccessible(true);
 		$plupload_mock = $this->getMockBuilder('\phpbb\plupload\plupload')
 			->disableOriginalConstructor()
 			->getMock();

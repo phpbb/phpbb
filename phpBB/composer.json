@@ -34,7 +34,7 @@
 		"bantu/ini-get-wrapper": "~1.0",
 		"carlos-mg89/oauth": "^0.8.15",
 		"composer/composer": "^2.0",
-		"composer/installers": "^1.9",
+		"composer/installers": "^2.3",
 		"composer/package-versions-deprecated": "^1.11",
 		"doctrine/dbal": "^3.9",
 		"google/recaptcha": "~1.1",

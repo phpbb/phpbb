@@ -422,7 +422,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->expectExceptionMessage('FORM_INVALID');
 
 		$check_subscribe_reflection = new ReflectionMethod($this->controller, 'check_subscribe_requests');
-		$check_subscribe_reflection->setAccessible(true);
 		$check_subscribe_reflection->invoke($this->controller);
 	}
 
@@ -436,7 +435,6 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->expectExceptionMessage('NO_AUTH_OPERATION');
 
 		$check_subscribe_reflection = new ReflectionMethod($this->controller, 'check_subscribe_requests');
-		$check_subscribe_reflection->setAccessible(true);
 		$check_subscribe_reflection->invoke($this->controller);
 	}
 

@@ -325,7 +325,7 @@ class recaptcha_v3 extends captcha_abstract
 		$token		= $request->variable('recaptcha_token', '', true);
 		$action		= $request->variable('recaptcha_action', '', true);
 		$action		= in_array($action, self::$actions) ? $action : reset(self::$actions);
-		$threshold	= (double) $config["recaptcha_v3_threshold_{$action}"] ?? 0.5;
+		$threshold	= (float) $config["recaptcha_v3_threshold_{$action}"] ?? 0.5;
 
 		// No token was provided, discard spam submissions
 		if (empty($token))

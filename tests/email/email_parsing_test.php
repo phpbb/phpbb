@@ -146,7 +146,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 		$reflection = new ReflectionObject($this->email);
 		$this->reflection_template_property = $reflection->getProperty('template');
-		$this->reflection_template_property->setAccessible(true);
 	}
 
 	public static function email_parsing_data()

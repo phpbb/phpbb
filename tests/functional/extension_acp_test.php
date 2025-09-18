@@ -300,41 +300,33 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 				$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&start=' . $i * 20 . '&mode=catalog&sid=' . $this->sid);
 			}
 
-			$extension_filter($crawler, 'Scroll Page', $scrollpage_install_link);
-			$extension_filter($crawler, 'Scroll To Top', $scrolltotop_install_link);
+			$extension_filter($crawler, 'VigLink', $viglink_install_link);
 		}
 
-		if (!isset($scrolltotop_install_link) || !isset($scrollpage_install_link))
+		if (!isset($viglink_install_link))
 		{
 			$this->fail('Failed acquiring install links for test extensions');
 		}
 
-		// Attempt to install vse/scrollpage extension
-		$crawler = self::$client->click($scrollpage_install_link);
+		// Attempt to install phpbb/viglink extension
+		$crawler = self::$client->click($viglink_install_link);
 		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Locking vse/scrollpage', $crawler->filter('.console-output > pre')->text());
-
-		// Attempt to install vse/scrolltotop extension
-		$crawler = self::$client->click($scrolltotop_install_link);
-		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
-		// Assert there's console log output
-		$this->assertStringContainsString('Locking vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Locking phpbb/viglink', $crawler->filter('.console-output > pre')->text());
 
 		// Ensure installed extension appears in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$this->assertStringContainsString('Scroll To Top', $crawler->filter('strong[title="vse/scrolltotop"]')->text());
-		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+		$this->assertStringContainsString('VigLink', $crawler->filter('strong[title="phpbb/viglink"]')->text());
 	}
 
 	public function test_extensions_catalog_updating_extension()
 	{
-		// Enable 'Scroll Page' extension installed earlier
+		// Enable 'VigLink' extension installed earlier
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 		$extension_enable_link = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
-				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+				return (bool) (strpos($node->text(), 'VigLink') !== false);
 			}
 		)->selectLink($this->lang('EXTENSION_ENABLE'))->link();
 		$crawler = self::$client->click($extension_enable_link);
@@ -342,22 +334,22 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
-		// Update 'Scroll Page' enabled extension
+		// Update 'VigLink' enabled extension
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$scrollpage_update_link = $crawler->filter('tr')->reduce(
+		$viglink_update_link = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
-				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
+				return (bool) (strpos($node->text(), 'VigLink') !== false);
 			}
 		)->selectLink($this->lang('EXTENSION_UPDATE'))->link();
-		$crawler = self::$client->click($scrollpage_update_link);
+		$crawler = self::$client->click($viglink_update_link);
 		$this->assertContainsLang('EXTENSIONS_UPDATED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
 		$this->assertStringContainsString('Updating packages', $crawler->filter('.console-output > pre')->text());
 
 		// Ensure installed extension still appears in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$this->assertStringContainsString('Scroll Page', $crawler->filter('strong[title="vse/scrollpage"]')->text());
+		$this->assertStringContainsString('VigLink', $crawler->filter('strong[title="phpbb/viglink"]')->text());
 	}
 
 	public function test_extensions_catalog_removing_extension()
@@ -365,36 +357,22 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 
 		// Check if both enabled and disabled extensions have 'Remove' action available
-		$scrollpage_remove_link = $crawler->filter('tr')->reduce(
+		$viglink_remove_link = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
-				return (bool) (strpos($node->text(), 'Scroll Page') !== false);
-			}
-		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
-
-		$scrolltotop_remove_link = $crawler->filter('tr')->reduce(
-			function ($node, $i)
-			{
-				return (bool) (strpos($node->text(), 'Scroll To Top') !== false);
+				return (bool) (strpos($node->text(), 'VigLink') !== false);
 			}
 		)->selectLink($this->lang('EXTENSION_REMOVE'))->link();
 
 		// Test extensions removal
-		// Remove 'Scroll Page' enabled extension
-		$crawler = self::$client->click($scrollpage_remove_link);
+		// Remove 'VigLink' enabled extension
+		$crawler = self::$client->click($viglink_remove_link);
 		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
-		$this->assertStringContainsString('Removing vse/scrollpage', $crawler->filter('.console-output > pre')->text());
-
-		// Remove 'Scroll To Top' disabled extension
-		$crawler = self::$client->click($scrolltotop_remove_link);
-		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
-		// Assert there's console log output
-		$this->assertStringContainsString('Removing vse/scrolltotop', $crawler->filter('.console-output > pre')->text());
+		$this->assertStringContainsString('Removing phpbb/viglink', $crawler->filter('.console-output > pre')->text());
 
 		// Ensure removed extensions do not appear in available extensions list
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$this->assertStringNotContainsString('Scroll Page', $this->get_content());
-		$this->assertStringNotContainsString('Scroll To Top', $this->get_content());
+		self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
+		$this->assertStringNotContainsString('VigLink', $this->get_content());
 	}
 }

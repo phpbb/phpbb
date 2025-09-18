@@ -22,7 +22,6 @@ class phpbb_filesystem_helper_realpath_test extends phpbb_test_case
 		parent::setUpBeforeClass();
 
 		self::$filesystem_helper_phpbb_own_realpath = new ReflectionMethod('\phpbb\filesystem\helper', 'phpbb_own_realpath');
-		self::$filesystem_helper_phpbb_own_realpath->setAccessible(true);
 	}
 
 	protected function setUp(): void

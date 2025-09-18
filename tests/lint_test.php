@@ -52,12 +52,12 @@ class lint_test extends phpbb_test_case
 		$this->assertEquals(0, $status, "PHP lint failed for $path:\n$output");
 	}
 
-	public function lint_data()
+	public static function lint_data(): array
 	{
-		return $this->check(__DIR__ . '/..');
+		return self::check(__DIR__ . '/..');
 	}
 
-	protected function check($root)
+	protected static function check($root): array
 	{
 		$files = array();
 		$dh = opendir($root);
@@ -92,7 +92,7 @@ class lint_test extends phpbb_test_case
 					__DIR__ . '/../node_modules',
 				)))
 			{
-				$files = array_merge($files, $this->check($path));
+				$files = array_merge($files, self::check($path));
 			}
 			else if (substr($filename, strlen($filename)-4) == '.php')
 			{
