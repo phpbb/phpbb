@@ -80,8 +80,26 @@
 			<li class="row<!-- IF searchresults.S_ROW_COUNT is even --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="row-item">
 					<dt>
-						<a class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{searchresults.U_NEWEST_POST}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
-							{{ Icon('svg', {
+						{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
+							{% set U_ITEM_LINK = searchresults.U_NEWEST_POST %}
+						{% elseif searchresults.U_VIEW_TOPIC %}
+							{% set U_ITEM_LINK = searchresults.U_VIEW_TOPIC %}
+						{% endif %}
+						{% if U_ITEM_LINK is defined %}
+							<a class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{{ U_ITEM_LINK }}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+								{{ Icon('svg', {
+									'globe' : searchresults.S_POST_GLOBAL,
+									'bullhorn' : searchresults.S_POST_ANNOUNCE,
+									'thumbtack' : searchresults.S_POST_STICKY,
+									'lock' : searchresults.S_TOPIC_LOCKED,
+									'arrow-right-bold' : searchresults.S_TOPIC_MOVED,
+									'fire' : searchresults.S_TOPIC_HOT,
+									'file-document-outline' : true,
+								}, '', true, 'c-forum-row-icon') }}
+							</a>
+						{% else %}
+							<span class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+								{{ Icon('svg', {
 								'globe' : searchresults.S_POST_GLOBAL,
 								'bullhorn' : searchresults.S_POST_ANNOUNCE,
 								'thumbtack' : searchresults.S_POST_STICKY,
@@ -89,8 +107,9 @@
 								'arrow-right-bold' : searchresults.S_TOPIC_MOVED,
 								'fire' : searchresults.S_TOPIC_HOT,
 								'file-document-outline' : true,
-							}, '', true, 'c-forum-row-icon') }}
-						</a>
+								}, '', true, 'c-forum-row-icon') }}
+							</span>
+						{% endif %}
 						{% if lang(searchresults.TOPIC_AUTHOR) == S_USERNAME %}
 							<span class="row-item-link-mine"></span>
 						{% endif%}
@@ -99,10 +118,12 @@
 						{% endif %}
 						<div class="list-inner">
 							<!-- EVENT topiclist_row_prepend -->
-							{% if searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
+							{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
 								<a href="{{ searchresults.U_NEWEST_POST }}" class="topictitle unread">{{ searchresults.TOPIC_TITLE }}</a>
-							{% else %}
+							{% elseif searchresults.U_VIEW_TOPIC %}
 								<a href="{{ searchresults.U_VIEW_TOPIC }}" class="topictitle">{{ searchresults.TOPIC_TITLE }}</a>
+							{% else %}
+								<span class="topictitle">{{ searchresults.TOPIC_TITLE }}</span>
 							{% endif %}
 							<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED -->
 								<a href="{searchresults.U_MCP_QUEUE}" title="{L_TOPIC_UNAPPROVED}">
@@ -161,11 +182,11 @@
 					<dd class="views">{searchresults.TOPIC_VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 					<dd class="lastpost">
 						<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT search_results_last_post_author_username_prepend -->{searchresults.LAST_POST_AUTHOR_FULL}<!-- EVENT search_results_last_post_author_username_append -->
-							<!-- IF not S_IS_BOT -->
+							{% if not S_IS_BOT and searchresults.U_LAST_POST %}
 								<a href="{searchresults.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
 									{{ Icon('font', 'arrow-up-right-from-square', VIEW_LATEST_POST, true, 'fas c-last-post-icon') }}
 								</a>
-							<!-- ENDIF -->
+							{% endif %}
 							<br /><time datetime="{searchresults.LAST_POST_TIME_RFC3339}">{searchresults.LAST_POST_TIME}</time>
 						</span>
 					</dd>
