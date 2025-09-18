@@ -22,8 +22,15 @@ class phpbb_mock_event_dispatcher extends \phpbb\event\dispatcher
 	{
 	}
 
-	public function trigger_event($eventName, $data = array())
+	public function trigger_event($eventName, $data = array()): array
 	{
-		return array();
+		$data = (array) $data;
+		
+		if ($eventName === 'core.exit_handler')
+		{
+			$data['exit_handler_override'] = true;
+		}
+
+		return $data;
 	}
 }
