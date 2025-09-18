@@ -159,12 +159,12 @@
 			<dl class="row-item">
 				<dt>
 					{% if topicrow.U_NEWEST_POST and topicrow.S_UNREAD_TOPIC and not S_IS_BOT %}
-						{% set topicrow.U_ITEM_LINK = topicrow.U_NEWEST_POST %}
+						{% set U_ITEM_LINK = topicrow.U_NEWEST_POST %}
 					{% elseif topicrow.U_VIEW_TOPIC %}
-						{% set topicrow.U_ITEM_LINK = topicrow.U_VIEW_TOPIC %}
+						{% set U_ITEM_LINK = topicrow.U_VIEW_TOPIC %}
 					{% endif %}
-					{% if topicrow.U_ITEM_LINK is defined %}
-						<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{topicrow.U_NEWEST_POST}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
+					{% if U_ITEM_LINK is defined %}
+						<a class="row-item-link{% if topicrow.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{{ U_ITEM_LINK }}" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">
 							{{ Icon('svg', {
 								'globe' : topicrow.S_POST_GLOBAL,
 								'bullhorn' : topicrow.S_POST_ANNOUNCE,

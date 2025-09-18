@@ -81,12 +81,12 @@
 				<dl class="row-item">
 					<dt>
 						{% if searchresults.U_NEWEST_POST and searchresults.S_UNREAD_TOPIC and not S_IS_BOT %}
-							{% set searchresults.U_ITEM_LINK = searchresults.U_NEWEST_POST %}
+							{% set U_ITEM_LINK = searchresults.U_NEWEST_POST %}
 						{% elseif searchresults.U_VIEW_TOPIC %}
-							{% set searchresults.U_ITEM_LINK = searchresults.U_VIEW_TOPIC %}
+							{% set U_ITEM_LINK = searchresults.U_VIEW_TOPIC %}
 						{% endif %}
-						{% if searchresults.U_ITEM_LINK is defined %}
-							<a class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{searchresults.U_NEWEST_POST}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
+						{% if U_ITEM_LINK is defined %}
+							<a class="row-item-link{% if searchresults.S_UNREAD_TOPIC %} unread{% else %} read{% endif %}" href="{{ U_ITEM_LINK }}" title="{searchresults.TOPIC_FOLDER_IMG_ALT}">
 								{{ Icon('svg', {
 									'globe' : searchresults.S_POST_GLOBAL,
 									'bullhorn' : searchresults.S_POST_ANNOUNCE,
