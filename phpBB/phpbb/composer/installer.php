@@ -545,8 +545,6 @@ class installer
 	 */
 	protected function generate_ext_json_file(array $packages)
 	{
-		$io = new NullIO();
-
 		$composer = $this->get_composer(null);
 
 		$core_packages = $this->get_core_packages($composer);
@@ -659,8 +657,6 @@ class installer
 	 */
 	protected function resolve_highest_versions(array $package_names, $composer, ConstraintInterface $core_constraint, $core_stability): array
 	{
-		$io = new NullIO();
-
 		$compatible_packages = [];
 		$repositories = $composer->getRepositoryManager()->getRepositories();
 
