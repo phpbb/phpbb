@@ -602,8 +602,8 @@ class installer
 				if (is_int($name))
 				{
 					// Numeric key means just a name
-					$pkgName = $constraint;
-					$unconstrained[$pkgName] = true;
+					$package_name = $constraint;
+					$unconstrained[$package_name] = true;
 				}
 				else
 				{
@@ -618,14 +618,14 @@ class installer
 			if (!empty($unconstrained))
 			{
 				// Load composer on the just-written file so repositories and core constraints are available
-				$extComposer = $this->get_composer($this->get_composer_ext_json_filename());
+				$ext_composer = $this->get_composer($this->get_composer_ext_json_filename());
 
 				/** @var ConstraintInterface $core_constraint */
-				$core_constraint = $extComposer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
-				$core_stability = $extComposer->getPackage()->getMinimumStability();
+				$core_constraint = $ext_composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
+				$core_stability = $ext_composer->getPackage()->getMinimumStability();
 
 				// Resolve highest compatible versions for each unconstrained package
-				$pins = $this->resolve_highest_versions(array_keys($unconstrained), $extComposer, $core_constraint, $core_stability);
+				$pins = $this->resolve_highest_versions(array_keys($unconstrained), $ext_composer, $core_constraint, $core_stability);
 
 				if (!empty($pins))
 				{
@@ -651,13 +651,13 @@ class installer
 	 * Resolve the highest compatible versions for the given package names
 	 * based on repositories and phpBB/PHP constraints from the provided Composer instance.
 	 *
-	 * @param array $packageNames list of package names to resolve
+	 * @param array $package_names list of package names to resolve
 	 * @param Composer|PartialComposer $composer Composer instance configured with repositories
 	 * @param ConstraintInterface $core_constraint phpBB version constraint
 	 * @param string $core_stability minimum stability
 	 * @return array [packageName => prettyVersion]
 	 */
-	private function resolve_highest_versions(array $packageNames, $composer, ConstraintInterface $core_constraint, $core_stability): array
+	protected function resolve_highest_versions(array $package_names, $composer, ConstraintInterface $core_constraint, $core_stability): array
 	{
 		$io = new NullIO();
 
@@ -670,7 +670,7 @@ class installer
 			{
 				if ($repository instanceof ComposerRepository)
 				{
-					foreach ($packageNames as $name)
+					foreach ($package_names as $name)
 					{
 						$versions = $repository->findPackages($name);
 						if (!empty($versions))
@@ -682,17 +682,17 @@ class installer
 				else
 				{
 					// Preload and filter by name for non-composer repositories
-					$byName = [];
-					foreach ($repository->getPackages() as $pkg)
+					$package_name = [];
+					foreach ($repository->getPackages() as $package)
 					{
-						$n = $pkg->getName();
-						if (in_array($n, $packageNames, true))
+						$name = $package->getName();
+						if (in_array($name, $package_names, true))
 						{
-							$byName[$n][] = $pkg;
+							$package_name[$name][] = $package;
 						}
 					}
 
-					foreach ($byName as $name => $versions)
+					foreach ($package_name as $name => $versions)
 					{
 						$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $core_stability, $name, $versions);
 					}
@@ -705,7 +705,7 @@ class installer
 		}
 
 		$pins = [];
-		foreach ($packageNames as $name)
+		foreach ($package_names as $name)
 		{
 			if (empty($compatible_packages[$name]))
 			{
