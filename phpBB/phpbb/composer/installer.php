@@ -696,6 +696,7 @@ class installer
 			}
 			catch (\Exception $e)
 			{
+				// If a repo fails, just skip it.
 				continue;
 			}
 		}
