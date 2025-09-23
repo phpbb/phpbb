@@ -24,7 +24,10 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	protected function tearDown(): void
 	{
-		$this->uninstall_ext('foo/bar');
+		if (self::$tests_count == 1)
+		{
+			$this->uninstall_ext('foo/bar');
+		}
 
 		parent::tearDown();
 	}
@@ -55,7 +58,7 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 
 	protected static function setup_extensions()
 	{
-		return ['foo/bar'];
+		return self::$tests_count == self::$tests_number ? ['foo/bar'] : [];
 	}
 
 	public function test_extensions_list()

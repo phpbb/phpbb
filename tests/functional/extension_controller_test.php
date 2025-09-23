@@ -39,7 +39,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 	protected static function setup_extensions()
 	{
-		return ['foo/bar', 'foo/foo'];
+		return self::$tests_count == self::$tests_number ? ['foo/bar', 'foo/foo'] : [];
 	}
 
 	protected function setUp(): void
@@ -51,8 +51,11 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 
 	protected function tearDown(): void
 	{
-		$this->uninstall_ext('foo/bar');
-		$this->uninstall_ext('foo/foo');
+		if (self::$tests_count == 1)
+		{
+			$this->uninstall_ext('foo/bar');
+			$this->uninstall_ext('foo/foo');
+		}
 
 		parent::tearDown();
 	}

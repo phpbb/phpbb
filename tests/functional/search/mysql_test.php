@@ -20,6 +20,17 @@ class phpbb_functional_search_mysql_test extends phpbb_functional_search_base
 {
 	protected $search_backend = 'phpbb\search\backend\fulltext_mysql';
 
+	protected function setUp(): void
+	{
+		$sql_layer = substr(self::$config['dbms'], strlen('phpbb\\db\\driver\\'));
+		if ($sql_layer !== 'mysqli') // MySQL search backend runs on MySQL/MariaDB only
+		{
+			$this->markTestSkipped($sql_layer . ': MySQL search is not supported');
+		}
+
+		parent::setUp();
+	}
+
 	protected function create_search_index($backend = null)
 	{
 		parent::create_search_index($backend);

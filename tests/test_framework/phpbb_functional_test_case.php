@@ -48,6 +48,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 	protected static $config = array();
 	protected static $already_installed = false;
+	protected static $tests_count = 0;
+	protected static $tests_number = 0;
 
 	static public function setUpBeforeClass(): void
 	{
@@ -73,6 +75,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::install_board();
 			self::$already_installed = true;
 		}
+
+		self::$tests_number = self::$tests_count = count(array_filter(get_class_methods(static::class), function($val)
+			{
+				return str_starts_with($val, 'test_');
+			})
+		);
 	}
 
 	/**
@@ -143,7 +151,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		parent::tearDown();
 
-		if ($this->db instanceof \phpbb\db\driver\driver_interface)
+		self::$tests_count--;
+
+		if (self::$tests_count === 0 && $this->db instanceof \phpbb\db\driver\driver_interface)
 		{
 			// Unset ci_tests_no_lock_posting from config
 			$sql = 'DELETE FROM ' . CONFIG_TABLE . "
@@ -234,7 +244,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			$dbms = self::$config['dbms'];
 			$this->db = new $dbms();
-			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport'], true);
 		}
 		return $this->db;
 	}
