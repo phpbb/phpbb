@@ -21,19 +21,18 @@ class phpbb_functional_smilies_test extends phpbb_functional_test_case
 		$this->login();
 
 		// Get smilies data
-		$db = $this->get_db();
 		$sql_ary = [
 			'SELECT'	=> 's.smiley_url, MIN(s.emotion) AS emotion, MIN(s.code) AS code, s.smiley_width, s.smiley_height, MIN(s.smiley_order) AS min_smiley_order',
 			'FROM'		=> [
 				SMILIES_TABLE => 's',
 			],
 			'GROUP_BY'	=> 's.smiley_url, s.smiley_width, s.smiley_height',
-			'ORDER_BY'	=> $db->sql_quote('min_smiley_order'),
+			'ORDER_BY'	=> $this->db->sql_quote('min_smiley_order'),
 		];
-		$sql = $db->sql_build_query('SELECT', $sql_ary);
-		$result = $db->sql_query($sql);
-		$smilies = $db->sql_fetchrowset($result);
-		$db->sql_freeresult($result);
+		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
+		$result = $this->db->sql_query($sql);
+		$smilies = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
 
 		// Visit smilies page
 		$crawler = self::request('GET', 'posting.php?mode=smilies');

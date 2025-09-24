@@ -28,9 +28,7 @@ class phpbb_functional_acp_registration_test extends phpbb_functional_test_case
 
 	public function test_submitting_activation_method()
 	{
-		$db = $this->get_db();
-
-		$this->set_email_enable($db, false);
+		$this->set_email_enable($this->db, false);
 
 		$this->add_lang('acp/board');
 		$this->login();
@@ -50,6 +48,6 @@ class phpbb_functional_acp_registration_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertNotContainsLang('ACC_ACTIVATION_WARNING', $crawler->filter('div.main')->text());
 
-		$this->set_email_enable($db, true);
+		$this->set_email_enable($this->db, true);
 	}
 }

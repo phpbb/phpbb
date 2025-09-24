@@ -40,15 +40,14 @@ class phpbb_functional_auth_test extends phpbb_functional_test_case
 	{
 		global $cache, $config;
 		$cache = new phpbb_mock_null_cache;
-		$db = $this->get_db();
 		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'foobar' WHERE config_name = 'auth_method'";
-		$db->sql_query($sql);
+		$this->db->sql_query($sql);
 		$config['auth_method'] = 'foobar';
 		$this->login('anothertestuser');
 		$crawler = self::request('GET', 'index.php');
 		$this->assertStringContainsString('anothertestuser', $crawler->filter('#username_logged_in')->text());
 		$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = 'db' WHERE config_name =  'auth_method'";
-		$db->sql_query($sql);
+		$this->db->sql_query($sql);
 		$config['auth_method'] = 'db';
 	}
 

@@ -119,15 +119,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->lang = array();
 		$this->add_lang('common');
 
-		$db = $this->get_db();
+		$this->get_db();
 
 		// Special flag for testing without possibility to run into lock scenario.
 		// Unset entry and add it back if lock behavior for posting should be tested.
 		// Unset ci_tests_no_lock_posting from config
-		$db->sql_return_on_error(true);
+		$this->db->sql_return_on_error(true);
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
 		$this->db->sql_query($sql);
-		$db->sql_return_on_error(false);
+		$this->db->sql_return_on_error(false);
 
 		foreach (static::setup_extensions() as $extension)
 		{
@@ -135,10 +135,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 			$sql = 'SELECT ext_active
 				FROM ' . EXT_TABLE . "
-				WHERE ext_name = '" . $db->sql_escape($extension). "'";
-			$result = $db->sql_query($sql);
-			$status = (bool) $db->sql_fetchfield('ext_active');
-			$db->sql_freeresult($result);
+				WHERE ext_name = '" . $this->db->sql_escape($extension). "'";
+			$result = $this->db->sql_query($sql);
+			$status = (bool) $this->db->sql_fetchfield('ext_active');
+			$this->db->sql_freeresult($result);
 
 			if (!$status)
 			{
@@ -289,7 +289,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
-		$db = $this->get_db();
+		$this->get_db();
 		$db_doctrine = $this->get_db_doctrine();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
@@ -300,7 +300,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$migrator = new \phpbb\db\migrator(
 			$container,
 			$config,
-			$db,
+			$this->db,
 			$db_tools,
 			self::$config['table_prefix'] . 'migrations',
 			$phpbb_root_path,
@@ -322,7 +322,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
-			$db,
+			$this->db,
 			$config,
 			$finder_factory,
 			self::$config['table_prefix'] . 'ext',
@@ -737,10 +737,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 
-		$db = $this->get_db();
+		$this->get_db();
 		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
@@ -749,17 +749,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'theme_id' => $style_id,
 				'imageset_id' => $style_id,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'imageset_id' => $style_id,
 				'imageset_name' => $style_path,
 				'imageset_copyright' => '',
 				'imageset_path' => $style_path,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'template_id' => $style_id,
 				'template_name' => $style_path,
 				'template_copyright' => '',
@@ -768,9 +768,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'template_inherits_id' => $parent_style_id,
 				'template_inherit_path' => $parent_style_path,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'theme_id' => $style_id,
 				'theme_name' => $style_path,
 				'theme_copyright' => '',
@@ -779,7 +779,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'theme_mtime' => 0,
 				'theme_data' => '',
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
 			if ($style_path != 'prosilver')
 			{
@@ -789,7 +789,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		else
 		{
-			$db->sql_multi_insert(STYLES_TABLE, array(array(
+			$this->db->sql_multi_insert(STYLES_TABLE, array(array(
 				'style_name' => $style_path,
 				'style_copyright' => '',
 				'style_active' => 1,
@@ -811,13 +811,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 
-		$db = $this->get_db();
-		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+		$this->get_db();
+		$this->db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
 		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
-			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
-			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
 			if ($style_path != 'prosilver')
 			{
@@ -904,13 +904,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 */
 	protected function get_group_id($group_name)
 	{
-		$db = $this->get_db();
+		$this->get_db();
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+			WHERE group_name = '" . $this->db->sql_escape($group_name) . "'";
+		$result = $this->db->sql_query($sql);
+		$group_id = (int) $this->db->sql_fetchfield('group_id');
+		$this->db->sql_freeresult($result);
 
 		return $group_id;
 	}
@@ -922,13 +922,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 */
 	protected function get_search_type()
 	{
-		$db = $this->get_db();
 		$sql = 'SELECT config_value as search_type
 			FROM ' . CONFIG_TABLE . "
-			WHERE config_name = '" . $db->sql_escape('search_type') . "'";
-		$result = $db->sql_query($sql);
-		$search_type = $db->sql_fetchfield('search_type');
-		$db->sql_freeresult($result);
+			WHERE config_name = '" . $this->db->sql_escape('search_type') . "'";
+		$result = $this->db->sql_query($sql);
+		$search_type = $this->db->sql_fetchfield('search_type');
+		$this->db->sql_freeresult($result);
 
 		return $search_type;
 	}

@@ -73,13 +73,12 @@ class phpbb_functional_switch_permissions_test extends phpbb_functional_test_cas
 	 */
 	public function test_switch_permissions_ucp()
 	{
-		$db = $this->get_db();
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . self::TEST_USER . "'";
-		$result = $db->sql_query($sql);
-		$user_id = $db->sql_fetchfield('user_id');
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$user_id = $this->db->sql_fetchfield('user_id');
+		$this->db->sql_freeresult($result);
 
 		// Open memberlist profile page for user
 		$crawler = self::request('GET', "memberlist.php?mode=viewprofile&u={$user_id}&sid={$this->sid}");
