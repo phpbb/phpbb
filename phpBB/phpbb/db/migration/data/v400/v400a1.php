@@ -28,7 +28,6 @@ class v400a1 extends \phpbb\db\migration\migration
 			'\phpbb\db\migration\data\v400\remove_remote_avatar',
 			'\phpbb\db\migration\data\v400\increase_avatar_size',
 			'\phpbb\db\migration\data\v400\remove_img_link',
-			'\phpbb\db\migration\data\v400\rename_duplicated_index_names',
 			'\phpbb\db\migration\data\v400\add_bbcode_font_icon',
 			'\phpbb\db\migration\data\v400\font_awesome_6_upgrade',
 			'\phpbb\db\migration\data\v400\remove_broken_captcha',
