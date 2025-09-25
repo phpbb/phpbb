@@ -22,28 +22,21 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		'./',
 	);
 
-	protected function tearDown(): void
-	{
-		if (self::$tests_count == 1)
-		{
-			$this->uninstall_ext('foo/bar');
-		}
-
-		parent::tearDown();
-	}
-
 	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
 		self::$helper = new phpbb_test_case_helpers(__CLASS__);
 		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
+
+		self::install_ext('foo/bar');
 	}
 
 	public static function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
+		self::uninstall_ext('foo/bar');
 		self::$helper->restore_original_ext_dir();
 	}
 
@@ -54,11 +47,6 @@ class phpbb_functional_metadata_manager_test extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 		$this->add_lang('acp/extensions');
-	}
-
-	protected static function setup_extensions()
-	{
-		return self::$tests_count == self::$tests_number ? ['foo/bar'] : [];
 	}
 
 	public function test_extensions_list()

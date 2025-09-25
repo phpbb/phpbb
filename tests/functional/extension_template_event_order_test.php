@@ -16,24 +16,29 @@
  */
 class phpbb_functional_extension_template_event_order_test extends phpbb_functional_test_case
 {
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = [
+	protected static $fixtures = [
 		'./',
 	];
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
 		self::$helper = new phpbb_test_case_helpers(__CLASS__);
 		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
+
+		self::install_ext('foo/bar');
+		self::install_ext('foo/foo');
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
+		self::uninstall_ext('foo/bar');
+		self::uninstall_ext('foo/foo');
 		self::$helper->restore_original_ext_dir();
 	}
 
@@ -44,21 +49,6 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 		$this->purge_cache();
 	}
 
-	protected function tearDown(): void
-	{
-		if (self::$tests_count == 1)
-		{
-			$this->uninstall_ext('foo/bar');
-			$this->uninstall_ext('foo/foo');
-		}
-
-		parent::tearDown();
-	}
-
-	protected static function setup_extensions()
-	{
-		return self::$tests_count == self::$tests_number ? ['foo/bar', 'foo/foo'] : [];
-	}
 
 	/**
 	 * Check extensions template event listener prioritizing

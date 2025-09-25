@@ -153,17 +153,6 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$crawler = self::submit($form, array('username' => self::TEST_USER, 'password' => self::TEST_USER));
 		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
-		$cookies = self::$cookieJar->all();
-
-		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie)
-		{
-			if (substr($cookie->getName(), -4) == '_sid')
-			{
-				$this->sid = $cookie->getValue();
-			}
-		}
-
 		$this->logout();
 
 		$crawler = self::request('GET', 'ucp.php');
