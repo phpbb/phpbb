@@ -2408,7 +2408,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			case LOGIN_ERROR_ATTEMPTS:
 
 				$captcha = $phpbb_container->get('captcha.factory')->get_instance($config['captcha_plugin']);
-				$captcha->init(CONFIRM_LOGIN);
+				$captcha->init(\phpbb\captcha\plugins\confirm_type::LOGIN);
 				// $captcha->reset();
 
 				$template->assign_vars(array(

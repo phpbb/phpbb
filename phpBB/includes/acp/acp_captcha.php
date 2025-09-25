@@ -194,7 +194,7 @@ class acp_captcha
 		global $phpbb_container;
 
 		$captcha = $phpbb_container->get('captcha.factory')->get_instance($selected);
-		$captcha->init(CONFIRM_REG);
+		$captcha->init(\phpbb\captcha\plugins\confirm_type::REGISTRATION);
 		$captcha->execute_demo();
 
 		garbage_collection();
