@@ -384,7 +384,18 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LO
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-$s_search_hidden_fields = array('fid' => array($forum_id));
+// Send the forum id... and maybe some other fields, depending on permissions
+$s_search_hidden_fields = [
+	'fid' => [$forum_id],
+];
+
+if ($auth->acl_get('f_list_topics', $forum_id) && !$auth->acl_get('f_read', $forum_id))
+{
+	// If the user has list access but not read access, then force the search to only be a topic title search
+	$s_search_hidden_fields['sr'] = 'topics';
+	$s_search_hidden_fields['sf'] = 'titleonly';
+}
+
 if ($_SID)
 {
 	$s_search_hidden_fields['sid'] = $_SID;
@@ -1017,7 +1028,7 @@ if (count($topic_list))
 			'S_TOPIC_MOVED'			=> ($row['topic_status'] == ITEM_MOVED) ? true : false,
 
 			'U_NEWEST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread' : false,
-			'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id)  ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,
+			'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,
 			'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'U_VIEW_TOPIC'			=> $view_topic_url,

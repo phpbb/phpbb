@@ -247,6 +247,15 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 	}
 
+	// Consider if there are any forums where can read forum = no, can read topics = yes
+	// In these cases, the user should see the topic title in the search results but not the link to the topic (or any posts) because they don't have the permissions
+	if ($request->variable('sr', '') == 'topics' && $search_fields == 'titleonly')
+	{
+		// The user could get here from a quick search through the viewforum page, or by doing a main search displayed by topics and searching only the topic titles.
+		// Allow the 'can read topics = yes' forums back in to the search by removing from $ex_fid_ary any of the 'can read topics' forums
+		$ex_fid_ary = array_diff($ex_fid_ary, array_keys($auth->acl_getf('f_list_topics', true)));
+	}
+
 	$not_in_fid = (count($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, f.forum_flags, fa.user_id
@@ -1157,10 +1166,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_TOPIC_DELETED'		=> $topic_deleted,
 					'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,
 
-					'U_LAST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
+					'U_LAST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'] : false,
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 					'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-					'U_NEWEST_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread',
+					'U_NEWEST_POST'			=> $auth->acl_get('f_read', $forum_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", $view_topic_url_params . '&amp;view=unread') . '#unread' : false,
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
 					'U_MCP_QUEUE'			=> $u_mcp_queue,
 				);
@@ -1230,7 +1239,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'TOPIC_REPLIES'		=> $replies,
 				'TOPIC_VIEWS'		=> $row['topic_views'],
 
-				'U_VIEW_TOPIC'		=> $view_topic_url,
+				'U_VIEW_TOPIC'		=> $auth->acl_get('f_read', $forum_id) ? $view_topic_url : false,
 				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '',
 			));
