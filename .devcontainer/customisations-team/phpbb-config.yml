@@ -6,8 +6,8 @@ installer:
 
     board:
         lang: en
-        name: My Board
-        description: My amazing new phpBB board
+        name: My Board (with Titania)
+        description: My amazing new phpBB board (with Titania)
 
     database:
         dbms: mysqli
@@ -23,7 +23,6 @@ installer:
         smtp_delivery : ~
         smtp_host: ~
         smtp_port: ~
-        smtp_auth: ~
         smtp_user: ~
         smtp_pass: ~
 
@@ -35,4 +34,4 @@ installer:
         server_port: 80
         script_path: /
 
-    extensions: []
+    extensions: ["phpbb/titania"]
