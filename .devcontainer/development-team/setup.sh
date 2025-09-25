@@ -1,5 +1,6 @@
-# setup.sh
+# setup.sh - Development Team
 # Commands to install and configure phpBB
+echo "[Codespaces] Development Team configuration..."
 
 # Start MySQL
 echo "[Codespaces] Start MySQL"
@@ -7,11 +8,7 @@ sudo service mysql start
 
 # Start Apache
 echo "[Codespaces] Start Apache"
-sudo service apache2 start
-
-# Add SSH key
-echo "[Codespaces] Add SSH key"
-echo "$SSH_KEY" > /home/vscode/.ssh/id_rsa && chmod 600 /home/vscode/.ssh/id_rsa
+sudo apache2ctl start
 
 # Create a MySQL user to use
 echo "[Codespaces] Create MySQL user"
@@ -30,23 +27,24 @@ echo "[Codespaces] Create Symlink of webroot"
 sudo rm -rf /var/www/html
 sudo ln -s /workspaces/phpbb/phpBB /var/www/html
 
-# Copy phpBB config
-echo "[Codespaces] Copy phpBB configuration"
-cp /workspaces/phpbb/.devcontainer/resources/phpbb-config.yml /workspaces/phpbb/phpBB/install/install-config.yml
-
 # Force the server URL to reflect the Codespace
 # https://docs.github.com/en/codespaces/developing-in-a-codespace/default-environment-variables-for-your-codespace
 if [ "$CODESPACES" = true ] ; then
-    echo "[Codespaces] Set the phpBB server name using default environment variables"
-    codespaces_url="${CODESPACE_NAME}-80.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
-    sed -i "s/localhost/$codespaces_url/g" /workspaces/phpbb/phpBB/install/install-config.yml
+    cp /workspaces/phpbb/.devcontainer/development-team/phpbb-config.yml /tmp/phpbb-config.yml
+    CODESPACES_URL="${CODESPACE_NAME}-80.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}"
+    echo "[Codespaces] Set the phpBB server name using default environment variables: $CODESPACES_URL"
+    sed -i "s/localhost/$CODESPACES_URL/g" /tmp/phpbb-config.yml
 fi
+
+# Copy phpBB config
+# echo "[Codespaces] Copy phpBB configuration"
+# cp /workspaces/phpbb/.devcontainer/resources/phpbb-config.yml /workspaces/phpbb/phpBB/install/install-config.yml
 
 # Install phpBB
 echo "[Codespaces] Run phpBB CLI installation"
 cd /workspaces/phpbb/phpBB && composer install --no-interaction
-sudo php /workspaces/phpbb/phpBB/install/phpbbcli.php install /workspaces/phpbb/phpBB/install/install-config.yml
+sudo php /workspaces/phpbb/phpBB/install/phpbbcli.php install /tmp/phpbb-config.yml
 rm -rf /workspaces/phpbb/phpBB/install
 
 # Finished
-echo "[Codespaces] phpBB installation completed"
+echo "[Codespaces] phpBB (Development Team) installation completed"
