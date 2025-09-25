@@ -24,12 +24,12 @@ class version_helper
 	/**
 	 * @var string Host
 	 */
-	protected $host = 'version.phpbb.com';
+	protected $host;
 
 	/**
 	 * @var string Path to file
 	 */
-	protected $path = '/phpbb';
+	protected $path;
 
 	/**
 	 * @var string File name
@@ -84,12 +84,16 @@ class version_helper
 	 * @param \phpbb\cache\service $cache
 	 * @param \phpbb\config\config $config
 	 * @param \phpbb\file_downloader $file_downloader
+	 * @param \phpbb\update\update_info_provider_interface $url_provider
 	 */
-	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\file_downloader $file_downloader)
+	public function __construct(\phpbb\cache\service $cache, \phpbb\config\config $config, \phpbb\file_downloader $file_downloader, \phpbb\update\update_info_provider_interface $url_provider)
 	{
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->file_downloader = $file_downloader;
+
+		$this->host = $url_provider->get_version_url();
+		$this->path = $url_provider->get_version_path();
 
 		if (defined('PHPBB_QA'))
 		{

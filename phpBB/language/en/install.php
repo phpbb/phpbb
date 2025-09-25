@@ -285,6 +285,9 @@ $lang = array_merge($lang, array(
 	'SMILIES_WINK'					=> 'Wink',
 
 	'TOPICS_TOPIC_TITLE'			=> 'Welcome to phpBB',
+
+	'AUTO_UPDATE_SUCCESS'			=> 'Updates downloaded',
+	'AUTOMATIC_UPDATE_SUCCESS'		=> 'Updates have been downloaded, please <a href="%s">click here</a> to apply them.',
 ));
 
 // Common navigation items' translation

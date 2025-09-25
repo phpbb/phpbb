@@ -2122,12 +2122,17 @@ li .pagnation li span,
 ---------------------------------------- */
 .successbox,
 .errorbox,
-.warningbox {
+.warningbox,
+.infobox {
 	text-align: center;
 	color: #ffffff;
 	clear: both;
 	margin: 10px 0;
 	padding: 8px;
+}
+
+.infobox {
+	background-color: #32749a;
 }
 
 .success {
@@ -2147,10 +2152,12 @@ li .pagnation li span,
 }
 
 .warningbox {
-	background-color: #fca600;
+	background-color: #e9c316;
+	color: #111111;
 }
 
 .successbox h3,
+.infobox h3,
 .errorbox h3 {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
@@ -2159,6 +2166,7 @@ li .pagnation li span,
 }
 
 .successbox p,
+.infobox p,
 .errorbox p {
 	font-size: 0.85em;
 	color: #ffffff;
@@ -2168,6 +2176,9 @@ li .pagnation li span,
 .errorbox a:link,
 .errorbox a:active,
 .errorbox a:visited,
+.infobox a:link,
+.infobox a:active,
+.infobox a:visited,
 .successbox a:link,
 .successbox a:active,
 .successbox a:visited {
@@ -2177,6 +2188,7 @@ li .pagnation li span,
 }
 
 .errorbox a:hover,
+.infobox a:hover,
 .successbox a:hover {
 	font-weight: bold;
 	text-decoration: none;

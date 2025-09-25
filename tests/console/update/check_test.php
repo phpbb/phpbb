@@ -89,7 +89,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 			->getMock();
 
 		$config = new \phpbb\config\config(array('version' => $current_version));
-		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader());
+		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader(), new \phpbb\update\update_info());
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('version_helper', $this->version_helper);
