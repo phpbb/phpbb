@@ -15,6 +15,7 @@ namespace phpbb\db;
 
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\migration\container_aware_migration;
 use phpbb\db\migration\exception;
 use phpbb\db\migration\helper;
 use phpbb\db\output_handler\migrator_output_handler_interface;
@@ -980,7 +981,7 @@ class migrator
 	{
 		$migration = new $name($this->config, $this->db, $this->db_tools, $this->phpbb_root_path, $this->php_ext, $this->table_prefix, $this->tables);
 
-		if ($migration instanceof ContainerAwareInterface)
+		if ($migration instanceof container_aware_migration)
 		{
 			$migration->setContainer($this->container);
 		}

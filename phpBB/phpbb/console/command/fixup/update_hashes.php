@@ -77,7 +77,7 @@ class update_hashes extends \phpbb\console\command\command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		// Get count to be able to display progress
 		$sql = 'SELECT COUNT(user_id) AS count

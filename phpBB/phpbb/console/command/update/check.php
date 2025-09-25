@@ -82,7 +82,7 @@ class check extends \phpbb\console\command\command
 	* @return int 0 if the board is up to date, 1 if it is not and 2 if an error occurred.
 	* @throws \RuntimeException
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 
