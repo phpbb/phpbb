@@ -196,4 +196,4 @@ services:
             - '@cache'
             - '@config'
             - '@file_downloader'
-            - '@user'
+            - '@updater.url_provider'
