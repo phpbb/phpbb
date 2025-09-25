@@ -135,7 +135,7 @@ class reparse extends \phpbb\console\command\command
 	* @param OutputInterface $output
 	* @return int
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$this->input = $input;
 		$this->output = $output;

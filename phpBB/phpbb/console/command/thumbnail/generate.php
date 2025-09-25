@@ -121,7 +121,7 @@ class generate extends \phpbb\console\command\command
 	*
 	* @return int 0.
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

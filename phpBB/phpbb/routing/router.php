@@ -146,7 +146,7 @@ class router implements RouterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getRouteCollection()
+	public function getRouteCollection(): RouteCollection
 	{
 		return $this->get_routes();
 	}
@@ -154,7 +154,7 @@ class router implements RouterInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function setContext(RequestContext $context)
+	public function setContext(RequestContext $context): void
 	{
 		$this->context = $context;
 

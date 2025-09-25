@@ -56,7 +56,7 @@ class proxy_instantiator implements InstantiatorInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function instantiateProxy(ContainerInterface $container, Definition $definition, $id, $realInstantiator)
+	public function instantiateProxy(ContainerInterface $container, Definition $definition, $id, $realInstantiator): object
 	{
 		return $this->factory->createProxy(
 			$definition->getClass(),

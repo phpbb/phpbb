@@ -48,7 +48,7 @@ class migration_tips extends \phpbb\console\command\command
 	 *
 	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$migrations = $this->extension_manager->get_finder()
 			->set_extensions(array())
