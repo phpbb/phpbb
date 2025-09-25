@@ -10,10 +10,6 @@ sudo service mysql start
 echo "[Codespaces] Start Apache"
 sudo apache2ctl start
 
-# Add SSH key
-# echo "[Codespaces] Add SSH key"
-# echo "$SSH_KEY" > /home/vscode/.ssh/id_rsa && chmod 600 /home/vscode/.ssh/id_rsa
-
 # Create a MySQL user to use
 echo "[Codespaces] Create MySQL user"
 sudo mysql -u root<<EOFMYSQL
@@ -37,13 +33,13 @@ if [ "$CODESPACES" = true ] ; then
 fi
 
 URL_EPV="https://github.com/phpbb/epv"
-URL_TV="https://github.com/battye/phpbb-translation-validator"
-URL_TITANIA="https://github.com/battye/customisation-db.git"
+URL_TV="https://github.com/phpbb/phpbb-translation-validator"
+URL_TITANIA="https://github.com/phpbb/customisation-db.git"
 
 # Install Titania
 echo "[Codespaces] Install Titania"
 cd /workspaces/
-git clone -b 3.3.x-phpbb-codespaces $URL_TITANIA titania
+git clone -b oberon $URL_TITANIA titania
 cd /workspaces/titania
 chmod 755 files store
 composer install --no-interaction

@@ -10,10 +10,6 @@ sudo service mysql start
 echo "[Codespaces] Start Apache"
 sudo apache2ctl start
 
-# Add SSH key
-# echo "[Codespaces] Add SSH key"
-# echo "$SSH_KEY" > /home/vscode/.ssh/id_rsa && chmod 600 /home/vscode/.ssh/id_rsa
-
 # Create a MySQL user to use
 echo "[Codespaces] Create MySQL user"
 sudo mysql -u root<<EOFMYSQL
@@ -23,8 +19,8 @@ sudo mysql -u root<<EOFMYSQL
 EOFMYSQL
 
 # Download dependencies
-# echo "[Codespaces] Install Composer dependencies"
-# composer install --no-interaction
+echo "[Codespaces] Install Composer dependencies"
+composer install --no-interaction
 
 # Symlink the webroot so it can be viewed
 echo "[Codespaces] Create Symlink of webroot"

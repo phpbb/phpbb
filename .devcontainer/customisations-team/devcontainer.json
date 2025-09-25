@@ -5,7 +5,7 @@
 	"build": {
 		"dockerfile": "../Dockerfile",
 		"args": { 
-			"VARIANT": "ubuntu-22.04"
+			"VARIANT": "ubuntu-24.04"
 		}
 	},
 
