@@ -75,7 +75,7 @@ class storage_track extends container_aware_migration
 		/** @var file_tracker $file_tracker */
 		$file_tracker = $this->container->get('storage.file_tracker');
 
-		$sql = 'SELECT user_avatar
+		$sql = 'SELECT DISTINCT user_avatar
 			FROM ' . USERS_TABLE . "
 			WHERE user_avatar_type = 'avatar.driver.upload'";
 		$result = $this->db->sql_query($sql);
@@ -121,7 +121,7 @@ class storage_track extends container_aware_migration
 		/** @var file_tracker $file_tracker */
 		$file_tracker = $this->container->get('storage.file_tracker');
 
-		$sql = 'SELECT physical_filename, thumbnail
+		$sql = 'SELECT DISTINCT physical_filename, thumbnail
 			FROM ' . ATTACHMENTS_TABLE;
 		$result = $this->db->sql_query($sql);
 
@@ -161,7 +161,7 @@ class storage_track extends container_aware_migration
 		/** @var file_tracker $file_tracker */
 		$file_tracker = $this->container->get('storage.file_tracker');
 
-		$sql = 'SELECT filename
+		$sql = 'SELECT DISTINCT filename
 			FROM ' . BACKUPS_TABLE;
 		$result = $this->db->sql_query($sql);
 
