@@ -56,6 +56,33 @@ $db = new \phpbb\db\driver\sqlite3();
 $ref = new ReflectionClass(\Doctrine\DBAL\Connection::class);
 $db_doctrine = $ref->newInstanceWithoutConstructor();
 
+// Create a mock SchemaManager that returns an empty array for listTableNames()
+$schema_manager_mock = new class extends \Doctrine\DBAL\Schema\SqliteSchemaManager {
+	public function listTableNames() {
+		return [];
+	}
+
+	public function __construct()
+	{
+		//parent::__construct($connection, $platform);
+	}
+};
+
+$schema_manager_factory_mock = new class($schema_manager_mock) implements \Doctrine\DBAL\Schema\SchemaManagerFactory {
+	private $schema_manager;
+	public function __construct($schema_manager) {
+		$this->schema_manager = $schema_manager;
+	}
+	public function createSchemaManager($connection): \Doctrine\DBAL\Schema\AbstractSchemaManager
+	{
+		return $this->schema_manager;
+	}
+};
+
+$schema_manager_factory = new \ReflectionProperty($db_doctrine, 'schemaManagerFactory');
+$schema_manager_factory->setAccessible(true);
+$schema_manager_factory->setValue($db_doctrine, new $schema_manager_factory_mock($schema_manager_mock));
+
 $factory = new \phpbb\db\tools\factory();
 $db_tools = $factory->get($db_doctrine, true);
 $db_tools->set_table_prefix($table_prefix);
