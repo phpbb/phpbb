@@ -4,7 +4,7 @@
 	"type": "phpbb-style",
 	"version": "4.0.0-a1-dev",
 	"homepage": "https://www.phpbb.com",
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-only",
 	"authors": [
 		{
 			"name": "phpBB Limited",
