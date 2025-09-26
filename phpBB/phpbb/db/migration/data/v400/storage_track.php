@@ -130,14 +130,14 @@ class storage_track extends container_aware_migration
 		{
 			$files[] = [
 				'file_path' => $row['physical_filename'],
-				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $row['physical_filename']),
+				'filesize' => @filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $row['physical_filename']),
 			];
 
 			if ($row['thumbnail'] == 1)
 			{
 				$files[] = [
 					'file_path' => 'thumb_' . $row['physical_filename'],
-					'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/thumb_' . $row['physical_filename']),
+					'filesize' => @filesize($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/thumb_' . $row['physical_filename']),
 				];
 			}
 
@@ -170,7 +170,7 @@ class storage_track extends container_aware_migration
 		{
 			$files[] = [
 				'file_path' => $row['filename'],
-				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\backup\\config\\path'] . '/' . $row['filename']),
+				'filesize' => @filesize($this->phpbb_root_path . $this->config['storage\\backup\\config\\path'] . '/' . $row['filename']),
 			];
 
 			if (count($files) >= self::BATCH_SIZE)
