@@ -18,31 +18,27 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 {
 	protected function get_forum_name_by_topic_id($topic_id)
 	{
-		$db = $this->get_db();
-
 		// Forum info
 		$sql =  'SELECT f.forum_name
 			FROM ' . FORUMS_TABLE . ' f,' . TOPICS_TABLE . ' t
 			WHERE t.forum_id = f.forum_id
 				AND t.topic_id = ' . (int) $topic_id;
-		$result = $db->sql_query($sql);
-		$forum_name = $db->sql_fetchfield('forum_name');
-		$db->sql_freeresult($result, 1800); // cache for 30 minutes
+		$result = $this->db->sql_query($sql);
+		$forum_name = $this->db->sql_fetchfield('forum_name');
+		$this->db->sql_freeresult($result, 1800); // cache for 30 minutes
 
 		return $forum_name;
 	}
 
 	protected function get_forum_name_by_forum_id($forum_id)
 	{
-		$db = $this->get_db();
-
 		// Forum info
 		$sql =  'SELECT forum_name
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
-		$result = $db->sql_query($sql);
-		$forum_name = $db->sql_fetchfield('forum_name');
-		$db->sql_freeresult($result, 1800); // cache for 30 minutes
+		$result = $this->db->sql_query($sql);
+		$forum_name = $this->db->sql_fetchfield('forum_name');
+		$this->db->sql_freeresult($result, 1800); // cache for 30 minutes
 
 		return $forum_name;
 	}

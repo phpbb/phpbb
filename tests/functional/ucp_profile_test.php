@@ -73,7 +73,6 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 	{
 		$this->add_lang('ucp');
 		$this->login('admin', true);
-		$db = $this->get_db();
 
 		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=autologin_keys');
 		$this->assertContainsLang('UCP_PROFILE_AUTOLOGIN_KEYS', $crawler->filter('#cp-main h2')->text());
@@ -87,9 +86,9 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 			'WHERE'		=> 'sk.user_id = ' . (int) $user_id,
 			'ORDER_BY'	=> 'sk.last_login ASC',
 		];
-		$result = $db->sql_query_limit($db->sql_build_query('SELECT', $sql_ary), 1);
-		$key_id = substr($db->sql_fetchfield('key_id'), 0, 8);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query_limit($this->db->sql_build_query('SELECT', $sql_ary), 1);
+		$key_id = substr($this->db->sql_fetchfield('key_id'), 0, 8);
+		$this->db->sql_freeresult($result);
 
 		$this->assertStringContainsString($key_id, $crawler->filter('label[for="' . $key_id . '"]')->text());
 

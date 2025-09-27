@@ -783,8 +783,6 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 	public function assert_forum_details($forum_id, $details, $additional_error_message = '')
 	{
-		$this->db = $this->get_db();
-
 		$sql = 'SELECT ' . implode(', ', array_keys($details)) . '
 			FROM phpbb_forums
 			WHERE forum_id = ' . (int) $forum_id;
@@ -797,8 +795,6 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 	public function load_ids($data)
 	{
-		$this->db = $this->get_db();
-
 		if (!empty($data['forums']))
 		{
 			$sql = 'SELECT *

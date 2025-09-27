@@ -18,8 +18,6 @@ require_once __DIR__ . '/common_groups_test_case.php';
 */
 class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_test_case
 {
-	protected $db;
-
 	protected function get_url()
 	{
 		return 'ucp.php?i=groups&mode=manage&action=edit';
@@ -27,10 +25,6 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 
 	protected function get_teampage_settings()
 	{
-		if (!isset($this->db))
-		{
-			$this->db = $this->get_db();
-		}
 		$sql = 'SELECT g.group_legend AS group_legend, t.teampage_position AS group_teampage
 			FROM ' . GROUPS_TABLE . ' g
 			LEFT JOIN ' . TEAMPAGE_TABLE . ' t

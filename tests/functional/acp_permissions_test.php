@@ -98,6 +98,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		// XXX globals for \phpbb\auth\auth, refactor it later
 		global $db, $cache;
 		$db = $this->get_db();
+
 		$cache = new phpbb_mock_null_cache;
 
 		$auth = new \phpbb\auth\auth;
