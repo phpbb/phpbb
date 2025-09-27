@@ -491,7 +491,7 @@ jobs:
                     - php: '8.4'
                       db: "postgres"
 
-        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         steps:
             - name: Prepare git for Windows
