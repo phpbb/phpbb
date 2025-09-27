@@ -28,6 +28,10 @@ phpbb_manifest_controller:
     path: /manifest
     defaults: { _controller: manifest.controller:handle }
 
+phpbb_members_routing:
+    resource: members.yml
+    prefix: /members
+
 phpbb_mention_controller:
     path: /mention
     methods: [GET, POST]
