@@ -390,22 +390,22 @@ class installer
 				}
 			}
 
-			foreach ($compatible_packages as $name => $versions)
+			foreach ($compatible_packages as $package_name => $package_versions)
 			{
 				// Determine the highest version of the package
 				/** @var CompletePackage|CompleteAliasPackage $highest_version */
 				$highest_version = null;
 
 				// Sort the versions array in descending order
-				usort($versions, function ($a, $b)
+				usort($package_versions, function ($a, $b)
 				{
 					return version_compare($b->getVersion(), $a->getVersion());
 				});
 
 				// The first element in the sorted array is the highest version
-				if (!empty($versions))
+				if (!empty($package_versions))
 				{
-					$highest_version = $versions[0];
+					$highest_version = $package_versions[0];
 
 					// If highest version is a non-numeric dev branch, it's an instance of CompleteAliasPackage,
 					// so we need to get the package being aliased in order to show the true non-numeric version.
@@ -416,23 +416,23 @@ class installer
 				}
 
 				// Generates the entry
-				$available[$name] = [];
-				$available[$name]['name'] = $highest_version->getPrettyName();
-				$available[$name]['display_name'] = $highest_version->getExtra()['display-name'];
-				$available[$name]['composer_name'] = $highest_version->getName();
-				$available[$name]['version'] = $highest_version->getPrettyVersion();
+				$available[$package_name] = [];
+				$available[$package_name]['name'] = $highest_version->getPrettyName();
+				$available[$package_name]['display_name'] = $highest_version->getExtra()['display-name'];
+				$available[$package_name]['composer_name'] = $highest_version->getName();
+				$available[$package_name]['version'] = $highest_version->getPrettyVersion();
 
 				if ($highest_version instanceof CompletePackage)
 				{
-					$available[$name]['description'] = $highest_version->getDescription();
-					$available[$name]['url'] = $highest_version->getHomepage();
-					$available[$name]['authors'] = $highest_version->getAuthors();
+					$available[$package_name]['description'] = $highest_version->getDescription();
+					$available[$package_name]['url'] = $highest_version->getHomepage();
+					$available[$package_name]['authors'] = $highest_version->getAuthors();
 				}
 				else
 				{
-					$available[$name]['description'] = '';
-					$available[$name]['url'] = '';
-					$available[$name]['authors'] = [];
+					$available[$package_name]['description'] = '';
+					$available[$package_name]['url'] = '';
+					$available[$package_name]['authors'] = [];
 				}
 			}
 
@@ -545,8 +545,6 @@ class installer
 	 */
 	protected function generate_ext_json_file(array $packages)
 	{
-		$io = new NullIO();
-
 		$composer = $this->get_composer(null);
 
 		$core_packages = $this->get_core_packages($composer);
@@ -587,8 +585,148 @@ class installer
 			$lockFile->write([]);
 		}
 
+		// First pass write: base file with requested packages as provided
 		$json_file->write($ext_json_data);
 		$this->ext_json_file_backup = $ext_json_file_backup;
+
+		// Second pass: resolve and pin the highest compatible versions for unconstrained requested packages
+		try
+		{
+			// Build a list of requested packages without explicit constraints
+			$unconstrained = [];
+			foreach ($packages as $name => $constraint)
+			{
+				// The $packages array can be either ['vendor/package' => '^1.2'] or ['vendor/package'] (numeric keys).
+				if (is_int($name))
+				{
+					// Numeric key means just a name
+					$package_name = $constraint;
+					$unconstrained[$package_name] = true;
+				}
+				else
+				{
+					// If constraint is empty or '*' treat as unconstrained
+					if ($constraint === '' || $constraint === '*' || $constraint === null)
+					{
+						$unconstrained[$name] = true;
+					}
+				}
+			}
+
+			if (!empty($unconstrained))
+			{
+				// Load composer on the just-written file so repositories and core constraints are available
+				$ext_composer = $this->get_composer($this->get_composer_ext_json_filename());
+
+				/** @var ConstraintInterface $core_constraint */
+				$core_constraint = $ext_composer->getPackage()->getRequires()['phpbb/phpbb']->getConstraint();
+				$core_stability = $ext_composer->getPackage()->getMinimumStability();
+
+				// Resolve highest compatible versions for each unconstrained package
+				$pins = $this->resolve_highest_versions(array_keys($unconstrained), $ext_composer, $core_constraint, $core_stability);
+
+				if (!empty($pins))
+				{
+					// Merge pins into require section, overwriting unconstrained entries
+					foreach ($pins as $pkg => $version)
+					{
+						$ext_json_data['require'][$pkg] = $version;
+					}
+
+					// Rewrite composer-ext.json with pinned versions
+					$json_file->write($ext_json_data);
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			// If resolution fails for any reason, keep the first-pass file intact (Composer will still resolve).
+			// Intentionally swallow to avoid breaking installation flow.
+		}
+	}
+
+	/**
+	 * Resolve the highest compatible versions for the given package names
+	 * based on repositories and phpBB/PHP constraints from the provided Composer instance.
+	 *
+	 * @param array $package_names list of package names to resolve
+	 * @param Composer|PartialComposer $composer Composer instance configured with repositories
+	 * @param ConstraintInterface $core_constraint phpBB version constraint
+	 * @param string $core_stability minimum stability
+	 * @return array [packageName => prettyVersion]
+	 */
+	protected function resolve_highest_versions(array $package_names, $composer, ConstraintInterface $core_constraint, $core_stability): array
+	{
+		$compatible_packages = [];
+		$repositories = $composer->getRepositoryManager()->getRepositories();
+
+		foreach ($repositories as $repository)
+		{
+			try
+			{
+				if ($repository instanceof ComposerRepository)
+				{
+					foreach ($package_names as $name)
+					{
+						$versions = $repository->findPackages($name);
+						if (!empty($versions))
+						{
+							$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $core_stability, $name, $versions);
+						}
+					}
+				}
+				else
+				{
+					// Preload and filter by name for non-composer repositories
+					$package_name = [];
+					foreach ($repository->getPackages() as $package)
+					{
+						$name = $package->getName();
+						if (in_array($name, $package_names, true))
+						{
+							$package_name[$name][] = $package;
+						}
+					}
+
+					foreach ($package_name as $name => $versions)
+					{
+						$compatible_packages = $this->get_compatible_versions($compatible_packages, $core_constraint, $core_stability, $name, $versions);
+					}
+				}
+			}
+			catch (\Exception $e)
+			{
+				// If a repo fails, just skip it.
+				continue;
+			}
+		}
+
+		$pins = [];
+		foreach ($package_names as $name)
+		{
+			if (empty($compatible_packages[$name]))
+			{
+				continue;
+			}
+
+			$package_versions = $compatible_packages[$name];
+
+			// Sort descending by normalized version
+			usort($package_versions, function ($a, $b) {
+				return version_compare($b->getVersion(), $a->getVersion());
+			});
+
+			$highest = $package_versions[0];
+			if ($highest instanceof CompleteAliasPackage)
+			{
+				$highest = $highest->getAliasOf();
+			}
+
+			// Pin to the resolved highest compatible version using its pretty version
+			$pins[$name] = $highest->getPrettyVersion();
+		}
+
+		return $pins;
 	}
 
 	/**
