@@ -1,0 +1,513 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- EVENT viewtopic_topic_title_before -->
+<h2 class="topic-title"><!-- EVENT viewtopic_topic_title_prepend --><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a><!-- EVENT viewtopic_topic_title_append --></h2>
+<!-- EVENT viewtopic_topic_title_after -->
+<!-- NOTE: remove the style="display: none" when you want to have the forum description on the topic body -->
+<!-- IF FORUM_DESC --><div style="display: none !important;">{FORUM_DESC}<br /></div><!-- ENDIF -->
+
+<!-- IF MODERATORS -->
+<p>
+	<strong><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->{L_COLON}</strong> {MODERATORS}
+</p>
+<!-- ENDIF -->
+
+<!-- IF S_FORUM_RULES -->
+	<div class="rules<!-- IF U_FORUM_RULES --> rules-link<!-- ENDIF -->">
+		<div class="inner">
+
+		<!-- IF U_FORUM_RULES -->
+			<a href="{U_FORUM_RULES}">{L_FORUM_RULES}</a>
+		<!-- ELSE -->
+			<strong>{L_FORUM_RULES}</strong><br />
+			{FORUM_RULES}
+		<!-- ENDIF -->
+
+		</div>
+	</div>
+<!-- ENDIF -->
+
+<div class="action-bar bar-top">
+	<!-- EVENT viewtopic_buttons_top_before -->
+
+	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
+		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('font', 'lock', '', true, 'fas c-button-icon') }}
+			<!-- ELSE -->
+				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('font', 'reply', '', true, 'fas c-button-icon') }}
+			<!-- ENDIF -->
+		</a>
+	<!-- ENDIF -->
+
+	<!-- EVENT viewtopic_buttons_top_after -->
+	<!-- INCLUDE viewtopic_topic_tools.html -->
+	<!-- EVENT viewtopic_dropdown_top_custom -->
+
+	<!-- IF S_DISPLAY_SEARCHBOX -->
+		<div class="search-box" role="search">
+			<form method="get" id="topic-search" action="{S_SEARCHBOX_ACTION}">
+			<fieldset>
+				<input class="inputbox search tiny"  type="search" name="keywords" id="search_keywords" size="20" placeholder="{L_SEARCH_TOPIC}" />
+				<button class="button button-search" type="submit" title="{L_SEARCH}">
+					{{ Icon('font', 'search', lang('SEARCH'), true, 'fas c-button-icon') }}
+				</button>
+				<a href="{U_SEARCH}" class="button button-search-end" title="{L_SEARCH_ADV}">
+					{{ Icon('font', 'gear', lang('SEARCH_ADV'), true, 'fas c-button-icon') }}
+				</a>
+				{S_SEARCH_LOCAL_HIDDEN_FIELDS}
+			</fieldset>
+			</form>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- IF .pagination or TOTAL_POSTS -->
+		<div class="pagination">
+			<!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --><a href="{U_VIEW_UNREAD_POST}" class="mark">{L_VIEW_UNREAD_POST}</a> &bull; <!-- ENDIF -->{TOTAL_POSTS}
+			<!-- IF .pagination -->
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				&bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+	<!-- EVENT viewtopic_body_pagination_top_after -->
+</div>
+
+<!-- EVENT viewtopic_body_poll_before -->
+
+<!-- IF S_HAS_POLL -->
+	<form method="post" action="{S_POLL_ACTION}" data-ajax="vote_poll" data-refresh="true" class="topic_poll">
+
+	<div class="panel">
+		<div class="inner">
+
+		<div class="content">
+			<h2 class="poll-title"><!-- EVENT viewtopic_body_poll_question_prepend -->{POLL_QUESTION}<!-- EVENT viewtopic_body_poll_question_append --></h2>
+			<p class="author">{L_POLL_LENGTH}<!-- IF S_CAN_VOTE and L_POLL_LENGTH --><br /><!-- ENDIF --><!-- IF S_CAN_VOTE --><span class="poll_max_votes">{L_MAX_VOTES}</span><!-- ENDIF --></p>
+
+			<fieldset class="polls">
+			<!-- BEGIN poll_option -->
+				<!-- EVENT viewtopic_body_poll_option_before -->
+				<dl class="<!-- IF poll_option.POLL_OPTION_VOTED -->voted<!-- ENDIF --><!-- IF poll_option.POLL_OPTION_MOST_VOTES --> most-votes<!-- ENDIF -->"<!-- IF poll_option.POLL_OPTION_VOTED --> title="{L_POLL_VOTED_OPTION}"<!-- ENDIF --> data-alt-text="{L_POLL_VOTED_OPTION}" data-poll-option-id="{poll_option.POLL_OPTION_ID}">
+					<dt><!-- IF S_CAN_VOTE --><label for="vote_{poll_option.POLL_OPTION_ID}">{poll_option.POLL_OPTION_CAPTION}</label><!-- ELSE -->{poll_option.POLL_OPTION_CAPTION}<!-- ENDIF --></dt>
+					<!-- IF S_CAN_VOTE --><dd style="width: auto;" class="poll_option_select"><!-- IF S_IS_MULTI_CHOICE --><input type="checkbox" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ELSE --><input type="radio" name="vote_id[]" id="vote_{poll_option.POLL_OPTION_ID}" value="{poll_option.POLL_OPTION_ID}"<!-- IF poll_option.POLL_OPTION_VOTED --> checked="checked"<!-- ENDIF --> /><!-- ENDIF --></dd><!-- ENDIF -->
+					<dd class="resultbar<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><div class="<!-- IF poll_option.POLL_OPTION_PCT < 20 -->pollbar1<!-- ELSEIF poll_option.POLL_OPTION_PCT < 40 -->pollbar2<!-- ELSEIF poll_option.POLL_OPTION_PCT < 60 -->pollbar3<!-- ELSEIF poll_option.POLL_OPTION_PCT < 80 -->pollbar4<!-- ELSE -->pollbar5<!-- ENDIF -->" style="width:{poll_option.POLL_OPTION_PERCENT_REL};">{poll_option.POLL_OPTION_RESULT}</div></dd>
+					<dd class="poll_option_percent<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->"><!-- IF poll_option.POLL_OPTION_RESULT == 0 -->{L_NO_VOTES}<!-- ELSE -->{poll_option.POLL_OPTION_PERCENT}<!-- ENDIF --></dd>
+				</dl>
+				<!-- EVENT viewtopic_body_poll_option_after -->
+			<!-- END poll_option -->
+
+				<dl class="poll_total_votes<!-- IF not S_DISPLAY_RESULTS --> hidden<!-- ENDIF -->">
+					<dt>&nbsp;</dt>
+					<dd class="resultbar">{L_TOTAL_VOTES}{L_COLON} <span class="poll_total_vote_cnt">{TOTAL_VOTES}</span></dd>
+				</dl>
+
+			<!-- IF S_CAN_VOTE -->
+				<dl style="border-top: none;" class="poll_vote">
+					<dt>&nbsp;</dt>
+					<dd class="resultbar"><input type="submit" name="update" value="{L_SUBMIT_VOTE}" class="button1 button button-form" /></dd>
+				</dl>
+			<!-- ENDIF -->
+
+			<!-- IF not S_DISPLAY_RESULTS -->
+				<dl style="border-top: none;" class="poll_view_results">
+					<dt>&nbsp;</dt>
+					<dd class="resultbar"><a href="{U_VIEW_RESULTS}">{L_VIEW_RESULTS}</a></dd>
+				</dl>
+			<!-- ENDIF -->
+			</fieldset>
+			<div class="vote-submitted hidden">{L_VOTE_SUBMITTED}</div>
+		</div>
+
+		</div>
+		{S_FORM_TOKEN}
+		{S_HIDDEN_FIELDS}
+	</div>
+
+	</form>
+	<hr />
+<!-- ENDIF -->
+
+<!-- EVENT viewtopic_body_poll_after -->
+
+<!-- BEGIN postrow -->
+	<!-- EVENT viewtopic_body_postrow_post_before -->
+	<!-- IF postrow.S_FIRST_UNREAD -->
+		<a id="unread" class="anchor"<!-- IF S_UNREAD_VIEW --> data-url="{postrow.U_MINI_POST}"<!-- ENDIF -->></a>
+	<!-- ENDIF -->
+	<div id="p{postrow.POST_ID}" class="post has-profile <!-- IF postrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF --><!-- IF postrow.S_UNREAD_POST --> unreadpost<!-- ENDIF --><!-- IF postrow.S_POST_REPORTED --> reported<!-- ENDIF --><!-- IF postrow.S_POST_DELETED --> deleted<!-- ENDIF --><!-- IF postrow.POSTER_WARNINGS --> warned<!-- ENDIF -->">
+		<div class="inner">
+
+		<dl class="postprofile" id="profile{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
+			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF postrow.POSTER_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
+				<div class="avatar-container">
+					<!-- EVENT viewtopic_body_avatar_before -->
+					<!-- IF postrow.POSTER_AVATAR_HTML -->
+						<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}" class="avatar">{postrow.POSTER_AVATAR_HTML}</a><!-- ELSE --><span class="avatar">{postrow.POSTER_AVATAR}</span><!-- ENDIF -->
+					<!-- ENDIF -->
+					<!-- EVENT viewtopic_body_avatar_after -->
+				</div>
+				<!-- EVENT viewtopic_body_post_author_before -->
+				<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF --><!-- IF postrow.S_ONLINE and not postrow.S_POST_HIDDEN --> {{ Icon('font', 'circle', lang('ONLINE'), true, 'fas c-online-icon') }}<!-- ENDIF -->
+				<!-- EVENT viewtopic_body_post_author_after -->
+			</dt>
+
+			<!-- EVENT viewtopic_body_postrow_rank_before -->
+			{% if postrow.RANK_IMG or postrow.RANK_TITLE %}<dd class="profile-rank rank-img">{{ postrow.RANK_TITLE }}{% if postrow.RANK_IMG and postrow.RANK_TITLE %}<br />{% endif %}{{ postrow.RANK_IMG }}</dd>{% endif %}
+			<!-- EVENT viewtopic_body_postrow_rank_after -->
+
+		<!-- IF postrow.POSTER_POSTS != '' --><dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF postrow.U_SEARCH !== '' --><a href="{postrow.U_SEARCH}"><!-- ENDIF -->{postrow.POSTER_POSTS}<!-- IF postrow.U_SEARCH !== '' --></a><!-- ENDIF --></dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_WARNINGS --><dd class="profile-warnings"><strong>{L_WARNINGS}{L_COLON}</strong> {postrow.POSTER_WARNINGS}</dd><!-- ENDIF -->
+
+		<!-- IF postrow.S_PROFILE_FIELD1 -->
+			<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
+			<dd><strong>{postrow.PROFILE_FIELD1_NAME}{L_COLON}</strong> {postrow.PROFILE_FIELD1_VALUE}</dd>
+		<!-- ENDIF -->
+
+		<!-- EVENT viewtopic_body_postrow_custom_fields_before -->
+		<!-- BEGIN custom_fields -->
+			<!-- IF not postrow.custom_fields.S_PROFILE_CONTACT -->
+				<dd class="profile-custom-field profile-{postrow.custom_fields.PROFILE_FIELD_IDENT}"><strong>{postrow.custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {postrow.custom_fields.PROFILE_FIELD_VALUE}</dd>
+			<!-- ENDIF -->
+		<!-- END custom_fields -->
+		<!-- EVENT viewtopic_body_postrow_custom_fields_after -->
+
+		<!-- EVENT viewtopic_body_contact_fields_before -->
+		<!-- IF not S_IS_BOT and .postrow.contact -->
+			<dd class="profile-contact">
+				<strong>{L_CONTACT}{L_COLON}</strong>
+				<div class="dropdown-container dropdown-left">
+					<a href="#" class="dropdown-trigger" title="{postrow.CONTACT_USER}">
+						{{ Icon('font', 'comment-dots', postrow.CONTACT_USER, true, 'far') }}
+					</a>
+					<div class="dropdown">
+						<div class="pointer"><div class="pointer-inner"></div></div>
+						<div class="dropdown-contents contact-icons">
+							<!-- BEGIN contact -->
+								{% set REMAINDER = postrow.contact.S_ROW_COUNT % 4 %}
+								<!-- DEFINE $S_LAST_CELL = ((REMAINDER eq 3) or (postrow.contact.S_LAST_ROW and postrow.contact.S_NUM_ROWS < 4)) -->
+								<!-- IF REMAINDER eq 0 -->
+									<div>
+								<!-- ENDIF -->
+									<a href="<!-- IF postrow.contact.U_CONTACT -->{postrow.contact.U_CONTACT}<!-- ELSE -->{postrow.U_POST_AUTHOR}<!-- ENDIF -->" title="{postrow.contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF postrow.contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
+										{% EVENT viewtopic_body_contact_icon_prepend %}
+										{% if postrow.contact.ID == 'pm' %}
+											{{ Icon('font', 'message', '', true, 'far contact-icon') }}
+										{% elseif postrow.contact.ID == 'email' %}
+											{{ Icon('font', 'at', '', true, 'fas contact-icon') }}
+										{% elseif postrow.contact.ID == 'phpbb_website' %}
+											{{ Icon('font', 'earth-americas', '', true, 'fas contact-icon') }}
+										{% elseif postrow.contact.ID == 'phpbb_facebook' %}
+											{{ Icon('font', 'square-facebook', '', true, 'fab contact-icon c-facebook-icon') }}
+										{% elseif postrow.contact.ID == 'phpbb_twitter' %}
+											{{ Icon('font', 'square-x-twitter', '', true, 'fab contact-icon c-twitter-icon') }}
+										{% elseif postrow.contact.ID == 'phpbb_skype' %}
+											{{ Icon('font', 'skype', '', true, 'fab contact-icon c-skype-icon') }}
+										{% elseif postrow.contact.ID == 'phpbb_youtube' %}
+											{{ Icon('font', 'youtube', '', true, 'fab contact-icon c-youtube-icon') }}
+										{% else %}
+											{{ Icon('svg', contact.ID, '', true, 'contact-icon') }}
+										{% endif %}
+										{% EVENT viewtopic_body_contact_icon_append %}
+									</a>
+								<!-- IF REMAINDER eq 3 or postrow.contact.S_LAST_ROW -->
+									</div>
+								<!-- ENDIF -->
+							<!-- END contact -->
+						</div>
+					</div>
+				</div>
+			</dd>
+		<!-- ENDIF -->
+		<!-- EVENT viewtopic_body_contact_fields_after -->
+
+		</dl>
+
+		<div class="postbody">
+			<!-- IF postrow.S_POST_HIDDEN -->
+				<!-- IF postrow.S_POST_DELETED -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_POST_DELETED_MESSAGE}<br>
+						<a class="display_post" data-post-id="{{ postrow.POST_ID }}" href="{{ postrow.U_MINI_POST_VIEW }}">{{ lang('POST_DISPLAY') }}</a>
+					</div>
+				<!-- ELSEIF postrow.S_IGNORE_POST -->
+					<div class="ignore" id="post_hidden{postrow.POST_ID}">
+						{postrow.L_IGNORE_POST}<br>
+						<a class="display_post" data-post-id="{{ postrow.POST_ID }}" href="{{ postrow.U_MINI_POST_VIEW }}">{{ lang('POST_DISPLAY') }}</a>
+					</div>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
+
+			<!-- EVENT viewtopic_body_post_subject_before -->
+		<h3 {% if postrow.S_FIRST_ROW %}class="first"{% endif %}>
+			{% if postrow.POST_ICON_IMG %}
+				<img src="{{ T_ICONS_PATH }}{{ postrow.POST_ICON_IMG }}" width="{{ postrow.POST_ICON_IMG_WIDTH }}" height="{{ postrow.POST_ICON_IMG_HEIGHT }}" alt="{{ postrow.POST_ICON_IMG_ALT }}" title="{{ postrow.POST_ICON_IMG_ALT }}">
+			{% endif %}
+			<a {% if postrow.S_FIRST_UNREAD %}class="first-unread" {% endif %}href="{{ postrow.U_MINI_POST }}">{{ postrow.POST_SUBJECT }}</a>
+		</h3>
+
+		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
+		<!-- EVENT viewtopic_body_post_buttons_list_before -->
+		<!-- IF not S_IS_BOT -->
+			<!-- IF $SHOW_POST_BUTTONS -->
+				<ul class="post-buttons">
+					{% with {'post_buttons_hide_text': true} %}
+						{% block post_buttons %}
+							{% EVENT viewtopic_body_post_buttons_before %}
+
+							{% if postrow.U_EDIT %}
+								<li>
+									<a href="{{ postrow.U_EDIT }}" title="{{ lang('EDIT_POST') }}" class="button button-icon-only">
+										{{ Icon('font', 'pencil', lang('BUTTON_EDIT'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_DELETE %}
+								<li>
+									<a href="{{ postrow.U_DELETE }}" title="{{ lang('DELETE_POST') }}" class="button button-icon-only">
+										{{ Icon('font', 'xmark', lang('BUTTON_DELETE'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_REPORT %}
+								<li>
+									<a href="{{ postrow.U_REPORT }}" title="{{ lang('REPORT_POST') }}" class="button button-icon-only">
+										{{ Icon('font', 'exclamation', lang('BUTTON_REPORT'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_WARN %}
+								<li>
+									<a href="{{ postrow.U_WARN }}" title="{{ lang('WARN_USER') }}" class="button button-icon-only">
+										{{ Icon('font', 'triangle-exclamation', lang('BUTTON_WARN'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_INFO %}
+								<li>
+									<a href="{{ postrow.U_INFO }}" title="{{ lang('INFORMATION') }}" class="button button-icon-only">
+										{{ Icon('font', 'info', lang('BUTTON_INFORMATION'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if postrow.U_QUOTE %}
+								<li>
+									<a href="{{ postrow.U_QUOTE }}" title="{{ lang('REPLY_WITH_QUOTE') }}" class="button button-icon-only">
+										{{ Icon('font', 'quote-left', lang('BUTTON_QUOTE'), post_buttons_hide_text, 'fas c-button-icon') }}
+									</a>
+								</li>
+							{% endif %}
+
+							{% EVENT viewtopic_body_post_buttons_after %}
+						{% endblock post_buttons %}
+					{% endwith %}
+
+					<li class="post-buttons-responsive-menu dropdown-container">
+						<a href="javascript:void(0);" class="button button-icon-only post-button-responsive dropdown-toggle">
+							{{ Icon('font', 'bars', '', true, 'fas c-button-icon') }}
+						</a>
+						<div class="dropdown">
+							<div class="pointer">
+								<div class="pointer-inner"></div>
+							</div>
+
+							<ul class="dropdown-contents">
+								{% with {'post_buttons_hide_text': false} %}
+									{{ block('post_buttons', _self) }}
+								{% endwith %}
+							</ul>
+						</div>
+					</li>
+				</ul>
+			<!-- ENDIF -->
+		<!-- ENDIF -->
+		<!-- EVENT viewtopic_body_post_buttons_list_after -->
+
+			<!-- EVENT viewtopic_body_postrow_post_details_before -->
+			<p class="author">
+				<a class="unread" href="{postrow.U_MINI_POST}" title="{postrow.MINI_POST}">
+					{% if postrow.S_UNREAD_POST %}
+						<span>{{ Icon('font', 'file', postrow.MINI_POST, true, 'fas c-topic-unread-icon') }}</span>
+					{% else %}
+						<span>{{ Icon('font', 'file', postrow.MINI_POST, true, 'fas c-topic-icon') }}</span>
+					{% endif %}
+				</a>
+				<span class="responsive-hide">{L_POST_BY_AUTHOR} <strong>{postrow.POST_AUTHOR_FULL}</strong> &raquo; </span><time datetime="{postrow.POST_DATE_RFC3339}">{postrow.POST_DATE}</time>
+			</p>
+			<!-- EVENT viewtopic_body_postrow_post_details_after -->
+
+			<!-- IF postrow.S_POST_UNAPPROVED -->
+			<!-- IF postrow.S_CAN_APPROVE -->
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
+				<p class="post-notice unapproved">
+					<span>{{ Icon('font', 'circle-question', '', true, 'fas c-unapproved-icon') }}</span>
+					<strong>{L_POST_UNAPPROVED_ACTION}</strong>
+					<input class="button1 button button-form-bold" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
+					<input class="button1 button button-form" type="submit" value="{L_APPROVE}" name="action[approve]" />
+					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+					{S_FORM_TOKEN}
+				</p>
+			</form>
+			<!-- ELSE -->
+				<p class="post-notice unapproved">
+					<span>{{ Icon('font', 'triangle-exclamation', '', true, 'fas c-topic-reported-icon') }}</span>
+					<strong>{L_POST_UNAPPROVED_EXPLAIN}</strong>
+				</p>
+			<!-- ENDIF -->
+			<!-- ELSEIF postrow.S_POST_DELETED -->
+			<form method="post" class="mcp_approve" action="{postrow.U_APPROVE_ACTION}">
+				<p class="post-notice deleted">
+					<strong>{L_POST_DELETED_ACTION}</strong>
+					<!-- IF postrow.S_DELETE_PERMANENT -->
+						<input class="button1 button button-form-bold" type="submit" value="{L_DELETE}" name="action[delete]" />
+					<!-- ENDIF -->
+					<input class="button1 button button-form" type="submit" value="{L_RESTORE}" name="action[restore]" />
+					<input type="hidden" name="post_id_list[]" value="{postrow.POST_ID}" />
+					{S_FORM_TOKEN}
+				</p>
+			</form>
+			<!-- ENDIF -->
+
+			<!-- IF postrow.S_POST_REPORTED -->
+			<p class="post-notice reported">
+				<a href="{postrow.U_MCP_REPORT}">{{ Icon('font', 'triangle-exclamation', '', true, 'fas c-topic-reported-icon') }}<strong>{L_POST_REPORTED}</strong></a>
+			</p>
+			<!-- ENDIF -->
+
+			{% EVENT viewtopic_body_postrow_content_before %}
+
+			<div class="content">{postrow.MESSAGE}</div>
+
+			<!-- EVENT viewtopic_body_postrow_content_after -->
+
+			<!-- IF postrow.S_HAS_ATTACHMENTS -->
+				<dl class="attachbox">
+					<dt>
+						{L_ATTACHMENTS}
+					</dt>
+					<!-- BEGIN attachment -->
+						<dd>{postrow.attachment.DISPLAY_ATTACHMENT}</dd>
+					<!-- END attachment -->
+				</dl>
+			<!-- ENDIF -->
+
+			<!-- EVENT viewtopic_body_postrow_post_notices_before -->
+			<!-- IF postrow.S_DISPLAY_NOTICE --><div class="rules">{L_DOWNLOAD_NOTICE}</div><!-- ENDIF -->
+			<!-- IF postrow.DELETED_MESSAGE or postrow.DELETE_REASON -->
+				<div class="notice post_deleted_msg">
+					{postrow.DELETED_MESSAGE}
+					<!-- IF postrow.DELETE_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.DELETE_REASON}</em><!-- ENDIF -->
+				</div>
+			<!-- ELSEIF postrow.EDITED_MESSAGE or postrow.EDIT_REASON -->
+				<div class="notice">
+					{postrow.EDITED_MESSAGE}
+					<!-- IF postrow.EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{postrow.EDIT_REASON}</em><!-- ENDIF -->
+				</div>
+			<!-- ENDIF -->
+
+			<!-- IF postrow.BUMPED_MESSAGE --><div class="notice"><br /><br />{postrow.BUMPED_MESSAGE}</div><!-- ENDIF -->
+			<!-- EVENT viewtopic_body_postrow_post_notices_after -->
+
+			{% EVENT viewtopic_body_postrow_signature_before %}
+				{% if postrow.SIGNATURE %}<div id="sig{{ postrow.POST_ID }}" class="signature">{{ postrow.SIGNATURE }}</div>{% endif %}
+			{% EVENT viewtopic_body_postrow_signature_after %}
+
+			<!-- EVENT viewtopic_body_postrow_post_content_footer -->
+			</div>
+
+		</div>
+
+		<!-- EVENT viewtopic_body_postrow_back2top_before -->
+		<div class="back2top">
+			<!-- EVENT viewtopic_body_postrow_back2top_prepend -->
+			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
+				{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), false, 'fas c-top-icon') }}
+			</a>
+			<!-- EVENT viewtopic_body_postrow_back2top_append -->
+		</div>
+		<!-- EVENT viewtopic_body_postrow_back2top_after -->
+
+		</div>
+	</div>
+
+	<hr class="divider" />
+	<!-- EVENT viewtopic_body_postrow_post_after -->
+<!-- END postrow -->
+
+<!-- IF S_QUICK_REPLY -->
+	<!-- INCLUDE quickreply_editor.html -->
+<!-- ENDIF -->
+
+<!-- EVENT viewtopic_body_topic_actions_before -->
+	<div class="action-bar bar-bottom">
+	<!-- EVENT viewtopic_buttons_bottom_before -->
+
+	<!-- IF not S_IS_BOT and S_DISPLAY_REPLY_INFO -->
+		<a href="{U_POST_REPLY_TOPIC}" class="button" title="<!-- IF S_IS_LOCKED -->{L_TOPIC_LOCKED}<!-- ELSE -->{L_POST_REPLY}<!-- ENDIF -->">
+			<!-- IF S_IS_LOCKED -->
+				<span>{L_BUTTON_TOPIC_LOCKED}</span> {{ Icon('font', 'lock', '', true, 'fas c-button-icon') }}
+			<!-- ELSE -->
+				<span>{L_BUTTON_POST_REPLY}</span> {{ Icon('font', 'reply', '', true, 'fas c-button-icon') }}
+			<!-- ENDIF -->
+		</a>
+	<!-- ENDIF -->
+	<!-- EVENT viewtopic_buttons_bottom_after -->
+
+	<!-- INCLUDE viewtopic_topic_tools.html -->
+
+	<!-- IF (S_NUM_POSTS > 1 or .pagination) and not S_IS_BOT  -->
+		<form method="post" action="{S_TOPIC_ACTION}">
+		<!-- INCLUDE display_options.html -->
+		</form>
+	<!-- ENDIF -->
+
+	<!-- IF .quickmod -->
+	<div class="quickmod dropdown-container dropdown-container-left dropdown-up dropdown-{S_CONTENT_FLOW_END} dropdown-button-control" id="quickmod">
+		<span title="{L_QUICK_MOD}" class="button button-secondary dropdown-trigger dropdown-select">
+			{{ Icon('font', 'gavel', lang('QUICK_MOD'), true, 'fas c-button-icon') }}
+			<span class="caret">{{ Icon('font', 'caret-down', '', true, 'fas c-button-icon') }}</span>
+		</span>
+		<div class="dropdown">
+				<div class="pointer"><div class="pointer-inner"></div></div>
+				<ul class="dropdown-contents">
+				<!-- BEGIN quickmod -->
+					<!-- DEFINE $QUICKMOD_AJAX = (quickmod.VALUE in ['lock', 'unlock', 'delete_topic', 'restore_topic', 'make_normal', 'make_sticky', 'make_announce', 'make_global']) -->
+					<li><a href="{quickmod.LINK}"<!-- IF $QUICKMOD_AJAX --> data-ajax="true" data-refresh="true"<!-- ENDIF -->>{quickmod.TITLE}</a></li>
+				<!-- END quickmod -->
+				</ul>
+			</div>
+		</div>
+	<!-- ENDIF -->
+
+	<!-- EVENT viewtopic_dropdown_bottom_custom -->
+
+	<!-- IF .pagination or TOTAL_POSTS -->
+		<div class="pagination">
+			{TOTAL_POSTS}
+			<!-- IF .pagination -->
+				<!-- INCLUDE pagination.html -->
+			<!-- ELSE -->
+				&bull; {PAGE_NUMBER}
+			<!-- ENDIF -->
+		</div>
+	<!-- ENDIF -->
+</div>
+
+<!-- EVENT viewtopic_body_footer_before -->
+<!-- INCLUDE jumpbox.html -->
+
+{% EVENT viewtopic_body_online_list_before %}
+
+<!-- IF S_DISPLAY_ONLINE_LIST and U_VIEWONLINE -->
+	<div class="stat-block online-list">
+		<h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3>
+		<p>{LOGGED_IN_USER_LIST}</p>
+	</div>
+<!-- ENDIF -->
+
+{% EVENT viewtopic_body_online_list_after %}
+
+<!-- INCLUDE overall_footer.html -->
