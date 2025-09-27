@@ -54,6 +54,12 @@ class online_whois
 	 */
 	protected $user;
 
+	/** @var string */
+	private $users_table;
+
+	/** @var string */
+	private $sessions_table;
+
 	/**
 	 * @var string
 	 */
@@ -72,10 +78,12 @@ class online_whois
 	 * @param language $language
 	 * @param template $template
 	 * @param user $user
+	 * @param string $users_table
+	 * @param string $sessions_table
 	 * @param string $phpbb_root_path
 	 * @param string $php_ex
 	 */
-	public function __construct(auth $auth, driver_interface $db, helper $helper, language $language, template $template, user $user, string $phpbb_root_path, string $php_ex)
+	public function __construct(auth $auth, driver_interface $db, helper $helper, language $language, template $template, user $user, string $users_table, string $sessions_table, string $phpbb_root_path, string $php_ex)
 	{
 		$this->auth				= $auth;
 		$this->db				= $db;
@@ -83,6 +91,8 @@ class online_whois
 		$this->language			= $language;
 		$this->template			= $template;
 		$this->user				= $user;
+		$this->users_table		= $users_table;
+		$this->sessions_table	= $sessions_table;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ex			= $php_ex;
 	}
@@ -122,7 +132,7 @@ class online_whois
 		}
 
 		$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
-			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
+			FROM ' . $this->users_table . ' u, ' . $this->sessions_table . " s
 			WHERE s.session_id = '" . $this->db->sql_escape($session_id) . "'
 				AND	u.user_id = s.session_user_id";
 		$result = $this->db->sql_query($sql);

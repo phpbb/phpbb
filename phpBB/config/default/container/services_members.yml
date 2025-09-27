@@ -6,7 +6,6 @@ services:
         arguments:
             - '@auth'
             - '@config'
-            - '@dbal.conn'
             - '@dispatcher'
             - '@group_helper'
             - '@viewonline_helper'
@@ -14,7 +13,6 @@ services:
             - '@language'
             - '@pagination'
             - '@request'
-            - '@router'
             - '@template'
             - '@user'
             - '%core.root_path%'
@@ -29,6 +27,8 @@ services:
             - '@language'
             - '@template'
             - '@user'
+            - '%tables.users%'
+            - '%tables.sessions%'
             - '%core.root_path%'
             - '%core.php_ext%'
 
@@ -55,4 +55,17 @@ services:
 # Helpers
     viewonline_helper:
         class: phpbb\members\viewonline_helper
-
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@event_dispatcher'
+            - '@router'
+            - '@controller.helper'
+            - '@language'
+            - '@auth'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.users%'
+            - '%tables.sessions%'
+            - '%tables.topics%'
+            - '%tables.forums%'
