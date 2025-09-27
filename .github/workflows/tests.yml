@@ -504,11 +504,10 @@ jobs:
         runs-on: windows-2025
         strategy:
             matrix:
-                type: ['unit', 'functional']
-                php: ['8.4']
+                php: ['8.2', '8.3', '8.4']
                 db: ['postgres']
 
-        name: Windows - ${{ matrix.type }} - PHP ${{ matrix.php }} - ${{ matrix.db }}
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         steps:
             - name: Prepare git for Windows
@@ -610,10 +609,5 @@ jobs:
               run: npm ci
 
             - name: Run unit tests
-              if: ${{ matrix.type == 'unit' }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --display-all-issues --stop-on-error --exclude-group functional,slow
-            - name: Run functional tests
-              if: ${{ matrix.type == 'functional' }}
-              run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --display-all-issues --stop-on-error --group functional
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
