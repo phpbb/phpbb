@@ -90,25 +90,23 @@ $lang = array_merge($lang, array(
 	'EXTENSION_NAME'			=> 'Extension Name',
 	'EXTENSION_ACTIONS'			=> 'Actions',
 	'EXTENSION_OPTIONS'			=> 'Options',
-	'EXTENSION_INSTALLING_HEADLINE'	=> 'Installing an extension',
-	'EXTENSION_INSTALLING_EXPLAIN'	=> [
-		0 => 'Download an extension from phpBB’s extensions database',
-		1 => 'Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board',
-		2 => 'Enable the extension, here in the Extensions manager',
-	],
-	'EXTENSION_REMOVING_HEADLINE'	=> 'Deleting an extension from your board',
-	'EXTENSION_REMOVING_EXPLAIN'	=> [
-		0 => 'Disable the extension',
-		1 => 'Delete the extension’s data',
-		2 => 'Delete the extension‘s files from the filesystem',
-	],
-	'EXTENSION_UPDATING_HEADLINE'	=> 'Updating an extension',
-	'EXTENSION_UPDATING_EXPLAIN'	=> [
-		0 => 'Disable the extension',
-		1 => 'Delete the extension’s files from the filesystem',
-		2 => 'Upload the new files',
-		3 => 'Enable the extension',
-	],
+
+	'EXTENSION_INSTALLING_HEADLINE'			=> 'Installing an extension',
+	'EXTENSION_INSTALLING_EXPLAIN_STEP1'	=> 'Download an extension from phpBB’s extensions database',
+	'EXTENSION_INSTALLING_EXPLAIN_STEP2'	=> 'Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board',
+	'EXTENSION_INSTALLING_EXPLAIN_STEP3'	=> 'Enable the extension, here in the Extensions manager',
+
+	'EXTENSION_REMOVING_HEADLINE'			=> 'Deleting an extension from your board',
+	'EXTENSION_REMOVING_EXPLAIN_STEP1'		=> 'Disable the extension',
+	'EXTENSION_REMOVING_EXPLAIN_STEP2'		=> 'Delete the extension’s data',
+	'EXTENSION_REMOVING_EXPLAIN_STEP3'		=> 'Delete the extension‘s files from the filesystem',
+
+	'EXTENSION_UPDATING_HEADLINE'			=> 'Updating an extension',
+	'EXTENSION_UPDATING_EXPLAIN_STEP1'		=> 'Disable the extension',
+	'EXTENSION_UPDATING_EXPLAIN_STEP2'		=> 'Delete the extension’s files from the filesystem',
+	'EXTENSION_UPDATING_EXPLAIN_STEP3'		=> 'Upload the new files',
+	'EXTENSION_UPDATING_EXPLAIN_STEP4'		=> 'Enable the extension',
+
 
 	'EXTENSION_DELETE_DATA_CONFIRM'	=> 'Are you sure that you wish to delete the data associated with “%s”?<br /><br />This removes all of its data and settings and cannot be undone!',
 	'EXTENSION_DISABLE_CONFIRM'		=> 'Are you sure that you wish to disable the “%s” extension?',
