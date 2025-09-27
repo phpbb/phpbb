@@ -42,13 +42,13 @@ class phpbb_migrations_remove_jabber_migration_test extends phpbb_migration_test
 			WHERE method = 'notification.method.jabber'";
 		$this->db->sql_query($sql);
 		$this->assertFalse($this->db->sql_fetchfield('id'));
-		
+
 		$sql = "SELECT id FROM phpbb_user_notifications
-			WHERE method = 'notification.method.email'";
+			WHERE method = 'notification.method.jabber'";
 		$result = $this->db->sql_query($sql);
 		$rowset = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
-		$this->assertEquals(14, count($rowset));
+		$this->assertEquals(0, count($rowset));
 
 		$sql = "SELECT config_name FROM phpbb_config
 			WHERE config_name = 'jab_enable'";
