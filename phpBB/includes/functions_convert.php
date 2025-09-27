@@ -1022,7 +1022,7 @@ function user_group_auth($group, $select_query, $use_src_db)
 /**
 * Retrieves configuration information from the source forum and caches it as an array
 * Both database and file driven configuration formats can be handled
-* (the type used is specified in $config_schema, see convert_phpbb20.php for more details)
+* (the type used is specified in $config_schema)
 */
 function get_config()
 {
@@ -1110,7 +1110,7 @@ function get_config()
 
 /**
 * Transfers the relevant configuration information from the source forum
-* The mapping of fields is specified in $config_schema, see convert_phpbb20.php for more details
+* The mapping of fields is specified in $config_schema
 */
 function restore_config($schema)
 {
