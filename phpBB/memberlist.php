@@ -43,6 +43,9 @@ $username	= $request->variable('un', '', true);
 $group_id	= $request->variable('g', 0);
 $topic_id	= $request->variable('t', 0);
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 // Redirect when old mode is used
 if ($mode == 'leaders')
 {

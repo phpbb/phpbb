@@ -1,27 +1,28 @@
 <?php
 /**
- *
- * This file is part of the phpBB Forum Software package.
- *
- * @copyright (c) phpBB Limited <https://www.phpbb.com>
- * @license GNU General Public License, version 2 (GPL-2.0)
- *
- * For full copyright and license information, please see
- * the docs/CREDITS.txt file.
- *
- */
+*
+* This file is part of the phpBB Forum Software package.
+*
+* @copyright (c) phpBB Limited <https://www.phpbb.com>
+* @license GNU General Public License, version 2 (GPL-2.0)
+*
+* For full copyright and license information, please see
+* the docs/CREDITS.txt file.
+*
+*/
 
 namespace phpbb\members\controller;
 
-use \phpbb\auth\auth;
-use \phpbb\config\config;
-use \phpbb\db\driver\driver_interface;
-use \phpbb\event\dispatcher;
-use \phpbb\group\helper as group_helper;
-use \phpbb\controller\helper;
-use \phpbb\language\language;
-use \phpbb\template\template;
-use \phpbb\user;
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher;
+use phpbb\exception\http_exception;
+use phpbb\group\helper as group_helper;
+use phpbb\controller\helper;
+use phpbb\language\language;
+use phpbb\template\template;
+use phpbb\user;
 
 class team
 {
