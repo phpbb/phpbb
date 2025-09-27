@@ -663,6 +663,7 @@ li {
 
 #menu li span.completed:before {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	color: #515f77;
 	margin-right: 1px;
 	margin-left: -8px;
@@ -676,6 +677,7 @@ li {
 
 .rtl #menu li span.completed:before {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	color: #515f77;
 	margin-right: -8px;
 	margin-left: 1px;
@@ -2858,12 +2860,14 @@ fieldset.permissions .permissions-switch {
 
 .roles-options > span:after {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	float: right;
 	content: "\f107";
 }
 
 .rtl .roles-options > span:after {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	float: left;
 	content: "\f107";
 }
