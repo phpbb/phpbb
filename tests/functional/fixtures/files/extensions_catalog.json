@@ -1,0 +1,34 @@
+[
+	{
+		"name": "extension1\/vendor",
+		"display_name": "Extension 1",
+		"composer_name": "extension1\/vendor",
+		"version": "1.0.0",
+		"description": "Dummy extension 1 for testing.",
+		"url": "https:\/\/example.com\/extension1",
+		"authors": [
+			{
+				"name": "Author One",
+				"email": "author1@example.com",
+				"homepage": "https:\/\/author1.example.com",
+				"role": "Developer"
+			}
+		]
+	},
+	{
+		"name": "phpbb\/viglink",
+		"display_name": "VigLink",
+		"composer_name": "phpbb\/viglink",
+		"version": "dev-master",
+		"description": "The VigLink extension for phpBB makes it possible to earn revenue, without any change to the user experience, when users post and follow links to commercial sites.",
+		"url": "https:\/\/www.phpbb.com\/",
+		"authors": [
+			{
+				"name": "Author Two",
+				"email": "author2@example.com",
+				"homepage": "https:\/\/author2.example.com",
+				"role": "Developer"
+			}
+		]
+	}
+]
