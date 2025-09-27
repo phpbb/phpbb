@@ -34,3 +34,5 @@ services:
 
     viewonline_helper:
         class: phpbb\members\viewonline_helper
+        arguments:
+            - '@dbal.conn'

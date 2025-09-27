@@ -194,14 +194,14 @@ class online
 		extract($this->dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
 
 		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
-		$session_data_rowset = $db->sql_fetchrowset($result);
-		$db->sql_freeresult($result);
+		$session_data_rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
 
 		$prev_id = $prev_ip = $user_list = [];
 		$logged_visible_online = $logged_hidden_online = $counter = 0;
 
 		// Get forum IDs for session pages which have only 't' parameter
-		$viewonline_helper->get_forum_ids($session_data_rowset);
+		$this->viewonline_helper->get_forum_ids($session_data_rowset);
 
 		foreach ($session_data_rowset as $row)
 		{
@@ -259,6 +259,11 @@ class online
 
 			list($location, $location_url) = $this->get_location($row['session_page'], $row['session_forum_id']);
 
+			// TODO: Check if this two lines should be moved to the router
+			$session_page = parse_url($row['session_page'],  PHP_URL_PATH); // Remove query string
+			$session_page = '/' . ((substr($session_page, 0, 8) == 'app.php/') ? substr($session_page, 8) : $session_page); // Remove app.php/
+			$on_page = $this->viewonline_helper->get_user_page($session_page);
+
 			/**
 			* Overwrite the location's name and URL, which are displayed in the list
 			*
@@ -308,9 +313,9 @@ class online
 
 			$this->template->assign_block_vars('user_row', $template_row);
 		}
-		$this->db->sql_freeresult($result);
+		//$this->db->sql_freeresult($result);
 
-		$group_helper->display_legend($db, $template);
+		$this->group_helper->display_legend($this->db, $this->template);
 
 		// Refreshing the page every 60 seconds...
 		meta_refresh(60, $this->helper->route('phpbb_members_online', ['sg' => $show_guests, 'sk' => $sort_key, 'sd' => $sort_dir, 'start' => $start]));
