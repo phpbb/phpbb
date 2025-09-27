@@ -142,11 +142,13 @@ services:
         arguments:
             - '@auth'
             - '@avatar.helper'
+            - '@dbal.conn'
             - '@cache'
             - '@config'
             - '@language'
             - '@event_dispatcher'
             - '@path_helper'
+            - '@template'
             - '@user'
 
     log:

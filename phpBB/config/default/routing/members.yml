@@ -1,5 +1,5 @@
 phpbb_members_online:
-    path: /
+    path: /online
     defaults:
         _controller: members.controller.online:handle
 

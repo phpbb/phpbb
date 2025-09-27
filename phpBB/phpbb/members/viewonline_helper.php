@@ -23,12 +23,74 @@ class viewonline_helper
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var \phpbb\config\config */
+	protected $config;
+
+	/** @var \phpbb\event\dispatcher_interface */
+	protected $dispatcher;
+
+	/** @var \phpbb\routing\router */
+	protected $router;
+
+	/** @var \phpbb\controller\helper */
+	protected $helper;
+
+	/** @var \phpbb\language\language */
+	protected $language;
+
+	/** @var \phpbb\auth\auth */
+	protected $auth;
+
+	/** @var string */
+	protected $phpbb_root_path;
+
+	/** @var string */
+	protected $php_ex;
+
+	/** @var string */
+	protected $forums_table;
+
+	/** @var string */
+	protected $topics_table;
+
+	/** @var string */
+	protected $users_table;
+
+	/** @var string */
+	protected $sessions_table;
+
 	/**
 	 * @param \phpbb\db\driver\driver_interface $db
+	 * @param \phpbb\config\config $config
+	 * @param \phpbb\event\dispatcher_interface $dispatcher
+	 * @param \phpbb\routing\router $router
+	 * @param \phpbb\controller\helper $helper
+	 * @param \phpbb\language\language $language
+	 * @param \phpbb\auth\auth $auth
+	 * @param string $phpbb_root_path
+	 * @param string $php_ex
+	 * @param string $users_table
+	 * @param string $sessions_table
+	 * @param string $topics_table
+	 * @param string $forums_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\config\config $config, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\routing\router $router, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\auth\auth $auth, string $phpbb_root_path, string $php_ex, string $users_table, string $sessions_table, string $topics_table, string $forums_table)
 	{
 		$this->db = $db;
+		$this->config = $config;
+		$this->dispatcher = $dispatcher;
+
+		$this->router = $router;
+		$this->helper = $helper;
+		$this->language = $language;
+		$this->auth = $auth;
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ex = $php_ex;
+
+		$this->users_table = $users_table;
+		$this->sessions_table = $sessions_table;
+		$this->topics_table = $topics_table;
+		$this->forums_table = $forums_table;
 	}
 
 	/**
@@ -56,7 +118,7 @@ class viewonline_helper
 			$sql_ary = [
 				'SELECT'	=> 't.topic_id, t.forum_id',
 				'FROM'		=> [
-					TOPICS_TABLE => 't',
+					$this->topics_table => 't',
 				],
 				'WHERE'		=> $this->db->sql_in_set('t.topic_id', $topic_ids),
 				'ORDER_BY'	=> 't.topic_id',
@@ -94,5 +156,315 @@ class viewonline_helper
 		}
 
 		return $on_page;
+	}
+
+	/**
+	 * Given a certain page, it returns the title of the page and a link to it.
+	 * There are 2 strategies to detect the page the user is in:
+	 *  - Try to get the controller route from the router service
+	 *  - And second, if is not possible to get the controller route, the
+	 * page is analyzed by path, analyzing the file that is accessed. This
+	 * is mostly for legacy pages, and should be removed in the future.
+	 *
+	 * @param $session_page
+	 * @param $forum_id
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function get_location($session_page, $forum_id) // $forum_id can be removed in the future i think https://tracker.phpbb.com/browse/PHPBB3-15434
+	{
+		global $phpbb_adm_relative_path;
+
+		try
+		{
+			// TODO: Check if this two lines should be moved to the router
+			$session_page2 = parse_url($session_page,  PHP_URL_PATH); // Remove query string
+			$session_page2 = '/' . ((substr($session_page2, 0, 8) == 'app.php/') ? substr($session_page2, 8) : $session_page2); // Remove app.php/
+
+			$match = $this->router->match($session_page2);
+
+			switch ($match['_route'])
+			{
+				case 'phpbb_help_bbcode_controller':
+					$location = $this->language->lang('VIEWING_FAQ');
+					$location_url = $this->helper->route('phpbb_help_faq_controller');
+					break;
+
+				case 'phpbb_members_online':
+				case 'phpbb_members_online_whois':
+					$location = $this->language->lang('VIEWING_ONLINE');
+					$location_url = $this->helper->route('phpbb_members_online');
+					break;
+
+				case 'phpbb_report_pm_controller':
+				case 'phpbb_report_post_controller':
+					$location = $this->language->lang('REPORTING_POST');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+
+				case 'phpbb_message_admin':
+					// https://github.com/phpbb/phpbb/pull/5391/files
+					// The current behavior is show users in contact admin, but they will be different controllers
+					//case 'phpbb_message_topic':
+					//case 'phpbb_message_user':
+					$location = $this->language->lang('VIEWING_CONTACT_ADMIN');
+					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex, 'mode=contactadmin');
+					break;
+
+				case 'phpbb_members_profile':
+					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
+					$location = $this->language->lang('VIEWING_MEMBER_PROFILE');
+					break;
+
+				case 'phpbb_members_team':
+					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
+					$location = $this->language->lang('VIEWING_MEMBERS');
+					break;
+
+				default:
+					// Is a route, but not in the switch
+					$location = $this->language->lang('INDEX');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+			}
+		}
+		catch (\RuntimeException $e) // Urls without route
+		{
+			$on_page = $this->get_user_page($session_page);
+
+			switch ($on_page[1])
+			{
+				case 'index':
+					$location = $this->language->lang('INDEX');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+
+				case $phpbb_adm_relative_path . 'index':
+					$location = $this->language->lang('ACP');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+
+				case 'posting':
+				case 'viewforum':
+				case 'viewtopic':
+
+					$forum_data = $this->get_forum_data();
+
+					if ($forum_id && $this->auth->acl_get('f_list', $forum_id))
+					{
+						$location = '';
+						$location_url = append_sid($this->phpbb_root_path . "viewforum." . $this->php_ex, 'f=' . $forum_id);
+
+						if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
+						{
+							$location = $this->language->lang('READING_LINK', $forum_data[$forum_id]['forum_name']);
+							break;
+						}
+
+						switch ($on_page[1])
+						{
+							case 'posting':
+								preg_match('#mode=([a-z]+)#', $session_page, $on_page);
+								$posting_mode = (!empty($on_page[1])) ? $on_page[1] : '';
+
+								switch ($posting_mode)
+								{
+									case 'reply':
+									case 'quote':
+										$location = $this->language->lang('REPLYING_MESSAGE', $forum_data[$forum_id]['forum_name']);
+										break;
+
+									default:
+										$location = $this->language->lang('POSTING_MESSAGE', $forum_data[$forum_id]['forum_name']);
+										break;
+								}
+								break;
+
+							case 'viewtopic':
+								$location = $this->language->lang('READING_TOPIC', $forum_data[$forum_id]['forum_name']);
+								break;
+
+							case 'viewforum':
+								$location = $this->language->lang('READING_FORUM', $forum_data[$forum_id]['forum_name']);
+								break;
+						}
+					}
+					else
+					{
+						$location = $this->language->lang('INDEX');
+						$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					}
+					break;
+
+				case 'search':
+					$location = $this->language->lang('SEARCHING_FORUMS');
+					$location_url = append_sid($this->phpbb_root_path . "search." . $this->php_ex);
+					break;
+
+				case 'memberlist':
+					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
+					$location = $this->language->lang('VIEWING_MEMBERS');
+					break;
+
+				case 'mcp':
+					$location = $this->language->lang('VIEWING_MCP');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+
+				case 'ucp':
+					$location = $this->language->lang('VIEWING_UCP');
+
+					// Grab some common modules
+					$url_params = [
+						'mode=register'		=> 'VIEWING_REGISTER',
+						'i=pm&mode=compose'	=> 'POSTING_PRIVATE_MESSAGE',
+						'i=pm&'				=> 'VIEWING_PRIVATE_MESSAGES',
+						'i=profile&'		=> 'CHANGING_PROFILE',
+						'i=prefs&'			=> 'CHANGING_PREFERENCES',
+					];
+
+					foreach ($url_params as $param => $lang)
+					{
+						if (strpos($session_page, $param) !== false)
+						{
+							$location = $this->language->lang($lang);
+							break;
+						}
+					}
+
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+
+				default:
+					$location = $this->language->lang('INDEX');
+					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
+					break;
+			}
+		}
+
+		return [$location, $location_url];
+	}
+
+	/**
+	 * Get number of guests online
+	 *
+	 * @return int
+	 */
+	public function get_number_guests()
+	{
+		switch ($this->db->get_sql_layer())
+		{
+			case 'sqlite3':
+				$sql = 'SELECT COUNT(session_ip) as num_guests
+					FROM (
+						SELECT DISTINCT session_ip
+							FROM ' . $this->sessions_table . '
+							WHERE session_user_id = ' . ANONYMOUS . '
+								AND session_time >= ' . (time() - ($this->config['load_online_time'] * 60)) .
+					')';
+				break;
+
+			default:
+				$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
+					FROM ' . $this->sessions_table . '
+					WHERE session_user_id = ' . ANONYMOUS . '
+						AND session_time >= ' . (time() - ($this->config['load_online_time'] * 60));
+				break;
+		}
+		$result = $this->db->sql_query($sql);
+		$guest_counter = (int) $this->db->sql_fetchfield('num_guests');
+		$this->db->sql_freeresult($result);
+
+		return $guest_counter;
+	}
+
+	/**
+	 * Get forum data
+	 *
+	 * @return array
+	 */
+	public function get_forum_data()
+	{
+		static $forum_data;
+
+		if (isset($forum_data))
+		{
+			return $forum_data;
+		}
+
+		// Forum info
+		$sql_ary = [
+			'SELECT'	=> 'f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id',
+			'FROM'		=> [
+				$this->forums_table    => 'f',
+			],
+			'ORDER_BY'	=> 'f.left_id ASC',
+		];
+
+		/**
+		 * Modify the forum data SQL query for getting additional fields if needed
+		 *
+		 * @event core.viewonline_modify_forum_data_sql
+		 * @var	array	sql_ary			The SQL array
+		 * @since 3.1.5-RC1
+		 */
+		$vars = ['sql_ary'];
+		extract($this->dispatcher->trigger_event('core.viewonline_modify_forum_data_sql', compact($vars)));
+
+		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary), 600);
+		unset($sql_ary);
+
+		$forum_data = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$forum_data[$row['forum_id']] = $row;
+		}
+		$this->db->sql_freeresult($result);
+
+		return $forum_data;
+	}
+
+	/**
+	 * Build and execute the sessions query and return the rowset.
+	 *
+	 * @param bool $show_guests
+	 * @param string $order_by
+	 * @param int &$guest_counter
+	 * @return array
+	 */
+	public function get_session_data_rowset(bool &$show_guests, string $order_by, int &$guest_counter): array
+	{
+		$forum_data = $this->get_forum_data();
+
+		$sql_ary = [
+			'SELECT'    => 'u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline, s.session_forum_id',
+			'FROM'      => [
+				$this->users_table     => 'u',
+				$this->sessions_table  => 's',
+			],
+			'WHERE'     => 'u.user_id = s.session_user_id
+				AND s.session_time >= ' . (time() - ($this->config['load_online_time'] * 60)) .
+				(($show_guests) ? '' : ' AND s.session_user_id <> ' . ANONYMOUS),
+			'ORDER_BY'  => $order_by,
+		];
+
+		/**
+		 * Modify the SQL query for getting the user data to display viewonline list
+		 *
+		 * @event core.viewonline_modify_sql
+		 * @var	array	sql_ary			The SQL array
+		 * @var	bool	show_guests		Do we display guests in the list
+		 * @var	int		guest_counter	Number of guests displayed
+		 * @var	array	forum_data		Array with forum data
+		 * @since 3.1.0-a1
+		 * @changed 3.1.0-a2 Added vars guest_counter and forum_data
+		 */
+		$vars = ['sql_ary', 'show_guests', 'guest_counter', 'forum_data'];
+		extract($this->dispatcher->trigger_event('core.viewonline_modify_sql', compact($vars)));
+
+		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
+		$session_data_rowset = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $session_data_rowset;
 	}
 }
