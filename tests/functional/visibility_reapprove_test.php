@@ -339,8 +339,6 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 	protected function assert_forum_details($forum_id, $details, $additional_error_message = '')
 	{
-		$this->db = $this->get_db();
-
 		$sql = 'SELECT ' . implode(', ', array_keys($details)) . '
 			FROM phpbb_forums
 			WHERE forum_id = ' . (int) $forum_id;
@@ -353,8 +351,6 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 	protected function load_ids($data)
 	{
-		$this->db = $this->get_db();
-
 		if (!empty($data['forums']))
 		{
 			$sql = 'SELECT *

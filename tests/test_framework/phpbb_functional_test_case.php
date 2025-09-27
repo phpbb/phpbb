@@ -30,7 +30,6 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected static $install_success = false;
 
 	protected $cache = null;
-	protected $db = null;
 	protected $db_doctrine = null;
 	protected $extension_manager = null;
 
@@ -38,18 +37,39 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* Session ID for current test's session (each test makes its own)
 	* @var string
 	*/
-	protected $sid;
+	protected static $session_id;
 
 	/**
 	* Language array used by phpBB
 	* @var array
 	*/
-	protected $lang = array();
+	protected static $lang_ary = [];
 
 	protected static $config = array();
 	protected static $already_installed = false;
+	protected static $db_connection = null;
 
-	static public function setUpBeforeClass(): void
+    public function __get($property)
+    {
+        if ($property === 'sid')
+		{
+            return self::$session_id ??= null;
+        }
+
+        if ($property === 'db')
+		{
+            return self::$db_connection ??= null;
+        }
+
+        if ($property === 'lang')
+		{
+            return self::$lang_ary;
+        }
+
+        return null;
+    }
+
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
@@ -73,6 +93,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::install_board();
 			self::$already_installed = true;
 		}
+
+		global $cache;
+		$cache = new phpbb_mock_null_cache;
+		self::get_db();
+
+		// Special flag for testing without possibility to run into lock scenario.
+		// Unset entry and add it back if lock behavior for posting should be tested.
+		// Unset ci_tests_no_lock_posting from config
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
+		self::$db_connection->sql_query($sql);
 	}
 
 	/**
@@ -108,50 +138,32 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
-		$this->lang = array();
-		$this->add_lang('common');
-
-		$db = $this->get_db();
-
-		// Special flag for testing without possibility to run into lock scenario.
-		// Unset entry and add it back if lock behavior for posting should be tested.
-		// Unset ci_tests_no_lock_posting from config
-		$db->sql_return_on_error(true);
-		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
-		$this->db->sql_query($sql);
-		$db->sql_return_on_error(false);
+		self::$lang_ary = [];
+		self::add_lang('common');
 
 		foreach (static::setup_extensions() as $extension)
 		{
-			$this->purge_cache();
-
-			$sql = 'SELECT ext_active
-				FROM ' . EXT_TABLE . "
-				WHERE ext_name = '" . $db->sql_escape($extension). "'";
-			$result = $db->sql_query($sql);
-			$status = (bool) $db->sql_fetchfield('ext_active');
-			$db->sql_freeresult($result);
-
-			if (!$status)
-			{
-				$this->install_ext($extension);
-			}
+			self::install_ext($extension);
 		}
 	}
 
-	protected function tearDown(): void
+	public static function tearDownAfterClass(): void
 	{
-		parent::tearDown();
+		parent::tearDownAfterClass();
 
-		if ($this->db instanceof \phpbb\db\driver\driver_interface)
+		global $cache;
+		$cache = new phpbb_mock_null_cache;
+
+		if (self::$db_connection instanceof \phpbb\db\driver\driver_interface)
 		{
 			// Unset ci_tests_no_lock_posting from config
 			$sql = 'DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'ci_tests_no_lock_posting'";
-			$this->db->sql_query($sql);
+			self::$db_connection->sql_query($sql);
 
 			// Close the database connections again this test
-			$this->db->sql_close();
+			self::$db_connection->sql_close();
+			self::$db_connection = null;
 		}
 	}
 
@@ -164,7 +176,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param bool	$assert_response_html	Should we perform standard assertions for a normal html page
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function request($method, $path, $form_data = array(), $assert_response_html = true)
+	public static function request($method, $path, $form_data = array(), $assert_response_html = true)
 	{
 		$crawler = self::$client->request($method, self::$root_url . $path, $form_data);
 
@@ -184,7 +196,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param bool	$assert_response_html	Should we perform standard assertions for a normal html page
 	* @return Symfony\Component\DomCrawler\Crawler
 	*/
-	static public function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
+	public static function submit(Symfony\Component\DomCrawler\Form $form, array $values = array(), $assert_response_html = true)
 	{
 		// Remove files from form if no file was submitted
 		// See: https://github.com/symfony/symfony/issues/49014
@@ -211,7 +223,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	*
 	* @return string HTML page
 	*/
-	static public function get_content()
+	public static function get_content()
 	{
 		return (string) self::$client->getResponse()->getContent();
 	}
@@ -226,17 +238,18 @@ class phpbb_functional_test_case extends phpbb_test_case
 	/**
 	 * @return \phpbb\db\driver\driver_interface
 	 */
-	protected function get_db()
+	protected static function get_db()
 	{
 		global $phpbb_root_path, $phpEx;
 		// so we don't reopen an open connection
-		if (!($this->db instanceof \phpbb\db\driver\driver_interface))
+		if (!(self::$db_connection instanceof \phpbb\db\driver\driver_interface))
 		{
 			$dbms = self::$config['dbms'];
-			$this->db = new $dbms();
-			$this->db->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport']);
+			self::$db_connection = new $dbms();
+			self::$db_connection->sql_connect(self::$config['dbhost'], self::$config['dbuser'], self::$config['dbpasswd'], self::$config['dbname'], self::$config['dbport'], true);
 		}
-		return $this->db;
+
+		return self::$db_connection;
 	}
 
 	protected function get_db_doctrine()
@@ -279,7 +292,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		global $phpbb_root_path, $phpEx;
 
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
-		$db = $this->get_db();
+		$this->get_db();
 		$db_doctrine = $this->get_db_doctrine();
 		$factory = new \phpbb\db\tools\factory();
 		$finder_factory = new \phpbb\finder\factory(null, false, $phpbb_root_path, $phpEx);
@@ -290,7 +303,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$migrator = new \phpbb\db\migrator(
 			$container,
 			$config,
-			$db,
+			$this->db,
 			$db_tools,
 			self::$config['table_prefix'] . 'migrations',
 			$phpbb_root_path,
@@ -312,7 +325,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$extension_manager = new \phpbb\extension\manager(
 			$container,
-			$db,
+			$this->db,
 			$config,
 			$finder_factory,
 			self::$config['table_prefix'] . 'ext',
@@ -598,58 +611,69 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
-	public function install_ext($extension)
+	public static function install_ext($extension)
 	{
-		$this->add_lang('acp/extensions');
+		self::get_db();
+		$sql = 'SELECT ext_active
+			FROM ' . EXT_TABLE . "
+			WHERE ext_name = '" . self::$db_connection->sql_escape($extension). "'";
+		$result = self::$db_connection->sql_query($sql);
+		$status = (bool) self::$db_connection->sql_fetchfield('ext_active');
+		self::$db_connection->sql_freeresult($result);
 
-		if ($this->get_logged_in_user())
+		if (!$status)
 		{
-			$this->logout();
-		}
-		$this->login();
-		$this->admin_login();
+			self::add_lang('acp/extensions');
 
-		$ext_path = str_replace('/', '%2F', $extension);
+			if (self::get_logged_in_user())
+			{
+				self::logout();
+			}
+			self::login();
+			self::admin_login();
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
+			$ext_path = str_replace('/', '%2F', $extension);
 
-		$form = $crawler->selectButton($this->lang('EXTENSION_ENABLE'))->form();
-		$crawler = self::submit($form);
+			$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=enable_pre&ext_name=' . $ext_path . '&sid=' . self::$session_id);
+			self::assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+			$form = $crawler->selectButton(self::lang('EXTENSION_ENABLE'))->form();
+			$crawler = self::submit($form);
 
-		// Wait for extension to be fully enabled
-		while (count($meta_refresh))
-		{
-			preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
-			$url = $match[1];
-			$crawler = self::request('POST', $url);
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+
+			// Wait for extension to be fully enabled
+			while (count($meta_refresh))
+			{
+				preg_match('#url=.+/(adm+.+)#', $meta_refresh->attr('content'), $match);
+				$url = $match[1];
+				$crawler = self::request('POST', $url);
+				$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
+			}
+
+			self::assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
+
+			self::logout();
 		}
-
-		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('div.successbox')->text());
-
-		$this->logout();
 	}
 
-	public function disable_ext($extension)
+	public static function disable_ext($extension)
 	{
-		$this->add_lang('acp/extensions');
+		self::add_lang('acp/extensions');
 
-		if ($this->get_logged_in_user())
+		if (self::get_logged_in_user())
 		{
-			$this->logout();
+			self::logout();
 		}
-		$this->login();
-		$this->admin_login();
+		self::login();
+		self::admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=disable_pre&ext_name=' . $ext_path . '&sid=' . self::$session_id);
+		self::assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$form = $crawler->selectButton($this->lang('EXTENSION_DISABLE'))->form();
+		$form = $crawler->selectButton(self::lang('EXTENSION_DISABLE'))->form();
 		$crawler = self::submit($form);
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -663,28 +687,28 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 		}
 
-		$this->assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('div.successbox')->text());
+		self::assertContainsLang('EXTENSION_DISABLE_SUCCESS', $crawler->filter('div.successbox')->text());
 
-		$this->logout();
+		self::logout();
 	}
 
-	public function delete_ext_data($extension)
+	public static function delete_ext_data($extension)
 	{
-		$this->add_lang('acp/extensions');
+		self::add_lang('acp/extensions');
 
-		if ($this->get_logged_in_user())
+		if (self::get_logged_in_user())
 		{
-			$this->logout();
+			self::logout();
 		}
-		$this->login();
-		$this->admin_login();
+		self::login();
+		self::admin_login();
 
 		$ext_path = str_replace('/', '%2F', $extension);
 
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . $this->sid);
-		$this->assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&action=delete_data_pre&ext_name=' . $ext_path . '&sid=' . self::$session_id);
+		self::assertGreaterThan(1, $crawler->filter('div.main fieldset.submit-buttons input')->count());
 
-		$form = $crawler->selectButton($this->lang('EXTENSION_DELETE_DATA'))->form();
+		$form = $crawler->selectButton(self::lang('EXTENSION_DELETE_DATA'))->form();
 		$crawler = self::submit($form);
 
 		$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
@@ -698,15 +722,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 			$meta_refresh = $crawler->filter('meta[http-equiv="refresh"]');
 		}
 
-		$this->assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('div.successbox')->text());
+		self::assertContainsLang('EXTENSION_DELETE_DATA_SUCCESS', $crawler->filter('div.successbox')->text());
 
-		$this->logout();
+		self::logout();
 	}
 
-	public function uninstall_ext($extension)
+	public static function uninstall_ext($extension)
 	{
-		$this->disable_ext($extension);
-		$this->delete_ext_data($extension);
+		self::disable_ext($extension);
+		self::delete_ext_data($extension);
 	}
 
 	private static function recreate_database($config)
@@ -727,10 +751,10 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 
-		$db = $this->get_db();
+		$this->get_db();
 		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'style_id' => $style_id,
 				'style_name' => $style_path,
 				'style_copyright' => '',
@@ -739,17 +763,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'theme_id' => $style_id,
 				'imageset_id' => $style_id,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_IMAGESET_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'imageset_id' => $style_id,
 				'imageset_name' => $style_path,
 				'imageset_copyright' => '',
 				'imageset_path' => $style_path,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'template_id' => $style_id,
 				'template_name' => $style_path,
 				'template_copyright' => '',
@@ -758,9 +782,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'template_inherits_id' => $parent_style_id,
 				'template_inherit_path' => $parent_style_path,
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
-			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . STYLES_THEME_TABLE . ' ' . $this->db->sql_build_array('INSERT', array(
 				'theme_id' => $style_id,
 				'theme_name' => $style_path,
 				'theme_copyright' => '',
@@ -769,7 +793,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				'theme_mtime' => 0,
 				'theme_data' => '',
 			));
-			$db->sql_query($sql);
+			$this->db->sql_query($sql);
 
 			if ($style_path != 'prosilver')
 			{
@@ -779,7 +803,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 		else
 		{
-			$db->sql_multi_insert(STYLES_TABLE, array(array(
+			$this->db->sql_multi_insert(STYLES_TABLE, array(array(
 				'style_name' => $style_path,
 				'style_copyright' => '',
 				'style_active' => 1,
@@ -801,13 +825,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 	{
 		global $phpbb_root_path;
 
-		$db = $this->get_db();
-		$db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
+		$this->get_db();
+		$this->db->sql_query('DELETE FROM ' . STYLES_TABLE . ' WHERE style_id = ' . $style_id);
 		if (version_compare(PHPBB_VERSION, '3.1.0-dev', '<'))
 		{
-			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
-			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
-			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE . ' WHERE imageset_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE . ' WHERE template_id = ' . $style_id);
+			$this->db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE . ' WHERE theme_id = ' . $style_id);
 
 			if ($style_path != 'prosilver')
 			{
@@ -894,13 +918,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 */
 	protected function get_group_id($group_name)
 	{
-		$db = $this->get_db();
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape($group_name) . "'";
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+			WHERE group_name = '" . $this->db->sql_escape($group_name) . "'";
+		$result = $this->db->sql_query($sql);
+		$group_id = (int) $this->db->sql_fetchfield('group_id');
+		$this->db->sql_freeresult($result);
 
 		return $group_id;
 	}
@@ -912,13 +935,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 */
 	protected function get_search_type()
 	{
-		$db = $this->get_db();
 		$sql = 'SELECT config_value as search_type
 			FROM ' . CONFIG_TABLE . "
-			WHERE config_name = '" . $db->sql_escape('search_type') . "'";
-		$result = $db->sql_query($sql);
-		$search_type = $db->sql_fetchfield('search_type');
-		$db->sql_freeresult($result);
+			WHERE config_name = '" . $this->db->sql_escape('search_type') . "'";
+		$result = $this->db->sql_query($sql);
+		$search_type = $this->db->sql_fetchfield('search_type');
+		$this->db->sql_freeresult($result);
 
 		return $search_type;
 	}
@@ -1008,21 +1030,21 @@ class phpbb_functional_test_case extends phpbb_test_case
 		return group_user_add($group_id, false, $usernames, $group_name, $default, $leader);
 	}
 
-	protected function login($username = 'admin', $autologin = false)
+	protected static function login($username = 'admin', $autologin = false)
 	{
-		$this->add_lang('ucp');
+		self::add_lang('ucp');
 
 		$crawler = self::request('GET', 'ucp.php?mode=login');
-		$button = $crawler->selectButton($this->lang('LOGIN'));
-		$this->assertGreaterThan(0, $button->count(), 'No login button found');
+		$button = $crawler->selectButton(self::lang('LOGIN'));
+		self::assertGreaterThan(0, $button->count(), 'No login button found');
 
-		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		$form = $crawler->selectButton(self::lang('LOGIN'))->form();
 		if ($autologin)
 		{
 			$form['autologin']->tick();
 		}
 		$crawler = self::submit($form, array('username' => $username, 'password' => $username . $username));
-		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
+		self::assertStringNotContainsString(self::lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$cookies = self::$cookieJar->all();
 
@@ -1031,50 +1053,50 @@ class phpbb_functional_test_case extends phpbb_test_case
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
-				$this->sid = $cookie->getValue();
+				self::$session_id = $cookie->getValue();
 			}
 		}
 	}
 
-	protected function logout()
+	protected static function logout()
 	{
-		$this->add_lang('ucp');
+		self::add_lang('ucp');
 
 		$crawler = self::request('GET', 'index.php');
-		$logout_link = $crawler->filter('a[title="' . $this->lang('LOGOUT') . '"]')->attr('href');
+		$logout_link = $crawler->filter('a[title="' . self::lang('LOGOUT') . '"]')->attr('href');
 		self::request('GET', $logout_link);
 
 		$crawler = self::request('GET', $logout_link);
-		$this->assertStringContainsString($this->lang('REGISTER'), $crawler->filter('.navbar')->text());
-		unset($this->sid);
+		self::assertStringContainsString(self::lang('REGISTER'), $crawler->filter('.navbar')->text());
+		self::$session_id = null;
 	}
 
 	/**
 	* Login to the ACP
 	* You must run login() before calling this.
 	*/
-	protected function admin_login($username = 'admin')
+	protected static function admin_login($username = 'admin')
 	{
-		$this->add_lang('acp/common');
+		self::add_lang('acp/common');
 
 		// Requires login first!
-		if (empty($this->sid))
+		if (empty(self::$session_id))
 		{
-			$this->fail('$this->sid is empty. Make sure you call login() before admin_login()');
+			self::fail('$this->sid is empty. Make sure you call login() before admin_login()');
 			return;
 		}
 
-		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid);
-		$this->assertStringContainsString($this->lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
+		$crawler = self::request('GET', 'adm/index.php?sid=' . self::$session_id);
+		self::assertStringContainsString(self::lang('LOGIN_ADMIN_CONFIRM'), $crawler->filter('html')->text());
 
-		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
+		$form = $crawler->selectButton(self::lang('LOGIN'))->form();
 
 		foreach ($form->getValues() as $field => $value)
 		{
 			if (strpos($field, 'password_') === 0)
 			{
 				$crawler = self::submit($form, array('username' => $username, $field => $username . $username));
-				$this->assertStringContainsString($this->lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
+				self::assertStringContainsString(self::lang('ADMIN_PANEL'), $crawler->filter('h1')->text());
 
 				$cookies = self::$cookieJar->all();
 
@@ -1083,7 +1105,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				{
 					if (substr($cookie->getName(), -4) == '_sid')
 					{
-						$this->sid = $cookie->getValue();
+						self::$session_id = $cookie->getValue();
 					}
 				}
 
@@ -1092,13 +1114,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		}
 	}
 
-	protected function add_lang($lang_file)
+	protected static function add_lang($lang_file)
 	{
 		if (is_array($lang_file))
 		{
 			foreach ($lang_file as $file)
 			{
-				$this->add_lang($file);
+				self::add_lang($file);
 			}
 
 			return;
@@ -1106,23 +1128,23 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$lang_path = __DIR__ . "/../../phpBB/language/en/$lang_file.php";
 
-		$lang = array();
+		$lang = [];
 
 		if (file_exists($lang_path))
 		{
 			include($lang_path);
 		}
 
-		$this->lang = array_merge($this->lang, $lang);
+		self::$lang_ary = array_merge(self::$lang_ary, $lang);
 	}
 
-	protected function add_lang_ext($ext_name, $lang_file)
+	protected static function add_lang_ext($ext_name, $lang_file)
 	{
 		if (is_array($lang_file))
 		{
 			foreach ($lang_file as $file)
 			{
-				$this->add_lang_ext($ext_name, $file);
+				self::add_lang_ext($ext_name, $file);
 			}
 
 			return;
@@ -1130,27 +1152,27 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$lang_path = __DIR__ . "/../../phpBB/ext/{$ext_name}/language/en/$lang_file.php";
 
-		$lang = array();
+		$lang = [];
 
 		if (file_exists($lang_path))
 		{
 			include($lang_path);
 		}
 
-		$this->lang = array_merge($this->lang, $lang);
+		self::$lang_ary = array_merge(self::$lang_ary, $lang);
 	}
 
-	protected function lang()
+	protected static function lang()
 	{
 		$args = func_get_args();
 		$key = $args[0];
 
-		if (empty($this->lang[$key]))
+		if (empty(self::$lang_ary[$key]))
 		{
 			throw new RuntimeException('Language key "' . $key . '" could not be found.');
 		}
 
-		$args[0] = $this->lang[$key];
+		$args[0] = self::$lang_ary[$key];
 
 		return call_user_func_array('sprintf', $args);
 	}
@@ -1162,9 +1184,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 * @param string $haystack	Search this
 	 * @param string $message	Optional failure message
 	 */
-	public function assertContainsLang($needle, $haystack, $message = '')
+	public static function assertContainsLang($needle, $haystack, $message = '')
 	{
-		$this->assertStringContainsString(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+		self::assertStringContainsString(html_entity_decode(self::lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
 	/**
@@ -1174,9 +1196,9 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param string $haystack	Search this
 	* @param string $message	Optional failure message
 	*/
-	public function assertNotContainsLang($needle, $haystack, $message = '')
+	public static function assertNotContainsLang($needle, $haystack, $message = '')
 	{
-		$this->assertStringNotContainsString(html_entity_decode($this->lang($needle), ENT_QUOTES), $haystack, $message);
+		self::assertStringNotContainsString(html_entity_decode(self::lang($needle), ENT_QUOTES), $haystack, $message);
 	}
 
 	/*
@@ -1187,7 +1209,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param mixed $status_code		Expected status code, false to disable check
 	* @return null
 	*/
-	static public function assert_response_html($status_code = 200)
+	public static function assert_response_html($status_code = 200)
 	{
 		// Any output before the doc type means there was an error
 		$content = self::get_content();
@@ -1208,7 +1230,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param mixed $status_code		Expected status code, false to disable check
 	* @return null
 	*/
-	static public function assert_response_xml($status_code = 200)
+	public static function assert_response_xml($status_code = 200)
 	{
 		// Any output before the xml opening means there was an error
 		$content = self::get_content();
@@ -1230,7 +1252,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	* @param int $status_code	Expected status code
 	* @return void
 	*/
-	static public function assert_response_status_code($status_code = 200)
+	public static function assert_response_status_code($status_code = 200)
 	{
 		if ($status_code != self::$client->getResponse()->getStatusCode() &&
 			preg_match('/^5[0-9]{2}/', self::$client->getResponse()->getStatusCode()))
@@ -1653,7 +1675,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	 *
 	 * @return string|bool username if logged in, false otherwise
 	 */
-	protected function get_logged_in_user()
+	protected static function get_logged_in_user()
 	{
 		$username_logged_in = false;
 		$crawler = self::request('GET', 'index.php');

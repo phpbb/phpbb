@@ -64,11 +64,10 @@ class phpbb_functional_ucp_allow_pm_test extends phpbb_functional_test_case
 	// enable or disable PM for a user, like from ucp
 	protected function set_user_allow_pm($user_id, $allow)
 	{
-		$db = $this->get_db();
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_allow_pm = " . $allow . "
 			WHERE user_id = " . $user_id;
-		$result = $db->sql_query($sql);
-		$db->sql_freeresult($result);
+		$result = $this->db->sql_query($sql);
+		$this->db->sql_freeresult($result);
 	}
 }

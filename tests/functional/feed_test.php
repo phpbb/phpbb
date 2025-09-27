@@ -1450,8 +1450,6 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	protected function load_ids($data)
 	{
-		$this->db = $this->get_db();
-
 		if (!empty($data['forums']))
 		{
 			$sql = 'SELECT *

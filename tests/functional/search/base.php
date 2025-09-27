@@ -137,8 +137,6 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
-		$this->create_search_index('phpbb\\search\\backend\\fulltext_native');
-
 		$post = $this->create_topic(2, 'Test Topic 1 foosubject', 'This is a test topic posted by the barsearch testing framework.');
 		$topic_multiple_results_count1 = $this->create_topic(2, 'Test Topic for multiple search results', 'This is a test topic posted to test multiple results count.');
 		$this->create_post(2, $topic_multiple_results_count1['topic_id'], 'Re: Test Topic for multiple search results', 'This is a test post 2 posted to test multiple results count.');

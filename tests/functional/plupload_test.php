@@ -21,13 +21,12 @@ class phpbb_functional_plupload_test extends phpbb_functional_test_case
 
 	protected function set_extension_group_permission($val)
 	{
-		$db = $this->get_db();
 		$query = "
 			UPDATE phpbb_extension_groups
 			SET allow_in_pm = '$val'
 			WHERE group_name = 'IMAGES'
 		";
-		$db->sql_query($query);
+		$this->db->sql_query($query);
 	}
 
 	protected function setUp(): void

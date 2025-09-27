@@ -16,24 +16,29 @@
  */
 class phpbb_functional_extension_template_event_order_test extends phpbb_functional_test_case
 {
-	static private $helper;
+	private static $helper;
 
-	static protected $fixtures = [
+	protected static $fixtures = [
 		'./',
 	];
 
-	static public function setUpBeforeClass(): void
+	public static function setUpBeforeClass(): void
 	{
 		parent::setUpBeforeClass();
 
 		self::$helper = new phpbb_test_case_helpers(__CLASS__);
 		self::$helper->copy_ext_fixtures(__DIR__ . '/fixtures/ext/', self::$fixtures);
+
+		self::install_ext('foo/bar');
+		self::install_ext('foo/foo');
 	}
 
-	static public function tearDownAfterClass(): void
+	public static function tearDownAfterClass(): void
 	{
 		parent::tearDownAfterClass();
 
+		self::uninstall_ext('foo/bar');
+		self::uninstall_ext('foo/foo');
 		self::$helper->restore_original_ext_dir();
 	}
 
@@ -44,18 +49,6 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 		$this->purge_cache();
 	}
 
-	protected function tearDown(): void
-	{
-		$this->uninstall_ext('foo/bar');
-		$this->uninstall_ext('foo/foo');
-
-		parent::tearDown();
-	}
-
-	protected static function setup_extensions()
-	{
-		return ['foo/bar', 'foo/foo'];
-	}
 
 	/**
 	 * Check extensions template event listener prioritizing
@@ -84,7 +77,7 @@ class phpbb_functional_extension_template_event_order_test extends phpbb_functio
 		$crawler = self::request('GET', 'index.php');
 		$quick_links_menu = $crawler->filter('ul[role="menu"]')->eq(0);
 		$quick_links_menu_nodes_count = (int) $quick_links_menu->filter('li')->count();
-		// Ensure foo/foo template event goes before foo/bar one
+		// Ensure foo/bar template event goes before foo/foo one
 		$this->assertStringContainsString('FOO_BAR_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 4)->filter('span')->text());
 		$this->assertStringContainsString('FOO_FOO_QUICK_LINK', $quick_links_menu->filter('li')->eq($quick_links_menu_nodes_count - 3)->filter('span')->text());
 	}

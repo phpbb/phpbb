@@ -91,7 +91,6 @@ class phpbb_functional_subforum_test extends phpbb_functional_test_case
 
 	protected function get_forum_id($forum_name)
 	{
-		$this->db = $this->get_db();
 		$forum_id = 0;
 
 		$sql = 'SELECT *
