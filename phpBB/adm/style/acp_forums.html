@@ -189,11 +189,13 @@
 	<div id="forum_cat_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
+		{% EVENT acp_forum_cat_options_prepend %}
 		<dl>
 			<dt><label for="display_active">{L_DISPLAY_ACTIVE_TOPICS}{L_COLON}</label><br /><span>{L_DISPLAY_ACTIVE_TOPICS_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="display_active" value="1"<!-- IF S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="display_active" value="0"<!-- IF not S_ENABLE_ACTIVE_TOPICS --> id="display_active" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
+		{% EVENT acp_forum_cat_options_append %}
 		</fieldset>
 	</div>
 
@@ -307,6 +309,7 @@
 	<div id="forum_link_options">
 		<fieldset>
 			<legend>{L_GENERAL_FORUM_SETTINGS}</legend>
+		{% EVENT acp_forum_link_options_prepend %}
 		<dl>
 			<dt><label for="link_display_on_index">{L_LIST_INDEX}{L_COLON}</label><br /><span>{L_LIST_INDEX_EXPLAIN}</span></dt>
 			<dd><label><input type="radio" class="radio" name="link_display_on_index" value="1"<!-- IF S_DISPLAY_ON_INDEX --> id="link_display_on_index" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -321,6 +324,7 @@
 			<dd><label><input type="radio" class="radio" name="forum_link_track" value="1"<!-- IF S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 				<label><input type="radio" class="radio" name="forum_link_track" value="0"<!-- IF not S_FORUM_LINK_TRACK --> id="forum_link_track" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
+		{% EVENT acp_forum_link_options_append %}
 		</fieldset>
 	</div>
 
