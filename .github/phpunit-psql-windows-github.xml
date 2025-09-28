@@ -7,7 +7,10 @@
 		bootstrap="../tests/bootstrap.php"
 		xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
 		cacheDirectory=".phpunit.cache"
-		backupStaticProperties="false">
+		backupStaticProperties="false"
+		timeoutForSmallTests="60"
+		timeoutForMediumTests="300"
+		timeoutForLargeTests="600">
   <testsuites>
     <testsuite name="phpBB Test Suite">
       <directory suffix="_test.php">../tests</directory>
