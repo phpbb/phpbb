@@ -225,7 +225,7 @@ class database
 		// Remove # style comments
 		$sql_query = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql_query));
 
-		return $sql_query;
+		return $sql_query ?: '';
 	}
 
 	/**

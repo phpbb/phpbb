@@ -303,7 +303,7 @@ class helper
 					{
 						if (defined('PHP_WINDOWS_VERSION_MAJOR'))
 						{
-							$prefix = $link[0] . ':';
+							$prefix = substr($link, 0, 1) . ':';
 							$link = substr($link, 2);
 						}
 						else
