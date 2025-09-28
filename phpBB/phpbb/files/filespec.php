@@ -355,7 +355,7 @@ class filespec
 	 */
 	public function get_filesize($filename)
 	{
-		return @filesize($filename);
+		return @filesize($filename) ?: 0;
 	}
 
 

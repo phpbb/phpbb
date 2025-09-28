@@ -140,6 +140,9 @@ class helper
 			}
 			$random = substr($random, 0, $length);
 		}
+		/**
+		 * @psalm-suppress FalsableReturnStatement
+		 */
 		return $random;
 	}
 

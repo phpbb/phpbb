@@ -129,7 +129,7 @@ abstract class driver implements \phpbb\avatar\driver\driver_interface
 	*/
 	public function get_config_name()
 	{
-		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this));
+		return preg_replace('#^phpbb\\\\avatar\\\\driver\\\\#', '', get_class($this)) ?: '';
 	}
 
 	/**

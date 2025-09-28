@@ -105,7 +105,7 @@ class oracle extends \phpbb\db\driver\driver
 */
 		$this->sql_server_version = @oci_server_version($this->db_connect_id);
 
-		return $this->sql_server_version;
+		return $this->sql_server_version ?: '';
 	}
 
 	/**

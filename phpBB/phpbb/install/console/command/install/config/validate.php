@@ -76,7 +76,7 @@ class validate extends \phpbb\console\command\command
 	 *
 	 * @return int 0 if everything went fine, or a non-zero exit code
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$this->iohandler_factory->set_environment('cli');
 
@@ -96,7 +96,7 @@ class validate extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true);
+			$config = Yaml::parse(file_get_contents($config_file));
 		}
 		catch (ParseException $e)
 		{
