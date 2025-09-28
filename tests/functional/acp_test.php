@@ -58,6 +58,12 @@ class phpbb_functional_acp_test extends phpbb_functional_test_case
 		// Browse all ACP submodules' modes
 		foreach ($acp_submodules as $acp_submodule)
 		{
+			// Don't click the ACP Extensions Catalog to prevent calling an external HTTP service in the test suite
+			if ($acp_submodule->getNode()->textContent === $this->lang('ACP_EXTENSIONS_CATALOG'))
+			{
+				continue;
+			}
+
 			self::$client->click($acp_submodule);
 			self::assert_response_html();
 		}
