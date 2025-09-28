@@ -21,7 +21,6 @@ use phpbb\db\migration\helper;
 use phpbb\db\output_handler\migrator_output_handler_interface;
 use phpbb\db\output_handler\null_migrator_output_handler;
 use phpbb\db\tools\tools_interface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
