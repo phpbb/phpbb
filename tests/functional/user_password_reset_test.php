@@ -125,7 +125,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$user_id = !$user_id ? $this->user_data['user_id'] : $user_id;
 		$token = !$token ? $this->user_data['reset_token'] : $token;
 
-		$crawler = self::request('GET', "app.php/user/reset_password?u=$user_id&token=$token");
+		$crawler = self::request('GET', "app.php/user/reset_password?u=$user_id&token=" . urlencode($token));
 
 		if ($expected)
 		{
