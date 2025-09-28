@@ -71,7 +71,7 @@
 		"symfony/css-selector": "^7.3",
 		"symfony/dom-crawler": "^7.3",
 		"symfony/http-client": "^7.3",
-		"vimeo/psalm": "^5.18.0",
+		"vimeo/psalm": "^6.13.1",
 		"psalm/plugin-symfony": "^v5.1.0"
 	},
 	"extra": {
@@ -81,7 +81,7 @@
 	},
 	"config": {
 		"platform": {
-			"php": "8.2.0"
+			"php": "8.2.27"
 		},
 		"allow-plugins": {
 			"composer/installers": true
