@@ -23,7 +23,7 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->viewonline_helper = new \phpbb\viewonline_helper($db);
+		$this->viewonline_helper = new \phpbb\members\viewonline_helper($db);
 	}
 
 	public static function session_pages_data()
