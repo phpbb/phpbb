@@ -525,6 +525,12 @@ class installer
 					}
 				}
 
+				// Check for ext-catalog in 'extra' section - must be present and set to true
+				if (!isset($extra['ext-catalog']) || $extra['ext-catalog'] !== true)
+				{
+					continue;
+				}
+
 				$compatible_packages[$package_name][] = $version;
 			}
 			catch (\Exception $e)
