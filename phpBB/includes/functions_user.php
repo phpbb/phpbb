@@ -1026,7 +1026,8 @@ function user_ipwhois($ip)
 	$match = array();
 
 	// Test for referrals from $whois_host to other whois databases, roll on rwhois
-	if (preg_match('#ReferralServer:[\x20]*whois://(.+)#im', $ipwhois, $match))
+	// Search for referral servers with or without the "whois://" prefix
+	if (preg_match('#ReferralServer:[\x20]*whois://(.+)#im', $ipwhois, $match) || preg_match('#ReferralServer:[\x20]*([^/]+)$#im', $ipwhois, $match))
 	{
 		if (strpos($match[1], ':') !== false)
 		{
