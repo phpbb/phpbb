@@ -246,6 +246,57 @@ function parse_document(container)
 	});
 }
 
+async function send_ajax_request(elem)
+{
+	const method = (elem.hasAttribute('data-method')) ? elem.getAttribute('data-method') : 'get';
+	const params = new URLSearchParams();
+	if (method === 'post')
+	{
+		for (const attr of elem.attributes) 
+		{
+			if (attr.name.startsWith('data-post-'))
+			{
+				params.append(attr.name.substring(10).replace('-', '_'), attr.value);
+			}
+		}
+	}
+	
+	const response = await fetch(elem.getAttribute('data-url'), {
+		method: method,
+		body: params,
+	});
+	if (!response.ok)
+	{
+		phpbb.alert(response.status, response.statusText);
+		return;
+	}
+	
+	const resp = await response.json();
+	switch (resp.type)
+	{
+		case 'error':
+			phpbb.alert(resp.status, resp.error);
+			return;
+		case 'resubmit':
+			await send_ajax_request(elem);
+			return;
+		case 'message':
+			phpbb.alert(resp.status, resp.msg);
+			return;
+	}
+}
+
+function attach_ajax() 
+{
+	const elems = document.querySelectorAll('a[data-url]');
+	for (const elem of elems) 
+	{
+		elem.addEventListener('click', async() => {
+			await send_ajax_request(elem);
+		});
+	}
+}
+
 /**
 * Run onload functions
 */
@@ -260,6 +311,7 @@ function parse_document(container)
 		});
 
 		parse_document($('body'));
+		attach_ajax();
 
 		$('#questionnaire-form').css('display', 'none');
 		var $triggerConfiglist = $('#trigger-configlist');

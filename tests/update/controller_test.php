@@ -15,6 +15,8 @@ use phpbb\update\controller;
 use phpbb\update\get_updates;
 use phpbb\filesystem\filesystem;
 use phpbb\language\language;
+use phpbb\user;
+use phpbb\config\config;
 
 class phpbb_update_controller_test extends \phpbb_test_case
 {
@@ -22,6 +24,8 @@ class phpbb_update_controller_test extends \phpbb_test_case
 	private $filesystem_mock;
 	private $updater_mock;
 	private $language_mock;
+	private $user_mock;
+	private $config_mock;
 	private $phpbb_root_path;
 
 	protected function setUp(): void
@@ -32,7 +36,12 @@ class phpbb_update_controller_test extends \phpbb_test_case
 		$this->filesystem_mock = $this->createMock(filesystem::class);
 		$this->updater_mock = $this->createMock(get_updates::class);
 		$this->language_mock = $this->createMock(language::class);
+		$this->user_mock = $this->createMock(user::class);
+		$this->config_mock = $this->createMock(config::class);
 		$this->phpbb_root_path = $phpbb_root_path;
+
+		$this->user_mock->data = ['user_type' => USER_FOUNDER];
+		$this->config_mock['cookie_path'] = '/';
 	}
 
 	protected function tearDown(): void
@@ -50,20 +59,21 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			->method('download')
 			->willReturn(false);
 
-		$this->language_mock->expects($this->once())
+		$this->language_mock->expects($this->any())
 			->method('lang')
-			->with('UPDATE_PACKAGE_DOWNLOAD_FAILURE')
 			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'error', 'error' => 'UPDATE_PACKAGE_DOWNLOAD_FAILURE'], $response);
+		$this->assertEquals(['type' => 'error', 'status' => 'ERROR', 'error' => 'UPDATE_PACKAGE_DOWNLOAD_FAILURE'], $response);
 	}
 
 	public function test_download_success(): void
@@ -76,11 +86,13 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'continue'], $response);
+		$this->assertEquals(['type' => 'resubmit'], $response);
 	}
 
 	public function test_download_signature_fails(): void
@@ -101,20 +113,21 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			->with('https://example.com/update.zip.sig', $update_path . '.sig')
 			->willReturn(false);
 
-		$this->language_mock->expects($this->once())
+		$this->language_mock->expects($this->any())
 			->method('lang')
-			->with('UPDATE_SIGNATURE_DOWNLOAD_FAILURE')
 			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'error', 'error' => 'UPDATE_SIGNATURE_DOWNLOAD_FAILURE'], $response);
+		$this->assertEquals(['type' => 'error', 'status' => 'ERROR', 'error' => 'UPDATE_SIGNATURE_DOWNLOAD_FAILURE'], $response);
 	}
 
 	public function test_download_signature_success(): void
@@ -139,11 +152,13 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'continue'], $response);
+		$this->assertEquals(['type' => 'resubmit'], $response);
 	}
 
 	public function test_signature_validation_fails(): void
@@ -163,20 +178,21 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			->method('validate')
 			->willReturn(false);
 
-		$this->language_mock->expects($this->once())
+		$this->language_mock->expects($this->any())
 			->method('lang')
-			->with('UPDATE_SIGNATURE_INVALID')
 			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'error', 'error' => 'UPDATE_SIGNATURE_INVALID'], $response);
+		$this->assertEquals(['type' => 'error', 'status' => 'ERROR', 'error' => 'UPDATE_SIGNATURE_INVALID'], $response);
 	}
 
 	public function test_extract_fails(): void
@@ -199,21 +215,22 @@ class phpbb_update_controller_test extends \phpbb_test_case
 		$this->updater_mock->expects($this->once())
 			->method('extract')
 			->willReturn(false);
-
-		$this->language_mock->expects($this->once())
+		
+		$this->language_mock->expects($this->any())
 			->method('lang')
-			->with('UPDATE_PACKAGE_EXTRACT_FAILURE')
 			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'error', 'error' => 'UPDATE_PACKAGE_EXTRACT_FAILURE'], $response);
+		$this->assertEquals(['type' => 'error', 'status' => 'ERROR', 'error' => 'UPDATE_PACKAGE_EXTRACT_FAILURE'], $response);
 	}
 
 	public function test_extract_success(): void
@@ -241,11 +258,13 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'continue'], $response);
+		$this->assertEquals(['type' => 'resubmit'], $response);
 	}
 
 	public function test_copy_fails(): void
@@ -268,20 +287,21 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			->method('copy')
 			->willReturn(false);
 
-		$this->language_mock->expects($this->once())
+		$this->language_mock->expects($this->any())
 			->method('lang')
-			->with('UPDATE_FILES_COPY_FAILURE')
 			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'error', 'error' => 'UPDATE_FILES_COPY_FAILURE'], $response);
+		$this->assertEquals(['type' => 'error', 'status' => 'ERROR', 'error' => 'UPDATE_FILES_COPY_FAILURE'], $response);
 	}
 
 	public function test_copy_success(): void
@@ -308,11 +328,13 @@ class phpbb_update_controller_test extends \phpbb_test_case
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'continue'], $response);
+		$this->assertEquals(['type' => 'resubmit'], $response);
 	}
 
 	public function test_successful_update_process(): void
@@ -337,15 +359,21 @@ class phpbb_update_controller_test extends \phpbb_test_case
 		$this->filesystem_mock->expects($this->once())
 			->method('remove')
 			->with([$update_dir, $update_path, $signature_path]);
+			
+		$this->language_mock->expects($this->any())
+			->method('lang')
+			->willReturnArgument(0);
 
 		$controller = new controller(
 			$this->filesystem_mock,
 			$this->updater_mock,
 			$this->language_mock,
+			$this->user_mock,
+			$this->config_mock,
 			$this->phpbb_root_path
 		);
 
 		$response = $controller->handle('https://example.com/update.zip');
-		$this->assertEquals(['status' => 'done'], $response);
+		$this->assertEquals(['type' => 'message', 'status' => 'AUTO_UPDATE_SUCCESS', 'msg' => 'AUTOMATIC_UPDATE_SUCCESS'], $response);
 	}
 }

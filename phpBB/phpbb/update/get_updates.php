@@ -52,7 +52,7 @@ class get_updates
 		$this->filesystem = $filesystem;
 		$this->http_client = new Client();
 		$this->zipper = new ZipArchive();
-		$this->public_key = base64_decode($public_key);
+		$this->public_key = $public_key;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 

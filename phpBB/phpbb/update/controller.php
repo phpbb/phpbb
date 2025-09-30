@@ -15,6 +15,9 @@ namespace phpbb\update;
 
 use phpbb\filesystem\filesystem_interface;
 use phpbb\language\language;
+use phpbb\user;
+use phpbb\exception\http_exception;
+use phpbb\config\config;
 
 class controller
 {
@@ -27,6 +30,12 @@ class controller
 	/** @var language Translation handler */
 	private language $language;
 
+	/** @var user User object */
+	private user $user;
+
+	/** @var config Config object */
+	private config $config;
+
 	/** @var string phpBB root path */
 	private string $phpbb_root_path;
 
@@ -36,17 +45,23 @@ class controller
 	 * @param filesystem_interface $filesystem
 	 * @param get_updates $updater
 	 * @param language $language
+	 * @param user $user
+	 * @param config $config
 	 * @param string $phpbb_root_path
 	 */
 	public function __construct(
 		filesystem_interface $filesystem,
 		get_updates $updater,
 		language $language,
+		user $user,
+		config $config,
 		string $phpbb_root_path)
 	{
 		$this->filesystem = $filesystem;
 		$this->language = $language;
+		$this->user = $user;
 		$this->updater = $updater;
+		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -59,8 +74,13 @@ class controller
 	 */
 	public function handle(string $download): array
 	{
+		if ($this->user->data['user_type'] != USER_FOUNDER)
+		{
+			throw new http_exception(403);
+		}
+
 		$update_path = $this->phpbb_root_path . 'store/update.zip';
-		$status = ['status' => 'continue'];
+		$status = ['type' => 'resubmit'];
 		if (!$this->filesystem->exists($update_path))
 		{
 			$result = $this->updater->download($download, $update_path);
@@ -117,7 +137,9 @@ class controller
 			$update_path . '.sig'
 		]);
 
-		$status['status'] = 'done';
+		$status['type'] = 'message';
+		$status['status'] = $this->language->lang('AUTO_UPDATE_SUCCESS');
+		$status['msg'] = $this->language->lang('AUTOMATIC_UPDATE_SUCCESS', $this->config['cookie_path'] . 'install/');
 		return $status;
 	}
 
@@ -130,7 +152,8 @@ class controller
 	protected function error_response(string $error_key): array
 	{
 		return [
-			'status' => 'error',
+			'type' => 'error',
+			'status' => $this->language->lang('ERROR'),
 			'error' => $this->language->lang($error_key),
 		];
 	}

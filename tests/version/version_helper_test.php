@@ -33,7 +33,8 @@ class phpbb_version_helper_test extends phpbb_test_case
 			new \phpbb\config\config(array(
 				'version'	=> '3.1.0',
 			)),
-			new \phpbb\file_downloader()
+			new \phpbb\file_downloader(),
+			new \phpbb\update\update_info()
 		);
 	}
 
@@ -217,7 +218,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $current_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user($lang, '\phpbb\datetime'),
+				new \phpbb\update\update_info()
 			))
 			->getMock()
 		;
@@ -333,7 +334,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $current_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user($lang, '\phpbb\datetime'),
+				new \phpbb\update\update_info()
 			))
 			->getMock()
 		;
@@ -590,7 +591,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $current_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user($lang, '\phpbb\datetime'),
+				new \phpbb\update\update_info()
 			))
 			->getMock()
 		;
@@ -967,7 +968,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'version'	=> $phpbb_version,
 				)),
 				new \phpbb\file_downloader(),
-				new \phpbb\user($lang, '\phpbb\datetime'),
+				new \phpbb\update\update_info()
 			))
 			->getMock()
 		;

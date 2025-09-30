@@ -39,6 +39,9 @@ class acp_update
 		{
 			$recheck = $request->variable('versioncheck_force', false);
 			$do_update = $request->variable('do_update', false);
+			$token = $request->variable('form_token', false);
+
+			$form_validator = $phpbb_container->get('form_helper');
 
 			$updates_available = $version_helper->get_update_on_branch($recheck);
 			$upgrades_available = $version_helper->get_suggested_updates();
@@ -49,12 +52,13 @@ class acp_update
 				$upgrades_available = array_pop($upgrades_available);
 			}
 
-			if ($do_update && !empty($updates_available))
+			if ($do_update && $token && $form_validator->check_form_tokens('auto_updater') && !empty($updates_available))
 			{
 				$updater = $phpbb_container->get('updater.controller');
+				$update_info = $phpbb_container->get('updater.url_provider');
 				$current_version = $config['version'];
 				$new_version = $upgrades_available['current'];
-				$download_url = 'https://download.phpbb.com/pub/release/';
+				$download_url = $update_info->get_download_url();
 				$download_url .= $branch . '/' . $new_version . '/';
 				$download_url .= 'phpBB-' . $current_version . '_to_' . $new_version . '.zip';
 				$data = $updater->handle(
@@ -79,10 +83,15 @@ class acp_update
 
 		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
 
+		$updater_token_details = $form_validator->get_form_tokens('auto_updater');
 		$template_ary = [
 			'S_UP_TO_DATE'				=> empty($updates_available),
 			'U_ACTION'					=> $this->u_action,
 			'U_VERSIONCHECK_FORCE'		=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
+			'S_SHOW_UPDATE_LINK'		=> $user->data['user_type'] == USER_FOUNDER,
+			'U_UPDATE_BOARD'			=> $this->u_action . '&amp;do_update=1&amp;',
+			'UPDATE_FORM_TOKEN'			=> $updater_token_details['form_token'],
+			'UPDATE_FORM_TIME'			=> $updater_token_details['creation_time'],
 
 			'CURRENT_VERSION'			=> $config['version'],
 
