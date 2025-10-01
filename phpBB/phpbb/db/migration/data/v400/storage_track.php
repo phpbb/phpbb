@@ -98,7 +98,7 @@ class storage_track extends container_aware_migration
 			$filename = $this->config['avatar_salt'] . '_' . ($avatar_group ? 'g' : '') . $filename . '.' . $ext;
 			$files[] = [
 				'file_path' => $filename,
-				'filesize' => filesize($this->phpbb_root_path . $this->config['storage\\avatar\\config\\path'] . '/' . $filename),
+				'filesize' => @filesize($this->phpbb_root_path . $this->config['storage\\avatar\\config\\path'] . '/' . $filename),
 			];
 
 			if (count($files) >= self::BATCH_SIZE)
