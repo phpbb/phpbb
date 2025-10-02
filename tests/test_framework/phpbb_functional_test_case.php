@@ -129,11 +129,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		// Force native client on windows platform
-		self::$http_client = strtolower(substr(PHP_OS, 0, 3)) === 'win' ? new NativeHttpClient() : HttpClient::create();
-		self::$http_client->withOptions([
-			'timeout' => 60,
-		]);
+		// Optimize HTTP client for Windows platform
+		if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
+			self::$http_client = new NativeHttpClient([
+				'timeout' => 30,
+				'max_duration' => 60,
+			]);
+		} else {
+			self::$http_client = HttpClient::create([
+				'timeout' => 60,
+			]);
+		}
 		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
