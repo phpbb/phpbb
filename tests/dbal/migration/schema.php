@@ -22,12 +22,22 @@ class phpbb_dbal_migration_schema extends \phpbb\db\migration\migration
 				),
 			),
 			'add_tables' => array(
-				$this->table_prefix . 'foobar' => array(
-					'COLUMNS' => array(
-						'module_id' => array('UINT:3', NULL, 'auto_increment'),
-					),
+				$this->table_prefix . 'foobar' => [
+					'COLUMNS' => [
+						'module_id'			=> ['UINT:3', NULL, 'auto_increment'],
+						'user_id'			=> ['ULINT', 0],
+						'endpoint'			=> ['VCHAR:220', ''],
+						'expiration_time'	=> ['TIMESTAMP', 0],
+						'p256dh'			=> ['VCHAR:200', ''],
+						'auth'				=> ['VCHAR:100', ''],
+					],
 					'PRIMARY_KEY'	=> 'module_id',
-				),
+					'KEYS'			=> [
+						'i_simple'	=> ['INDEX', ['user_id', 'endpoint:191']],
+						'i_uniq'	=> ['UNIQUE', ['expiration_time', 'p256dh(100)']],
+						'i_auth'	=> ['INDEX', 'auth'],
+					],
+				],
 			),
 		);
 	}
