@@ -15,6 +15,7 @@ namespace phpbb\feed\event;
 
 use phpbb\auth\auth;
 use phpbb\config\config;
+use phpbb\language\language;
 use phpbb\request\request_interface;
 use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -33,6 +34,9 @@ class http_auth_subscriber implements EventSubscriberInterface
 	/** @var config */
 	protected $config;
 
+	/** @var language */
+	protected $language;
+
 	/** @var request_interface */
 	protected $request;
 
@@ -44,13 +48,15 @@ class http_auth_subscriber implements EventSubscriberInterface
 	 *
 	 * @param auth				$auth		Auth object
 	 * @param config			$config		Config object
+	 * @param language	$language	Language object
 	 * @param request_interface	$request	Request object
 	 * @param user				$user		User object
 	 */
-	public function __construct(auth $auth, config $config, request_interface $request, user $user)
+	public function __construct(auth $auth, config $config, language $language, request_interface $request, user $user)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
 	}
@@ -63,6 +69,12 @@ class http_auth_subscriber implements EventSubscriberInterface
 	 */
 	public function on_kernel_request(GetResponseEvent $event)
 	{
+		// Check if HTTP authentication is enabled
+		if (!$this->config['feed_http_auth'])
+		{
+			return;
+		}
+
 		$request = $event->getRequest();
 		$route = $request->attributes->get('_route');
 
@@ -78,12 +90,6 @@ class http_auth_subscriber implements EventSubscriberInterface
 			return;
 		}
 
-		// Check if HTTP authentication is enabled
-		if (!$this->config['feed_http_auth'])
-		{
-			return;
-		}
-
 		// User is already logged in, no need to authenticate
 		if (!empty($this->user->data['is_registered']))
 		{
@@ -91,8 +97,7 @@ class http_auth_subscriber implements EventSubscriberInterface
 		}
 
 		// Get HTTP authentication credentials
-		$username = $this->get_http_username();
-		$password = $this->get_http_password();
+		[$username, $password] = $this->get_credentials();
 
 		// If no credentials provided, send authentication challenge
 		if ($username === null || $password === null)
@@ -113,7 +118,7 @@ class http_auth_subscriber implements EventSubscriberInterface
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
 		{
 			// Too many login attempts
-			$response = new Response('', Response::HTTP_UNAUTHORIZED);
+			$response = new Response($this->language->lang('NOT_AUTHORISED'), Response::HTTP_UNAUTHORIZED);
 			$event->setResponse($response);
 			return;
 		}
@@ -123,13 +128,13 @@ class http_auth_subscriber implements EventSubscriberInterface
 	}
 
 	/**
-	 * Get HTTP username from request headers
+	 * Retrieve HTTP authentication credentials from server variables
 	 *
-	 * @return string|null
+	 * @return array [username, password] Array containing the username and password, or null if not found
 	 */
-	protected function get_http_username()
+	protected function get_credentials(): array
 	{
-		$username_keys = array(
+		$username_keys = [
 			'PHP_AUTH_USER',
 			'Authorization',
 			'REMOTE_USER',
@@ -139,85 +144,41 @@ class http_auth_subscriber implements EventSubscriberInterface
 			'REMOTE_AUTHORIZATION',
 			'REDIRECT_REMOTE_AUTHORIZATION',
 			'AUTH_USER',
-		);
+		];
 
+		$password_keys = [
+			'PHP_AUTH_PW',
+			'REMOTE_PASSWORD',
+			'AUTH_PASSWORD',
+		];
+
+		$username = null;
 		foreach ($username_keys as $key)
 		{
 			if ($this->request->is_set($key, request_interface::SERVER))
 			{
-				$username = html_entity_decode($this->request->server($key), ENT_COMPAT);
-
-				// Decode Basic authentication header
-				if (strpos($username, 'Basic ') === 0)
-				{
-					$credentials = base64_decode(substr($username, 6));
-					if (strpos($credentials, ':') !== false)
-					{
-						list($username, ) = explode(':', $credentials, 2);
-					}
-				}
-
-				return $username;
+				$username = htmlspecialchars_decode($this->request->server($key));
+				break;
 			}
 		}
 
-		return null;
-	}
-
-	/**
-	 * Get HTTP password from request headers
-	 *
-	 * @return string|null
-	 */
-	protected function get_http_password()
-	{
-		$password_keys = array(
-			'PHP_AUTH_PW',
-			'REMOTE_PASSWORD',
-			'AUTH_PASSWORD',
-		);
-
+		$password = null;
 		foreach ($password_keys as $key)
 		{
 			if ($this->request->is_set($key, request_interface::SERVER))
 			{
-				return html_entity_decode($this->request->server($key), ENT_COMPAT);
+				$password =  htmlspecialchars_decode($this->request->server($key));
+				break;
 			}
 		}
 
-		// Check if password is in Authorization header (Basic auth)
-		$username_keys = array(
-			'PHP_AUTH_USER',
-			'Authorization',
-			'REMOTE_USER',
-			'REDIRECT_REMOTE_USER',
-			'HTTP_AUTHORIZATION',
-			'REDIRECT_HTTP_AUTHORIZATION',
-			'REMOTE_AUTHORIZATION',
-			'REDIRECT_REMOTE_AUTHORIZATION',
-			'AUTH_USER',
-		);
-
-		foreach ($username_keys as $key)
+		// Decode Basic authentication header if needed
+		if (!is_null($username) && is_null($password) && strpos($username, 'Basic ') === 0)
 		{
-			if ($this->request->is_set($key, request_interface::SERVER))
-			{
-				$auth_header = html_entity_decode($this->request->server($key), ENT_COMPAT);
-
-				// Decode Basic authentication header
-				if (strpos($auth_header, 'Basic ') === 0)
-				{
-					$credentials = base64_decode(substr($auth_header, 6));
-					if (strpos($credentials, ':') !== false)
-					{
-						list(, $password) = explode(':', $credentials, 2);
-						return $password;
-					}
-				}
-			}
+			[$username, $password] = explode(':', base64_decode(substr($username, 6)), 2);
 		}
 
-		return null;
+		return [$username, $password];
 	}
 
 	/**
@@ -232,19 +193,18 @@ class http_auth_subscriber implements EventSubscriberInterface
 		// Filter out non-ASCII characters per RFC2616
 		$realm = preg_replace('/[\x80-\xFF]/', '?', $realm);
 
-		$response = new Response('', Response::HTTP_UNAUTHORIZED);
-		$response->headers->set('WWW-Authenticate', 'Basic realm="' . $realm . '"');
+		$response = new Response($this->language->lang('NOT_AUTHORISED'), Response::HTTP_UNAUTHORIZED);
+		$response->headers->set('WWW-Authenticate', 'Basic realm="' . $realm . ' - Feed"');
 		$event->setResponse($response);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
-		return array(
-			// Priority should be high to run after session_begin but before controller
-			KernelEvents::REQUEST => array('on_kernel_request', 5),
-		);
+		return [
+			KernelEvents::REQUEST => ['on_kernel_request', 5],
+		];
 	}
 }
