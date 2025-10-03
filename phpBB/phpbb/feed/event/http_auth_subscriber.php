@@ -100,6 +100,8 @@ class http_auth_subscriber implements EventSubscriberInterface
 
 		if ($auth_result['status'] == LOGIN_SUCCESS)
 		{
+			// Reload ACL for the newly logged-in user
+			$this->auth->acl($this->user->data);
 			return;
 		}
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)

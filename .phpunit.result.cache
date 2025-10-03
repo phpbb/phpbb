@@ -1,1 +1,0 @@
-{"version":1,"defects":[],"times":{"phpbb\\feed\\event\\http_auth_subscriber_test::test_subscriber_events":0.006,"phpbb\\feed\\event\\http_auth_subscriber_test::test_non_feed_route_skipped":0.005,"phpbb\\feed\\event\\http_auth_subscriber_test::test_http_auth_disabled":0.001,"phpbb\\feed\\event\\http_auth_subscriber_test::test_user_already_logged_in":0.001}}
