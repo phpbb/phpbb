@@ -95,6 +95,39 @@ class http_auth_subscriber_test extends \phpbb_test_case
 		$this->subscriber->on_kernel_request($event);
 	}
 
+	public function test_insecure_connection_skipped()
+	{
+		$request = $this->getMockBuilder('\Symfony\Component\HttpFoundation\Request')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$request->attributes = $this->getMockBuilder('\Symfony\Component\HttpFoundation\ParameterBag')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$request->attributes->expects($this->once())
+			->method('get')
+			->with('_route')
+			->willReturn('phpbb_feed_overall');
+
+		$request->expects($this->once())
+			->method('isSecure')
+			->willReturn(false);
+
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$event->expects($this->once())
+			->method('getRequest')
+			->willReturn($request);
+
+		$event->expects($this->never())
+			->method('setResponse');
+
+		$this->subscriber->on_kernel_request($event);
+	}
+
 	public function test_http_auth_disabled()
 	{
 		$this->config['feed_http_auth'] = 0;
@@ -111,6 +144,10 @@ class http_auth_subscriber_test extends \phpbb_test_case
 			->method('get')
 			->with('_route')
 			->willReturn('phpbb_feed_overall');
+
+		$request->expects($this->once())
+			->method('isSecure')
+			->willReturn(true);
 
 		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
 			->disableOriginalConstructor()
@@ -142,6 +179,10 @@ class http_auth_subscriber_test extends \phpbb_test_case
 			->method('get')
 			->with('_route')
 			->willReturn('phpbb_feed_overall');
+
+		$request->expects($this->once())
+			->method('isSecure')
+			->willReturn(true);
 
 		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
 			->disableOriginalConstructor()
