@@ -15,6 +15,16 @@ services:
             - '@language'
             - '%core.php_ext%'
 
+    feed.http_auth_subscriber:
+        class: phpbb\feed\event\http_auth_subscriber
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@request'
+            - '@user'
+        tags:
+            - { name: kernel.event_subscriber }
+
     feed.helper:
         class: phpbb\feed\helper
         arguments:
