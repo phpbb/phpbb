@@ -72,6 +72,12 @@ class http_auth_subscriber implements EventSubscriberInterface
 			return;
 		}
 
+		// Only allow HTTP authentication in secure context (HTTPS)
+		if (!$request->isSecure())
+		{
+			return;
+		}
+
 		// Check if HTTP authentication is enabled
 		if (!$this->config['feed_http_auth'])
 		{
