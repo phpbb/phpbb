@@ -24,6 +24,7 @@ class phpbb_functional_registration_test extends phpbb_functional_test_case
 		$crawler = self::request('GET', "adm/index.php?i=acp_board&mode=registration&sid={$this->sid}");
 		$form = $crawler->selectButton('Submit')->form();
 		$form['config[enable_confirm]']->setValue('0');
+		$form['config[pass_complex]']->setValue('PASS_TYPE_ANY');
 		$crawler = self::submit($form);
 
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('#main .successbox')->text());
