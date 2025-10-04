@@ -298,7 +298,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
 
 	'ACP_FEED_HTTP_AUTH'				=> 'Allow HTTP Authentication',
-	'ACP_FEED_HTTP_AUTH_EXPLAIN'		=> 'Enables HTTP authentication, which allows users to receive content that is hidden to guest users by adding the <samp>auth=http</samp> parameter to the feed URL. Please note that some PHP setups require additional changes to the .htaccess file. Instructions can be found in that file.',
+	'ACP_FEED_HTTP_AUTH_EXPLAIN'		=> 'Enables HTTP authentication, allowing users to access content hidden from guests by adding the <samp>auth=http</samp> parameter to the feed URL. Please note that some PHP configurations may require additional changes to the .htaccess file; refer to that file for guidance. HTTP authentication is only supported over encrypted (https) connections.',
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
 	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br>(e.g. posted by, date and time, replies, views)',
 	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
