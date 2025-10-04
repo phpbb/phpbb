@@ -108,11 +108,35 @@ acp_ext_list_not_installed_title_after
 * Changed: 3.3.14 Renamed from acp_ext_list_available_title_after
 * Purpose: Add text after not installed extensions section title.
 
+acp_forums_cat_options_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.3.16-RC1
+* Purpose: Add additional settings to a forum type 'category' within 'General forum settings' fieldset
+
+acp_forums_cat_options_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.3.16-RC1
+* Purpose: Add additional settings to a forum type 'category' within 'General forum settings' fieldset
+
 acp_forums_custom_settings
 ===
 * Location: adm/style/acp_forums.html
 * Since: 3.1.6-RC1
 * Purpose: Add its own box (fieldset) for extension settings
+
+acp_forums_link_options_append
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.3.16-RC1
+* Purpose: Add additional settings to a forum type 'link' within 'General forum settings' fieldset
+
+acp_forums_link_options_prepend
+===
+* Location: adm/style/acp_forums.html
+* Since: 3.3.16-RC1
+* Purpose: Add additional settings to a forum type 'link' within 'General forum settings' fieldset
 
 acp_forums_main_settings_append
 ===
