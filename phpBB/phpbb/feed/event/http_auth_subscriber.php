@@ -190,6 +190,7 @@ class http_auth_subscriber implements EventSubscriberInterface
 	protected function send_auth_challenge(GetResponseEvent $event)
 	{
 		$realm = $this->config['sitename'];
+
 		// Filter out non-ASCII characters per RFC2616
 		$realm = preg_replace('/[\x80-\xFF]/', '?', $realm);
 
