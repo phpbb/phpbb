@@ -11,7 +11,7 @@
 		bootstrap="../tests/bootstrap.php"
 		timeoutForSmallTests="60"
 		timeoutForMediumTests="300"
-		timeoutForLargeTests="600">>
+		timeoutForLargeTests="600">
 	<testsuites>
 		<testsuite name="phpBB Test Suite">
 			<directory suffix="_test.php">../tests</directory>
