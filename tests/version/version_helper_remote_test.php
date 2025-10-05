@@ -78,7 +78,8 @@ class version_helper_remote_test extends \phpbb_test_case
 		$this->version_helper = new \phpbb\version_helper(
 			$this->cache,
 			$config,
-			$this->file_downloader
+			$this->file_downloader,
+			new \phpbb\update\update_info()
 		);
 		$this->user = new \phpbb\user(new \phpbb\language\language($lang_loader), '\phpbb\datetime');
 		$this->user->add_lang('acp/common');

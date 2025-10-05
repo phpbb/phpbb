@@ -467,6 +467,7 @@ $lang = array_merge($lang, array(
 	'VERSION_NOT_UP_TO_DATE_ACP'	=> 'Your phpBB installation is not up to date.<br />Below is a link to the release announcement, which contains more information as well as instructions on updating.',
 	'VERSION_NOT_UP_TO_DATE_TITLE'	=> 'Your phpBB installation is not up to date.',
 	'VERSION_UP_TO_DATE_ACP'		=> 'Your phpBB installation is up to date. There are no updates available at this time.',
+	'UPDATE_BOARD'					=> 'Update now',
 	'VIEW_ADMIN_LOG'				=> 'View administrator log',
 	'VIEW_INACTIVE_USERS'			=> 'View inactive users',
 
