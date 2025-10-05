@@ -79,6 +79,18 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->add_lang(['acp/common', 'acp/extensions']);
 	}
 
+	/**
+	 * Mocks the extensions catalog cache used in phpBB/phpbb/composer/manager.php
+	 * with a predefined fixture so no external calls are made.
+	 */
+	protected function mock_extensions_catalog_cache():void {
+		$fixture_file = __DIR__ . '/fixtures/files/extensions_catalog.json';
+		$package_type = 'phpbb-extension';
+
+		$available_extensions = json_decode(file_get_contents($fixture_file), true);
+		$this->cache->put('_composer_' . $package_type . '_available', $available_extensions, 24*60*60);
+	}
+
 	public function test_list()
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
@@ -247,6 +259,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_extensions_catalog()
 	{
 		// Access extensions catalog main page
+		$this->mock_extensions_catalog_cache();
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 
@@ -260,6 +273,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('CONFIG_UPDATED', $crawler->filter('div[class="successbox"] > p')->text());
 
 		// Revisit extensions catalog main page after configuration change
+		$this->mock_extensions_catalog_cache();
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 
@@ -270,12 +284,17 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 	public function test_extensions_catalog_installing_extension()
 	{
 		// Let's check the overview, multiple packages should be listed
+		$this->mock_extensions_catalog_cache();
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&sid=' . $this->sid);
 		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
 		$this->assertGreaterThan(1, $crawler->filter('tr')->count());
 		$this->assertGreaterThan(1, $crawler->selectLink($this->lang('INSTALL'))->count());
 
-		$pages = (int) $crawler->filter('div.pagination li:nth-last-child(2) a')->first()->text();
+		$pages = 1;
+		$pagination = $crawler->filter('div.pagination li:nth-last-child(2) a');
+		if ($pagination->count() > 0) {
+			$pages = (int) $pagination->first()->text();
+		}
 
 		// Get Install links for both extensions
 		$extension_filter = function($crawler, $extension_name, &$install_link)
@@ -297,6 +316,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		{
 			if ($i != 0)
 			{
+				$this->mock_extensions_catalog_cache();
 				$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&start=' . $i * 20 . '&mode=catalog&sid=' . $this->sid);
 			}
 
