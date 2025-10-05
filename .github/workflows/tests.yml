@@ -480,42 +480,18 @@ jobs:
                 include:
                     - php: '7.4'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.0'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.1'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.2'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.3'
                       db: "postgres"
-                      type: 'unit'
                     - php: '8.4'
                       db: "postgres"
-                      type: 'unit'
-                    - php: '7.4'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.0'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.1'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.2'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.3'
-                      db: "postgres"
-                      type: 'functional'
-                    - php: '8.4'
-                      db: "postgres"
-                      type: 'functional'
 
-        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }} - ${{ matrix.type }}
+        name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         steps:
             - name: Prepare git for Windows
@@ -643,16 +619,5 @@ jobs:
 
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
             - name: Run unit tests
-              if: ${{ matrix.type == 'unit' }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
-            - name: Run unit tests
-              if: ${{ matrix.type == 'functional' }}
-              timeout-minutes: 45
-              env:
-                  PHPBB_FUNCTIONAL_TIMEOUT: 30
-                  SYMFONY_DEPRECATIONS_HELPER: disabled
-                  PHPBB_TEST_REDIS_HOST: ''
-                  PHPBB_TEST_MEMCACHED_HOST: ''
-              run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --group functional
