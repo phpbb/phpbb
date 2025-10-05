@@ -109,9 +109,10 @@ class phpbb_console_command_check_test extends phpbb_test_case
 				{
 					return [
 						[
-							'version'		=> '100000',
-							'stability'		=> 'stable',
-							'download_url'	=> 'https://www.phpbb.com/downloads/',
+							'current'		=> '100000',
+							'announcement'	=> 'https://www.phpbb.com/downloads/',
+							'eol'			=> null,
+							'security'		=> false,
 						],
 					];
 				}
