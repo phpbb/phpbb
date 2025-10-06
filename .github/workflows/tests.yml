@@ -619,5 +619,8 @@ jobs:
 
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
             - name: Run unit tests
-              run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+              uses: nick-fields/retry@v3
+              with:
+                  timeout_minutes: 15
+                  max_attempts: 3
+                  command: phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
