@@ -53,7 +53,11 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			$phpEx
 		);
 
-		$imagesize = new \FastImageSize\FastImageSize();
+		$imagesize = $this->getMockBuilder('\FastImageSize\FastImageSize')
+			->onlyMethods(['getImageSize'])
+			->getMock();
+		$imagesize->method('getImageSize')
+			->willReturn(['width' => 80, 'height' => 80, 'mime' => 'image/jpeg']);
 
 		$dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_dispatcher = $dispatcher;

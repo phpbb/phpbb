@@ -89,7 +89,33 @@ class phpbb_console_command_check_test extends phpbb_test_case
 			->getMock();
 
 		$config = new \phpbb\config\config(array('version' => $current_version));
-		$this->version_helper = new \phpbb\version_helper($cache, $config, new \phpbb\file_downloader());
+		$this->version_helper = $this->getMockBuilder('\phpbb\version_helper')
+			->setConstructorArgs([$cache, $config, new \phpbb\file_downloader()])
+			->onlyMethods(['get_suggested_updates'])
+			->getMock();
+		$this->version_helper->method('get_suggested_updates')
+			->willReturnCallback(function($force_update = false, $force_cache = false) use ($config)
+			{
+				if ($config['version'] === '100000')
+				{
+					return [];
+				}
+				else if ($config['version'] === '0')
+				{
+					return [
+						[
+							'current'		=> '100000',
+							'announcement'	=> 'https://www.phpbb.com/downloads/',
+							'eol'			=> null,
+							'security'		=> false,
+						],
+					];
+				}
+				else
+				{
+					throw new \phpbb\exception\runtime_exception('VERSIONCHECK_FAIL');
+				}
+			});
 
 		$container = new phpbb_mock_container_builder;
 		$container->set('version_helper', $this->version_helper);
