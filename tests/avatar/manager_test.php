@@ -57,7 +57,11 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 			new \phpbb\mimetype\content_guesser,
 		);
 		$guesser = new \phpbb\mimetype\guesser($guessers);
-		$imagesize = new \FastImageSize\FastImageSize();
+		$imagesize = $this->getMockBuilder('\FastImageSize\FastImageSize')
+			->setMethods(['getImageSize'])
+			->getMock();
+		$imagesize->method('getImageSize')
+			->willReturn(['width' => 80, 'height' => 80, 'mime' => 'image/jpeg']);
 
 		$dispatcher = new phpbb_mock_event_dispatcher();
 		$phpbb_dispatcher = $dispatcher;
@@ -405,9 +409,9 @@ class phpbb_avatar_manager_test extends \phpbb_database_test_case
 	{
 		return array(
 			array('127.0.0.1:91?foo.jpg', 80, 80, array('AVATAR_URL_INVALID')),
-			array(gethostbyname('secure.gravatar.com') . '/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
+			array('127.0.0.1/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80),
-			array(gethostbyname('secure.gravatar.com') . ':120/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
+			array('127.0.0.1:120/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com:80/avatar/55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com:80?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')),
 			array('secure.gravatar.com?55502f40dc8b7c769880b10874abc9d0.jpg', 80, 80, array('AVATAR_URL_INVALID')), // should be a 404
