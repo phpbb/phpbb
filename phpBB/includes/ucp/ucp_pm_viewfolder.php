@@ -314,7 +314,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 						$newline = "\n";
 					}
 
-					$string = '';
+					$string = $export_type == 'CSV_EXCEL' ? "\xEF\xBB\xBF" : ''; // Add UTF-8 BOM mark for Excel
 					foreach ($data as $value)
 					{
 						$recipients = $value['to'];
