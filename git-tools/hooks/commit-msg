@@ -337,7 +337,7 @@ done
 # If EOF is expected exit cleanly
 echo "$expecting" | grep -q "eof" || (
 	# Unexpected EOF, error
-	complain "Unexpected EOF encountered" >&2;
+	complain "Expected to see footer (e.g. PHPBB-12345) or description line, but reached end of file." >&2;
 	quit $ERR_EOF;
 ) && (
 	# Do post scan checks
