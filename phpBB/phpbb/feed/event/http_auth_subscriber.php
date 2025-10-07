@@ -118,7 +118,7 @@ class http_auth_subscriber implements EventSubscriberInterface
 		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
 		{
 			// Too many login attempts
-			$response = new Response($this->language->lang('NOT_AUTHORISED'), Response::HTTP_UNAUTHORIZED);
+			$response = new Response($this->language->lang('LOGIN_ERROR_ATTEMPTS'), Response::HTTP_UNAUTHORIZED);
 			$event->setResponse($response);
 			return;
 		}

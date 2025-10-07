@@ -62,6 +62,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$this->language->method('lang')
 			->willReturnMap([
 				['NOT_AUTHORISED', 'NOT_AUTHORISED'],
+				['LOGIN_ERROR_ATTEMPTS', 'LOGIN_ERROR_ATTEMPTS']
 			]);
 
 		$this->request = $this->getMockBuilder('\phpbb\request\request_interface')
@@ -414,7 +415,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$this->subscriber->on_kernel_request($event);
 
 		$this->assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-		$this->assertEquals('NOT_AUTHORISED', $response->getContent());
+		$this->assertEquals('LOGIN_ERROR_ATTEMPTS', $response->getContent());
 		$this->assertFalse($response->headers->has('WWW-Authenticate'));
 	}
 
