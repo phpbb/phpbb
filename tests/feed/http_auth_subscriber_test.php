@@ -104,7 +104,8 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->with('_route')
 			->willReturn('not_a_feed_route');
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
+			->onlyMethods(['getRequest', 'setResponse'])
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -137,7 +138,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(false);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -169,7 +170,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$request->expects($this->never())
 			->method('isSecure');
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -203,7 +204,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -238,7 +239,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -251,9 +252,9 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$event->expects($this->once())
 			->method('setResponse')
 			->with($this->isInstanceOf('\Symfony\Component\HttpFoundation\Response'))
-			->will($this->returnCallback(function ($newResponse) use (&$response) {
+			->willReturnCallback(function ($newResponse) use (&$response) {
 				$response = $newResponse;
-			}));
+			});
 
 		$this->subscriber->on_kernel_request($event);
 
@@ -295,7 +296,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -344,7 +345,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -395,7 +396,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -408,9 +409,9 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$event->expects($this->once())
 			->method('setResponse')
 			->with($this->isInstanceOf('\Symfony\Component\HttpFoundation\Response'))
-			->will($this->returnCallback(function ($newResponse) use (&$response) {
+			->willReturnCallback(function ($newResponse) use (&$response) {
 				$response = $newResponse;
-			}));
+			});
 
 		$this->subscriber->on_kernel_request($event);
 
@@ -452,7 +453,7 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 			->method('isSecure')
 			->willReturn(true);
 
-		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\GetResponseEvent')
+		$event = $this->getMockBuilder('\Symfony\Component\HttpKernel\Event\RequestEvent')
 			->disableOriginalConstructor()
 			->getMock();
 
@@ -465,9 +466,9 @@ class phpbb_feed_http_auth_subscriber_test extends \phpbb_test_case
 		$event->expects($this->once())
 			->method('setResponse')
 			->with($this->isInstanceOf('\Symfony\Component\HttpFoundation\Response'))
-			->will($this->returnCallback(function ($newResponse) use (&$response) {
+			->willReturnCallback(function ($newResponse) use (&$response) {
 				$response = $newResponse;
-			}));
+			});
 
 		$this->subscriber->on_kernel_request($event);
 

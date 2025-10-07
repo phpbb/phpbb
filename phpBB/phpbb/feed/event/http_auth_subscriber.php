@@ -20,7 +20,7 @@ use phpbb\request\request_interface;
 use phpbb\user;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -64,10 +64,10 @@ class http_auth_subscriber implements EventSubscriberInterface
 	/**
 	 * Handle HTTP authentication for feed routes
 	 *
-	 * @param GetResponseEvent $event
+	 * @param RequestEvent $event
 	 * @return void
 	 */
-	public function on_kernel_request(GetResponseEvent $event)
+	public function on_kernel_request(RequestEvent $event)
 	{
 		// Check if HTTP authentication is enabled
 		if (!$this->config['feed_http_auth'])
@@ -184,10 +184,10 @@ class http_auth_subscriber implements EventSubscriberInterface
 	/**
 	 * Send HTTP authentication challenge
 	 *
-	 * @param GetResponseEvent $event
+	 * @param RequestEvent $event
 	 * @return void
 	 */
-	protected function send_auth_challenge(GetResponseEvent $event)
+	protected function send_auth_challenge(RequestEvent $event)
 	{
 		$realm = $this->config['sitename'];
 
