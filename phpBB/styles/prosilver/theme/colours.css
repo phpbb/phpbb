@@ -128,7 +128,7 @@ th a:hover {
 }
 
 .header-profile {
-	text-shadow: 0 0 1.75rem #eaf8ff;
+	text-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5);
 }
 
 .panel {
