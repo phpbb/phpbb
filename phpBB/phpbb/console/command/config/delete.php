@@ -47,7 +47,7 @@ class delete extends command
 	 * @return int
 	 * @see \phpbb\config\config::delete()
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

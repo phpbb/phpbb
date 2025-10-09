@@ -63,7 +63,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 	 *
 	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

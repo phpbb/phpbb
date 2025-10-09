@@ -76,7 +76,7 @@ class run extends \phpbb\console\command\command
 	*
 	* @return int 0 if all is ok, 1 if a lock error occurred and 2 if no task matching the argument was found.
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		if ($this->lock_db->acquire())
 		{

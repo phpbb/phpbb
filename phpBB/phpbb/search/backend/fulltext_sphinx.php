@@ -774,7 +774,7 @@ class fulltext_sphinx implements search_backend_interface
 		 */
 		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);
 
-		return $search_string;
+		return $search_string ?: '';
 	}
 
 	/**

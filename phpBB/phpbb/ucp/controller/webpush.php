@@ -166,7 +166,7 @@ class webpush
 			throw new http_exception(Response::HTTP_BAD_REQUEST, 'AJAX_ERROR_TEXT');
 		}
 
-		return $this->get_notification_data($notification_data);
+		return $this->get_notification_data($notification_data) ?: '';
 	}
 
 	/**
@@ -219,7 +219,7 @@ class webpush
 				{
 					$this->language->set_user_language($user_lang, true);
 				}
-				return $this->get_notification_data($notification_data);
+				return $this->get_notification_data($notification_data) ?: '';
 			}
 		}
 
@@ -231,9 +231,9 @@ class webpush
 	 *
 	 * @param string $notification_data Encoded data stored in database
 	 *
-	 * @return string Data for notification output with javascript
+	 * @return false|string Data for notification output with javascript
 	 */
-	private function get_notification_data(string $notification_data): string
+	private function get_notification_data(string $notification_data): false|string
 	{
 		$row_data = json_decode($notification_data, true);
 

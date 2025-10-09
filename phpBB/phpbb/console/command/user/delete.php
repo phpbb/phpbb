@@ -109,7 +109,7 @@ class delete extends command
 	 *
 	 * @return int 0 if all is well, 1 if any errors occurred
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$name = $input->getArgument('username');
 		$mode = ($input->getOption('delete-posts')) ? 'remove' : 'retain';
