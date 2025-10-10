@@ -805,7 +805,7 @@ fieldset.polls dd div {
 }
 
 /* Post-profile avatars */
-.postprofile .has-avatar .avatar-container {
+.postprofile .avatar-container {
 	overflow: hidden;
 	margin-bottom: 3px;
 }
@@ -820,6 +820,21 @@ fieldset.polls dd div {
 	display: block;
 	max-width: 100%;
 	height: auto !important;
+}
+
+.avatar-placeholder {
+	font-size: 36px;
+	font-weight: bold;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80px;
+	height: 80px;
+}
+
+.avatar-initials {
+	line-height: 1;
 }
 
 .postprofile .profile-posts a {
