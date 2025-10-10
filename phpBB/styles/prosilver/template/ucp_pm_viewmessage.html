@@ -35,7 +35,7 @@
 						{% set color_classes = ['avatar-color-0', 'avatar-color-1', 'avatar-color-2', 'avatar-color-3', 'avatar-color-4'] %}
 						{% set color_class = color_classes[MESSAGE_AUTHOR_ID % 5] %}
 						<a href="{{ U_MESSAGE_AUTHOR }}" class="avatar-placeholder {{ color_class }}">
-							<div class="avatar-initials">{{ MESSAGE_AUTHOR|striptags|slice(0, 2)|upper }}</div>
+							<div class="avatar-initials">{{ MESSAGE_AUTHOR|striptags|slice(0, 1)|upper }}</div>
 						</a>
 					{% endif %}
 					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
