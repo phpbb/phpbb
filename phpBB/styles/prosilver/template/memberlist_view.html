@@ -20,7 +20,7 @@
 		{% set color_class = color_classes[USER_ID % 5] %}
 		<dl class="left-box avatar-rank-container">
 			<div class="avatar-placeholder {{ color_class }}">
-				<div class="avatar-initials">{{ USERNAME|striptags|slice(0, 2)|upper }}</div>
+				<div class="avatar-initials">{{ USERNAME|striptags|slice(0, 1)|upper }}</div>
 			</div>
 			{% EVENT memberlist_view_rank_avatar_before %}
 			{% if RANK_TITLE %}<dd class="profile-avatar">{{ RANK_TITLE }}</dd>{% endif %}
