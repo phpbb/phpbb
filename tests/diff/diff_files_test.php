@@ -11,100 +11,119 @@
  *
  */
 
+include_once(__DIR__ . '/../../phpBB/includes/diff/diff.php');
+include_once(__DIR__ . '/../../phpBB/includes/diff/engine.php');
+
 class diff_files_test extends phpbb_test_case
 {
 	/**
-	 * @var \phpbb\install\module\update_filesystem\task\diff_files
+	 * @var string
 	 */
-	protected $diff_task;
-
-	/**
-	 * @var \phpbb\install\helper\config
-	 */
-	protected $config;
+	protected $filename;
 
 	/**
 	 * @var phpbb_mock_container_builder
 	 */
-	protected $container;
-
+	protected $old_path;
 
 	/**
-	 * @var \phpbb\request\request
+	 * @var \phpbb\install\helper\config
 	 */
-	protected $request;
-
-	private static $helper;
+	protected $new_path;
 
 	/**
 	 * @var string
 	 */
-	protected $phpbb_root_path;
+	protected $path;
 
 	/**
-	 * @var string
+	 * @var array
 	 */
-	protected $phpEx;
+	protected $update_files = [];
 
 	protected function setUp(): void
 	{
-		$this->phpbb_root_path = __DIR__ . '/../../phpBB/';
-		$this->phpEx = 'php';
-
-		$language = new \phpbb\language\language(
-			new \phpbb\language\language_file_loader($this->phpbb_root_path, $this->phpEx)
-		);
-		$this->request = new \phpbb\request\request();
-		$update_helper = new \phpbb\install\helper\update_helper($this->phpbb_root_path);
-		$this->container = new \phpbb\install\helper\container_factory($language, $this->request, $update_helper, $this->phpbb_root_path, $this->phpEx);
-
-		$iohandler = $this->createMock('\phpbb\install\helper\iohandler\iohandler_interface');
-
-		$this->config = new \phpbb\install\helper\config(new \phpbb\filesystem\filesystem(), new \bantu\IniGetWrapper\IniGetWrapper(), '');
-		$update_files['update_with_diff'] = [
-			'test_files_diff.php',
+		$this->filename = 'test_files_diff.php';
+		$this->path = __DIR__ . '/fixtures/';
+		$this->old_path = $this->path . 'install/update/old/';
+		$this->new_path = $this->path . 'install/update/new/';
+		$this->update_files = [
+			$this->filename,
 		];
-		$this->config->set('update_files', $update_files);
-
-		$this->diff_task = new \phpbb\install\module\update_filesystem\task\diff_files($this->container, $this->config, $iohandler, $update_helper, $this->phpbb_root_path, $this->phpEx);
-	}
-
-	protected function tearDown(): void
-	{
-		$disable_super_globals = $this->request->super_globals_disabled();
-
-		// This is needed because \phpbb\install\helper\container_factory disables it
-		if ($disable_super_globals)
-		{
-			$this->request->enable_super_globals();
-		}
-	}
-
-	public static function setUpBeforeClass(): void
-	{
-		$phpbb_root_path = __DIR__ . '/../../phpBB/';
-
-		parent::setUpBeforeClass();
-
-		self::$helper = new phpbb_test_case_helpers(__CLASS__);
-		self::$helper->copy_dir(__DIR__ . '/fixtures/', $phpbb_root_path);
-	}
-
-	public static function tearDownAfterClass(): void
-	{
-		$phpbb_root_path = __DIR__ . '/../../phpBB/';
-
-		parent::tearDownAfterClass();
-
-		self::$helper->empty_dir($phpbb_root_path . 'install/update');
-		rmdir($phpbb_root_path . 'install/update');
-		unlink($phpbb_root_path . 'test_files_diff.php');
 	}
 
 	public function test_diff_files()
 	{
-		$this->diff_task->run();
+		foreach ($this->update_files as $key => $filename)
+		{
+			$merge_conflicts = $file_contents = [];
 
-		$this->assertEmpty($this->config->get('update_files'));
+			$file_to_diff = $this->old_path . $filename;
+			$file_contents[0] = file_get_contents($file_to_diff);
+			$this->assertNotFalse($file_contents[0], "File $file_to_diff is empty");
+
+			$filenames = [
+				$this->path . $filename,
+				$this->new_path . $filename
+			];
+
+			foreach ($filenames as $file_to_diff)
+			{
+				$file_contents[] = file_get_contents($file_to_diff);
+				$this->assertNotFalse($file_contents[count($file_contents) - 1], "File $file_to_diff is empty");
+			}
+
+			$diff = new \diff3($file_contents[0], $file_contents[1], $file_contents[2]);
+
+			$file_is_merged = $diff->merged_output() === $file_contents[1];
+
+			// Handle conflicts
+			if ($diff->get_num_conflicts() !== 0)
+			{
+				// Check if current file content is merge of new or original file
+				$tmp = [
+					'file1'		=> $file_contents[1],
+					'file2'		=> implode("\n", $diff->merged_new_output()),
+				];
+
+				$diff2 = new \diff($tmp['file1'], $tmp['file2']);
+				$empty = $diff2->is_empty();
+
+				if (!$empty)
+				{
+					unset($tmp, $diff2);
+
+					// We check if the user merged with his output
+					$tmp = [
+						'file1'		=> $file_contents[1],
+						'file2'		=> implode("\n", $diff->merged_orig_output()),
+					];
+
+					$diff2 = new \diff($tmp['file1'], $tmp['file2']);
+					$empty = $diff2->is_empty();
+				}
+
+				unset($diff2);
+
+				if (!$empty && in_array($filename, $merge_conflicts))
+				{
+					$merge_conflicts[] = $filename;
+				}
+				else
+				{
+					$file_is_merged = true;
+				}
+			}
+
+			if ($file_is_merged)
+			{
+				unset($this->update_files[$key]);
+			}
+
+			unset($file_contents);
+			unset($diff);
+		}
+
+		$this->assertEquals([], $this->update_files);
 	}
 }
