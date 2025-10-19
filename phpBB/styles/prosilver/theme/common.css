@@ -320,6 +320,10 @@ ul.linklist li.responsive-menu {
 	margin: 0 5px 0 0;
 }
 
+.nav-footer .responsive-menu {
+	display: none;
+}
+
 .hasjs ul.linklist.leftside,
 .hasjs ul.linklist.rightside {
 	max-width: 48%;
