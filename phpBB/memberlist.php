@@ -50,7 +50,7 @@ $controller_helper = $phpbb_container->get('controller.helper');
 if ($mode == 'leaders')
 {
 	send_status_line(301, 'Moved Permanently');
-	redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'));
+	redirect($controller_helper->route('phpbb_members_team', [], false));
 }
 
 // Check our mode...

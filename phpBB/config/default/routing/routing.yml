@@ -30,6 +30,7 @@ phpbb_manifest_controller:
 
 phpbb_members_routing:
     resource: members.yml
+    prefix: /members
 
 phpbb_mention_controller:
     path: /mention

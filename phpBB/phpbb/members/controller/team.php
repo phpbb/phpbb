@@ -23,6 +23,7 @@ use phpbb\controller\helper;
 use phpbb\language\language;
 use phpbb\template\template;
 use phpbb\user;
+use Symfony\Component\HttpFoundation\Response;
 
 class team
 {
@@ -71,7 +72,63 @@ class team
 	 */
 	protected $user;
 
-	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher $dispatcher, group_helper $group_helper, helper $helper, language $language, template $template, user $user)
+	/**
+	 * @var string
+	 */
+	protected $phpbb_root_path;
+
+	/**
+	 * @var string
+	 */
+	protected $php_ext;
+
+	/**
+	 * @var string
+	 */
+	protected $forums_table;
+
+	/**
+	 * @var string
+	 */
+	protected $groups_table;
+
+	/**
+	 * @var string
+	 */
+	protected $teampage_table;
+
+	/**
+	 * @var string
+	 */
+	protected $user_group_table;
+
+	/**
+	 * @var string
+	 */
+	protected $users_table;
+
+
+	/**
+	 * Constructor
+	 *
+	 * @param auth             $auth           Authentication service
+	 * @param config           $config         Configuration
+	 * @param driver_interface $db             Database driver
+	 * @param dispatcher       $dispatcher     Event dispatcher
+	 * @param group_helper     $group_helper   Group helper
+	 * @param helper           $helper         Controller helper
+	 * @param language         $language       Language service
+	 * @param template         $template       Template service
+	 * @param user             $user           User object
+	 * @param string           $phpbb_root_path Path to phpBB root
+	 * @param string           $phpEx          PHP file extension
+	 * @param string           $forums_table   Table name for forums
+	 * @param string           $groups_table   Table name for groups
+	 * @param string           $teampage_table Table name for teampage
+	 * @param string           $user_group_table Table name for user_group
+	 * @param string           $users_table    Table name for users
+	 */
+	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher $dispatcher, group_helper $group_helper, helper $helper, language $language, template $template, user $user, string $phpbb_root_path, string $phpEx, string $forums_table, string $groups_table, string $teampage_table, string $user_group_table, string $users_table)
 	{
 		$this->auth				= $auth;
 		$this->config			= $config;
@@ -82,23 +139,31 @@ class team
 		$this->language			= $language;
 		$this->template			= $template;
 		$this->user				= $user;
+		$this->phpbb_root_path	= $phpbb_root_path;
+		$this->php_ext			= $phpEx;
+		$this->forums_table	= $forums_table;
+		$this->groups_table	= $groups_table;
+		$this->teampage_table	= $teampage_table;
+		$this->user_group_table	= $user_group_table;
+		$this->users_table	= $users_table;
 	}
 
 	/**
 	 * Controller for /team route
 	 *
-	 * @return \Symfony\Component\HttpFoundation\Response a Symfony response object
+	 * @return Response a Symfony response object
 	 */
-	public function handle()
+	public function handle() : Response
 	{
-		global $phpbb_root_path, $phpEx;
-
 		// Display a listing of board admins, moderators
 		if (!function_exists('user_get_id_name'))
 		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
 		}
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		if (!function_exists('phpbb_get_user_rank'))
+		{
+			include($this->phpbb_root_path . 'includes/functions_display.' . $this->php_ext);
+		}
 
 		// Load language strings
 		$this->language->add_lang('memberlist');
@@ -115,32 +180,32 @@ class team
 		}
 
 		$sql = 'SELECT *
-			FROM ' . TEAMPAGE_TABLE . '
+			FROM ' . $this->teampage_table . '
 			ORDER BY teampage_position ASC';
 		$result = $this->db->sql_query($sql, 3600);
 		$teampage_data = $this->db->sql_fetchrowset($result);
 		$this->db->sql_freeresult($result);
 
-		$sql_ary = array(
+		$sql_ary = [
 			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id, t.teampage_id',
 
-			'FROM'		=> array(GROUPS_TABLE => 'g'),
+			'FROM'		=> [$this->groups_table => 'g'],
 
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(TEAMPAGE_TABLE => 't'),
+			'LEFT_JOIN'	=> [
+				[
+					'FROM'	=> [$this->teampage_table => 't'],
 					'ON'	=> 't.group_id = g.group_id',
-				),
-				array(
-					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
+				],
+				[
+					'FROM'	=> [$this->user_group_table => 'ug'],
 					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $this->user->data['user_id'],
-				),
-			),
-		);
+				],
+			],
+		];
 
 		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
 
-		$group_ids = $groups_ary = array();
+		$group_ids = $groups_ary = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			if ($row['group_type'] == GROUP_HIDDEN && !$this->auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $this->user->data['user_id'])
@@ -151,7 +216,7 @@ class team
 			else
 			{
 				$row['group_name'] = $this->group_helper->get_name($row['group_name']);
-				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
+				$row['u_group'] = append_sid("{$this->phpbb_root_path}memberlist.{$this->php_ext}", 'mode=group&amp;g=' . $row['group_id']);
 			}
 
 			if ($row['teampage_id'])
@@ -164,28 +229,28 @@ class team
 		}
 		$this->db->sql_freeresult($result);
 
-		$sql_ary = array(
+		$sql_ary = [
 			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_type, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
 
-			'FROM'		=> array(
-				USER_GROUP_TABLE => 'ug',
-			),
+			'FROM'		=> [
+				$this->user_group_table => 'ug',
+			],
 
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(USERS_TABLE => 'u'),
+			'LEFT_JOIN'	=> [
+				[
+					'FROM'	=> [$this->users_table => 'u'],
 					'ON'	=> 'ug.user_id = u.user_id',
-				),
-				array(
-					'FROM'	=> array(GROUPS_TABLE => 'g'),
+				],
+				[
+					'FROM'	=> [$this->groups_table => 'g'],
 					'ON'	=> 'ug.group_id = g.group_id',
-				),
-			),
+				],
+			],
 
-			'WHERE'		=> $this->db->sql_in_set('g.group_id', $group_ids, false, true),
+			'WHERE'		=> $this->db->sql_in_set('g.group_id', $group_ids, false, true) . ' AND ug.user_pending = 0',
 
 			'ORDER_BY'	=> 'u.username_clean ASC',
-		);
+		];
 
 		/**
 		 * Modify the query used to get the users for the team page
@@ -196,20 +261,16 @@ class team
 		 * @var array	teampage_data	The teampage data
 		 * @since 3.1.3-RC1
 		 */
-		$vars = array(
-			'sql_ary',
-			'group_ids',
-			'teampage_data',
-		);
+		$vars = ['sql_ary', 'group_ids', 'teampage_data'];
 		extract($this->dispatcher->trigger_event('core.memberlist_team_modify_query', compact($vars)));
 
 		$result = $this->db->sql_query($this->db->sql_build_query('SELECT', $sql_ary));
 
-		$user_ary = $user_ids = $group_users = array();
+		$user_ary = $user_ids = $group_users = [];
 		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$row['forums'] = '';
-			$row['forums_ary'] = array();
+			$row['forums_ary'] = [];
 			$user_ary[(int) $row['user_id']] = $row;
 			$user_ids[] = (int) $row['user_id'];
 			$group_users[(int) $row['group_id']][] = (int) $row['user_id'];
@@ -222,11 +283,11 @@ class team
 		{
 			$this->template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
 			// Get all moderators
-			$perm_ary = $this->auth->acl_get_list($user_ids, array('m_'), false);
+			$perm_ary = $this->auth->acl_get_list($user_ids, ['m_'], false);
 
 			foreach ($perm_ary as $forum_id => $forum_ary)
 			{
-				foreach ($forum_ary as $this->auth_option => $id_ary)
+				foreach ($forum_ary as $id_ary)
 				{
 					foreach ($id_ary as $id)
 					{
@@ -243,10 +304,10 @@ class team
 			}
 
 			$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE;
+				FROM ' . $this->forums_table;
 			$result = $this->db->sql_query($sql);
 
-			$forums = array();
+			$forums = [];
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$forums[$row['forum_id']] = $row['forum_name'];
@@ -272,17 +333,15 @@ class team
 			}
 		}
 
-		$parent_team = 0;
 		foreach ($teampage_data as $team_data)
 		{
 			// If this team entry has no group, it's a category
 			if (!$team_data['group_id'])
 			{
-				$this->template->assign_block_vars('group', array(
+				$this->template->assign_block_vars('group', [
 					'GROUP_NAME'  => $team_data['teampage_name'],
-				));
+				]);
 
-				$parent_team = (int) $team_data['teampage_id'];
 				continue;
 			}
 
@@ -292,11 +351,11 @@ class team
 			if (!$team_data['teampage_parent'])
 			{
 				// If the group does not have a parent category, we display the groupname as category
-				$this->template->assign_block_vars('group', array(
+				$this->template->assign_block_vars('group', [
 					'GROUP_NAME'	=> $group_data['group_name'],
 					'GROUP_COLOR'	=> $group_data['group_colour'],
 					'U_GROUP'		=> $group_data['u_group'],
-				));
+				]);
 			}
 
 			// Display group members.
@@ -315,7 +374,7 @@ class team
 
 						$user_rank_data = phpbb_get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']));
 
-						$template_vars = array(
+						$template_vars = [
 							'USER_ID'		=> $row['user_id'],
 							'FORUMS'		=> $row['forums'],
 							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
@@ -330,13 +389,13 @@ class team
 
 							'S_INACTIVE'	=> $row['user_type'] == USER_INACTIVE,
 
-							'U_PM'			=> ($this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+							'U_PM'			=> ($this->config['allow_privmsg'] && $this->auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $this->auth->acl_gets('a_', 'm_') || $this->auth->acl_getf_global('m_'))) ? append_sid("{$this->phpbb_root_path}ucp.{$this->php_ext}", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 
 							'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
-						);
+						];
 
 						/**
 						 * Modify the template vars for displaying the user in the groups on the teampage
@@ -347,11 +406,7 @@ class team
 						 * @var array	groups_ary			Array of groups with all users that should be displayed
 						 * @since 3.1.3-RC1
 						 */
-						$vars = array(
-							'template_vars',
-							'row',
-							'groups_ary',
-						);
+						$vars = ['template_vars', 'row', 'groups_ary'];
 						extract($this->dispatcher->trigger_event('core.memberlist_team_modify_template_vars', compact($vars)));
 
 						$this->template->assign_block_vars('group.user', $template_vars);
@@ -365,17 +420,17 @@ class team
 			}
 		}
 
-		$this->template->assign_vars(array(
-			'PM_IMG'		=> $this->user->img('icon_contact_pm', $this->language->lang('SEND_PRIVATE_MESSAGE')))
-		);
+		$this->template->assign_vars([
+			'PM_IMG' => $this->user->img('icon_contact_pm', $this->language->lang('SEND_PRIVATE_MESSAGE')),
+		]);
 
-		// Breadcrums
-		$this->template->assign_block_vars('navlinks', array(
-			'BREADCRUMB_NAME'	=> $this->language->lang('THE_TEAM'),
-			'U_BREADCRUMB'		=> $this->helper->route('phpbb_members_team'),
-		));
+		// Breadcrumbs
+		$this->template->assign_block_vars('navlinks', [
+			'BREADCRUMB_NAME' => $this->language->lang('THE_TEAM'),
+			'U_BREADCRUMB' => $this->helper->route('phpbb_members_team'),
+		]);
 
-		make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+		make_jumpbox(append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}"));
 
 		// Render
 		return $this->helper->render('memberlist_team.html', $this->language->lang('THE_TEAM'));
