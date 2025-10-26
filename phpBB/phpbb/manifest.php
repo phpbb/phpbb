@@ -22,9 +22,6 @@ class manifest
 	/** @var config */
 	protected $config;
 
-	/** @var path_helper */
-	protected $path_helper;
-
 	/** @var dispatcher_interface */
 	protected $phpbb_dispatcher;
 
@@ -35,14 +32,12 @@ class manifest
 	 * Constructor for manifest controller
 	 *
 	 * @param config $config
-	 * @param path_helper $path_helper
 	 * @param dispatcher_interface $phpbb_dispatcher
 	 * @param user $user
 	 */
-	public function __construct(config $config, path_helper $path_helper, dispatcher_interface $phpbb_dispatcher, user $user)
+	public function __construct(config $config, dispatcher_interface $phpbb_dispatcher, user $user)
 	{
 		$this->config = $config;
-		$this->path_helper = $path_helper;
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->user = $user;
 	}
@@ -54,7 +49,12 @@ class manifest
 	 */
 	public function handle(): JsonResponse
 	{
-		$board_path = $this->config['force_server_vars'] ? $this->config['script_path'] : $this->path_helper->get_web_root_path();
+		// Get the board URL and extract the path component
+		$board_path = $this->config['force_server_vars'] ? $this->config['script_path'] : (parse_url(generate_board_url())['path'] ?? '');
+
+		// Ensure path ends with '/' for PWA scope
+		$scope = rtrim($board_path, '/\\') . '/';
+		$start_url = $scope;
 
 		$sitename = html_entity_decode($this->config['sitename'], ENT_QUOTES, 'UTF-8');
 		$sitename_short = html_entity_decode($this->config['sitename_short'], ENT_QUOTES, 'UTF-8');
@@ -64,8 +64,8 @@ class manifest
 			'short_name'	=> $sitename_short ?: utf8_substr($sitename, 0, 12),
 			'display'		=> 'standalone',
 			'orientation'	=> 'portrait',
-			'start_url'		=> $board_path,
-			'scope'			=> $board_path,
+			'start_url'		=> $start_url,
+			'scope'			=> $scope,
 		];
 
 		/**
@@ -73,12 +73,13 @@ class manifest
 		 *
 		 * @event core.modify_manifest
 		 * @var	array	manifest	    Array of manifest members
-		 * @var	string	board_path	    Path to the board root
+		 * @var string  scope           PWA scope path
+		 * @var string  start_url       PWA start URL
 		 * @var	string	sitename	    Full name of the board
 		 * @var	string	sitename_short	Shortened name of the board
 		 * @since 4.0.0-a1
 		 */
-		$vars = ['manifest', 'board_path', 'sitename', 'sitename_short'];
+		$vars = ['manifest', 'scope', 'start_url', 'sitename', 'sitename_short'];
 		extract($this->phpbb_dispatcher->trigger_event('core.modify_manifest', compact($vars)));
 
 		$response = new JsonResponse($manifest);

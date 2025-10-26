@@ -163,7 +163,6 @@ services:
         class: phpbb\manifest
         arguments:
             - '@config'
-            - '@path_helper'
             - '@event_dispatcher'
             - '@user'
 
