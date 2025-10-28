@@ -43,11 +43,14 @@ $username	= $request->variable('un', '', true);
 $group_id	= $request->variable('g', 0);
 $topic_id	= $request->variable('t', 0);
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 // Redirect when old mode is used
 if ($mode == 'leaders')
 {
 	send_status_line(301, 'Moved Permanently');
-	redirect(append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=team'));
+	redirect($controller_helper->route('phpbb_members_team', [], false));
 }
 
 // Check our mode...
@@ -60,6 +63,11 @@ switch ($mode)
 {
 	case 'email':
 	case 'contactadmin':
+	break;
+
+	case 'team':
+		send_status_line(301, 'Moved Permanently');
+		redirect($controller_helper->route('phpbb_members_team', [], false));
 	break;
 
 	case 'livesearch':
@@ -102,277 +110,6 @@ if ($auth->acl_get('a_user'))
 // What do you want to do today? ... oops, I think that line is taken ...
 switch ($mode)
 {
-	case 'team':
-		// Display a listing of board admins, moderators
-		if (!function_exists('user_get_id_name'))
-		{
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		}
-
-		$page_title = $user->lang['THE_TEAM'];
-		$template_html = 'memberlist_team.html';
-
-		$sql = 'SELECT *
-			FROM ' . TEAMPAGE_TABLE . '
-			ORDER BY teampage_position ASC';
-		$result = $db->sql_query($sql, 3600);
-		$teampage_data = $db->sql_fetchrowset($result);
-		$db->sql_freeresult($result);
-
-		$sql_ary = array(
-			'SELECT'	=> 'g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id, t.teampage_id',
-
-			'FROM'		=> array(GROUPS_TABLE => 'g'),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(TEAMPAGE_TABLE => 't'),
-					'ON'	=> 't.group_id = g.group_id',
-				),
-				array(
-					'FROM'	=> array(USER_GROUP_TABLE => 'ug'),
-					'ON'	=> 'ug.group_id = g.group_id AND ug.user_pending = 0 AND ug.user_id = ' . (int) $user->data['user_id'],
-				),
-			),
-		);
-
-		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
-
-		$group_ids = $groups_ary = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
-			{
-				$row['group_name'] = $user->lang['GROUP_UNDISCLOSED'];
-				$row['u_group'] = '';
-			}
-			else
-			{
-				$row['group_name'] = $group_helper->get_name($row['group_name']);
-				$row['u_group'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']);
-			}
-
-			if ($row['teampage_id'])
-			{
-				// Only put groups into the array we want to display.
-				// We are fetching all groups, to ensure we got all data for default groups.
-				$group_ids[] = (int) $row['group_id'];
-			}
-			$groups_ary[(int) $row['group_id']] = $row;
-		}
-		$db->sql_freeresult($result);
-
-		$sql_ary = array(
-			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_type, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id',
-
-			'FROM'		=> array(
-				USER_GROUP_TABLE => 'ug',
-			),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(USERS_TABLE => 'u'),
-					'ON'	=> 'ug.user_id = u.user_id',
-				),
-				array(
-					'FROM'	=> array(GROUPS_TABLE => 'g'),
-					'ON'	=> 'ug.group_id = g.group_id',
-				),
-			),
-
-			'WHERE'		=> $db->sql_in_set('g.group_id', $group_ids, false, true) . ' AND ug.user_pending = 0',
-
-			'ORDER_BY'	=> 'u.username_clean ASC',
-		);
-
-		/**
-		 * Modify the query used to get the users for the team page
-		 *
-		 * @event core.memberlist_team_modify_query
-		 * @var array	sql_ary			Array containing the query
-		 * @var array	group_ids		Array of group ids
-		 * @var array	teampage_data	The teampage data
-		 * @since 3.1.3-RC1
-		 */
-		$vars = array(
-			'sql_ary',
-			'group_ids',
-			'teampage_data',
-		);
-		extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_query', compact($vars)));
-
-		$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
-
-		$user_ary = $user_ids = $group_users = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$row['forums'] = '';
-			$row['forums_ary'] = array();
-			$user_ary[(int) $row['user_id']] = $row;
-			$user_ids[] = (int) $row['user_id'];
-			$group_users[(int) $row['group_id']][] = (int) $row['user_id'];
-		}
-		$db->sql_freeresult($result);
-
-		$user_ids = array_unique($user_ids);
-
-		if (!empty($user_ids) && $config['teampage_forums'])
-		{
-			$template->assign_var('S_DISPLAY_MODERATOR_FORUMS', true);
-			// Get all moderators
-			$perm_ary = $auth->acl_get_list($user_ids, array('m_'), false);
-
-			foreach ($perm_ary as $forum_id => $forum_ary)
-			{
-				foreach ($forum_ary as $auth_option => $id_ary)
-				{
-					foreach ($id_ary as $id)
-					{
-						if (!$forum_id)
-						{
-							$user_ary[$id]['forums'] = $user->lang['ALL_FORUMS'];
-						}
-						else
-						{
-							$user_ary[$id]['forums_ary'][] = $forum_id;
-						}
-					}
-				}
-			}
-
-			$sql = 'SELECT forum_id, forum_name
-				FROM ' . FORUMS_TABLE;
-			$result = $db->sql_query($sql);
-
-			$forums = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$forums[$row['forum_id']] = $row['forum_name'];
-			}
-			$db->sql_freeresult($result);
-
-			foreach ($user_ary as $user_id => $user_data)
-			{
-				if (!$user_data['forums'])
-				{
-					foreach ($user_data['forums_ary'] as $forum_id)
-					{
-						$user_ary[$user_id]['forums_options'] = true;
-						if (isset($forums[$forum_id]))
-						{
-							if ($auth->acl_get('f_list', $forum_id))
-							{
-								$user_ary[$user_id]['forums'] .= '<option value="">' . $forums[$forum_id] . '</option>';
-							}
-						}
-					}
-				}
-			}
-		}
-
-		$parent_team = 0;
-		foreach ($teampage_data as $team_data)
-		{
-			// If this team entry has no group, it's a category
-			if (!$team_data['group_id'])
-			{
-				$template->assign_block_vars('group', array(
-					'GROUP_NAME'  => $team_data['teampage_name'],
-				));
-
-				$parent_team = (int) $team_data['teampage_id'];
-				continue;
-			}
-
-			$group_data = $groups_ary[(int) $team_data['group_id']];
-			$group_id = (int) $team_data['group_id'];
-
-			if (!$team_data['teampage_parent'])
-			{
-				// If the group does not have a parent category, we display the groupname as category
-				$template->assign_block_vars('group', array(
-					'GROUP_NAME'	=> $group_data['group_name'],
-					'GROUP_COLOR'	=> $group_data['group_colour'],
-					'U_GROUP'		=> $group_data['u_group'],
-				));
-			}
-
-			// Display group members.
-			if (!empty($group_users[$group_id]))
-			{
-				foreach ($group_users[$group_id] as $user_id)
-				{
-					if (isset($user_ary[$user_id]))
-					{
-						$row = $user_ary[$user_id];
-						if ($config['teampage_memberships'] == 1 && ($group_id != $groups_ary[$row['default_group']]['group_id']) && $groups_ary[$row['default_group']]['teampage_id'])
-						{
-							// Display users in their primary group, instead of the first group, when it is displayed on the teampage.
-							continue;
-						}
-
-						$user_rank_data = phpbb_get_user_rank($row, (($row['user_id'] == ANONYMOUS) ? false : $row['user_posts']));
-
-						$template_vars = array(
-							'USER_ID'		=> $row['user_id'],
-							'FORUMS'		=> $row['forums'],
-							'FORUM_OPTIONS'	=> (isset($row['forums_options'])) ? true : false,
-							'RANK_TITLE'	=> $user_rank_data['title'],
-
-							'GROUP_NAME'	=> $groups_ary[$row['default_group']]['group_name'],
-							'GROUP_COLOR'	=> $groups_ary[$row['default_group']]['group_colour'],
-							'U_GROUP'		=> $groups_ary[$row['default_group']]['u_group'],
-
-							'RANK_IMG'		=> $user_rank_data['img'],
-							'RANK_IMG_SRC'	=> $user_rank_data['img_src'],
-
-							'S_INACTIVE'	=> $row['user_type'] == USER_INACTIVE,
-
-							'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
-
-							'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
-							'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-							'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
-							'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
-						);
-
-						/**
-						 * Modify the template vars for displaying the user in the groups on the teampage
-						 *
-						 * @event core.memberlist_team_modify_template_vars
-						 * @var array	template_vars		Array containing the query
-						 * @var array	row					Array containing the action user row
-						 * @var array	groups_ary			Array of groups with all users that should be displayed
-						 * @since 3.1.3-RC1
-						 */
-						$vars = array(
-							'template_vars',
-							'row',
-							'groups_ary',
-						);
-						extract($phpbb_dispatcher->trigger_event('core.memberlist_team_modify_template_vars', compact($vars)));
-
-						$template->assign_block_vars('group.user', $template_vars);
-
-						if ($config['teampage_memberships'] != 2)
-						{
-							unset($user_ary[$user_id]);
-						}
-					}
-				}
-			}
-		}
-
-		$template->assign_block_vars('navlinks', array(
-			'BREADCRUMB_NAME'	=> $page_title,
-			'U_BREADCRUMB'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=team"),
-		));
-
-		$template->assign_vars(array(
-			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']))
-		);
-	break;
-
 	case 'viewprofile':
 		// Display a profile
 		if ($user_id == ANONYMOUS && !$username)
