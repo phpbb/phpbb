@@ -89,7 +89,7 @@ display_forums('', $config['load_moderators']);
 /** @var \phpbb\group\helper $group_helper */
 $group_helper = $phpbb_container->get('group_helper');
 
-$group_helper->display_legend($db, $template);
+$group_helper->display_legend();
 
 // Generate birthday list if required ...
 $show_birthdays = ($config['load_birthdays'] && $config['allow_birthdays'] && $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
