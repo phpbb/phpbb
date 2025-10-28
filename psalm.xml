@@ -1,9 +1,10 @@
 <?xml version="1.0"?>
 <psalm
     errorLevel="5"
-    phpVersion="8.1"
+    phpVersion="8.2"
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
+	ensureOverrideAttribute="false"
     autoloader="build/psalm_bootstrap.php"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns="https://getpsalm.org/schema/config"
@@ -11,15 +12,15 @@
 >
     <projectFiles>
         <directory name="phpBB/phpbb"/>
+		<ignoreFiles>
+			<directory name="phpBB/vendor"/>
+		</ignoreFiles>
     </projectFiles>
 
     <issueHandlers>
         <InvalidGlobal errorLevel="suppress" />
-        <UndefinedDocblockClass>
-            <errorLevel type="suppress">
-                <referencedClass name="UnitEnum" />
-            </errorLevel>
-        </UndefinedDocblockClass>
+		<UndefinedThisPropertyAssignment errorLevel="suppress"/>
+		<UndefinedThisPropertyFetch errorLevel="suppress"/>
         <UnsupportedPropertyReferenceUsage errorLevel="suppress" />
         <MissingTemplateParam errorLevel="suppress" />
     </issueHandlers>

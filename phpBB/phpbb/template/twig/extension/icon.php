@@ -269,7 +269,7 @@ class icon extends AbstractExtension
 		$string = $doc->saveHTML();
 		$string = preg_replace('/\s+/', ' ', $string);
 
-		return $string;
+		return $string ?: '';
 	}
 
 	/**

@@ -87,8 +87,6 @@ class phpbb_cron_manager_test extends \phpbb_test_case
 			->onlyMethods(array('setContext', 'generate'))
 			->disableOriginalConstructor()
 			->getMock();
-		$mock_router->method('setContext')
-			->willReturn(true);
 		$mock_router->method('generate')
 			->willReturn('foobar');
 

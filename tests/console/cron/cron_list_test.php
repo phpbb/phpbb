@@ -79,8 +79,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 			->onlyMethods(array('setContext', 'generate'))
 			->disableOriginalConstructor()
 			->getMock();
-		$mock_router->method('setContext')
-			->willReturn(true);
+		$mock_router->method('setContext');
 		$mock_router->method('generate')
 			->willReturn('foobar');
 
