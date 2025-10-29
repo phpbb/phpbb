@@ -24,7 +24,7 @@ class extensions_composer_2 extends migration
 
 	public function update_data()
 	{
-		$repositories = json_decode($this->config['exts_composer_repositories'], true);
+		$repositories = json_decode($this->config['exts_composer_repositories'], true) ?: [];
 		$repositories[] = 'https://satis.phpbb.com';
 		$repositories = array_unique($repositories);
 
