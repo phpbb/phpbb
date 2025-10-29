@@ -154,7 +154,7 @@ a:hover {
 	border: solid transparent;
 	border-width: 0 1px 1px;
 	border-radius: 0 0 8px 8px;
-	min-width: 625px;
+	min-width: 320px;
 	max-width: 1152px;
 	margin: 0 auto;
 	padding: 0 15px 15px;

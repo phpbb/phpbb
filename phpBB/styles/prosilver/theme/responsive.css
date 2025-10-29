@@ -182,8 +182,7 @@
 	.wrap {
 		border: none;
 		border-radius: 0;
-		min-width: 390px;
-		margin: 0 !important;
+		box-sizing: border-box;
 		padding: 0 5px;
 	}
 
@@ -863,7 +862,7 @@
 	}
 }
 
-@media (max-width: 1220px) {
+@media (min-width: 751px) and (max-width: 1200px) {
 	.wrap {
 		margin: 0 12px;
 	}
