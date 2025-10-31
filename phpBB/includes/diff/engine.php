@@ -1,68 +1,98 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
 }
 
 /**
-* Code from pear.php.net, Text_Diff-1.1.0 package
-* http://pear.php.net/package/Text_Diff/ (native engine)
-*
-* Modified by phpBB Limited to meet our coding standards
-* and being able to integrate into phpBB
-*
-* Class used internally by Text_Diff to actually compute the diffs. This
-* class is implemented using native PHP code.
-*
-* The algorithm used here is mostly lifted from the perl module
-* Algorithm::Diff (version 1.06) by Ned Konz, which is available at:
-* http://www.perl.com/CPAN/authors/id/N/NE/NEDKONZ/Algorithm-Diff-1.06.zip
-*
-* More ideas are taken from: http://www.ics.uci.edu/~eppstein/161/960229.html
-*
-* Some ideas (and a bit of code) are taken from analyze.c, of GNU
-* diffutils-2.7, which can be found at:
-* ftp://gnudist.gnu.org/pub/gnu/diffutils/diffutils-2.7.tar.gz
-*
-* Some ideas (subdivision by NCHUNKS > 2, and some optimizations) are from
-* Geoffrey T. Dairiki <dairiki@dairiki.org>. The original PHP version of this
-* code was written by him, and is used/adapted with his permission.
-*
-* Copyright 2004-2008 The Horde Project (http://www.horde.org/)
-*
-* @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
-* @package diff
-*
-* @access private
-*/
+ * Code from pear.php.net, Text_Diff-1.1.0 package
+ * http://pear.php.net/package/Text_Diff/ (native engine)
+ *
+ * Modified by phpBB Limited to meet our coding standards
+ * and being able to integrate into phpBB
+ *
+ * Class used internally by Text_Diff to actually compute the diffs. This
+ * class is implemented using native PHP code.
+ *
+ * The algorithm used here is mostly lifted from the perl module
+ * Algorithm::Diff (version 1.06) by Ned Konz, which is available at:
+ * http://www.perl.com/CPAN/authors/id/N/NE/NEDKONZ/Algorithm-Diff-1.06.zip
+ *
+ * More ideas are taken from: http://www.ics.uci.edu/~eppstein/161/960229.html
+ *
+ * Some ideas (and a bit of code) are taken from analyze.c, of GNU
+ * diffutils-2.7, which can be found at:
+ * ftp://gnudist.gnu.org/pub/gnu/diffutils/diffutils-2.7.tar.gz
+ *
+ * Some ideas (subdivision by NCHUNKS > 2, and some optimizations) are from
+ * Geoffrey T. Dairiki <dairiki@dairiki.org>. The original PHP version of this
+ * code was written by him, and is used/adapted with his permission.
+ *
+ * Copyright 2004-2008 The Horde Project (http://www.horde.org/)
+ *
+ * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
+ * @package diff
+ *
+ * @access private
+ */
 class diff_engine
 {
+	/** var array */
+	protected $in_seq;
+
+	/** var int */
+	protected $lcs;
+
+	/** var array */
+	protected $seq;
+
 	/**
-	* If set to true we trim all lines before we compare them. This ensures that sole space/tab changes do not trigger diffs.
-	*/
-	var $skip_whitespace_changes = true;
+	 * bool
+	 *
+	 * If set to true we trim all lines before we compare them. This ensures that sole space/tab changes do not trigger diffs.
+	 */
+	protected $skip_whitespace_changes = true;
+
+	/** var array */
+	protected $xchanged;
+
+	/** var array */
+	protected $xind;
+
+	/** var array */
+	protected $xv;
+
+	/** var array */
+	protected $ychanged;
+
+	/** var array */
+	protected $yind;
+
+	/** var array */
+	protected $yv;
 
 	function diff(&$from_lines, &$to_lines, $preserve_cr = true)
 	{
-		// Remove empty lines...
-		// If preserve_cr is true, we basically only change \r\n and bare \r to \n to get the same carriage returns for both files
-		// If it is false, we try to only use \n once per line and ommit all empty lines to be able to get a proper data diff
-
+		/*
+		 * Remove empty lines...
+		 * If preserve_cr is true, we basically only change \r\n and bare \r to \n to get the same carriage returns for both files
+		 * If it is false, we try to only use \n once per line and ommit all empty lines to be able to get a proper data diff
+		 */
 		if (is_array($from_lines))
 		{
 			$from_lines = implode("\n", $from_lines);
@@ -87,7 +117,7 @@ class diff_engine
 		$n_from = count($from_lines);
 		$n_to = count($to_lines);
 
-		$this->xchanged = $this->ychanged = $this->xv = $this->yv = $this->xind = $this->yind = array();
+		$this->xchanged = $this->ychanged = $this->xv = $this->yv = $this->xind = $this->yind = [];
 		unset($this->seq, $this->in_seq, $this->lcs);
 
 		// Skip leading common lines.

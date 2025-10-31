@@ -768,12 +768,12 @@ class diff3_op
 	/**
 	 * @var array|mixed
 	 */
-	protected $final1;
+	public $final1;
 
 	/**
 	 * @var array|mixed
 	 */
-	protected $final2;
+	public $final2;
 
 	/**
 	 * @var false
