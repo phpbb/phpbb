@@ -268,12 +268,16 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				header('Content-Length: ' . $range['bytes_requested']);
 
 				// First read chunks
-				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				while (!feof($fp) && ftell($fp) <= $range['byte_pos_end'] - 8191)
 				{
 					echo fread($fp, 8192);
 				}
 				// Then, read the remainder
-				echo fread($fp, $range['bytes_requested'] % 8192);
+				$remainder = $range['bytes_requested'] % 8192;
+				if ($remainder > 0)
+				{
+					echo fread($fp, $remainder);
+				}
 			}
 			else
 			{
