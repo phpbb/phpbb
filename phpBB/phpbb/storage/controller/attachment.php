@@ -370,6 +370,7 @@ class attachment extends controller
 		}
 
 		$allowed = $this->phpbb_download_check_pm_auth($msg_id);
+		$user_id = $this->user->data['user_id'];
 
 		/**
 		 * Event to modify PM attachments download auth
