@@ -818,23 +818,26 @@ class session
 
 			unset($cookie_expire);
 
-			$sql = 'SELECT COUNT(session_id) AS sessions
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . (int) $this->data['user_id'] . '
-					AND session_time >= ' . (int) ($this->time_now - (max((int) $config['session_length'], (int) $config['form_token_lifetime'])));
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
+			if ($this->data['user_id'] != ANONYMOUS)
 			{
-				$this->data['user_form_salt'] = unique_id();
-				// Update the form key
-				$sql = 'UPDATE ' . USERS_TABLE . '
+				$sql = 'SELECT COUNT(session_id) AS sessions
+						FROM ' . SESSIONS_TABLE . '
+						WHERE session_user_id = ' . (int) $this->data['user_id'] . '
+						AND session_time >= ' . (int) ($this->time_now - (max((int) $config['session_length'], (int) $config['form_token_lifetime'])));
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
+				{
+					$this->data['user_form_salt'] = unique_id();
+					// Update the form key
+					$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\',
 						user_last_active = ' . (int) $this->time_now . '
 					WHERE user_id = ' . (int) $this->data['user_id'];
-				$db->sql_query($sql);
+					$db->sql_query($sql);
+				}
 			}
 			else
 			{
