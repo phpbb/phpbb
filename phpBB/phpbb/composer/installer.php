@@ -525,6 +525,21 @@ class installer
 					}
 				}
 
+				// Check for composer/installers requirement - must support version 2.0 or later
+				if (isset($requires['composer/installers']))
+				{
+					$installers_constraint = $requires['composer/installers']->getConstraint();
+					$min_version_constraint = $version_parser->parseConstraints('>=2.0');
+					if (!$min_version_constraint->matches($installers_constraint))
+					{
+						continue;
+					}
+				}
+				else
+				{
+					continue;
+				}
+
 				$compatible_packages[$package_name][] = $version;
 			}
 			catch (\Exception $e)
