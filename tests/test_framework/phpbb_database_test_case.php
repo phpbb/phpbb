@@ -66,7 +66,15 @@ abstract class phpbb_database_test_case extends TestCase
 			global $table_prefix;
 
 			$db = new \phpbb\db\driver\sqlite3();
-			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection(new phpbb_mock_config_php_file());
+			// Some local setups may not configure a DB driver. If the configured
+			// 'dbms' is null, skip this test instead of failing with a TypeError in
+			// the connection factory which expects a non-null driver name.
+			$mock_config = new phpbb_mock_config_php_file();
+			if ($mock_config->get('dbms') === null)
+			{
+				self::markTestSkipped('Skipping schema generator tests: dbms is not configured (null) in local environment.');
+			}
+			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection($mock_config);
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($doctrine, true);
 			$db_tools->set_table_prefix($table_prefix);
