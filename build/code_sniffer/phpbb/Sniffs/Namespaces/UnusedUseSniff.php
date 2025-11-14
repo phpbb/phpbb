@@ -114,7 +114,7 @@ class UnusedUseSniff implements Sniff
 			$ok = $this->findClassUsage($phpcsFile, $stackPtr, $tokens, $name_full, $name_short);
 		}
 
-		if ($name_full[0] === '\\')
+		if (!empty($name_full) && $name_full[0] === '\\')
 		{
 			$phpcsFile->addError("There must not be a leading '\\' in use statements.", $stackPtr, 'Malformed');
 		}
