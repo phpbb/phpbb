@@ -273,7 +273,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 					echo fread($fp, 8192);
 				}
 				// Then, read the remainder
-				echo fread($fp, $range['bytes_requested'] % 8192);
+				$remainder = $range['bytes_requested'] % 8192;
+				if ($remainder > 0)
+				{
+					echo fread($fp, $remainder);
+				}
 			}
 			else
 			{
