@@ -406,6 +406,42 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Returns an array of the table index names and relevant data in format
+	 * [
+	 *		[$index_name] = [
+	 *			'columns'	=> (array) $index_columns,
+	 *			'flags'		=> (array) $index_flags,
+	 *			'options'	=> (array) $index_options,
+	 *			'is_primary'=> (bool) $isPrimary,
+	 *			'is_unique'	=> (bool) $isUnique,
+	 *			'is_simple'	=> (bool) $isSimple,
+	 *		]
+	 *
+	 * @param string $table_name
+	 *
+	 * @return array
+	 */
+	public function sql_get_table_index_data(string $table_name): array
+	{
+		$schema = $this->get_schema();
+		$table = $schema->getTable($table_name);
+		$indexes = [];
+		foreach ($table->getIndexes() as $index)
+		{
+			$indexes[$index->getName()] = [
+				'columns'	=> array_map('strtolower', $index->getUnquotedColumns()),
+				'flags'		=> $index->getFlags(),
+				'options'	=> $index->getOptions(),
+				'is_primary'=> $index->isPrimary(),
+				'is_unique'	=> $index->isUnique(),
+				'is_simple'	=> $index->isSimpleIndex(),
+			];
+		}
+
+		return $indexes;
+	}
+
+	/**
 	 * Returns an array of indices for either unique and primary keys, or simple indices.
 	 *
 	 * @param string $table_name    The name of the table.
@@ -655,24 +691,16 @@ class doctrine implements tools_interface
 				$columns = (is_array($key_data[1])) ? $key_data[1] : [$key_data[1]];
 				$key_name = !str_starts_with($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
 
-				// Supports key columns defined with there length
-				$columns = array_map(function (string $column)
-				{
-					if (strpos($column, ':') !== false)
-					{
-						$parts = explode(':', $column, 2);
-						return $parts[0];
-					}
-					return $column;
-				}, $columns);
+				$options = [];
+				$this->schema_get_index_key_data($columns, $options);
 
 				if ($key_data[0] === 'UNIQUE')
 				{
-					$table->addUniqueIndex($columns, $key_name);
+					$table->addUniqueIndex($columns, $key_name, $options);
 				}
 				else
 				{
-					$table->addIndex($columns, $key_name);
+					$table->addIndex($columns, $key_name, [], $options);
 				}
 			}
 		}
@@ -869,7 +897,10 @@ class doctrine implements tools_interface
 			return;
 		}
 
-		$table->addIndex($columns, $index_name);
+		$options = [];
+		$this->schema_get_index_key_data($columns, $options);
+
+		$table->addIndex($columns, $index_name, [], $options);
 	}
 
 	/**
@@ -925,7 +956,10 @@ class doctrine implements tools_interface
 			return;
 		}
 
-		$table->addUniqueIndex($columns, $index_name);
+		$options = [];
+		$this->schema_get_index_key_data($columns, $options);
+
+		$table->addUniqueIndex($columns, $index_name, $options);
 	}
 
 	/**
@@ -972,6 +1006,30 @@ class doctrine implements tools_interface
 		$table = $schema->getTable($table_name);
 		$table->dropPrimaryKey();
 		$table->setPrimaryKey($columns);
+	}
+
+	/**
+	 * Checks if index data contains key length
+	 * and put it into $options['lengths'] array.
+	 * Handles key length in formats of 'keyname:123' or 'keyname(123)'
+	 *
+	 * @param array  $columns
+	 * @param array  $options
+	 */
+	protected function schema_get_index_key_data(array &$columns, array &$options): void
+	{
+		if (!empty($columns))
+		{
+			$columns = array_map(function (string $column) use (&$options)
+			{
+				if (preg_match('/^([a-zA-Z0-9_]+)(?:(?:\:|\()([0-9]{1,3})\)?)?$/', $column, $parts))
+				{
+					$options['lengths'][] = $parts[2] ?? null;
+					return $parts[1];
+				}
+				return $column;
+			}, $columns);
+		}
 	}
 
 	/**
