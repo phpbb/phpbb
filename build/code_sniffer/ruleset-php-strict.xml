@@ -32,7 +32,9 @@
  <rule ref="PSR1.Classes.ClassDeclaration.MultipleClasses" />
 
  <!-- Files containing classes MUST not have any side-effects -->
- <rule ref="PSR1.Files.SideEffects.FoundWithSymbols" />
+ <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+  <exclude-pattern>*/tests/*</exclude-pattern>
+ </rule>
 
  <!-- When present, all use declarations MUST go after the namespace declaration.
       There MUST be one use keyword per declaration.
