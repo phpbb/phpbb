@@ -247,6 +247,69 @@ function parse_document(container)
 }
 
 /**
+* Automatically display custom profile fields FontAwesome icon
+*/
+const DEFAULT_COLOR = '#000000';
+const HEX_REGEX = /^#[A-Fa-f0-9]{6}$/;
+const colorPicker = document.getElementById('field_icon_color_picker');
+if (colorPicker) {
+	const colorText = colorPicker.previousElementSibling;
+
+	const syncColors = (source, target) => {
+		const value = '#' + source.value.trim();
+		target.value = HEX_REGEX.test(value) ? value : DEFAULT_COLOR;
+	};
+
+	const handleInput = ({ target }) => {
+		if (target === colorPicker) {
+			colorText.value = target.value.substring(1);
+		} else {
+			syncColors(colorText, colorPicker);
+		}
+		const icon = field_icon?.nextElementSibling;
+		if (icon && icon.tagName.toLowerCase() === 'i') {
+			icon.style.color = colorPicker.value;
+		}
+	};
+
+	colorPicker.addEventListener('input', handleInput);
+	colorText.addEventListener('input', handleInput);
+	colorText.addEventListener('blur', () => {
+		if (!colorText.value.trim()) {
+			colorPicker.value = DEFAULT_COLOR;
+		}
+	});
+	syncColors(colorText, colorPicker);
+
+	var field_icon = document.getElementById('field_icon');
+	if (!field_icon.nextElementSibling) {
+		icon_demo = document.createElement('i');
+		icon_demo.setAttribute('style', `margin:0 6px; color: ${colorPicker.value}`);
+		icon_demo.setAttribute('class', `o-icon o-icon-font fa-fw fas acp-icon`);
+		field_icon.after(icon_demo);
+	}
+
+	const updateIconClass = (element, newClass) => {
+
+		element.classList.forEach(className => {
+			if (className.startsWith('fa-') && className !== 'fa-fw') {
+				element.classList.remove(className);
+			}
+		});
+
+		element.classList.add(`fa-${newClass}`);
+	};
+
+	field_icon.addEventListener('keyup', function() {
+		updateIconClass(this.nextElementSibling, this.value);
+	});
+
+	field_icon.addEventListener('blur', function() {
+		updateIconClass(this.nextElementSibling, this.value);
+	});
+}
+
+/**
 * Run onload functions
 */
 (function($) {

@@ -3156,3 +3156,29 @@ span + .o-icon {
 .acp-icon-disabled {
 	color: #d0d0d0;
 }
+
+
+input[type="color"] {
+	background-color: transparent;
+	border: solid 1px #d3d3d3;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	padding: 2px;
+	cursor: pointer;
+	-webkit-appearance: none;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+	border: 0;
+	border-radius: 50%;
+}
+
+input[type="color"]::-moz-color-swatch {
+	border: 0;
+	border-radius: 50%;
+}
