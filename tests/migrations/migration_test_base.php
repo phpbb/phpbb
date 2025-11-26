@@ -59,7 +59,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $cache, $db, $phpbb_log, $phpbb_root_path, $phpEx, $skip_add_log, $table_prefix, $user;
+		global $cache, $db, $phpbb_log, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $skip_add_log, $table_prefix, $user;
 
 		parent::setUp();
 

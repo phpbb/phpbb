@@ -377,7 +377,7 @@ class module implements \phpbb\db\migration\tool\tool_interface
 		{
 			if (!$this->exists($class, $parent, $module, true))
 			{
-				throw new \phpbb\db\migration\exception('MODULE_NOT_EXIST', $module);
+				return;
 			}
 
 			$parent_sql = '';
