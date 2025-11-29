@@ -24,7 +24,7 @@ class updater_configuration implements ConfigurationInterface
 	 *
 	 * @return TreeBuilder The tree builder
 	 */
-	public function getConfigTreeBuilder()
+	public function getConfigTreeBuilder(): TreeBuilder
 	{
 		$treeBuilder = new TreeBuilder('updater');
 		$rootNode = $treeBuilder->getRootNode();

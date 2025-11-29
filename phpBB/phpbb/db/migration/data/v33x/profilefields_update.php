@@ -202,6 +202,6 @@ class profilefields_update extends \phpbb\db\migration\migration
 
 	protected function get_youtube_url_part(string $profile_field_string): string
 	{
-		return preg_replace('#^https://(?:www\.)?youtube\.com/(.+)$#iu', '$1', $profile_field_string);
+		return preg_replace('#^https://(?:www\.)?youtube\.com/(.+)$#iu', '$1', $profile_field_string) ?: '';
 	}
 }
