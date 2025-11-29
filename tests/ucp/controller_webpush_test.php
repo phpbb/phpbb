@@ -188,6 +188,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->controller_helper,
 					$this->db,
 					$this->language,
 					$this->user,
@@ -242,6 +243,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->controller_helper,
 					$this->db,
 					$this->language,
 					$this->user,
@@ -297,6 +299,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->controller_helper,
 					$this->db,
 					$this->language,
 					$this->user,
@@ -345,6 +348,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->controller_helper,
 					$this->db,
 					$this->language,
 					$this->user,
