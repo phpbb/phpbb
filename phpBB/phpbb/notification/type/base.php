@@ -113,6 +113,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		$this->php_ext = $php_ext;
 
 		$this->user_notifications_table = $user_notifications_table;
+
 	}
 
 	/**
