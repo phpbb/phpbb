@@ -92,6 +92,9 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
 							  ->disableOriginalConstructor()
 							  ->getMock();
+		$controller_helper = $this->getMockBuilder('\phpbb\controller\helper')
+								  ->disableOriginalConstructor()
+								  ->getMock();
 		$db = $this->db = $this->new_dbal();
 		$config = $this->config = new \phpbb\config\config([
 			'allow_privmsg'			=> true,
@@ -133,12 +136,14 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$phpbb_container->set('language', $this->language);
 		$phpbb_container->set('config', $this->config);
 		$phpbb_container->set('dbal.conn', $this->db);
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('log', $this->log);
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set('dispatcher', $this->phpbb_dispatcher);
+		$phpbb_container->set('event_dispatcher', $this->phpbb_dispatcher);
 		$phpbb_container->setParameter('core.root_path', $phpbb_root_path);
 		$phpbb_container->setParameter('core.php_ext', $phpEx);
 		$phpbb_container->setParameter('tables.notifications', 'phpbb_notifications');
