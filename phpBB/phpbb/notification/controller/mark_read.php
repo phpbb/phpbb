@@ -17,6 +17,7 @@ use phpbb\event\dispatcher;
 use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\notification\manager;
+use phpbb\notification\type\type_interface;
 use phpbb\request\request;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -71,6 +72,8 @@ class mark_read
 	 * @return Response
 	 *
 	 * @throws http_exception
+	 *
+	 * @psalm-suppress InvalidArgument
 	 */
 	public function handle(int $id): Response
 	{
@@ -109,10 +112,11 @@ class mark_read
 		 * You can use this event to perform additional tasks or redirect user elsewhere.
 		 *
 		 * @event core.index_mark_notification_after
-		 * @var	int				mark_notification	Notification ID
+		 * @var		int				mark_notification	Notification ID
+		 * @var		type_interface	notification		Notification instance
 		 * @since 3.2.6-RC1
 		 */
-		$vars = ['mark_notification'];
+		$vars = ['mark_notification', 'notification'];
 		extract($this->dispatcher->trigger_event('core.index_mark_notification_after', compact($vars)));
 
 		if ($this->request->is_ajax())
