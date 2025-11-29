@@ -135,6 +135,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 		$phpbb_container->set('log', new \phpbb\log\dummy());
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$phpbb_container->set(

@@ -12,9 +12,6 @@
 */
 
 /**
-*/
-
-/**
 * @ignore
 */
 define('IN_PHPBB', true);
@@ -27,62 +24,6 @@ include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
-
-// Mark notifications read
-if (($mark_notification = $request->variable('mark_notification', 0)))
-{
-	if ($user->data['user_id'] == ANONYMOUS)
-	{
-		if ($request->is_ajax())
-		{
-			trigger_error('LOGIN_REQUIRED');
-		}
-		login_box('', $user->lang['LOGIN_REQUIRED']);
-	}
-
-	if (check_link_hash($request->variable('hash', ''), 'mark_notification_read'))
-	{
-		/* @var $phpbb_notifications \phpbb\notification\manager */
-		$phpbb_notifications = $phpbb_container->get('notification_manager');
-
-		$notification = $phpbb_notifications->load_notifications('notification.method.board', array(
-			'notification_id'	=> $mark_notification,
-		));
-
-		if (isset($notification['notifications'][$mark_notification]))
-		{
-			$notification = $notification['notifications'][$mark_notification];
-
-			$notification->mark_read();
-
-			/**
-			* You can use this event to perform additional tasks or redirect user elsewhere.
-			*
-			* @event core.index_mark_notification_after
-			* @var	int										mark_notification	Notification ID
-			* @var	\phpbb\notification\type\type_interface	notification		Notification instance
-			* @since 3.2.6-RC1
-			*/
-			$vars = array('mark_notification', 'notification');
-			extract($phpbb_dispatcher->trigger_event('core.index_mark_notification_after', compact($vars)));
-
-			if ($request->is_ajax())
-			{
-				$json_response = new \phpbb\json_response();
-				$json_response->send(array(
-					'success'	=> true,
-				));
-			}
-
-			if (($redirect = $request->variable('redirect', '')))
-			{
-				redirect(append_sid($phpbb_root_path . $redirect));
-			}
-
-			redirect($notification->get_redirect_url());
-		}
-	}
-}
 
 display_forums('', $config['load_moderators']);
 
