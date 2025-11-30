@@ -55,7 +55,6 @@
 		"symfony/mailer": "^7.4",
 		"symfony/mime": "^7.4",
 		"symfony/process": "^7.4",
-		"symfony/proxy-manager-bridge": "^6.4",
 		"symfony/routing": "^7.4",
 		"symfony/twig-bridge": "^7.4",
 		"symfony/yaml": "^7.4",
