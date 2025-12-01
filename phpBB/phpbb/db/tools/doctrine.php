@@ -718,8 +718,8 @@ class doctrine implements tools_interface
 		switch ($dbms_name)
 		{
 			case 'mysql':
-				$table->addOption('charset', 'utf8');
-				$table->addOption('collation', 'utf8_bin');
+				$table->addOption('charset', 'utf8mb4');
+				$table->addOption('collation', 'utf8mb4_bin');
 			break;
 		}
 	}
