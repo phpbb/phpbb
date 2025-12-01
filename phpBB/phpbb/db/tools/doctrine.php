@@ -708,7 +708,7 @@ class doctrine implements tools_interface
 		switch ($dbms_name)
 		{
 			case 'mysql':
-				$table->addOption('collate', 'utf8_bin');
+				$table->addOption('collate', 'utf8mb4_bin');
 			break;
 		}
 	}
