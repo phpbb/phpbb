@@ -15,7 +15,7 @@ namespace phpbb\db\migration\data\v400;
 
 use phpbb\db\migration\migration;
 
-class convert_to_utf8mb4 extends migration
+class convert_to_utf8mb4_2 extends migration
 {
 	public function effectively_installed()
 	{
@@ -25,7 +25,7 @@ class convert_to_utf8mb4 extends migration
 	public static function depends_on(): array
 	{
 		return [
-			'\phpbb\db\migration\data\v400\v400a1',
+			'\phpbb\db\migration\data\v400\convert_to_utf8mb4_1',
 		];
 	}
 
@@ -45,41 +45,6 @@ class convert_to_utf8mb4 extends migration
 				],
 				$this->table_prefix . 'oauth_accounts' => [
 					'provider'	=> ['VCHAR:187', ''], // Limit to 187 as primary key is composed with int unsigned (4 bytes)
-				],
-			],
-			'drop_keys' => [
-				$this->table_prefix . 'ext' => [
-					'ext_name',
-				],
-				$this->table_prefix . 'notification_types' => [
-					'type',
-				],
-				$this->table_prefix . 'search_wordlist' => [
-					'wrd_txt',
-				],
-				$this->table_prefix . 'storage' => [
-					'uidx_storage',
-				],
-				$this->table_prefix . 'styles' => [
-					'style_name',
-				],
-				$this->table_prefix . 'users' => [
-					'username_clean',
-				],
-				$this->table_prefix . 'groups' => [
-					'group_legend_name',
-				],
-				$this->table_prefix . 'login_attempts' => [
-					'att_for',
-				],
-				$this->table_prefix . 'oauth_states' => [
-					'provider',
-				],
-				$this->table_prefix . 'oauth_tokens' => [
-					'provider',
-				],
-				$this->table_prefix . 'posts' => [
-					'post_username',
 				],
 			],
 			'add_unique_index'	=> [
@@ -172,43 +137,6 @@ class convert_to_utf8mb4 extends migration
 				],
 				$this->table_prefix . 'posts' => [
 					'post_username',
-				],
-			],
-			'add_unique_index'	=> [
-				$this->table_prefix . 'ext'		=> [
-					'ext_name'	=> ['ext_name'],
-				],
-				$this->table_prefix . 'notification_types'		=> [
-					'type'	=> ['notification_type_name'],
-				],
-				$this->table_prefix . 'search_wordlist'		=> [
-					'wrd_txt'	=> ['word_text'],
-				],
-				$this->table_prefix . 'storage'		=> [
-					'uidx_storage'	=> ['file_path', 'storage'],
-				],
-				$this->table_prefix . 'styles'		=> [
-					'style_name'	=> ['style_name'],
-				],
-				$this->table_prefix . 'users'		=> [
-					'username_clean'	=> ['username_clean'],
-				],
-			],
-			'add_index'	=> [
-				$this->table_prefix . 'groups'		=> [
-					'group_legend_name'	=> ['group_legend', 'group_name'],
-				],
-				$this->table_prefix . 'login_attempts'		=> [
-					'att_for'	=> ['attempt_forwarded_for', 'attempt_time'],
-				],
-				$this->table_prefix . 'oauth_states'		=> [
-					'provider'	=> ['provider'],
-				],
-				$this->table_prefix . 'oauth_tokens'		=> [
-					'provider'	=> ['provider'],
-				],
-				$this->table_prefix . 'posts'		=> [
-					'post_username'	=> ['post_username'],
 				],
 			],
 		];
