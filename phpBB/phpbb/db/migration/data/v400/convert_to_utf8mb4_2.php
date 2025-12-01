@@ -162,8 +162,8 @@ class convert_to_utf8mb4_2 extends migration
 	{
 		foreach ($this->tables as $table_name)
 		{
-		$sql = "ALTER TABLE $table_name CONVERT TO CHARACTER SET $charset COLLATE {$charset}_bin";
-			$this->db->sql_query($sql_index_add);
+			$sql = "ALTER TABLE $table_name CONVERT TO CHARACTER SET $charset COLLATE {$charset}_bin";
+			$this->db->sql_query($sql);
 		}
 	}
 
