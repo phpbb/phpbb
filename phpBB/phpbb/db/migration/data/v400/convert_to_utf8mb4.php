@@ -217,8 +217,8 @@ class convert_to_utf8mb4 extends migration
 	public function update_data(): array
 	{
 		return [
-			['custom', [[$this, 'convert_tables_charset_collation']]],
-			['custom', [[$this, 'change_database_default_charset_collation']]],
+			['custom', [[$this, 'convert_tables_charset_collation'], ['utf8mb4']]],
+			['custom', [[$this, 'change_database_default_charset_collation'], ['utf8mb4']]],
 		];
 	}
 
@@ -232,7 +232,8 @@ class convert_to_utf8mb4 extends migration
 
 	public function convert_tables_charset_collation($charset = 'utf8mb4')
 	{
-		foreach ($this->tables as $table_name)
+		$existing_tables = array_keys($this->db_tools->sql_list_tables());
+		foreach ($existing_tables as $table_name)
 		{
 			$sql = "ALTER TABLE $table_name CONVERT TO CHARACTER SET $charset COLLATE {$charset}_bin";
 			$this->db->sql_query($sql);
