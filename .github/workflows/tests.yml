@@ -412,7 +412,7 @@ jobs:
                 ports:
                     - 1433:1433
                 options: >-
-                    --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_CI_AS\" || exit 1"
+                    --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_100_CI_AS_SC_UTF8\" || exit 1"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
