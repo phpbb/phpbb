@@ -46,6 +46,9 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var array */
+	protected $tables;
+
 	/** @var string */
 	protected $fixture;
 
@@ -117,7 +120,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 			__DIR__ . '/../../phpBB/',
 			'php',
 			'phpbb_',
-			self::get_core_tables(),
+			$this->tables ?? self::get_core_tables(),
 			$this->tools,
 			new \phpbb\db\migration\helper()
 		);
@@ -138,7 +141,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 			{
 				$this->migrator->update();
 			}
-			catch (\phpbb\db\migration\exception $e)
+			catch (\Throwable $e)
 			{
 				$this->fail('Applying migration error: ' . $e->__toString());
 			}
@@ -155,7 +158,7 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 			{
 				$this->migrator->revert($this->migration_class);
 			}
-			catch (\phpbb\db\migration\exception $e)
+			catch (\Throwable $e)
 			{
 				$this->fail('Reverting migration error: ' . $e->__toString());
 			}
