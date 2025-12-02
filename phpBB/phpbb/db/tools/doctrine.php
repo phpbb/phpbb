@@ -406,6 +406,22 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Returns index name prefixed with the table shortname (if applicable).
+	 *
+	 * @param string $index_name Index name to prefix.
+	 * @param string $table_name Table name to generate prefix from.
+	 *
+	 * @return string Index name prefixed with the table shortname (if applicable)
+	 */
+	public function generate_index_name(string $index_name, string $table_name): string
+	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+
+		return $index_name;
+	}
+
+	/**
 	 * Returns an array of the table index names and relevant data in format
 	 * [
 	 *		[$index_name] = [
@@ -889,8 +905,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = $this->generate_index_name($index_name, $table_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -948,8 +963,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = $this->generate_index_name($index_name, $table_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
