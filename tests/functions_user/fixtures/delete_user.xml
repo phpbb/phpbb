@@ -306,15 +306,18 @@
 		</row>
 	</table>
 	<table name="phpbb_sessions">
+		<column>id</column>
 		<column>session_id</column>
 		<column>session_user_id</column>
 		<column>session_page</column>
 		<row>
+			<value>1</value>
 			<value>12345678901234567890123456789012</value>
 			<value>2</value>
 			<value></value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>12345678901234567890123456789013</value>
 			<value>3</value>
 			<value></value>
