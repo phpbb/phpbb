@@ -185,11 +185,11 @@ class schema_generator
 			'drop_columns'		=> 'COLUMNS',
 			'change_columns'	=> 'COLUMNS',
 			'add_index'			=> 'KEYS',
-			'add_primary_keys'	=> null,
+			'add_primary_keys'	=> 'PRIMARY_KEY',
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
-			'drop_primary_keys'	=> null,
+			'drop_primary_keys'	=> 'PRIMARY_KEY',
 		];
 
 		$schema_changes = $migration->update_schema();
@@ -217,7 +217,7 @@ class schema_generator
 
 				case 'drop':
 					$action = function(&$value, $changes, $value_transform = null) {
-						self::unset_all($value, $changes, $value_transform);
+						self::unset_all($value, $changes);
 					};
 				break;
 
@@ -293,21 +293,13 @@ class schema_generator
 	 *
 	 * @param mixed $schema						Reference to the schema entry.
 	 * @param mixed $data						Array of values to be removed.
-	 * @param callable|null	$value_transform	Callback to transform the value being set.
 	 */
-	private static function unset_all(&$schema, $data, callable|null $value_transform = null)
+	private static function unset_all(&$schema, $data)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
-		foreach ($data as $key => $change)
+		foreach ($data as $key)
 		{
-			if (is_callable($value_transform))
-			{
-				$value_transform($schema, $key, $change);
-			}
-			else
-			{
-				unset($schema[$change]);
-			}
+			unset($schema[$key]);
 		}
 	}
 
@@ -359,13 +351,6 @@ class schema_generator
 	 */
 	private static function get_value_transform(string $change_type, string $schema_type) : Closure|null
 	{
-		if ($change_type == 'drop' && $schema_type == 'primary_keys')
-		{
-				return function(&$value, $key, $change) {
-					unset($value['PRIMARY_KEY']);
-				};
-		}
-
 		if (!in_array($change_type, ['add', 'rename']))
 		{
 			return null;
@@ -403,11 +388,6 @@ class schema_generator
 			case 'columns':
 				return function(&$value, $key, $change) {
 					self::handle_add_column($value, $key, $change);
-				};
-
-			case 'primary_keys':
-				return function(&$value, $key, $change) {
-					$value['PRIMARY_KEY'] = $change;
 				};
 		}
 
