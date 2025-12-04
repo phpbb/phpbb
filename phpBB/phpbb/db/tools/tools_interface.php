@@ -219,6 +219,7 @@ interface tools_interface
 	 */
 	public function sql_create_primary_key(string $table_name, $column);
 
+
 	/**
 	 * Drop primary key
 	 *
@@ -246,7 +247,7 @@ interface tools_interface
 	/**
 	 * Adds prefix to a string if needed
 	 *
-	 * @param string	$name		String to add the prefix to
+	 * @param string	$name		Table name with tables prefix
 	 * @param string	$prefix		Prefix to add
 	 *
 	 * @return string	Prefixed name
@@ -258,7 +259,7 @@ interface tools_interface
 	 * the first part of the string ending with underscore will be removed.
 	 *
 	 * @param string	$name		String to remove the prefix from
-	 * @param string	$prefix		Prefix to remove if any
+	 * @param string	$prefix		Prefix to remove
 	 *
 	 * @return string	Prefixless string
 	 */
@@ -272,14 +273,4 @@ interface tools_interface
 	 * @return void
 	 */
 	public function set_table_prefix(string $table_prefix): void;
-
-	/**
-	 * Adds short table name prefix to an index name if needed
-	 *
-	 * @param string	$table_name	Table name with or without tables prefix
-	 * @param string	$index_name	Index name
-	 *
-	 * @return string	Index name prefixed with the short table name
-	 */
-	public static function normalize_index_name(string $table_name, string $index_name): string;
 }
