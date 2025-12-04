@@ -40,7 +40,7 @@ class remove_jabber extends migration
 					'id' => ['ULINT', null, 'auto_increment'],
 				],
 			],
-			'add_primary_keys' => [
+			'add_primary_key' => [
 				$this->table_prefix . 'user_notifications' => ['id'],
 			],
 		];

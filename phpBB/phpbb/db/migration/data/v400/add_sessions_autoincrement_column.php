@@ -27,15 +27,15 @@ class add_sessions_autoincrement_column extends migration
 	public function update_schema(): array
 	{
 		return [
-			'drop_primary_keys' => [
-				$this->table_prefix . 'sessions' => $this->table_prefix . 'sessions',
+			'drop_primary_key' => [
+				$this->table_prefix . 'sessions',
 			],
 			'add_columns' => [
 				$this->table_prefix . 'sessions' => [
 					'id' => ['BINT', null, 'auto_increment'],
 				],
 			],
-			'add_primary_keys' => [
+			'add_primary_key' => [
 				$this->table_prefix . 'sessions' => ['id'],
 			],
 			'add_index'	=> [
@@ -49,15 +49,15 @@ class add_sessions_autoincrement_column extends migration
 	public function revert_schema(): array
 	{
 		return [
-			'drop_columns' => [
-				$this->table_prefix . 'sessions' => ['id'],
+			'drop_primary_keys' => [
+				$this->table_prefix . 'sessions',
 			],
 			'drop_keys'	=> [
 				$this->table_prefix . 'sessions' => [
 					'session_id',
 				],
 			],
-			'add_primary_keys' => [
+			'add_primary_key' => [
 				$this->table_prefix . 'sessions' => ['session_id'],
 			],
 		];
