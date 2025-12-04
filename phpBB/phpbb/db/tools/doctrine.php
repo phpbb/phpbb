@@ -61,7 +61,7 @@ class doctrine implements tools_interface
 	/**
 	 * @var string
 	 */
-	private static $table_prefix;
+	private $table_prefix;
 
 	/**
 	 * Database tools constructors.
@@ -113,10 +113,7 @@ class doctrine implements tools_interface
 	 */
 	public function set_table_prefix($table_prefix): void
 	{
-		if (!isset(self::$table_prefix))
-		{
-			self::$table_prefix = $table_prefix;
-		}
+		$this->table_prefix = $table_prefix;
 	}
 
 	/**
@@ -193,7 +190,6 @@ class doctrine implements tools_interface
 	 */
 	public function sql_index_exists(string $table_name, string $index_name): bool
 	{
-		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, true));
 	}
 
@@ -202,7 +198,6 @@ class doctrine implements tools_interface
 	 */
 	public function sql_unique_index_exists(string $table_name, string $index_name): bool
 	{
-		$index_name = self::normalize_index_name($table_name, $index_name);
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, false));
 	}
 
@@ -469,16 +464,6 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	public static function normalize_index_name(string $table_name, string $index_name): string
-	{
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, self::$table_prefix));
-		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
-		return $index_name;
-	}
-
-	/**
 	 * Returns an array of indices for either unique and primary keys, or simple indices.
 	 *
 	 * @param string $table_name    The name of the table.
@@ -625,11 +610,11 @@ class doctrine implements tools_interface
 				'use_key' => false,
 				'per_table' => true,
 			],
-			'drop_primary_keys' => [
+			'drop_primary_key' => [
 				'method' => 'schema_drop_primary_key',
 				'use_key' => false,
 			],
-			'add_primary_keys' => [
+			'add_primary_key' => [
 				'method' => 'schema_create_primary_key',
 				'use_key' => true,
 			],
@@ -705,6 +690,7 @@ class doctrine implements tools_interface
 		}
 
 		$table = $schema->createTable($table_name);
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 		$dbms_name = $this->get_dbms_name();
 
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -730,7 +716,7 @@ class doctrine implements tools_interface
 			foreach ($table_data['KEYS'] as $key_name => $key_data)
 			{
 				$columns = (is_array($key_data[1])) ? $key_data[1] : [$key_data[1]];
-				$key_name = self::normalize_index_name($table_name, $key_name);
+				$key_name = !str_starts_with($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
 
 				$options = [];
 				$this->schema_get_index_key_data($columns, $options, $table, $dbms_name);
@@ -931,7 +917,8 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$index_name = self::normalize_index_name($table_name, $index_name);
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -958,13 +945,13 @@ class doctrine implements tools_interface
 	protected function schema_rename_index(Schema $schema, string $table_name, string $index_name_old, string $index_name_new, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, self::$table_prefix));
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 
 		if (!$table->hasIndex($index_name_old))
 		{
 			$index_name_old = !str_starts_with($index_name_old, $short_table_name) ? self::add_prefix($index_name_old, $short_table_name) : self::remove_prefix($index_name_old, $short_table_name);
 		}
-		$index_name_new = self::normalize_index_name($table_name, $index_name_new);
+		$index_name_new = !str_starts_with($index_name_new, $short_table_name) ? self::add_prefix($index_name_new, $short_table_name) : $index_name_new;
 
 		if ($safe_check && !$table->hasIndex($index_name_old))
 		{
@@ -989,7 +976,8 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$index_name = self::normalize_index_name($table_name, $index_name);
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -1015,7 +1003,7 @@ class doctrine implements tools_interface
 	protected function schema_index_drop(Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, self::$table_prefix));
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 
 		if (!$table->hasIndex($index_name))
 		{

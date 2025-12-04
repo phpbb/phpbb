@@ -84,7 +84,7 @@ class get_schema_steps_test extends phpbb_test_case
 							'column2',
 						),
 					),
-					'add_primary_keys'	=> array(
+					'add_primary_key'	=> array(
 						'table1' => array('foo'),
 						'table2' => array('bar'),
 						'table3' => array('foobar'),
@@ -182,13 +182,13 @@ class get_schema_steps_test extends phpbb_test_case
 							1 => 'column2',
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('add_primary_keys'	=> array(
+					array('dbtools.perform_schema_changes', array(array('add_primary_key'	=> array(
 						'table1' => array('foo'),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('add_primary_keys'	=> array(
+					array('dbtools.perform_schema_changes', array(array('add_primary_key'	=> array(
 						'table2' => array('bar'),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('add_primary_keys'	=> array(
+					array('dbtools.perform_schema_changes', array(array('add_primary_key'	=> array(
 						'table3' => array('foobar'),
 					)))),
 				),
