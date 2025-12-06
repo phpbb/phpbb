@@ -21,6 +21,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
+	/** @var \phpbb\controller\helper|null */
+	protected $controller_helper;
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
@@ -76,6 +79,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	 * Notification Type Base Constructor
 	 *
+	 * @param \phpbb\controller\helper $controller_helper
 	 * @param \phpbb\db\driver\driver_interface $db
 	 * @param \phpbb\language\language          $language
 	 * @param \phpbb\user                       $user
@@ -84,8 +88,9 @@ abstract class base implements \phpbb\notification\type\type_interface
 	 * @param string                            $php_ext
 	 * @param string                            $user_notifications_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
+	public function __construct(\phpbb\controller\helper $controller_helper, \phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
 	{
+		$this->controller_helper = $controller_helper;
 		$this->db = $db;
 		$this->language = $language;
 		$this->user = $user;
@@ -95,6 +100,7 @@ abstract class base implements \phpbb\notification\type\type_interface
 		$this->php_ext = $php_ext;
 
 		$this->user_notifications_table = $user_notifications_table;
+
 	}
 
 	/**
@@ -131,7 +137,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		return $this->data[$name] ?? null;
 	}
-
 
 	/**
 	* Magic method to set data on this notification
@@ -286,13 +291,19 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		if ($this->get_url())
 		{
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash);
+			$query = http_build_query([
+				'hash'				=> $mark_hash,
+			]);
+			$u_mark_read = $this->controller_helper->route('phpbb_notifications_mark_read', ['id' => $this->notification_id]) . '?' . $query;
 		}
 		else
 		{
 			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
-
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash . '&amp;redirect=' . urlencode($redirect));
+			$query = http_build_query([
+				'hash'				=> $mark_hash,
+				'redirect'			=> $redirect,
+			]);
+			$u_mark_read = $this->controller_helper->route('phpbb_notifications_mark_read', ['id' => $this->notification_id]) . '?' . $query;
 		}
 
 		$avatar = $this->get_avatar();
