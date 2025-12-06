@@ -96,7 +96,7 @@ class show extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file));
+			$config = Yaml::parse(file_get_contents($config_file), Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 		}
 		catch (ParseException $e)
 		{

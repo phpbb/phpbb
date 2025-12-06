@@ -15,6 +15,7 @@ namespace phpbb\install\module\install_database\task;
 
 use phpbb\db\doctrine\connection_factory;
 use phpbb\install\exception\resource_limit_reached_exception;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Create database schema
@@ -146,7 +147,7 @@ class create_schema_file extends \phpbb\install\task_base
 			$factory = new \phpbb\db\tools\factory();
 			$db_tools = $factory->get($this->db_doctrine, true);
 			$db_tools->set_table_prefix($table_prefix);
-			$tables_data = \Symfony\Component\Yaml\Yaml::parseFile($this->phpbb_root_path . '/config/default/container/tables.yml');
+			$tables_data = Yaml::parseFile($this->phpbb_root_path . '/config/default/container/tables.yml', Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 			$tables = [];
 			foreach ($tables_data['parameters'] as $parameter => $table)
 			{
