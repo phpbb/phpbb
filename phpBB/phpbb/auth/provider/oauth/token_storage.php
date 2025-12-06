@@ -537,9 +537,9 @@ class token_storage implements TokenStorageInterface
 	 * A helper function that JSON encodes a TokenInterface's data.
 	 *
 	 * @param TokenInterface	$token
-	 * @return string					The json encoded TokenInterface's data
+	 * @return false|string		The json encoded TokenInterface's data
 	 */
-	public function json_encode_token(TokenInterface $token)
+	public function json_encode_token(TokenInterface $token): false|string
 	{
 		$members = [
 			'accessToken'	=> $token->getAccessToken(),

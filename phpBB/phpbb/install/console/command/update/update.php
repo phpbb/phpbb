@@ -95,7 +95,7 @@ class update extends \phpbb\console\command\command
 	 *
 	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$this->iohandler_factory->set_environment('cli');
 
@@ -124,7 +124,7 @@ class update extends \phpbb\console\command\command
 
 		try
 		{
-			$config = Yaml::parse(file_get_contents($config_file), true);
+			$config = Yaml::parse(file_get_contents($config_file), Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 		}
 		catch (ParseException $e)
 		{

@@ -85,7 +85,7 @@ class exception_listener_test extends phpbb_test_case
 
 		$exception_listener = new \phpbb\event\kernel_exception_subscriber($template, $lang, $user);
 
-		$event = new \Symfony\Component\HttpKernel\Event\ExceptionEvent($this->createMock('Symfony\Component\HttpKernel\HttpKernelInterface'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MASTER_REQUEST, $exception);
+		$event = new \Symfony\Component\HttpKernel\Event\ExceptionEvent($this->createMock('Symfony\Component\HttpKernel\HttpKernelInterface'), $request, \Symfony\Component\HttpKernel\HttpKernelInterface::MAIN_REQUEST, $exception);
 		$exception_listener->on_kernel_exception($event);
 
 		$response = $event->getResponse();

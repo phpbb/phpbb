@@ -13,11 +13,11 @@
 
 namespace phpbb\di;
 
-use Symfony\Bridge\ProxyManager\LazyProxy\PhpDumper\ProxyDumper;
 use Symfony\Component\Config\ConfigCache;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Dumper\PhpDumper;
+use Symfony\Component\DependencyInjection\LazyProxy\PhpDumper\LazyServiceDumper;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\EventDispatcher\DependencyInjection\RegisterListenersPass;
@@ -517,7 +517,7 @@ class container_builder
 		try
 		{
 			$dumper = new PhpDumper($this->container);
-			$proxy_dumper = new ProxyDumper();
+			$proxy_dumper = new LazyServiceDumper();
 			$dumper->setProxyDumper($proxy_dumper);
 
 			$cached_container_dump = $dumper->dump(array(
@@ -542,7 +542,6 @@ class container_builder
 	protected function create_container(array $extensions)
 	{
 		$container = new ContainerBuilder(new ParameterBag($this->get_core_parameters()));
-		$container->setProxyInstantiator(new proxy_instantiator($this->get_cache_dir()));
 
 		$extensions_alias = array();
 

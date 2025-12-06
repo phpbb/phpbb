@@ -67,7 +67,7 @@ class update extends \phpbb\console\command\command
 	* @param OutputInterface $output
 	* @return integer
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$output->getFormatter()->setStyle('warning', new OutputFormatterStyle('black', 'yellow'));
 

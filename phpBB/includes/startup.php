@@ -23,11 +23,11 @@ $level = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
 error_reporting($level);
 
 /**
-* Minimum Requirement: PHP 8.1.0
+* Minimum Requirement: PHP 8.2.0
 */
-if (version_compare(PHP_VERSION, '8.1.0', '<'))
+if (version_compare(PHP_VERSION, '8.2.0', '<'))
 {
-	die('You are running an unsupported PHP version (' . PHP_VERSION . '). Please upgrade to PHP 8.1.0 or higher before trying to install or update to phpBB 4.0');
+	die('You are running an unsupported PHP version (' . PHP_VERSION . '). Please upgrade to PHP 8.2.0 or higher before trying to install or update to phpBB 4.0');
 }
 
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems

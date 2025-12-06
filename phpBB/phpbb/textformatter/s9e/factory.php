@@ -647,7 +647,7 @@ class factory implements \phpbb\textformatter\cache_interface
 		// Return the template as-is if there's only one style or all styles share the same template
 		if (count(array_unique($style_templates)) === 1)
 		{
-			return end($style_templates);
+			return end($style_templates) ?: '';
 		}
 
 		// Group identical templates together
