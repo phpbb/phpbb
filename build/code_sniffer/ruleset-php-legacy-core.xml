@@ -8,11 +8,4 @@
  <!-- Each file MUST start with a valid header as defined by the Coding Guidelines -->
  <rule ref="./phpbb/Sniffs/Commenting/FileCommentSniff.php" />
 
- <!-- Exclude specific files that legitimately use eval() -->
- <rule ref="Squiz.PHP.Eval">
-  <exclude-pattern>*/install/convert/convertor.php</exclude-pattern>
-  <exclude-pattern>*/includes/functions_module.php</exclude-pattern>
-  <exclude-pattern>*/includes/functions_convert.php</exclude-pattern>
- </rule>
-
 </ruleset>
