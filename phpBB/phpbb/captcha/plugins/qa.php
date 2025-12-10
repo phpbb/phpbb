@@ -511,6 +511,7 @@ class qa
 		global $db, $request;
 
 		$answer = ($this->question_strict) ? $request->variable('qa_answer', '', true) : utf8_clean_string($request->variable('qa_answer', '', true));
+		$confirm_id = $request->variable('qa_confirm_id', '');
 
 		$sql = 'SELECT answer_text
 			FROM ' . $this->table_captcha_answers . '
@@ -521,7 +522,7 @@ class qa
 		{
 			$solution = ($this->question_strict) ? $row['answer_text'] : utf8_clean_string($row['answer_text']);
 
-			if ($solution === $answer)
+			if ($solution === $answer && $this->confirm_id === $confirm_id)
 			{
 				$this->solved = true;
 
