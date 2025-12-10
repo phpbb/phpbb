@@ -10,6 +10,8 @@
 	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
 	var imageTag = false;
 
+	var mention_no_match_found = '{{ lang('MENTION_NO_MATCH_FOUND')|e('js') }}';
+
 	function change_palette()
 	{
 		phpbb.toggleDisplay('colour_palette');
