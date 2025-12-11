@@ -158,6 +158,7 @@ $lang = array_merge($lang, array(
 		2	=> 'Your images may only be up to %d pixels wide.',
 	),
 
+	'MENTION_NO_MATCH_FOUND'	=> 'No match found',
 	'MESSAGE_BODY_EXPLAIN'		=> array(
 		0	=> '', // zero means no limit, so we don't view a message here.
 		1	=> 'Enter your message here, it may contain no more than <strong>%d</strong> character.',
