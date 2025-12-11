@@ -49,6 +49,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 		$this->container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
 			$this->getMockBuilder('\phpbb\avatar\helper')->disableOriginalConstructor()->getMock(),
+			$this->db,
 			$this->cache,
 			$this->config,
 			new \phpbb\language\language(
@@ -63,6 +64,7 @@ class phpbb_notification_group_request_test extends phpbb_tests_notification_bas
 				$phpbb_root_path,
 				$phpEx
 			),
+			$this->getMockBuilder('\phpbb\template\template')->disableOriginalConstructor()->getMock(),
 			$this->user
 		));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
