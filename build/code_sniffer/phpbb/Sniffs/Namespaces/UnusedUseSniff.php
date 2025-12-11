@@ -69,7 +69,7 @@ class UnusedUseSniff implements Sniff
 			$phpcsFile->addError($error, $stack_pointer, 'FullName');
 		}
 
-		/* 
+		/*
 		 * Check for possible union types (like string|MyType|null)
 		 * and question mark nullable type syntax (like ?MyType)
 		 */
@@ -125,7 +125,20 @@ class UnusedUseSniff implements Sniff
 		{
 			$alias_position = $phpcsFile->findNext(T_STRING, $aliasing_as_position, null, false, null, true);
 			$name_short = $tokens[$alias_position]['content'];
-			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
+
+			// Only recalculate name_full if it wasn't a single token (T_NAME_QUALIFIED)
+			// to avoid calculating it as 0 length string. Prevents incorrectly calculating the
+			// "full name" of the aliased class (resolving it to an empty string in some cases).
+			if (!isset($tokens[$class_name_start]) ||
+				(
+					(!defined('T_NAME_QUALIFIED') || $tokens[$class_name_start]['code'] !== T_NAME_QUALIFIED) &&
+					(!defined('T_NAME_FULLY_QUALIFIED') || $tokens[$class_name_start]['code'] !== T_NAME_FULLY_QUALIFIED) &&
+					(!defined('T_NAME_RELATIVE') || $tokens[$class_name_start]['code'] !== T_NAME_RELATIVE)
+				)
+			)
+			{
+				$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
+			}
 		}
 
 		if ($tokens[$class_name_start]['content'] === 'function'
