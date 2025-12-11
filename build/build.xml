@@ -106,13 +106,22 @@
 				--ignore=${sniffIgnoreList}
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
-		<exec command="phpBB/vendor/bin/phpcs
-				-s -p
-				--extensions=php
-				--standard=build/code_sniffer/ruleset-php-extensions.xml
-				--ignore=${project.basedir}/phpBB/ext/*/tests/*,${project.basedir}/phpBB/ext/*/vendor/*
-				phpBB/ext"
-			dir="." returnProperty="retval-php-ext" passthru="true" />
+		<exec command="find phpBB/ext -name '*.php' -type f | head -1" dir="." outputProperty="ext-php-files" />
+		<if>
+			<not><equals arg1="${ext-php-files}" arg2="" /></not>
+			<then>
+				<exec command="phpBB/vendor/bin/phpcs
+						-s -p
+						--extensions=php
+						--standard=build/code_sniffer/ruleset-php-extensions.xml
+						--ignore=${project.basedir}/phpBB/ext/*/tests/*,${project.basedir}/phpBB/ext/*/vendor/*
+						phpBB/ext"
+					dir="." returnProperty="retval-php-ext" passthru="true" />
+			</then>
+			<else>
+				<property name="retval-php-ext" value="0" />
+			</else>
+		</if>
 		<if>
 			<or>
 				<not><equals arg1="${retval-php-strict}" arg2="0" /></not>
