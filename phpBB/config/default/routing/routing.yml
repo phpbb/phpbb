@@ -37,6 +37,10 @@ phpbb_mention_controller:
     methods: [GET, POST]
     defaults: { _controller: mention.controller:handle }
 
+phpbb_notifications:
+    resource: notifications.yml
+    prefix: /notifications
+
 phpbb_report_routing:
     resource: report.yml
 

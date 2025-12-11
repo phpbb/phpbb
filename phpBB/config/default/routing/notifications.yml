@@ -1,0 +1,6 @@
+phpbb_notifications_mark_read:
+    path:             /mark-read/{id}
+    defaults:
+        _controller:  notification.controller.mark_read:handle
+    requirements:
+        id:         \d+

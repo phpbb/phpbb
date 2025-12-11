@@ -26,6 +26,7 @@ services:
     notification.type.base:
         abstract: true
         arguments:
+            - '@controller.helper'
             - '@dbal.conn'
             - '@language'
             - '@user'
@@ -248,3 +249,14 @@ services:
             - '%tables.push_subscriptions%'
         tags:
             - { name: notification.method }
+
+# ----- Notification's controllers -----
+    notification.controller.mark_read:
+        class: phpbb\notification\controller\mark_read
+        arguments:
+            - '@event_dispatcher'
+            - '@language'
+            - '@notification_manager'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'

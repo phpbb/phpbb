@@ -102,6 +102,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container->set('user', $user);
 		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('config', $this->config);
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 		$phpbb_container->set('dbal.conn', $this->db);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);
