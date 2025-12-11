@@ -268,6 +268,57 @@ foreach ($session_data_rowset as $row)
 		case 'viewtopic':
 			$forum_id = $row['session_forum_id'];
 
+			if (!$forum_id)
+			{
+				$array_match_index = 5;
+				// find the forum_id from the page URI
+				$matches = array();
+
+				$pattern = '#(viewtopic|posting)\.' . $phpEx . '((\?|&)\w+=\w+)*(\?|&)';
+				preg_match($pattern . 'f=(\d+)#', $row['session_page'], $matches);
+				if ($matches[$array_match_index])
+				{
+					$forum_id = (int) $matches[$array_match_index];
+				}
+				else
+				{
+					preg_match($pattern . 't=(\d+)#', $row['session_page'], $matches);
+					if ($matches[$array_match_index])
+					{
+						$topic_id = $matches[$array_match_index];
+
+						$sql = 'SELECT forum_id
+							FROM ' . TOPICS_TABLE . "
+							WHERE topic_id = $topic_id";
+						$result1 = $db->sql_query($sql);
+						$forum_id = (int) $db->sql_fetchfield('forum_id');
+						$db->sql_freeresult($result1);
+					}
+					else
+					{
+						preg_match($pattern . 'p=(\d+)#', $row['session_page'], $matches);
+						if ($matches[$array_match_index])
+						{
+							$post_id = $matches[$array_match_index];
+
+							$topic_forum = array();
+
+							$sql = 'SELECT t.forum_id
+								FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+								WHERE p.post_id = ' . $post_id . '
+								AND t.topic_id = p.topic_id';
+							$result1 = $db->sql_query($sql);
+							$forum_id = (int) $db->sql_fetchfield('forum_id');
+							$db->sql_freeresult($result1);
+						}
+						else
+						{
+							$forum_id = 0;
+						}
+					}
+				}
+			}
+
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
 				$location = '';
@@ -309,7 +360,7 @@ foreach ($session_data_rowset as $row)
 			}
 			else
 			{
-				$location = $user->lang['INDEX'];
+				$location = $user->lang['UNRECOGNISED_PAGE'];
 				$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
 			}
 		break;
@@ -382,16 +433,22 @@ foreach ($session_data_rowset as $row)
 		break;
 
 		default:
-			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-
 			if ($row['session_page'] === 'app.' . $phpEx . '/help/faq' ||
 				$row['session_page'] === 'app.' . $phpEx . '/help/bbcode')
 			{
 				$location = $user->lang['VIEWING_FAQ'];
 				$location_url = $controller_helper->route('phpbb_help_faq_controller');
 			}
+			else
+			{
+				$location = $user->lang['UNRECOGNISED_PAGE'];
+				$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			}
 		break;
+	}
+	if ($auth->acl_get('a_'))
+	{
+		$location .= nl2br("\n" . substr($row['session_page'], 0, 99));
 	}
 
 	/**
@@ -410,7 +467,7 @@ foreach ($session_data_rowset as $row)
 	extract($phpbb_dispatcher->trigger_event('core.viewonline_overwrite_location', compact($vars)));
 
 	$template_row = array(
-		'USERNAME' 			=> $row['username'],
+		'USERNAME'  		=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
 		'USERNAME_FULL'		=> $username_full,
 		'LASTUPDATE'		=> $user->format_date($row['session_time']),
