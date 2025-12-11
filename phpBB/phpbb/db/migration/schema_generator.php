@@ -185,7 +185,8 @@ class schema_generator
 			'drop_columns'		=> 'COLUMNS',
 			'change_columns'	=> 'COLUMNS',
 			'add_index'			=> 'KEYS',
-			'add_primary_keys'	=> 'PRIMARY_KEY',
+			'add_primary_key'	=> 'PRIMARY_KEY',
+			'drop_primary_key'	=> null,
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
@@ -350,7 +351,7 @@ class schema_generator
 	 */
 	private static function get_value_transform(string $change_type, string $schema_type) : Closure|null
 	{
-		if (!in_array($change_type, ['add', 'rename']))
+		if (!in_array($change_type, ['add', 'drop', 'rename']))
 		{
 			return null;
 		}
@@ -383,6 +384,20 @@ class schema_generator
 				return function(&$value, $key, $change) {
 					$value[$key] = ['UNIQUE', $change];
 				};
+
+			case 'primary_key':
+				if ($change_type == 'add')
+				{
+					return function(&$value, $key, $change) {
+						$value = [$change];
+					};
+				}
+				else if ($change_type == 'drop')
+				{
+					return function(&$value, $key, $change) {
+						unset($value['PRIMARY_KEY']);
+					};
+				}
 
 			case 'columns':
 				return function(&$value, $key, $change) {
