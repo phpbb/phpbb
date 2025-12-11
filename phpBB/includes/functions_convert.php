@@ -1125,7 +1125,9 @@ function restore_config($schema)
 			$var = (empty($m[2]) || empty($convert_config[$m[2]])) ? "''" : "'" . addslashes($convert_config[$m[2]]) . "'";
 			$exec = '$config_value = ' . $m[1] . '(' . $var . ');';
 			// @codingStandardsIgnoreStart
+			// phpcs:disable Squiz.PHP.Eval
 			eval($exec);
+			// phpcs:enable Squiz.PHP.Eval
 			// @codingStandardsIgnoreEnd
 		}
 		else
