@@ -72,8 +72,6 @@ class controller
 	 */
 	public function handle(string $file): Response
 	{
-		$response = new StreamedResponse();
-
 		if (!static::is_allowed($file))
 		{
 			throw new http_exception(403, 'Forbidden');
@@ -84,12 +82,35 @@ class controller
 			throw new http_exception(404, 'Not Found');
 		}
 
+		$response = new StreamedResponse();
+		$fp = $this->storage->read($file);
+		$output = fopen('php://output', 'w+b');
+
+		$response->setCallback(function () use ($fp, $output) {
+			stream_copy_to_stream($fp, $output);
+			fclose($fp);
+			fclose($output);
+			flush();
+
+			// Terminate script to avoid the execution of terminate events
+			// This avoids possible errors with db connection closed
+			exit;
+		});
+
 		static::prepare($response, $file);
 
 		if (headers_sent())
 		{
 			throw new http_exception(500, 'Headers already sent');
 		}
+
+		// Close db connection and unload cache
+		$this->cache->unload();
+		$this->db->sql_close();
+
+		$response->isNotModified($this->symfony_request);
+
+		@set_time_limit(0);
 
 		return $response;
 	}
@@ -121,13 +142,13 @@ class controller
 	/**
 	 * Prepare response
 	 *
-	 * @param StreamedResponse $response
+	 * @param Response $response
 	 * @param string $file File path
 	 *
 	 * @return void
 	 * @throws storage_exception when there is an error reading the file
 	 */
-	protected function prepare(StreamedResponse $response, string $file): void
+	protected function prepare(Response $response, string $file): void
 	{
 		// Add Content-Type header
 		if (!$response->headers->has('Content-Type'))
@@ -157,35 +178,5 @@ class controller
 			}
 		}
 
-		@set_time_limit(0);
-
-		$fp = $this->storage->read($file);
-
-		// Close db connection
-		$this->file_gc();
-
-		$output = fopen('php://output', 'w+b');
-
-		$response->setCallback(function () use ($fp, $output) {
-			stream_copy_to_stream($fp, $output);
-			fclose($fp);
-			fclose($output);
-			flush();
-
-			// Terminate script to avoid the execution of terminate events
-			// This avoids possible errors with db connection closed
-			exit;
-		});
-
-		$response->isNotModified($this->symfony_request);
-	}
-
-	/**
-	* Garbage Collection
-	*/
-	protected function file_gc(): void
-	{
-		$this->cache->unload(); // Equivalent to $this->cache->get_driver()->unload();
-		$this->db->sql_close();
 	}
 }
