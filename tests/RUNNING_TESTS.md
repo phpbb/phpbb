@@ -175,6 +175,15 @@ on which to run tests.
 
     $phpbb_functional_url = 'http://localhost/phpBB3/';
 
+If your local server uses an SSL certificate with HTTPS, you may need to specify the
+path to your security certificate for functional tests to run successfully. Set
+`$path_to_ssl_cert` to the location of your certificate file (.pem or .crt).
+If you can’t locate your certificate, or it still isn’t working, you can disable 
+SSL verification by setting this value to `false` (though this is less secure).
+Note: You must keep `$phpbb_functional_url` set to `http`, since this option bypasses https.
+
+	$path_to_ssl_cert = '/path/to/your/certificate.pem';
+
 Functional tests are automatically run, if '$phpbb_functional_url' is configured.
 If you only want the functional tests, run:
 

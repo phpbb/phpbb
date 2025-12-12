@@ -89,6 +89,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$cookieJar = new CookieJar;
 		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
 
+		// Disable SSL verification for local development with self-signed certificates
+		if (isset(self::$config['path_to_ssl_cert']))
+		{
+			$guzzle_client = new \GuzzleHttp\Client(['verify' => self::$config['path_to_ssl_cert']]);
+			self::$client->setClient($guzzle_client);
+		}
+
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
