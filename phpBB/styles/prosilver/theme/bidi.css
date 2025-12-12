@@ -395,11 +395,6 @@ li.breadcrumbs span:first-child > a {
 	border-left: none;
 }
 
-.rtl ul.topiclist dfn {
-	left: auto;
-	right: -999px;
-}
-
 .rtl ul.topiclist li.row dt a.subforum {
 	padding-right: 12px;
 	background-position: right;
@@ -1071,7 +1066,7 @@ li.breadcrumbs span:first-child > a {
 	.captcha-panel dd.captcha {
 		margin-right: 0;
 	}
-	
+
 	.rtl p.responsive-center {
 		float: none;
 		text-align: center;
