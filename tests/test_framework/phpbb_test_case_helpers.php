@@ -167,6 +167,11 @@ class phpbb_test_case_helpers
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
 
+			if (isset($path_to_ssl_cert))
+			{
+				$config['path_to_ssl_cert'] = $path_to_ssl_cert;
+			}
+
 			if (isset($phpbb_redis_host))
 			{
 				$config['redis_host'] = $phpbb_redis_host;
