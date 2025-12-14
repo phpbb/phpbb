@@ -1479,7 +1479,7 @@ while ($row = $db->sql_fetchrow($result))
 				'viewonline'	=> $row['user_allow_viewonline'],
 				'allow_pm'		=> $row['user_allow_pm'],
 
-				'avatar'		=> ($user->optionget('viewavatars')) ? $avatar_helper->get_user_avatar($row) : [],
+				'avatar'		=> ($user->optionget('viewavatars')) ? \phpbb\avatar\manager::clean_row($row, 'user') : [],
 				'age'			=> '',
 
 				'rank_title'		=> '',
@@ -2032,6 +2032,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'RANK_TITLE'		=> $user_cache[$poster_id]['rank_title'],
 		'RANK_IMG'			=> $user_cache[$poster_id]['rank_image'],
 		'RANK_IMG_SRC'		=> $user_cache[$poster_id]['rank_image_src'],
+		'POSTER_AVATAR'		=> $user_cache[$poster_id]['avatar'],
 		'POSTER_JOINED'		=> $user_cache[$poster_id]['joined'],
 		'POSTER_POSTS'		=> $user_cache[$poster_id]['posts'],
 		'POSTER_WARNINGS'	=> $auth->acl_get('m_warn') ? $user_cache[$poster_id]['warnings'] : '',
@@ -2104,11 +2105,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'S_POST_HIDDEN'		=> $row['hide_post'],
 		'S_DELETE_PERMANENT'	=> $permanent_delete_allowed,
 	);
-
-	if ($user_cache[$poster_id]['avatar'])
-	{
-		$post_row += $avatar_helper->get_template_vars($user_cache[$poster_id]['avatar'], 'POSTER_');
-	}
 
 	$user_poster_data = $user_cache[$poster_id];
 

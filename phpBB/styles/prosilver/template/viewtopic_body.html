@@ -143,8 +143,8 @@
 			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF postrow.POSTER_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
 				<div class="avatar-container">
 					<!-- EVENT viewtopic_body_avatar_before -->
-					{% if postrow.POSTER_AVATAR_HTML %}
-						{% if postrow.U_POST_AUTHOR %}<a href="{{ postrow.U_POST_AUTHOR }}" class="avatar">{{ postrow.POSTER_AVATAR_HTML|raw }}</a>{% else %}<span class="avatar">{{ postrow.POSTER_AVATAR_HTML|raw }}</span>{% endif %}
+					{% if postrow.POSTER_AVATAR %}
+						{% if postrow.U_POST_AUTHOR %}<a href="{{ postrow.U_POST_AUTHOR }}" class="avatar">{{ avatar(postrow.POSTER_AVATAR, lang('USER_AVATAR')) }}</a>{% else %}<span class="avatar">{{ avatar(postrow.POSTER_AVATAR, lang('USER_AVATAR')) }}</span>{% endif %}
 					{% else %}
 						{% set color_classes = ['avatar-color-0', 'avatar-color-1', 'avatar-color-2', 'avatar-color-3', 'avatar-color-4'] %}
 						{% set color_class = color_classes[postrow.POSTER_ID % 5] %}

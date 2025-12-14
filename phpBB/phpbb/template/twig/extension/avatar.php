@@ -63,19 +63,18 @@ class avatar extends AbstractExtension
 	 * Get avatar for placing into templates.
 	 *
 	 * How to use in a template:
-	 * - {{ avatar('mode', row, alt, ignore_config, lazy) }}
+	 * - {{ avatar(row, alt, ignore_config, lazy) }}
 	 *
 	 * The mode and row (group_row or user_row) are required.
 	 * The other fields (alt|ignore_config|lazy) are optional.
 	 *
 	 * @return string	The avatar HTML for the specified mode
 	 */
-	public function get_avatar(environment $environment, string $mode, array $row, string|null $alt, bool|null $ignore_config, bool|null $lazy): string
+	public function get_avatar(environment $environment, array $row, string|null $alt = null, bool|null $ignore_config = null, bool|null $lazy = null): string
 	{
 		$alt = $alt ?? false;
 		$ignore_config = $ignore_config ?? false;
 		$lazy = $lazy ?? false;
-		$row = manager::clean_row($row, $mode);
 		$avatar = $this->avatar_helper->get_avatar($row, $alt, $ignore_config, $lazy);
 
 		try

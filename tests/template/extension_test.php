@@ -148,10 +148,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_user.html',
 				[
 					'row' => [
-						'user_avatar' => 'great_avatar.png',
-						'user_avatar_type' => 'avatar.driver.upload',
-						'user_avatar_width' => 90,
-						'user_avatar_height' => 90,
+						'avatar' => 'great_avatar.png',
+						'avatar_type' => 'avatar.driver.upload',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo'
 				],
@@ -164,10 +164,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_user.html',
 				[
 					'row' => [
-						'user_avatar' => 'great_avatar.png',
-						'user_avatar_type' => 'avatar.driver.upload',
-						'user_avatar_width' => 90,
-						'user_avatar_height' => 90,
+						'avatar' => 'great_avatar.png',
+						'avatar_type' => 'avatar.driver.upload',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo',
 					'ignore_config' => true,
@@ -182,10 +182,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_user.html',
 				[
 					'row' => [
-						'user_avatar' => 'foo@bar.com',
-						'user_avatar_type' => 'avatar.driver.gravatar',
-						'user_avatar_width' => 90,
-						'user_avatar_height' => 90,
+						'avatar' => 'foo@bar.com',
+						'avatar_type' => 'avatar.driver.gravatar',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo'
 				],
@@ -198,10 +198,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_group.html',
 				[
 					'row' => [
-						'group_avatar' => 'great_avatar.png',
-						'group_avatar_type' => 'avatar.driver.upload',
-						'group_avatar_width' => 90,
-						'group_avatar_height' => 90,
+						'avatar' => 'great_avatar.png',
+						'avatar_type' => 'avatar.driver.upload',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo'
 				],
@@ -214,10 +214,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_group.html',
 				[
 					'row' => [
-						'group_avatar' => 'great_avatar.png',
-						'group_avatar_type' => 'avatar.driver.upload',
-						'group_avatar_width' => 90,
-						'group_avatar_height' => 90,
+						'avatar' => 'great_avatar.png',
+						'avatar_type' => 'avatar.driver.upload',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo',
 					'ignore_config' => true,
@@ -232,10 +232,10 @@ class phpbb_template_extension_test extends phpbb_template_template_test_case
 				'avatar_group.html',
 				[
 					'row' => [
-						'group_avatar' => 'foo@bar.com',
-						'group_avatar_type' => 'avatar.driver.gravatar',
-						'group_avatar_width' => 90,
-						'group_avatar_height' => 90,
+						'avatar' => 'foo@bar.com',
+						'avatar_type' => 'avatar.driver.gravatar',
+						'avatar_width' => 90,
+						'avatar_height' => 90,
 					],
 					'alt' => 'foo'
 				],
