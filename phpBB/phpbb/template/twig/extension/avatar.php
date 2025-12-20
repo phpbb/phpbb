@@ -14,7 +14,6 @@
 namespace phpbb\template\twig\extension;
 
 use phpbb\avatar\helper;
-use phpbb\avatar\manager;
 use phpbb\template\twig\environment;
 use Twig\Error\Error;
 use Twig\Extension\AbstractExtension;
