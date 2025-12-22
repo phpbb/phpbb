@@ -165,7 +165,7 @@ function PhpbbWebpush() {
 	async function subscribeButtonHandler(event) {
 		event.preventDefault();
 
-		subscribeButton.addEventListener('click', subscribeButtonHandler);
+		subscribeButton.removeEventListener('click', subscribeButtonHandler);
 
 		try {
 			// Prevent the user from clicking the subscribe button multiple times.
@@ -210,6 +210,8 @@ function PhpbbWebpush() {
 				});
 		} catch (error) {
 			phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-disabled-msg'));
+		} finally {
+			subscribeButton.addEventListener('click', subscribeButtonHandler);
 		}
 	}
 
