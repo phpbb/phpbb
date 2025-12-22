@@ -154,7 +154,7 @@ class helper
 		}
 
 		$data = [
-			'id'		=> $row['id'],
+			'id'		=> $row['id'] ?? 0,
 			'src'		=> $row['avatar'],
 			'width'		=> $row['avatar_width'],
 			'height'	=> $row['avatar_height'],
