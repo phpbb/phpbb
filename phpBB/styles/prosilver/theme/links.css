@@ -140,6 +140,10 @@ a.lastsubject:hover {
 	text-decoration: underline;
 }
 
+.postprofile a.avatar:hover {
+	text-decoration: none;
+}
+
 /* Profile searchresults */
 .search .postprofile a {
 	font-weight: normal;
