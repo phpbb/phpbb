@@ -26,6 +26,7 @@
 		{% EVENT memberlist_body_group_desc_after %}
 
 		<p>
+			{% include 'avatar.html' with {'avatar_data': AVATAR} only %}
 			<!-- IF AVATAR_HTML -->{AVATAR_HTML}<!-- ENDIF -->
 			{% EVENT memberlist_body_group_rank_before %}
 			{% if RANK_IMG %}<span class="rank-img">{{ RANK_IMG }}</span>{% endif %}

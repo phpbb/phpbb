@@ -143,7 +143,7 @@
 			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF postrow.POSTER_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
 				<div class="avatar-container">
 					<!-- EVENT viewtopic_body_avatar_before -->
-					{% include 'user_avatar.html' with {
+					{% include 'avatar.html' with {
 						'avatar_data': postrow.POSTER_AVATAR,
 						'username': postrow.POST_AUTHOR,
 						'avatar_link': postrow.U_POST_AUTHOR
