@@ -69,22 +69,17 @@ class avatar extends AbstractExtension
 	 *
 	 * @return string	The avatar HTML for the specified mode
 	 */
-	public function get_avatar(environment $environment, array $row, string|null $alt = null, bool|null $ignore_config = null, bool|null $lazy = null): string
+	public function get_avatar(environment $environment, array $row): string
 	{
-		$alt = $alt ?? false;
-		$ignore_config = $ignore_config ?? false;
-		$lazy = $lazy ?? false;
-		$avatar = $this->avatar_helper->get_avatar($row, $alt, $ignore_config, $lazy);
-
 		try
 		{
 			return $environment->render('macros/avatar.twig', [
-				'SRC'		=> $avatar['lazy'] ? $this->avatar_helper->get_no_avatar_source() : $avatar['src'],
-				'DATA_SRC'	=> $avatar['lazy'] ? $avatar['src'] : '',
-				'WIDTH'		=> $avatar['width'],
-				'HEIGHT'	=> $avatar['height'],
-				'TITLE'		=> $avatar['title'],
-				'LAZY'		=> $avatar['lazy'],
+				'SRC'		=> $row['lazy'] ? $this->avatar_helper->get_no_avatar_source() : $row['src'],
+				'DATA_SRC'	=> $row['lazy'] ? $row['src'] : '',
+				'WIDTH'		=> $row['width'],
+				'HEIGHT'	=> $row['height'],
+				'TITLE'		=> $row['title'],
+				'LAZY'		=> $row['lazy'],
 			]);
 		}
 		catch (Error $e)

@@ -81,7 +81,7 @@ class helper
 	 */
 	public function get_template_vars(array $avatar, string $prefix = ''): array
 	{
-		$prefix = $prefix && substr($prefix, -1) !== '_' ? "{$prefix}_" : $prefix;
+		$prefix = $prefix && !str_ends_with($prefix, '_') ? "{$prefix}_" : $prefix;
 
 		return [
 			"{$prefix}AVATAR"			=> $avatar,
@@ -94,7 +94,6 @@ class helper
 			"{$prefix}AVATAR_HEIGHT"	=> $avatar['height'],
 
 			"{$prefix}AVATAR_LAZY"		=> $avatar['lazy'],
-			"{$prefix}AVATAR_HTML"		=> $avatar['html'],
 		];
 	}
 
