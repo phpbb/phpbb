@@ -145,9 +145,8 @@
 					<!-- EVENT viewtopic_body_avatar_before -->
 					{% include 'user_avatar.html' with {
 						'avatar_data': postrow.POSTER_AVATAR,
-						'user_id': postrow.POSTER_ID,
 						'username': postrow.POST_AUTHOR,
-						'user_link': postrow.U_POST_AUTHOR
+						'avatar_link': postrow.U_POST_AUTHOR
 					} only %}
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>

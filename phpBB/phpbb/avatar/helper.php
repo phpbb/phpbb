@@ -143,7 +143,7 @@ class helper
 		if (!$this->config['allow_avatar'] && !$ignore_config)
 		{
 			return [
-				'html'		=> '',
+				'id'		=> 0,
 				'lazy'		=> false,
 				'src'		=> '',
 				'title'		=> '',
@@ -154,6 +154,7 @@ class helper
 		}
 
 		$data = [
+			'id'		=> $row['id'],
 			'src'		=> $row['avatar'],
 			'width'		=> $row['avatar_width'],
 			'height'	=> $row['avatar_height'],

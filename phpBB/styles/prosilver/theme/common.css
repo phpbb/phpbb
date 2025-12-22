@@ -395,7 +395,7 @@ a.header-avatar .avatar-placeholder {
 }
 
 a.header-avatar .avatar-placeholder {
-	font-size: var(--ps-font-small);
+	font-size: var(--ps-font-tiny);
 	display: inline-flex;
 	width: 20px;
 }

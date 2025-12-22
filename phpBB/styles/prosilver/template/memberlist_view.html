@@ -7,26 +7,12 @@
 <form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
 <div class="panel bg1">
 	<div class="inner">
-
-	{% if AVATAR_HTML %}
 		<dl class="left-box avatar-rank-container">
-			<dt class="profile-avatar">{{ AVATAR_HTML }}</dt>
+			<dt class="profile-avatar">{% include 'user_avatar.html' with {'avatar_data': AVATAR, 'username': USERNAME} only %}</dt>
 			{% EVENT memberlist_view_rank_avatar_before %}
 			{% if RANK_TITLE %}<dd class="profile-avatar">{{ RANK_TITLE }}</dd>{% endif %}
 			{% EVENT memberlist_view_rank_avatar_after %}
 		</dl>
-	{% else %}
-		{% set color_classes = ['avatar-color-0', 'avatar-color-1', 'avatar-color-2', 'avatar-color-3', 'avatar-color-4'] %}
-		{% set color_class = color_classes[USER_ID % 5] %}
-		<dl class="left-box avatar-rank-container">
-			<div class="avatar-placeholder {{ color_class }}">
-				<div class="avatar-initials">{{ USERNAME|striptags|slice(0, 1)|upper }}</div>
-			</div>
-			{% EVENT memberlist_view_rank_avatar_before %}
-			{% if RANK_TITLE %}<dd class="profile-avatar">{{ RANK_TITLE }}</dd>{% endif %}
-			{% EVENT memberlist_view_rank_avatar_after %}
-		</dl>
-	{% endif %}
 
 	<dl class="left-box details profile-details">
 		<dt>

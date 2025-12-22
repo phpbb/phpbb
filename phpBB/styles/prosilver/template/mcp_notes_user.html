@@ -13,10 +13,8 @@
 		<div class="column1">
 			{% include 'user_avatar.html' with {
 				'avatar_data': USER_AVATAR,
-				'user_id': USER_ID,
 				'username': USERNAME
 			} only %}
-			<!-- IF AVATAR_HTML --><div>{AVATAR_HTML}</div><!-- ENDIF -->
 		</div>
 
 		<div class="column2">
