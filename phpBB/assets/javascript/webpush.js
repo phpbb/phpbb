@@ -209,7 +209,8 @@ function PhpbbWebpush() {
 					phpbb.alert(ajaxErrorTitle, error);
 				});
 		} catch (error) {
-			phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-disabled-msg'));
+			console.info(error);
+			phpbb.alert(subscribeButton.getAttribute('data-l-err'), error.message || subscribeButton.getAttribute('data-disabled-msg'));
 		} finally {
 			subscribeButton.addEventListener('click', subscribeButtonHandler);
 		}
