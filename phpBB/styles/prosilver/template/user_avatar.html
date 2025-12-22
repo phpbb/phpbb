@@ -1,0 +1,15 @@
+{% if avatar_data.src %}
+	{% if user_link %}
+		<a href="{{ user_link }}" class="avatar">{{ avatar(avatar_data, lang('USER_AVATAR')) }}</a>
+	{% else %}
+		<span class="avatar">{{ avatar(avatar_data, lang('USER_AVATAR')) }}</span>
+	{% endif %}
+{% else %}
+	{% set color_classes = ['avatar-color-0', 'avatar-color-1', 'avatar-color-2', 'avatar-color-3', 'avatar-color-4'] %}
+	{% set color_class = color_classes[user_id % 5] %}
+	{% if user_link %}<a href="{{ user_link }}" class="avatar">{% endif %}
+	<div class="avatar-placeholder {{ color_class }}">
+		<div class="avatar-initials">{{ username|striptags|slice(0, 1)|upper }}</div>
+	</div>
+	{% if user_link %}</a>{% endif %}
+{% endif %}
