@@ -24,7 +24,7 @@ class extensions_composer_4 extends migration
 
 	public function update_data()
 	{
-		$repositories = json_decode($this->config['exts_composer_repositories'], true);
+		$repositories = json_decode($this->config['exts_composer_repositories'], true) ?: [];
 		$repositories = array_map(function($repo) {
 			return $repo === 'https://www.phpbb.com/customise/db/composer/'
 				? 'https://www.phpbb.com/customise/db/composer/40/'
