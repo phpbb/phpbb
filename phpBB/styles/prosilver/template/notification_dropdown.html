@@ -47,7 +47,7 @@
 		{% if NOTIFICATIONS_WEBPUSH_ENABLE and notification_types is not defined %}
 			<div class="footer webpush-subscribe">
 				<span class="ellipsis-text">{{ lang('NOTIFY_WEB_PUSH_ENABLE') ~ lang('COLON') }}</span>
-				<button id="subscribe_webpush" name="subscribe_webpush" class="notification-subscribe-toggle" data-l-err="{{ lang('INFORMATION') }}" data-l-msg="{{ lang('NOTIFY_WEB_PUSH_DENIED') }}">{{ Icon('svg', 'toggle-off', lang('NOTIFY_WEB_PUSH_SUBSCRIBE'), true, 'push-subscribe-toggle-icon toggle-off') }}</button>
+				<button id="subscribe_webpush" name="subscribe_webpush" class="notification-subscribe-toggle" data-l-err="{{ lang('INFORMATION'))|e('html_attr') }}" data-l-msg="{{ lang('NOTIFY_WEB_PUSH_DENIED'))|e('html_attr') }}" data-disabled-msg="{{ lang('NOTIFY_WEB_PUSH_DISABLED'))|e('html_attr') }}">{{ Icon('svg', 'toggle-off', lang('NOTIFY_WEB_PUSH_SUBSCRIBE'), true, 'push-subscribe-toggle-icon toggle-off') }}</button>
 				<button id="unsubscribe_webpush" name="unsubscribe_webpush" class="notification-subscribe-toggle hidden">{{ Icon('svg', 'toggle-on', lang('NOTIFY_WEB_PUSH_SUBSCRIBED'), true, 'push-subscribe-toggle-icon toggle-on') }}</button>
 			</div>
 		{% endif %}
