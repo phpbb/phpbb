@@ -4,12 +4,12 @@
 	{% else %}
 		<span class="avatar">{{ avatar(avatar_data, lang('USER_AVATAR')) }}</span>
 	{% endif %}
-{% elseif avatar_data.id and not avatar_data.id starts with 'g' %}
+{% elseif avatar_data.id and not(avatar_data.id starts with 'g') %}
 	{% set color_classes = ['avatar-color-0', 'avatar-color-1', 'avatar-color-2', 'avatar-color-3', 'avatar-color-4'] %}
 	{% set color_class = color_classes[avatar_data.id % 5] %}
 	{% if avatar_link %}<a href="{{ avatar_link }}" class="avatar">{% endif %}
 	<div class="avatar-placeholder {{ color_class }}">
-		<div class="avatar-initials">{{ username|striptags|slice(0, 1)|upper }}</div>
+		<div class="avatar-initials">{{ username|striptags|trim(' -+_[]', 'left')|slice(0, 1)|upper }}</div>
 	</div>
 	{% if avatar_link %}</a>{% endif %}
 {% endif %}
