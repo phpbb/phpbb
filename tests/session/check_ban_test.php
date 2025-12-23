@@ -26,14 +26,22 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/sessions_banlist.xml');
 	}
 
-	static function check_banned_data()
+	static function check_banned_data(): array
 	{
-		return array(
-		    array('All false values, should not be banned',
-				 false, false, false, false, /* should be banned? -> */ false),
-			array('Matching values in the database, should be banned',
-				 4, '127.0.0.1', 'bar@example.org', true, /* should be banned? -> */ true),
-		);
+		return [
+			'not_banned' => [
+				'All false values, should not be banned',
+				false, false, false, false, /* should be banned? -> */ false
+			],
+			'banned' => [
+				'Matching values in the database, should be banned',
+				4, '127.0.0.1', 'bar@example.org', true, /* should be banned? -> */ true
+			],
+			'banned_with_trigger_error' => [
+				'Matching values in the database, should be banned',
+				4, '127.0.0.1', 'bar@example.org', false, /* should be banned? -> */ true
+			],
+		];
 	}
 
 	protected function setUp(): void
@@ -90,6 +98,17 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 
 		$ban_manager = new \phpbb\ban\manager($collection, $cache->get_driver(), $this->db, $language, $phpbb_log, $user, 'phpbb_bans', 'phpbb_users');
 		$phpbb_container->set('ban.manager', $ban_manager);
+
+		$phpbb_container->set(
+			'auth.provider.db',
+			new phpbb_mock_auth_provider()
+		);
+		$provider_collection = new \phpbb\auth\provider_collection($phpbb_container, $config);
+		$provider_collection->add('auth.provider.db');
+		$phpbb_container->set(
+			'auth.provider_collection',
+			$provider_collection
+		);
 	}
 
 	protected function tearDown(): void
@@ -103,16 +122,20 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 	/** @dataProvider check_banned_data */
 	public function test_check_is_banned($test_msg, $user_id, $user_ips, $user_email, $return, $should_be_banned)
 	{
-		try
-		{
-			$ban = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
-			$is_banned = !empty($ban);
-		}
-		catch (PHPUnit\Framework\Error\Notice $e)
-		{
-			// User error was triggered, user must have been banned
+		$is_banned = false;
+
+		// Set a custom handler to "catch" the notice
+		set_error_handler(function ($errno, $errstr) use (&$is_banned) {
 			$is_banned = true;
-		}
+			return true; // Stop PHP from handling the error further
+		}, E_USER_NOTICE);
+
+		$ban = $this->session->check_ban($user_id, $user_ips, $user_email, $return);
+
+		// Restore the default handler immediately after the call
+		restore_error_handler();
+
+		$is_banned = !empty($ban) || $is_banned;
 
 		$this->assertEquals($should_be_banned, $is_banned, $test_msg);
 	}

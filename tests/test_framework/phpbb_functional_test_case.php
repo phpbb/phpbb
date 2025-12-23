@@ -1688,7 +1688,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$is_logged_in = strpos($crawler->filter('div[class="navbar"]')->text(), 'Login') === false;
 		if ($is_logged_in)
 		{
-			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span')->text();
+			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span:not(.avatar)')->text();
 		}
 		return $username_logged_in;
 	}

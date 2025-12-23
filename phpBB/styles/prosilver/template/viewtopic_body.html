@@ -143,9 +143,11 @@
 			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF postrow.POSTER_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
 				<div class="avatar-container">
 					<!-- EVENT viewtopic_body_avatar_before -->
-					<!-- IF postrow.POSTER_AVATAR_HTML -->
-						<!-- IF postrow.U_POST_AUTHOR --><a href="{postrow.U_POST_AUTHOR}" class="avatar">{postrow.POSTER_AVATAR_HTML}</a><!-- ELSE --><span class="avatar">{postrow.POSTER_AVATAR_HTML}</span><!-- ENDIF -->
-					<!-- ENDIF -->
+					{% include 'avatar.html' with {
+						'avatar_data': postrow.POSTER_AVATAR,
+						'username': postrow.POST_AUTHOR,
+						'avatar_link': postrow.U_POST_AUTHOR
+					} only %}
 					<!-- EVENT viewtopic_body_avatar_after -->
 				</div>
 				<!-- EVENT viewtopic_body_post_author_before -->

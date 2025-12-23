@@ -75,7 +75,7 @@ do
 	if [ $? -ne 0 ]
 	then
 		# Swap back in correct filenames
-		errors=$(echo "$errors"; echo "$result" | grep ':' | sed -e "s@in - on@in $filename on@g")
+		errors=$(echo "$errors"; echo "$result" | grep ':' | sed -E "s@in (.+) on line@in $filename on@g")
 	fi
 done
 unset IFS

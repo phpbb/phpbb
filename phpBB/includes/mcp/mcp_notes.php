@@ -234,7 +234,7 @@ class mcp_notes
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($userrow);
-		$template->assign_vars($avatar_helper->get_template_vars($avatar));
+		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -255,6 +255,7 @@ class mcp_notes
 			'USERNAME_FULL'		=> get_username_string('full', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 			'USERNAME_COLOUR'	=> get_username_string('colour', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 			'USERNAME'			=> get_username_string('username', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
+			'USER_ID'			=> $userrow['user_id'],
 			'U_PROFILE'			=> get_username_string('profile', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 
 			'RANK_IMG'			=> $rank_data['img'],

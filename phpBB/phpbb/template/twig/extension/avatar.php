@@ -14,7 +14,6 @@
 namespace phpbb\template\twig\extension;
 
 use phpbb\avatar\helper;
-use phpbb\avatar\manager;
 use phpbb\template\twig\environment;
 use Twig\Error\Error;
 use Twig\Extension\AbstractExtension;
@@ -63,30 +62,24 @@ class avatar extends AbstractExtension
 	 * Get avatar for placing into templates.
 	 *
 	 * How to use in a template:
-	 * - {{ avatar('mode', row, alt, ignore_config, lazy) }}
+	 * - {{ avatar(row, alt, ignore_config, lazy) }}
 	 *
 	 * The mode and row (group_row or user_row) are required.
 	 * The other fields (alt|ignore_config|lazy) are optional.
 	 *
 	 * @return string	The avatar HTML for the specified mode
 	 */
-	public function get_avatar(environment $environment, string $mode, array $row, string|null $alt, bool|null $ignore_config, bool|null $lazy): string
+	public function get_avatar(environment $environment, array $row): string
 	{
-		$alt = $alt ?? false;
-		$ignore_config = $ignore_config ?? false;
-		$lazy = $lazy ?? false;
-		$row = manager::clean_row($row, $mode);
-		$avatar = $this->avatar_helper->get_avatar($row, $alt, $ignore_config, $lazy);
-
 		try
 		{
 			return $environment->render('macros/avatar.twig', [
-				'SRC'		=> $avatar['lazy'] ? $this->avatar_helper->get_no_avatar_source() : $avatar['src'],
-				'DATA_SRC'	=> $avatar['lazy'] ? $avatar['src'] : '',
-				'WIDTH'		=> $avatar['width'],
-				'HEIGHT'	=> $avatar['height'],
-				'TITLE'		=> $avatar['title'],
-				'LAZY'		=> $avatar['lazy'],
+				'SRC'		=> $row['lazy'] ? $this->avatar_helper->get_no_avatar_source() : $row['src'],
+				'DATA_SRC'	=> $row['lazy'] ? $row['src'] : '',
+				'WIDTH'		=> $row['width'],
+				'HEIGHT'	=> $row['height'],
+				'TITLE'		=> $row['title'],
+				'LAZY'		=> $row['lazy'],
 			]);
 		}
 		catch (Error $e)

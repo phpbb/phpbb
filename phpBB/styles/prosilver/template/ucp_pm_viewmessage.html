@@ -29,7 +29,7 @@
 			<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF AUTHOR_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
 				<div class="avatar-container">
 					<!-- EVENT ucp_pm_viewmessage_avatar_before -->
-					<!-- IF AUTHOR_AVATAR_HTML --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR_HTML}</a><!-- ENDIF -->
+					{% include 'avatar.html' with {'avatar_data': AUTHOR_AVATAR, 'username': MESSAGE_AUTHOR, 'avatar_link': U_MESSAGE_AUTHOR} only %}
 					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
 				</div>
 				{% apply spaceless %}

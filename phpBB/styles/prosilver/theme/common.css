@@ -386,11 +386,18 @@ a.header-avatar:hover {
 	text-decoration: none;
 }
 
-a.header-avatar img {
+a.header-avatar img,
+a.header-avatar .avatar-placeholder {
 	vertical-align: middle;
 	width: auto;
 	max-height: 20px;
 	margin-bottom: 2px;
+}
+
+a.header-avatar .avatar-placeholder {
+	font-size: var(--ps-font-tiny);
+	display: inline-flex;
+	width: 20px;
 }
 
 /* Dropdown menu

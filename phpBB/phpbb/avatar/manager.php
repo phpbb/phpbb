@@ -205,6 +205,11 @@ class manager
 		$output = [];
 		foreach ($row as $key => $value)
 		{
+			if (!str_starts_with($key, $prefix ? "{$prefix}_avatar": 'avatar') && $key !== 'user_id' && $key !== 'group_id')
+			{
+				continue;
+			}
+
 			$key = preg_replace("#^(?:{$prefix}_)#", '', (string) $key);
 			$output[$key] = $value;
 		}
