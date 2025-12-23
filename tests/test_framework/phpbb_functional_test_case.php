@@ -864,7 +864,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie);
+		foreach ($cookies as $cookie)
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
@@ -913,7 +913,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$cookies = self::$cookieJar->all();
 
 				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-				foreach ($cookies as $cookie);
+				foreach ($cookies as $cookie)
 				{
 					if (substr($cookie->getName(), -4) == '_sid')
 					{
