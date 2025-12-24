@@ -86,19 +86,12 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->bootstrap();
 
-		$db = $this->get_db();
-
 		self::$cookieJar = new CookieJar;
 		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
 
 		// Disable SSL verification for local development with self-signed certificates
 		if (isset(self::$config['path_to_ssl_cert']))
 		{
-			// Synchronize cookie secure flag with the server protocol
-			$cookie_secure = (strpos(self::$root_url, 'https://') === 0) ? '1' : '0';
-			$sql = 'UPDATE ' . CONFIG_TABLE . " SET config_value = '$cookie_secure' WHERE config_name = 'cookie_secure'";
-			$db->sql_query($sql);
-
 			$guzzle_client = new \GuzzleHttp\Client(['verify' => self::$config['path_to_ssl_cert']]);
 			self::$client->setClient($guzzle_client);
 		}
@@ -107,6 +100,8 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// that were added in other tests are gone
 		$this->lang = array();
 		$this->add_lang('common');
+
+		$db = $this->get_db();
 
 		// Special flag for testing without possibility to run into lock scenario.
 		// Unset entry and add it back if lock behavior for posting should be tested.
@@ -405,7 +400,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('smtp_pass', 'nxpass');
 		$iohandler->set_input('submit_email', 'submit');
 
-		$iohandler->set_input('cookie_secure', '0');
+		$iohandler->set_input('cookie_secure', (strpos(self::$root_url, 'https://') === 0) ? '1' : '0');
 		$iohandler->set_input('server_protocol', '0');
 		$iohandler->set_input('force_server_vars', $parseURL['scheme'] . '://');
 		$iohandler->set_input('server_name', $parseURL['host']);
