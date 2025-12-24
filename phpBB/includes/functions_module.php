@@ -468,11 +468,9 @@ class p_master
 		);
 
 		$is_auth = false;
-		// @codingStandardsIgnoreStart
 		// phpcs:disable Squiz.PHP.Eval
 		eval('$is_auth = (int) (' .	$module_auth . ');');
 		// phpcs:enable Squiz.PHP.Eval
-		// @codingStandardsIgnoreEnd
 
 		return $is_auth;
 	}
