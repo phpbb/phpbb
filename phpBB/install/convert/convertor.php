@@ -453,9 +453,9 @@ class convertor
 			// Now process queries and execute functions that have to be executed prior to the conversion
 			if (!empty($convert->convertor['execute_first']))
 			{
-				// @codingStandardsIgnoreStart
+				// phpcs:disable Squiz.PHP.Eval
 				eval($convert->convertor['execute_first']);
-				// @codingStandardsIgnoreEnd
+				// phpcs:enable Squiz.PHP.Eval
 			}
 
 			if (!empty($convert->convertor['query_first']))
@@ -525,9 +525,9 @@ class convertor
 				// process execute_first and query_first for this table...
 				if (!empty($schema['execute_first']))
 				{
-					// @codingStandardsIgnoreStart
+					// phpcs:disable Squiz.PHP.Eval
 					eval($schema['execute_first']);
-					// @codingStandardsIgnoreEnd
+					// phpcs:enable Squiz.PHP.Eval
 				}
 
 				if (!empty($schema['query_first']))
@@ -592,9 +592,9 @@ class convertor
 			// it gets split because of time restrictions
 			if (!empty($schema['execute_always']))
 			{
-				// @codingStandardsIgnoreStart
+				// phpcs:disable Squiz.PHP.Eval
 				eval($schema['execute_always']);
-				// @codingStandardsIgnoreEnd
+				// phpcs:enable Squiz.PHP.Eval
 			}
 
 			//
@@ -1109,17 +1109,17 @@ class convertor
 			{
 				if (!is_array($convert->convertor['execute_last']))
 				{
-					// @codingStandardsIgnoreStart
+					// phpcs:disable Squiz.PHP.Eval
 					eval($convert->convertor['execute_last']);
-					// @codingStandardsIgnoreEnd
+					// phpcs:enable Squiz.PHP.Eval
 				}
 				else
 				{
 					while ($last_statement < count($convert->convertor['execute_last']))
 					{
-						// @codingStandardsIgnoreStart
+						// phpcs:disable Squiz.PHP.Eval
 						eval($convert->convertor['execute_last'][$last_statement]);
-						// @codingStandardsIgnoreEnd
+						// phpcs:enable Squiz.PHP.Eval
 
 						$this->template->assign_block_vars('checks', array(
 							'TITLE'		=> $convert->convertor['execute_last'][$last_statement],
@@ -1485,9 +1485,9 @@ class convertor
 
 								$execution = str_replace('{RESULT}', '$value', $execution);
 								$execution = str_replace('{VALUE}', '$value', $execution);
-								// @codingStandardsIgnoreStart
+								// phpcs:disable Squiz.PHP.Eval
 								eval($execution);
-								// @codingStandardsIgnoreEnd
+								// phpcs:enable Squiz.PHP.Eval
 							}
 						}
 					}
@@ -1540,9 +1540,9 @@ class convertor
 
 								$execution = str_replace('{RESULT}', '$value', $execution);
 								$execution = str_replace('{VALUE}', '$value', $execution);
-								// @codingStandardsIgnoreStart
+								// phpcs:disable Squiz.PHP.Eval
 								eval($execution);
-								// @codingStandardsIgnoreEnd
+								// phpcs:enable Squiz.PHP.Eval
 							}
 						}
 					}
