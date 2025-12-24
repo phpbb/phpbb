@@ -219,6 +219,16 @@ interface tools_interface
 	 */
 	public function sql_create_primary_key(string $table_name, $column);
 
+
+	/**
+	 * Drop primary key
+	 *
+	 * @param string       $table_name Table to modify
+	 *
+	 * @return bool|string[]    True if the statements have been executed
+	 */
+	public function sql_drop_primary_key(string $table_name);
+
 	/**
 	 * Truncate the table
 	 *
