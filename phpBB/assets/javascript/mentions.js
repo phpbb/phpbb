@@ -290,6 +290,9 @@
 				selectClass: 'is-active',
 				itemClass: 'mention-item',
 				menuItemTemplate,
+				noMatchTemplate() {
+					return (typeof mention_no_match_found === 'undefined') ? 'No match found' : mention_no_match_found;
+				},
 				selectTemplate(item) {
 					return '[mention ' + (item.type === 'g' ? 'group_id=' : 'user_id=') + item.id + ']' + item.name + '[/mention]';
 				},
