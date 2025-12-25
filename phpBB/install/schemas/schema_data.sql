@@ -302,7 +302,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '4.0.0-a2-dev');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '["https://satis.phpbb.com/","https://www.phpbb.com/customise/db/composer/"]');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '["https://satis.phpbb.com/","https://www.phpbb.com/customise/db/composer/40/"]');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_packagist', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_json_file', 'composer-ext.json');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_vendor_dir', 'vendor-ext/');
