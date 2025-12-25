@@ -175,6 +175,17 @@ on which to run tests.
 
     $phpbb_functional_url = 'http://localhost/phpBB3/';
 
+Functional tests are automatically run, if '$phpbb_functional_url' is configured.
+If you only want the functional tests, run:
+
+    $ phpBB/vendor/bin/phpunit --group functional
+
+This will change your board's config.php file, but it makes a backup at
+config_dev.php, so you can restore it after the test run is complete.
+
+Running on SSL
+--------------
+
 If your local server uses an SSL certificate with HTTPS, you may need to specify the
 path to your security certificate for functional tests to run successfully. Set
 `$path_to_ssl_cert` to the location of your certificate file (.pem or .crt).
@@ -184,13 +195,9 @@ Note: You must ensure `$phpbb_functional_url` is using `https://`.
 
 	$path_to_ssl_cert = '/path/to/your/certificate.pem';
 
-Functional tests are automatically run, if '$phpbb_functional_url' is configured.
-If you only want the functional tests, run:
+Or via environment variables as follows:
 
-    $ phpBB/vendor/bin/phpunit --group functional
-
-This will change your board's config.php file, but it makes a backup at
-config_dev.php, so you can restore it after the test run is complete.
+    $ PHPBB_TEST_SSL_CERT_PATH=/path/to/your/certificate.pem phpunit
 
 UI tests
 ========

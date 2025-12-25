@@ -237,6 +237,11 @@ class phpbb_test_case_helpers
 			$config['memcached_port'] = $_SERVER['PHPBB_TEST_MEMCACHED_PORT'];
 		}
 
+		if (isset($_SERVER['PHPBB_TEST_SSL_CERT_PATH']))
+		{
+			$config['path_to_ssl_cert'] = $_SERVER['PHPBB_TEST_SSL_CERT_PATH'];
+		}
+
 		return $config;
 	}
 
