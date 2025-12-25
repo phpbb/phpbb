@@ -89,6 +89,13 @@ class phpbb_functional_test_case extends phpbb_test_case
 		self::$cookieJar = new CookieJar;
 		self::$client = new Goutte\Client(array(), null, self::$cookieJar);
 
+		// Disable SSL verification for local development with self-signed certificates
+		if (isset(self::$config['path_to_ssl_cert']))
+		{
+			$guzzle_client = new \GuzzleHttp\Client(['verify' => self::$config['path_to_ssl_cert']]);
+			self::$client->setClient($guzzle_client);
+		}
+
 		// Clear the language array so that things
 		// that were added in other tests are gone
 		$this->lang = array();
@@ -393,7 +400,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('smtp_pass', 'nxpass');
 		$iohandler->set_input('submit_email', 'submit');
 
-		$iohandler->set_input('cookie_secure', '0');
+		$iohandler->set_input('cookie_secure', (strpos(self::$root_url, 'https://') === 0) ? '1' : '0');
 		$iohandler->set_input('server_protocol', '0');
 		$iohandler->set_input('force_server_vars', $parseURL['scheme'] . '://');
 		$iohandler->set_input('server_name', $parseURL['host']);
@@ -852,7 +859,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$cookies = self::$cookieJar->all();
 
 		// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-		foreach ($cookies as $cookie);
+		foreach ($cookies as $cookie)
 		{
 			if (substr($cookie->getName(), -4) == '_sid')
 			{
@@ -901,7 +908,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 				$cookies = self::$cookieJar->all();
 
 				// The session id is stored in a cookie that ends with _sid - we assume there is only one such cookie
-				foreach ($cookies as $cookie);
+				foreach ($cookies as $cookie)
 				{
 					if (substr($cookie->getName(), -4) == '_sid')
 					{
