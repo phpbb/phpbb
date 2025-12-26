@@ -18,8 +18,8 @@ imports:
     - { resource: services_help.yml }
     - { resource: services_http.yml }
     - { resource: services_language.yml }
-    - { resource: services_mention.yml }
     - { resource: services_members.yml }
+    - { resource: services_mention.yml }
     - { resource: services_messenger.yml }
     - { resource: services_migrator.yml }
     - { resource: services_mimetype_guesser.yml }
@@ -141,11 +141,13 @@ services:
         arguments:
             - '@auth'
             - '@avatar.helper'
+            - '@dbal.conn'
             - '@cache'
             - '@config'
             - '@language'
             - '@event_dispatcher'
             - '@path_helper'
+            - '@template'
             - '@user'
 
     log:
