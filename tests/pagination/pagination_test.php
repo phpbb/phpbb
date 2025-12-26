@@ -53,9 +53,9 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 		$router = new phpbb_mock_router(new phpbb_mock_container_builder(), $resources_locator, $loader, 'php', __DIR__ . '/', true, true);
 
 		$request = new phpbb_mock_request();
-		$request->overwrite('SCRIPT_NAME', '/app.php', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('SCRIPT_FILENAME', 'app.php', \phpbb\request\request_interface::SERVER);
-		$request->overwrite('REQUEST_URI', '/app.php', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SCRIPT_NAME', '/index.php', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('SCRIPT_FILENAME', 'index.php', \phpbb\request\request_interface::SERVER);
+		$request->overwrite('REQUEST_URI', '/index.php', \phpbb\request\request_interface::SERVER);
 
 		$symfony_request = new \phpbb\symfony_request(
 			$request

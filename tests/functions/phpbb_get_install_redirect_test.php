@@ -18,37 +18,37 @@ class phpbb_get_install_redirect_test extends phpbb_test_case
 		return [
 			[
 				['REQUEST_URI'	=> '/foo/bar/'],
-				'/foo/bar/install/app.php',
+				'/foo/bar/install/index.php',
 			],
 			[
 				['REQUEST_URI'	=> '/foo/bar/index.php'],
-				'/foo/bar/install/app.php',
+				'/foo/bar/install/index.php',
 			],
 			[
 				['REQUEST_URI'	=> '/foo/bar'],
-				'/foo/install/app.php',
+				'/foo/install/index.php',
 			],
 			[
 				['REQUEST_URI'	=> '/foo/'],
-				'/foo/install/app.php',
+				'/foo/install/index.php',
 			],
 			[
 				['REQUEST_URI'	=> '/foo/index.php'],
-				'/foo/install/app.php',
+				'/foo/install/index.php',
 			],
 			[
 				[
 					'REQUEST_URI'	=> '/foo/bar/',
 					'PHP_SELF'		=> '/foo/bar/index.php'
 				],
-				'/foo/bar/install/app.php',
+				'/foo/bar/install/index.php',
 			],
 			[
 				[
 					'REQUEST_URI'	=> '',
 					'PHP_SELF'		=> '/foo/bar/index.php'
 				],
-				'/foo/bar/install/app.php',
+				'/foo/bar/install/index.php',
 			],
 		];
 	}

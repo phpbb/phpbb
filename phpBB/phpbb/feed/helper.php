@@ -167,7 +167,7 @@ class helper
 			$content .= implode('<br />', $post_attachments);
 
 			// Convert attachments' relative path to absolute path
-			$pattern = '#(/app.php)?/download/attachment/#';
+			$pattern = '#(/index.php)?/download/attachment/#';
 			$replacement = $this->get_board_url() . '\1/download/attachment/';
 			$content = preg_replace($pattern, $replacement, $content);
 		}
