@@ -1825,7 +1825,7 @@ function phpbb_get_install_redirect(string $phpbb_root_path, string $phpEx): str
 	$script_name = substr($script_name, -1) === '/' ? $script_name . '.' : $script_name;
 
 	// $phpbb_root_path accounts for redirects from e.g. /adm
-	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/app.' . $phpEx;
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/index.' . $phpEx;
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	return preg_replace('#[\\\\/]{2,}#', '/', $script_path);

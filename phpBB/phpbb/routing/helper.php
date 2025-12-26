@@ -118,15 +118,15 @@ class helper
 			$base_url .= '/' . $page_name;
 		}
 
-		// If enable_mod_rewrite is false we need to replace the current front-end by app.php, otherwise we need to remove it.
-		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/app.' . $this->php_ext : '', $base_url);
+		// If enable_mod_rewrite is false we need to replace the current front-end by index.php, otherwise we need to remove it.
+		$base_url = str_replace('/' . $page_name, empty($this->config['enable_mod_rewrite']) ? '/index.' . $this->php_ext : '', $base_url);
 
-		// We need to update the base url to move to the directory of the app.php file if the current script is not app.php
-		if ($page_name !== 'app.php' && !$this->config['force_server_vars'])
+		// We need to update the base url to move to the directory of the index.php file if the current script is not index.php
+		if ((str_starts_with($base_url, '/adm') || $page_name !== 'index.php') && !$this->config['force_server_vars'])
 		{
 			if (empty($this->config['enable_mod_rewrite']))
 			{
-				$base_url = str_replace('/app.' . $this->php_ext, '/' . $this->phpbb_root_path . 'app.' . $this->php_ext, $base_url);
+				$base_url = str_replace('/index.' . $this->php_ext, '/' . $this->phpbb_root_path . 'index.' . $this->php_ext, $base_url);
 			}
 			else
 			{
@@ -148,7 +148,7 @@ class helper
 
 		if ($reference_type === UrlGeneratorInterface::RELATIVE_PATH && empty($this->config['enable_mod_rewrite']))
 		{
-			$route_url = 'app.' . $this->php_ext . '/' . $route_url;
+			$route_url = 'index.' . $this->php_ext . '/' . $route_url;
 		}
 
 		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);

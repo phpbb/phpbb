@@ -114,7 +114,7 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 			// index
 			array('', 0, true, 'Index page', './'),
 			array('/', 0, true, 'Index page', './'),
-			array('/app.php/', 0, true, 'Index page', './'),
+			array('/index.php/', 0, true, 'Index page', './'),
 			array('index.php', 0, true, 'Index page', './index.php'),
 			array('./index.php', 0, true, 'Index page', './index.php'),
 			// help.yml routes have prefix /help

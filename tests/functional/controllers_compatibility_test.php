@@ -19,29 +19,29 @@ class phpbb_functional_controllers_compatibility_test extends phpbb_functional_t
 {
 	public function test_report_compatibility()
 	{
-		$this->assert301('report.php?f=1&p=1', 'app.php/post/1/report');
-		$this->assert301('report.php?p=1', 'app.php/post/1/report');
-		$this->assert301('report.php?pm=1', 'app.php/pm/1/report');
+		$this->assert301('report.php?f=1&p=1', 'index.php/post/1/report');
+		$this->assert301('report.php?p=1', 'index.php/post/1/report');
+		$this->assert301('report.php?pm=1', 'index.php/pm/1/report');
 	}
 
 	public function test_feed_compatibility()
 	{
-		$this->assert301('feed.php', 'app.php/feed');
-		$this->assert301('feed.php?mode=foobar', 'app.php/feed/foobar');
-		$this->assert301('feed.php?mode=news', 'app.php/feed/news');
-		$this->assert301('feed.php?mode=topics', 'app.php/feed/topics');
-		$this->assert301('feed.php?mode=topics_news', 'app.php/feed/topics_news');
-		$this->assert301('feed.php?mode=topics_active', 'app.php/feed/topics_active');
-		$this->assert301('feed.php?mode=forums', 'app.php/feed/forums');
-		$this->assert301('feed.php?f=1', 'app.php/feed/forum/1');
-		$this->assert301('feed.php?t=1', 'app.php/feed/topic/1');
+		$this->assert301('feed.php', 'index.php/feed');
+		$this->assert301('feed.php?mode=foobar', 'index.php/feed/foobar');
+		$this->assert301('feed.php?mode=news', 'index.php/feed/news');
+		$this->assert301('feed.php?mode=topics', 'index.php/feed/topics');
+		$this->assert301('feed.php?mode=topics_news', 'index.php/feed/topics_news');
+		$this->assert301('feed.php?mode=topics_active', 'index.php/feed/topics_active');
+		$this->assert301('feed.php?mode=forums', 'index.php/feed/forums');
+		$this->assert301('feed.php?f=1', 'index.php/feed/forum/1');
+		$this->assert301('feed.php?t=1', 'index.php/feed/topic/1');
 	}
 
 	public function test_cron_compatibility()
 	{
-		$this->assert301('cron.php?cron_type=foo', 'app.php/cron/foo');
-		$this->assert301('cron.php?cron_type=foo&bar=foobar', 'app.php/cron/foo?bar=foobar');
-		$this->assert301('cron.php?cron_type=foo&bar=foobar&who=me', 'app.php/cron/foo?bar=foobar&who=me');
+		$this->assert301('cron.php?cron_type=foo', 'index.php/cron/foo');
+		$this->assert301('cron.php?cron_type=foo&bar=foobar', 'index.php/cron/foo?bar=foobar');
+		$this->assert301('cron.php?cron_type=foo&bar=foobar&who=me', 'index.php/cron/foo?bar=foobar&who=me');
 	}
 
 	protected function assert301($from, $to)

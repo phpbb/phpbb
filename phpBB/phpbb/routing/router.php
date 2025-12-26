@@ -197,8 +197,8 @@ class router implements RouterInterface
 			throw new RuntimeException('Malformed pathinfo given to the router.');
 		}
 
-		// Remove app.php if present
-		$pathinfo = preg_replace('/^\/app\.php\//', '/', $pathinfo);
+		// Remove index.php if present
+		$pathinfo = preg_replace('/^\/index\.php\//', '/', $pathinfo);
 
 		return $this->get_matcher()->match($pathinfo);
 	}

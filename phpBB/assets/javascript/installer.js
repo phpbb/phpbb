@@ -375,7 +375,7 @@
 	 */
 	function queryInstallerStatus() {
 		var url = $(location).attr('pathname');
-		var lookUp = 'install/app.php';
+		var lookUp = 'install/index.php';
 		var position = url.indexOf(lookUp);
 
 		if (position === -1) {

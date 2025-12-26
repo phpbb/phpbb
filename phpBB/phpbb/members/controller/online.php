@@ -218,7 +218,7 @@ class online
 			list($location, $location_url) = $this->viewonline_helper->get_location($row['session_page'], $row['session_forum_id']);
 
 			$session_page = parse_url($row['session_page'], PHP_URL_PATH);
-			$session_page = preg_replace('/^\/app\.php\//', '/', $session_page);
+			$session_page = preg_replace('/^\/index\.php\//', '/', $session_page);
 			$on_page = $this->viewonline_helper->get_user_page($session_page);
 
 			$forum_data = $this->viewonline_helper->get_forum_data();

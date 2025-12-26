@@ -54,7 +54,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_foo_bar()
 	{
-		$crawler = self::request('GET', 'app.php/foo/bar', array(), false);
+		$crawler = self::request('GET', 'index.php/foo/bar', array(), false);
 		self::assert_response_status_code();
 		$this->assertStringContainsString("foo/bar controller handle() method", $crawler->filter('body')->text());
 	}
@@ -64,7 +64,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_routing_resources()
 	{
-		$crawler = self::request('GET', 'app.php/foo/foo', array(), false);
+		$crawler = self::request('GET', 'index.php/foo/foo', array(), false);
 		self::assert_response_status_code();
 		$this->assertStringContainsString("foo/foo controller handle() method", $crawler->filter('body')->text());
 	}
@@ -74,7 +74,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_controller_with_template()
 	{
-		$crawler = self::request('GET', 'app.php/foo/template');
+		$crawler = self::request('GET', 'index.php/foo/template');
 		$this->assertStringContainsString("I am a variable", $crawler->filter('#content')->text());
 	}
 
@@ -83,7 +83,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_controller_template_include_js_css()
 	{
-		$crawler = self::request('GET', 'app.php/help/faq');
+		$crawler = self::request('GET', 'index.php/help/faq');
 		$this->assertStringContainsString("./../../assets/javascript/core.js", $crawler->filter('body')->html());
 	}
 
@@ -93,7 +93,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_missing_argument()
 	{
-		$crawler = self::request('GET', 'app.php/foo/baz', array(), false);
+		$crawler = self::request('GET', 'index.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
 		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz" requires the "$test" argument that could not be resolved', $crawler->filter('body')->text());
 	}
@@ -103,7 +103,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_exception_should_result_in_500_status_code()
 	{
-		$crawler = self::request('GET', 'app.php/foo/exception', array(), false);
+		$crawler = self::request('GET', 'index.php/foo/exception', array(), false);
 		$this->assert_response_html(500);
 		$this->assertStringContainsString('Exception thrown from foo/exception route', $crawler->filter('body')->text());
 	}
@@ -119,7 +119,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_error_ext_disabled_or_404()
 	{
-		$crawler = self::request('GET', 'app.php/does/not/exist', array(), false);
+		$crawler = self::request('GET', 'index.php/does/not/exist', array(), false);
 		$this->assert_response_html(404);
 
 		// Since version 5.3.0-BETA1, Symfony shows full URI when route not found. See https://github.com/symfony/symfony/pull/39893
@@ -135,13 +135,13 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 		$this->markTestIncomplete('Session table contains incorrect data for controllers on CI,'
 			. 'therefore the redirect fails.');
 
-		$crawler = self::request('GET', 'app.php/foo/login_redirect');
+		$crawler = self::request('GET', 'index.php/foo/login_redirect');
 		$this->assertContainsLang('LOGIN', $crawler->filter('h2')->text());
 		$form = $crawler->selectButton('login')->form(array(
 			'username'	=> 'admin',
 			'password'	=> 'adminadmin',
 		));
-		$this->assertStringStartsWith('./app.php/foo/login_redirect', $form->get('redirect')->getValue());
+		$this->assertStringStartsWith('./index.php/foo/login_redirect', $form->get('redirect')->getValue());
 
 		$crawler = self::submit($form);
 		$this->assertStringContainsString("I am a variable", $crawler->filter('#content')->text(), 'Unsuccessful redirect after using login_box()');
@@ -152,7 +152,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	*/
 	public function test_redirect()
 	{
-		$crawler = self::request('GET', 'app.php/foo/redirect');
+		$crawler = self::request('GET', 'index.php/foo/redirect');
 
 		$nodes = $crawler->filter('div')->extract(array('id'));
 
