@@ -144,6 +144,7 @@ class helper
 		{
 			return [
 				'id'		=> 0,
+				'username'	=> '',
 				'lazy'		=> false,
 				'src'		=> '',
 				'title'		=> '',
@@ -155,6 +156,7 @@ class helper
 
 		$data = [
 			'id'		=> $row['id'] ?? 0,
+			'username'	=> $row['username'] ?? '',
 			'src'		=> $row['avatar'],
 			'width'		=> $row['avatar_width'],
 			'height'	=> $row['avatar_height'],

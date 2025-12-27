@@ -26,6 +26,7 @@ services:
     notification.type.base:
         abstract: true
         arguments:
+            - '@avatar.helper'
             - '@controller.helper'
             - '@dbal.conn'
             - '@language'

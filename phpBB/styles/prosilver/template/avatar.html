@@ -9,7 +9,9 @@
 	{% set color_class = color_classes[avatar_data.id % 5] %}
 	{% if avatar_link %}<a href="{{ avatar_link }}" class="avatar">{% endif %}
 	<div class="avatar-placeholder {{ color_class }}">
-		<div class="avatar-initials">{{ username|striptags|trim(' -+_[]', 'left')|slice(0, 1)|upper }}</div>
+		{% set username = username ?: avatar_data.username %}
+		{% set initials = username|striptags|trim(' -+_[]', 'left')|slice(0, 1)|upper %}
+		<div class="avatar-initials">{% if initials %}{{ initials }}{% else %}{{ Icon('font', 'user', '', true) }}{% endif %}</div>
 	</div>
 	{% if avatar_link %}</a>{% endif %}
 {% endif %}

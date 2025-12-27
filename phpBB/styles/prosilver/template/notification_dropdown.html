@@ -22,7 +22,7 @@
 					<!-- IF notifications.URL -->
 						<a class="notification-block" href="<!-- IF notifications.UNREAD -->{notifications.U_MARK_READ}" data-real-url="{notifications.URL}<!-- ELSE -->{notifications.URL}<!-- ENDIF -->">
 					<!-- ENDIF -->
-						<!-- IF notifications.AVATAR_HTML -->{notifications.AVATAR_HTML}<!-- ELSE --><img class="avatar notification-avatar" src="{{ NO_AVATAR_SOURCE }}" alt="" /><!-- ENDIF -->
+						{% include 'avatar.html' with {'avatar_data': notifications.AVATAR} only %}
 						<div class="notification-text">
 							<p class="notification-title">{notifications.FORMATTED_TITLE}</p>
 							<!-- IF notifications.REFERENCE --><p class="notification-reference">{notifications.REFERENCE}</p><!-- ENDIF -->

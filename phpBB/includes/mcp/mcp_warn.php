@@ -347,7 +347,7 @@ class mcp_warn
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
-		$template->assign_vars($avatar_helper->get_template_vars($avatar));
+		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
@@ -500,7 +500,7 @@ class mcp_warn
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
-		$template->assign_vars($avatar_helper->get_template_vars($avatar));
+		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
