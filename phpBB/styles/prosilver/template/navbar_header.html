@@ -119,7 +119,7 @@
 
 					<div class="header-profile dropdown-container">
 						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
-							{% if CURRENT_USER_AVATAR %}{% include 'avatar.html' with {'avatar_data': CURRENT_USER_AVATAR, 'user_id': S_USER_ID, 'username': S_USERNAME} only %} {% endif %}
+							{% if CURRENT_USER_AVATAR %}{% include 'avatar.html' with {'avatar_data': CURRENT_USER_AVATAR} only %} {% endif %}
 							{{ CURRENT_USERNAME_SIMPLE }}
 							{{ Icon('font', 'caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
 						</a>

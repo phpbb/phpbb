@@ -8,7 +8,7 @@
 <div class="panel bg1">
 	<div class="inner">
 		<dl class="left-box avatar-rank-container">
-			<dt class="profile-avatar">{% include 'avatar.html' with {'avatar_data': AVATAR, 'username': USERNAME} only %}</dt>
+			<dt class="profile-avatar">{% include 'avatar.html' with {'avatar_data': AVATAR} only %}</dt>
 			{% EVENT memberlist_view_rank_avatar_before %}
 			{% if RANK_TITLE %}<dd class="profile-avatar">{{ RANK_TITLE }}</dd>{% endif %}
 			{% EVENT memberlist_view_rank_avatar_after %}

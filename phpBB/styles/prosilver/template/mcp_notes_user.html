@@ -11,10 +11,7 @@
 
 	<div>
 		<div class="column1">
-			{% include 'avatar.html' with {
-				'avatar_data': USER_AVATAR,
-				'username': USERNAME
-			} only %}
+			{% include 'avatar.html' with {'avatar_data': USER_AVATAR} only %}
 		</div>
 
 		<div class="column2">

@@ -41,7 +41,6 @@
 								<dt>
 									<div class="list-inner notification-item">
 										{% include 'avatar.html' with {'avatar_data': notification_list.AVATAR} only %}
-										<!-- IF notification_list.AVATAR -->{notification_list.AVATAR_HTML}<!-- ELSE --><img class="avatar notification-avatar" src="{{ NO_AVATAR_SOURCE }}" alt="" /><!-- ENDIF -->
 										<div class="notification-text">
 											<!-- IF notification_list.URL --><a href="<!-- IF notification_list.UNREAD -->{notification_list.U_MARK_READ}<!-- ELSE -->{notification_list.URL}<!-- ENDIF -->"><!-- ENDIF -->
 												<p class="notification-title">{notification_list.FORMATTED_TITLE}<!-- IF notification_list.REFERENCE --> {notification_list.REFERENCE}<!-- ENDIF --></p>

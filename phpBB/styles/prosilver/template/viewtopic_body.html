@@ -140,12 +140,11 @@
 		<div class="inner">
 
 		<dl class="postprofile" id="profile{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
-			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF postrow.POSTER_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
+			<dt class="<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> has-avatar">
 				<div class="avatar-container">
 					<!-- EVENT viewtopic_body_avatar_before -->
 					{% include 'avatar.html' with {
 						'avatar_data': postrow.POSTER_AVATAR,
-						'username': postrow.POST_AUTHOR,
 						'avatar_link': postrow.U_POST_AUTHOR
 					} only %}
 					<!-- EVENT viewtopic_body_avatar_after -->
