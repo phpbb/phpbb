@@ -98,6 +98,7 @@ abstract class phpbb_tests_notification_base extends phpbb_database_test_case
 		$phpbb_container = $this->container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_notification.yml');
+		$phpbb_container->set('avatar.helper', $avatar_helper);
 		$phpbb_container->set('user_loader', $this->user_loader);
 		$phpbb_container->set('user', $user);
 		$phpbb_container->set('language', $lang);

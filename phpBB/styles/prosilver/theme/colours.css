@@ -992,6 +992,7 @@ dl.mini dt {
 }
 
 /* avatar placeholder colours */
+.avatar-color-default { background-color: hsl(207, 15%, 80%); }
 .avatar-color-0 { background-color: #d32f2f; }
 .avatar-color-1 { background-color: #c2185b; }
 .avatar-color-2 { background-color: #7b1fa2; }
