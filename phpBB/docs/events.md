@@ -1543,20 +1543,6 @@ memberlist_view_rank_avatar_before
 * Since: 3.1.6-RC1
 * Purpose: Add information before rank in memberlist (with avatar)
 
-memberlist_view_rank_no_avatar_after
-===
-* Locations:
-    + styles/prosilver/template/memberlist_view.html
-* Since: 3.1.6-RC1
-* Purpose: Add information after rank in memberlist (without avatar)
-
-memberlist_view_rank_no_avatar_before
-===
-* Locations:
-    + styles/prosilver/template/memberlist_view.html
-* Since: 3.1.6-RC1
-* Purpose: Add information before rank in memberlist (without avatar)
-
 memberlist_view_user_statistics_after
 ===
 * Locations:

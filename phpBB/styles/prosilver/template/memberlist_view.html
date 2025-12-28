@@ -25,12 +25,6 @@
 			<!-- IF U_USER_BAN --> [ <a href="{U_USER_BAN}">{L_USER_BAN}</a> ]<!-- ENDIF -->
 			<!-- IF U_SWITCH_PERMISSIONS --> [ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]<!-- ENDIF -->
 		</dd>
-		<!-- IF not AVATAR_HTML -->
-			<!-- EVENT memberlist_view_rank_no_avatar_before -->
-			<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt> <dd>{RANK_TITLE}</dd><!-- ENDIF -->
-			{% if RANK_IMG %}<dt>{% if RANK_TITLE %}&nbsp;{% else %}{{ lang('RANK') ~ lang('COLON') }}{% endif %}</dt><dd class="rank-img">{{ RANK_IMG }}</dd>{% endif %}
-			<!-- EVENT memberlist_view_rank_no_avatar_after -->
-		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}{L_COLON}</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF AGE !== '' --><dt>{L_AGE}{L_COLON}</dt> <dd>{AGE}</dd><!-- ENDIF -->
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}{L_COLON}</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button1 button button-form-bold" /></dd><!-- ENDIF -->
