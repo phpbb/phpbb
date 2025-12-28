@@ -16,6 +16,7 @@
 */
 
 use phpbb\controller\helper;
+use phpbb\language\language;
 use phpbb\messenger\method\messenger_interface;
 
 if (!defined('IN_PHPBB'))
@@ -42,6 +43,9 @@ class acp_users
 
 		/** @var helper $controller_helper */
 		$controller_helper = $phpbb_container->get('controller.helper');
+
+		/** @var language $language Language object */
+		$language = $phpbb_container->get('language');
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -1889,9 +1893,33 @@ class acp_users
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . (int) $user_id;
-
 									$db->sql_query($sql);
-									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+
+									if ($request->is_ajax())
+									{
+										/** @var \phpbb\avatar\helper $avatar_helper */
+										$avatar_helper = $phpbb_container->get('avatar.helper');
+
+										$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
+
+										$json_response = new \phpbb\json_response;
+										$json_response->send([
+											'success' => true,
+
+											'MESSAGE_TITLE'	=> $language->lang('INFORMATION'),
+											'MESSAGE_TEXT'	=> $language->lang('USER_AVATAR_UPDATED'),
+											'AVATAR'		=> $avatar_helper->get_template_vars($avatar),
+											'REFRESH_DATA'	=> [
+												'time'	=> 3,
+												'url'		=> $this->u_action . '&amp;u=' . $user_id,
+												'text'		=> $language->lang('BACK_TO_PREV'),
+											]
+										]);
+									}
+									else
+									{
+										trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+									}
 								}
 							}
 						}

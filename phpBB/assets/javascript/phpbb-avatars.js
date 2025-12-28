@@ -47,10 +47,11 @@
 			// Ensure we have an img for the cropping
 			const $existingImg = this.$box.find('img');
 			if ($existingImg.length === 0) {
+				/** @type {jQuery} */
 				const $avatarImg = $('<img src="" alt="">');
-				$avatarImg.setAttribute('width', phpbb.avatars.$data.data().maxWidth);
-				$avatarImg.setAttribute('height', phpbb.avatars.$data.data().maxHeight);
-				$avatarImg.addClass('avatar');
+				$avatarImg.attr('width', phpbb.avatars.$data.data().maxWidth);
+				$avatarImg.attr('height', phpbb.avatars.$data.data().maxHeight);
+				$avatarImg.addClass('avatar hidden');
 				this.image = $avatarImg;
 				this.$box.prepend($avatarImg);
 			} else {
@@ -92,6 +93,11 @@
 						phpbb.avatars.$input.trigger('change');
 					}
 				} else {
+					// Show placeholder avatar if it exists and was hidden
+					if (phpbb.avatars.$box.children('.avatar-placeholder').length) {
+						phpbb.avatars.$box.children('.avatar-placeholder').show();
+					}
+
 					phpbb.avatars.destroy();
 				}
 			});
@@ -129,6 +135,11 @@
 			const $this = this;
 			$this.$form = this.$input.closest('form');
 			$this.$form.on('submit', () => {
+				if ($this.$form.find('#avatar_delete').is(':checked')) {
+					return;
+				}
+
+				const $submitButton = this.$form.find('fieldset > input[type=submit]').first();
 				const data = phpbb.avatars.$data.data();
 
 				const avatarCanvas = phpbb.avatars.cropper.getCroppedCanvas({
@@ -143,7 +154,7 @@
 				avatarCanvas.toBlob(blob => {
 					const formData = new FormData($this.$form[0]);
 					formData.set('avatar_upload_file', blob, $this.getUploadFileName());
-					formData.set('submit', '1');
+					formData.set($submitButton.attr('name'), $submitButton.val());
 
 					const canvasDataUrl = avatarCanvas.toDataURL('image/png');
 
@@ -182,7 +193,9 @@
 
 		/**
 		 * Handle response from avatar submission
-		 * @param {Object} response AJAX response object
+		 * @param {{MESSAGE_TITLE: string, MESSAGE_TEXT: string,
+		 * 			REFRESH_DATA: {time: int, url: string},
+		 * 			error: {title: string, messages: string[]}}} response AJAX response object
 		 * @param {string} canvasDataUrl Uploaded canvas element as data URL
 		 */
 		uploadDone(response, canvasDataUrl) {
@@ -240,6 +253,9 @@
 		 * and registers a callback function for the 'crop' event.
 		 */
 		initCropper() {
+			// Hide placeholder avatar
+			this.$box.children('.avatar-placeholder').hide();
+
 			this.cropper = this.image.cropper({
 				aspectRatio: 1,
 				autoCropArea: 1,
