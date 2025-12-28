@@ -34,8 +34,8 @@
 
 		/** @type {{width: {min: number, max: number}, height: {min: number, max: number}}} Allowed avatar sizes */
 		allowedSizes: {
-			width: {min: -1, max: -1},
-			height: {min: -1, max: -1},
+			width: { min: -1, max: -1 },
+			height: { min: -1, max: -1 },
 		},
 
 		/**
