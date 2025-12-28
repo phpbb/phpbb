@@ -45,7 +45,8 @@
 			this.$buttons.appendTo(this.$box);
 
 			// Ensure we have an img for the cropping
-			if (this.$box.children('img').length === 0) {
+			const $existingImg = this.$box.find('img');
+			if ($existingImg.length === 0) {
 				const $avatarImg = $('<img src="" alt="">');
 				$avatarImg.setAttribute('width', phpbb.avatars.$data.data().maxWidth);
 				$avatarImg.setAttribute('height', phpbb.avatars.$data.data().maxHeight);
@@ -53,7 +54,7 @@
 				this.image = $avatarImg;
 				this.$box.prepend($avatarImg);
 			} else {
-				this.image = this.$box.children('img');
+				this.image = $existingImg;
 			}
 
 			this.bindInput();
