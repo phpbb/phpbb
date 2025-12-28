@@ -106,7 +106,7 @@ class online
 	 *
 	 * @return Response a Symfony response object
 	 */
-	public function handle()
+	public function handle(): Response
 	{
 		// Display a listing of board admins, moderators
 		if (!function_exists('display_user_activity'))
@@ -217,9 +217,8 @@ class online
 
 			list($location, $location_url) = $this->viewonline_helper->get_location($row['session_page'], $row['session_forum_id']);
 
-			// TODO: Check if these two lines should be moved to the router
-			$session_page = parse_url($row['session_page'],  PHP_URL_PATH); // Remove query string
-			$session_page = '/' . ((substr($session_page, 0, 8) == 'app.php/') ? substr($session_page, 8) : $session_page); // Remove app.php/
+			$session_page = parse_url($row['session_page'], PHP_URL_PATH);
+			$session_page = preg_replace('/^\/app\.php\//', '/', $session_page);
 			$on_page = $this->viewonline_helper->get_user_page($session_page);
 
 			$forum_data = $this->viewonline_helper->get_forum_data();

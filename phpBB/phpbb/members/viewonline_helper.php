@@ -146,10 +146,11 @@ class viewonline_helper
 	 * @param string $session_page User's session page
 	 * @return array Match array filled by preg_match()
 	 */
-	public function get_user_page($session_page)
+	public function get_user_page($session_page): array
 	{
 		$session_page = filesystem_helper::clean_path($session_page);
-		if (strpos($session_page, './') === 0)
+
+		if (str_starts_with($session_page, './'))
 		{
 			$session_page = substr($session_page, 2);
 		}
@@ -175,7 +176,7 @@ class viewonline_helper
 	 * @param int $forum_id
 	 * @return array
 	 */
-	public function get_location(string $session_page, int $forum_id)
+	public function get_location(string $session_page, int $forum_id): array
 	{
 		try
 		{
@@ -184,6 +185,7 @@ class viewonline_helper
 			switch ($match['_route'])
 			{
 				case 'phpbb_help_bbcode_controller':
+				case 'phpbb_help_faq_controller':
 					$location = $this->language->lang('VIEWING_FAQ');
 					$location_url = $this->helper->route('phpbb_help_faq_controller');
 					break;
@@ -194,29 +196,15 @@ class viewonline_helper
 					$location_url = $this->helper->route('phpbb_members_online');
 					break;
 
+				case 'phpbb_members_team':
+					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
+					$location = $this->language->lang('VIEWING_MEMBERS');
+					break;
+
 				case 'phpbb_report_pm_controller':
 				case 'phpbb_report_post_controller':
 					$location = $this->language->lang('REPORTING_POST');
 					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
-					break;
-
-				case 'phpbb_message_admin':
-					// https://github.com/phpbb/phpbb/pull/5391/files
-					// The current behavior is show users in contact admin, but they will be different controllers
-					//case 'phpbb_message_topic':
-					//case 'phpbb_message_user':
-					$location = $this->language->lang('VIEWING_CONTACT_ADMIN');
-					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex, 'mode=contactadmin');
-					break;
-
-				case 'phpbb_members_profile':
-					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
-					$location = $this->language->lang('VIEWING_MEMBER_PROFILE');
-					break;
-
-				case 'phpbb_members_team':
-					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
-					$location = $this->language->lang('VIEWING_MEMBERS');
 					break;
 
 				default:
@@ -300,7 +288,20 @@ class viewonline_helper
 
 				case 'memberlist':
 					$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex);
-					$location = $this->language->lang('VIEWING_MEMBERS');
+
+					if (str_contains($session_page, 'mode=viewprofile'))
+					{
+						$location = $this->language->lang('VIEWING_MEMBER_PROFILE');
+					}
+					else if (str_contains($session_page, 'mode=contactadmin'))
+					{
+						$location = $this->language->lang('VIEWING_CONTACT_ADMIN');
+						$location_url = append_sid($this->phpbb_root_path . "memberlist." . $this->php_ex, 'mode=contactadmin');
+					}
+					else
+					{
+						$location = $this->language->lang('VIEWING_MEMBERS');
+					}
 					break;
 
 				case 'mcp':
@@ -347,7 +348,7 @@ class viewonline_helper
 	 *
 	 * @return int
 	 */
-	public function get_number_guests()
+	public function get_number_guests(): int
 	{
 		switch ($this->db->get_sql_layer())
 		{
@@ -380,7 +381,7 @@ class viewonline_helper
 	 *
 	 * @return array
 	 */
-	public function get_forum_data()
+	public function get_forum_data(): array
 	{
 		static $forum_data;
 

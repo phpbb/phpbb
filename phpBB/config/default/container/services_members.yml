@@ -18,7 +18,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
-    members.controller.online.whois:
+    members.controller.online_whois:
         class: phpbb\members\controller\online_whois
         arguments:
             - '@auth'

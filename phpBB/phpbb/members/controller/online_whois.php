@@ -24,34 +24,22 @@ use Symfony\Component\HttpFoundation\Response;
 
 class online_whois
 {
-	/**
-	 * @var auth
-	 */
+	/** @var auth */
 	protected $auth;
 
-	/**
-	 * @var driver_interface
-	 */
+	/** @var driver_interface */
 	protected $db;
 
-	/**
-	 * @var helper
-	 */
+	/** @var helper */
 	protected $helper;
 
-	/**
-	 * @var language
-	 */
+	/** @var language */
 	protected $language;
 
-	/**
-	 * @var template
-	 */
+	/** @var template */
 	protected $template;
 
-	/**
-	 * @var user
-	 */
+	/** @var user */
 	protected $user;
 
 	/** @var string */
@@ -60,14 +48,10 @@ class online_whois
 	/** @var string */
 	private $sessions_table;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $phpbb_root_path;
 
-	/**
-	 * @var string
-	 */
+	/** @var string */
 	private $php_ex;
 
 	/**
@@ -103,7 +87,7 @@ class online_whois
 	 * @param $session_id
 	 * @return Response a Symfony response object
 	 */
-	public function handle($session_id)
+	public function handle($session_id): Response
 	{
 		if (!function_exists('user_ipwhois'))
 		{
