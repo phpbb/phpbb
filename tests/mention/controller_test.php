@@ -76,10 +76,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		// User
-		$user = $this->createMock('\phpbb\user', array(), array(
-			$lang,
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->ip = '';
 		$user->data = array(
 			'user_id'       => 2,
@@ -100,6 +97,9 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 
 		$user_loader = new \phpbb\user_loader($avatar_helper, $db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
+		// Controller helper
+		$controller_helper = $this->createMock('\phpbb\controller\helper');
+
 		// Container
 		$phpbb_container = new ContainerBuilder();
 
@@ -114,6 +114,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$phpbb_container->set('cache.driver', $cache_driver);
 		$phpbb_container->set('cache', $cache);
 		$phpbb_container->set('request', $request);
+		$phpbb_container->set('controller.helper', $controller_helper);
 		$phpbb_container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
 			$avatar_helper,
@@ -160,7 +161,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			$mention_sources_array['mention.source.' . $source] = $class;
 		}
 
-		$this->controller = new \phpbb\mention\controller\mention($mention_sources_array, $request, $phpbb_root_path, $phpEx);
+		$this->controller = new \phpbb\mention\controller\mention($mention_sources_array, $request, $controller_helper, $phpbb_root_path, $phpEx);
 	}
 
 	public static function handle_data()

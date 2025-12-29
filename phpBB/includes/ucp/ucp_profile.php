@@ -36,6 +36,9 @@ class ucp_profile
 		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_log, $phpbb_dispatcher, $language;
 
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+
 		$user->add_lang('posting');
 
 		$submit		= $request->variable('submit', false, false, \phpbb\request\request_interface::POST);
@@ -233,8 +236,8 @@ class ucp_profile
 						// Now, we can remove the user completely (kill the session) - NOT BEFORE!!!
 						if (!empty($sql_ary['user_actkey']))
 						{
-							meta_refresh(5, append_sid($phpbb_root_path . 'index.' . $phpEx));
-							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
+							meta_refresh(5, $controller_helper->route('phpbb_index_controller'));
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $controller_helper->route('phpbb_index_controller') . '">', '</a>');
 
 							// Because the user gets deactivated we log him out too, killing his session
 							$user->session_kill();

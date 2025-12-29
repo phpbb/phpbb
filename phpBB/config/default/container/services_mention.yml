@@ -5,6 +5,7 @@ services:
         arguments:
             - '@mention.source_collection'
             - '@request'
+            - '@controller.helper'
             - '%core.root_path%'
             - '%core.php_ext%'
 

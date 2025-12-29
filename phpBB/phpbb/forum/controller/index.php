@@ -84,6 +84,7 @@ class index
 		$this->group_helper = $group_helper;
 		$this->language = $language;
 		$this->user = $user;
+		$this->template = $template;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 	}
@@ -115,18 +116,18 @@ class index
 		$this->birthday_helper->display_birthdays();
 
 		$this->template->assign_vars(array(
-				'TOTAL_POSTS'	=> $this->language->lang('TOTAL_POSTS_COUNT', (int) $this->config['num_posts']),
-				'TOTAL_TOPICS'	=> $this->language->lang('TOTAL_TOPICS', (int) $this->config['num_topics']),
-				'TOTAL_USERS'	=> $this->language->lang('TOTAL_USERS', (int) $this->config['num_users']),
-				'NEWEST_USER'	=> $this->language->lang('NEWEST_USER', get_username_string('full', $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
+			'TOTAL_POSTS'	=> $this->language->lang('TOTAL_POSTS_COUNT', (int) $this->config['num_posts']),
+			'TOTAL_TOPICS'	=> $this->language->lang('TOTAL_TOPICS', (int) $this->config['num_topics']),
+			'TOTAL_USERS'	=> $this->language->lang('TOTAL_USERS', (int) $this->config['num_users']),
+			'NEWEST_USER'	=> $this->language->lang('NEWEST_USER', get_username_string('full', $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
 
-				'S_LOGIN_ACTION'			=> append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=login'),
-				'U_SEND_PASSWORD'           => ($this->config['email_enable'] && $this->config['allow_password_reset']) ? $this->controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
-				'S_INDEX'					=> true,
+			'S_LOGIN_ACTION'			=> append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=login'),
+			'U_SEND_PASSWORD'           => ($this->config['email_enable'] && $this->config['allow_password_reset']) ? $this->controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
+			'S_INDEX'					=> true,
 
-				'U_CANONICAL'		=> generate_board_url() . '/',
-				'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? append_sid("{$this->phpbb_root_path}index.$this->phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
-				'U_MCP'				=> ($this->auth->acl_get('m_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}mcp.$this->phpEx", 'i=main&amp;mode=front') : '')
+			'U_CANONICAL'		=> generate_board_url() . '/',
+			'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_index_controller', ['hash' => generate_link_hash('global'), 'mark' => 'forums', 'mark_time' => time()]) : '',
+			'U_MCP'				=> ($this->auth->acl_get('m_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}mcp.$this->phpEx", 'i=main&amp;mode=front') : '')
 		);
 
 		$page_title = ($this->config['board_index_text'] !== '') ? $this->config['board_index_text'] : $this->language->lang('INDEX');
