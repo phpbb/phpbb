@@ -43,7 +43,7 @@
 		 */
 		init() {
 			// If the cropper library is not available
-			if (!$.isFunction($.fn.cropper)) {
+			if (!$.fn.hasOwnProperty('cropper') || typeof $.fn.cropper !== "function") {
 				return;
 			}
 
@@ -60,7 +60,6 @@
 			// Ensure we have an img for the cropping
 			const $existingImg = this.$box.find('img');
 			if ($existingImg.length === 0) {
-				/** @type {jQuery} */
 				const $avatarImg = $('<img src="" alt="">');
 				$avatarImg.attr('width', this.allowedSizes.width.max);
 				$avatarImg.attr('height', this.allowedSizes.height.max);
@@ -274,8 +273,8 @@
 			this.cropper = this.image.cropper({
 				aspectRatio: 1,
 				autoCropArea: 1,
-				minContainerHeight: this.allowedSizes.height.max * 2,
-				minContainerWidth: this.allowedSizes.width.max * 2,
+				minContainerHeight: this.allowedSizes.height.max * 2, // Double max size for better usability
+				minContainerWidth: this.allowedSizes.width.max * 2, // Double max size for better usability
 			}).data('cropper');
 
 			this.image.off('crop.phpbb.avatars').on('crop.phpbb.avatars', phpbb.avatars.onCrop);
