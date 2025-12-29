@@ -23,14 +23,38 @@ use phpbb\user;
 
 class birthday_helper
 {
+	/** @var auth */
 	protected $auth;
+
+	/** @var config */
 	protected $config;
+
+	/** @var driver_interface */
 	protected $db;
+
+	/** @var dispatcher */
 	protected $dispatcher;
+
+	/** @var language */
 	protected $language;
+
+	/** @var template */
 	protected $template;
+
+	/** @var user */
 	protected $user;
 
+	/**
+	 * Constructor
+	 *
+	 * @param auth $auth
+	 * @param config $config
+	 * @param driver_interface $db
+	 * @param dispatcher $dispatcher
+	 * @param language $language
+	 * @param template $template
+	 * @param user $user
+	 */
 	public function __construct(auth $auth, config $config, driver_interface $db, dispatcher $dispatcher, language $language, template $template, user $user)
 	{
 		$this->auth = $auth;
@@ -42,7 +66,14 @@ class birthday_helper
 		$this->user = $user;
 	}
 
-	public function display_birthdays()
+	/**
+	 * Display birthdays in index page
+	 *
+	 * @return void
+	 *
+	 * @psalm-suppress InvalidArgument
+	 */
+	public function display_birthdays(): void
 	{
 		$show_birthdays = ($this->config['load_birthdays'] && $this->config['allow_birthdays'] && $this->auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
 
@@ -102,9 +133,6 @@ class birthday_helper
 					'USERNAME'	=> $birthday_username,
 					'AGE'		=> $birthday_age,
 				);
-
-				// For 3.0 compatibility
-				$birthday_list[] = $birthday_username . (($birthday_age) ? " ({$birthday_age})" : '');
 			}
 
 			/**
@@ -122,7 +150,6 @@ class birthday_helper
 		}
 
 		$this->template->assign_vars([
-			'BIRTHDAY_LIST'		=> (empty($birthday_list)) ? '' : implode($this->language->lang('COMMA_SEPARATOR'), $birthday_list),
 			'S_DISPLAY_BIRTHDAY_LIST' => $show_birthdays,
 		]);
 	}

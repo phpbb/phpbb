@@ -52,10 +52,7 @@ class mention_helper_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		// User
-		$user = $this->createMock('\phpbb\user', array(), array(
-			$lang,
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->ip = '';
 		$user->data = array(
 			'user_id'       => 2,

@@ -214,7 +214,7 @@ class reset_password
 			}
 			else
 			{
-				$message = $this->language->lang('PASSWORD_RESET_LINK_SENT') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+				$message = $this->language->lang('PASSWORD_RESET_LINK_SENT') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . $this->helper->route('phpbb_index_controller') . '">', '</a>');
 
 				if (empty($rowset))
 				{
@@ -335,7 +335,7 @@ class reset_password
 		$user_row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		$message = $this->language->lang('RESET_TOKEN_EXPIRED_OR_INVALID') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->root_path}index.{$this->php_ext}") . '">', '</a>');
+		$message = $this->language->lang('RESET_TOKEN_EXPIRED_OR_INVALID') . '<br /><br />' . $this->language->lang('RETURN_INDEX', '<a href="' . $this->helper->route('phpbb_index_controller') . '">', '</a>');
 
 		if (empty($user_row))
 		{
@@ -416,7 +416,7 @@ class reset_password
 					'reportee_id' => $user_row['user_id'],
 					$user_row['username']
 				]);
-				meta_refresh(3, append_sid("{$this->root_path}index.{$this->php_ext}"));
+				meta_refresh(3, $this->helper->route('phpbb_index_controller'));
 				return $this->helper->message($this->language->lang('PASSWORD_RESET'));
 			}
 		}

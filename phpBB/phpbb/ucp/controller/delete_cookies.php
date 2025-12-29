@@ -14,6 +14,7 @@
 namespace phpbb\ucp\controller;
 
 use phpbb\config\config;
+use phpbb\controller\helper;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
 use phpbb\request\request_interface;
@@ -26,6 +27,9 @@ class delete_cookies
 
 	/** @var dispatcher_interface */
 	private $dispatcher;
+
+	/** @var helper */
+	private $helper;
 
 	/** @var language */
 	private $language;
@@ -47,14 +51,18 @@ class delete_cookies
 	 *
 	 * @param config $config
 	 * @param dispatcher_interface $dispatcher
+	 * @param helper $helper
 	 * @param language $language
 	 * @param request_interface $request
 	 * @param user $user
+	 * @param string $phpbb_root_path
+	 * @param string $php_ext
 	 */
-	public function __construct(config $config, dispatcher_interface $dispatcher, language $language, request_interface $request, user $user, string $phpbb_root_path, string $php_ext)
+	public function __construct(config $config, dispatcher_interface $dispatcher, helper $helper, language $language, request_interface $request, user $user, string $phpbb_root_path, string $php_ext)
 	{
 		$this->config = $config;
 		$this->dispatcher = $dispatcher;
+		$this->helper = $helper;
 		$this->language = $language;
 		$this->request = $request;
 		$this->user = $user;
@@ -119,9 +127,9 @@ class delete_cookies
 			$this->user->session_kill();
 			$this->user->session_begin();
 
-			meta_refresh(3, append_sid("{$this->phpbb_root_path}index.$this->php_ext"));
+			meta_refresh(3, $this->helper->route('phpbb_index_controller'));
 
-			$message = $this->language->lang('COOKIES_DELETED') . '<br><br>' . $this->language->lang('RETURN_INDEX', '<a href="' . append_sid("{$this->phpbb_root_path}index.$this->php_ext") . '">', '</a>');
+			$message = $this->language->lang('COOKIES_DELETED') . '<br><br>' . $this->language->lang('RETURN_INDEX', '<a href="' . $this->helper->route('phpbb_index_controller') . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -129,6 +137,6 @@ class delete_cookies
 			confirm_box(false, 'DELETE_COOKIES', '');
 		}
 
-		redirect(append_sid("{$this->phpbb_root_path}index.$this->php_ext"));
+		redirect($this->helper->route('phpbb_index_controller'));
 	}
 }

@@ -32,6 +32,9 @@ class ucp_resend
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template, $request, $phpbb_container;
 
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+
 		$username	= $request->variable('username', '', true);
 		$email		= strtolower($request->variable('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
@@ -157,10 +160,10 @@ class ucp_resend
 
 			$this->update_activation_expiration();
 
-			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+			meta_refresh(3, $controller_helper->route('phpbb_index_controller'));
 
 			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACTIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $controller_helper->route('phpbb_index_controller') . '">', '</a>');
 			trigger_error($message);
 		}
 

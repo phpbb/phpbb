@@ -111,6 +111,12 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 	{
 		return array(
 			// Route-based pages - routes have prefixes as defined in routing.yml
+			// index
+			array('', 0, true, 'Index page', './'),
+			array('/', 0, true, 'Index page', './'),
+			array('/app.php/', 0, true, 'Index page', './'),
+			array('index.php', 0, true, 'Index page', './index.php'),
+			array('./index.php', 0, true, 'Index page', './index.php'),
 			// help.yml routes have prefix /help
 			array('/help/bbcode', 0, true, 'Viewing FAQ', './help/faq'),
 			array('/help/faq', 0, true, 'Viewing FAQ', './help/faq'),
@@ -121,10 +127,6 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 			// report.yml routes have no prefix
 			array('/pm/5/report', 0, true, 'Reporting post', './index.php'),
 			array('/post/10/report', 0, true, 'Reporting post', './index.php'),
-
-			// Legacy pages - index
-			array('index.php', 0, true, 'Index page', './index.php'),
-			array('./index.php', 0, true, 'Index page', './index.php'),
 
 			// Legacy pages - admin
 			array('adm/index.php', 0, true, 'Administration Control Panel', './index.php'),
@@ -162,9 +164,6 @@ class phpbb_viewonline_helper_test extends phpbb_test_case
 
 			// Unknown route
 			array('/unknown/route', 0, true, 'Index page', './index.php'),
-
-			// Empty page
-			array('', 0, true, 'Index page', './index.php'),
 		);
 	}
 
