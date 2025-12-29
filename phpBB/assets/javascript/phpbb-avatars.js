@@ -46,7 +46,7 @@
 		 */
 		init() {
 			// If the cropper library is not available
-			if (!$.fn.hasOwnProperty('cropper') || typeof $.fn.cropper !== "function") {
+			if (!$.fn.hasOwnProperty('cropper') || typeof $.fn.cropper !== 'function') {
 				return;
 			}
 
@@ -246,7 +246,7 @@
 					alert.hide();
 				}, response.REFRESH_DATA.time * 1000);
 
-				// Update original avatar image if it exists or create a new one
+				// Update original avatar image if it exists or use added image
 				if (phpbb.avatars.$originalAvatar !== null) {
 					phpbb.avatars.$originalAvatar.attr('src', canvasDataUrl);
 					phpbb.avatars.image.addClass('hidden');
