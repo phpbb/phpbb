@@ -11,6 +11,9 @@
 		cropper: null,
 		image: null,
 
+		/** @type {jQuery|null} */
+		$originalAvatar: null,
+
 		/** @type {jQuery} */
 		$form: null,
 
@@ -57,18 +60,18 @@
 			// Correctly position the cropper buttons
 			this.$buttons.appendTo(this.$box);
 
-			// Ensure we have an img for the cropping
+			// Add image for cropping but track original avatar if it exists
 			const $existingImg = this.$box.find('img');
-			if ($existingImg.length === 0) {
-				const $avatarImg = $('<img src="" alt="">');
-				$avatarImg.attr('width', this.allowedSizes.width.max);
-				$avatarImg.attr('height', this.allowedSizes.height.max);
-				$avatarImg.addClass('avatar hidden');
-				this.image = $avatarImg;
-				this.$box.prepend($avatarImg);
-			} else {
-				this.image = $existingImg;
+			if ($existingImg.length) {
+				this.$originalAvatar = $existingImg;
 			}
+
+			const $avatarImg = $('<img src="" alt="">');
+			$avatarImg.attr('width', this.allowedSizes.width.max);
+			$avatarImg.attr('height', this.allowedSizes.height.max);
+			$avatarImg.addClass('avatar hidden');
+			this.image = $avatarImg;
+			this.$box.prepend($avatarImg);
 
 			this.bindInput();
 			this.bindSelect();
@@ -81,9 +84,11 @@
 		destroy() {
 			this.$buttons.find('[data-cropper-action]').off('click.phpbb.avatars');
 			this.image.off('crop.phpbb.avatars');
+			this.setAvatarVisible(true);
 			this.$form.off('submit');
 
 			this.$data.val('');
+			this.$input.val(null);
 			this.$buttons.hide();
 			this.$box.removeClass('c-cropper-avatar-box');
 
@@ -101,9 +106,8 @@
 		bindSelect() {
 			this.$driver.on('change', function() {
 				if ($(this).val() === phpbb.avatars.driverUpload) {
-					if (phpbb.avatars.$input.val() !== '') {
-						phpbb.avatars.$input.trigger('change');
-					}
+					// Rebind submit after switching back to upload driver
+					phpbb.avatars.bindSubmit();
 				} else {
 					// Show placeholder avatar if it exists and was hidden
 					if (phpbb.avatars.$box.children('.avatar-placeholder').length) {
@@ -131,6 +135,7 @@
 					fileReader.addEventListener('load', function() {
 						phpbb.avatars.image.cropper('destroy').attr('src', this.result).addClass('avatar');
 						phpbb.avatars.$box.addClass('c-cropper-avatar-box');
+						phpbb.avatars.setAvatarVisible(false);
 						phpbb.avatars.initCropper();
 						phpbb.avatars.initButtons();
 					});
@@ -138,6 +143,21 @@
 					phpbb.avatars.destroy();
 				}
 			});
+		},
+
+		/**
+		 * Show or hide the original avatar image.
+		 * @param {boolean} visible
+		 * @return {void}
+		 */
+		setAvatarVisible(visible) {
+			if (this.$originalAvatar !== null) {
+				if (visible) {
+					phpbb.avatars.$originalAvatar.removeClass('hidden');
+				} else {
+					phpbb.avatars.$originalAvatar.addClass('hidden');
+				}
+			}
 		},
 
 		/**
@@ -226,7 +246,14 @@
 					alert.hide();
 				}, response.REFRESH_DATA.time * 1000);
 
-				phpbb.avatars.image.attr('src', canvasDataUrl);
+				// Update original avatar image if it exists or create a new one
+				if (phpbb.avatars.$originalAvatar !== null) {
+					phpbb.avatars.$originalAvatar.attr('src', canvasDataUrl);
+					phpbb.avatars.image.addClass('hidden');
+				} else {
+					phpbb.avatars.image.attr('src', canvasDataUrl);
+				}
+
 				phpbb.avatars.destroy();
 			} else {
 				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
