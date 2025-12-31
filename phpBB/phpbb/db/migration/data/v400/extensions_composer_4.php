@@ -19,7 +19,7 @@ class extensions_composer_4 extends migration
 {
 	public function effectively_installed()
 	{
-		return strpos($this->config['exts_composer_repositories'], 'https://www.phpbb.com/customise/db/composer/40') !== false;
+		return str_contains($this->config['exts_composer_repositories'], 'https://www.phpbb.com/customise/db/composer/40/');
 	}
 
 	public function update_data()
