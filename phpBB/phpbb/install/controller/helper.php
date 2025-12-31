@@ -205,6 +205,23 @@ class helper
 	}
 
 	/**
+	 * Handle installer restart
+	 */
+	public function handle_installer_restart(): void
+	{
+		$restart = $this->phpbb_request->variable('install_restart', false);
+		if ($restart)
+		{
+			// Clean up config file to restart installer
+			$this->installer_config->clean_up_config_file();
+		}
+		else if ($this->installer_config->exists())
+		{
+			$this->template->assign_var('SHOW_RESTART_BUTTON', true);
+		}
+	}
+
+	/**
 	 * Process navigation data to reflect active/completed stages
 	 *
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface|null	$iohandler
