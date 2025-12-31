@@ -97,17 +97,6 @@ class online_whois
 		// Load language strings
 		$this->language->add_lang('memberlist');
 
-		// Can this user view profiles/memberlist?
-		if (!$this->auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
-		{
-			if ($this->user->data['user_id'] != ANONYMOUS)
-			{
-				throw new http_exception(403, 'NO_VIEW_USERS');
-			}
-
-			login_box('', $this->language->lang('LOGIN_EXPLAIN_VIEWONLINE'));
-		}
-
 		if (!$this->auth->acl_get('a_'))
 		{
 			$this->language->add_lang('acp/common');
