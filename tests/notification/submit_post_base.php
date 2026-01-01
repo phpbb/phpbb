@@ -127,6 +127,7 @@ abstract class phpbb_notification_submit_post_base extends phpbb_database_test_c
 		$phpbb_container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_notification.yml');
+		$phpbb_container->set('avatar.helper', $avatar_helper);
 		$phpbb_container->set('user_loader', $user_loader);
 		$phpbb_container->set('user', $user);
 		$phpbb_container->set('language', $lang);

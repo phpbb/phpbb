@@ -164,7 +164,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request->method('is_ajax')->willReturn($is_ajax);
 		$this->request->expects($this->any())
 			->method('variable')
-			->will($this->returnValueMap($request_data));
+			->willReturnMap($request_data);
 		$this->user->data = [
 			'is_bot'		=> $is_bot,
 			'user_type'		=> $user_type,
@@ -188,6 +188,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->avatar_helper,
 					$this->controller_helper,
 					$this->db,
 					$this->language,
@@ -207,11 +208,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request->method('is_ajax')->willReturn(true);
 		$this->request->expects($this->any())
 			->method('variable')
-			->will($this->returnValueMap([
+			->willReturnMap([
 				['token', '', false, request_interface::REQUEST, 'foobar'],
 				['item_id', 0, false, request_interface::REQUEST, 1],
 				['type_id', 0, false, request_interface::REQUEST, 4],
-			]));
+			]);
 		$this->user->data = [
 			'is_bot'		=> false,
 			'user_type'		=> USER_NORMAL,
@@ -243,6 +244,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->avatar_helper,
 					$this->controller_helper,
 					$this->db,
 					$this->language,
@@ -262,12 +264,12 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request->method('is_ajax')->willReturn(true);
 		$this->request->expects($this->any())
 			->method('variable')
-			->will($this->returnValueMap([
+			->willReturnMap([
 				['token', '', false, request_interface::REQUEST, '0ccf8fcd96a66297b77b66109cbe9870e1a6fa66e42b9bf36d1f2c7263240058'],
 				['item_id', 0, false, request_interface::REQUEST, 1],
 				['type_id', 0, false, request_interface::REQUEST, 4],
 				['user_id', 0, false, request_interface::REQUEST, 2],
-			]));
+			]);
 		$this->user->data = [
 			'is_bot'		=> false,
 			'user_type'		=> USER_NORMAL,
@@ -299,6 +301,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->avatar_helper,
 					$this->controller_helper,
 					$this->db,
 					$this->language,
@@ -318,12 +321,12 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request->method('is_ajax')->willReturn(true);
 		$this->request->expects($this->any())
 			->method('variable')
-			->will($this->returnValueMap([
+			->willReturnMap([
 				['token', '', false, request_interface::REQUEST, '488c17afe4f18714c235b395e21b78df1c3d78bf1e13d0633ed9425d2eebf967'],
 				['item_id', 0, false, request_interface::REQUEST, 1],
 				['type_id', 0, false, request_interface::REQUEST, 4],
 				['user_id', 0, false, request_interface::REQUEST, 2],
-			]));
+			]);
 		$this->user->data = [
 			'is_bot'		=> false,
 			'user_type'		=> USER_NORMAL,
@@ -348,6 +351,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->notification_manager->method('get_item_type_class')
 			->willReturnCallback(function(string $type_name, array $row_data) {
 				$notification_type = new quote(
+					$this->avatar_helper,
 					$this->controller_helper,
 					$this->db,
 					$this->language,
@@ -367,11 +371,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->request->method('is_ajax')->willReturn(true);
 		$this->request->expects($this->any())
 			->method('variable')
-			->will($this->returnValueMap([
+			->willReturnMap([
 				['token', '', false, request_interface::REQUEST, 'foobar'],
 				['item_id', 0, false, request_interface::REQUEST, 2],
 				['type_id', 0, false, request_interface::REQUEST, 4],
-			]));
+			]);
 		$this->user->data = [
 			'is_bot'		=> false,
 			'user_type'		=> USER_NORMAL,

@@ -198,6 +198,7 @@ class user_loader
 
 		$row = [
 			'id'			=> $user['user_id'],
+			'username'		=> $user['username'],
 			'avatar'		=> $user['user_avatar'],
 			'avatar_type'	=> $user['user_avatar_type'],
 			'avatar_width'	=> $user['user_avatar_width'],

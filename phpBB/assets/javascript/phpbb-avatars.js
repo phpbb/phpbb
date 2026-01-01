@@ -11,6 +11,9 @@
 		cropper: null,
 		image: null,
 
+		/** @type {jQuery|null} */
+		$originalAvatar: null,
+
 		/** @type {jQuery} */
 		$form: null,
 
@@ -32,29 +35,43 @@
 		/** @type {string} */
 		driverUpload: 'avatar_driver_upload',
 
+		/** @type {{width: {min: number, max: number}, height: {min: number, max: number}}} Allowed avatar sizes */
+		allowedSizes: {
+			width: { min: -1, max: -1 },
+			height: { min: -1, max: -1 },
+		},
+
 		/**
 		 * Initialise avatar cropping.
 		 */
 		init() {
 			// If the cropper library is not available
-			if (!$.isFunction($.fn.cropper)) {
+			if (!$.fn.hasOwnProperty('cropper') || typeof $.fn.cropper !== 'function') {
 				return;
 			}
+
+			// Set allowed sizes from data attributes
+			const data = this.$data.data();
+			this.allowedSizes.width.min = data.minWidth;
+			this.allowedSizes.width.max = data.maxWidth;
+			this.allowedSizes.height.min = data.minHeight;
+			this.allowedSizes.height.max = data.maxHeight;
 
 			// Correctly position the cropper buttons
 			this.$buttons.appendTo(this.$box);
 
-			// Ensure we have an img for the cropping
-			if (this.$box.children('img').length === 0) {
-				const $avatarImg = $('<img src="" alt="">');
-				$avatarImg.setAttribute('width', phpbb.avatars.$data.data().maxWidth);
-				$avatarImg.setAttribute('height', phpbb.avatars.$data.data().maxHeight);
-				$avatarImg.addClass('avatar');
-				this.image = $avatarImg;
-				this.$box.prepend($avatarImg);
-			} else {
-				this.image = this.$box.children('img');
+			// Add image for cropping but track original avatar if it exists
+			const $existingImg = this.$box.find('img');
+			if ($existingImg.length) {
+				this.$originalAvatar = $existingImg;
 			}
+
+			const $avatarImg = $('<img src="" alt="">');
+			$avatarImg.attr('width', this.allowedSizes.width.max);
+			$avatarImg.attr('height', this.allowedSizes.height.max);
+			$avatarImg.addClass('avatar hidden');
+			this.image = $avatarImg;
+			this.$box.prepend($avatarImg);
 
 			this.bindInput();
 			this.bindSelect();
@@ -67,9 +84,11 @@
 		destroy() {
 			this.$buttons.find('[data-cropper-action]').off('click.phpbb.avatars');
 			this.image.off('crop.phpbb.avatars');
+			this.setAvatarVisible(true);
 			this.$form.off('submit');
 
 			this.$data.val('');
+			this.$input.val(null);
 			this.$buttons.hide();
 			this.$box.removeClass('c-cropper-avatar-box');
 
@@ -87,10 +106,14 @@
 		bindSelect() {
 			this.$driver.on('change', function() {
 				if ($(this).val() === phpbb.avatars.driverUpload) {
-					if (phpbb.avatars.$input.val() !== '') {
-						phpbb.avatars.$input.trigger('change');
-					}
+					// Rebind submit after switching back to upload driver
+					phpbb.avatars.bindSubmit();
 				} else {
+					// Show placeholder avatar if it exists and was hidden
+					if (phpbb.avatars.$box.children('.avatar-placeholder').length) {
+						phpbb.avatars.$box.children('.avatar-placeholder').show();
+					}
+
 					phpbb.avatars.destroy();
 				}
 			});
@@ -112,6 +135,7 @@
 					fileReader.addEventListener('load', function() {
 						phpbb.avatars.image.cropper('destroy').attr('src', this.result).addClass('avatar');
 						phpbb.avatars.$box.addClass('c-cropper-avatar-box');
+						phpbb.avatars.setAvatarVisible(false);
 						phpbb.avatars.initCropper();
 						phpbb.avatars.initButtons();
 					});
@@ -122,13 +146,32 @@
 		},
 
 		/**
+		 * Show or hide the original avatar image.
+		 * @param {boolean} visible
+		 * @return {void}
+		 */
+		setAvatarVisible(visible) {
+			if (this.$originalAvatar !== null) {
+				if (visible) {
+					phpbb.avatars.$originalAvatar.removeClass('hidden');
+				} else {
+					phpbb.avatars.$originalAvatar.addClass('hidden');
+				}
+			}
+		},
+
+		/**
 		 * Bind submit button to be handled by ajax submit
 		 */
 		bindSubmit() {
 			const $this = this;
 			$this.$form = this.$input.closest('form');
 			$this.$form.on('submit', () => {
-				const data = phpbb.avatars.$data.data();
+				if ($this.$form.find('#avatar_delete').is(':checked')) {
+					return;
+				}
+
+				const $submitButton = this.$form.find('fieldset > input[type=submit]').first();
 
 				const avatarCanvas = phpbb.avatars.cropper.getCroppedCanvas({
 					maxWidth: 4096, // High values for max quality cropping
@@ -137,12 +180,12 @@
 
 				// eslint-disable-next-line no-undef
 				const hermiteResize = new Hermite_class();
-				hermiteResize.resample_single(avatarCanvas, data.maxWidth, data.maxHeight, true);
+				hermiteResize.resample_single(avatarCanvas, phpbb.avatars.allowedSizes.width.max, phpbb.avatars.allowedSizes.height.max, true);
 
 				avatarCanvas.toBlob(blob => {
 					const formData = new FormData($this.$form[0]);
 					formData.set('avatar_upload_file', blob, $this.getUploadFileName());
-					formData.set('submit', '1');
+					formData.set($submitButton.attr('name'), $submitButton.val());
 
 					const canvasDataUrl = avatarCanvas.toDataURL('image/png');
 
@@ -181,7 +224,9 @@
 
 		/**
 		 * Handle response from avatar submission
-		 * @param {Object} response AJAX response object
+		 * @param {{MESSAGE_TITLE: string, MESSAGE_TEXT: string,
+		 * 			REFRESH_DATA: {time: int, url: string},
+		 * 			error: {title: string, messages: string[]}}} response AJAX response object
 		 * @param {string} canvasDataUrl Uploaded canvas element as data URL
 		 */
 		uploadDone(response, canvasDataUrl) {
@@ -191,6 +236,9 @@
 
 			// Handle errors while deleting file
 			if (typeof response.error === 'undefined') {
+				// Ensure image is visible after upload
+				phpbb.avatars.image.removeClass('hidden');
+
 				const alert = phpbb.alert(response.MESSAGE_TITLE, response.MESSAGE_TEXT);
 
 				setTimeout(() => {
@@ -198,7 +246,14 @@
 					alert.hide();
 				}, response.REFRESH_DATA.time * 1000);
 
-				phpbb.avatars.image.attr('src', canvasDataUrl);
+				// Update original avatar image if it exists or use added image
+				if (phpbb.avatars.$originalAvatar !== null) {
+					phpbb.avatars.$originalAvatar.attr('src', canvasDataUrl);
+					phpbb.avatars.image.addClass('hidden');
+				} else {
+					phpbb.avatars.image.attr('src', canvasDataUrl);
+				}
+
 				phpbb.avatars.destroy();
 			} else {
 				phpbb.alert(response.error.title, response.error.messages.join('<br>'));
@@ -239,9 +294,14 @@
 		 * and registers a callback function for the 'crop' event.
 		 */
 		initCropper() {
+			// Hide placeholder avatar
+			this.$box.children('.avatar-placeholder').hide();
+
 			this.cropper = this.image.cropper({
 				aspectRatio: 1,
 				autoCropArea: 1,
+				minContainerHeight: this.allowedSizes.height.max * 2, // Double max size for better usability
+				minContainerWidth: this.allowedSizes.width.max * 2, // Double max size for better usability
 			}).data('cropper');
 
 			this.image.off('crop.phpbb.avatars').on('crop.phpbb.avatars', phpbb.avatars.onCrop);
@@ -261,12 +321,12 @@
 		 * @param {object} event
 		 */
 		onCrop(event) {
-			const data = phpbb.avatars.$data.data();
 			let { width, height } = event.detail;
+			const allowedSizes = phpbb.avatars.allowedSizes;
 
-			if (width < data.minWidth || height < data.minHeight) {
-				width = Math.max(data.minWidth, Math.min(data.maxWidth, width));
-				height = Math.max(data.minHeight, Math.min(data.maxHeight, height));
+			if (width < allowedSizes.width.min || height < allowedSizes.height.min) {
+				width = Math.max(allowedSizes.width.min, Math.min(allowedSizes.width.max, width));
+				height = Math.max(allowedSizes.height.min, Math.min(allowedSizes.height.max, height));
 				phpbb.avatars.cropper.setData({
 					width,
 					height,

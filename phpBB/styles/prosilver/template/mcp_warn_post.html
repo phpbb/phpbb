@@ -11,7 +11,7 @@
 
 	<div>
 		<div class="column1">
-			<!-- IF AVATAR_HTML --><div>{AVATAR_HTML}</div><!-- ENDIF -->
+			{% include 'avatar.html' with {'avatar_data': USER_AVATAR} only %}
 		</div>
 
 		<div class="column2">

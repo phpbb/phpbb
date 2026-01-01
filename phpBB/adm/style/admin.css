@@ -2708,6 +2708,38 @@ fieldset.permissions .permissions-switch {
 	padding: 0;
 }
 
+/* Placeholder avatars
+---------------------------------------- */
+.avatar-color-default { background-color: hsl(207, 15%, 80%); }
+.avatar-color-0 { background-color: #d32f2f; }
+.avatar-color-1 { background-color: #c2185b; }
+.avatar-color-2 { background-color: #7b1fa2; }
+.avatar-color-3 { background-color: #512da8; }
+.avatar-color-4 { background-color: #303f9f; }
+
+.avatar-initials {
+	font-size: 36px;
+	font-weight: bold;
+	line-height: 1;
+	color: #ffffff;
+}
+
+.avatar-placeholder {
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80px;
+	height: 80px;
+}
+
+.avatar-initials .o-icon {
+	font-size: 36px;
+	vertical-align: baseline !important;
+	width: auto;
+	height: auto;
+}
+
 /* Dropdown menu
 ---------------------------------------- */
 .dropdown {
