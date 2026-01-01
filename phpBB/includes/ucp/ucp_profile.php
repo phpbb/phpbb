@@ -676,7 +676,6 @@ class ucp_profile
 
 											'MESSAGE_TITLE'	=> $language->lang('INFORMATION'),
 											'MESSAGE_TEXT'	=> $language->lang('PROFILE_UPDATED'),
-											'AVATAR'		=> $avatar_helper->get_template_vars($avatar),
 											'REFRESH_DATA'	=> [
 												'time'	=> 3,
 												'url'		=> $this->u_action,
