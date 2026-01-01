@@ -57,7 +57,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login();
 		// PHP goes faster than DBMS, make sure session data got written to the database
 		sleep(1);
-		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'members/online');
 		// Make sure posting reply page is in the list
 		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
 		$this->assertStringContainsString($this->lang('REPLYING_MESSAGE', $this->get_forum_name_by_topic_id(1)), $crawler->text());
@@ -72,7 +72,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login();
 		// PHP goes faster than DBMS, make sure session data got written to the database
 		sleep(1);
-		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'members/online');
 		// Make sure posting message page is in the list
 		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
 		$this->assertStringContainsString($this->lang('POSTING_MESSAGE', $this->get_forum_name_by_forum_id(2)), $crawler->text());
@@ -88,7 +88,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login();
 		// PHP goes faster than DBMS, make sure session data got written to the database
 		sleep(1);
-		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'members/online');
 		// Make sure posting message page is in the list
 		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
 		$this->assertStringContainsString($this->lang('POSTING_MESSAGE', $this->get_forum_name_by_forum_id(2)), $crawler->text());
@@ -102,7 +102,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login();
 		// PHP goes faster than DBMS, make sure session data got written to the database
 		sleep(1);
-		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'members/online');
 		// Make sure reading topic page is in the list
 		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
 		$this->assertStringContainsString($this->lang('READING_TOPIC', $this->get_forum_name_by_topic_id(1)), $crawler->text());
@@ -116,7 +116,7 @@ class phpbb_functional_viewonline_test extends phpbb_functional_test_case
 		$this->login();
 		// PHP goes faster than DBMS, make sure session data got written to the database
 		sleep(1);
-		$crawler = self::request('GET', 'viewonline.php?sid=' . $this->sid);
+		$crawler = self::request('GET', 'members/online');
 		// Make sure reading forum page is in the list
 		$this->assertStringContainsString('viewonline-test-user1', $crawler->text());
 		$this->assertStringContainsString($this->lang('READING_FORUM', $this->get_forum_name_by_forum_id(2)), $crawler->text());

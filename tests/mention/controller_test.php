@@ -117,6 +117,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$phpbb_container->set('group_helper', new \phpbb\group\helper(
 			$this->getMockBuilder('\phpbb\auth\auth')->disableOriginalConstructor()->getMock(),
 			$avatar_helper,
+			$db,
 			$cache,
 			$config,
 			new \phpbb\language\language(
@@ -131,6 +132,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 				$phpbb_root_path,
 				$phpEx
 			),
+			$this->getMockBuilder('\phpbb\template\template')->disableOriginalConstructor()->getMock(),
 			$user
 		));
 		$phpbb_container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
@@ -552,7 +554,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 				['keyword', '', true, \phpbb\request\request_interface::REQUEST] => $keyword,
 				['topic_id', 0, false, \phpbb\request\request_interface::REQUEST] => $topic_id,
 			};});
-			
+
 		$data = json_decode($this->controller->handle()->getContent(), true);
 		$this->assertEquals($expected_result, $data);
 	}

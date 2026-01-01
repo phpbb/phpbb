@@ -32,6 +32,9 @@ class helper
 	/** @var avatar_helper */
 	protected $avatar_helper;
 
+	/** @var driver_interface */
+	protected $db;
+
 	/** @var cache */
 	protected $cache;
 
@@ -47,6 +50,9 @@ class helper
 	/** @var path_helper */
 	protected $path_helper;
 
+	/** @var template */
+	protected $template;
+
 	/** @var user */
 	protected $user;
 
@@ -61,22 +67,26 @@ class helper
 	 *
 	 * @param auth					$auth			Authentication object
 	 * @param avatar_helper			$avatar_helper	Avatar helper object
+	 * @param driver_interface 		$db 			Database connection
 	 * @param cache					$cache			Cache service object
 	 * @param config				$config			Configuration object
 	 * @param language				$language		Language object
 	 * @param dispatcher_interface	$dispatcher		Event dispatcher object
 	 * @param path_helper			$path_helper	Path helper object
+	 * @param template 				$template 		Template service
 	 * @param user					$user			User object
 	 */
-	public function __construct(auth $auth, avatar_helper $avatar_helper, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, user $user)
+	public function __construct(auth $auth, avatar_helper $avatar_helper, driver_interface $db, cache $cache, config $config, language $language, dispatcher_interface $dispatcher, path_helper $path_helper, template $template, user $user)
 	{
 		$this->auth = $auth;
 		$this->avatar_helper = $avatar_helper;
+		$this->db = $db;
 		$this->cache = $cache;
 		$this->config = $config;
 		$this->language = $language;
 		$this->dispatcher = $dispatcher;
 		$this->path_helper = $path_helper;
+		$this->template = $template;
 		$this->user = $user;
 
 		$this->phpbb_root_path = $path_helper->get_phpbb_root_path();
@@ -304,11 +314,9 @@ class helper
 	/**
 	 * Display groups legend
 	 *
-	 * @param driver_interface $db
-	 * @param template $template
 	 * @return void
 	 */
-	public function display_legend(driver_interface $db, template $template): void
+	public function display_legend(): void
 	{
 		$order_legend = $this->config['legend_sort_groupname'] ? 'group_name' : 'group_legend';
 
@@ -334,18 +342,18 @@ class helper
 					AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $this->user->data['user_id'] . ')
 				ORDER BY g.' . $order_legend . ' ASC';
 		}
-		$result = $db->sql_query($sql);
+		$result = $this->db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $this->db->sql_fetchrow($result))
 		{
 			$show_group_url = $row['group_name'] != 'BOTS' && $this->auth->acl_get('u_viewprofile');
 
-			$template->assign_block_vars('LEGEND', [
+			$this->template->assign_block_vars('LEGEND', [
 				'GROUP_COLOR'		=> $row['group_colour'] ?: '',
 				'GROUP_NAME'		=> $this->get_name($row['group_name']),
 				'GROUP_URL'			=> $show_group_url ? append_sid("{$this->path_helper->get_phpbb_root_path()}memberlist.{$this->path_helper->get_php_ext()}", 'mode=group&amp;g=' . $row['group_id']) : '',
 			]);
 		}
-		$db->sql_freeresult($result);
+		$this->db->sql_freeresult($result);
 	}
 }
