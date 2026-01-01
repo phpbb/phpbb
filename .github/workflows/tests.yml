@@ -226,7 +226,7 @@ jobs:
                   .github/setup-ldap.sh
 
             - name: Setup node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 20
             - name: Setup node dependencies
@@ -364,7 +364,7 @@ jobs:
                   .github/setup-database.sh $DB $MYISAM
 
             - name: Setup node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 20
             - name: Setup node dependencies
@@ -477,7 +477,7 @@ jobs:
                   .github/setup-database.sh $DB $MYISAM
 
             - name: Setup node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 20
             - name: Setup node dependencies
@@ -622,7 +622,7 @@ jobs:
                   Set-MpPreference -ExclusionPath "${env:PGDATA}" # Exclude PGDATA directory from Windows Defender
 
             - name: Setup node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: 20
             - name: Setup node dependencies
