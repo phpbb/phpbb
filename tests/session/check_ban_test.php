@@ -75,7 +75,7 @@ class phpbb_session_check_ban_test extends phpbb_session_test_case
 		// the mock cache object does not hit the database as is needed
 		// for this test.
 		$cache = new \phpbb\cache\service(
-			new \phpbb\cache\driver\file(),
+			new \phpbb\cache\driver\dummy(),
 			$config,
 			$this->db,
 			$phpbb_dispatcher,

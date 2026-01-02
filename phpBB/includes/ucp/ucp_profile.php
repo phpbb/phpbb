@@ -665,11 +665,6 @@ class ucp_profile
 
 									if ($request->is_ajax())
 									{
-										/** @var \phpbb\avatar\helper $avatar_helper */
-										$avatar_helper = $phpbb_container->get('avatar.helper');
-
-										$avatar = $avatar_helper->get_user_avatar($user->data, 'USER_AVATAR', true);
-
 										$json_response = new \phpbb\json_response;
 										$json_response->send(array(
 											'success' => true,

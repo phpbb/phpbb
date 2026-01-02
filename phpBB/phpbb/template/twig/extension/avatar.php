@@ -73,13 +73,19 @@ class avatar extends AbstractExtension
 	{
 		try
 		{
+			// Quickly return if required data is missing
+			if (!isset($row['src'], $row['width'], $row['height'], $row['title']))
+			{
+				return '';
+			}
+
 			return $environment->render('macros/avatar.twig', [
-				'SRC'		=> $row['lazy'] ? $this->avatar_helper->get_no_avatar_source() : $row['src'],
-				'DATA_SRC'	=> $row['lazy'] ? $row['src'] : '',
+				'SRC'		=> !empty($row['lazy']) ? $this->avatar_helper->get_no_avatar_source() : $row['src'],
+				'DATA_SRC'	=> !empty($row['lazy']) ? $row['src'] : '',
 				'WIDTH'		=> $row['width'],
 				'HEIGHT'	=> $row['height'],
 				'TITLE'		=> $row['title'],
-				'LAZY'		=> $row['lazy'],
+				'LAZY'		=> $row['lazy'] ?? false,
 			]);
 		}
 		catch (Error $e)
