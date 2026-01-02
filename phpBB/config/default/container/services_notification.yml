@@ -260,3 +260,49 @@ services:
             - '@request'
             - '@user'
             - '%core.root_path%'
+
+    notification.controller.mark_all_read:
+        class: phpbb\notification\controller\mark_all_read
+        arguments:
+            - '@config'
+            - '@notification_helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    notification.controller.mark_subforums_read:
+        class: phpbb\notification\controller\mark_subforums_read
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@notification_helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+
+    notification.controller.mark_topics_read:
+        class: phpbb\notification\controller\mark_topics_read
+        arguments:
+            - '@config'
+            - '@notification_helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+# ----- Notification's helpers -----
+    notification_helper:
+        class: phpbb\notification\helper
+        arguments:
+            - '@dbal.conn'
+            - '@config'
+            - '@event_dispatcher'
+            - '@notification_manager'
+            - '@request'
+            - '@user'
