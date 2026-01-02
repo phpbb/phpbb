@@ -15,6 +15,7 @@ imports:
     - { resource: services_files.yml }
     - { resource: services_filesystem.yml }
     - { resource: services_finder.yml }
+    - { resource: services_forum.yml }
     - { resource: services_help.yml }
     - { resource: services_http.yml }
     - { resource: services_language.yml }

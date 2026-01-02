@@ -13,6 +13,7 @@
 
 namespace phpbb\mention\controller;
 
+use phpbb\controller\helper;
 use phpbb\di\service_collection;
 use phpbb\request\request_interface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,9 @@ class mention
 	/** @var  request_interface */
 	protected $request;
 
+	/** @var helper */
+	protected $helper;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -37,13 +41,15 @@ class mention
 	 *
 	 * @param service_collection|array $mention_sources
 	 * @param request_interface $request
+	 * @param helper $helper
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct($mention_sources, request_interface $request, string $phpbb_root_path, string $phpEx)
+	public function __construct($mention_sources, request_interface $request, helper $helper, string $phpbb_root_path, string $phpEx)
 	{
 		$this->mention_sources = $mention_sources;
 		$this->request = $request;
+		$this->helper = $helper;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 	}
@@ -57,7 +63,7 @@ class mention
 	{
 		if (!$this->request->is_ajax())
 		{
-			return new RedirectResponse(append_sid($this->phpbb_root_path . 'index.' . $this->php_ext));
+			return new RedirectResponse($this->helper->route('phpbb_index_controller'));
 		}
 
 		$keyword = $this->request->variable('keyword', '', true);

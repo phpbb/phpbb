@@ -184,6 +184,11 @@ class viewonline_helper
 
 			switch ($match['_route'])
 			{
+				case 'phpbb_index_controller':
+					$location = $this->language->lang('INDEX');
+					$location_url = $this->helper->route('phpbb_index_controller');
+					break;
+
 				case 'phpbb_help_bbcode_controller':
 				case 'phpbb_help_faq_controller':
 					$location = $this->language->lang('VIEWING_FAQ');
@@ -219,11 +224,6 @@ class viewonline_helper
 
 			switch ($on_page[1])
 			{
-				case 'index':
-					$location = $this->language->lang('INDEX');
-					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);
-					break;
-
 				case $this->phpbb_adm_relative_path . 'index':
 					$location = $this->language->lang('ACP');
 					$location_url = append_sid($this->phpbb_root_path . "index." . $this->php_ex);

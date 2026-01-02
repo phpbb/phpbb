@@ -1,0 +1,27 @@
+services:
+
+    phpbb.birthday.helper:
+        class: phpbb\forum\birthday_helper
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@language'
+            - '@template'
+            - '@user'
+
+    forum.controller.index:
+        class: phpbb\forum\controller\index
+        arguments:
+            - '@auth'
+            - '@phpbb.birthday.helper'
+            - '@config'
+            - '@controller.helper'
+            - '@dispatcher'
+            - '@group_helper'
+            - '@language'
+            - '@user'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
