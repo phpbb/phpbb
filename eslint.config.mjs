@@ -1,4 +1,4 @@
-const { browser: browserGlobals, node: nodeGlobals, jquery: jqueryGlobals } = (await import('globals')).default;
+import globals from 'globals';
 
 // File patterns to ignore
 const IGNORED_FILES = [
@@ -49,9 +49,9 @@ const mainConfig = {
 		ecmaVersion: 'latest',
 		sourceType: 'module',
 		globals: {
-			...browserGlobals,
-			...nodeGlobals,
-			...jqueryGlobals,
+			...globals.browser,
+			...globals.node,
+			...globals.jquery,
 		},
 	},
 	rules: {

@@ -40,16 +40,8 @@
 	},
 	"homepage": "https://www.phpbb.com",
 	"devDependencies": {
-		"autoprefixer": "^10.4.4",
-		"cssnano": "^5.1.7",
 		"eslint": "^9.28.0",
-		"globals": "^16.2.0",
-		"gulp": "^5.0.0",
-		"gulp-concat": "^2.6.1",
-		"gulp-postcss": "^9.0.1",
-		"gulp-rename": "^2.0.0",
-		"postcss": "^8.4.31",
-		"postcss-sorting": "^7.0.1",
+		"globals": "^17.0.0",
 		"stylelint": "^14.7.0",
 		"stylelint-order": "^5.0.0",
 		"web-push-testing": "^1.1.1"
