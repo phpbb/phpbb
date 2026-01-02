@@ -539,8 +539,8 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 * Marks a topic as posted to
 *
 * @param string $mode (all, topics, topic, post)
-* @param int|bool $forum_id Used in all, topics, and topic mode
-* @param int|bool $topic_id Used in topic and post mode
+* @param array|int|false $forum_id Used in all, topics, and topic mode
+* @param int|false $topic_id Used in topic and post mode
 * @param int $post_time 0 means current time(), otherwise to set a specific mark time
 * @param int $user_id can only be used with $mode == 'post'
 */
@@ -4229,4 +4229,130 @@ function phpbb_get_board_contact_link(\phpbb\config\config $config, $phpbb_root_
 	{
 		return 'mailto:' . htmlspecialchars($config['board_contact'], ENT_COMPAT);
 	}
+}
+
+/**
+ * Get forum rows
+ *
+ * @param $root_data
+ * @return array|false|mixed
+ */
+function get_forums_rows($root_data)
+{
+	global $db, $config, $user, $phpbb_dispatcher;
+
+	if (!$root_data)
+	{
+		$sql_where = '';
+	}
+	else
+	{
+		$sql_where = 'left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
+	}
+
+	// Display list of active topics for this category?
+	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
+
+	$sql_array = array(
+		'SELECT'	=> 'f.*',
+		'FROM'		=> array(
+			FORUMS_TABLE		=> 'f'
+		),
+		'LEFT_JOIN'	=> array(),
+	);
+
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id');
+		$sql_array['SELECT'] .= ', ft.mark_time';
+	}
+
+	if ($show_active)
+	{
+		$sql_array['LEFT_JOIN'][] = array(
+			'FROM'	=> array(FORUMS_ACCESS_TABLE => 'fa'),
+			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . $db->sql_escape($user->session_id) . "'"
+		);
+
+		$sql_array['SELECT'] .= ', fa.user_id';
+	}
+
+	$sql_ary = array(
+		'SELECT'	=> $sql_array['SELECT'],
+		'FROM'		=> $sql_array['FROM'],
+		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
+
+		'WHERE'		=> $sql_where,
+
+		'ORDER_BY'	=> 'f.left_id',
+	);
+
+	/**
+	 * Event to modify the SQL query before the forum data is queried
+	 *
+	 * @event core.display_forums_modify_sql
+	 * @var	array	sql_ary		The SQL array to get the data of the forums
+	 * @since 3.1.0-a1
+	 */
+	$vars = array('sql_ary');
+	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
+
+	$sql = $db->sql_build_query('SELECT', $sql_ary);
+	$result = $db->sql_query($sql);
+	$data = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
+
+	return $data;
+}
+
+/**
+ * Get forum data
+ *
+ * @param int $forum_id
+ * @return array|false
+ */
+function get_forum_data($forum_id)
+{
+	global $user, $config, $phpbb_dispatcher, $db;
+
+	$sql_ary = [
+		'SELECT' => 'f.*',
+		'FROM' => [
+			FORUMS_TABLE => 'f',
+		],
+		'WHERE' => 'f.forum_id = ' . $forum_id,
+	];
+
+	// Grab appropriate forum data
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		$sql_ary['LEFT_JOIN'][] = [
+			'FROM' => [FORUMS_TRACK_TABLE => 'ft'],
+			'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id',
+		];
+		$sql_ary['SELECT'] .= ', ft.mark_time';
+	}
+
+	if ($user->data['is_registered'])
+	{
+		$sql_ary['LEFT_JOIN'][] = [
+			'FROM' => [FORUMS_WATCH_TABLE => 'fw'],
+			'ON' => 'fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'],
+		];
+		$sql_ary['SELECT'] .= ', fw.notify_status';
+	}
+
+	/**
+	 * You can use this event to modify the sql that selects the forum on the viewforum page.
+	 *
+	 * @event core.viewforum_modify_sql
+	 * @var array    sql_ary        The SQL array to get the data for a forum
+	 * @since 3.3.14-RC1
+	 */
+	$vars = ['sql_ary'];
+	extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_sql', compact($vars)));
+	$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
+	$forum_data = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+	return $forum_data;
 }

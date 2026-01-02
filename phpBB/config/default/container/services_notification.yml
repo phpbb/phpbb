@@ -260,3 +260,35 @@ services:
             - '@request'
             - '@user'
             - '%core.root_path%'
+
+    notification.controller.mark_all_read:
+        class: phpbb\notification\controller\mark_all_read
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    notification.controller.mark_subforums_read:
+        class: phpbb\notification\controller\mark_subforums_read
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+
+    notification.controller.mark_topics_read:
+        class: phpbb\notification\controller\mark_topics_read
+        arguments:
+            - '@config'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'

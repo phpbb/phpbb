@@ -20,13 +20,15 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
+/* @var $controller_helper \phpbb\controller\helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 // Start session
 $user->session_begin();
 $auth->acl($user->data);
 
 // Start initial var setup
 $forum_id	= $request->variable('f', 0);
-$mark_read	= $request->variable('mark', '');
 $start		= $request->variable('start', 0);
 
 $default_sort_days	= (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0;
@@ -47,47 +49,7 @@ if (!$forum_id)
 	trigger_error('NO_FORUM');
 }
 
-$sql_ary = [
-	'SELECT'	=> 'f.*',
-	'FROM'		=> [
-		FORUMS_TABLE		=> 'f',
-	],
-	'WHERE'		=> 'f.forum_id = ' . $forum_id,
-];
-
-$lastread_select = '';
-
-// Grab appropriate forum data
-if ($config['load_db_lastread'] && $user->data['is_registered'])
-{
-	$sql_ary['LEFT_JOIN'][] = [
-		'FROM' => [FORUMS_TRACK_TABLE => 'ft'],
-		'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id',
-	];
-	$sql_ary['SELECT'] .= ', ft.mark_time';
-}
-
-if ($user->data['is_registered'])
-{
-	$sql_ary['LEFT_JOIN'][] = [
-		'FROM' => [FORUMS_WATCH_TABLE => 'fw'],
-		'ON' => 'fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'],
-	];
-	$sql_ary['SELECT'] .= ', fw.notify_status';
-}
-
-/**
- * You can use this event to modify the sql that selects the forum on the viewforum page.
- *
- * @event core.viewforum_modify_sql
- * @var array	sql_ary		The SQL array to get the data for a forum
- * @since 3.3.14-RC1
- */
-$vars = ['sql_ary'];
-extract($phpbb_dispatcher->trigger_event('core.viewforum_modify_sql', compact($vars)));
-$result = $db->sql_query($db->sql_build_query('SELECT', $sql_ary));
-$forum_data = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+$forum_data = get_forum_data($forum_id);
 
 if (!$forum_data)
 {
@@ -155,7 +117,7 @@ $active_forum_ary = $moderators = array();
 
 if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 {
-	list($active_forum_ary, $moderators) = display_forums($forum_data, $config['load_moderators'], $config['load_moderators']);
+	list($active_forum_ary, $moderators) = display_forums($forum_data, $config['load_moderators']);
 }
 else
 {
@@ -221,34 +183,6 @@ if (!$auth->acl_gets('f_read', 'f_list_topics', $forum_id))
 	));
 
 	page_footer();
-}
-
-// Handle marking posts
-if ($mark_read == 'topics')
-{
-	$token = $request->variable('hash', '');
-	if (check_link_hash($token, 'global'))
-	{
-		markread('topics', array($forum_id), false, $request->variable('mark_time', 0));
-	}
-	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
-	meta_refresh(3, $redirect_url);
-
-	if ($request->is_ajax())
-	{
-		// Tell the ajax script what language vars and URL need to be replaced
-		$data = array(
-			'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-			'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
-			'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&f=$forum_id&mark=topics&mark_time=" . time(), false) : '',
-			'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-			'MESSAGE_TEXT'		=> $user->lang['TOPICS_MARKED']
-		);
-		$json_response = new \phpbb\json_response();
-		$json_response->send($data);
-	}
-
-	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
 }
 
 // Do the forum Prune thang - cron type job ...
@@ -461,7 +395,7 @@ $template->assign_vars(array(
 	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start == 0) ? '' : "&amp;start=$start")),
 	'U_CANONICAL'		=> generate_board_url() . '/' . append_sid("viewforum.$phpEx", "f=$forum_id" . (($start) ? "&amp;start=$start" : ''), true, ''),
-	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics&amp;mark_time=" . time()) : '',
+	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_notifications_mark_topics_read', ['id' => $forum_id, 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 	'U_SEARCH_FORUM'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'fid%5B%5D=' . $forum_id),
 ));
 

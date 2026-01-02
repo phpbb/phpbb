@@ -4,3 +4,24 @@ phpbb_notifications_mark_read:
         _controller:  notification.controller.mark_read:handle
     requirements:
         id:         \d+
+
+phpbb_notifications_mark_all_read:
+    path:             /mark-all-read
+    defaults:
+        _controller:  notification.controller.mark_all_read:handle
+
+
+phpbb_notifications_mark_subforums_read:
+    path:             /mark-subforums-read/{id}
+    defaults:
+        _controller:  notification.controller.mark_subforums_read:handle
+    requirements:
+        id:         \d+
+
+
+phpbb_notifications_mark_topics_read:
+    path:             /mark-topics-read/{id}
+    defaults:
+        _controller:  notification.controller.mark_topics_read:handle
+    requirements:
+        id:         \d+
