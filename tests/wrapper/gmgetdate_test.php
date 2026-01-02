@@ -13,15 +13,15 @@
 
 class phpbb_wrapper_gmgetdate_test extends phpbb_test_case
 {
-	public static function phpbb_gmgetdate_data()
+	public static function phpbb_gmgetdate_data(): array
 	{
-		return array(
-			array(''),
-			array('UTC'),
-			array('Europe/Berlin'),
-			array('America/Los_Angeles'),
-			array('Antarctica/South_Pole'),
-		);
+		return [
+			[''],
+			['UTC'],
+			['Europe/Berlin'],
+			['America/Los_Angeles'],
+			['Pacific/Auckland'],
+		];
 	}
 
 	/**
