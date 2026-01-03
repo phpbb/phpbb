@@ -22,6 +22,16 @@ services:
         tags:
             - { name: update_database_task, order: 20 }
 
+    installer.update_database.disable_extensions:
+        class: phpbb\install\module\update_database\task\disable_extensions
+        arguments:
+            - '@installer.helper.container_factory'
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.update_helper'
+        tags:
+            - { name: update_database_task, order: 30 }
+
     installer.module.update_database_collection:
         class: phpbb\di\ordered_service_collection
         arguments:
