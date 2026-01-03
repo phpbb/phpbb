@@ -25,7 +25,7 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
-display_forums('', $config['load_moderators']);
+display_forums('');
 
 /** @var \phpbb\group\helper $group_helper */
 $group_helper = $phpbb_container->get('group_helper');
@@ -127,7 +127,7 @@ $template->assign_vars(array(
 	'S_INDEX'					=> true,
 
 	'U_CANONICAL'		=> generate_board_url() . '/',
-	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;mark=forums&amp;mark_time=' . time()) : '',
+	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_notifications_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=front') : '')
 );
 

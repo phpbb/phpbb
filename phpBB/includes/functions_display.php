@@ -22,89 +22,32 @@ if (!defined('IN_PHPBB'))
 /**
 * Display Forums
 */
-function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
+function display_forums($root_data = '', $return_moderators = false)
 {
-	global $db, $auth, $user, $template;
+	global $auth, $user, $template, $request;
 	global $phpbb_root_path, $phpEx, $config;
-	global $request, $phpbb_dispatcher, $phpbb_container;
+	global $phpbb_dispatcher, $phpbb_container;
 
-	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
+	/** @var \phpbb\controller\helper  */
+	$controller_helper = $phpbb_container->get('controller.helper');
+
+	$forum_rows = $subforums = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
 	$parent_subforum_limit = false;
 
-	// Mark forums read?
-	$mark_read = $request->variable('mark', '');
-
-	if ($mark_read == 'all')
-	{
-		$mark_read = '';
-	}
+	$rows = get_forums_rows($root_data);
 
 	if (!$root_data)
 	{
-		if ($mark_read == 'forums')
-		{
-			$mark_read = 'all';
-		}
-
 		$root_data = array('forum_id' => 0);
-		$sql_where = '';
-	}
-	else
-	{
-		$sql_where = 'left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
-	}
-
-	// Handle marking everything read
-	if ($mark_read == 'all')
-	{
-		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		meta_refresh(3, $redirect);
-
-		if (check_link_hash($request->variable('hash', ''), 'global'))
-		{
-			markread('all', false, false, $request->variable('mark_time', 0));
-
-			if ($request->is_ajax())
-			{
-				// Tell the ajax script what language vars and URL need to be replaced
-				$data = array(
-					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
-					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}index.$phpEx", 'hash=' . generate_link_hash('global') . '&mark=forums&mark_time=' . time(), false) : '',
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
-				);
-				$json_response = new \phpbb\json_response();
-				$json_response->send($data);
-			}
-
-			trigger_error(
-				$user->lang['FORUMS_MARKED'] . '<br /><br />' .
-				sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>')
-			);
-		}
-		else
-		{
-			trigger_error(sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
-		}
 	}
 
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-	$sql_array = array(
-		'SELECT'	=> 'f.*',
-		'FROM'		=> array(
-			FORUMS_TABLE		=> 'f'
-		),
-		'LEFT_JOIN'	=> array(),
-	);
-
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
-		$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id');
-		$sql_array['SELECT'] .= ', ft.mark_time';
+
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
@@ -117,46 +60,13 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 	}
 
-	if ($show_active)
-	{
-		$sql_array['LEFT_JOIN'][] = array(
-			'FROM'	=> array(FORUMS_ACCESS_TABLE => 'fa'),
-			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . $db->sql_escape($user->session_id) . "'"
-		);
-
-		$sql_array['SELECT'] .= ', fa.user_id';
-	}
-
-	$sql_ary = array(
-		'SELECT'	=> $sql_array['SELECT'],
-		'FROM'		=> $sql_array['FROM'],
-		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
-
-		'WHERE'		=> $sql_where,
-
-		'ORDER_BY'	=> 'f.left_id',
-	);
-
-	/**
-	* Event to modify the SQL query before the forum data is queried
-	*
-	* @event core.display_forums_modify_sql
-	* @var	array	sql_ary		The SQL array to get the data of the forums
-	* @since 3.1.0-a1
-	*/
-	$vars = array('sql_ary');
-	extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_sql', compact($vars)));
-
-	$sql = $db->sql_build_query('SELECT', $sql_ary);
-	$result = $db->sql_query($sql);
-
 	$forum_tracking_info = $valid_categories = array();
 	$branch_root_id = $root_data['forum_id'];
 
 	/* @var $phpbb_content_visibility \phpbb\content_visibility */
 	$phpbb_content_visibility = $phpbb_container->get('content.visibility');
 
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($rows as $row)
 	{
 		/**
 		* Event to modify the data set of a forum
@@ -172,17 +82,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_row', compact($vars)));
 
 		$forum_id = $row['forum_id'];
-
-		// Mark forums read?
-		if ($mark_read == 'forums')
-		{
-			if ($auth->acl_get('f_list', $forum_id))
-			{
-				$forum_ids[] = $forum_id;
-			}
-
-			continue;
-		}
 
 		// Category with no members
 		if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
@@ -338,46 +237,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$vars = array('forum_rows', 'subforums', 'branch_root_id', 'parent_id', 'row');
 		extract($phpbb_dispatcher->trigger_event('core.display_forums_modify_forum_rows', compact($vars)));
 	}
-	$db->sql_freeresult($result);
-
-	// Handle marking posts
-	if ($mark_read == 'forums')
-	{
-		$redirect = build_url(array('mark', 'hash', 'mark_time'));
-		$token = $request->variable('hash', '');
-		if (check_link_hash($token, 'global'))
-		{
-			markread('topics', $forum_ids, false, $request->variable('mark_time', 0));
-			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
-			meta_refresh(3, $redirect);
-
-			if ($request->is_ajax())
-			{
-				// Tell the ajax script what language vars and URL need to be replaced
-				$data = array(
-					'NO_UNREAD_POSTS'	=> $user->lang['NO_UNREAD_POSTS'],
-					'UNREAD_POSTS'		=> $user->lang['UNREAD_POSTS'],
-					'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&f=' . $root_data['forum_id'] . '&mark=forums&mark_time=' . time(), false) : '',
-					'MESSAGE_TITLE'		=> $user->lang['INFORMATION'],
-					'MESSAGE_TEXT'		=> $user->lang['FORUMS_MARKED']
-				);
-				$json_response = new \phpbb\json_response();
-				$json_response->send($data);
-			}
-
-			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
-		}
-		else
-		{
-			$message = sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
-			meta_refresh(3, $redirect);
-			trigger_error($message);
-		}
-
-	}
 
 	// Grab moderators ... if necessary
-	if ($display_moderators)
+	if ($config['load_moderators'])
 	{
 		if ($return_moderators)
 		{
@@ -385,6 +247,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		get_moderators($forum_moderators, $forum_ids_moderator);
 	}
+
+	$display_moderators = $config['load_moderators'];
 
 	/**
 	* Event to perform additional actions before the forum list is being generated
@@ -560,7 +424,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 		// Output moderator listing ... if applicable
 		$l_moderator = $moderators_list = '';
-		if ($display_moderators && !empty($forum_moderators[$forum_id]))
+		if ($config['load_moderators'] && !empty($forum_moderators[$forum_id]))
 		{
 			$l_moderator = (count($forum_moderators[$forum_id]) == 1) ? $user->lang['MODERATOR'] : $user->lang['MODERATORS'];
 			$moderators_list = implode($user->lang['COMMA_SEPARATOR'], $forum_moderators[$forum_id]);
@@ -691,13 +555,15 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums&amp;mark_time=' . time()) : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_notifications_mark_subforums_read', ['id' => $root_data['forum_id'], 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPICS_UNAPPROVED'),
 		'UNAPPROVED_POST_IMG'	=> $user->img('icon_topic_unapproved', 'POSTS_UNAPPROVED_FORUM'),
 	));
+
+	$display_moderators = $config['load_moderators'];
 
 	/**
 	* Event to perform additional actions after the forum list has been generated
