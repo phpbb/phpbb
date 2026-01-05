@@ -122,7 +122,7 @@ class index
 			'NEWEST_USER'	=> $this->language->lang('NEWEST_USER', get_username_string('full', $this->config['newest_user_id'], $this->config['newest_username'], $this->config['newest_user_colour'])),
 
 			'S_LOGIN_ACTION'			=> append_sid("{$this->phpbb_root_path}ucp.$this->phpEx", 'mode=login'),
-			'U_SEND_PASSWORD'           => ($this->config['email_enable'] && $this->config['allow_password_reset']) ? $this->controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
+			'U_SEND_PASSWORD'			=> ($this->config['email_enable'] && $this->config['allow_password_reset']) ? $this->controller_helper->route('phpbb_ucp_forgot_password_controller') : '',
 			'S_INDEX'					=> true,
 
 			'U_CANONICAL'		=> generate_board_url() . '/',

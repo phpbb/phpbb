@@ -77,7 +77,7 @@ class birthday_helper
 	{
 		$show_birthdays = ($this->config['load_birthdays'] && $this->config['allow_birthdays'] && $this->auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'));
 
-		$birthdays = $birthday_list = array();
+		$birthdays = array();
 		if ($show_birthdays)
 		{
 			$time = $this->user->create_datetime();
