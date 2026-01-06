@@ -72,7 +72,7 @@ else for ($i=0; $i<count($files); $i++)
 	{
 		if (strpos($data, $not_compatible[$j]) !== false)
 		{
-			echo 'Error: ', $file, ' contains ', $not_compatible[$j], '. That variable cannot be converted.<br />';
+			echo 'Error: ', htmlspecialchars($file, ENT_QUOTES), ' contains ', htmlspecialchars($not_compatible[$j], ENT_QUOTES), '. That variable cannot be converted.<br />';
 			continue;
 		}
 	}
@@ -85,11 +85,11 @@ else for ($i=0; $i<count($files); $i++)
 	}
 	if (md5($data) == $hash)
 	{
-		echo 'Nothing to replace in ', $file, '<br />';
+		echo 'Nothing to replace in ', htmlspecialchars($file, ENT_QUOTES), '<br />';
 	}
 	else
 	{
-		echo 'Updated ', $file, ':', dump_code($data, $files[$i]);
+		echo 'Updated ', htmlspecialchars($file, ENT_QUOTES), ':', dump_code($data, $files[$i]);
 	}
 }
 
@@ -279,7 +279,8 @@ function dump_code($code, $filename = 'file.txt')
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
 		header('Content-Type: application/force-download');
-		header('Content-Disposition: attachment; filename="' . $filename . '";');
+		$safe_filename = preg_replace('/[^A-Za-z0-9._-]/', '_', basename($filename));
+		header('Content-Disposition: attachment; filename="' . $safe_filename . '";');
 		header('Content-Transfer-Encoding: binary');
 		header('Content-Length: ' . strlen($code));
 		echo $code;
