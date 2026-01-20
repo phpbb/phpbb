@@ -257,8 +257,10 @@ class ucp_login_link
 	*/
 	protected function perform_redirect()
 	{
-		global $phpbb_root_path, $phpEx;
-		$url = append_sid($phpbb_root_path . 'index.' . $phpEx);
+		global $phpbb_container;
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+		$url = $controller_helper->route('phpbb_index_controller');
 		redirect($url);
 	}
 }

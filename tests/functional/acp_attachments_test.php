@@ -46,7 +46,7 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 
 	private function upload_file($filename, $mimetype)
 	{
-		$crawler = self::$client->request(
+		$crawler = self::request(
 			'GET',
 			'posting.php?mode=reply&f=2&t=1&sid=' . $this->sid
 		);

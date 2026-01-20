@@ -4,6 +4,7 @@ services:
         arguments:
             - '@config'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@request'
             - '@user'
