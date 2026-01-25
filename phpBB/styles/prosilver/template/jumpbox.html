@@ -1,30 +1,5 @@
 
 <div class="action-bar actions-jump">
-	<!-- IF S_VIEWTOPIC -->
-	<p class="jumpbox-return">
-		<a href="{U_VIEW_FORUM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
-			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('RETURN_TO_FORUM'), false, 'fas c-return-arrow-icon') }}
-		</a>
-	</p>
-	<!-- ELSEIF S_VIEWFORUM -->
-	<p class="jumpbox-return">
-		<a href="{U_INDEX}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" accesskey="r">
-			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('RETURN_TO_INDEX'), false, 'fas c-return-arrow-icon') }}
-		</a>
-	</p>
-	<!-- ELSEIF SEARCH_TOPIC -->
-	<p class="jumpbox-return">
-		<a class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}" accesskey="r">
-			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('RETURN_TO_TOPIC'), false, 'fas c-return-arrow-icon') }}
-		</a>
-	</p>
-	<!-- ELSEIF S_SEARCH_ACTION -->
-	<p class="jumpbox-return">
-		<a class="left-box arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}" accesskey="r">
-			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('GO_TO_SEARCH_ADV'), false, 'fas c-return-arrow-icon') }}
-		</a>
-	</p>
-	<!-- ENDIF -->
 
 	<!-- IF S_DISPLAY_JUMPBOX -->
 	<div class="jumpbox dropdown-container dropdown-container-right<!-- IF not S_IN_MCP --> dropdown-up<!-- ENDIF --> dropdown-{S_CONTENT_FLOW_BEGIN} dropdown-button-control" id="jumpbox">
