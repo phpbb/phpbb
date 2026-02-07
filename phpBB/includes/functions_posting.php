@@ -331,7 +331,6 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		foreach ($empty_forums as $forum_id)
 		{
 			$update_sql[$forum_id][] = 'forum_last_post_id = 0';
-			$update_sql[$forum_id][] = "forum_last_post_subject = ''";
 			$update_sql[$forum_id][] = 'forum_last_post_time = 0';
 			$update_sql[$forum_id][] = 'forum_last_poster_id = 0';
 			$update_sql[$forum_id][] = "forum_last_poster_name = ''";
@@ -342,7 +341,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	if (count($last_post_ids))
 	{
 		$sql_ary = array(
-			'SELECT'	=> 'p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour',
+			'SELECT'	=> 'p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour',
 			'FROM'		=> array(
 				POSTS_TABLE	=> 'p',
 				USERS_TABLE => 'u',
@@ -371,7 +370,6 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		{
 			$rowset[] = $row;
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
 			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
@@ -1201,7 +1199,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$row = $rowset[$post_list[$i]];
 
 		$poster_id		= $row['user_id'];
-		$post_subject	= $row['post_subject'];
 
 		$decoded_message = false;
 
@@ -1223,7 +1220,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 		}
 
-		$post_subject = censor_text($post_subject);
 
 		$post_anchor = ($mode == 'post_review') ? 'ppr' . $row['post_id'] : 'pr' . $row['post_id'];
 		$u_show_post = append_sid($phpbb_root_path . 'viewtopic.' . $phpEx, "t=$topic_id&amp;p={$row['post_id']}&amp;view=show#p{$row['post_id']}");
@@ -1266,7 +1262,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'S_POST_DELETED'	=> $row['post_visibility'] == ITEM_DELETED,
 			'L_DELETE_POST'		=> $l_deleted_message,
 
-			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
 			'MESSAGE'			=> $message,
@@ -1771,7 +1766,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'enable_magic_url'	=> $data_ary['enable_urls'],
 				'enable_sig'		=> $data_ary['enable_sig'],
 				'post_username'		=> (!$user->data['is_registered']) ? $username : '',
-				'post_subject'		=> $subject,
 				'post_text'			=> $data_ary['message'],
 				'post_checksum'		=> $data_ary['message_md5'],
 				'post_attachment'	=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
@@ -1845,7 +1839,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'enable_magic_url'	=> $data_ary['enable_urls'],
 				'enable_sig'		=> $data_ary['enable_sig'],
 				'post_username'		=> ($username && $data_ary['poster_id'] == ANONYMOUS) ? $username : '',
-				'post_subject'		=> $subject,
 				'post_checksum'		=> $data_ary['message_md5'],
 				'post_attachment'	=> (!empty($data_ary['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data_ary['bbcode_bitfield'],
@@ -2056,7 +2049,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				'topic_last_poster_id'		=> $sql_data[POSTS_TABLE]['sql']['poster_id'],
 				'topic_last_poster_name'	=> ($user->data['user_id'] == ANONYMOUS) ? $sql_data[POSTS_TABLE]['sql']['post_username'] : $user->data['username'],
 				'topic_last_poster_colour'	=> $user->data['user_colour'],
-				'topic_last_post_subject'	=> (string) $subject,
 			);
 		}
 
@@ -2075,7 +2067,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			$config->increment('num_posts', 1, false);
 
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data_ary['post_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . $current_time;
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $user->data['user_id'];
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')) . "'";
@@ -2277,10 +2268,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 	{
 		if ($post_visibility == ITEM_APPROVED || $data_ary['topic_visibility'] == $post_visibility)
 		{
-			// only the subject can be changed from edit
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
-
-			// Maybe not only the subject, but also changing anonymous usernames. ;)
+			// Maybe changing anonymous usernames
 			if ((int) $data_ary['poster_id'] == ANONYMOUS)
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
@@ -2290,7 +2278,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 			{
 				// this does not _necessarily_ mean that we must update the info again,
 				// it just means that we might have to
-				$sql = 'SELECT forum_last_post_id, forum_last_post_subject
+				$sql = 'SELECT forum_last_post_id
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . (int) $data_ary['forum_id'];
 				$result = $db->sql_query($sql);
@@ -2298,19 +2286,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 				$db->sql_freeresult($result);
 
 				// this post is the latest post in the forum, better update
-				if ($row['forum_last_post_id'] == $data_ary['post_id'] && ($row['forum_last_post_subject'] !== $subject || (int) $data_ary['poster_id'] == ANONYMOUS))
+				if ($row['forum_last_post_id'] == $data_ary['post_id'] && (int) $data_ary['poster_id'] == ANONYMOUS)
 				{
-					// the post's subject changed
-					if ($row['forum_last_post_subject'] !== $subject)
-					{
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
-					}
-
 					// Update the user name if poster is anonymous... just in case a moderator changed it
-					if ((int) $data_ary['poster_id'] == ANONYMOUS)
-					{
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
-					}
+					$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
 				}
 			}
 		}
@@ -2439,7 +2418,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 		'poster_id'			=> $poster_id,
 		'post_text'			=> $data_ary['message'],
 		'post_time'			=> $current_time,
-		'post_subject'		=> $subject,
 	));
 
 	/**
@@ -2653,7 +2631,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll_ary, &$data
 *				- 'topic_title'
 *				- 'topic_last_post_id'
 *				- 'topic_last_poster_id'
-*				- 'topic_last_post_subject'
 *				- 'topic_last_poster_name'
 *				- 'topic_last_poster_colour'
 * @param int $bump_time The time at which topic was bumped, usually it is a current time as obtained via time().
@@ -2690,7 +2667,6 @@ function phpbb_bump_topic($forum_id, $topic_id, $post_data, $bump_time = false)
 	$sql = 'UPDATE ' . FORUMS_TABLE . "
 		SET forum_last_post_id = " . $post_data['topic_last_post_id'] . ",
 			forum_last_poster_id = " . $post_data['topic_last_poster_id'] . ",
-			forum_last_post_subject = '" . $db->sql_escape($post_data['topic_last_post_subject']) . "',
 			forum_last_post_time = $bump_time,
 			forum_last_poster_name = '" . $db->sql_escape($post_data['topic_last_poster_name']) . "',
 			forum_last_poster_colour = '" . $db->sql_escape($post_data['topic_last_poster_colour']) . "'
@@ -2872,7 +2848,7 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 					'forum_id' => $forum_id,
 					'topic_id' => $topic_id,
 					'post_id'  => $post_id,
-					$post_data['post_subject'],
+					$post_data['topic_title'],
 					$post_username,
 					$delete_reason
 				));

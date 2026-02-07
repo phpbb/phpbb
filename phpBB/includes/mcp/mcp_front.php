@@ -113,7 +113,7 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total)
 			{
-				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.post_attachment, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
+				$sql = 'SELECT p.post_id, p.post_time, p.post_attachment, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
 						AND t.topic_id = p.topic_id
@@ -159,7 +159,6 @@ function mcp_front_view($id, $mode, $action)
 						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 					];
@@ -234,7 +233,7 @@ function mcp_front_view($id, $mode, $action)
 			if ($total)
 			{
 				$sql_ary = array(
-					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+					'SELECT'	=> 'r.report_time, p.post_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 					'FROM'		=> array(
 						REPORTS_TABLE			=> 'r',
@@ -298,7 +297,6 @@ function mcp_front_view($id, $mode, $action)
 
 						'FORUM_NAME'	=> $row['forum_name'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'REPORT_TIME'	=> $user->format_date($row['report_time']),
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',

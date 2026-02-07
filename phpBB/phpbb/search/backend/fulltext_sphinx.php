@@ -307,7 +307,7 @@ class fulltext_sphinx implements search_backend_interface
 				case 'i':
 
 				case 's':
-					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'post_subject ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
+					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'topic_title ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
 				break;
 
 				case 't':
@@ -332,7 +332,7 @@ class fulltext_sphinx implements search_backend_interface
 				case 'i':
 
 				case 's':
-					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'post_subject');
+					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'topic_title');
 				break;
 
 				case 't':
@@ -877,8 +877,8 @@ class fulltext_sphinx implements search_backend_interface
 						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
-						p.post_subject,
-						p.post_subject as title,
+						t.topic_title,
+						t.topic_title as title,
 						p.post_text as data,
 						t.topic_last_post_time,
 						0 as deleted
@@ -896,7 +896,7 @@ class fulltext_sphinx implements search_backend_interface
 				array('sql_attr_bool',				'deleted'),
 				array('sql_attr_timestamp',			'post_time'),
 				array('sql_attr_timestamp',			'topic_last_post_time'),
-				array('sql_attr_string',			'post_subject'),
+				array('sql_attr_string',			'topic_title'),
 			),
 			'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
 				array('sql_query_pre',				'SET NAMES \'utf8\''),
@@ -910,8 +910,8 @@ class fulltext_sphinx implements search_backend_interface
 						p.post_visibility,
 						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
 						p.post_time,
-						p.post_subject,
-						p.post_subject as title,
+						t.topic_title,
+						t.topic_title as title,
 						p.post_text as data,
 						t.topic_last_post_time,
 						0 as deleted

@@ -829,15 +829,16 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 
 		if (!empty($data['posts']))
 		{
-			$sql = 'SELECT *
-				FROM phpbb_posts
-				WHERE ' . $this->db->sql_in_set('post_subject', $data['posts']);
+			$sql = 'SELECT p.*, t.topic_title
+				FROM phpbb_posts p
+				LEFT JOIN phpbb_topics t ON (p.topic_id = t.topic_id)
+				WHERE ' . $this->db->sql_in_set('t.topic_title', $data['posts']);
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (in_array($row['post_subject'], $data['posts']))
+				if (in_array($row['topic_title'], $data['posts']))
 				{
-					$this->data['posts'][$row['post_subject']] = (int) $row['post_id'];
+					$this->data['posts'][$row['topic_title']] = (int) $row['post_id'];
 				}
 			}
 			$this->db->sql_freeresult($result);

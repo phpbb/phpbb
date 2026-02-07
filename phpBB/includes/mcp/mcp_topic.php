@@ -263,7 +263,6 @@ function mcp_topic_view($id, $mode, $action)
 	foreach ($rowset as $current_row_number => $row)
 	{
 		$message = $row['post_text'];
-		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
 
 		$parse_flags = ($row['bbcode_bitfield'] ? OPTION_FLAG_BBCODE : 0) | OPTION_FLAG_SMILIES;
 		$message = generate_text_for_display($message, $row['bbcode_uid'], $row['bbcode_bitfield'], $parse_flags, false);
@@ -293,7 +292,6 @@ function mcp_topic_view($id, $mode, $action)
 			'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
 			'POST_DATE'		=> $user->format_date($row['post_time']),
-			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
 			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
@@ -660,9 +658,8 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			$topic_info['topic_title']
 		));
 
-		// Change topic title of first post and write icon_id to post
+		// Change icon_id of first post
 		$sql_ary = [
-			'post_subject'		=> $subject,
 			'icon_id'			=> $icon_id,
 		];
 		$sql = 'UPDATE ' . POSTS_TABLE . '

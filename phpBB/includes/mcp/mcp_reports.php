@@ -293,7 +293,6 @@ class mcp_reports
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
 					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
@@ -476,7 +475,7 @@ class mcp_reports
 
 				if (count($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
 						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
@@ -525,7 +524,6 @@ class mcp_reports
 
 							'FORUM_NAME'	=> $forum_data[$row['forum_id']]['forum_name'],
 							'POST_ID'		=> $row['post_id'],
-							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 							'POST_TIME'		=> $user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> $user->format_date($row['report_time']),
@@ -788,7 +786,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 					'forum_id' => $post_info[$report['post_id']]['forum_id'],
 					'topic_id' => $post_info[$report['post_id']]['topic_id'],
 					'post_id'  => $report['post_id'],
-					$post_info[$report['post_id']]['post_subject']
+					$post_info[$report['post_id']]['topic_title']
 				));
 				$phpbb_notifications->delete_notifications('notification.type.report_post', $report['post_id']);
 			}

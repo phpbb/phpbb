@@ -263,7 +263,6 @@ function mcp_post_details($id, $mode, $action)
 		'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 
 		'POST_PREVIEW'			=> $message,
-		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
 		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',

@@ -446,9 +446,9 @@ if (!isset($topic_tracking_info))
 // Post ordering options
 $limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-$sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => array('p.post_time', 'p.post_id'), 's' => array('p.post_subject', 'p.post_id'));
-$join_user_sql = array('a' => true, 't' => false, 's' => false);
+$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME']);
+$sort_by_sql = array('a' => array('u.username_clean', 'p.post_id'), 't' => array('p.post_time', 'p.post_id'));
+$join_user_sql = array('a' => true, 't' => false);
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 
@@ -1362,7 +1362,6 @@ while ($row = $db->sql_fetchrow($result))
 		'user_colour'		=> $row['user_colour'],
 		'topic_id'			=> $row['topic_id'],
 		'forum_id'			=> $row['forum_id'],
-		'post_subject'		=> $row['post_subject'],
 		'post_edit_count'	=> $row['post_edit_count'],
 		'post_edit_time'	=> $row['post_edit_time'],
 		'post_edit_reason'	=> $row['post_edit_reason'],
@@ -1765,14 +1764,10 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 	}
 
-	// Replace naughty words such as farty pants
-	$row['post_subject'] = censor_text($row['post_subject']);
-
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
 		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
-		$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $row['post_subject']);
 	}
 
 	// Editing information
@@ -2040,7 +2035,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 		'POST_DATE'			=> $user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
 		'POST_DATE_RFC3339'	=> gmdate(DATE_RFC3339, $row['post_time']),
-		'POST_SUBJECT'		=> $row['post_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,

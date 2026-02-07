@@ -243,12 +243,6 @@
 			<div id="post_content{postrow.POST_ID}"<!-- IF postrow.S_POST_HIDDEN --> style="display: none;"<!-- ENDIF -->>
 
 			<!-- EVENT viewtopic_body_post_subject_before -->
-		<h3 {% if postrow.S_FIRST_ROW %}class="first"{% endif %}>
-			{% if postrow.POST_ICON_IMG %}
-				<img src="{{ T_ICONS_PATH }}{{ postrow.POST_ICON_IMG }}" width="{{ postrow.POST_ICON_IMG_WIDTH }}" height="{{ postrow.POST_ICON_IMG_HEIGHT }}" alt="{{ postrow.POST_ICON_IMG_ALT }}" title="{{ postrow.POST_ICON_IMG_ALT }}">
-			{% endif %}
-			<a {% if postrow.S_FIRST_UNREAD %}class="first-unread" {% endif %}href="{{ postrow.U_MINI_POST }}">{{ postrow.POST_SUBJECT }}</a>
-		</h3>
 
 		<!-- DEFINE $SHOW_POST_BUTTONS = (postrow.U_EDIT or postrow.U_DELETE or postrow.U_REPORT or postrow.U_WARN or postrow.U_INFO or postrow.U_QUOTE) -->
 		<!-- EVENT viewtopic_body_post_buttons_list_before -->

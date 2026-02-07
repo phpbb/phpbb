@@ -558,15 +558,15 @@ function phpbb_mcp_sorting($mode, &$sort_days_val, &$sort_key_val, &$sort_dir_va
 
 		case 'posts':
 			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql_ary = array('a' => 'u.username_clean', 't' => array('p.post_time', 'p.post_id'), 's' => 'p.post_subject');
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME']);
+			$sort_by_sql_ary = array('a' => 'u.username_clean', 't' => array('p.post_time', 'p.post_id'));
 			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
 			break;
 
 		case 'reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql_ary = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => array('p.post_time', 'p.post_id'), 't' => 'r.report_time', 's' => 'p.post_subject');
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME']);
+			$sort_by_sql_ary = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => array('p.post_time', 'p.post_id'), 't' => 'r.report_time');
 			break;
 
 		case 'pm_reports':

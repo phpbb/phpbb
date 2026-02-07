@@ -109,7 +109,7 @@ class approve_post extends \phpbb\notification\type\post
 	*/
 	public function create_insert_array($type_data, $pre_create_data = array())
 	{
-		$this->set_data('post_subject', $type_data['post_subject']);
+		$this->set_data('post_subject', $type_data['topic_title']);
 
 		parent::create_insert_array($type_data, $pre_create_data);
 

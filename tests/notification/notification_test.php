@@ -159,7 +159,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_time'		=> 1349413324,
 			'poster_id'		=> 2,
 			'topic_title'	=> 'test-title',
-			'post_subject'	=> 'Re: test-title',
+			'post_subject'	=> 'test-title',
 			'forum_id'		=> 2,
 			'forum_name'	=> 'Your first forum',
 			'post_username'	=> '',
@@ -177,7 +177,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'post_time'		=> 1349413325,
 			'poster_id'		=> 2,
 			'topic_title'	=> 'test-title',
-			'post_subject'	=> 'Re: test-title',
+			'post_subject'	=> 'test-title',
 			'forum_id'		=> 2,
 			'forum_name'	=> 'Your first forum',
 			'post_username'	=> '',
@@ -227,7 +227,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'notification_data'			   	=> array(
 						'poster_id'		=> 2,
 						'topic_title'	=> 'test-title',
-						'post_subject'	=> 'Re: test-title',
+						'post_subject'	=> 'test-title',
 						'post_username'	=> '',
 						'forum_id'		=> 2,
 						'forum_name'	=> 'Your first forum',
@@ -242,7 +242,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'notification_data'			   	=> array(
 						'poster_id'		=> 2,
 						'topic_title'	=> 'test-title',
-						'post_subject'	=> 'Re: test-title',
+						'post_subject'	=> 'test-title',
 						'post_username'	=> '',
 						'forum_id'		=> 2,
 						'forum_name'	=> 'Your first forum',
@@ -270,7 +270,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 			'topic_id'		=> '2',
 			'poster_id'		=> 2,
 			'topic_title'	=> 'test-title2', // change topic_title
-			'post_subject'	=> 'Re: test-title2', // change post_subject
+			'post_subject'	=> 'test-title2', // change post_subject (now same as topic_title)
 			'forum_id'		=> 3, // change forum_id
 			'forum_name'	=> 'Your second forum', // change forum_name
 			'post_username'	=> '',
@@ -313,7 +313,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'notification_data'	=> array(
 						'poster_id'		=> 2,
 						'topic_title'	=> 'test-title',
-						'post_subject'	=> 'Re: test-title',
+						'post_subject'	=> 'test-title',
 						'post_username'	=> '',
 						'forum_id'		=> 2,
 						'forum_name'	=> 'Your first forum',
@@ -328,7 +328,7 @@ class phpbb_notification_test extends phpbb_tests_notification_base
 					'notification_data'	=> array(
 						'poster_id'		=> 2,
 						'topic_title'	=> 'test-title2',
-						'post_subject'	=> 'Re: test-title2',
+						'post_subject'	=> 'test-title2',
 						'post_username'	=> '',
 						'forum_id'		=> 3,
 						'forum_name'	=> 'Your second forum',

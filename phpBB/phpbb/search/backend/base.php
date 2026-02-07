@@ -343,7 +343,7 @@ abstract class base implements search_backend_interface
 				// Indexing enabled for this forum
 				if (in_array($row['forum_id'], $forums_indexing_enabled, true))
 				{
-					$this->index('post', (int) $row['post_id'], $row['post_text'], $row['post_subject'], (int) $row['poster_id'], (int) $row['forum_id']);
+					$this->index('post', (int) $row['post_id'], $row['post_text'], $row['topic_title'], (int) $row['poster_id'], (int) $row['forum_id']);
 				}
 				$row_count++;
 				$post_counter = (int) $row['post_id'];
@@ -463,10 +463,11 @@ abstract class base implements search_backend_interface
 	 */
 	protected function get_posts_batch_after(int $post_id): \Generator
 	{
-		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-				FROM ' . POSTS_TABLE . '
-				WHERE post_id > ' . (int) $post_id . '
-				ORDER BY post_id ASC';
+		$sql = 'SELECT p.post_id, t.topic_title, p.post_text, p.poster_id, p.forum_id
+				FROM ' . POSTS_TABLE . ' p
+				LEFT JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
+				WHERE p.post_id > ' . (int) $post_id . '
+				ORDER BY p.post_id ASC';
 		$result = $this->db->sql_query_limit($sql, self::BATCH_SIZE);
 
 		while ($row = $this->db->sql_fetchrow($result))

@@ -438,7 +438,7 @@ class fulltext_mysql extends base implements search_backend_interface
 		switch ($fields)
 		{
 			case 'titleonly':
-				$sql_match = 'p.post_subject';
+				$sql_match = 't.topic_title';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 			break;
@@ -449,13 +449,13 @@ class fulltext_mysql extends base implements search_backend_interface
 			break;
 
 			case 'firstpost':
-				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match = 't.topic_title, p.post_text';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 			break;
 
 			default:
-				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match = 'p.post_text';
 				$sql_match_where = '';
 			break;
 		}
@@ -928,19 +928,11 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		$alter_list = array();
 
-		if (!isset($this->stats['post_subject']))
-		{
-			$alter_entry = array();
-			$alter_entry[] = 'MODIFY post_subject varchar(255) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
-			$alter_entry[] = 'ADD FULLTEXT (post_subject)';
-			$alter_list[] = $alter_entry;
-		}
-
 		if (!isset($this->stats['post_content']))
 		{
 			$alter_entry = array();
 			$alter_entry[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
-			$alter_entry[] = 'ADD FULLTEXT post_content (post_text, post_subject)';
+			$alter_entry[] = 'ADD FULLTEXT post_content (post_text)';
 			$alter_list[] = $alter_entry;
 		}
 
@@ -1000,10 +992,6 @@ class fulltext_mysql extends base implements search_backend_interface
 
 		$alter = array();
 
-		if (isset($this->stats['post_subject']))
-		{
-			$alter[] = 'DROP INDEX post_subject';
-		}
 
 		if (isset($this->stats['post_content']))
 		{
@@ -1058,7 +1046,7 @@ class fulltext_mysql extends base implements search_backend_interface
 			$this->get_stats();
 		}
 
-		return isset($this->stats['post_subject']) && isset($this->stats['post_content']) && isset($this->stats['post_text']);
+		return isset($this->stats['post_content']) && isset($this->stats['post_text']);
 	}
 
 	/**
@@ -1098,11 +1086,7 @@ class fulltext_mysql extends base implements search_backend_interface
 
 			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['Key_name'] == 'post_subject')
-				{
-					$this->stats['post_subject'] = $row;
-				}
-				else if ($row['Key_name'] == 'post_text')
+				if ($row['Key_name'] == 'post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}

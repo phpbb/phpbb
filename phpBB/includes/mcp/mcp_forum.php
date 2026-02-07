@@ -326,7 +326,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'REPLIES'			=> $phpbb_content_visibility->get_count('topic_posts', $row_ary, $row_ary['forum_id']) - 1,
 			'LAST_POST_TIME'	=> $user->format_date($row_ary['topic_last_post_time']),
 			'FIRST_POST_TIME'	=> $user->format_date($row_ary['topic_time']),
-			'LAST_POST_SUBJECT'	=> $row_ary['topic_last_post_subject'],
 			'LAST_VIEW_TIME'	=> $user->format_date($row_ary['topic_last_view_time']),
 
 			'S_TOPIC_REPORTED'		=> (!empty($row_ary['topic_reported']) && empty($row_ary['topic_moved_id']) && $auth->acl_get('m_report', $row_ary['forum_id'])) ? true : false,

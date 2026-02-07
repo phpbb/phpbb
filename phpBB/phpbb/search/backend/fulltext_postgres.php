@@ -360,7 +360,7 @@ class fulltext_postgres extends base implements search_backend_interface
 		switch ($fields)
 		{
 			case 'titleonly':
-				$sql_match = 'p.post_subject';
+				$sql_match = 't.topic_title';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 				break;
@@ -371,13 +371,13 @@ class fulltext_postgres extends base implements search_backend_interface
 				break;
 
 			case 'firstpost':
-				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match = 't.topic_title, p.post_text';
 				$sql_match_where = ' AND p.post_id = t.topic_first_post_id';
 				$join_topic = true;
 				break;
 
 			default:
-				$sql_match = 'p.post_subject, p.post_text';
+				$sql_match = 'p.post_text';
 				$sql_match_where = '';
 				break;
 		}
@@ -882,20 +882,11 @@ class fulltext_postgres extends base implements search_backend_interface
 
 		$sql_queries = [];
 
-		if (!isset($this->stats['post_subject']))
-		{
-			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject))";
-		}
-
 		if (!isset($this->stats['post_content']))
 		{
 			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_text))";
 		}
 
-		if (!isset($this->stats['post_subject_content']))
-		{
-			$sql_queries[] = "CREATE INDEX " . POSTS_TABLE . "_" . $this->config['fulltext_postgres_ts_name'] . "_post_subject_content ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $this->db->sql_escape($this->config['fulltext_postgres_ts_name']) . "', post_subject || ' ' || post_text))";
-		}
 
 		$stats = $this->stats;
 
@@ -941,20 +932,11 @@ class fulltext_postgres extends base implements search_backend_interface
 
 		$sql_queries = [];
 
-		if (isset($this->stats['post_subject']))
-		{
-			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_subject']['relname'];
-		}
-
 		if (isset($this->stats['post_content']))
 		{
 			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_content']['relname'];
 		}
 
-		if (isset($this->stats['post_subject_content']))
-		{
-			$sql_queries[] = 'DROP INDEX ' . $this->stats['post_subject_content']['relname'];
-		}
 
 		$stats = $this->stats;
 
@@ -992,7 +974,7 @@ class fulltext_postgres extends base implements search_backend_interface
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
+		return isset($this->stats['post_content']);
 	}
 
 	/**
@@ -1034,17 +1016,9 @@ class fulltext_postgres extends base implements search_backend_interface
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
-				{
-					$this->stats['post_subject'] = $row;
-				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_content' || $row['relname'] == POSTS_TABLE . '_post_content')
+				if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_content' || $row['relname'] == POSTS_TABLE . '_post_content')
 				{
 					$this->stats['post_content'] = $row;
-				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $this->config['fulltext_postgres_ts_name'] . '_post_subject_content' || $row['relname'] == POSTS_TABLE . '_post_subject_content')
-				{
-					$this->stats['post_subject_content'] = $row;
 				}
 			}
 		}

@@ -311,7 +311,6 @@ class mcp_queue
 					'U_POST_AUTHOR'			=> get_username_string('profile', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 
 					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
@@ -481,7 +480,7 @@ class mcp_queue
 
 					if (count($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
+						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
@@ -533,7 +532,7 @@ class mcp_queue
 				}
 				else
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_title AS post_subject, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, t.topic_time AS post_time, t.topic_poster AS poster_id, t.topic_first_post_id AS post_id, t.topic_attachment AS post_attachment, t.topic_first_poster_name AS username, t.topic_first_poster_colour AS user_colour
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('forum_id', $forum_list) . '
 							AND  ' . $db->sql_in_set('topic_visibility', $visibility_const) . "
@@ -611,7 +610,6 @@ class mcp_queue
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_ID'		=> $row['topic_id'],
 						'FORUM_NAME'	=> $forum_names[$row['forum_id']],
-						'POST_SUBJECT'	=> ($row['post_subject'] != '') ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']),
 						'S_HAS_ATTACHMENTS'	=> $auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['post_attachment'],
@@ -736,7 +734,7 @@ class mcp_queue
 					'forum_id'		=> $post_data['forum_id'],
 					'topic_id'		=> $post_data['topic_id'],
 					'post_id'		=> $post_id,
-					'post_subject'	=> $post_data['post_subject'],
+					'topic_title'	=> $post_data['topic_title'],
 				);
 			}
 
@@ -753,7 +751,7 @@ class mcp_queue
 					'forum_id' => $log_data['forum_id'],
 					'topic_id' => $log_data['topic_id'],
 					'post_id'  => $log_data['post_id'],
-					$log_data['post_subject']
+					$log_data['topic_title']
 				));
 			}
 
@@ -1018,7 +1016,6 @@ class mcp_queue
 				{
 					$topic_data = array_merge($topic_data, array(
 						'post_id'		=> $topic_data['topic_first_post_id'],
-						'post_subject'	=> $topic_data['topic_title'],
 						'post_time'		=> $topic_data['topic_time'],
 						'poster_id'		=> $topic_data['topic_poster'],
 						'post_username'	=> $topic_data['topic_first_poster_name'],
@@ -1247,7 +1244,7 @@ class mcp_queue
 						// Build disapproved topics log
 						$disapprove_log_topics[$topic_id] = array(
 							'type'			=> 'topic',
-							'post_subject'	=> $post_info[$post_id]['topic_title'],
+							'topic_title'	=> $post_info[$post_id]['topic_title'],
 							'forum_id'		=> $post_info[$post_id]['forum_id'],
 							'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
 							'post_username'	=> ($post_info[$post_id]['poster_id'] == ANONYMOUS && !empty($post_info[$post_id]['post_username'])) ? $post_info[$post_id]['post_username'] : $post_info[$post_id]['username'],
@@ -1259,7 +1256,7 @@ class mcp_queue
 					// Build disapproved posts log
 					$disapprove_log_posts[] = array(
 						'type'			=> 'post',
-						'post_subject'	=> $post_info[$post_id]['post_subject'],
+						'topic_title'	=> $post_info[$post_id]['topic_title'],
 						'forum_id'		=> $post_info[$post_id]['forum_id'],
 						'topic_id'		=> $post_info[$post_id]['topic_id'],
 						'post_username'	=> ($post_info[$post_id]['poster_id'] == ANONYMOUS && !empty($post_info[$post_id]['post_username'])) ? $post_info[$post_id]['post_username'] : $post_info[$post_id]['username'],
@@ -1299,7 +1296,7 @@ class mcp_queue
 						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
 							'forum_id' => $log_data['forum_id'],
 							'topic_id' => $log_data['topic_id'],
-							$log_data['post_subject'],
+							$log_data['topic_title'],
 							$disapprove_reason,
 							$log_data['post_username']
 						));
@@ -1310,7 +1307,7 @@ class mcp_queue
 						$phpbb_log->add('mod', $user->data['user_id'], $user->ip, $l_log_message, false, array(
 							'forum_id' => $log_data['forum_id'],
 							'topic_id' => $log_data['topic_id'],
-							$log_data['post_subject'],
+							$log_data['topic_title'],
 							$log_data['post_username']
 						));
 					}

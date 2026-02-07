@@ -988,7 +988,6 @@ if (count($topic_list))
 			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
 			'FIRST_POST_TIME_RFC3339'	=> gmdate(DATE_RFC3339, $row['topic_time']),
-			'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
 			'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
 			'LAST_POST_TIME_RFC3339'	=> gmdate(DATE_RFC3339, $row['topic_last_post_time']),
 			'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),

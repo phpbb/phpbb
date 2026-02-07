@@ -670,7 +670,6 @@ function mcp_move_topic($topic_ids)
 					'topic_last_poster_id'	=>	(int) $row['topic_last_poster_id'],
 					'topic_last_poster_colour'=>(string) $row['topic_last_poster_colour'],
 					'topic_last_poster_name'=>	(string) $row['topic_last_poster_name'],
-					'topic_last_post_subject'=>	(string) $row['topic_last_post_subject'],
 					'topic_last_post_time'	=>	(int) $row['topic_last_post_time'],
 					'topic_last_view_time'	=>	(int) $row['topic_last_view_time'],
 					'topic_moved_id'		=>	(int) $row['topic_id'],
@@ -1126,7 +1125,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 				'forum_id'		=> $post_data['forum_id'],
 				'topic_id'		=> $post_data['topic_id'],
 				'post_id'		=> $post_id,
-				'post_subject'	=> $post_data['post_subject'],
+				'topic_title'	=> $post_data['topic_title'],
 				'poster_id'		=> $post_data['poster_id'],
 				'post_username'	=> $post_data['post_username'],
 				'username'		=> $post_data['username'],
@@ -1152,7 +1151,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
 				'post_id'  => $row['post_id'],
-				$row['post_subject'],
+				$row['topic_title'],
 				$post_username,
 				$soft_delete_reason
 			));
@@ -1200,7 +1199,7 @@ function mcp_delete_post($post_ids, $is_soft = false, $soft_delete_reason = '', 
 				'forum_id' => $row['forum_id'],
 				'topic_id' => $row['topic_id'],
 				'post_id'  => $row['post_id'],
-				$row['post_subject'],
+				$row['topic_title'],
 				$post_username,
 				$soft_delete_reason
 			));
@@ -1524,7 +1523,6 @@ function mcp_fork_topic($topic_ids)
 					'enable_magic_url'	=> (int) $row['enable_magic_url'],
 					'enable_sig'		=> (int) $row['enable_sig'],
 					'post_username'		=> (string) $row['post_username'],
-					'post_subject'		=> (string) $row['post_subject'],
 					'post_text'			=> (string) $row['post_text'],
 					'post_edit_reason'	=> (string) $row['post_edit_reason'],
 					'post_edit_user'	=> (int) $row['post_edit_user'],
@@ -1609,7 +1607,7 @@ function mcp_fork_topic($topic_ids)
 
 				if (!empty($search))
 				{
-					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $sql_ary['post_subject'], (int) $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
+					$search->index($search_mode, $new_post_id, $sql_ary['post_text'], $topic_row['topic_title'], (int) $sql_ary['poster_id'], ($topic_row['topic_type'] == POST_GLOBAL) ? 0 : $to_forum_id);
 					$search_mode = 'reply'; // After one we index replies
 				}
 

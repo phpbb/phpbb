@@ -1311,7 +1311,6 @@ class acp_forums
 				$forum_data_sql['forum_topics_unapproved'] = 0;
 				$forum_data_sql['forum_topics_softdeleted'] = 0;
 				$forum_data_sql['forum_last_post_id'] = 0;
-				$forum_data_sql['forum_last_post_subject'] = '';
 				$forum_data_sql['forum_last_post_time'] = 0;
 				$forum_data_sql['forum_last_poster_id'] = 0;
 				$forum_data_sql['forum_last_poster_name'] = '';

@@ -97,6 +97,11 @@ class create_search_index extends database_task
 	protected $posts_table;
 
 	/**
+	 * @var string
+	 */
+	protected $topics_table;
+
+	/**
 	 * @var mixed
 	 */
 	protected $error;
@@ -133,6 +138,7 @@ class create_search_index extends database_task
 		$this->php_ext			= $php_ext;
 
 		$this->posts_table = $container->get_parameter('tables.posts');
+		$this->topics_table = $container->get_parameter('tables.topics');
 
 		$this->search_indexer = new fulltext_native(
 			$this->config,
@@ -161,7 +167,9 @@ class create_search_index extends database_task
 
 		try
 		{
-			$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id FROM ' . $this->posts_table;
+			$sql = 'SELECT p.post_id, t.topic_title, p.post_text, p.poster_id, p.forum_id
+				FROM ' . $this->posts_table . ' p
+				LEFT JOIN ' . $this->topics_table . ' t ON (p.topic_id = t.topic_id)';
 			$rows = $this->conn->fetchAllAssociative($sql);
 		}
 		catch (Exception $e)
@@ -182,7 +190,7 @@ class create_search_index extends database_task
 			'post',
 			(int) $value['post_id'],
 			$value['post_text'],
-			$value['post_subject'],
+			$value['topic_title'],
 			(int) $value['poster_id'],
 			(int) $value['forum_id']
 		);

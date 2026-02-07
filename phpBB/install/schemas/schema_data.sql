@@ -100,7 +100,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_search_ret
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('delete_time', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_subject', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_order', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_unapproved_posts', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('edit_time', '0');
@@ -524,7 +523,7 @@ INSERT INTO phpbb_styles (style_name, style_copyright, style_active, style_path,
 # -- Forums
 INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts_approved, forum_posts_unapproved, forum_posts_softdeleted, forum_topics_approved, forum_topics_unapproved, forum_topics_softdeleted, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_days, prune_viewed, forum_parents) VALUES ('{L_FORUMS_FIRST_CATEGORY}', '', 1, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 'Admin', 'AA0000', 972086460, '', '', '', '', '', '', '', 0, 0, '');
 
-INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts_approved, forum_posts_unapproved, forum_posts_softdeleted, forum_topics_approved, forum_topics_unapproved, forum_topics_softdeleted, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_subject, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_freq, prune_days, prune_viewed, forum_parents, forum_flags) VALUES ('{L_FORUMS_TEST_FORUM_TITLE}', '{L_FORUMS_TEST_FORUM_DESC}', 2, 3, 1, 1, 1, 0, 0, 1, 0, 0, 1, 2, 'Admin', 'AA0000', '{L_TOPICS_TOPIC_TITLE}', 972086460, '', '', '', '', '', '', '', 1, 7, 7, '', 48);
+INSERT INTO phpbb_forums (forum_name, forum_desc, left_id, right_id, parent_id, forum_type, forum_posts_approved, forum_posts_unapproved, forum_posts_softdeleted, forum_topics_approved, forum_topics_unapproved, forum_topics_softdeleted, forum_last_post_id, forum_last_poster_id, forum_last_poster_name, forum_last_poster_colour, forum_last_post_time, forum_link, forum_password, forum_image, forum_rules, forum_rules_link, forum_rules_uid, forum_desc_uid, prune_freq, prune_days, prune_viewed, forum_parents, forum_flags) VALUES ('{L_FORUMS_TEST_FORUM_TITLE}', '{L_FORUMS_TEST_FORUM_DESC}', 2, 3, 1, 1, 1, 0, 0, 1, 0, 0, 1, 2, 'Admin', 'AA0000', 972086460, '', '', '', '', '', '', '', 1, 7, 7, '', 48);
 
 # -- Users / Anonymous user
 INSERT INTO phpbb_users (user_type, group_id, username, username_clean, user_regdate, user_password, user_email, user_lang, user_style, user_rank, user_colour, user_posts, user_permissions, user_ip, user_birthday, user_lastpage, user_last_confirm_key, user_post_sortby_type, user_post_sortby_dir, user_topic_sortby_type, user_topic_sortby_dir, user_avatar, user_sig, user_sig_bbcode_uid, user_actkey, user_actkey_expiration, user_newpasswd, user_allow_massemail) VALUES (2, 1, 'Anonymous', 'anonymous', 0, '', '', 'en', 1, 0, '', 0, '', '', '', '', '', 't', 'a', 't', 'd', '', '', '', '', 0, '', 0);
@@ -690,10 +689,10 @@ INSERT INTO phpbb_acl_groups (group_id, forum_id, auth_option_id, auth_role_id, 
 
 
 # -- Demo Topic
-INSERT INTO phpbb_topics (topic_title, topic_poster, topic_time, topic_views, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, forum_id, topic_status, topic_type, topic_first_post_id, topic_first_poster_name, topic_first_poster_colour, topic_last_post_id, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour, topic_last_post_subject, topic_last_post_time, topic_last_view_time, poll_title, topic_visibility) VALUES ('{L_TOPICS_TOPIC_TITLE}', 2, 972086460, 0, 1, 0, 0, 2, 0, 0, 1, 'Admin', 'AA0000', 1, 2, 'Admin', 'AA0000', '{L_TOPICS_TOPIC_TITLE}', 972086460, 972086460, '', 1);
+INSERT INTO phpbb_topics (topic_title, topic_poster, topic_time, topic_views, topic_posts_approved, topic_posts_unapproved, topic_posts_softdeleted, forum_id, topic_status, topic_type, topic_first_post_id, topic_first_poster_name, topic_first_poster_colour, topic_last_post_id, topic_last_poster_id, topic_last_poster_name, topic_last_poster_colour, topic_last_post_time, topic_last_view_time, poll_title, topic_visibility) VALUES ('{L_TOPICS_TOPIC_TITLE}', 2, 972086460, 0, 1, 0, 0, 2, 0, 0, 1, 'Admin', 'AA0000', 1, 2, 'Admin', 'AA0000', 972086460, 972086460, '', 1);
 
 # -- Demo Post
-INSERT INTO phpbb_posts (topic_id, forum_id, poster_id, icon_id, post_time, post_username, poster_ip, post_subject, post_text, post_checksum, bbcode_uid, post_visibility) VALUES (1, 2, 2, 0, 972086460, '', '127.0.0.1', '{L_TOPICS_TOPIC_TITLE}', '{L_DEFAULT_INSTALL_POST}', '5dd683b17f641daf84c040bfefc58ce9', '', 1);
+INSERT INTO phpbb_posts (topic_id, forum_id, poster_id, icon_id, post_time, post_username, poster_ip, post_text, post_checksum, bbcode_uid, post_visibility) VALUES (1, 2, 2, 0, 972086460, '', '127.0.0.1', '{L_DEFAULT_INSTALL_POST}', '5dd683b17f641daf84c040bfefc58ce9', '', 1);
 
 # -- Admin posted to the demo topic
 INSERT INTO phpbb_topics_posted (user_id, topic_id, topic_posted) VALUES (2, 1, 1);

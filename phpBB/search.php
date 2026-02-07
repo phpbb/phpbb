@@ -134,7 +134,7 @@ if ($interval && !in_array($search_id, array('unreadposts', 'unanswered', 'activ
 
 // Define some vars
 $limit_days		= array(0 => $user->lang['ALL_RESULTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-$sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SORT_TIME'], 'f' => $user->lang['SORT_FORUM'], 'i' => $user->lang['SORT_TOPIC_TITLE'], 's' => $user->lang['SORT_POST_SUBJECT']);
+$sort_by_text	= array('a' => $user->lang['SORT_AUTHOR'], 't' => $user->lang['SORT_TIME'], 'f' => $user->lang['SORT_FORUM'], 'i' => $user->lang['SORT_TOPIC_TITLE']);
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -362,7 +362,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		't' => (($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time'),
 		'f' => 'f.forum_id',
 		'i' => 't.topic_title',
-		's' => (($show_results == 'posts') ? 'p.post_subject' : 't.topic_title')
 	];
 
 	/**
@@ -425,7 +424,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$show_results = $request->variable('sr', 'topics');
 				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
-				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
 				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
@@ -1133,7 +1131,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 					'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
 					'FIRST_POST_TIME_RFC3339'	=> gmdate(DATE_RFC3339, $row['topic_time']),
-					'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
 					'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
 					'LAST_POST_TIME_RFC3339'	=> gmdate(DATE_RFC3339, $row['topic_last_post_time']),
 					'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
@@ -1190,9 +1187,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					continue;
 				}
 
-				// Replace naughty words such as farty pants
-				$row['post_subject'] = censor_text($row['post_subject']);
-
 				if ($row['display_text_only'])
 				{
 					// now find context for the searched words
@@ -1217,7 +1211,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					// post highlighting
 					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu', '<span class="posthilit">$1</span>', $row['post_text']);
-					$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#isu', '<span class="posthilit">$1</span>', $row['post_subject']);
 				}
 
 				$tpl_ary = array(
@@ -1226,7 +1219,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
-					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
 					'MESSAGE'			=> $row['post_text']
 				);

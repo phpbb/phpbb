@@ -374,7 +374,7 @@ class post extends \phpbb\notification\type\base
 
 		$this->set_data('topic_title', $type_data['topic_title']);
 
-		$this->set_data('post_subject', $type_data['post_subject']);
+		$this->set_data('post_subject', $type_data['topic_title']);
 
 		$this->set_data('post_username', (($type_data['poster_id'] == ANONYMOUS) ? $type_data['post_username'] : ''));
 
@@ -448,7 +448,7 @@ class post extends \phpbb\notification\type\base
 		$data_array = array_merge(array(
 			'poster_id'		=> $post['poster_id'],
 			'topic_title'	=> $post['topic_title'],
-			'post_subject'	=> $post['post_subject'],
+			'post_subject'	=> $post['topic_title'],
 			'post_username'	=> $post['post_username'],
 			'forum_id'		=> $post['forum_id'],
 			'forum_name'	=> $post['forum_name'],

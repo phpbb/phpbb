@@ -25,7 +25,7 @@ abstract class post_base extends attachments_base
 	 */
 	public function set_keys()
 	{
-		$this->set('title',		'post_subject');
+		$this->set('title',		'topic_title');
 		$this->set('title2',	'topic_title');
 
 		$this->set('author_id',	'user_id');

@@ -119,7 +119,6 @@ class acp_board
 						'allow_nocensors'				=> array('lang' => 'ALLOW_NO_CENSORS',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_bookmarks'				=> array('lang' => 'ALLOW_BOOKMARKS',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_birthdays'				=> array('lang' => 'ALLOW_BIRTHDAYS',				'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'display_last_subject'			=> array('lang' => 'DISPLAY_LAST_SUBJECT',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'display_unapproved_posts'		=> array('lang' => 'DISPLAY_UNAPPROVED_POSTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_quick_reply'				=> array('lang' => 'ALLOW_QUICK_REPLY',				'validate' => 'bool',	'type' => 'custom', 'method' => 'quick_reply', 'explain' => true),
 
