@@ -109,7 +109,7 @@
 		<li>Change the permissions on config.php to be writable by all (666 or -rw-rw-rw- within your FTP Client)</li>
 		<li>Change the permissions on the following directories to be writable by all (777 or -rwxrwxrwx within your FTP Client):<br />
 			<code>store/</code>, <code>cache/</code>, <code>files/</code> and <code>images/avatars/upload/</code>.</li>
-		<li>Point your web browser to the location where you uploaded the phpBB files with the addition of <code>install/app.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB/install/app.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
+		<li>Point your web browser to the location where you uploaded the phpBB files with the addition of <code>install/index.php</code> or simply <code>install/</code>, e.g. <code>http://www.example.com/phpBB/install/index.php</code>, <code>http://www.example.com/forum/install/</code>.</li>
 		<li>Click the <strong><em>INSTALL</em></strong> tab, follow the steps and fill out all the requested information.</li>
 		<li>Change the permissions on config.php to be writable only by yourself (644 or -rw-r--r-- within your FTP Client)</li>
 		<li>phpBB should now be available, please <strong>MAKE SURE</strong> you read at least <a href="#postinstall">Section 6</a> below for important, security related post-installation instructions, and also take note of <a href="#anti_spam">Section 7</a> regarding anti-spam measures.</li>
@@ -190,7 +190,7 @@
 
 	<p>phpBB comes supplied with British English as its standard language. However, a number of separate packs for different languages are available. If you are not a native English speaker you may wish to install one or more of these packages before continuing. The installation process below will allow you to select a default language from those available (you can, of course, change this default at a later stage). For more details on language packs, where to obtain them and how to install them please see the <a href="README.html#i18n">README</a>.</p>
 
-	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB</code> off your web root you would enter <code>http://www.example.com/phpBB/install/</code> or (alternatively) <code>http://www.example.com/phpBB/install/app.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
+	<p>Once all the files have been uploaded to your site, you should point your browser at this location with the addition of <code>/install/</code>. For example, if your domain name is <code>www.example.com</code> and you placed the phpBB files in the directory <code>/phpBB</code> off your web root you would enter <code>http://www.example.com/phpBB/install/</code> or (alternatively) <code>http://www.example.com/phpBB/install/index.php</code> into your browser. When you have done this, you should see the <strong><em>phpBB Introduction</em></strong> screen appear.</p>
 
 	<h4>Introduction:</h4>
 
@@ -272,9 +272,9 @@
 
 	<p>First, you should make a copy of your existing <code>config.php</code> file; keep it in a safe place! Next, delete all the existing phpBB files, you should leave your <code>files/</code>, <code>images/</code> and <code>ext/</code> directories in place, otherwise you will lose your file attachments, uploaded images and get errors due to missing extension files. You can leave alternative styles in place too. With this complete, you can upload the new phpBB files (see <a href="#install">New installation</a> for details if necessary). Once complete, copy back your saved <code>config.php</code>, replacing the new one. Another method is to just <strong>replace</strong> the existing files with the files from the full package - though make sure you do <strong>not</strong> overwrite your config.php file.</p>
 
-	<p>You should now got to <code>/install/app.php/update</code> which will display a warning: <strong>No valid update directory was found, please make sure you uploaded the relevant files</strong>. Beneath that warning you will see a radio button <em>Update database only</em>, just click <strong>Submit</strong>. Depending on your previous version this will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker). If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>You should now got to <code>/install/index.php/update</code> which will display a warning: <strong>No valid update directory was found, please make sure you uploaded the relevant files</strong>. Beneath that warning you will see a radio button <em>Update database only</em>, just click <strong>Submit</strong>. Depending on your previous version this will make a number of database changes. You may receive <em>FAILURES</em> during this procedure. They should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker). If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
-	<p>Once <code>/install/app.php/update</code> has completed, it displays the success message: <strong>The database update was successful</strong>. You may proceed to the Administration Control Panel and then remove the install directory as advised.</p>
+	<p>Once <code>/install/index.php/update</code> has completed, it displays the success message: <strong>The database update was successful</strong>. You may proceed to the Administration Control Panel and then remove the install directory as advised.</p>
 
 <a name="update_files"></a><h3>4.ii. Changed files</h3>
 
@@ -284,7 +284,7 @@
 
 	<p>The directory structure has been preserved, enabling you (if you wish) to simply upload the uncompressed contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any modifications (MODs) these files will overwrite the originals, possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
-	<p>As for the other update procedures, you should go to <code>/install/app.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>As for the other update procedures, you should go to <code>/install/index.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_patch"></a><h3>4.iii. Patch file</h3>
 
@@ -296,7 +296,7 @@
 
 	<p>If you do get failures, you should look at using the <a href="#update_files">Changed Files</a> package to replace the files which failed to patch. Please note that you will need to manually re-add any MODs to these particular files. Alternatively, if you know how, you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
-	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should navigate to <code>/install/app.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
+	<p>You should, of course, delete the patch file (or files) after use. As for the other update procedures, you should navigate to <code>/install/index.php/update</code>, select "Update database only" and submit the page after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number. If you have shell access to your server, you may wish to update via the command line interface. From your board's root, execute the following command: <code>php bin/phpbbcli.php --safe-mode db:migrate</code>.</p>
 
 <a name="update_advanced"></a><h3>4.iv. Advanced update package (Expert users)</h3>
 
@@ -356,7 +356,7 @@
 				</ul></li>
 
 				<li>Upload the contents of the 3.3.x Full Package (<strong>except</strong> for config.php) into your forum's directory. Make sure the root level .htaccess file is included in the upload.</li>
-				<li>Browse to <code>/install/app.php/update</code></li>
+				<li>Browse to <code>/install/index.php/update</code></li>
 				<li>Read the notice <em>Update database only</em> and press <strong>Submit</strong></li>
 				<li>Delete the <code>install/</code> directory</li>
 			</ol>

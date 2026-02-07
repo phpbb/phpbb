@@ -29,13 +29,13 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
-		$this->assertStringContainsString('app.php/user/forgot_password', $crawler->getUri());
+		$this->assertStringContainsString('index.php/user/forgot_password', $crawler->getUri());
 		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
 		// test with non-existent email
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'	=> 'non-existent@email.com',
 		));
@@ -43,7 +43,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// test with correct email
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -58,7 +58,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$reset_token_expiration = $this->user_data['reset_token_expiration'];
 
 		// Check that reset token is only created once per day
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -75,7 +75,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->create_user('reset-password-test-user1', self::TEST_EMAIL);
 
 		// Test that username is now also required
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -125,7 +125,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$user_id = !$user_id ? $this->user_data['user_id'] : $user_id;
 		$token = !$token ? $this->user_data['reset_token'] : $token;
 
-		$crawler = self::request('GET', "app.php/user/reset_password?u=$user_id&token=" . urlencode($token));
+		$crawler = self::request('GET', "index.php/user/reset_password?u=$user_id&token=" . urlencode($token));
 
 		if ($expected)
 		{

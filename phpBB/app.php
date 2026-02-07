@@ -14,10 +14,27 @@
 /**
 * @ignore
 */
+
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
+
+if (basename($symfony_request->getScriptName()) === 'app.php')
+{
+	$base_path = $symfony_request->getBasePath();
+	$path_info = $symfony_request->getPathInfo();
+	$query_string = $symfony_request->getQueryString();
+
+	$url = $base_path . '/index.php' . $path_info . ($query_string ? '?' . $query_string : '');
+
+	$response = new RedirectResponse($url, 301);
+	$response->send();
+
+	exit;
+}
 
 // Start session management
 $user->session_begin();

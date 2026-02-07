@@ -160,7 +160,7 @@ function installer_shutdown_function($display_errors)
 		@ini_set('display_errors', $display_errors);
 
 		// Manually define phpBB root path and phpEx. These will not be passed
-		// on from app.php
+		// on from index.php
 		$phpbb_root_path = __DIR__ . '/../';
 		$phpEx = 'php';
 

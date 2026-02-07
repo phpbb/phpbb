@@ -42,7 +42,7 @@ class phpbb_functional_manifest_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 
-		self::request('GET', 'app.php/manifest', [], false);
+		self::request('GET', 'index.php/manifest', [], false);
 		$this->assertEquals(json_encode($expected), self::get_content());
 	}
 }

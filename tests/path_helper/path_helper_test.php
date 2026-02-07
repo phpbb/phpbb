@@ -115,8 +115,8 @@ class phpbb_path_helper_test extends phpbb_test_case
 			->onlyMethods(['get_web_root_path'])
 			->getMock();
 		$path_helper->method('get_web_root_path')
-			->willReturn('/var/www/phpbb/app.php/');
-		$this->assertEquals('/var/www/phpbb/app.php/foo', $path_helper->update_web_root_path(self::$phpbb_root_path . 'app.php/foo'));
+			->willReturn('/var/www/phpbb/index.php/');
+		$this->assertEquals('/var/www/phpbb/index.php/foo', $path_helper->update_web_root_path(self::$phpbb_root_path . 'index.php/foo'));
 	}
 
 	public static function update_web_root_path_data()
@@ -141,22 +141,22 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array(
 				self::$phpbb_root_path . 'test.php',
 				'/foo/template',
-				'/phpbb-fork/phpBB/app.php/foo/template',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php/foo/template',
+				'/phpbb-fork/phpBB/index.php',
 				'./../../',
 			),
 			array(
 				self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/foo/template',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php',
 				'./../',
 			),
 			array(
 				self::$phpbb_root_path . 'test.php',
 				'/',
-				'/phpbb-fork/phpBB/app.php/',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php/',
+				'/phpbb-fork/phpBB/index.php',
 				'./../',
 			),
 
@@ -171,29 +171,29 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array(
 				'./../../' . self::$phpbb_root_path . 'test.php',
 				'/foo/template',
-				'/phpbb-fork/phpBB/app.php/foo/template',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php/foo/template',
+				'/phpbb-fork/phpBB/index.php',
 				'',
 			),
 			array(
 				'./../' . self::$phpbb_root_path . 'test.php',
 				'/foo/template',
 				'/phpbb-fork/phpBB/foo/template',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php',
 				'',
 			),
 			array(
 				'./../'.self::$phpbb_root_path . 'test.php',
 				'/',
-				'/phpbb-fork/phpBB/app.php/',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php/',
+				'/phpbb-fork/phpBB/index.php',
 				'',
 			),
 			array(
 				'./../'.self::$phpbb_root_path . 'test.php',
 				'',
 				'/phpbb-fork/phpBB/foo',
-				'/phpbb-fork/phpBB/app.php',
+				'/phpbb-fork/phpBB/index.php',
 				'',
 			),
 		);
@@ -591,12 +591,12 @@ class phpbb_path_helper_test extends phpbb_test_case
 			array('index', false, 'index'),
 			array('foo/index', true, 'foo/index'),
 			array('foo/index', false, 'foo/index'),
-			array('app.php/foo', true, 'foo'),
-			array('app.php/foo', false, 'app.php/foo'),
-			array('/../app.php/foo', true, '../foo'),
-			array('/../app.php/foo', false, '../app.php/foo'),
-			array('/../example/app.php/foo/bar', true, '../example/foo/bar'),
-			array('/../example/app.php/foo/bar', false, '../example/app.php/foo/bar'),
+			array('index.php/foo', true, 'foo'),
+			array('index.php/foo', false, 'index.php/foo'),
+			array('/../index.php/foo', true, '../foo'),
+			array('/../index.php/foo', false, '../index.php/foo'),
+			array('/../example/index.php/foo/bar', true, '../example/foo/bar'),
+			array('/../example/index.php/foo/bar', false, '../example/index.php/foo/bar'),
 		);
 	}
 
@@ -613,10 +613,6 @@ class phpbb_path_helper_test extends phpbb_test_case
 		return [
 			[
 				'index.php',
-				false,
-			],
-			[
-				'app.php',
 				true,
 			],
 		];

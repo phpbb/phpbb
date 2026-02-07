@@ -133,7 +133,7 @@ class phpbb_functional_ucp_attachments_test extends phpbb_functional_test_case
 
 		$attachment_filename = $crawler->filter('.attachment-filename');
 		$this->assertEquals('valid.jpg', $attachment_filename->attr('title'));
-		$this->assertStringContainsString('app.php/download/attachment/' . $attach_id . '/valid.jpg', $attachment_filename->attr('href'));
+		$this->assertStringContainsString('index.php/download/attachment/' . $attach_id . '/valid.jpg', $attachment_filename->attr('href'));
 		$this->assertFalse($crawler->filter('[name="attachment[' . $attach_id . ']"]')->getNode(0)->hasAttribute('disabled'));
 	}
 

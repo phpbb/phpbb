@@ -19,12 +19,9 @@ class phpbb_functional_visit_installer_test extends phpbb_functional_test_case
 	public function test_visit_installer()
 	{
 		self::request('GET', 'install/', [], false);
-		$this->assertStringContainsString('<meta http-equiv="refresh" content="0; url=./app.php" />', $this->get_content());
+		$this->assertStringContainsString('installation system', $this->get_content());
 
-		self::request('GET', 'install/index.html', [], false);
-		$this->assertStringContainsString('<meta http-equiv="refresh" content="0; url=./app.php" />', $this->get_content());
-
-		self::request('GET', 'install/app.php');
+		self::request('GET', 'install/index.php');
 		$this->assertStringContainsString('installation system', $this->get_content());
 	}
 }
