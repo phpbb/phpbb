@@ -447,11 +447,6 @@
 	float: right;
 }
 
-.rtl ul.topiclist dfn {
-	right: -999px;
-	left: auto;
-}
-
 .rtl ul.topiclist li.row dt a.subforum {
 	background-position: right;
 	position: static;
