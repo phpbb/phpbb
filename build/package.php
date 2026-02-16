@@ -489,12 +489,6 @@ foreach ($compress_programs as $extension => $compress_command)
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
 }
 
-// Microsoft Web PI packaging
-$package->begin_status('Packaging phpBB for Microsoft WebPI');
-$file = './release_files/' . $package->get('release_filename') . '.webpi.zip';
-$package->run_command('cp -p ./release_files/' . $package->get('release_filename') . ".zip $file");
-$package->run_command('cd ./../webpi && ' . $compress_programs['zip'] . " ./../new_version/$file *");
-
 // verify results
 chdir($package->locations['root']);
 $package->begin_status('********** Verifying packages **********');
