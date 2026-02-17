@@ -2103,8 +2103,6 @@ $template->set_filenames(array(
 	'body' => 'posting_body.html')
 );
 
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
-
 // Topic review
 if ($mode == 'reply' || $mode == 'quote')
 {

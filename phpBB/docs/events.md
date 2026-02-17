@@ -2348,13 +2348,6 @@ search_results_header_before
 * Since: 3.1.4-RC1
 * Purpose: Add content before the header of the search results.
 
-search_results_jumpbox_before
-===
-* Locations:
-    + styles/prosilver/template/search_results.html
-* Since: 3.3.4-RC1
-* Purpose: Add content before the jumpbox of the search results.
-
 search_results_last_post_author_username_append
 ===
 * Locations:
@@ -3290,7 +3283,7 @@ viewtopic_body_footer_before
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.1.0-a1
 * Purpose: Add content to the bottom of the View topic screen below the posts
-and quick reply, directly before the jumpbox in Prosilver.
+and quick reply in Prosilver.
 
 viewtopic_body_online_list_after
 ===
