@@ -2,19 +2,21 @@
 
 phpBB includes support for Vagrant. This allows developers and contributors to run phpBB without the need to set up their own local web server with traditional WAMP/MAMP stacks. It also provides a consistent environment between developers for writing and debugging code changes more productively.
 
-phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.1/homestead) Vagrant box. It runs a Linux server with Ubuntu 14.04, PHP 5.6, Nginx, SQLite3, MySQL, and a whole lot more (complete specs below).
+phpBB uses the [Laravel/Homestead](https://laravel.com/docs/5.1/homestead) Vagrant box. It runs a Linux server with Ubuntu, PHP 7.2, Apache, SQLite3, MySQL, and a whole lot more (complete specs below).
 
 ## Get Started
 
 * Download and Install [Vagrant](https://www.vagrantup.com/downloads.html)
 * Download and Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
-* Run `vagrant up` from the root of your cloned fork of the phpBB Git repository
+* Run `vagrant up` from the `vagrant` directory of your cloned fork of the phpBB Git repository
 
 ```sh
+$ cd vagrant
+$ ../composer.phar install
 $ vagrant up
 ```
 
-* Access phpBB at `http://192.168.10.10/`
+* Access phpBB at `http://192.168.56.56/`
 * Username: **admin**
 * Password: **adminadmin**
 
@@ -52,7 +54,7 @@ By default, phpBB is pre-configured to install with a MySQL database. You can, h
 If you prefer to access phpBB from the more friendly URL `http://phpbb.app` then you must update your computer's hosts file. This file is typically located at `/etc/hosts` for Mac/Linux or `C:\Windows\System32\drivers\etc\hosts` for Windows. Open this file and add the following line to it, at the very bottom, and save.
 
 ```
-192.168.10.10  phpbb.app
+192.168.56.56  phpbb.app
 ```
 
 ## How it all works
@@ -91,11 +93,11 @@ $ mysql -uhomestead -psecret phpbb < /home/vagrant/phpbb/phpBB/store/phpbb.sql
 
 ### Included Software
 
-* Ubuntu 14.04
+* Ubuntu
 * Git
-* PHP 5.6
+* PHP 7.2
 * HHVM
-* Nginx
+* Apache
 * MySQL
 * Sqlite3
 * Postgres
