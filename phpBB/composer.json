@@ -61,7 +61,6 @@
 		"twig/twig": "^3.14"
 	},
 	"require-dev": {
-		"laravel/homestead": "~15.0",
 		"misantron/dbunit": "~5.0",
 		"phing/phing": "~2.4",
 		"phpunit/phpunit": "^10.0",
