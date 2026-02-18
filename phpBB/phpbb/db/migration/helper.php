@@ -39,8 +39,8 @@ class helper
 			'add_columns'		=> 2,
 			'drop_keys'			=> 2,
 			'drop_columns'		=> 2,
-			'add_primary_key'	=> 2, // perform_schema_changes only uses one level, but second is in the function
-			'drop_primary_key'	=> 1,
+			'add_primary_keys'	=> 2, // perform_schema_changes only uses one level, but second is in the function
+			'drop_primary_keys'	=> 1,
 			'add_unique_index'	=> 2,
 			'add_index'			=> 2,
 			'rename_index'		=> 1,

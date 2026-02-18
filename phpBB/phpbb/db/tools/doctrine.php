@@ -600,13 +600,15 @@ class doctrine implements tools_interface
 				'use_key' => false,
 				'per_table' => true,
 			],
-			'drop_primary_key' => [
+			'drop_primary_keys' => [
 				'method' => 'schema_drop_primary_key',
 				'use_key' => false,
+				'per_table' => true,
 			],
-			'add_primary_key' => [
+			'add_primary_keys' => [
 				'method' => 'schema_create_primary_key',
 				'use_key' => true,
+				'per_table' => true,
 			],
 			'add_unique_index' => [
 				'method' => 'schema_create_unique_index',
