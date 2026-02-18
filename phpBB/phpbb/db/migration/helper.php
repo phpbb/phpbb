@@ -40,16 +40,17 @@ class helper
 			'drop_keys'			=> 2,
 			'drop_columns'		=> 2,
 			'add_primary_keys'	=> 2, // perform_schema_changes only uses one level, but second is in the function
+			'drop_primary_keys'	=> 1,
 			'add_unique_index'	=> 2,
 			'add_index'			=> 2,
 			'rename_index'		=> 1,
 		);
 
-		foreach ($nested_level as $change_type => $data_depth)
+		foreach ($schema_changes as $change_type => $schema_change)
 		{
-			if (!empty($schema_changes[$change_type]))
+			if (!empty($data_depth = $nested_level[$change_type]))
 			{
-				foreach ($schema_changes[$change_type] as $key => $value)
+				foreach ($schema_change as $key => $value)
 				{
 					if ($data_depth === 1)
 					{
