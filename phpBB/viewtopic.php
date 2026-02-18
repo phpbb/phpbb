@@ -1980,9 +1980,9 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		!$s_cannot_edit_locked
 	)));
 
-	$quote_allowed = $auth->acl_get('m_edit', $forum_id) || ($topic_data['topic_status'] != ITEM_LOCKED &&
+	$quote_allowed = ($auth->acl_get('m_edit', $forum_id) || ($topic_data['topic_status'] != ITEM_LOCKED &&
 		($user->data['user_id'] == ANONYMOUS || $auth->acl_get('f_reply', $forum_id))
-	);
+	)) && (bool) $config['allow_full_quotes'];
 
 	// Only display the quote button if the post is quotable.  Posts not approved are not quotable.
 	$quote_allowed = ($quote_allowed && $row['post_visibility'] == ITEM_APPROVED) ? true : false;
