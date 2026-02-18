@@ -15,7 +15,9 @@ namespace phpbb\db\migration;
 
 use Closure;
 use phpbb\config\config;
+use phpbb\db\doctrine\table_helper;
 use phpbb\db\driver\driver_interface;
+use phpbb\db\tools\doctrine;
 use phpbb\db\migrator;
 use phpbb\db\tools\tools_interface;
 use UnexpectedValueException;
@@ -38,7 +40,7 @@ class schema_generator
 	protected $class_names;
 
 	/** @var string */
-	protected $table_prefix;
+	protected static $table_prefix;
 
 	/** @var string */
 	protected $phpbb_root_path;
@@ -79,7 +81,7 @@ class schema_generator
 		$this->class_names = $class_names;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
-		$this->table_prefix = $table_prefix;
+		self::$table_prefix = $table_prefix;
 		$this->table_names = $tables;
 	}
 
@@ -174,7 +176,7 @@ class schema_generator
 			$this->db_tools,
 			$this->phpbb_root_path,
 			$this->php_ext,
-			$this->table_prefix,
+			self::$table_prefix,
 			$this->table_names
 		);
 
@@ -185,8 +187,8 @@ class schema_generator
 			'drop_columns'		=> 'COLUMNS',
 			'change_columns'	=> 'COLUMNS',
 			'add_index'			=> 'KEYS',
-			'add_primary_key'	=> 'PRIMARY_KEY',
-			'drop_primary_key'	=> null,
+			'add_primary_keys'	=> 'PRIMARY_KEY',
+			'drop_primary_keys'	=> null,
 			'add_unique_index'	=> 'KEYS',
 			'drop_keys'			=> 'KEYS',
 			'rename_index'		=> 'KEYS',
@@ -210,14 +212,14 @@ class schema_generator
 				case 'add':
 				case 'change':
 				case 'rename':
-					$action = function(&$value, $changes, $value_transform = null) {
-						self::set_all($value, $changes, $value_transform);
+					$action = function(&$schema, $data, $value_transform = null) {
+						self::set_all($schema, $data, $value_transform);
 					};
 				break;
 
 				case 'drop':
-					$action = function(&$value, $changes, $value_transform = null) {
-						self::unset_all($value, $changes);
+					$action = function(&$schema, $data, $value_transform = null, $table_name = null) {
+						self::unset_all($schema, $data, $value_transform, $table_name);
 					};
 				break;
 
@@ -261,7 +263,7 @@ class schema_generator
 				$target = &$target[$column];
 			}
 
-			$callback($target, $values, $value_transform);
+			$callback($target, $values, $value_transform, $table);
 		}
 	}
 
@@ -283,7 +285,14 @@ class schema_generator
 			}
 			else
 			{
-				$schema[$key] = $change;
+				if (isset($schema) && is_string($schema))
+				{
+					$schema = $change;
+				}
+				else
+				{
+					$schema[$key] = $change;
+				}
 			}
 		}
 	}
@@ -293,13 +302,22 @@ class schema_generator
 	 *
 	 * @param mixed $schema						Reference to the schema entry.
 	 * @param mixed $data						Array of values to be removed.
+	 * @param callable|null	$value_transform	Callback to transform the value being set.
+	 * @param string|null	$table_name			Table name the value being unset for.
 	 */
-	private static function unset_all(&$schema, $data)
+	private static function unset_all(&$schema, $data, callable|null $value_transform = null, string|null $table_name = null)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
 		foreach ($data as $key)
 		{
-			unset($schema[$key]);
+			if (is_callable($value_transform))
+			{
+				$value_transform($schema, $key, $table_name);
+			}
+			else
+			{
+				unset($schema[$key]);
+			}
 		}
 	}
 
@@ -385,24 +403,37 @@ class schema_generator
 					$value[$key] = ['UNIQUE', $change];
 				};
 
-			case 'primary_key':
-				if ($change_type == 'add')
-				{
-					return function(&$value, $key, $change) {
-						$value = [$change];
-					};
-				}
-				else if ($change_type == 'drop')
+			case 'primary_keys':
+				if ($change_type == 'drop')
 				{
 					return function(&$value, $key, $change) {
 						unset($value['PRIMARY_KEY']);
 					};
 				}
+				return null;
+
+			case 'keys':
+				if ($change_type == 'drop')
+				{
+					return function(&$value, $key, $table_name) {
+						if (!isset($value[$key]))
+						{
+							$short_table_name = table_helper::generate_shortname(doctrine::remove_prefix($table_name, self::$table_prefix));
+							$key = !str_starts_with($key, $short_table_name) ? doctrine::add_prefix($key, $short_table_name) : doctrine::remove_prefix($key, $short_table_name);
+						}
+						unset($value[$key]);
+					};
+				}
+				return null;
 
 			case 'columns':
-				return function(&$value, $key, $change) {
-					self::handle_add_column($value, $key, $change);
-				};
+				if ($change_type == 'add')
+				{
+					return function(&$value, $key, $change) {
+						self::handle_add_column($value, $key, $change);
+					};
+				}
+				return null;
 		}
 
 		return null;
