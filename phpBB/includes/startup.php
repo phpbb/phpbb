@@ -33,11 +33,10 @@ if (version_compare(PHP_VERSION, '8.2.0', '<'))
 /**
  * Handle maintenance mode. If the file store/UPDATE_LOCK.php exists, we will show a maintenance screen and exit.
  */
-if (file_exists($phpbb_root_path . 'store/UPDATE_LOCK.php'))
+if (is_file($phpbb_root_path . 'store/UPDATE_LOCK.php'))
 {
 	// Check if we should bypass (e.g., for the active update process)
-	// You could check for a specific constant defined in your update script
-	if (!defined('PHPBB_UPGRADER_ACTIVE'))
+	if (!defined('IN_INSTALL'))
 	{
 		send_maintenance_screen();
 	}
@@ -96,6 +95,12 @@ else
 
 $starttime = microtime(true);
 
+/**
+ * Send maintenance screen to the user and exit. This is used when an update is in progress and the UPDATE_LOCK.php file exists.
+ * Invalid data in the UPDATE_LOCK.php file will cause this function to return without sending the maintenance screen.
+ *
+ * @return void
+ */
 function send_maintenance_screen(): void
 {
 	global $phpbb_root_path;
@@ -106,7 +111,7 @@ function send_maintenance_screen(): void
 	header('Content-Type: text/html; charset=utf-8');
 
 	$lock_file = $phpbb_root_path . 'store/UPDATE_LOCK.php';
-	$update_data = (file_exists($lock_file)) ? include($lock_file) : null;
+	$update_data = (is_file($lock_file)) ? include($lock_file) : null;
 
 	// Return if update data is invalid
 	if (!$update_data)
