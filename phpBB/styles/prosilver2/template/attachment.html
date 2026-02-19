@@ -1,0 +1,75 @@
+<!-- EVENT attachment_file_before -->
+
+<!-- BEGIN _file -->
+	<!-- IF _file.S_DENIED -->
+	<p>[{_file.DENIED_MESSAGE}]</p>
+	<!-- ELSE -->
+		<!-- EVENT attachment_file_prepend -->
+
+		<!-- IF _file.S_THUMBNAIL -->
+		<dl class="thumbnail">
+			<dt><a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" class="postimage" alt="{% if _file.COMMENT %}{{ _file.COMMENT|e('html') }}{% else %}{{ _file.DOWNLOAD_NAME }}{% endif %}" title="{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}" /></a></dt>
+			<!-- IF _file.COMMENT --><dd> {_file.COMMENT}</dd><!-- ENDIF -->
+		</dl>
+		<!-- ENDIF -->
+
+		<!-- IF _file.S_IMAGE -->
+		<dl class="file">
+			<dt class="attach-image"><img src="{_file.U_INLINE_LINK}" class="postimage" alt="{% if _file.COMMENT %}{{ _file.COMMENT|e('html') }}{% else %}{{ _file.DOWNLOAD_NAME }}{% endif %}" onclick="viewableArea(this);" /></dt>
+			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
+			<dd>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
+		</dl>
+		<!-- ENDIF -->
+
+		<!-- IF _file.S_FILE -->
+		<dl class="file">
+			<dt><!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF --><a class="postlink" href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a></dt>
+			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
+			<dd>({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
+		</dl>
+		<!-- ENDIF -->
+
+		{% if _file.S_AUDIO_FILE %}
+			<dl class="file">
+				<dt class="c-file-header">
+					<audio class="c-file-audio-controls" controls="controls" preload="metadata">
+						<source class="c-file-audio-source" src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
+					</audio>
+				</dt>
+				{% if _file.COMMENT %}
+					<dd class="c-file-comment">{{ _file.COMMENT }}</dd>
+				{% endif %}
+				<dd class="c-file-actions">
+					{% if _file.UPLOAD_ICON %}
+						<span class="o-icon c-file-icon">{{ _file.UPLOAD_ICON }}</span>
+					{% endif %}
+					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}" download>{{ _file.DOWNLOAD_NAME }}</a>
+					<span class="c-file-actions-meta">({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</span>
+				</dd>
+			</dl>
+		{% endif %}
+
+		{% if _file.S_VIDEO_FILE %}
+			<dl class="file">
+				<dt class="c-file-header">
+					<video class="c-file-video-controls" controls="controls" preload="metadata">
+						<source class="c-file-video-source" src="{{ _file.U_DOWNLOAD_LINK }}" type="{{ _file.MIMETYPE }}">
+					</video>
+				</dt>
+				{% if _file.COMMENT %}
+					<dd class="c-file-comment">{{ _file.COMMENT }}</dd>
+				{% endif %}
+				<dd class="c-file-actions">
+					{% if _file.UPLOAD_ICON %}
+						<span class="o-icon c-file-icon">{{ _file.UPLOAD_ICON }}</span>
+					{% endif %}
+					<a class="c-file-actions-link postlink" href="{{ _file.U_DOWNLOAD_LINK }}" download>{{ _file.DOWNLOAD_NAME }}</a>
+					<span class="c-file-actions-meta">({{ _file.FILESIZE }} {{ _file.SIZE_LANG }}) {{ _file.L_DOWNLOAD_COUNT }}</span>
+				</dd>
+			</dl>
+		{% endif %}
+
+		<!-- EVENT attachment_file_append -->
+	<!-- ENDIF -->
+<!-- END _file -->
+<!-- EVENT attachment_file_after -->

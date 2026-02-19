@@ -1,0 +1,11 @@
+<dl>
+	<dt><label for="avatar_gravatar_email">{L_GRAVATAR_AVATAR_EMAIL}{L_COLON}</label><br /><span>{L_GRAVATAR_AVATAR_EMAIL_EXPLAIN}</span></dt>
+	<dd><input type="email" name="avatar_gravatar_email" id="avatar_gravatar_email" value="{AVATAR_GRAVATAR_EMAIL}" class="inputbox" data-reset-on-edit="#avatar_gravatar_width, #avatar_gravatar_height" /></dd>
+</dl>
+<dl>
+	<dt><label for="avatar_gravatar_width">{L_GRAVATAR_AVATAR_SIZE}{L_COLON}</label><br /><span>{L_GRAVATAR_AVATAR_SIZE_EXPLAIN}</span></dt>
+	<dd>
+		<label for="avatar_gravatar_width"><input type="number" name="avatar_gravatar_width" id="avatar_gravatar_width" min="{AVATAR_MIN_WIDTH}" max="{AVATAR_MAX_WIDTH}" value="{AVATAR_GRAVATAR_WIDTH}" class="inputbox autowidth" /> {L_PIXEL}</label> &times;&nbsp;
+		<label for="avatar_gravatar_height"><input type="number" name="avatar_gravatar_height" id="avatar_gravatar_height" min="{AVATAR_MIN_HEIGHT}" max="{AVATAR_MAX_HEIGHT}" value="{AVATAR_GRAVATAR_HEIGHT}" class="inputbox autowidth" /> {L_PIXEL}</label>
+	</dd>
+</dl>

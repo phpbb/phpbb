@@ -1,0 +1,117 @@
+<div class="navbar" role="navigation">
+	<div class="inner">
+
+		<ul id="nav-footer" class="nav-footer linklist" role="menubar">
+			<li class="breadcrumbs">
+				{% if U_SITE_HOME %}
+					{% apply spaceless %}
+						<span class="crumb">
+							<a href="{{ U_SITE_HOME }}" data-navbar-reference="home">
+								{{ Icon('font', 'home', lang('SITE_HOME'), false, 'fas o-icon-baseline') }}
+							</a>
+						</span>
+					{% endapply %}
+				{% endif %}
+
+				{% EVENT overall_footer_breadcrumb_prepend %}
+
+				{% apply spaceless %}
+					<span class="crumb">
+						<a href="{{ U_INDEX }}" data-navbar-reference="index">
+							{% if U_SITE_HOME %}
+								<span>{{ lang('INDEX') }}</span>
+							{% else %}
+								{{ Icon('font', 'home', lang('INDEX'), false, 'fas o-icon-baseline') }}
+							{% endif %}
+						</a>
+					</span>
+				{% endapply %}
+
+				{% EVENT overall_footer_breadcrumb_append %}
+			</li>
+
+			{% block nav_footer_left_side %}
+				{% if U_WATCH_FORUM_LINK and not S_IS_BOT %}
+					<li class="in-menu">
+						<a href="{{ U_WATCH_FORUM_LINK }}" title="{{ S_WATCH_FORUM_TITLE }}" data-ajax="toggle_link" data-toggle-text="{{ S_WATCH_FORUM_TOGGLE }}" data-toggle-url="{{ U_WATCH_FORUM_TOGGLE }}">
+							{% if S_WATCHING_FORUM %}
+								{{ Icon('font', 'bell-slash', '', true, 'far c-watch-icon is-active') }}
+								{{ Icon('font', 'bell', '', true, 'far c-watch-icon') }}
+							{% else %}
+								{{ Icon('font', 'bell', '', true, 'far c-watch-icon is-active') }}
+								{{ Icon('font', 'bell-slash', '', true, 'far c-watch-icon') }}
+							{% endif %}
+							<span>{{ S_WATCH_FORUM_TITLE }}</span>
+						</a>
+					</li>
+				{% endif %}
+			{% endblock nav_footer_left_side %}
+
+			{# End of left side menu Start of right side menu #}
+
+			{% EVENT overall_footer_timezone_before %}
+			<li class="rightside">
+				{{ S_TIMEZONE }}
+			</li>
+			{% EVENT overall_footer_timezone_after %}
+
+			{% block nav_footer_right_side %}
+				{% if not S_IS_BOT %}
+					<li class="rightside in-menu">
+						<a href="{{ U_DELETE_COOKIES }}" data-ajax="true" data-refresh="true" role="menuitem">
+							{{ Icon('font', 'trash', lang('DELETE_COOKIES'), false) }}
+						</a>
+					</li>
+
+					{% if S_DISPLAY_MEMBERLIST %}
+						<li class="rightside in-menu">
+							<a href="{{ U_MEMBERLIST }}" title="{{ lang('MEMBERLIST_EXPLAIN') }}" role="menuitem">
+								{{ Icon('font', 'users', lang('MEMBERLIST'), false) }}
+							</a>
+						</li>
+					{% endif %}
+				{% endif %}
+
+				{% EVENT overall_footer_teamlink_before %}
+
+				{% if U_TEAM %}
+					<li class="rightside in-menu">
+						<a href="{{ U_TEAM }}" role="menuitem">
+							{{ Icon('font', 'shield-halved', lang('THE_TEAM'), false) }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% EVENT overall_footer_teamlink_after %}
+
+				{% if U_CONTACT_US %}
+					<li class="rightside in-menu">
+						<a href="{{ U_CONTACT_US }}" role="menuitem">
+							{{ Icon('font', 'envelope', lang('CONTACT_US'), false) }}
+						</a>
+					</li>
+				{% endif %}
+			{% endblock nav_footer_right_side %}
+
+			{# right side responsive menu #}
+
+			<li class="rightside dropdown-container responsive-menu">
+				<a class="dropdown-toggle" href="">
+					{{ Icon('font', 'bars', '', true) }}
+				</a>
+				<div class="dropdown">
+					<div class="pointer">
+						<div class="pointer-inner"></div>
+					</div>
+
+					<ul class="dropdown-contents">
+						{{ block('nav_footer_left_side', _self) }}
+						<li class="separator"></li>
+						{{ block('nav_footer_right_side', _self) }}
+					</ul>
+				</div>
+			</li>
+		</ul>
+
+	</div>
+</div>
