@@ -120,14 +120,16 @@ function send_maintenance_screen(): void
 	}
 
 	$json_payload = json_encode($update_data);
+	$config = $update_data['config'];
+	$lang = $update_data['lang'];
 
 	echo '<!DOCTYPE html>
-    <html lang="' . $update_data['default_lang'] . '">
+    <html lang="' . $config['default_lang'] . '">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="refresh" content="30">
-        <title>Update in Progress</title>
+        <title>' . sprintf($lang['en']['BOARD_MAINTENANCE_TITLE'], $config['sitename']) . '</title>
         <style>
             body { font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f7f9; color: #444; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
             .card { background: #fff; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; max-width: 500px; width: 90%; }
@@ -157,10 +159,10 @@ function send_maintenance_screen(): void
         <script>
             (function() {
                 const data = ' . $json_payload . ';
-                const userLang = navigator.language || "' . $update_data['default_lang'] . '";
+                const userLang = navigator.language || "' . $config['default_lang'] . '";
 
                 // Select localized message
-                document.getElementById("msg").textContent = data.messages[userLang.toLowerCase()] || data.messages[data.default_lang];
+                document.getElementById("msg").textContent = data.messages[userLang.toLowerCase()] || data.messages[userLang.toLowerCase().split("-")[0]] || data.messages[data.config.default_lang];
 
                 // Handle timestamp
                 if (data.hasOwnProperty("initiated") && data.initiated > 0) {
