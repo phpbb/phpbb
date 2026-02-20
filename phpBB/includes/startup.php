@@ -173,9 +173,10 @@ function send_maintenance_screen(): void
 				const data = ' . $json_payload . ';
 				const userLang = navigator.language || "' . $config['default_lang'] . '";
 				const shortLang = userLang.toLowerCase().split("-")[0];
+				const language = data.lang[userLang.toLowerCase()] || data.lang[shortLang] || data.lang[data.config.default_lang];
 
 				// Select localized message
-				document.getElementById("msg").textContent = data.messages[userLang.toLowerCase()] || data.messages[shortLang] || data.messages[data.config.default_lang];
+				document.getElementById("msg").textContent = language["BOARD_MAINTENANCE"];
 
 				// Handle timestamp
 				if (data.hasOwnProperty("initiated") && data.initiated > 0) {
@@ -183,15 +184,7 @@ function send_maintenance_screen(): void
 					const formatted = new Intl.DateTimeFormat(userLang, { dateStyle: "medium", timeStyle: "short" }).format(date);
 
 					// Display localized "Started on: [time]"
-					let timeMsgLang = {};
-					for (const lang_key in data.lang) {
-						if (data.lang.hasOwnProperty(lang_key) && data.lang[lang_key].hasOwnProperty("BOARD_MAINTENANCE_START")) {
-							timeMsgLang[lang_key] = data.lang[lang_key]["BOARD_MAINTENANCE_START"];
-						}
-					}
-
-					const timeMsg = timeMsgLang[userLang.toLowerCase()] || timeMsgLang[shortLang] || timeMsgLang[data.config.default_lang];
-					document.getElementById("time").textContent = timeMsg.replace(/{initiated}/, formatted);
+					document.getElementById("time").textContent = language["BOARD_MAINTENANCE_START"].replace(/{initiated}/, formatted);
 				}
 			})();
 		</script>
