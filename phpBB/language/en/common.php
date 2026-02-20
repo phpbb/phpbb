@@ -128,6 +128,7 @@ $lang = array_merge($lang, array(
 	'BOARD_DISABLE'			=> 'Sorry but this board is currently unavailable.',
 	'BOARD_DISABLED'		=> 'This board is currently disabled.',
 	'BOARD_MAINTENANCE'		=> 'The board is currently down for maintenance. We will be back shortly.',
+	'BOARD_MAINTENANCE_START'	=> 'Started on %1$s',
 	'BOARD_MAINTENANCE_TITLE'	=> 'Board maintenance - %1$s',
 	'BOARD_UNAVAILABLE'		=> 'Sorry but the board is temporarily unavailable, please try again in a few minutes.',
 	'BROWSING_FORUM'		=> 'Users browsing this forum: %1$s',
