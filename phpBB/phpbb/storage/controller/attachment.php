@@ -24,8 +24,11 @@ use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\mimetype\extension_guesser;
 use phpbb\request\request;
+use phpbb\storage\provider\local;
 use phpbb\storage\storage;
 use phpbb\user;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,10 +38,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 /**
  * Controller for /download/attachment/{id} routes
  */
-class attachment extends controller
+class attachment
 {
 	/** @var auth */
 	protected $auth;
+
+	/** @var service */
+	protected $cache;
 
 	/** @var config */
 	protected $config;
@@ -46,14 +52,26 @@ class attachment extends controller
 	/** @var content_visibility */
 	protected $content_visibility;
 
+	/** @var driver_interface */
+	protected $db;
+
 	/** @var dispatcher_interface */
 	protected $dispatcher;
+
+	/** @var extension_guesser */
+	protected $extension_guesser;
 
 	/** @var language */
 	protected $language;
 
 	/** @var request */
 	protected $request;
+
+	/** @var storage */
+	protected $storage;
+
+	/** @var symfony_request */
+	protected $symfony_request;
 
 	/** @var user */
 	protected $user;
@@ -76,14 +94,17 @@ class attachment extends controller
 	 */
 	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, extension_guesser $extension_guesser, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
 	{
-		parent::__construct($cache, $db, $extension_guesser, $storage, $symfony_request);
-
 		$this->auth = $auth;
+		$this->cache = $cache;
 		$this->config = $config;
 		$this->content_visibility = $content_visibility;
+		$this->db = $db;
 		$this->dispatcher = $dispatcher;
+		$this->extension_guesser = $extension_guesser;
 		$this->language = $language;
 		$this->request = $request;
+		$this->storage = $storage;
+		$this->symfony_request = $symfony_request;
 		$this->user = $user;
 	}
 
@@ -110,15 +131,7 @@ class attachment extends controller
 			throw new http_exception(404, 'NO_ATTACHMENT_SELECTED');
 		}
 
-		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id,
-				is_orphan, physical_filename, real_filename, extension, mimetype,
-				filesize, filetime
-			FROM ' . ATTACHMENTS_TABLE . "
-			WHERE attach_id = $attach_id" .
-				(($filename) ? " AND real_filename = '" . $this->db->sql_escape($filename) . "'" : '');
-		$result = $this->db->sql_query($sql);
-		$attachment = $this->db->sql_fetchrow($result);
-		$this->db->sql_freeresult($result);
+		$attachment = $this->get_attachment($attach_id, $filename);
 
 		if (!$attachment)
 		{
@@ -157,12 +170,7 @@ class attachment extends controller
 			{
 				$this->phpbb_download_handle_forum_auth($attachment['topic_id']);
 
-				$sql = 'SELECT forum_id, poster_id, post_visibility
-					FROM ' . POSTS_TABLE . '
-					WHERE post_id = ' . (int) $attachment['post_msg_id'];
-				$result = $this->db->sql_query($sql);
-				$post_row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$post_row = $this->get_post((int) $attachment['post_msg_id']);
 
 				if (!$post_row || !$this->content_visibility->is_visible('post', $post_row['forum_id'], $post_row))
 				{
@@ -173,11 +181,11 @@ class attachment extends controller
 			else
 			{
 				// Attachment is in a private message.
-				$post_row = array('forum_id' => false);
+				$post_row = ['forum_id' => false];
 				$this->phpbb_download_handle_pm_auth( $attachment['post_msg_id']);
 			}
 
-			$extensions = array();
+			$extensions = [];
 			if (!extension_allowed($post_row['forum_id'], $attachment['extension'], $extensions))
 			{
 				throw new http_exception(403, 'EXTENSION_DISABLED_AFTER_POSTING', [$attachment['extension']]);
@@ -216,13 +224,13 @@ class attachment extends controller
 		 * @changed 3.3.0-a1		Remove display_cat variable
 		 * @changed 3.3.0-a1		Remove mode variable
 		 */
-		$vars = array(
+		$vars = [
 			'attach_id',
 			'attachment',
 			'extensions',
 			'thumbnail',
 			'redirect',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.download_file_send_to_browser_before', compact($vars)));
 
 		// If the redirect variable have been overwritten, do redirect there
@@ -247,26 +255,15 @@ class attachment extends controller
 		 * @changed 3.3.0-a1		Removed size variable
 		 * @changed 3.3.0-a1		Removed filename variable
 		 */
-		$vars = array(
+		$vars = [
 			'attachment',
-		);
+		];
 		extract($this->dispatcher->trigger_event('core.send_file_to_browser_before', compact($vars)));
 
-		// TODO: The next lines should go better in prepare, also the mimetype is handled by the storage table
-		// so probably can be removed
-
-		$response = new StreamedResponse();
-
-		// Content-type header
-		$response->headers->set('Content-Type', $attachment['mimetype']);
-
-		// Display file types in browser and force download for others
-		if (strpos($attachment['mimetype'], 'image') !== false
-			|| strpos($attachment['mimetype'], 'audio') !== false
-			|| strpos($attachment['mimetype'], 'video') !== false
-		)
+		// Display images in browser and force download for others
+		if ($display_cat == attachment_category::IMAGE && str_starts_with($attachment['mimetype'], 'image'))
 		{
-			$disposition = $response->headers->makeDisposition(
+			$disposition = HeaderUtils::makeDisposition(
 				ResponseHeaderBag::DISPOSITION_INLINE,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
@@ -274,20 +271,81 @@ class attachment extends controller
 		}
 		else
 		{
-			$disposition = $response->headers->makeDisposition(
+			// Correct the mime type - we force application/octet-stream for all files, except images
+			$attachment['mimetype'] = 'application/octet-stream';
+
+			$disposition = HeaderUtils::makeDisposition(
 				ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 				$attachment['real_filename'],
 				$this->filenameFallback($attachment['real_filename'])
 			);
 		}
 
+		if ($this->config['storage\\attachment\\provider'] === local::class)
+		{
+			$response = new BinaryFileResponse($this->config['storage\\attachment\\config\\path'] . '/' . $attachment['physical_filename']);
+		}
+		else
+		{
+			$response = new StreamedResponse();
+
+			$fp = $this->storage->read($attachment['physical_filename']);
+
+			$output = fopen('php://output', 'w+b');
+
+			$response->setCallback(function () use ($fp, $output) {
+				stream_copy_to_stream($fp, $output);
+				fclose($fp);
+				fclose($output);
+				flush();
+
+				// Terminate script to avoid the execution of terminate events
+				// This avoids possible errors with db connection closed
+				exit;
+			});
+		}
+
+		// Close db connection and unload cache
+		$this->cache->unload();
+		$this->db->sql_close();
+
+		// Don't cache attachments on proxies
+		$response->setPrivate();
+
+		// Content-type and content-disposition headers
+		$response->headers->set('Content-Type', $attachment['mimetype']);
 		$response->headers->set('Content-Disposition', $disposition);
 
-		// Set expires header for browser cache
-		$time = new \DateTime();
-		$response->setExpires($time->modify('+1 year'));
+		@set_time_limit(0);
 
-		return parent::handle($attachment['physical_filename']);
+		return $response;
+	}
+
+	protected function get_attachment(int $attach_id, string $filename): array|null
+	{
+		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id,
+				is_orphan, physical_filename, real_filename, extension, mimetype,
+				filesize, filetime
+			FROM ' . ATTACHMENTS_TABLE . "
+			WHERE attach_id = $attach_id" .
+			(($filename) ? " AND real_filename = '" . $this->db->sql_escape($filename) . "'" : '');
+		$result = $this->db->sql_query($sql);
+		$attachment = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $attachment ?: null;
+	}
+
+	protected function get_post(int $post_id): array|null
+	{
+		$sql = 'SELECT forum_id, poster_id, post_visibility
+					FROM ' . POSTS_TABLE . '
+					WHERE post_id = ' . (int) $post_id;
+		$result = $this->db->sql_query($sql);
+		$post_row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		return $post_row ?: null;
 	}
 
 	/**
@@ -298,16 +356,6 @@ class attachment extends controller
 		$filename = (string) preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
 
 		return !empty($filename) ? $filename : 'File';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	protected function prepare(StreamedResponse $response, string $file): void
-	{
-		$response->setPrivate();	// By default, should be private, but make sure of it
-
-		parent::prepare($response, $file);
 	}
 
 	/**
@@ -381,7 +429,7 @@ class attachment extends controller
 		 * @var	int		user_id		The user id for auth check
 		 * @since 3.1.11-RC1
 		 */
-		$vars = array('allowed', 'msg_id', 'user_id');
+		$vars = ['allowed', 'msg_id', 'user_id'];
 		extract($this->dispatcher->trigger_event('core.modify_pm_attach_download_auth', compact($vars)));
 
 		if (!$allowed)
@@ -408,7 +456,8 @@ class attachment extends controller
 				AND (
 					user_id = ' . (int) $user_id . '
 					OR author_id = ' . (int) $user_id . '
-				)';
+				)
+			';
 		$result = $this->db->sql_query_limit($sql, 1);
 		$allowed = (bool) $this->db->sql_fetchfield('msg_id');
 		$this->db->sql_freeresult($result);
@@ -461,7 +510,7 @@ class attachment extends controller
 		unset($url);
 
 		$allowed = !$this->config['secure_allow_deny'];
-		$iplist = array();
+		$iplist = [];
 
 		if (($ip_ary = @gethostbynamel($hostname)) !== false)
 		{
