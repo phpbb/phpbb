@@ -78,7 +78,7 @@ class table_helper
 			}
 			else if ($dbms_layer === 'mysql' && $column_data[2] === 'true_sort')
 			{
-				$doctrine_options['platformoptions']['collation'] = 'utf8_unicode_ci';
+				$doctrine_options['platformoptions']['collation'] = 'utf8mb4_unicode_ci';
 			}
 		}
 
