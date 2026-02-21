@@ -145,7 +145,6 @@ function send_maintenance_screen(): void
 	$update_data['lang'] = $lang;
 	$json_payload = json_encode($update_data);
 
-
 	echo '<!DOCTYPE html>
 	<html lang="' . $config['default_lang'] . '">
 	<head>
