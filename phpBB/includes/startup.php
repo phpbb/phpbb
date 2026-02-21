@@ -131,6 +131,17 @@ function send_maintenance_screen(): void
 		$lang[$lang_key]['BOARD_MAINTENANCE_START'] = sprintf($lang[$lang_key]['BOARD_MAINTENANCE_START'], '{initiated}');
 	}
 
+	// Prepare optional links
+	$links = [];
+	if (isset($update_data['links']))
+	{
+		foreach ($update_data['links'] as $link)
+		{
+			$links[] = '<a href="' . htmlspecialchars($link['url']) . '" target="_blank" rel="noopener">' . htmlspecialchars($link['title']) . '</a>';
+		}
+	}
+	$links_html = implode('', $links);
+
 	$update_data['lang'] = $lang;
 	$json_payload = json_encode($update_data);
 
@@ -151,6 +162,11 @@ function send_maintenance_screen(): void
 			.loader { border: 3px solid #f3f3f3; border-top: 3px solid #009BDF; border-radius: 50%; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
 			.time { font-size: 0.85rem; color: #888; margin-top: 2.5rem; border-top: 1px solid #eee; padding-top: 1.2rem; }
 			@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+			/* Social Links Styling */
+			.links { margin-top: 2rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; }
+			.links:empty { display: none;}
+			.links a { color: #009BDF; text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+			.links a:hover { color: #11589f; text-decoration: underline; }
 		</style>
 	</head>
 	<body>
@@ -165,6 +181,7 @@ function send_maintenance_screen(): void
 			</div>
 			<div id="msg">Updating...</div>
 			<div class="loader"></div>
+			<div class="links">' . ($links_html ?: '') . '</div>
 			<div class="time" id="time"></div>
 		</div>
 
