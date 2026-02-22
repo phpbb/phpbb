@@ -58,6 +58,9 @@ class add_sessions_autoincrement_column extends migration
 			'add_primary_keys' => [
 				$this->table_prefix . 'sessions' => ['session_id'],
 			],
+			'drop_columns' => [
+				$this->table_prefix . 'sessions' => ['id'],
+			],
 		];
 	}
 }
