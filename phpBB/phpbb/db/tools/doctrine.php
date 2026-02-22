@@ -607,7 +607,7 @@ class doctrine implements tools_interface
 			],
 			'add_primary_keys' => [
 				'method' => 'schema_create_primary_key',
-				'use_key' => true,
+				'use_key' => false,
 				'per_table' => true,
 			],
 			'add_unique_index' => [
