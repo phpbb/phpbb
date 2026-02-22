@@ -49,17 +49,14 @@ class add_sessions_autoincrement_column extends migration
 	public function revert_schema(): array
 	{
 		return [
-			'drop_primary_keys' => [
-				$this->table_prefix . 'sessions' => ['PRIMARY_KEY'],
+			'drop_columns' => [
+				$this->table_prefix . 'sessions' => ['id'],
 			],
 			'drop_keys'	=> [
 				$this->table_prefix . 'sessions' => ['session_id'],
 			],
 			'add_primary_keys' => [
 				$this->table_prefix . 'sessions' => ['session_id'],
-			],
-			'drop_columns' => [
-				$this->table_prefix . 'sessions' => ['id'],
 			],
 		];
 	}
