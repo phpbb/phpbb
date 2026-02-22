@@ -212,14 +212,14 @@ class schema_generator
 				case 'add':
 				case 'change':
 				case 'rename':
-					$action = function(&$schema, $data, $value_transform = null) {
-						self::set_all($schema, $data, $value_transform);
+					$action = function(&$value, $changes, $value_transform = null) {
+						self::set_all($value, $changes, $value_transform);
 					};
 				break;
 
 				case 'drop':
-					$action = function(&$schema, $data, $value_transform = null, $table_name = null) {
-						self::unset_all($schema, $data, $value_transform, $table_name);
+					$action = function(&$value, $changes, $value_transform = null) {
+						self::unset_all($value, $changes);
 					};
 				break;
 
@@ -263,7 +263,7 @@ class schema_generator
 				$target = &$target[$column];
 			}
 
-			$callback($target, $values, $value_transform, $table);
+			$callback($target, $values, $value_transform);
 		}
 	}
 
@@ -302,22 +302,13 @@ class schema_generator
 	 *
 	 * @param mixed $schema						Reference to the schema entry.
 	 * @param mixed $data						Array of values to be removed.
-	 * @param callable|null	$value_transform	Callback to transform the value being set.
-	 * @param string|null	$table_name			Table name the value being unset for.
 	 */
-	private static function unset_all(&$schema, $data, callable|null $value_transform = null, string|null $table_name = null)
+	private static function unset_all(&$schema, $data)
 	{
 		$data = (!is_array($data)) ? [$data] : $data;
 		foreach ($data as $key)
 		{
-			if (is_callable($value_transform))
-			{
-				$value_transform($schema, $key, $table_name);
-			}
-			else
-			{
-				unset($schema[$key]);
-			}
+			unset($schema[$key]);
 		}
 	}
 
@@ -403,19 +394,11 @@ class schema_generator
 					$value[$key] = ['UNIQUE', $change];
 				};
 
-			case 'primary_keys':
-				if ($change_type == 'drop')
-				{
-					return function(&$value, $key, $change) {
-						unset($value['PRIMARY_KEY']);
-					};
-				}
-				return null;
-
 			case 'keys':
 				if ($change_type == 'drop')
 				{
 					return function(&$value, $key, $table_name) {
+						var_dump($value, $key, $table_name);
 						if (!isset($value[$key]))
 						{
 							$short_table_name = table_helper::generate_shortname(doctrine::remove_prefix($table_name, self::$table_prefix));
