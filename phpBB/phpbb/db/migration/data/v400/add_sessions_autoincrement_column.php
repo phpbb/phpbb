@@ -28,7 +28,7 @@ class add_sessions_autoincrement_column extends migration
 	{
 		return [
 			'drop_primary_keys' => [
-				$this->table_prefix . 'sessions' => null,
+				$this->table_prefix . 'sessions' => 'PRIMARY_KEY',
 			],
 			'add_columns' => [
 				$this->table_prefix . 'sessions' => [
@@ -50,7 +50,7 @@ class add_sessions_autoincrement_column extends migration
 	{
 		return [
 			'drop_primary_keys' => [
-				$this->table_prefix . 'sessions' => null,
+				$this->table_prefix . 'sessions' => 'PRIMARY_KEY',
 			],
 			'drop_keys'	=> [
 				$this->table_prefix . 'sessions' => [
