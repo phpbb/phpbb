@@ -24,7 +24,7 @@ use phpbb\filesystem\helper as filesystem_helper;
 */
 class extension extends extension_base
 {
-	protected function load_services(ContainerBuilder $container)
+	protected function load_services(ContainerBuilder $container): void
 	{
 		$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->ext_path)));
 		$loader->load('environment.yml');
