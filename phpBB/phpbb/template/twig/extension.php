@@ -16,6 +16,18 @@ namespace phpbb\template\twig;
 use Twig\Error\RuntimeError;
 use Twig\Extension\CoreExtension;
 use Twig\Runtime\EscaperRuntime;
+use Twig\Node\Expression\Unary\NotUnary;
+use Twig\Node\Expression\Binary\OrBinary;
+use Twig\Node\Expression\Binary\AndBinary;
+use Twig\Node\Expression\Binary\EqualBinary;
+use Twig\Node\Expression\Binary\NotEqualBinary;
+use phpbb\template\twig\node\expression\binary\equalequal;
+use phpbb\template\twig\node\expression\binary\notequalequal;
+use Twig\Node\Expression\Binary\GreaterBinary;
+use Twig\Node\Expression\Binary\GreaterEqualBinary;
+use Twig\Node\Expression\Binary\LessBinary;
+use Twig\Node\Expression\Binary\LessEqualBinary;
+use Twig\Node\Expression\Binary\ModBinary;
 
 class extension extends \Twig\Extension\AbstractExtension
 {
@@ -109,22 +121,22 @@ class extension extends \Twig\Extension\AbstractExtension
 	public function getExpressionParsers(): array
 	{
 		return [
-			new \Twig\ExpressionParser\Prefix\UnaryOperatorExpressionParser('\Twig\Node\Expression\Unary\NotUnary', '!', 50),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\OrBinary', '||', 10),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\AndBinary', '&&', 15),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\EqualBinary', 'eq', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\NotEqualBinary', 'ne', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\NotEqualBinary', 'neq', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\NotEqualBinary', '<>', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\phpbb\template\twig\node\expression\binary\equalequal', '===', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\phpbb\template\twig\node\expression\binary\notequalequal', '!==', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\GreaterBinary', 'gt', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\GreaterEqualBinary', 'gte', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\GreaterEqualBinary', 'ge', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\LessBinary', 'lt', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\LessEqualBinary', 'lte', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\LessEqualBinary', 'le', 20),
-			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser('\Twig\Node\Expression\Binary\ModBinary', 'mod', 60),
+			new \Twig\ExpressionParser\Prefix\UnaryOperatorExpressionParser(NotUnary::class, '!', 50),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(OrBinary::class, '||', 10),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(AndBinary::class, '&&', 15),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(EqualBinary::class, 'eq', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(NotEqualBinary::class, 'ne', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(NotEqualBinary::class, 'neq', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(NotEqualBinary::class, '<>', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(equalequal::class, '===', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(notequalequal::class, '!==', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(GreaterBinary::class, 'gt', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(GreaterEqualBinary::class, 'gte', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(GreaterEqualBinary::class, 'ge', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(LessBinary::class, 'lt', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(LessEqualBinary::class, 'lte', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(LessEqualBinary::class, 'le', 20),
+			new \Twig\ExpressionParser\Infix\BinaryOperatorExpressionParser(ModBinary::class, 'mod', 60),
 		];
 	}
 
