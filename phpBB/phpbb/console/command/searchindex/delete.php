@@ -72,7 +72,7 @@ class delete extends command
 	 *
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this->setName('searchindex:delete')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_DELETE'))

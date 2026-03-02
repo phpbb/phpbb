@@ -47,7 +47,7 @@ class list_all extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this->setName('reparser:list')
 			->setDescription($this->user->lang('CLI_DESCRIPTION_REPARSER_LIST'));

@@ -22,7 +22,7 @@ class show extends command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('extension:show')

@@ -48,7 +48,7 @@ class fix_left_right_ids extends \phpbb\console\command\command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('fixup:fix-left-right-ids')

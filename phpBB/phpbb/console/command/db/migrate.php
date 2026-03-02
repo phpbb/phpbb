@@ -45,7 +45,7 @@ class migrate extends \phpbb\console\command\db\migration_command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('db:migrate')

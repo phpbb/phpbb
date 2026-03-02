@@ -66,7 +66,7 @@ class update_hashes extends \phpbb\console\command\command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('fixup:update-hashes')
