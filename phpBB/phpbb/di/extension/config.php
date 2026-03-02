@@ -14,7 +14,7 @@
 namespace phpbb\di\extension;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 /**
 * Container config extension
