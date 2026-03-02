@@ -28,13 +28,13 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 	{
 		$lineno = $token->getLine();
 		$stream = $this->parser->getStream();
-		$name = $this->parser->getExpressionParser()->parseExpression();
+		$name = $this->parser->parseExpression();
 
 		$capture = false;
 		if ($stream->test(\Twig\Token::OPERATOR_TYPE, '='))
 		{
 			$stream->next();
-			$value = $this->parser->getExpressionParser()->parseExpression();
+			$value = $this->parser->parseExpression();
 
 			if ($value instanceof \Twig\Node\Expression\NameExpression)
 			{
@@ -55,7 +55,7 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 		}
 
-		return new \phpbb\template\twig\node\definenode($capture, $name, $value, $lineno, $this->getTag());
+		return new \phpbb\template\twig\node\definenode($capture, $name, $value, $lineno);
 	}
 
 	public function decideBlockEnd(\Twig\Token $token)
