@@ -67,7 +67,7 @@ class delete extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('thumbnail:delete')

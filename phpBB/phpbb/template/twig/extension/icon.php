@@ -46,7 +46,7 @@ class icon extends AbstractExtension
 	 *
 	 * @return \Twig\TwigFunction[]			Array of twig functions
 	 */
-	public function getFunctions()
+	public function getFunctions(): array
 	{
 		return [
 			new \Twig\TwigFunction('Icon', [$this, 'icon'], ['needs_environment' => true]),

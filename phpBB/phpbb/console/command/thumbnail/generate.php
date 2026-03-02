@@ -103,7 +103,7 @@ class generate extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('thumbnail:generate')

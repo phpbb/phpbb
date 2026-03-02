@@ -13,6 +13,7 @@
 
 namespace phpbb\extension\di;
 
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,7 +60,7 @@ class extension_base extends Extension
 	 *
 	 * @throws \InvalidArgumentException When provided tag is not defined in this extension
 	 */
-	public function load(array $configs, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container): void
 	{
 		$this->load_services($container);
 	}
@@ -69,7 +70,7 @@ class extension_base extends Extension
 	 *
 	 * @param ContainerBuilder $container A ContainerBuilder instance
 	 */
-	protected function load_services(ContainerBuilder $container)
+	protected function load_services(ContainerBuilder $container): void
 	{
 		$services_directory = false;
 		$services_file = false;
@@ -103,7 +104,7 @@ class extension_base extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getConfiguration(array $config, ContainerBuilder $container)
+	public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface|null
 	{
 		$reflected = new \ReflectionClass($this);
 		$namespace = $reflected->getNamespaceName();

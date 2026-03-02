@@ -14,7 +14,7 @@
 namespace phpbb\di\extension;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 /**
  * Container tables extension
@@ -24,7 +24,7 @@ class tables extends Extension
 	/**
 	 * {@inheritDoc}
 	 */
-	public function load(array $configs, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container): void
 	{
 		// Tables is a reserved parameter and will be overwritten at all times
 		$tables = [];

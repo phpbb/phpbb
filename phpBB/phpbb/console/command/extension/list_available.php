@@ -40,7 +40,7 @@ class list_available extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('extension:list-available')

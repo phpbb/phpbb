@@ -13,6 +13,7 @@
 
 namespace phpbb\di\extension;
 
+use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -54,9 +55,9 @@ class core extends Extension
 	 * @param array            $configs   An array of configuration values
 	 * @param ContainerBuilder $container A ContainerBuilder instance
 	 *
-	 * @throws \InvalidArgumentException When provided tag is not defined in this extension
+	 * @throws \InvalidArgumentException|\Exception When provided tag is not defined in this extension
 	 */
-	public function load(array $configs, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container): void
 	{
 		$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->config_path)));
 		$loader->load($container->getParameter('core.environment') . '/container/environment.yml');
@@ -133,7 +134,7 @@ class core extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getConfiguration(array $config, ContainerBuilder $container)
+	public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface|container_configuration|null
 	{
 		$r = new \ReflectionClass('\phpbb\di\extension\container_configuration');
 		$container->addResource(new FileResource($r->getFileName()));
