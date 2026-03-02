@@ -13,19 +13,21 @@
 
 namespace phpbb\template\twig\node;
 
+#[\Twig\Attribute\YieldReady]
 abstract class includeasset extends \Twig\Node\Node
 {
-	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, $lineno, $tag = null)
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, $lineno)
 	{
-		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
+		parent::__construct(array('expr' => $expr), array(), $lineno);
 	}
 
 	/**
 	* Compiles the node to PHP.
 	*
 	* @param \Twig\Compiler A Twig\Compiler instance
+	* @return void
 	*/
-	public function compile(\Twig\Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler): void
 	{
 		$compiler->addDebugInfo($this);
 

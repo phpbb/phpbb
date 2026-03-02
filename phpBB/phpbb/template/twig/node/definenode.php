@@ -14,19 +14,21 @@
 
 namespace phpbb\template\twig\node;
 
+#[\Twig\Attribute\YieldReady]
 class definenode extends \Twig\Node\Node
 {
-	public function __construct($capture, \Twig\Node\Node $name, \Twig\Node\Node $value, $lineno, $tag = null)
+	public function __construct($capture, \Twig\Node\Node $name, \Twig\Node\Node $value, $lineno)
 	{
-		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno, $tag);
+		parent::__construct(array('name' => $name, 'value' => $value), array('capture' => $capture, 'safe' => false), $lineno);
 	}
 
 	/**
 	* Compiles the node to PHP.
 	*
 	* @param \Twig\Compiler A Twig\Compiler instance
+	* @return void
 	*/
-	public function compile(\Twig\Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler): void
 	{
 		$compiler->addDebugInfo($this);
 

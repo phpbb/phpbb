@@ -24,12 +24,12 @@ class includecss extends \Twig\TokenParser\AbstractTokenParser
 	*/
 	public function parse(\Twig\Token $token)
 	{
-		$expr = $this->parser->getExpressionParser()->parseExpression();
+		$expr = $this->parser->parseExpression();
 
 		$stream = $this->parser->getStream();
 		$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
-		return new \phpbb\template\twig\node\includecss($expr, $token->getLine(), $this->getTag());
+		return new \phpbb\template\twig\node\includecss($expr, $token->getLine());
 	}
 
 	/**
