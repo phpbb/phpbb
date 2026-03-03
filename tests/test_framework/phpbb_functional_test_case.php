@@ -129,25 +129,41 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$this->bootstrap();
 
 		self::$cookieJar = new CookieJar;
-		// Optimize HTTP client for Windows platform
-		if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-			self::$http_client = new NativeHttpClient([
-				'timeout' => 30,
-				'max_duration' => 60,
-			]);
-		} else {
-			self::$http_client = HttpClient::create([
-				'timeout' => 60,
-			]);
-		}
-		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
-		// Disable SSL verification for local development with self-signed certificates
+		// Configure SSL verification for local development with self-signed certificates
+		$http_options = [];
 		if (isset(self::$config['path_to_ssl_cert']))
 		{
-			$guzzle_client = new \GuzzleHttp\Client(['verify' => self::$config['path_to_ssl_cert']]);
-			self::$client->setClient($guzzle_client);
+			if (self::$config['path_to_ssl_cert'] === false)
+			{
+				// Disable SSL verification
+				$http_options['verify_peer'] = false;
+				$http_options['verify_host'] = false;
+			}
+			else
+			{
+				// Use custom CA certificate
+				$http_options['verify_peer'] = true;
+				$http_options['verify_host'] = true;
+				$http_options['cafile'] = self::$config['path_to_ssl_cert'];
+			}
 		}
+
+		// Optimize HTTP client for Windows platform
+		if (stripos(PHP_OS_FAMILY, 'win') === 0)
+		{
+			self::$http_client = new NativeHttpClient(array_merge([
+				'timeout' => 30,
+				'max_duration' => 60,
+			], $http_options));
+		}
+		else
+		{
+			self::$http_client = HttpClient::create(array_merge([
+				'timeout' => 60,
+			], $http_options));
+		}
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
