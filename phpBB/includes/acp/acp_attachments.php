@@ -30,6 +30,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_attachments
 {
 	/** @var driver_interface */

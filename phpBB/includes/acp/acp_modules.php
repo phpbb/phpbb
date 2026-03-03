@@ -31,6 +31,7 @@ use phpbb\module\exception\module_exception;
 * - category disabled
 */
 
+#[\AllowDynamicProperties]
 class acp_modules
 {
 	var $module_class = '';
