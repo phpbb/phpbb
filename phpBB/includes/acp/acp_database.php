@@ -19,13 +19,13 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_database
 {
 	protected $db_tools;
 	protected $temp;
 	public $u_action;
 	public $page_title;
+	public $tpl_name;
 
 	function main($id, $mode)
 	{

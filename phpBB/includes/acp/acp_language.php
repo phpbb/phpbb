@@ -29,7 +29,6 @@ use phpbb\request\request_interface;
 use phpbb\template\template;
 use phpbb\user;
 
-#[\AllowDynamicProperties]
 class acp_language
 {
 	var $u_action;

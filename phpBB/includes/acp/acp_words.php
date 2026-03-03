@@ -22,10 +22,11 @@ if (!defined('IN_PHPBB'))
 /**
   * @todo {words} check regular expressions for special char replacements (stored specialchared in db)
   */
-#[\AllowDynamicProperties]
 class acp_words
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{

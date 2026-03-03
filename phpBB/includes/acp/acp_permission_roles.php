@@ -19,10 +19,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_permission_roles
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	protected $auth_admin;
 
 	function main($id, $mode)

@@ -31,12 +31,13 @@ use phpbb\module\exception\module_exception;
 * - category disabled
 */
 
-#[\AllowDynamicProperties]
 class acp_modules
 {
 	var $module_class = '';
 	var $parent_id;
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{

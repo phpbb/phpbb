@@ -31,7 +31,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_storage
 {
 	/** @var driver_interface */
