@@ -686,7 +686,10 @@ class p_master
 		}
 
 		// Assign the module path for re-usage
-		@$this->module->module_path = $module_path . '/';
+		if (property_exists($this->module, 'module_path'))
+		{
+			$this->module->module_path = $module_path . '/';
+		}
 
 		// Execute the main method for the new instance, we send the module id and mode as parameters
 		// Users are able to call the main method after this function to be able to assign additional parameters manually

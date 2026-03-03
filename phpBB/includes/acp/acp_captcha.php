@@ -19,7 +19,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_captcha
 {
 	var $u_action;

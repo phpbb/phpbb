@@ -24,10 +24,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_users
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	var $p_master;
 
 	function __construct($p_master)

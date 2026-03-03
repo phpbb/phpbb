@@ -19,10 +19,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_styles
 {
 	public $u_action;
+	public $tpl_name;
+	public $page_title;
 
 	protected $u_base_action;
 	protected $s_hidden_fields;
@@ -65,6 +66,9 @@ class acp_styles
 
 	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
+
+	/** @var array|int[] */
+	protected $style_counters;
 
 	public function main($id, $mode)
 	{

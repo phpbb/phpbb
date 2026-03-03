@@ -30,7 +30,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_attachments
 {
 	/** @var driver_interface */
@@ -62,6 +61,8 @@ class acp_attachments
 
 	public $id;
 	public $u_action;
+	public $tpl_name;
+	public $page_title;
 	protected $new_config;
 
 	function main($id, $mode)

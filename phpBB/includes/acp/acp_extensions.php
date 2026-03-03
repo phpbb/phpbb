@@ -23,10 +23,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_extensions
 {
 	public $u_action;
+	public $tpl_name;
+	public $page_title;
 
 	private $db;
 

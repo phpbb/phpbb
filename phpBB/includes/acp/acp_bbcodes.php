@@ -19,10 +19,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-#[\AllowDynamicProperties]
 class acp_bbcodes
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{
