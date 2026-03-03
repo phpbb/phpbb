@@ -23,6 +23,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_extensions
 {
 	public $u_action;

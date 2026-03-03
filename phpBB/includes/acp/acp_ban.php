@@ -24,6 +24,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_ban
 {
 	var $u_action;

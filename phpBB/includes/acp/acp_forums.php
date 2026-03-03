@@ -19,6 +19,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_forums
 {
 	var $u_action;

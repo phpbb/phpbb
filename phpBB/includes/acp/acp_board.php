@@ -29,6 +29,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_board
 {
 	var $u_action;

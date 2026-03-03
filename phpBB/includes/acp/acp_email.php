@@ -21,6 +21,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_email
 {
 	var $u_action;

@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @package acp
 */
+#[\AllowDynamicProperties]
 class acp_contact
 {
 	public $u_action;

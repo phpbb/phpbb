@@ -19,6 +19,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_inactive
 {
 	var $u_action;

@@ -32,6 +32,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+#[\AllowDynamicProperties]
 class acp_search
 {
 	public $u_action;
