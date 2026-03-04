@@ -268,6 +268,27 @@ class UnusedUseSniff implements Sniff
 			}
 		}
 
+		// Checks in property type declarations
+		$old_property = $stackPtr;
+		while (($property = $phpcsFile->findNext(T_VARIABLE, ($old_property + 1))) !== false)
+		{
+			$old_property = $property;
+
+			try
+			{
+				$property_props = $phpcsFile->getMemberProperties($property);
+				if (!empty($property_props['type']))
+				{
+					$ok = $this->check($phpcsFile, $property_props['type'], $class_name_full, $class_name_short, $property) || $ok;
+				}
+			}
+			catch (\Exception $e)
+			{
+				// Not a class member property, skip it
+				continue;
+			}
+		}
+
 		// Checks in catch blocks
 		$old_catch = $stackPtr;
 		while (($catch = $phpcsFile->findNext(T_CATCH, ($old_catch + 1))) !== false)
