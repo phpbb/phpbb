@@ -32,6 +32,16 @@ class ucp_login_link
 	public $u_action;
 
 	/**
+	 * @var	string
+	 */
+	public $page_title;
+
+	/**
+	 * @var	string
+	 */
+	public $tpl_name;
+
+	/**
 	* Generates the ucp_login_link page and handles login link process
 	*
 	* @param	int		$id
