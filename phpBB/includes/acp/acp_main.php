@@ -467,6 +467,7 @@ class acp_main
 
 		if ($auth->acl_get('a_board'))
 		{
+			/** @var \phpbb\version_helper $version_helper */
 			$version_helper = $phpbb_container->get('version_helper');
 			try
 			{
