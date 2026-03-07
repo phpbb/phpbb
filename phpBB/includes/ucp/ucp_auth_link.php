@@ -27,6 +27,16 @@ class ucp_auth_link
 	public $u_action;
 
 	/**
+	 * @var	string
+	 */
+	public $page_title;
+
+	/**
+	 * @var	string
+	 */
+	public $tpl_name;
+
+	/**
 	* Generates the ucp_auth_link page and handles the auth link process
 	*
 	* @param	int		$id
