@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class acp_inactive
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	var $p_master;
 
 	function __construct($p_master)

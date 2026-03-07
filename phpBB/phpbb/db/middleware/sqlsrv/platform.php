@@ -47,7 +47,7 @@ class platform extends SQLServerPlatform
 	 *
 	 * Renames the default constraints to use the classic phpBB's names
 	 */
-	public function getAlterTableSQL(TableDiff $diff)
+	public function getAlterTableSQL(TableDiff $diff): array|string
 	{
 		$sql = [];
 

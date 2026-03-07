@@ -23,7 +23,7 @@ class disable extends command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('extension:disable')

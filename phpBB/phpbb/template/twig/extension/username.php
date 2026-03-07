@@ -30,7 +30,7 @@ class username extends AbstractExtension
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getFunctions()
+	public function getFunctions(): array
 	{
 		return array(
 			new \Twig\TwigFunction('username', [$this, 'get_username']),

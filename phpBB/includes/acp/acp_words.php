@@ -25,6 +25,8 @@ if (!defined('IN_PHPBB'))
 class acp_words
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{

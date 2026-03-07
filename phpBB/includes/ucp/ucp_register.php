@@ -26,6 +26,8 @@ if (!defined('IN_PHPBB'))
 class ucp_register
 {
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	function main($id, $mode)
 	{

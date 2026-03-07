@@ -34,7 +34,7 @@ class driver extends AbstractDriverMiddleware
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createDatabasePlatformForVersion($version)
+	public function createDatabasePlatformForVersion($version): AbstractPlatform|platform
 	{
 		return new platform();
 	}

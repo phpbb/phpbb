@@ -42,6 +42,9 @@ if (!defined('IN_PHPBB'))
 class ucp_pm
 {
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
+	var $p_name;
 
 	function main($id, $mode)
 	{
