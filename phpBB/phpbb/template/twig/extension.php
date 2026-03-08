@@ -179,7 +179,7 @@ class extension extends \Twig\Extension\AbstractExtension
 	*/
 	public function spaceless_filter($content)
 	{
-		return trim(preg_replace('/>\s+</', '><', $content));
+		return trim(preg_replace('/>\s+</', '><', $content ?? ''));
 	}
 
 	/**
