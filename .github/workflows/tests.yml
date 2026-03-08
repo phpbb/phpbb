@@ -492,6 +492,7 @@ jobs:
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
         runs-on: windows-2025
+        timeout-minutes: 30
         strategy:
             matrix:
                 php: ['8.2', '8.3', '8.4', '8.5']
@@ -633,4 +634,22 @@ jobs:
               with:
                   timeout_minutes: 15
                   max_attempts: 3
-                  command: phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --display-all-issues --stop-on-error --exclude-group functional,slow
+                  shell: pwsh
+                  command: |
+                      $p = Start-Process phpBB/vendor/bin/phpunit `
+                        -ArgumentList @(
+                          '--configuration', '.github/phpunit-psql-windows-github.xml',
+                          '--display-all-issues',
+                          '--stop-on-error',
+                          '--exclude-group', 'functional,slow'
+                        ) `
+                        -PassThru
+
+                      if ($null -eq (Wait-Process -Id $p.Id -Timeout 900 -PassThru -ErrorAction SilentlyContinue)) {
+                        if (Get-Process -Id $p.Id -ErrorAction SilentlyContinue) {
+                          Stop-Process -Id $p.Id -Force
+                        }
+                        throw "phpunit timed out after 15 minutes"
+                      }
+
+                      exit $p.ExitCode
