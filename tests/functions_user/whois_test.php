@@ -46,6 +46,16 @@ class phpbb_functions_user_whois_test extends phpbb_test_case
 	public function test_ip_whois($ip)
 	{
 		$ip_whois = user_ipwhois($ip);
+
+		if (
+			preg_match('/%ERROR:201:\s*access denied/i', $ip_whois)
+			|| stripos($ip_whois, 'daily limit of controlled objects') !== false
+			|| stripos($ip_whois, 'Access from your host has been temporarily denied') !== false
+		)
+		{
+			$this->markTestSkipped('WHOIS provider temporarily denied access due to rate limiting (RIPE ERROR:201).');
+		}
+
 		$this->assertStringNotContainsString('Query terms are ambiguous', $ip_whois);
 		$this->assertStringNotContainsString('no entries found', $ip_whois);
 		$this->assertStringNotContainsString('ERROR', $ip_whois);
