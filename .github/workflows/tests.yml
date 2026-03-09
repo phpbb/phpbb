@@ -624,11 +624,12 @@ jobs:
               with:
                   timeout_minutes: 15
                   max_attempts: 3
+                  retry_on: timeout
                   command: |
                       phpBB/vendor/bin/phpunit `
                         --configuration .github/phpunit-psql-windows-github.xml `
-                        --display-all-issues `
+                        --verbose `
                         --stop-on-error `
-                        --exclude-group functional,slow
+                        --exclude-group functional
 
                       exit $LASTEXITCODE
