@@ -1924,7 +1924,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		$s_first_unread = $first_unread = true;
 	}
 
-	$force_edit_allowed = $force_delete_allowed = $force_softdelete_allowed = false;
+	$force_edit_allowed = $force_delete_allowed = $force_softdelete_allowed = $force_warn_allowed = false;
 
 	$s_cannot_edit = !$auth->acl_get('f_edit', $forum_id) || $user->data['user_id'] != $poster_id;
 	$s_cannot_edit_time = $config['edit_time'] && $row['post_time'] <= time() - ($config['edit_time'] * 60);
@@ -1955,8 +1955,10 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	* @var	bool	s_cannot_delete_locked		User can not delete the post because it's locked
 	* @var	bool	s_cannot_delete_time		User can not delete the post because edit_time has passed
 	* @var	bool	force_softdelete_allowed	Allow the user to ыoftdelete the post (all permissions and conditions are ignored)
+	* @var	bool	force_warn_allowed			Allow the user to warn (all permissions and conditions are ignored)
 	* @since 3.1.0-b4
 	* @changed 3.1.11-RC1 Added force_softdelete_allowed var
+	* @changed 3.1.16-RC1 Added force_warn_allowed var
 	*/
 	$vars = array(
 		'row',
@@ -1971,6 +1973,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		's_cannot_delete_locked',
 		's_cannot_delete_time',
 		'force_softdelete_allowed',
+		'force_warn_allowed',
 	);
 	extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_post_action_conditions', compact($vars)));
 
@@ -1997,6 +2000,8 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 
 	$permanent_delete_allowed = $force_delete_allowed || ($auth->acl_get('m_delete', $forum_id) ||
 		($auth->acl_get('f_delete', $forum_id) && $user->data['user_id'] == $poster_id));
+
+	$warn_allowed = $force_warn_allowed || ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS);
 
 	// Can this user receive a Private Message?
 	$can_receive_pm = (
@@ -2076,7 +2081,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id) : '',
-		'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;p=' . $row['post_id']) : '',
+		'U_WARN'			=> ($warn_allowed) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;p=' . $row['post_id']) : '',
 
 		'POST_ID'			=> $row['post_id'],
 		'POST_NUMBER'		=> $i + $start + 1,
