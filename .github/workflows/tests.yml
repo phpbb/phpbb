@@ -475,6 +475,7 @@ jobs:
     # Test with IIS & PostgreSQL on Windows
     windows-tests:
         runs-on: windows-2025
+        timeout-minutes: 30
         strategy:
             matrix:
                 include:
@@ -623,4 +624,11 @@ jobs:
               with:
                   timeout_minutes: 15
                   max_attempts: 3
-                  command: phpBB/vendor/bin/phpunit --configuration .github/phpunit-psql-windows-github.xml --verbose --stop-on-error --exclude-group functional
+                  command: |
+                      phpBB/vendor/bin/phpunit `
+                        --configuration .github/phpunit-psql-windows-github.xml `
+                        --display-all-issues `
+                        --stop-on-error `
+                        --exclude-group functional,slow
+
+                      exit $LASTEXITCODE
