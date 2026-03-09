@@ -625,11 +625,50 @@ jobs:
                   timeout_minutes: 15
                   max_attempts: 3
                   retry_on: timeout
+                  shell: pwsh
                   command: |
-                      phpBB/vendor/bin/phpunit `
-                        --configuration .github/phpunit-psql-windows-github.xml `
-                        --verbose `
-                        --stop-on-error `
-                        --exclude-group functional
+                      $psi = [System.Diagnostics.ProcessStartInfo]::new()
+                      $psi.FileName = 'phpBB/vendor/bin/phpunit'
+                      $psi.ArgumentList.Add('--configuration')
+                      $psi.ArgumentList.Add('.github/phpunit-psql-windows-github.xml')
+                      $psi.ArgumentList.Add('--verbose')
+                      $psi.ArgumentList.Add('--stop-on-error')
+                      $psi.ArgumentList.Add('--exclude-group')
+                      $psi.ArgumentList.Add('functional')
+                      $psi.UseShellExecute = $false
+                      $psi.RedirectStandardOutput = $true
+                      $psi.RedirectStandardError = $true
 
-                      exit $LASTEXITCODE
+                      $p = [System.Diagnostics.Process]::new()
+                      $p.StartInfo = $psi
+
+                      $outHandler = [System.Diagnostics.DataReceivedEventHandler] {
+                        param($sender, $e)
+                        if ($null -ne $e.Data) {
+                          Write-Output $e.Data
+                        }
+                      }
+                      $errHandler = [System.Diagnostics.DataReceivedEventHandler] {
+                        param($sender, $e)
+                        if ($null -ne $e.Data) {
+                          Write-Output $e.Data
+                        }
+                      }
+
+                      $p.add_OutputDataReceived($outHandler)
+                      $p.add_ErrorDataReceived($errHandler)
+
+                      if (-not $p.Start()) {
+                        throw "Failed to start phpunit"
+                      }
+
+                      $p.BeginOutputReadLine()
+                      $p.BeginErrorReadLine()
+
+                      if (-not $p.WaitForExit(900000)) {
+                        $p.Kill($true)
+                        throw "phpunit timed out after 15 minutes"
+                      }
+
+                      $p.WaitForExit()
+                      exit $p.ExitCode
