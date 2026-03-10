@@ -1958,7 +1958,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	* @var	bool	force_warn_allowed			Allow the user to warn (all permissions and conditions are ignored)
 	* @since 3.1.0-b4
 	* @changed 3.1.11-RC1 Added force_softdelete_allowed var
-	* @changed 3.1.16-RC1 Added force_warn_allowed var
+	* @changed 3.3.16-RC1 Added force_warn_allowed var
 	*/
 	$vars = array(
 		'row',
