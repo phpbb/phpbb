@@ -213,7 +213,7 @@ class version_helper
 
 		// Get the branch information for the current version
 		$current_branch = $this->get_branch($current_version);
-		if (isset($versions[$current_branch]) && !$versions[$current_branch]['eol'])
+		if (isset($versions[$current_branch]) && empty($versions[$current_branch]['eol']))
 		{
 			return $versions[$current_branch]['current'];
 		}
@@ -255,8 +255,8 @@ class version_helper
 		// Use current branch information if it exists
 		$current_branch = $this->get_branch($current_version);
 		$current_branch_data = $versions[$current_branch] ?? null;
-		if ($current_branch_data && !$current_branch_data['eol']
-			&& (!$current_branch_data['security'] || $this->compare($current_branch_data['security'], $current_version, '<=')))
+		if ($current_branch_data && empty($current_branch_data['eol'])
+			&& (empty($current_branch_data['security']) || $this->compare($current_branch_data['security'], $current_version, '<=')))
 		{
 			return ($this->compare($current_branch_data['current'], $current_version, '>')) ? $current_branch_data : [];
 		}
