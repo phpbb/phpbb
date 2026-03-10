@@ -245,17 +245,26 @@ class version_helper
 	 * @return array Version info or empty array if there are no updates
 	 * @throws \RuntimeException
 	 */
-	public function get_update_on_branch($force_update = false, $force_cache = false)
+	public function get_update_on_branch(bool $force_update = false, bool $force_cache = false): array
 	{
 		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
 		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than the current version
-		$versions = array_filter($versions, function($data) use ($self, $current_version) {
-			return $self->compare($data['current'], $current_version, '>=');
-		});
+		// Use current branch information if it exists
+		$current_branch = $this->get_branch($current_version);
+		$current_branch_data = $versions[$current_branch] ?? null;
+		if ($current_branch_data && !$current_branch_data['eol']
+			&& (!$current_branch_data['security'] || $this->compare($current_branch_data['security'], $current_version, '<=')))
+		{
+			return ($this->compare($current_branch_data['current'], $current_version, '>')) ? $current_branch_data : [];
+		}
+
+		// Filter out any branches less than the current branch
+		$versions = array_filter($versions, function($data, $branch) use ($current_branch) {
+			return $this->compare($branch, $current_branch, '>=');
+		}, ARRAY_FILTER_USE_BOTH);
 
 		// Get the lowest version from the previous list.
 		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
