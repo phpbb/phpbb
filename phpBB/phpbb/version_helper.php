@@ -225,7 +225,7 @@ class version_helper
 
 		// Get the lowest version from the previous list that is not EoL
 		return array_reduce($versions, function($value, $data) {
-			if (!$data['eol'] && ($value === null || $this->compare($data['current'], $value, '<')))
+			if (empty($data['eol']) && ($value === null || $this->compare($data['current'], $value, '<')))
 			{
 				return $data['current'];
 			}
@@ -270,7 +270,7 @@ class version_helper
 		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
 			if ($value === null && $self->compare($data['current'], $current_version, '>='))
 			{
-				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				if (empty($data['eol']) && (empty($data['security']) || $self->compare($data['security'], $data['current'], '<=')))
 				{
 					return ($self->compare($data['current'], $current_version, '>')) ? $data : array();
 				}
