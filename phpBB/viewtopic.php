@@ -2001,8 +2001,6 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	$permanent_delete_allowed = $force_delete_allowed || ($auth->acl_get('m_delete', $forum_id) ||
 		($auth->acl_get('f_delete', $forum_id) && $user->data['user_id'] == $poster_id));
 
-	$warn_allowed = $force_warn_allowed;
-
 	// Can this user receive a Private Message?
 	$can_receive_pm = (
 		// They must be a "normal" user
@@ -2081,7 +2079,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
 		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id) : '',
-		'U_WARN'			=> ($warn_allowed) ? ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;p=' . $row['post_id']) : '') : '',
+		'U_WARN'			=> ($force_warn_allowed) ? ($auth->acl_get('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;p=' . $row['post_id']) : '') : '',
 
 		'POST_ID'			=> $row['post_id'],
 		'POST_NUMBER'		=> $i + $start + 1,
