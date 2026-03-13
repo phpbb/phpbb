@@ -219,20 +219,24 @@ class version_helper
 			return $versions[$current_branch]['current'];
 		}
 
-		// Filter out any branches less than the current branch
-		$versions = array_filter($versions, function($data, $branch) use ($current_branch) {
-			return $this->compare($branch, $current_branch, '>=');
-		}, ARRAY_FILTER_USE_BOTH);
+		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
+		uksort($versions, function($version1, $version2) {
+			return $this->compare($version1, $version2, '>');
+		});
 
-		// Get the lowest version from the previous list that is not EoL
-		return array_reduce($versions, function($value, $data) {
-			if (empty($data['eol']) && ($value === null || $this->compare($data['current'], $value, '<')))
+		// Find next available version from versions info.
+		// Will suggest newer branches when EoL has been reached for the current branch, and/or version from newer branch
+		// is needed for having all known security issues fixed ('security' > latest on branch).
+		foreach ($versions as $branch => $data)
+		{
+			if ($this->compare($branch, $current_branch, '>=') && empty($data['eol'])
+				&& (empty($branch['security']) || $this->compare($branch['security'], $data['current'], '<=')))
 			{
 				return $data['current'];
 			}
+		}
 
-			return $value;
-		}) ?? '';
+		return '';
 	}
 
 	/**
@@ -250,7 +254,6 @@ class version_helper
 	{
 		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
-		$self = $this;
 		$current_version = $this->current_version;
 
 		// Use current branch information if it exists
@@ -262,29 +265,28 @@ class version_helper
 			return ($this->compare($current_branch_data['current'], $current_version, '>')) ? $current_branch_data : [];
 		}
 
-		// Filter out any branches less than the current branch
-		$versions = array_filter($versions, function($data, $branch) use ($current_branch) {
-			return $this->compare($branch, $current_branch, '>=');
-		}, ARRAY_FILTER_USE_BOTH);
+		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
+		uksort($versions, function($version1, $version2) {
+			return $this->compare($version1, $version2, '>');
+		});
 
-		// Get the lowest version from the previous list.
-		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
-			if ($value === null && $self->compare($data['current'], $current_version, '>='))
+		foreach ($versions as $branch => $data)
+		{
+			if ($this->compare($branch, $current_branch, '>=') && empty($data['eol'])
+				&& (empty($data['security']) || $this->compare($data['security'], $data['current'], '<=')))
 			{
-				if (empty($data['eol']) && (empty($data['security']) || $self->compare($data['security'], $data['current'], '<=')))
+				if ($this->compare($data['current'], $current_version, '>'))
 				{
-					return ($self->compare($data['current'], $current_version, '>')) ? $data : array();
+					return $data;
 				}
 				else
 				{
-					return null;
+					break;
 				}
 			}
+		}
 
-			return $value;
-		});
-
-		return $update_info === null ? array() : $update_info;
+		return [];
 	}
 
 	/**

@@ -429,7 +429,7 @@ class phpbb_version_helper_test extends phpbb_test_case
 					'security'	=> false,
 				],
 			],
-			'1.0_with_alpha_on_newer_branch' => [
+			'1.0rc1_update_on_newer_branch' => [
 				'1.0.2-RC1',
 				[
 					'1.0'	=> [
