@@ -86,111 +86,111 @@ class phpbb_version_helper_test extends phpbb_test_case
 
 	public function get_suggested_updates_data()
 	{
-		return array(
-			array(
+		return [
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-				array(
-					'1.0'	=> array(
+					],
+				],
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-			),
-			array(
+					],
+				],
+			],
+			[
 				'1.0.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-				array(
-					'1.1'	=> array(
+					],
+				],
+				[
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-			),
-			array(
+					],
+				],
+			],
+			[
 				'1.0.1-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1-a2',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0',
-					),
-				),
-				array(
-					'1.0'	=> array(
+					],
+				],
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1-a2',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0',
-					),
-				),
-			),
-			array(
+					],
+				],
+			],
+			[
 				'1.1.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-				array(
-					'1.1'	=> array(
+					],
+				],
+				[
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-			),
-			array(
+					],
+				],
+			],
+			[
 				'1.1.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
-				array(),
-			),
-			array(
+					],
+				],
+				[],
+			],
+			[
 				'1.1.0-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0-a2',
-					),
-				),
-				array(
-					'1.1'	=> array(
+					],
+				],
+				[
+					'1.1'	=> [
 						'current'		=> '1.1.0-a2',
-					),
-				),
-			),
-			array(
+					],
+				],
+			],
+			[
 				'1.1.0',
-				array(),
-				array(),
-			),
-		);
+				[],
+				[],
+			],
+		];
 	}
 
 	/**
@@ -226,87 +226,142 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $version_helper->get_suggested_updates());
 	}
 
-	public function get_latest_on_current_branch_data()
+	public function get_latest_on_current_branch_data(): array
 	{
-		return array(
-			array(
+		return [
+			'stable1.0_update_same_branch' => [
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
+					],
+				],
 				'1.0.1',
-			),
-			array(
+			],
+			'stable1.0_no_update_same_branch' => [
 				'1.0.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
+					],
+				],
 				'1.0.1',
-			),
-			array(
+			],
+			'stable1.0_eol_branch' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'			=> true,
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+					],
+				],
+				'1.1.1',
+			],
+			'stable1.0_security_update' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.2',
+						'eol'			=> false,
+						'security'		=> '1.0.2'
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+					],
+				],
+				'1.0.2',
+			],
+			'stable1.0_security_update_newer_branch' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.2',
+						'eol'			=> false,
+						'security'		=> '1.1.1'
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+					],
+				],
+				// Special case: Latest on current branch is still 1.0.2, the update will be recommended
+				// as update either way by get_update_on_branch
+				'1.0.2',
+			],
+			'unstable1.0_update_same_branch' => [
 				'1.0.1-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1-a2',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0',
-					),
-				),
+					],
+				],
 				'1.0.1-a2',
-			),
-			array(
+			],
+			'stable1.1_update_same_branch' => [
 				'1.1.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
+					],
+				],
 				'1.1.1',
-			),
-			array(
+			],
+			'stable1.1_no_update_same_branch' => [
 				'1.1.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
-					),
-				),
+					],
+				],
 				'1.1.1',
-			),
-			array(
+			],
+			'unstable1.1_update_same_branch' => [
 				'1.1.0-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0-a2',
-					),
-				),
+					],
+				],
 				'1.1.0-a2',
-			),
-			array(
+			],
+			'unstable1.0_update_newer_branch' => [
+				'1.0.2-a1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.0-a2',
+					],
+				],
+				'1.0.1',
+			],
+			'no_update_data' => [
 				'1.1.0',
-				array(),
-				null,
-			),
-		);
+				[],
+				'',
+			],
+		];
 	}
 
 	/**
@@ -342,228 +397,304 @@ class phpbb_version_helper_test extends phpbb_test_case
 		$this->assertSame($expected, $version_helper->get_latest_on_current_branch());
 	}
 
-	public function get_update_on_branch_data()
+	public function get_update_on_branch_data(): array
 	{
-		return array(
-			array(
+		return [
+			'1.0_with_in_branch_update' => [
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.0.1',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
-			array(
+				],
+			],
+			'1.0_without_update' => [
 				'1.0.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(),
-			),
-			array(
+					],
+				],
+				[],
+			],
+			'1.0_eol' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'		=> true,
+						'security'	=> false,
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.1.1',
+					'eol' => false,
+					'security' => false,
+				],
+			],
+			'1.0_security_update' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.3',
+						'eol'		=> false,
+						'security'	=> '1.0.3',
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.0.3',
+					'eol' => false,
+					'security' => '1.0.3',
+				],
+			],
+			'1.0_security_update_with_1.1' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> '1.1.0',
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.1.1',
+					'eol' => false,
+					'security' => false,
+				],
+			],
+			'1.0_with_alpha_update' => [
 				'1.0.1-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1-a2',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.0.1-a2',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
-			array(
-				'1.1.0',
-				array(
-					'1.0'	=> array(
+				],
+			],
+			'1.0rc1_update_on_newer_branch' => [
+				'1.0.2-RC1',
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.0',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[],
+			],
+			'1.1_with_in_branch_update' => [
+				'1.1.0',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.1.1',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
-			array(
+				],
+			],
+			'1.1_without_update' => [
 				'1.1.1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(),
-			),
-			array(
+					],
+				],
+				[],
+			],
+			'1.1_with_alpha_update' => [
 				'1.1.0-a1',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.0-a2',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.1.0-a2',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
-			array(
+				],
+			],
+			[
 				'1.1.0',
-				array(),
-				array(),
-			),
+				[],
+				[],
+			],
 			// Latest safe release is 1.0.1
-			array(
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'			=> false,
 						'security'		=> '1.0.1',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.0.1',
 					'eol'			=> false,
 					'security'		=> '1.0.1',
-				),
-			),
+				],
+			],
 			// Latest safe release is 1.0.0
-			array(
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'			=> false,
 						'security'		=> '1.0.0',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.0.1',
 					'eol'			=> false,
 					'security'		=> '1.0.0',
-				),
-			),
+				],
+			],
 			// Latest safe release is 1.1.0
-			array(
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'			=> false,
 						'security'		=> '1.1.0',
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.1.1',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
+				],
+			],
 			// Latest 1.0 release is EOL
-			array(
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'			=> true,
 						'security'	=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'		=> false,
 						'security'	=> false,
-					),
-				),
-				array(
+					],
+				],
+				[
 					'current'		=> '1.1.1',
 					'eol'		=> false,
 					'security'	=> false,
-				),
-			),
+				],
+			],
 			// All are EOL -- somewhat undefined behavior
-			array(
+			[
 				'1.0.0',
-				array(
-					'1.0'	=> array(
+				[
+					'1.0'	=> [
 						'current'		=> '1.0.1',
 						'eol'			=> true,
 						'security'		=> false,
-					),
-					'1.1'	=> array(
+					],
+					'1.1'	=> [
 						'current'		=> '1.1.1',
 						'eol'			=> true,
 						'security'		=> false,
-					),
-				),
-				array(),
-			),
-		);
+					],
+				],
+				[],
+			],
+		];
 	}
 
 	/**
