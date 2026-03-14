@@ -266,6 +266,36 @@ class phpbb_version_helper_test extends phpbb_test_case
 				],
 				'1.1.1',
 			],
+			'stable1.0_security_update' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.2',
+						'eol'			=> false,
+						'security'		=> '1.0.2'
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+					],
+				],
+				'1.0.2',
+			],
+			'stable1.0_security_update_newer_branch' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.2',
+						'eol'			=> false,
+						'security'		=> '1.1.1'
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+					],
+				],
+				// Special case: Latest on current branch is still 1.0.2, the update will be recommended
+				// as update either way by get_update_on_branch
+				'1.0.2',
+			],
 			'unstable1.0_update_same_branch' => [
 				'1.0.1-a1',
 				[
@@ -405,6 +435,66 @@ class phpbb_version_helper_test extends phpbb_test_case
 					],
 				],
 				[],
+			],
+			'1.0_eol' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'		=> true,
+						'security'	=> false,
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.1.1',
+					'eol' => false,
+					'security' => false,
+				],
+			],
+			'1.0_security_update' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.3',
+						'eol'		=> false,
+						'security'	=> '1.0.3',
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.0.3',
+					'eol' => false,
+					'security' => '1.0.3',
+				],
+			],
+			'1.0_security_update_with_1.1' => [
+				'1.0.1',
+				[
+					'1.0'	=> [
+						'current'		=> '1.0.1',
+						'eol'		=> false,
+						'security'	=> '1.1.0',
+					],
+					'1.1'	=> [
+						'current'		=> '1.1.1',
+						'eol'		=> false,
+						'security'	=> false,
+					],
+				],
+				[
+					'current' => '1.1.1',
+					'eol' => false,
+					'security' => false,
+				],
 			],
 			'1.0_with_alpha_update' => [
 				'1.0.1-a1',
