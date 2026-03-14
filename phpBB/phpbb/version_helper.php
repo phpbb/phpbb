@@ -230,7 +230,7 @@ class version_helper
 		foreach ($versions as $branch => $data)
 		{
 			if ($this->compare($branch, $current_branch, '>=') && empty($data['eol'])
-				&& (empty($branch['security']) || $this->compare($branch['security'], $data['current'], '<=')))
+				&& (empty($data['security']) || $this->compare($data['security'], $data['current'], '<=')))
 			{
 				return $data['current'];
 			}
