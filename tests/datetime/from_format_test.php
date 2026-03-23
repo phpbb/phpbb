@@ -120,16 +120,18 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 			],
 
 			// Test edge cases: Yesterday 00:00, Today 00:00, Tomorrow 00:00
+			// Use time() arithmetic instead of strtotime() to avoid local
+			// timezone shifting the date when formatted with gmdate().
 			[
-				gmdate('Y-m-d', strtotime('yesterday')) . ' 00:00', false,
+				gmdate('Y-m-d', time() - 86400) . ' 00:00', false,
 				'Yesterday 00:00',
 			],
 			[
-				gmdate('Y-m-d', strtotime('today')) . ' 00:00', false,
+				gmdate('Y-m-d', time()) . ' 00:00', false,
 				'Today 00:00',
 			],
 			[
-				gmdate('Y-m-d', strtotime('tomorrow')) . ' 00:00', false,
+				gmdate('Y-m-d', time() + 86400) . ' 00:00', false,
 				'Tomorrow 00:00',
 			],
 		];
