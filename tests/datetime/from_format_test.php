@@ -23,10 +23,11 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx;
+		global $phpbb_dispatcher, $phpbb_root_path, $phpEx;
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$this->lang = new \phpbb\language\language($lang_loader);
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		// Set up language data for testing
 		$reflection_class = new ReflectionClass('\phpbb\language\language');
