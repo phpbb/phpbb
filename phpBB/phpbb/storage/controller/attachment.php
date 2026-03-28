@@ -321,6 +321,14 @@ class attachment
 		return $response;
 	}
 
+	/**
+	 * Get attachment data
+	 *
+	 * @param int $attach_id The attach_id of the attachment
+	 * @param string $filename The real filename of the attachment (optional)
+	 *
+	 * @return array|null Array with attachment data or null if the attachment is not found
+	 */
 	protected function get_attachment(int $attach_id, string $filename): array|null
 	{
 		$sql = 'SELECT attach_id, post_msg_id, topic_id, in_message, poster_id,
@@ -336,6 +344,13 @@ class attachment
 		return $attachment ?: null;
 	}
 
+	/**
+	 * Get post data
+	 *
+	 * @param int $post_id The post_id of the post
+	 *
+	 * @return array|null Array with post data or null if the post is not found
+	 */
 	protected function get_post(int $post_id): array|null
 	{
 		$sql = 'SELECT forum_id, poster_id, post_visibility
@@ -350,12 +365,16 @@ class attachment
 
 	/**
 	 * Remove non valid characters https://github.com/symfony/http-foundation/commit/c7df9082ee7205548a97031683bc6550b5dc9551
+	 *
+	 * @param string $filename The filename to sanitize
+	  *
+	  * @return string Sanitized filename
 	 */
-	protected function filenameFallback($filename): string
+	protected function filenameFallback(string $filename): string
 	{
 		$filename = (string) preg_replace(['/[^\x20-\x7e]/', '/%/', '/\//', '/\\\\/'], '', $filename);
 
-		return !empty($filename) ? $filename : 'File';
+		return $filename ?: 'File';
 	}
 
 	/**
