@@ -44,7 +44,7 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 					0		=> 'less than a minute ago',
 					1		=> '%d minute ago',
 					2		=> '%d minutes ago',
-				],		
+				],
 			],
 		]);
 
@@ -87,16 +87,16 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 
 		return [
 			[
-				gmdate('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time, false,
-				gmdate('Y-m-d', time() + 2 * 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', strtotime('+2day')) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', strtotime('+2day')) . ' ' . $testing_time,
 			],
 			[
-				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', strtotime('+1day')) . ' ' . $testing_time, false,
 				'Tomorrow ' . $testing_time,
 			],
 			[
-				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time, true,
-				gmdate('Y-m-d', time() + 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', strtotime('+1day')) . ' ' . $testing_time, true,
+				gmdate('Y-m-d', strtotime('+1day')) . ' ' . $testing_time,
 			],
 			[
 				gmdate('Y-m-d') . ' ' . $testing_time, false,
@@ -107,31 +107,29 @@ class phpbb_datetime_from_format_test extends phpbb_test_case
 				gmdate('Y-m-d') . ' ' . $testing_time,
 			],
 			[
-				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', strtotime('-1day')) . ' ' . $testing_time, false,
 				'Yesterday ' . $testing_time,
 			],
 			[
-				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time, true,
-				gmdate('Y-m-d', time() - 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', strtotime('-1day')) . ' ' . $testing_time, true,
+				gmdate('Y-m-d', strtotime('-1day')) . ' ' . $testing_time,
 			],
 			[
-				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time, false,
-				gmdate('Y-m-d', time() - 2 * 86400) . ' ' . $testing_time,
+				gmdate('Y-m-d', strtotime('-2day')) . ' ' . $testing_time, false,
+				gmdate('Y-m-d', strtotime('-2day')) . ' ' . $testing_time,
 			],
 
 			// Test edge cases: Yesterday 00:00, Today 00:00, Tomorrow 00:00
-			// Use time() arithmetic instead of strtotime() to avoid local
-			// timezone shifting the date when formatted with gmdate().
 			[
-				gmdate('Y-m-d', time() - 86400) . ' 00:00', false,
+				gmdate('Y-m-d', strtotime('-1day')) . ' 00:00', false,
 				'Yesterday 00:00',
 			],
 			[
-				gmdate('Y-m-d', time()) . ' 00:00', false,
+				gmdate('Y-m-d', strtotime('now')) . ' 00:00', false,
 				'Today 00:00',
 			],
 			[
-				gmdate('Y-m-d', time() + 86400) . ' 00:00', false,
+				gmdate('Y-m-d', strtotime('+1day')) . ' 00:00', false,
 				'Tomorrow 00:00',
 			],
 		];
