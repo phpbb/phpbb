@@ -30,24 +30,25 @@ class includeparser extends \Twig\TokenParser\AbstractTokenParser
 		$variables = null;
 		$only = false;
 		$ignoreMissing = false;
+		$stream = $this->parser->getStream();
 
-		if ($this->parser->getStream()->nextIf(\Twig\Token::NAME_TYPE, 'with'))
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'with'))
 		{
 			$variables = $this->parser->parseExpression();
 		}
 
-		if ($this->parser->getStream()->nextIf(\Twig\Token::NAME_TYPE, 'only'))
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'only'))
 		{
 			$only = true;
 		}
 
-		if ($this->parser->getStream()->nextIf(\Twig\Token::NAME_TYPE, 'ignore'))
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'ignore'))
 		{
-			$this->parser->getStream()->expect(\Twig\Token::NAME_TYPE, 'missing');
+			$stream->expect(\Twig\Token::NAME_TYPE, 'missing');
 			$ignoreMissing = true;
 		}
 
-		$this->parser->getStream()->expect(\Twig\Token::BLOCK_END_TYPE);
+		$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
 		return new \phpbb\template\twig\node\includenode($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
 	}

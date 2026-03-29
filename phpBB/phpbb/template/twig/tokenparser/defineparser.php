@@ -40,7 +40,7 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 			{
 				// This would happen if someone improperly formed their DEFINE syntax
 				// e.g. <!-- DEFINE $VAR = foo -->
-				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $this->parser->getStream()->getSourceContext());
+				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $stream->getSourceContext());
 			}
 
 			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
