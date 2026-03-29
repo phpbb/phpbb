@@ -34,12 +34,29 @@ class definenode extends \Twig\Node\Node
 
 		if ($this->getAttribute('capture'))
 		{
+			$useYield = $compiler->getEnvironment()->useYield();
+
 			$compiler
-				->write("ob_start();\n")
+				->write("\$value = ('' === \$value = ")
+				->raw($useYield ? "implode('', iterator_to_array(" : "\\Twig\\Extension\\CoreExtension::captureOutput(")
+				->raw("(function () use (&\$context, \$macros, \$blocks) {\n")
+				->indent()
 				->subcompile($this->getNode('value'))
+				->write("yield from [];\n")
+				->outdent()
+				->write("})()")
 			;
 
-			$compiler->write("\$value = ('' === \$value = ob_get_clean()) ? '' : new \Twig\Markup(\$value, \$this->env->getCharset());\n");
+			if ($useYield)
+			{
+				$compiler->raw(', false))');
+			}
+			else
+			{
+				$compiler->raw(')');
+			}
+
+			$compiler->raw(") ? '' : new \\Twig\\Markup(\$value, \$this->env->getCharset());\n");
 		}
 		else
 		{
