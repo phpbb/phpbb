@@ -47,7 +47,7 @@ class event extends \Twig\Node\Node
 		$compiler->addDebugInfo($this);
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
-		$useYield = $compiler->getEnvironment()->useYield();
+		$use_yield = $compiler->getEnvironment()->useYield();
 
 		$template_event_listeners = [];
 
@@ -82,7 +82,7 @@ class event extends \Twig\Node\Node
 					// We set the namespace lookup order to be this extension first, then the main path
 					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n");
 
-				if ($useYield)
+				if ($use_yield)
 				{
 					$compiler->write("yield from \$this->env->load('@{$ext_namespace}/{$location}.html')->unwrap()->yield(\$context);\n");
 				}
