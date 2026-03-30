@@ -34,11 +34,11 @@ class definenode extends \Twig\Node\Node
 
 		if ($this->getAttribute('capture'))
 		{
-			$useYield = $compiler->getEnvironment()->useYield();
+			$use_yield = $compiler->getEnvironment()->useYield();
 
 			$compiler
 				->write("\$value = ('' === \$value = ")
-				->raw($useYield ? "implode('', iterator_to_array(" : "\\Twig\\Extension\\CoreExtension::captureOutput(")
+				->raw($use_yield ? "implode('', iterator_to_array(" : "\\Twig\\Extension\\CoreExtension::captureOutput(")
 				->raw("(function () use (&\$context, \$macros, \$blocks) {\n")
 				->indent()
 				->subcompile($this->getNode('value'))
@@ -47,7 +47,7 @@ class definenode extends \Twig\Node\Node
 				->write("})()")
 			;
 
-			if ($useYield)
+			if ($use_yield)
 			{
 				$compiler->raw(', false))');
 			}
