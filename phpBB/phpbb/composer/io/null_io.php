@@ -20,7 +20,7 @@ class null_io extends NullIO implements io_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_composer_error()
+	public function get_composer_error(): string
 	{
 		return '';
 	}

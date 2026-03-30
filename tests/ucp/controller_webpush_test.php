@@ -544,8 +544,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['user_type'] = USER_NORMAL;
 
 		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->attributes = $this->createMock(\Symfony\Component\HttpFoundation\ParameterBag::class);
-		$symfony_request->attributes->method('get')->willReturn(json_encode([
+		$symfony_request->method('getContent')->willReturn(json_encode([
 			'endpoint' => $data_provider,
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -575,8 +574,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['user_type'] = USER_NORMAL;
 
 		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->attributes = $this->createMock(\Symfony\Component\HttpFoundation\ParameterBag::class);
-		$symfony_request->attributes->method('get')->willReturn(json_encode([
+		$symfony_request->method('getContent')->willReturn(json_encode([
 			'endpoint' => 'https://test.endpoint.com/send/candy/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -622,8 +620,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['user_type'] = USER_NORMAL;
 
 		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->attributes = $this->createMock(\Symfony\Component\HttpFoundation\ParameterBag::class);
-		$symfony_request->attributes->method('get')->willReturn(json_encode([
+		$symfony_request->method('getContent')->willReturn(json_encode([
 			'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']

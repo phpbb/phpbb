@@ -15,8 +15,8 @@ namespace phpbb\db\doctrine;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Index;
-use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 
 class comparator extends \Doctrine\DBAL\Schema\Comparator
 {
