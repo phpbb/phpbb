@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v3315">Changes since 3.3.15</a></li>
 		<li><a href="#v3315rc1">Changes since 3.3.15-RC1</a></li>
 		<li><a href="#v3314">Changes since 3.3.14</a></li>
 		<li><a href="#v3314rc1">Changes since 3.3.14-RC1</a></li>
@@ -175,6 +176,60 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v3315"></a><h3>Changes since 3.3.15</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-14401">PHPBB-14401</a>] - Sphinx: Remove ending slash from binlog_path</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-15085">PHPBB-15085</a>] - HTTP authentication from feeds served via controller</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17034">PHPBB-17034</a>] - Rank post limit</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17157">PHPBB-17157</a>] - Read Topic Permission With Search permission</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17399">PHPBB-17399</a>] - Add select attribute for British English the default language</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17475">PHPBB-17475</a>] - Overflow on resynchronize statistics when running on MSSQL with large number of attachments</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17477">PHPBB-17477</a>] - Problem with Whois lookups returning incorrect information due to ARIN/RIPE changes</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17486">PHPBB-17486</a>] - Upgrade from 3.0 to 3.3 fails with SQL &quot;Incorrect integer value&quot; error</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17491">PHPBB-17491</a>] - Ascending posts pagination in version 3.3.15</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17504">PHPBB-17504</a>] - Tests fail because of changed label of ondrej/php repo</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17506">PHPBB-17506</a>] - PHP fatal error on install</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17510">PHPBB-17510</a>] - CodeSniffer ruleset is reported as DEPRECATED</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17519">PHPBB-17519</a>] - Cron URLs are encoded incorrectly</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17527">PHPBB-17527</a>] - PHP fatal error when decorating Twig phpBB extension service in phpBB extension</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17533">PHPBB-17533</a>] - Reverting migrations may cause restoring incorrect data and throw &quot;module exists&quot; exceptions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17563">PHPBB-17563</a>] - CodeSniffer ruleset (PPSSE) not fully compatible with CS 4</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17565">PHPBB-17565</a>] - Incorrect exporting PM as CSV for Excel</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17580">PHPBB-17580</a>] - Downloading files with a byte range of 8192 bytes causes fatal error</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17589">PHPBB-17589</a>] - QA captcha appears on every other login attempt</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17622">PHPBB-17622</a>] - Version helper may return update from newer branch</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-13481">PHPBB-13481</a>] - Explain in ACP Attachment settings images get resized (at client-side)</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-15007">PHPBB-15007</a>] - Add Restart link to installer</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-16941">PHPBB-16941</a>] - Add Sphinx search backend tests</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17498">PHPBB-17498</a>] - Move GitHub Actions Ubuntu 20.04 runners to Ubuntu 22.04</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17536">PHPBB-17536</a>] - Add event to Edit forum in ACP to modify template</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17538">PHPBB-17538</a>] - Terms and Policy wording improvements</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17555">PHPBB-17555</a>] - Improve running of tests on windows runners in GitHub Actions</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17570">PHPBB-17570</a>] - Replace an old CSS accessibility hack with a modern, recommended and W3C compliant method</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17598">PHPBB-17598</a>] - Deny access to composer files in apache</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17605">PHPBB-17605</a>] - Fix homestead and use a fork since is no longer maintained</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17620">PHPBB-17620</a>] - Skip whois test when daily rate-limit is reached</li>
+			</ul>
+			<h4>New Feature</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17515">PHPBB-17515</a>] - Add new event to: ucp_pm_viewmessage.html</li>
+			</ul>
+			<h4>Task</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17110">PHPBB-17110</a>] - Reword &quot;slander&quot; to &quot;libel&quot; in registration legalese</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17545">PHPBB-17545</a>] - Improve handling of DDoS/brute force attacks on login form</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17584">PHPBB-17584</a>] - Exclude tests from PSR1 code sniffs</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17591">PHPBB-17591</a>] - Update to Code Sniffer 4</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17593">PHPBB-17593</a>] - Allow functional tests on a secure local server</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17612">PHPBB-17612</a>] - Remove imageset to css converter</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17613">PHPBB-17613</a>] - Remove support for retired WebPI packages</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17628">PHPBB-17628</a>] - Update composer and node dependencies</li>
+			</ul>
+
 			<a name="v3315rc1"></a><h3>Changes since 3.3.15-RC1</h3>
 			<h4>Bug</h4>
 			<ul>
