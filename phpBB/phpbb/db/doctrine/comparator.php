@@ -14,13 +14,14 @@
 namespace phpbb\db\doctrine;
 
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\TableDiff;
 
 class comparator extends \Doctrine\DBAL\Schema\Comparator
 {
 	/**
 	 * {@inerhitDoc}
 	 */
-	public function diffTable(Table $fromTable, Table $toTable)
+	public function diffTable(Table $fromTable, Table $toTable): TableDiff|false
 	{
 		$diff = parent::diffTable($fromTable, $toTable);
 
