@@ -1958,7 +1958,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	* @var	bool	s_cannot_delete_locked		User can not delete the post because it's locked
 	* @var	bool	s_cannot_delete_time		User can not delete the post because edit_time has passed
 	* @var	bool	force_softdelete_allowed	Allow the user to ыoftdelete the post (all permissions and conditions are ignored)
-	* @var	bool	warn_allowed				Allow the user to warn (all permissions and conditions are ignored)
+	* @var	bool	warn_allowed				Controls whether warning is allowed (default: true)
 	* @since 3.1.0-b4
 	* @changed 3.1.11-RC1 Added force_softdelete_allowed var
 	* @changed 3.3.16-RC1 Added warn_allowed var
