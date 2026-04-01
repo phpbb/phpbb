@@ -189,7 +189,6 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_lastread',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_db_track', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_font_awesome_url', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jquery_url', '//ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_jumpbox', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_moderators', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_notifications', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online', '1');

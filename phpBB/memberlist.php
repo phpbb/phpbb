@@ -1496,6 +1496,5 @@ page_header($page_title);
 $template->set_filenames(array(
 	'body' => $template_html)
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 page_footer();
