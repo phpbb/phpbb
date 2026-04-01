@@ -181,6 +181,9 @@ class doctrine implements tools_interface
 	 */
 	public function sql_index_exists(string $table_name, string $index_name): bool
 	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, true));
 	}
 
@@ -189,6 +192,9 @@ class doctrine implements tools_interface
 	 */
 	public function sql_unique_index_exists(string $table_name, string $index_name): bool
 	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+
 		return $this->asset_exists($index_name, $this->get_filtered_index_list($table_name, false));
 	}
 
@@ -369,6 +375,19 @@ class doctrine implements tools_interface
 			function (Schema $schema) use ($table_name, $column): void
 			{
 				$this->schema_create_primary_key($schema, $table_name, $column);
+			}
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function sql_drop_primary_key(string $table_name)
+	{
+		return $this->alter_schema(
+			function (Schema $schema) use ($table_name): void
+			{
+				$this->schema_drop_primary_key($schema, $table_name);
 			}
 		);
 	}
@@ -587,9 +606,15 @@ class doctrine implements tools_interface
 				'use_key' => false,
 				'per_table' => true,
 			],
+			'drop_primary_keys' => [
+				'method' => 'schema_drop_primary_key',
+				'use_key' => false,
+				'per_table' => true,
+			],
 			'add_primary_keys' => [
 				'method' => 'schema_create_primary_key',
-				'use_key' => true,
+				'use_key' => false,
+				'per_table' => true,
 			],
 			'add_unique_index' => [
 				'method' => 'schema_create_unique_index',
@@ -988,6 +1013,27 @@ class doctrine implements tools_interface
 		}
 
 		$table->dropIndex($index_name);
+	}
+
+	/**
+	 * Drops primary key from a table
+	 *
+	 * @param Schema $schema
+	 * @param string $table_name
+	 * @param bool   $safe_check
+	 *
+	 * @throws SchemaException
+	 */
+	protected function schema_drop_primary_key(Schema $schema, string $table_name, bool $safe_check = false): void
+	{
+		$table = $schema->getTable($table_name);
+
+		if ($safe_check && !$table->getPrimaryKey())
+		{
+			return;
+		}
+
+		$table->dropPrimaryKey();
 	}
 
 	/**
