@@ -13,12 +13,14 @@
 
 namespace phpbb\template\twig\node;
 
+#[\Twig\Attribute\YieldReady]
 class includenode extends \Twig\Node\IncludeNode
 {
 	/**
 	* Compiles the node to PHP.
 	*
 	* @param \Twig\Compiler A Twig\Compiler instance
+	* @return void
 	*/
 	public function compile(\Twig\Compiler $compiler) : void
 	{

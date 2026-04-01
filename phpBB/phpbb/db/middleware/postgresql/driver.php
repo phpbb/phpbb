@@ -14,6 +14,7 @@
 namespace phpbb\db\middleware\postgresql;
 
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 
 /**
  * PostgreSQL Doctrine driver middleware.
@@ -24,7 +25,7 @@ class driver extends AbstractDriverMiddleware
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createDatabasePlatformForVersion($version)
+	public function createDatabasePlatformForVersion($version): AbstractPlatform|platform
 	{
 		return new platform();
 	}

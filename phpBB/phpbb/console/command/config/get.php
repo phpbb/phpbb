@@ -24,7 +24,7 @@ class get extends command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:get')

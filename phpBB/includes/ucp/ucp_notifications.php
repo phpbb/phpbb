@@ -27,6 +27,8 @@ if (!defined('IN_PHPBB'))
 class ucp_notifications
 {
 	public $u_action;
+	public $page_title;
+	public $tpl_name;
 
 	private const FORM_TOKEN_NAME = 'ucp_notification';
 

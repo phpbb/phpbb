@@ -13,6 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
+#[\Twig\Attribute\YieldReady]
 class event extends \Twig\Node\Node
 {
 	/**
@@ -27,24 +28,26 @@ class event extends \Twig\Node\Node
 	/** @var array */
 	protected $template_event_priority_array;
 
-	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $tag = null, $template_event_priority_array = [])
+	public function __construct(\Twig\Node\Expression\AbstractExpression $expr, \phpbb\template\twig\environment $environment, $lineno, $template_event_priority_array = [])
 	{
 		$this->environment = $environment;
 		$this->template_event_priority_array = $template_event_priority_array;
 
-		parent::__construct(array('expr' => $expr), array(), $lineno, $tag);
+		parent::__construct(array('expr' => $expr), array(), $lineno);
 	}
 
 	/**
 	* Compiles the node to PHP.
 	*
 	* @param \Twig\Compiler A Twig\Compiler instance
+	* @return void
 	*/
-	public function compile(\Twig\Compiler $compiler)
+	public function compile(\Twig\Compiler $compiler): void
 	{
 		$compiler->addDebugInfo($this);
 
 		$location = $this->listener_directory . $this->getNode('expr')->getAttribute('name');
+		$use_yield = $compiler->getEnvironment()->useYield();
 
 		$template_event_listeners = [];
 
@@ -77,9 +80,18 @@ class event extends \Twig\Node\Node
 					->write("\$previous_look_up_order = \$this->env->getNamespaceLookUpOrder();\n")
 
 					// We set the namespace lookup order to be this extension first, then the main path
-					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n")
-					->write("\$this->env->loadTemplate(\$this->env->getTemplateClass('@{$ext_namespace}/{$location}.html'), '@{$ext_namespace}/{$location}.html')->display(\$context);\n")
-					->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
+					->write("\$this->env->setNamespaceLookUpOrder(array('{$ext_namespace}', '__main__'));\n");
+
+				if ($use_yield)
+				{
+					$compiler->write("yield from \$this->env->load('@{$ext_namespace}/{$location}.html')->unwrap()->yield(\$context);\n");
+				}
+				else
+				{
+					$compiler->write("\$this->env->load('@{$ext_namespace}/{$location}.html')->display(\$context);\n");
+				}
+
+				$compiler->write("\$this->env->setNamespaceLookUpOrder(\$previous_look_up_order);\n");
 			}
 
 			if ($this->environment->isDebug())

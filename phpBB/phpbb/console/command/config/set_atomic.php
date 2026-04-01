@@ -24,7 +24,7 @@ class set_atomic extends command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:set-atomic')

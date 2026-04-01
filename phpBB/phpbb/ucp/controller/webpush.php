@@ -316,7 +316,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->get('data', ''));
+		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
 
 		$sql = 'INSERT INTO ' . $this->push_subscriptions_table . ' ' . $this->db->sql_build_array('INSERT', [
 			'user_id'			=> $this->user->id(),
@@ -343,7 +343,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->get('data', ''));
+		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
 
 		$endpoint = $data['endpoint'];
 

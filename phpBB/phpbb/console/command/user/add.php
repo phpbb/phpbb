@@ -94,7 +94,7 @@ class add extends command
 	 *
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('user:add')
@@ -188,7 +188,7 @@ class add extends command
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 */
-	protected function interact(InputInterface $input, OutputInterface $output)
+	protected function interact(InputInterface $input, OutputInterface $output): void
 	{
 		$helper = $this->getHelper('question');
 		if (!$helper instanceof QuestionHelper)

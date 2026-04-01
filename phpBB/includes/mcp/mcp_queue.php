@@ -27,6 +27,8 @@ class mcp_queue
 {
 	var $p_master;
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	public function __construct($p_master)
 	{

@@ -13,6 +13,7 @@
 
 namespace phpbb\template\twig\node;
 
+#[\Twig\Attribute\YieldReady]
 class includecss extends \phpbb\template\twig\node\includeasset
 {
 	/**
