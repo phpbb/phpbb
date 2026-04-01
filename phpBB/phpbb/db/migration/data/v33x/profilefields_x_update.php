@@ -15,11 +15,10 @@ namespace phpbb\db\migration\data\v33x;
 
 class profilefields_x_update extends \phpbb\db\migration\migration
 {
-
 	public static function depends_on(): array
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\v3310',
+			'\phpbb\db\migration\data\v33x\profilefields_update',
 		];
 	}
 
@@ -58,5 +57,4 @@ class profilefields_x_update extends \phpbb\db\migration\migration
 				WHERE field_name = 'phpbb_twitter'"
 		);
 	}
-
 }
