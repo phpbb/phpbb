@@ -18,6 +18,10 @@ if [ "$DB" == "postgres" ]
 then
 	psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
 	psql -c 'create database phpbb_tests;' -U postgres
+elif [ "$DB" == "mysql" ] || [ "$DB" == "mariadb" ]
+then
+	mysql -h 127.0.0.1 -u root -e 'SET GLOBAL character_set_server = "utf8mb4";'
+	mysql -h 127.0.0.1 -u root -e 'SET GLOBAL collation_server = "utf8mb4_bin";'
 fi
 
 if [ "$MYISAM" == '1' ]
