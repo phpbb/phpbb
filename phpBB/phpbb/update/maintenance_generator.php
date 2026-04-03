@@ -18,6 +18,7 @@ use phpbb\filesystem\filesystem_interface;
 use phpbb\language\language_file_helper;
 use phpbb\language\language_file_loader;
 use phpbb\template\template;
+use Symfony\Component\VarExporter\Exception\ExceptionInterface;
 use Symfony\Component\VarExporter\VarExporter;
 
 /**
@@ -44,12 +45,13 @@ class maintenance_generator
 	/**
 	 * Generates the maintenance page and writes it to the store directory.
 	 *
-	 * @param array $template_vars Variables to pass to the template
+	 * @param array $social_links Social links to pass to the template
 	 * @return void
+	 * @throws ExceptionInterface If writing of maintenance lock file fails
 	 */
-	public function write_maintenance_lock(array $template_vars)
+	public function write_maintenance_lock(array $social_links = []): void
 	{
-		$this->template->assign_vars($template_vars);
+		$this->assign_template_vars($social_links);
 
 		$template_content = $this->template->assign_display('maintenance_page.html');
 
@@ -68,18 +70,33 @@ class maintenance_generator
 
 		$exported_data = VarExporter::export([
 			'content'	=> $template_content,
-			'config'	=> [
-				'sitename'		=> $this->config['sitename'],
-				'default_lang'	=> $this->config['default_lang'],
-			],
-			'lang'		=> $this->get_language_vars(),
-			'initiated'	=> $template_vars['MAINTENANCE_DATA']['initiated'] ?? null,
-			'links'		=> $template_vars['links'] ?? [],
 		]);
 
 		$file_content .= 'return ' . $exported_data . ';' . "\n";
 
-		$this->filesystem->dump_file($this->phpbb_root_path . 'store/UPDATE_LOCK' . $this->php_ext, $file_content);
+		$this->filesystem->dump_file($this->phpbb_root_path . 'store/UPDATE_LOCK.' . $this->php_ext, $file_content);
+	}
+
+	protected function assign_template_vars(array $social_links): void
+	{
+		$maintenance_start = time();
+
+		foreach ($social_links as $social_link)
+		{
+			$this->template->assign_block_vars('links', [
+				'ICON'	=> $social_link['ICON'],
+				'URL'	=> $social_link['URL'],
+				'NAME'	=> $social_link['NAME'],
+			]);
+		}
+
+		// Assign general data for maintenance page
+		$this->template->assign_vars([
+			'DEFAULT_LANG'				=> $this->config['default_lang'],
+			'LANG_DATA'					=> json_encode($this->get_language_vars()),
+			'MAINTENANCE_INITIATED'		=> $maintenance_start,
+			'SITENAME'					=> $this->config['sitename'],
+		]);
 	}
 
 	/**

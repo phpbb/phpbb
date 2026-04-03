@@ -12,3 +12,14 @@ services:
             - '@filesystem'
             - '@updater.get_updates'
             - '%core.root_path%'
+
+    update.maintenance_generator:
+        class: phpbb\update\maintenance_generator
+        arguments:
+            - '@config'
+            - '@filesystem'
+            - '@language.helper.language_file'
+            - '@language.loader'
+            - '@template'
+            - '%core.root_path%'
+            - '%core.php_ext%'
