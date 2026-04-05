@@ -1,0 +1,13 @@
+phpbb_bookmarks_add:
+    path:             /add/{topic_id}
+    defaults:
+        _controller:  bookmark.controller.add:handle
+    requirements:
+        topic_id:     \d+
+
+phpbb_bookmarks_remove:
+    path:             /remove/{topic_id}
+    defaults:
+        _controller:  bookmark.controller.remove:handle
+    requirements:
+        topic_id:     \d+

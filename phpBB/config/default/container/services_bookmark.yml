@@ -1,0 +1,22 @@
+services:
+    bookmark.controller.add:
+        class: phpbb\bookmark\controller\add
+        arguments:
+            - '@config'
+            - '@auth'
+            - '@dbal.conn'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    bookmark.controller.remove:
+        class: phpbb\bookmark\controller\remove
+        arguments:
+            - '@config'
+            - '@auth'
+            - '@dbal.conn'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
