@@ -11,6 +11,14 @@ services:
             - '@template'
             - '@user'
 
+    forum.helper:
+        class: phpbb\forum\helper
+        arguments:
+            - '@config'
+            - '@dbal.conn'
+            - '@dispatcher'
+            - '@user'
+
     forum.controller.index:
         class: phpbb\forum\controller\index
         arguments:

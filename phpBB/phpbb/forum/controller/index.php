@@ -108,7 +108,7 @@ class index
 
 		$this->language->add_lang('viewforum');
 
-		display_forums('', $this->config['load_moderators']);
+		display_forums(null, $this->config['load_moderators']);
 
 		// This is shown only if display_online_list is true
 		$this->group_helper->display_legend();
@@ -126,7 +126,7 @@ class index
 			'S_INDEX'					=> true,
 
 			'U_CANONICAL'		=> generate_board_url() . '/',
-			'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_index_controller', ['hash' => generate_link_hash('global'), 'mark' => 'forums', 'mark_time' => time()]) : '',
+			'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_notifications_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 			'U_MCP'				=> ($this->auth->acl_get('m_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}mcp.$this->phpEx", 'i=main&amp;mode=front') : '')
 		);
 
