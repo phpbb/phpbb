@@ -51,6 +51,9 @@ $update		= $request->variable('update', false);
 /* @var $pagination \phpbb\pagination */
 $pagination = $phpbb_container->get('pagination');
 
+/* @var $controller_helper \phpbb\controller\helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 $s_can_vote = false;
 /**
 * @todo normalize?
@@ -575,47 +578,6 @@ $vars = array(
 );
 extract($phpbb_dispatcher->trigger_event('core.viewtopic_highlight_modify', compact($vars)));
 
-// Bookmarks
-if ($config['allow_bookmarks'] && $user->data['is_registered'] && $request->variable('bookmark', 0))
-{
-	if (check_link_hash($request->variable('hash', ''), "topic_$topic_id"))
-	{
-		if (!$topic_data['bookmarked'])
-		{
-			$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'	=> $user->data['user_id'],
-				'topic_id'	=> $topic_id,
-			));
-			$db->sql_query($sql);
-		}
-		else
-		{
-			$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . "
-				WHERE user_id = {$user->data['user_id']}
-					AND topic_id = $topic_id";
-			$db->sql_query($sql);
-		}
-		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']);
-
-		if (!$request->is_ajax())
-		{
-			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
-		}
-	}
-	else
-	{
-		$message = $user->lang['BOOKMARK_ERR'];
-
-		if (!$request->is_ajax())
-		{
-			$message .= '<br /><br />' . $user->lang('RETURN_TOPIC', '<a href="' . $viewtopic_url . '">', '</a>');
-		}
-	}
-	meta_refresh(3, $viewtopic_url);
-
-	trigger_error($message);
-}
-
 // Grab ranks
 $ranks = $cache->obtain_ranks();
 
@@ -833,6 +795,24 @@ $template->assign_vars(array(
 	'U_VIEW_FORUM' 			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 	'U_VIEW_OLDER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id&amp;view=previous"),
 	'U_VIEW_NEWER_TOPIC'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id&amp;view=next"),
+	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id") : '',
+	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;t=$topic_id") : ''
+));
+
+// Send vars used by viewtopic_topic_tools.html in a dedicated block.
+$u_bookmark_topic_add = '';
+$u_bookmark_topic_remove = '';
+if ($user->data['is_registered'] && $config['allow_bookmarks'])
+{
+	$bookmark_route_params = array(
+		'topic_id' => $topic_id,
+		'hash' => generate_link_hash("topic_$topic_id"),
+	);
+	$u_bookmark_topic_add = $controller_helper->route('phpbb_bookmarks_add', $bookmark_route_params);
+	$u_bookmark_topic_remove = $controller_helper->route('phpbb_bookmarks_remove', $bookmark_route_params);
+}
+
+$template->assign_vars(array(
 	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
 	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;t=$topic_id") : '',
 
@@ -842,15 +822,14 @@ $template->assign_vars(array(
 	'S_WATCH_TOPIC_TOGGLE'	=> $s_watching_topic['title_toggle'],
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
-	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
+	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? (($topic_data['bookmarked']) ? $u_bookmark_topic_remove : $u_bookmark_topic_add) : '',
+	'U_BOOKMARK_TOPIC_TOGGLE'	=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? (($topic_data['bookmarked']) ? $u_bookmark_topic_add : $u_bookmark_topic_remove) : '',
 	'S_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 	'S_BOOKMARK_TOGGLE'		=> (!$user->data['is_registered'] || !$config['allow_bookmarks'] || !$topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 	'S_BOOKMARKED_TOPIC'	=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? true : false,
 
-	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=post&amp;f=$forum_id") : '',
-	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;t=$topic_id") : '',
-	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
-);
+	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=bump&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : ''
+));
 
 // Does this topic contain a poll?
 if (!empty($topic_data['poll_start']))

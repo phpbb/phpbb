@@ -12,6 +12,10 @@ phpbb_index_controller:
     path: /
     defaults: { _controller: forum.controller.index:handle }
 
+phpbb_bookmarks:
+    resource: bookmarks.yml
+    prefix: /bookmarks
+
 phpbb_cron_routing:
     resource: cron.yml
     prefix: /cron
