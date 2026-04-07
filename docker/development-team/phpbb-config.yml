@@ -1,0 +1,37 @@
+installer:
+    admin:
+        name: admin
+        password: adminadmin
+        email: admin@example.org
+
+    board:
+        lang: en
+        name: My Board
+        description: My amazing new phpBB board
+
+    database:
+        dbms: mysqli
+        dbhost: 127.0.0.1
+        dbport: 3306
+        dbuser: phpbb
+        dbpasswd: phpbb
+        dbname: phpbb
+        table_prefix: phpbb_
+
+    email:
+        enabled: false
+        smtp_delivery : ~
+        smtp_host: ~
+        smtp_port: ~
+        smtp_user: ~
+        smtp_pass: ~
+
+    server:
+        cookie_secure: false
+        server_protocol: http://
+        force_server_vars: true
+        server_name: localhost
+        server_port: 80
+        script_path: /
+
+    extensions: []
