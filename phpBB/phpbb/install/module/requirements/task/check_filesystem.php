@@ -146,7 +146,12 @@ class check_filesystem extends \phpbb\install\task_base
 		if (!file_exists($path))
 		{
 			$fp = @fopen($path, 'w');
-			@fclose($fp);
+
+			if (is_resource($fp))
+			{
+				fclose($fp);
+			}
+
 			try
 			{
 				$this->filesystem->phpbb_chmod($path,
