@@ -101,9 +101,9 @@ else
  */
 function send_maintenance_screen(): void
 {
-	global $phpbb_root_path;
+	global $phpbb_root_path, $phpEx;
 
-	$lock_file = $phpbb_root_path . 'store/UPDATE_LOCK.php';
+	$lock_file = $phpbb_root_path . 'store/UPDATE_LOCK.' . $phpEx;
 	$update_data = (is_file($lock_file)) ? include($lock_file) : null;
 
 	// Return if update data is invalid
