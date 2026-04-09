@@ -84,7 +84,7 @@ class maintenance_generator
 		foreach ($social_links as $social_link)
 		{
 			$this->template->assign_block_vars('links', [
-				'ICON'	=> $social_link['ICON'],
+				'ICON'	=> $social_link['ICON'] ?? '',
 				'URL'	=> $social_link['URL'],
 				'NAME'	=> $social_link['NAME'],
 			]);
