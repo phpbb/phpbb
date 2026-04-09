@@ -15,12 +15,12 @@
 			<div class="maintenance-message" id="msg">{{ lang('BOARD_MAINTENANCE') }}</div>
 			<div class="loader"></div>
 			<div class="links">
-			{% for link in links %}
+			{%- for link in links %}
 				<a href="{{ link.URL|e('html') }}" target="_blank" rel="noopener">
 					{% if link.ICON %}<span>{{ link.ICON }}</span>{% endif %}
 					<span>{{ link.NAME }}</span>
 				</a>
-			{% endfor %}
+			{% endfor -%}
 			</div>
 			<div class="time" id="time"></div>
 		</div>
