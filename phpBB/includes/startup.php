@@ -114,6 +114,9 @@ function send_maintenance_screen(): void
 
 	header('HTTP/1.1 503 Service Temporarily Unavailable');
 	header('Retry-After: 600');
+	header('Cache-Control: no-store, no-cache, must-revalidate');
+	header('Pragma: no-cache');
+	header('Expires: 0');
 	header('Content-Type: text/html; charset=utf-8');
 
 	echo $update_data['content'];
