@@ -77,6 +77,12 @@ class maintenance_generator
 		$this->filesystem->dump_file($this->phpbb_root_path . 'store/UPDATE_LOCK.' . $this->php_ext, $file_content);
 	}
 
+	/**
+	 * Assign template vars including social links
+	 *
+	 * @param array $social_links Optional social links with icon, url, and name to be displayed
+	 * @return void
+	 */
 	protected function assign_template_vars(array $social_links): void
 	{
 		$maintenance_start = time();
