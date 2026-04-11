@@ -30,6 +30,18 @@ if (version_compare(PHP_VERSION, '8.2.0', '<'))
 	die('You are running an unsupported PHP version (' . PHP_VERSION . '). Please upgrade to PHP 8.2.0 or higher before trying to install or update to phpBB 4.0');
 }
 
+/**
+ * Handle maintenance mode. If the file store/UPDATE_LOCK.php exists, we will show a maintenance screen and exit.
+ */
+if (is_file($phpbb_root_path . 'store/UPDATE_LOCK.php'))
+{
+	// Check if we should bypass (e.g., for the active update process)
+	if (!defined('IN_INSTALL'))
+	{
+		send_maintenance_screen();
+	}
+}
+
 // In PHP 5.3.0 the error level has been raised to E_WARNING which causes problems
 // because we show E_WARNING errors and do not set a default timezone.
 // This is because we have our own timezone handling and work in UTC only anyway.
@@ -79,6 +91,36 @@ else
 		);
 	}
 	require($phpbb_root_path . 'vendor/autoload.php');
+}
+
+/**
+ * Send maintenance screen to the user and exit. This is used when an update is in progress and the UPDATE_LOCK.php file exists.
+ * Invalid data in the UPDATE_LOCK.php file will cause this function to return without sending the maintenance screen.
+ *
+ * @return void
+ */
+function send_maintenance_screen(): void
+{
+	global $phpbb_root_path, $phpEx;
+
+	$lock_file = $phpbb_root_path . 'store/UPDATE_LOCK.' . $phpEx;
+	$update_data = (is_file($lock_file)) ? include($lock_file) : null;
+
+	// Return if update data is invalid
+	if (!$update_data || !isset($update_data['content']))
+	{
+		return;
+	}
+
+	header('HTTP/1.1 503 Service Temporarily Unavailable');
+	header('Retry-After: 600');
+	header('Cache-Control: no-store, no-cache, must-revalidate');
+	header('Pragma: no-cache');
+	header('Expires: 0');
+	header('Content-Type: text/html; charset=utf-8');
+
+	echo $update_data['content'];
+	exit;
 }
 
 $starttime = microtime(true);
