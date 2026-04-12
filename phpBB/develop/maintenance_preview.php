@@ -15,6 +15,9 @@
  * Creates a preview of the maintenance page.
  *
  * DO NOT USE FOR PRODUCTION
+ *
+ * Uncomment the die() below to enable this script. It is only intended for development purposes and will display the maintenance page
+ * when accessing it via a web browser. The lock file will be created for displaying the page, but will be deleted immediately after.
  */
 die("Please read the first lines of this script for instructions on how to enable it");
 
