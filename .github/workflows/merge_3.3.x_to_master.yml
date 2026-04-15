@@ -7,6 +7,7 @@ on:
 
 jobs:
     merge-branch:
+        if: github.repository == 'phpbb/phpbb' && github.event.repository.fork == false
         runs-on: ubuntu-latest
 
         steps:
@@ -17,7 +18,7 @@ jobs:
                   private-key: ${{ secrets.MERGE_MASTER_SECRET }}
 
             - name: Checkout the repository
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   fetch-depth: 0  # Fetch full history for proper merging
                   ref: 3.3.x      # Checkout the 3.3.x branch
