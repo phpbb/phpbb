@@ -42,7 +42,7 @@ class acp_extensions
 	function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher, $phpbb_container;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $phpbb_root_path, $phpbb_log, $phpbb_dispatcher, $phpbb_container, $phpbb_admin_path;
 
 		$this->config = $config;
 		$this->template = $template;
@@ -224,7 +224,7 @@ class acp_extensions
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
 						),
-					), array($phpbb_root_path . 'adm/style'));
+					), array($phpbb_admin_path . 'style'));
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}
