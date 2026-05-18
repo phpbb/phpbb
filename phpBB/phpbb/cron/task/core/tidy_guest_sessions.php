@@ -55,4 +55,3 @@ class tidy_guest_sessions extends base
 		return ((int) $this->config['session_guest_last_gc'] + (int) $this->config['session_guest_gc']) <= time();
 	}
 }
-
