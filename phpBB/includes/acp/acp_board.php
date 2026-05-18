@@ -333,11 +333,14 @@ class acp_board
 				$display_vars = array(
 					'title'	=> 'ACP_LOAD_SETTINGS',
 					'vars'	=> array(
-						'legend1'			=> 'GENERAL_SETTINGS',
-						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
-						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
-						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
-						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'legend1'				=> 'GENERAL_SETTINGS',
+						'limit_load'			=> array('lang' => 'LIMIT_LOAD',			'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
+						'session_length'		=> array('lang' => 'SESSION_LENGTH',		'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'session_gc'			=> array('lang' => 'SESSION_GC',			'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'session_guest_length'	=> array('lang' => 'SESSION_GUEST_LENGTH',	'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'session_guest_gc'		=> array('lang' => 'SESSION_GUEST_GC',		'validate' => 'int:60:9999999999',	'type' => 'number:60:9999999999', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'active_sessions'		=> array('lang' => 'LIMIT_SESSIONS',		'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true),
+						'load_online_time'		=> array('lang' => 'ONLINE_LENGTH',			'validate' => 'int:0:999',	'type' => 'number:0:999', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						'read_notification_expire_days'	=> array('lang' => 'READ_NOTIFICATION_EXPIRE_DAYS',	'validate' => 'int:0',	'type' => 'number:0', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',

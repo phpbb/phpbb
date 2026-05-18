@@ -285,6 +285,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_guest_length', '300');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_guest_gc', '300');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
