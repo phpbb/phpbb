@@ -960,6 +960,29 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertEquals($expected_padding, $web_push->getAutomaticPadding());
 	}
 
+	public function test_set_endpoint_padding_resets_after_mozilla(): void
+	{
+		$reflection = new \ReflectionMethod($this->notification_method_webpush, 'set_endpoint_padding');
+
+		$auth = [
+			'VAPID' => [
+				'subject' => generate_board_url(),
+				'publicKey' => $this->config['webpush_vapid_public'],
+				'privateKey' => $this->config['webpush_vapid_private'],
+			],
+		];
+
+		$web_push = new \Minishlink\WebPush\WebPush($auth);
+
+		// First call sets Mozilla padding
+		$reflection->invoke($this->notification_method_webpush, $web_push, 'foo.mozilla.com');
+		$this->assertEquals(webpush::MOZILLA_FALLBACK_PADDING, $web_push->getAutomaticPadding());
+
+		// Second call with a non-Mozilla endpoint must reset to the default
+		$reflection->invoke($this->notification_method_webpush, $web_push, 'fcm.googleapis.com');
+		$this->assertEquals(\Minishlink\WebPush\Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH, $web_push->getAutomaticPadding());
+	}
+
 	protected function create_subscription_for_user($user_id, bool $invalidate_endpoint = false): array
 	{
 		$client = new \GuzzleHttp\Client();
