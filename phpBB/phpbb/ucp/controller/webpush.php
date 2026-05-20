@@ -474,7 +474,11 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
+<<<<<<< HEAD
 		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
+=======
+		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
+>>>>>>> e7ba760fbd ([ticket/17657] Request was not recieving form data)
 
 		$endpoint = $data['endpoint'];
 
