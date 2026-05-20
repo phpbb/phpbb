@@ -685,6 +685,58 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertEquals('notification.method.webpush', $this->notification_method_webpush->get_type());
 	}
 
+	public function test_push_token_map_is_per_user(): void
+	{
+		// Verifies that when multiple users are notified about the same item,
+		// each user's push token is stored and used independently.
+		// Previously the map was keyed [type_id][item_id], so the last user's
+		// token overwrote all others, making every other user's token invalid.
+		$subscription_info = [];
+		$expected_users = [2 => ['user_id' => '2'], 3 => ['user_id' => '3'], 4 => ['user_id' => '4']];
+		foreach ($expected_users as $user_id => $user_data)
+		{
+			$subscription_info[$user_id] = $this->create_subscription_for_user($user_id);
+		}
+
+		$post_data = [
+			'post_time'		=> 1349413322,
+			'poster_id'		=> 1,
+			'topic_title'	=> '',
+			'post_subject'	=> '',
+			'post_username'	=> '',
+			'forum_name'	=> '',
+			'forum_id'		=> '1',
+			'post_id'		=> '2',
+			'topic_id'		=> '1',
+		];
+
+		$this->notifications->add_notifications('notification.type.post', $post_data);
+
+		// Fetch the stored rows only for users we created subscriptions for
+		$webpush_table = $this->container->getParameter('tables.notification_push');
+		$sql = 'SELECT user_id, push_token FROM ' . $webpush_table . ' WHERE ' . $this->db->sql_in_set('user_id', array_keys($expected_users)) . ' ORDER BY user_id ASC';
+		$result = $this->db->sql_query($sql);
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$this->assertCount(count($expected_users), $rows, 'Each expected user must have a notification row');
+		$tokens = array_column($rows, 'push_token');
+		$this->assertEquals(count($tokens), count(array_unique($tokens)), 'Each user must have a unique push_token');
+
+		// Verify each message payload contains the token hashed with that specific user's salt
+		foreach ($rows as $row)
+		{
+			$user_id = (int) $row['user_id'];
+			$client_hash = basename($subscription_info[$user_id]['endpoint']);
+			$messages = $this->get_messages_for_subscription($client_hash);
+			$this->assertNotEmpty($messages);
+			$payload = json_decode($messages[0], true);
+			$user = $this->user_loader->get_user($user_id);
+			$expected_token = hash('sha256', $user['user_form_salt'] . $row['push_token']);
+			$this->assertEquals($expected_token, $payload['token'], 'Token in push payload must match hash of that user\'s salt + their own push_token');
+		}
+	}
+
 	public function test_get_ucp_template_data_uses_millisecond_expiration_time(): void
 	{
 		$this->user->data['user_id'] = 2;
