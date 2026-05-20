@@ -34,7 +34,7 @@ class guest_session_config extends migration
 		return [
 			'add_index' => [
 				$this->table_prefix . 'sessions' => [
-					'session_user_ip' => ['session_user_id', 'session_ip', 'session_time'],
+					'session_user_time' => ['session_user_id', 'session_time'],
 				],
 			],
 		];
@@ -45,7 +45,7 @@ class guest_session_config extends migration
 		return [
 			'drop_keys' => [
 				$this->table_prefix . 'sessions' => [
-					'session_user_ip',
+					'session_user_time',
 				],
 			],
 		];
@@ -56,7 +56,7 @@ class guest_session_config extends migration
 		return [
 			['config.add', ['session_guest_gc', 300]],
 			['config.add', ['session_guest_length', 300]],
-			['config.add', ['session_guest_last_gc', 0]],
+			['config.add', ['session_guest_last_gc', 0, true]],
 		];
 	}
 }
