@@ -366,12 +366,12 @@ $lang = array_merge($lang, array(
 	'ONLINE_LENGTH_EXPLAIN'			=> 'Number of minutes after which inactive users will not appear in “Who is online” listings. The higher this value the greater is the processing required to generate the listing.',
 	'SESSION_LENGTH'				=> 'Session length',
 	'SESSION_LENGTH_EXPLAIN'		=> 'Sessions will expire after this time, in seconds.',
-	'SESSION_GC'					=> 'Session garbage collection time',
-	'SESSION_GC_EXPLAIN'			=> 'Sessions will be garbage collected after this time, in seconds.',
+	'SESSION_GC'					=> 'Session cleanup interval',
+	'SESSION_GC_EXPLAIN'			=> 'Sessions will be cleaned up after this time, in seconds.',
 	'SESSION_GUEST_LENGTH'			=> 'Guest session length',
 	'SESSION_GUEST_LENGTH_EXPLAIN'	=> 'Guest sessions will expire after this time, in seconds.',
-	'SESSION_GUEST_GC'				=> 'Guest session garbage collection time',
-	'SESSION_GUEST_GC_EXPLAIN'		=> 'Guest sessions will be garbage collected after this time, in seconds.',
+	'SESSION_GUEST_GC'				=> 'Guest session cleanup interval',
+	'SESSION_GUEST_GC_EXPLAIN'		=> 'Guest sessions will be cleaned up after this time, in seconds.',
 ));
 
 // Contact Settings
