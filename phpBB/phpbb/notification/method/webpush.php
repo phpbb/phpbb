@@ -27,7 +27,6 @@ use phpbb\user_loader;
 * Web Push notification method class
 * This class handles sending push messages for notifications
 */
-
 class webpush extends base implements extended_method_interface
 {
 	/** @var config */
@@ -58,7 +57,7 @@ class webpush extends base implements extended_method_interface
 	protected $push_subscriptions_table;
 
 	/** @var int Fallback size for padding if endpoint is mozilla, see https://github.com/web-push-libs/web-push-php/issues/108#issuecomment-2133477054 */
-	const MOZILLA_FALLBACK_PADDING = 2820;
+	public const MOZILLA_FALLBACK_PADDING = 2820;
 
 	/** @var array Map for storing push token between db insertion and sending of notifications */
 	private array $push_token_map = [];
@@ -198,7 +197,12 @@ class webpush extends base implements extended_method_interface
 
 		// Load all the users we need
 		$notify_users = array_diff($user_ids, $banned_users);
-		$this->user_loader->load_users($notify_users, array(USER_IGNORE));
+		if (empty($notify_users))
+		{
+			return;
+		}
+
+		$this->user_loader->load_users($notify_users, [USER_IGNORE]);
 
 		// Get subscriptions for users
 		$user_subscription_map = $this->get_user_subscription_map($notify_users);
@@ -224,7 +228,7 @@ class webpush extends base implements extended_method_interface
 
 			$user_subscriptions = $user_subscription_map[$notification->user_id] ?? [];
 
-			if ($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL
+			if (($user['user_type'] == USER_INACTIVE && $user['user_inactive_reason'] == INACTIVE_MANUAL)
 				|| empty($user_subscriptions))
 			{
 				continue;
@@ -278,8 +282,11 @@ class webpush extends base implements extended_method_interface
 			{
 				if (!$report->isSuccess())
 				{
-					// Fill array of endpoints to remove if subscription has expired
-					if ($report->isSubscriptionExpired())
+					// Fill array of endpoints to remove if subscription has expired or is permanently gone.
+					// Library checks for 404/410; we also check for 401/403 auth failures and endpoints
+					// using the .invalid TLD (e.g. permanently-removed.invalid), which per RFC 6761 are
+					// guaranteed to never resolve and are used as a sentinel for dead subscriptions.
+					if ($report->isSubscriptionExpired() || $this->is_subscription_unauthorized($report) || $this->is_endpoint_permanently_removed($report->getEndpoint()))
 					{
 						$expired_endpoints[] = $report->getEndpoint();
 					}
@@ -378,13 +385,13 @@ class webpush extends base implements extended_method_interface
 			{
 				$subscriptions[] = [
 					'endpoint'			=> $subscription['endpoint'],
-					'expirationTime'	=> $subscription['expiration_time'],
+					'expirationTime'	=> max(0, (int) $subscription['expiration_time']) * 1000,
 				];
 			}
 		}
 
 		return [
-			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> $this->config['webpush_dropdown_subscribe'] || stripos($this->user->page['page'], 'notification_options'),
+			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> ($this->config['load_notifications'] && $this->config['allow_board_notifications'] && $this->config['webpush_dropdown_subscribe']) || stripos($this->user->page['page'], 'notification_options'),
 			'U_WEBPUSH_SUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_subscribe_controller'),
 			'U_WEBPUSH_UNSUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_unsubscribe_controller'),
 			'VAPID_PUBLIC_KEY'				=> $this->config['webpush_vapid_public'],
@@ -488,5 +495,40 @@ class webpush extends base implements extended_method_interface
 				// This shouldn't happen since we won't pass padding length outside limits
 			}
 		}
+	}
+
+	/**
+	 * Check if subscription push failed with a permanent authorization error
+	 *
+	 * 401/403 indicate the push service no longer accepts this subscription,
+	 * typically due to revoked credentials, rotated VAPID keys, or the
+	 * subscription no longer being valid for the current credentials.
+	 *
+	 * @param \Minishlink\WebPush\MessageSentReport $report
+	 *
+	 * @return bool True if subscription returned 401 Unauthorized or 403 Forbidden
+	 */
+	protected function is_subscription_unauthorized(\Minishlink\WebPush\MessageSentReport $report): bool
+	{
+		$response = $report->getResponse();
+		return $response && in_array($response->getStatusCode(), [401, 403], true);
+	}
+
+	/**
+	 * Check if a push endpoint uses the .invalid TLD, meaning it can never resolve.
+	 *
+	 * Per RFC 6761, the .invalid TLD is reserved and guaranteed to never resolve in DNS.
+	 * It is commonly used as a sentinel value for dead/permanently-removed push subscriptions
+	 * (e.g. permanently-removed.invalid) where the push service has indicated the endpoint
+	 * is gone but no HTTP response was returned (e.g. cURL error 6: could not resolve host).
+	 *
+	 * @param string $endpoint
+	 *
+	 * @return bool True if the endpoint host ends with .invalid
+	 */
+	protected function is_endpoint_permanently_removed(string $endpoint): bool
+	{
+		$host = parse_url($endpoint, PHP_URL_HOST);
+		return $host !== null && str_ends_with($host, '.invalid');
 	}
 }

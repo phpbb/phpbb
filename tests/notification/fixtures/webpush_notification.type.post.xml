@@ -82,6 +82,9 @@
 		<column>subscription_id</column>
 		<column>user_id</column>
 		<column>endpoint</column>
+		<column>p256dh</column>
+		<column>auth</column>
+		<column>expiration_time</column>
 	</table>
 	<table name="phpbb_topics">
 		<column>topic_id</column>

@@ -130,16 +130,7 @@ class webpush
 			throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
 		}
 
-		if ($this->user->id() !== ANONYMOUS)
-		{
-			$notification_data = $this->get_user_notifications();
-		}
-		else
-		{
-			$notification_data = $this->get_anonymous_notifications();
-		}
-
-		return new JsonResponse($notification_data, 200, [], true);
+		return new JsonResponse($this->get_user_notifications(), 200, [], true);
 	}
 
 	/**
@@ -149,6 +140,11 @@ class webpush
 	 */
 	private function get_user_notifications(): string
 	{
+		if ($this->user->id() === ANONYMOUS)
+		{
+			return $this->get_anonymous_notifications();
+		}
+
 		// Subscribe should only be available for logged-in "normal" users
 		if ($this->user->data['user_type'] == USER_IGNORE)
 		{
@@ -323,20 +319,41 @@ class webpush
 		$this->check_subscribe_requests();
 
 		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
+		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
+		$previous_endpoint = is_string($data['previous_endpoint'] ?? null) ? $data['previous_endpoint'] : '';
 
-		if (!$this->verify_endpoint($data['endpoint']))
+		if (!$this->verify_endpoint($endpoint))
 		{
 			throw new http_exception(Response::HTTP_BAD_REQUEST, 'NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
 		}
 
-		$sql = 'INSERT INTO ' . $this->push_subscriptions_table . ' ' . $this->db->sql_build_array('INSERT', [
-			'user_id'			=> $this->user->id(),
-			'endpoint'			=> $data['endpoint'],
-			'expiration_time'	=> $data['expiration_time'] ?? 0,
-			'p256dh'			=> $data['keys']['p256dh'],
-			'auth'				=> $data['keys']['auth'],
-		]);
+		$subscription_data = $this->get_subscription_write_data($data);
+		$subscription_data['user_id'] = $this->user->id();
+		$subscription_data['endpoint'] = $endpoint;
+
+		$sql = 'UPDATE ' . $this->push_subscriptions_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', [
+				'expiration_time'	=> $subscription_data['expiration_time'],
+				'p256dh'			=> $subscription_data['p256dh'],
+				'auth'				=> $subscription_data['auth'],
+			]) . "
+			WHERE user_id = " . (int) $this->user->id() . "
+				AND endpoint = '" . $this->db->sql_escape($endpoint) . "'";
 		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows())
+		{
+			$sql = 'INSERT INTO ' . $this->push_subscriptions_table . ' ' . $this->db->sql_build_array('INSERT', $subscription_data);
+			$this->db->sql_query($sql);
+		}
+
+		if ($previous_endpoint && $previous_endpoint !== $endpoint)
+		{
+			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+				WHERE user_id = ' . (int) $this->user->id() . "
+					AND endpoint = '" . $this->db->sql_escape($previous_endpoint) . "'";
+			$this->db->sql_query($sql);
+		}
 
 		return new JsonResponse([
 			'success'		=> true,
@@ -400,6 +417,51 @@ class webpush
 		}
 
 		return false;
+	}
+
+	/**
+	 * Validate and normalize subscription data for database writes
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	protected function get_subscription_write_data(array $data): array
+	{
+		$p256dh = is_string($data['keys']['p256dh'] ?? null) ? $data['keys']['p256dh'] : '';
+		$auth = is_string($data['keys']['auth'] ?? null) ? $data['keys']['auth'] : '';
+
+		if ($p256dh === '' || $auth === '')
+		{
+			throw new http_exception(Response::HTTP_BAD_REQUEST, 'AJAX_ERROR_TEXT');
+		}
+
+		return [
+			'expiration_time'	=> $this->normalize_subscription_expiration_time($data),
+			'p256dh'			=> $p256dh,
+			'auth'				=> $auth,
+		];
+	}
+
+	/**
+	 * Normalize PushSubscription expiration timestamps to seconds for storage
+	 *
+	 * @param array $data
+	 * @return int
+	 */
+	protected function normalize_subscription_expiration_time(array $data): int
+	{
+		if (isset($data['expiration_time']))
+		{
+			return max(0, (int) $data['expiration_time']);
+		}
+
+		$expiration_time = $data['expirationTime'] ?? 0;
+		if (empty($expiration_time))
+		{
+			return 0;
+		}
+
+		return max(0, (int) floor(((int) $expiration_time) / 1000));
 	}
 
 	/**

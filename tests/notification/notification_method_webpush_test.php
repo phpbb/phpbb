@@ -588,9 +588,267 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		}
 	}
 
+	/**
+	 * @dataProvider data_notification_webpush
+	 */
+	public function test_expired_subscriptions_deleted($notification_type, $post_data, $expected_users): void
+	{
+		// Skip test if no expected users
+		if (empty($expected_users))
+		{
+			$this->assertTrue(true);
+			return;
+		}
+
+		$subscription_info = [];
+		foreach ($expected_users as $user_id => $user_data)
+		{
+			$subscription_info[$user_id][] = $this->create_subscription_for_user($user_id);
+		}
+
+		// Get first user and expire their subscription
+		$first_user_id = array_key_first($expected_users);
+		$first_user_sub = $subscription_info[$first_user_id][0];
+		$this->expire_subscription($first_user_sub['clientHash']);
+
+		// Count subscriptions before notification
+		$subscriptions_before = $this->get_subscription_count();
+		$this->assertEquals(count($expected_users), $subscriptions_before, 'Expected ' . count($expected_users) . ' subscriptions before notification');
+
+		$post_data = array_merge([
+			'post_time' => 1349413322,
+			'poster_id' => 1,
+			'topic_title' => '',
+			'post_subject' => '',
+			'post_username' => '',
+			'forum_name' => '',
+		], $post_data);
+
+		// Send notifications, which should trigger cleanup of expired subscription
+		$this->notifications->add_notifications($notification_type, $post_data);
+
+		// Count subscriptions after notification - expired one should be deleted
+		$subscriptions_after = $this->get_subscription_count();
+		$this->assertEquals(count($expected_users) - 1, $subscriptions_after, 'Expected expired subscription to be deleted');
+
+		// Verify the expired subscription is actually gone
+		$remaining_subs = $this->get_all_subscriptions();
+		foreach ($remaining_subs as $sub)
+		{
+			$this->assertNotEquals($first_user_sub['endpoint'], $sub['endpoint'], 'Expired subscription should be deleted');
+		}
+	}
+
+	/**
+	 * @dataProvider data_notification_webpush
+	 */
+	public function test_permanently_removed_subscriptions_deleted($notification_type, $post_data, $expected_users): void
+	{
+		// Skip test if no expected users
+		if (empty($expected_users))
+		{
+			$this->assertTrue(true);
+			return;
+		}
+
+		// Insert a permanently-removed.invalid subscription for the first user.
+		// This simulates a dead subscription whose endpoint can never resolve (RFC 6761).
+		$first_user_id = array_key_first($expected_users);
+		$dead_endpoint = 'https://permanently-removed.invalid/fcm/send/test_dead_subscription';
+		$this->insert_subscription_for_user($first_user_id, $dead_endpoint);
+
+		$this->assertEquals(1, $this->get_subscription_count(), 'Expected 1 subscription before notification');
+
+		$post_data = array_merge([
+			'post_time' => 1349413322,
+			'poster_id' => 1,
+			'topic_title' => '',
+			'post_subject' => '',
+			'post_username' => '',
+			'forum_name' => '',
+		], $post_data);
+
+		// Send notifications — should trigger cleanup of the permanently-removed subscription
+		$this->notifications->add_notifications($notification_type, $post_data);
+
+		// The dead subscription should have been silently deleted
+		$this->assertEquals(0, $this->get_subscription_count(), 'Expected permanently-removed subscription to be deleted');
+
+		// Verify no admin log was written — unlike real delivery failures (which log errors),
+		// permanently-removed endpoints should be silently cleaned up without noise.
+		$admin_logs = $this->log->get_logs('admin');
+		$this->assertEmpty($admin_logs, 'Expected no admin log entry for a permanently-removed subscription');
+	}
+
 	public function test_get_type(): void
 	{
 		$this->assertEquals('notification.method.webpush', $this->notification_method_webpush->get_type());
+	}
+
+	public function test_get_ucp_template_data_uses_millisecond_expiration_time(): void
+	{
+		$this->user->data['user_id'] = 2;
+		$this->user->page['page'] = 'ucp.php?i=ucp_notifications';
+		$this->config['load_notifications'] = true;
+		$this->config['allow_board_notifications'] = true;
+		$this->config['wpn_webpush_dropdown_subscribe'] = true;
+
+		$sql = 'INSERT INTO phpbb_push_subscriptions ' . $this->db->sql_build_array('INSERT', [
+				'user_id'			=> 2,
+				'endpoint'			=> 'https://fcm.googleapis.com/fcm/send/test_endpoint',
+				'expiration_time'	=> 42,
+				'p256dh'			=> 'test_p256dh',
+				'auth'				=> 'test_auth',
+			]);
+		$this->db->sql_query($sql);
+
+		$controller_helper = $this->createMock(\phpbb\controller\helper::class);
+		$controller_helper->method('route')->willReturnArgument(0);
+
+		$form_helper = $this->createMock(phpbb\form\form_helper::class);
+		$form_helper->method('get_form_tokens')->willReturn([
+			'creation_time' => 1,
+			'form_token' => 'test',
+		]);
+
+		$template_data = $this->notification_method_webpush->get_ucp_template_data($controller_helper, $form_helper);
+
+		$this->assertSame([
+			[
+				'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
+				'expirationTime' => 42000,
+			],
+		], $template_data['SUBSCRIPTIONS']);
+	}
+
+	/**
+	 * Test is_subscription_unauthorized method with various HTTP status codes
+	 */
+	public function test_is_subscription_unauthorized(): void
+	{
+		$reflection = new \ReflectionMethod($this->notification_method_webpush, 'is_subscription_unauthorized');
+
+		// Test 401 status (should return true)
+		$response_401 = $this->createMockResponse(401);
+		$request_401 = $this->createMockRequest();
+		$report_401 = new \Minishlink\WebPush\MessageSentReport($request_401, $response_401, false, 'Unauthorized');
+		$this->assertTrue($reflection->invoke($this->notification_method_webpush, $report_401), 'Expected 401 to be treated as unauthorized');
+
+		// Test 403 status (should return true for invalid VAPID/subscription mismatches)
+		$response_403 = $this->createMockResponse(403);
+		$request_403 = $this->createMockRequest();
+		$report_403 = new \Minishlink\WebPush\MessageSentReport($request_403, $response_403, false, 'Forbidden');
+		$this->assertTrue($reflection->invoke($this->notification_method_webpush, $report_403), 'Expected 403 to be treated as a permanent authorization failure');
+
+		// Test 404 status (should return false, handled by isSubscriptionExpired)
+		$response_404 = $this->createMockResponse(404);
+		$request_404 = $this->createMockRequest();
+		$report_404 = new \Minishlink\WebPush\MessageSentReport($request_404, $response_404, false, 'Not Found');
+		$this->assertFalse($reflection->invoke($this->notification_method_webpush, $report_404), 'Expected 404 to not be treated as unauthorized');
+
+		// Test 410 status (should return false, handled by isSubscriptionExpired)
+		$response_410 = $this->createMockResponse(410);
+		$request_410 = $this->createMockRequest();
+		$report_410 = new \Minishlink\WebPush\MessageSentReport($request_410, $response_410, false, 'Gone');
+		$this->assertFalse($reflection->invoke($this->notification_method_webpush, $report_410), 'Expected 410 to not be treated as unauthorized');
+
+		// Test 429 status (should return false, temporary error)
+		$response_429 = $this->createMockResponse(429);
+		$request_429 = $this->createMockRequest();
+		$report_429 = new \Minishlink\WebPush\MessageSentReport($request_429, $response_429, false, 'Too Many Requests');
+		$this->assertFalse($reflection->invoke($this->notification_method_webpush, $report_429), 'Expected 429 to not be treated as unauthorized');
+
+		// Test 500 status (should return false, temporary error)
+		$response_500 = $this->createMockResponse(500);
+		$request_500 = $this->createMockRequest();
+		$report_500 = new \Minishlink\WebPush\MessageSentReport($request_500, $response_500, false, 'Internal Server Error');
+		$this->assertFalse($reflection->invoke($this->notification_method_webpush, $report_500), 'Expected 500 to not be treated as unauthorized');
+
+		// Test null response (network failure - should return false)
+		$request_null = $this->createMockRequest();
+		$report_null = new \Minishlink\WebPush\MessageSentReport($request_null, null, false, 'Network error');
+		$this->assertFalse($reflection->invoke($this->notification_method_webpush, $report_null), 'Expected null response to not be treated as unauthorized');
+	}
+
+	/**
+	 * Create a mock PSR-7 ResponseInterface with specified status code
+	 */
+	protected function createMockResponse(int $status_code): \Psr\Http\Message\ResponseInterface
+	{
+		$response = $this->getMockBuilder(\Psr\Http\Message\ResponseInterface::class)
+			->getMock();
+		$response->method('getStatusCode')
+			->willReturn($status_code);
+		return $response;
+	}
+
+	/**
+	 * Create a mock PSR-7 RequestInterface
+	 */
+	protected function createMockRequest(): \Psr\Http\Message\RequestInterface
+	{
+		$uri = $this->getMockBuilder(\Psr\Http\Message\UriInterface::class)
+			->getMock();
+		$uri->method('__toString')
+			->willReturn('http://localhost:9012/notify/test');
+
+		$request = $this->getMockBuilder(\Psr\Http\Message\RequestInterface::class)
+			->getMock();
+		$request->method('getUri')
+			->willReturn($uri);
+
+		$body = $this->getMockBuilder(\Psr\Http\Message\StreamInterface::class)
+			->getMock();
+		$body->method('getContents')
+			->willReturn('test payload');
+		$request->method('getBody')
+			->willReturn($body);
+
+		return $request;
+	}
+
+	/**
+	 * Test is_endpoint_permanently_removed method
+	 */
+	public function test_is_endpoint_permanently_removed(): void
+	{
+		$reflection = new \ReflectionMethod($this->notification_method_webpush, 'is_endpoint_permanently_removed');
+
+		// .invalid TLD sentinel — should return true
+		$this->assertTrue(
+			$reflection->invoke($this->notification_method_webpush, 'https://permanently-removed.invalid/fcm/send/abc123'),
+			'Expected permanently-removed.invalid to be treated as permanently removed'
+		);
+
+		// Any .invalid host — should return true
+		$this->assertTrue(
+			$reflection->invoke($this->notification_method_webpush, 'https://some-other.invalid/push/endpoint'),
+			'Expected any .invalid host to be treated as permanently removed'
+		);
+
+		// Valid FCM endpoint — should return false
+		$this->assertFalse(
+			$reflection->invoke($this->notification_method_webpush, 'https://fcm.googleapis.com/fcm/send/abc123'),
+			'Expected valid FCM endpoint to not be treated as permanently removed'
+		);
+
+		// Valid Mozilla endpoint — should return false
+		$this->assertFalse(
+			$reflection->invoke($this->notification_method_webpush, 'https://updates.push.services.mozilla.com/push/v1/abc123'),
+			'Expected valid Mozilla endpoint to not be treated as permanently removed'
+		);
+
+		// Subdomain spoofing attempt (host ends in .invalid.attacker.com, not .invalid) — should return false
+		$this->assertFalse(
+			$reflection->invoke($this->notification_method_webpush, 'https://permanently-removed.invalid.attacker.com/push'),
+			'Expected .invalid.attacker.com to not be treated as permanently removed'
+		);
+
+		// Empty/invalid URL — should return false
+		$this->assertFalse(
+			$reflection->invoke($this->notification_method_webpush, 'not_a_url'),
+			'Expected unparseable URL to not be treated as permanently removed'
+		);
 	}
 
 	/**
@@ -787,5 +1045,48 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->db->sql_freeresult($result);
 
 		return $sql_ary;
+	}
+
+	protected function get_subscription_count(): int
+	{
+		$push_subscriptions_table = $this->container->getParameter('tables.push_subscriptions');
+		$sql = 'SELECT COUNT(*) as count FROM ' . $push_subscriptions_table;
+		$result = $this->db->sql_query($sql);
+		$count = (int) $this->db->sql_fetchfield('count');
+		$this->db->sql_freeresult($result);
+
+		return $count;
+	}
+
+	protected function get_all_subscriptions(): array
+	{
+		$push_subscriptions_table = $this->container->getParameter('tables.push_subscriptions');
+		$sql = 'SELECT * FROM ' . $push_subscriptions_table;
+		$result = $this->db->sql_query($sql);
+		$sql_ary = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		return $sql_ary;
+	}
+
+	/**
+	 * Create a real subscription via the push testing service for the given user, then overwrite
+	 * its endpoint with the specified value. This gives a subscription with valid encryption keys
+	 * (required for payload encryption) but an endpoint that will never resolve — used for testing
+	 * dead/sentinel endpoints such as permanently-removed.invalid.
+	 */
+	protected function insert_subscription_for_user(int $user_id, string $endpoint): void
+	{
+		// Get a real subscription from the push testing service so the p256dh/auth keys are
+		// valid base64url-encoded EC keys that the library can actually encrypt against.
+		$subscription_data = $this->create_subscription_for_user($user_id);
+
+		// Overwrite the endpoint to the dead one we want to test with.
+		$push_subscriptions_table = $this->container->getParameter('tables.push_subscriptions');
+		$sql = 'UPDATE ' . $push_subscriptions_table . "
+			SET endpoint = '" . $this->db->sql_escape($endpoint) . "'
+			WHERE user_id = " . (int) $user_id . "
+				AND endpoint = '" . $this->db->sql_escape($subscription_data['endpoint']) . "'";
+		$this->db->sql_query($sql);
 	}
 }
