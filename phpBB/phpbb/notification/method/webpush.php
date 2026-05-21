@@ -484,17 +484,16 @@ class webpush extends base implements extended_method_interface
 	 */
 	protected function set_endpoint_padding(\Minishlink\WebPush\WebPush $web_push, string $endpoint): void
 	{
-		$padding = (str_contains($endpoint, 'mozilla.com') || str_contains($endpoint, 'mozaws.net'))
-			? self::MOZILLA_FALLBACK_PADDING
-			: \Minishlink\WebPush\Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH;
-
-		try
+		if (str_contains($endpoint, 'mozilla.com') || str_contains($endpoint, 'mozaws.net'))
 		{
-			$web_push->setAutomaticPadding($padding);
-		}
-		catch (\Exception)
-		{
-			// This shouldn't happen since we won't pass padding length outside limits
+			try
+			{
+				$web_push->setAutomaticPadding(self::MOZILLA_FALLBACK_PADDING);
+			}
+			catch (\Exception)
+			{
+				// This shouldn't happen since we won't pass padding length outside limits
+			}
 		}
 	}
 
