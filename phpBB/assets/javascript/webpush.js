@@ -363,11 +363,11 @@ function PhpbbWebpush() {
 			},
 			body: getFormData({ endpoint: subscription.endpoint }),
 		})
-			.then(async (response) => {
+			.then(async(response) => {
 				let data = null;
 				try {
 					data = await response.json();
-				} catch (e) {
+				} catch {
 					// Ignore JSON parsing failures and fall back below.
 				}
 				if (!response.ok || !data || !data.success) {
