@@ -255,7 +255,7 @@ function PhpbbWebpush() {
 			const data = await response.json();
 
 			if (!data.success) {
-				throw new Error(data.message || subscribeButton.getAttribute('data-l-unsupported'));
+				throw new Error(data.message || subscribeButton.getAttribute('data-disabled-msg'));
 			}
 
 			handleSubscribe(data, subscription, previousEndpoint);
@@ -318,14 +318,14 @@ function PhpbbWebpush() {
 			// We might already have a subscription that is unknown to this instance of phpBB.
 			// Unsubscribe before trying to subscribe again.
 			if (typeof registration === 'undefined') {
-				throw new Error(subscribeButton.getAttribute('data-l-unsupported'));
+				throw new Error(subscribeButton.getAttribute('data-disabled-msg'));
 			}
 
 			try {
 				const subscribed = await registration.pushManager.getSubscription();
 				await refreshSubscription(registration, subscribed);
 			} catch (error) {
-				phpbb.alert(ajaxErrorTitle, error.message || subscribeButton.getAttribute('data-l-unsupported'));
+				phpbb.alert(ajaxErrorTitle, error.message || subscribeButton.getAttribute('data-disabled-msg'));
 			}
 		} catch (error) {
 			console.error('Push subscription error:', error);
@@ -363,19 +363,29 @@ function PhpbbWebpush() {
 			},
 			body: getFormData({ endpoint: subscription.endpoint }),
 		})
-			.then(() => {
-				loadingIndicator.fadeOut(phpbb.alertTime);
-				return subscription.unsubscribe();
-			})
-			.then(unsubscribed => {
+			.then(async (response) => {
+				let data = null;
+				try {
+					data = await response.json();
+				} catch (e) {
+					// Ignore JSON parsing failures and fall back below.
+				}
+				if (!response.ok || !data || !data.success) {
+					throw new Error(data && data.message ? data.message : 'Unsubscribe failed.');
+				}
+
+				const unsubscribed = await subscription.unsubscribe();
+
 				if (unsubscribed) {
 					removeStoredSubscription(subscription.endpoint);
 					setSubscriptionState(false);
 				}
 			})
 			.catch(error => {
+				phpbb.alert(ajaxErrorTitle, error.message || error);
+			})
+			.finally(() => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
-				phpbb.alert(ajaxErrorTitle, error);
 			});
 	}
 

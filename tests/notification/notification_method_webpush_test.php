@@ -743,7 +743,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->user->page['page'] = 'ucp.php?i=ucp_notifications';
 		$this->config['load_notifications'] = true;
 		$this->config['allow_board_notifications'] = true;
-		$this->config['wpn_webpush_dropdown_subscribe'] = true;
+		$this->config['webpush_dropdown_subscribe'] = true;
 
 		$sql = 'INSERT INTO phpbb_push_subscriptions ' . $this->db->sql_build_array('INSERT', [
 				'user_id'			=> 2,

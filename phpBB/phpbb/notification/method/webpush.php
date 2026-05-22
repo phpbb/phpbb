@@ -197,8 +197,11 @@ class webpush extends base implements extended_method_interface
 
 		// Load all the users we need
 		$notify_users = array_diff($user_ids, $banned_users);
+
+		// If we have no users (e.g. all recipients are banned) empty queue and exit
 		if (empty($notify_users))
 		{
+			$this->empty_queue();
 			return;
 		}
 
@@ -529,6 +532,6 @@ class webpush extends base implements extended_method_interface
 	protected function is_endpoint_permanently_removed(string $endpoint): bool
 	{
 		$host = parse_url($endpoint, PHP_URL_HOST);
-		return $host !== null && str_ends_with($host, '.invalid');
+		return is_string($host) && str_ends_with($host, '.invalid');
 	}
 }
