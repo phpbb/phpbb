@@ -218,7 +218,7 @@ class manager
 			return false;
 		}
 
-		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state']) : false;
+		$old_state = (isset($this->extensions[$name]['ext_state'])) ? unserialize($this->extensions[$name]['ext_state'], ['allowed_classes' => false]) : false;
 
 		$extension = $this->get_extension($name);
 
@@ -278,7 +278,7 @@ class manager
 			return false;
 		}
 
-		$old_state = unserialize($this->extensions[$name]['ext_state']);
+		$old_state = unserialize($this->extensions[$name]['ext_state'], ['allowed_classes' => false]);
 
 		$extension = $this->get_extension($name);
 		$state = $extension->disable_step($old_state);
@@ -330,7 +330,7 @@ class manager
 			$this->disable($name);
 		}
 
-		$old_state = unserialize($this->extensions[$name]['ext_state']);
+		$old_state = unserialize($this->extensions[$name]['ext_state'], ['allowed_classes' => false]);
 
 		$extension = $this->get_extension($name);
 		$state = $extension->purge_step($old_state);
