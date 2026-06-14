@@ -39,7 +39,7 @@ self.addEventListener('push', event => {
 	}
 
 	event.waitUntil((async() => {
-		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
+		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION|e('js') }}';
 		const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
 
 		// Force update if versions differ
@@ -83,7 +83,10 @@ self.addEventListener('push', event => {
  */
 self.addEventListener('notificationclick', event => {
 	event.notification.close();
-	if (typeof event.notification.data !== 'undefined') {
-		event.waitUntil(self.clients.openWindow(event.notification.data.url));
+	if (typeof event.notification.data !== 'undefined' && event.notification.data.url) {
+		const url = event.notification.data.url;
+		if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/')) {
+			event.waitUntil(self.clients.openWindow(url));
+		}
 	}
 });
