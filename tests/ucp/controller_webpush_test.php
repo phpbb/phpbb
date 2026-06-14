@@ -495,6 +495,45 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		], $row);
 	}
 
+	public static function data_subscribe_missing_endpoint(): array
+	{
+		return [
+			'missing_endpoint'	=> [[
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+			'null_endpoint'		=> [[
+				'endpoint'			=> null,
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+			'array_endpoint'	=> [[
+				'endpoint'			=> ['https://fcm.googleapis.com/fcm/send/test_endpoint'],
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+		];
+	}
+
+	/**
+	 * @dataProvider data_subscribe_missing_endpoint
+	 */
+	public function test_subscribe_missing_endpoint(array $payload): void
+	{
+		$this->form_helper->method('check_form_tokens')->willReturn(true);
+		$this->request->method('is_ajax')->willReturn(true);
+		$this->user->data['user_id'] = 2;
+		$this->user->data['is_bot'] = false;
+		$this->user->data['user_type'] = USER_NORMAL;
+
+		$symfony_request = $this->create_symfony_request($payload);
+
+		$this->expectException(http_exception::class);
+		$this->expectExceptionMessage('NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
+
+		$this->controller->subscribe($symfony_request);
+	}
+
 	public function test_subscribe_unsupported_endpoint()
 	{
 		$this->form_helper->method('check_form_tokens')->willReturn(true);
