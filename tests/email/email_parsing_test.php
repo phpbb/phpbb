@@ -215,4 +215,30 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->assertStringNotContainsString('USERNAME', $msg);
 		$this->assertStringNotContainsString('EMAIL_SIG', $msg);
 	}
+
+	public function test_email_changed_email()
+	{
+		global $config, $user;
+
+		$this->email->set_addresses($user->data);
+
+		$this->email->assign_vars(array(
+			'EMAIL_SIG'	=> str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)),
+			'SITENAME'	=> html_entity_decode($config['sitename'], ENT_COMPAT),
+			'USERNAME'	=> 'Test user',
+			'NEW_EMAIL'	=> 'new.address@example.com',
+		));
+		$this->email->template('email_changed', $user->data['user_lang'], '', '');
+
+		$reflection_template = $this->reflection_template_property->getValue($this->email);
+		$msg = trim($reflection_template->assign_display('body'));
+
+		$this->assertStringContainsString('Test user', $msg);
+		$this->assertStringContainsString('new.address@example.com', $msg);
+		$this->assertStringContainsString(html_entity_decode($config['sitename'], ENT_COMPAT), $msg);
+		$this->assertStringContainsString('has just been changed', $msg);
+		$this->assertStringContainsString(str_replace('<br />', "\n", "-- \n" . html_entity_decode($config['board_email_sig'], ENT_COMPAT)), $msg);
+		$this->assertStringNotContainsString('NEW_EMAIL', $msg);
+		$this->assertStringNotContainsString('EMAIL_SIG', $msg);
+	}
 }

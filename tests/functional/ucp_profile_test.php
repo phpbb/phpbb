@@ -105,6 +105,49 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->db->sql_query($sql);
 	}
 
+	public function test_changing_email_notifies_old_address()
+	{
+		$this->add_lang('ucp');
+		$this->login();
+
+		// Disable the MX-record check so the test does not depend on DNS, and
+		// remember the original value to restore it afterwards.
+		$result = $this->db->sql_query('SELECT config_value FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'email_check_mx'");
+		$original_check_mx = $this->db->sql_fetchfield('config_value');
+		$this->db->sql_freeresult($result);
+		$this->db->sql_query('UPDATE ' . CONFIG_TABLE . "
+			SET config_value = '0'
+			WHERE config_name = 'email_check_mx'");
+		$this->purge_cache();
+
+		// The default board require_activation is "none", so the email change
+		// applies immediately and the email-changed notice is sent to the old
+		// address. Capture the original email to restore it afterwards.
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=reg_details');
+		$form = $crawler->selectButton('submit')->form();
+		$original_email = $form->get('email')->getValue();
+
+		$form['cur_password'] = 'adminadmin';
+		$form['email'] = 'changed.address@example.com';
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
+
+		// Restore the original email and MX-check setting so the shared board
+		// state is left unchanged for the rest of the suite.
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=reg_details');
+		$form = $crawler->selectButton('submit')->form();
+		$form['cur_password'] = 'adminadmin';
+		$form['email'] = $original_email;
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
+
+		$this->db->sql_query('UPDATE ' . CONFIG_TABLE . "
+			SET config_value = '" . $this->db->sql_escape($original_check_mx) . "'
+			WHERE config_name = 'email_check_mx'");
+		$this->purge_cache();
+	}
+
 	public function test_autologin_keys_manage()
 	{
 		$this->add_lang('ucp');
