@@ -157,6 +157,19 @@ class ucp_profile
 								'reportee_id' => $user->data['user_id'],
 								$user->data['username']
 							));
+
+							// Notify the account holder by email that their password has been changed
+							if ($config['email_enable'])
+							{
+								$email_method = $phpbb_container->get('messenger.method.email');
+								$email_method->template('password_changed', $user->data['user_lang']);
+								$email_method->to($user->data['user_email'], $user->data['username']);
+								$email_method->anti_abuse_headers($config, $user);
+								$email_method->assign_vars([
+									'USERNAME'	=> html_entity_decode($user->data['username'], ENT_COMPAT),
+								]);
+								$email_method->send();
+							}
 						}
 
 						if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'])

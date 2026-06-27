@@ -69,6 +69,42 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$this->assertEquals('😁', $form->get('pf_phpbb_location')->getValue());
 	}
 
+	public function test_changing_password_sends_email()
+	{
+		$this->add_lang('ucp');
+		$this->login();
+
+		// Capture the original password hash. The board's password-complexity
+		// rules do not allow changing back to the install default through the
+		// UCP form, so it is restored directly afterwards to keep the shared
+		// admin account usable by the rest of the suite.
+		$sql = 'SELECT user_id, user_password
+			FROM ' . USERS_TABLE . "
+			WHERE username_clean = 'admin'";
+		$result = $this->db->sql_query($sql);
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		// Change the password. Board email is enabled in the test board, so
+		// this exercises the new password-changed confirmation email send.
+		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=reg_details');
+		$this->assertContainsLang('UCP_PROFILE_REG_DETAILS', $crawler->filter('#cp-main h2')->text());
+
+		$form = $crawler->selectButton('submit')->form(array(
+			'cur_password'		=> 'adminadmin',
+			'new_password'		=> 'AdminAdmin1',
+			'password_confirm'	=> 'AdminAdmin1',
+		));
+		$crawler = self::submit($form);
+		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
+
+		// Restore the original password hash for the rest of the suite.
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_password = '" . $this->db->sql_escape($row['user_password']) . "'
+			WHERE user_id = " . (int) $row['user_id'];
+		$this->db->sql_query($sql);
+	}
+
 	public function test_autologin_keys_manage()
 	{
 		$this->add_lang('ucp');
