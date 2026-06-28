@@ -125,4 +125,3 @@ class argument_resolver implements ArgumentResolverInterface
 		return $arguments;
 	}
 }
-
