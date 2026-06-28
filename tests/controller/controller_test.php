@@ -89,17 +89,18 @@ class phpbb_controller_controller_test extends phpbb_test_case
 		$container = $this->get_foo_container();
 
 		$resolver = new \phpbb\controller\resolver($container, __DIR__ . '/');
+		$arg_resolver = new \phpbb\controller\argument_resolver();
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'foo.controller:handle');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new foo\controller, 'handle'));
-		$this->assertEquals(array('foo'), $resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
+		$this->assertEquals(array('foo'), $arg_resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
 
 		$symfony_request = new Request();
 		$symfony_request->attributes->set('_controller', 'core_foo.controller:bar');
 
 		$this->assertEquals($resolver->getController($symfony_request), array(new phpbb\controller\foo, 'bar'));
-		$this->assertEquals(array(), $resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
+		$this->assertEquals(array(), $arg_resolver->getArguments($symfony_request, $resolver->getController($symfony_request)));
 	}
 
 	public static function data_get_arguments()
@@ -122,9 +123,7 @@ class phpbb_controller_controller_test extends phpbb_test_case
 	 */
 	public function test_get_arguments($input, $expected, $set_attributes = array(), $exception = '', $exception_message = '')
 	{
-		$container = $this->get_foo_container();
-
-		$resolver = new \phpbb\controller\resolver($container, __DIR__ . '/');
+		$arg_resolver = new \phpbb\controller\argument_resolver();
 		$symfony_request = new Request();
 
 		foreach ($set_attributes as $name => $value)
@@ -138,6 +137,6 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			$this->expectExceptionMessage($exception_message);
 		}
 
-		$this->assertEquals($expected, $resolver->getArguments($symfony_request, $input));
+		$this->assertEquals($expected, $arg_resolver->getArguments($symfony_request, $input));
 	}
 }
