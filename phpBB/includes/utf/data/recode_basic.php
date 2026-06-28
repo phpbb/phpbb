@@ -1,7 +1,7 @@
 <?php
 function iso_8859_1($string)
 {
-	return utf8_encode($string);
+	return mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1');
 }
 
 function iso_8859_2($string)
@@ -442,7 +442,7 @@ function iso_8859_8($string)
 		"\xC3\xBD" => "\xE2\x80\x8E",
 		"\xC3\xBE" => "\xE2\x80\x8F",
 	);
-	return strtr(utf8_encode($string), $transform);
+	return strtr(mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1'), $transform);
 }
 
 function iso_8859_9($string)
@@ -455,7 +455,7 @@ function iso_8859_9($string)
 		"\xC3\xBD" => "\xC4\xB1",
 		"\xC3\xBE" => "\xC5\x9F",
 	);
-	return strtr(utf8_encode($string), $transform);
+	return strtr(mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1'), $transform);
 }
 
 function iso_8859_15($string)
@@ -470,7 +470,7 @@ function iso_8859_15($string)
 		"\xC2\xBD" => "\xC5\x93",
 		"\xC2\xBE" => "\xC5\xB8",
 	);
-	return strtr(utf8_encode($string), $transform);
+	return strtr(mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1'), $transform);
 }
 
 // nearly the same as iso-8859-11
@@ -999,7 +999,7 @@ function cp1252($string)
 		"\xC2\x9E" => "\xC5\xBE",
 		"\xC2\x9F" => "\xC5\xB8"
 	);
-	return strtr(utf8_encode($string), $transform);
+	return strtr(mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1'), $transform);
 }
 
 function cp1254($string)
@@ -1037,7 +1037,7 @@ function cp1254($string)
 		"\xC3\xBD" => "\xC4\xB1",
 		"\xC3\xBE" => "\xC5\x9F",
 	);
-	return strtr(utf8_encode($string), $transform);
+	return strtr(mb_convert_encoding($string, 'UTF-8', 'ISO-8859-1'), $transform);
 }
 
 function cp1255($string)
