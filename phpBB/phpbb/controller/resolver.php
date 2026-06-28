@@ -35,12 +35,6 @@ class resolver implements ControllerResolverInterface
 	protected $template;
 
 	/**
-	* Request type cast helper object
-	* @var \phpbb\request\type_cast_helper
-	*/
-	protected $type_cast_helper;
-
-	/**
 	* phpBB root path
 	* @var string
 	*/
@@ -57,7 +51,6 @@ class resolver implements ControllerResolverInterface
 	{
 		$this->container = $container;
 		$this->template = $template;
-		$this->type_cast_helper = new \phpbb\request\type_cast_helper();
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -111,69 +104,5 @@ class resolver implements ControllerResolverInterface
 		}
 
 		return array($controller_object, $method);
-	}
-
-	/**
-	* Dependencies should be specified in the service definition and can be
-	* then accessed in __construct(). Arguments are sent through the URL path
-	* and should match the parameters of the method you are using as your
-	* controller.
-	*
-	* @param Request $request Symfony Request object
-	* @param mixed $controller A callable (controller class, method)
-	* @return array An array of arguments to pass to the controller
-	* @throws \phpbb\controller\exception
-	*/
-	public function getArguments(Request $request, $controller)
-	{
-		// At this point, $controller should be a callable
-		if (is_array($controller))
-		{
-			list($object, $method) = $controller;
-			$mirror = new \ReflectionMethod($object, $method);
-		}
-		else if (is_object($controller) && !$controller instanceof \Closure)
-		{
-			$mirror = new \ReflectionObject($controller);
-			$mirror = $mirror->getMethod('__invoke');
-		}
-		else
-		{
-			$mirror = new \ReflectionFunction($controller);
-		}
-
-		$arguments = array();
-		$parameters = $mirror->getParameters();
-		$attributes = $request->attributes->all();
-		foreach ($parameters as $param)
-		{
-			if (array_key_exists($param->name, $attributes))
-			{
-				if (is_string($attributes[$param->name]))
-				{
-					$value = $attributes[$param->name];
-					$this->type_cast_helper->set_var($value, $attributes[$param->name], 'string', true, false);
-					$arguments[] = $value;
-				}
-				else
-				{
-					$arguments[] = $attributes[$param->name];
-				}
-			}
-			else if ($param->getType() && $param->getType() instanceof $request)
-			{
-				$arguments[] = $request;
-			}
-			else if ($param->isDefaultValueAvailable())
-			{
-				$arguments[] = $param->getDefaultValue();
-			}
-			else
-			{
-				throw new \phpbb\controller\exception('CONTROLLER_ARGUMENT_VALUE_MISSING', array($param->getPosition() + 1, get_class($object) . ':' . $method, $param->name));
-			}
-		}
-
-		return $arguments;
 	}
 }
