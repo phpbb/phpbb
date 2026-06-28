@@ -110,11 +110,8 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			array(array(new foo\controller(), 'handle_fail'), array('default'), array('no_default' => 'default')),
 			array(new foo\controller(), array(), array()),
 			array(array(new foo\controller(), 'handle_fail'), array(), array(), '\phpbb\controller\exception', 'CONTROLLER_ARGUMENT_VALUE_MISSING'),
-			array('', array(), array(), '\ReflectionException', 'Function () does not exist'),
-			// Before PHP 8: 'Method __invoke does not exist'
-			// As of PHP 8: 'Method phpbb\controller\foo::__invoke() does not exist'
-			array(new phpbb\controller\foo, array(), array(), '\ReflectionException',
-				'Method ' . (version_compare(PHP_VERSION, '8', '>=') ? 'phpbb\controller\foo::__invoke()' : '__invoke') . ' does not exist'),
+			array('', array(), array(), '\TypeError', 'must be of type callable, string given'),
+			array(new phpbb\controller\foo, array(), array(), '\TypeError', 'must be of type callable, phpbb\controller\foo given'),
 		);
 	}
 
