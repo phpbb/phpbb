@@ -129,6 +129,35 @@ class phpbb_functions_import_attachment_test extends phpbb_test_case
 		$this->assertSame('file.png', $result['target']);
 	}
 
+	public function test_import_check_avatar_uses_storage()
+	{
+		global $convert, $config, $phpbb_container;
+
+		file_put_contents($this->source_dir . 'avatar.png', 'avatar');
+
+		$convert = new stdClass();
+		$convert->convertor = array('source_path_absolute' => false, 'avatar_path' => '');
+		$convert->options = array('forum_path' => rtrim($this->source_dir, '/'));
+
+		$config = array();
+
+		$avatar_storage = $this->getMockBuilder('\phpbb\storage\storage')
+			->disableOriginalConstructor()
+			->getMock();
+		$avatar_storage->method('exists')->willReturn(false);
+		$avatar_storage->expects($this->once())
+			->method('write')
+			->with('avatar.png', $this->isType('resource'));
+
+		$phpbb_container = new phpbb_mock_container_builder();
+		$phpbb_container->set('storage.avatar', $avatar_storage);
+
+		$result = _import_check('avatar_path', 'avatar.png', false);
+
+		$this->assertTrue($result['copied']);
+		$this->assertSame('avatar.png', $result['target']);
+	}
+
 	public function test_import_check_ranks_use_copy_file_not_storage()
 	{
 		global $convert, $config, $phpbb_container, $phpbb_root_path, $phpbb_filesystem;

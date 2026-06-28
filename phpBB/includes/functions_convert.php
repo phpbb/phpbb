@@ -585,6 +585,7 @@ function _import_check($config_var, $source, $use_target)
 	// (ranks, smilies, ...) are not storage-backed and keep using copy_file().
 	$storage_services = array(
 		'upload_path'	=> 'storage.attachment',
+		'avatar_path'	=> 'storage.avatar',
 	);
 
 	$use_storage = isset($storage_services[$config_var]);
