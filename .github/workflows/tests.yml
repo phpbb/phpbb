@@ -116,6 +116,12 @@ jobs:
                     - php: '8.2'
                       db: "mariadb:10.11"
                     - php: '8.2'
+                      db: "mariadb:11.4"
+                    - php: '8.2'
+                      db: "mariadb:11.8"
+                    - php: '8.2'
+                      db: "mariadb:12.3"
+                    - php: '8.2'
                       db: "mysql:8.0"
                       db_alias: "MySQL Slow Tests"
                       SLOWTESTS: 1
@@ -129,6 +135,8 @@ jobs:
                       db: "mysql:8.4"
                     - php: '8.2'
                       db: "mysql:9.4"
+                    - php: '8.2'
+                      db: "mysql:9.7"
                     - php: '8.3'
                       db: "mysql:8.0"
                     - php: '8.4'
@@ -268,6 +276,12 @@ jobs:
                       db: "postgres:14"
                     - php: '8.2'
                       db: "postgres:15"
+                    - php: '8.2'
+                      db: "postgres:16"
+                    - php: '8.2'
+                      db: "postgres:17"
+                    - php: '8.2'
+                      db: "postgres:18"
                     - php: '8.3'
                       db: "postgres:10"
                     - php: '8.4'
@@ -279,7 +293,7 @@ jobs:
 
         services:
             postgres:
-                image: ${{ matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && 'postgres:10' || matrix.db }}
+                image: ${{ matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && matrix.db != 'postgres:16' && matrix.db != 'postgres:17' && matrix.db != 'postgres:18' && 'postgres:10' || matrix.db }}
                 env:
                     POSTGRES_HOST: localhost
                     POSTGRES_USER: postgres
@@ -382,12 +396,15 @@ jobs:
                     - php: '8.2'
                       db: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
+                    - php: '8.2'
+                      db: "mcr.microsoft.com/mssql/server:2025-CU6-ubuntu-22.04"
+                      db_alias: 'MSSQL 2025'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mssql:
-                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' && matrix.db != 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' && 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' || matrix.db }}
+                image: ${{ startsWith(matrix.db, 'mcr.microsoft.com/mssql/server:') && matrix.db || 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' }}
                 env:
                     SA_PASSWORD: "Pssw0rd_12"
                     ACCEPT_EULA: "y"
@@ -423,12 +440,14 @@ jobs:
               env:
                   MATRIX_DB: ${{ matrix.db }}
               run: |
-                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' ]
-                  then
-                      db='mssql'
-                  else
-                      db=$(echo "${MATRIX_DB%%:*}")
-                  fi
+                  case "$MATRIX_DB" in
+                      mcr.microsoft.com/mssql/server:*)
+                          db='mssql'
+                          ;;
+                      *)
+                          db="${MATRIX_DB%%:*}"
+                          ;;
+                  esac
                   echo "db=$db" >> $GITHUB_OUTPUT
 
             - name: Setup PHP
