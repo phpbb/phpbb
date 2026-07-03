@@ -15,6 +15,7 @@ namespace phpbb\db\middleware\mysql;
 
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\ServerVersionProvider;
 
 /**
  * MySQL Doctrine driver middleware.
@@ -25,7 +26,7 @@ class driver extends AbstractDriverMiddleware
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createDatabasePlatformForVersion($version): AbstractPlatform|platform
+	public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
 	{
 		return new platform();
 	}

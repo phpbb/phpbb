@@ -13,7 +13,9 @@
 
 namespace phpbb\db\middleware\oracle;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Identifier;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Table;
@@ -26,14 +28,14 @@ class platform extends OraclePlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getVarcharTypeDeclarationSQL(array $column): string
+	public function getStringTypeDeclarationSQL(array $column): string
 	{
 		if (array_key_exists('length', $column) && is_int($column['length']))
 		{
 			$column['length'] *= 3;
 		}
 
-		return parent::getVarcharTypeDeclarationSQL($column);
+		return parent::getStringTypeDeclarationSQL($column);
 	}
 
 	/**
@@ -41,7 +43,15 @@ class platform extends OraclePlatform
 	 */
 	public function getAsciiStringTypeDeclarationSQL(array $column): string
 	{
-		return parent::getVarcharTypeDeclarationSQL($column);
+		return parent::getStringTypeDeclarationSQL($column);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function createSchemaManager(Connection $connection): AbstractSchemaManager
+	{
+		return new schema_manager($connection, $this);
 	}
 
 	/**

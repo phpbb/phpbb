@@ -15,6 +15,11 @@ namespace phpbb\db\tools;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Platforms\AbstractMySQLPlatform;
+use Doctrine\DBAL\Platforms\OraclePlatform;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\DBAL\Platforms\SQLitePlatform;
+use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Index;
@@ -519,9 +524,10 @@ class doctrine implements tools_interface
 		$new_schema = clone $current_schema;
 		call_user_func($callback, $new_schema);
 
-		$comparator = new comparator();
+		$platform = $this->connection->getDatabasePlatform();
+		$comparator = new comparator($platform);
 		$schemaDiff = $comparator->compareSchemas($current_schema, $new_schema);
-		$queries = $schemaDiff->toSql($this->connection->getDatabasePlatform());
+		$queries = $platform->getAlterSchemaSQL($schemaDiff);
 
 		if ($this->return_statements)
 		{
@@ -664,7 +670,7 @@ class doctrine implements tools_interface
 
 		$table = $schema->createTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$dbms_name = $this->connection->getDatabasePlatform()->getName();
+		$dbms_name = $this->get_dbms_name();
 
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
@@ -755,7 +761,7 @@ class doctrine implements tools_interface
 					return false;
 				}
 
-				$dbms_name = $this->connection->getDatabasePlatform()->getName();
+				$dbms_name = $this->get_dbms_name();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$table->addColumn($column_name, $type, $options);
@@ -787,11 +793,11 @@ class doctrine implements tools_interface
 					return;
 				}
 
-				$dbms_name = $this->connection->getDatabasePlatform()->getName();
+				$dbms_name = $this->get_dbms_name();
 
 				list($type, $options) = table_helper::convert_column_data($column_data, $dbms_name);
 				$options['type'] = Type::getType($type);
-				$table->changeColumn($column_name, $options);
+				$table->modifyColumn($column_name, $options);
 			}
 		);
 	}
@@ -1118,5 +1124,42 @@ class doctrine implements tools_interface
 		$tableSequenceName = sprintf('%s_seq', $tableName);
 
 		return $tableSequenceName === $sequenceName;
+	}
+
+	/**
+	 * @return string phpBB DBMS layer name.
+	 */
+	private function get_dbms_name(): string
+	{
+		$platform = $this->connection->getDatabasePlatform();
+
+		if ($platform instanceof AbstractMySQLPlatform)
+		{
+			return 'mysql';
+		}
+
+		if ($platform instanceof OraclePlatform)
+		{
+			return 'oracle';
+		}
+
+		if ($platform instanceof PostgreSQLPlatform)
+		{
+			return 'postgresql';
+		}
+
+		if ($platform instanceof SQLServerPlatform)
+		{
+			return 'mssql';
+		}
+
+		if ($platform instanceof SQLitePlatform)
+		{
+			return 'sqlite';
+		}
+
+		throw new \InvalidArgumentException(
+			sprintf('Unsupported Doctrine DBAL platform "%s".', $platform::class)
+		);
 	}
 }
