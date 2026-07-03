@@ -16,7 +16,6 @@ namespace phpbb\db\middleware\postgresql;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Sequence;
-use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\IntegerType;
@@ -91,7 +90,7 @@ class platform extends PostgreSQLPlatform
 		foreach ($columns as $column)
 		{
 			$column_name = $column->getName();
-			if (!empty($column->getAutoincrement()))
+			if ($column->getAutoincrement())
 			{
 				$sequence = new Sequence($this->getIdentitySequenceName($table_name, $column_name));
 				$sequence_sql[] = $this->getCreateSequenceSQL($sequence);
@@ -123,10 +122,11 @@ class platform extends PostgreSQLPlatform
 	{
 		$sql = [];
 		$post_sql = [];
-		foreach ($columns as $column_name => $column)
+		foreach ($columns as $column)
 		{
 			if (!empty($column['autoincrement']))
 			{
+				$column_name = $column['name'];
 				$sequence = new Sequence($this->getIdentitySequenceName($name, $column_name));
 				$sql[] = $this->getCreateSequenceSQL($sequence);
 				$post_sql[] = 'ALTER SEQUENCE '.$sequence->getName().' OWNED BY '.$name.'.'.$column_name;
@@ -183,23 +183,15 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDropIndexSQL($index, $table = null): string
+	public function getDropIndexSQL(string $name, string $table): string
 	{
 		// If we have a primary or a unique index, we need to drop the constraint
 		// instead of the index itself or postgreSQL will reject the query.
-		if (is_string($index) && $table !== null && $index === $this->tableName($table) . '_pkey')
+		if ($name === $table . '_pkey')
 		{
-			return $this->getDropConstraintSQL($index, $this->tableName($table));
+			return $this->getDropConstraintSQL($name, $table);
 		}
 
-		return parent::getDropIndexSQL($index, $table);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	private function tableName($table)
-	{
-		return $table instanceof Table ? $table->getName() : (string) $table;
+		return parent::getDropIndexSQL($name, $table);
 	}
 }

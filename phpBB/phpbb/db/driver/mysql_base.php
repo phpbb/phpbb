@@ -54,7 +54,7 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 
 		if (isset($table_status['Engine']))
 		{
-			if ($table_status['Engine'] === 'MyISAM')
+			if ($table_status['Engine'] === 'MyISAM' && (int) $table_status['Rows'] !== 0)
 			{
 				return $table_status['Rows'];
 			}
@@ -74,7 +74,7 @@ abstract class mysql_base extends \phpbb\db\driver\driver
 	{
 		$table_status = $this->get_table_status($table_name);
 
-		if (isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM')
+		if (isset($table_status['Engine']) && $table_status['Engine'] === 'MyISAM' && (int) $table_status['Rows'] !== 0)
 		{
 			return $table_status['Rows'];
 		}
