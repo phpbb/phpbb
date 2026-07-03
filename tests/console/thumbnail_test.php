@@ -38,7 +38,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem;
+		global $config, $phpbb_root_path, $phpEx, $phpbb_filesystem, $phpbb_dispatcher;
 
 		if (!@extension_loaded('gd'))
 		{
@@ -65,6 +65,7 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		)));
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$this->storage = $this->createMock('\phpbb\storage\storage');
 		$this->storage->method('write')->willReturnCallback(function ($path, $data) use ($phpbb_root_path) {

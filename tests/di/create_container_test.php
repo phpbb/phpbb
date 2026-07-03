@@ -13,6 +13,7 @@
 
 namespace
 {
+	require_once __DIR__ . '/fixtures/manager_mock.php';
 	require_once __DIR__ . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
 	class phpbb_di_create_container_test extends \phpbb_test_case
@@ -149,26 +150,6 @@ namespace
 			$this->assertInstanceOf('Symfony\Component\DependencyInjection\ContainerBuilder', $container);
 
 			$this->assertTrue($container->hasParameter('my_parameter'));
-		}
-	}
-}
-
-namespace phpbb\extension
-{
-	class manager_mock extends \phpbb\extension\manager
-	{
-		public function __construct()
-		{
-		}
-
-		public function all_enabled($phpbb_relative = true)
-		{
-			return array(
-				'vendor/enabled' => __DIR__ . '/fixtures/ext/vendor/enabled/',
-				'vendor/enabled-2' => __DIR__ . '/fixtures/ext/vendor/enabled-2/',
-				'vendor/enabled-3' => __DIR__ . '/fixtures/ext/vendor/enabled-3/',
-				'vendor/enabled_4' => __DIR__ . '/fixtures/ext/vendor/enabled_4/',
-			);
 		}
 	}
 }

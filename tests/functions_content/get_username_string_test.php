@@ -26,6 +26,7 @@ class phpbb_functions_content_get_username_string_test extends phpbb_test_case
 				array('u_viewprofile', true),
 			)));
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher;
+		$user = new phpbb_mock_user;
 		$user->data['user_id'] = ANONYMOUS;
 		$user->lang['GUEST'] = 'Guest';
 	}
