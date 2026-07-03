@@ -73,6 +73,42 @@ class comparator extends \Doctrine\DBAL\Schema\Comparator
 			}
 		}
 
+		foreach ($diff->getDroppedColumns() as $column)
+		{
+			$column_name = strtolower($column->getName());
+
+			foreach ($oldTable->getIndexes() as $index_name => $index)
+			{
+				if (in_array($this->get_index_name($index), $dropped_index_names, true))
+				{
+					continue;
+				}
+
+				$index_columns = array_map('strtolower', $index->getUnquotedColumns());
+				if (!in_array($column_name, $index_columns, true))
+				{
+					continue;
+				}
+
+				$dropped_indexes[] = $index;
+				$dropped_index_names[] = $this->get_index_name($index);
+
+				if (!$newTable->hasIndex($index_name))
+				{
+					continue;
+				}
+
+				$new_index = $newTable->getIndex($index_name);
+				if (in_array($this->get_index_name($new_index), $added_index_names, true))
+				{
+					continue;
+				}
+
+				$added_indexes[] = $new_index;
+				$added_index_names[] = $this->get_index_name($new_index);
+			}
+		}
+
 		return new TableDiff(
 			$diff->getOldTable(),
 			addedColumns: $diff->getAddedColumns(),

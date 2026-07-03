@@ -32,14 +32,10 @@ class platform extends SQLServerPlatform
 		$sql = parent::getDefaultConstraintDeclarationSQL($column);
 
 		return str_replace(
-			[
-				$this->generate_doctrine_identifier_name($column['name']),
-				$this->generate_doctrine_identifier_name($column['name']),
-			], [
-				$column['name'] . '_1',
-				$column['name'] . '_1',
-			],
-			$sql);
+			$this->generate_doctrine_identifier_name($column['name']),
+			$column['name'] . '_1',
+			$sql
+		);
 	}
 
 	/**
@@ -87,6 +83,61 @@ class platform extends SQLServerPlatform
 		}
 
 		return str_replace($doctrine_names, $phpbb_names, $sql);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getPreAlterTableIndexForeignKeySQL(TableDiff $diff): array
+	{
+		$table_name = $diff->getOldTable()->getQuotedName($this);
+		$sql = [];
+
+		foreach ($diff->getDroppedForeignKeys() as $foreign_key)
+		{
+			$sql[] = $this->getDropForeignKeySQL($foreign_key->getQuotedName($this), $table_name);
+		}
+
+		foreach ($diff->getDroppedIndexes() as $index)
+		{
+			$sql[] = $index->isPrimary()
+				? $this->getDropConstraintSQL($index->getQuotedName($this), $table_name)
+				: $this->getDropIndexSQL($index->getQuotedName($this), $table_name);
+		}
+
+		return $sql;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getPostAlterTableIndexForeignKeySQL(TableDiff $diff): array
+	{
+		$table_name = $diff->getOldTable()->getQuotedName($this);
+		$sql = [];
+
+		foreach ($diff->getAddedForeignKeys() as $foreign_key)
+		{
+			$sql[] = $this->getCreateForeignKeySQL($foreign_key, $table_name);
+		}
+
+		foreach ($diff->getAddedIndexes() as $index)
+		{
+			$sql[] = $index->isPrimary()
+				? $this->getCreatePrimaryKeySQL($index, $table_name)
+				: $this->getCreateIndexSQL($index, $table_name);
+		}
+
+		foreach ($diff->getRenamedIndexes() as $old_index_name => $index)
+		{
+			$old_index_name = new Identifier($old_index_name);
+			$sql = array_merge(
+				$sql,
+				$this->getRenameIndexSQL($old_index_name->getQuotedName($this), $index, $table_name)
+			);
+		}
+
+		return $sql;
 	}
 
 	/**
