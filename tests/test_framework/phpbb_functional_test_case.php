@@ -12,7 +12,6 @@
 */
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\NativeHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -101,8 +100,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Special flag for testing without possibility to run into lock scenario.
 		// Unset entry and add it back if lock behavior for posting should be tested.
 		// Unset ci_tests_no_lock_posting from config
+		$sql = 'DELETE FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'ci_tests_no_lock_posting'";
+		self::$db_connection->sql_query($sql);
+
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
 		self::$db_connection->sql_query($sql);
+
+		self::init_http_client();
+		self::$lang_ary = [];
+		self::add_lang('common');
 	}
 
 	/**
@@ -128,42 +135,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->bootstrap();
 
-		self::$cookieJar = new CookieJar;
-
-		// Configure SSL verification for local development with self-signed certificates
-		$http_options = [];
-		if (isset(self::$config['path_to_ssl_cert']))
-		{
-			if (self::$config['path_to_ssl_cert'] === false)
-			{
-				// Disable SSL verification
-				$http_options['verify_peer'] = false;
-				$http_options['verify_host'] = false;
-			}
-			else
-			{
-				// Use custom CA certificate
-				$http_options['verify_peer'] = true;
-				$http_options['verify_host'] = true;
-				$http_options['cafile'] = self::$config['path_to_ssl_cert'];
-			}
-		}
-
-		// Optimize HTTP client for Windows platform
-		if (stripos(PHP_OS_FAMILY, 'win') === 0)
-		{
-			self::$http_client = new NativeHttpClient(array_merge([
-				'timeout' => 30,
-				'max_duration' => 60,
-			], $http_options));
-		}
-		else
-		{
-			self::$http_client = HttpClient::create(array_merge([
-				'timeout' => 60,
-			], $http_options));
-		}
-		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
+		self::init_http_client();
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -194,6 +166,36 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$db_connection->sql_close();
 			self::$db_connection = null;
 		}
+	}
+
+	protected static function init_http_client()
+	{
+		self::$cookieJar = new CookieJar;
+
+		// Configure SSL verification for local development with self-signed certificates
+		$http_options = [];
+		if (isset(self::$config['path_to_ssl_cert']))
+		{
+			if (self::$config['path_to_ssl_cert'] === false)
+			{
+				// Disable SSL verification
+				$http_options['verify_peer'] = false;
+				$http_options['verify_host'] = false;
+			}
+			else
+			{
+				// Use custom CA certificate
+				$http_options['verify_peer'] = true;
+				$http_options['verify_host'] = true;
+				$http_options['cafile'] = self::$config['path_to_ssl_cert'];
+			}
+		}
+
+		self::$http_client = new NativeHttpClient(array_merge([
+			'timeout' => 60,
+			'max_duration' => 60,
+		], $http_options));
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 	}
 
 	/**

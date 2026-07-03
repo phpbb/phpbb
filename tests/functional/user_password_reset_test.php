@@ -22,6 +22,8 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 	protected const TEST_EMAIL = 'reset-password-test-user@test.com';
 
+	protected const TEST_NEW_PASSWORD = 'ResetPasswordTest1';
+
 	public function test_password_reset()
 	{
 		$this->add_lang('ucp');
@@ -135,8 +137,8 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		{
 			$form = $crawler->filter('input[type=submit]')->form();
 			$values = array_merge($form->getValues(), [
-				'new_password'			=> self::TEST_USER,
-				'new_password_confirm'	=> self::TEST_USER,
+				'new_password'			=> self::TEST_NEW_PASSWORD,
+				'new_password_confirm'	=> self::TEST_NEW_PASSWORD,
 			]);
 			$crawler = self::submit($form, $values);
 			$this->assertContainsLang('PASSWORD_RESET', $crawler->text());
@@ -150,7 +152,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$crawler = self::submit($form, array('username' => self::TEST_USER, 'password' => self::TEST_USER));
+		$crawler = self::submit($form, array('username' => self::TEST_USER, 'password' => self::TEST_NEW_PASSWORD));
 		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$this->logout();
