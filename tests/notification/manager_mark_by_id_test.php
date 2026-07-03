@@ -321,7 +321,7 @@ class phpbb_notification_manager_mark_by_id_test extends phpbb_tests_notificatio
 
 		// Try to mark user 2's notification as read while being other user
 		$userReflection = new \ReflectionProperty($this->notifications, 'user');
-		$userReflection->setAccessible(true);
+
 		$user = $userReflection->getValue($this->notifications);
 		$user->data['id'] = 3;
 		$this->notifications->mark_notifications_by_id('notification.method.board', $notification_id);

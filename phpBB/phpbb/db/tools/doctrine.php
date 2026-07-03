@@ -1144,7 +1144,7 @@ class doctrine implements tools_interface
 	 *
 	 * @param Table $table
 	 * @param Index $index
-	 * @param array  Columns to use in the new (recreated) index
+	 * @param array $new_columns Columns to use in the new (recreated) index
 	 *
 	 * @throws SchemaException
 	 */

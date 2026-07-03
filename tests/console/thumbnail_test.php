@@ -84,9 +84,9 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		});
 
 		$this->application = new Application();
-		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->temp, $this->phpbb_root_path, $this->phpEx));
-		$this->application->add(new delete($this->user, $this->db, $this->language, $this->storage));
-		$this->application->add(new recreate($this->user, $this->language));
+		$this->application->addCommand(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->temp, $this->phpbb_root_path, $this->phpEx));
+		$this->application->addCommand(new delete($this->user, $this->db, $this->language, $this->storage));
+		$this->application->addCommand(new recreate($this->user, $this->language));
 
 		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
 		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');

@@ -346,7 +346,6 @@ class installer
 
 						$repositoryReflection = new \ReflectionObject($repository);
 						$repo_url = $repositoryReflection->getProperty('url');
-						$repo_url->setAccessible(true);
 
 						if ($repo_url->getValue($repository) === 'https://repo.packagist.org')
 						{

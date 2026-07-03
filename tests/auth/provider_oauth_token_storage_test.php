@@ -315,7 +315,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		);
 		$google_reflection = new \ReflectionClass($google_service);
 		$storage = $google_reflection->getProperty('storage');
-		$storage->setAccessible(true);
+
 		$storage->setValue($google_service, $this->token_storage);
 
 		$expected_state = 'abc123_securestate';

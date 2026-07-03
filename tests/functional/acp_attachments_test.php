@@ -81,6 +81,7 @@ class phpbb_functional_acp_attachments_test extends phpbb_functional_test_case
 		$this->assertStringNotContainsString('<h2>' . $this->lang('INFORMATION') . '</h2>', $this->get_content());
 
 		// Also the file name should be in the first row of the files table
+		file_put_contents('/tmp/acp_attachments_test_output.html', $this->get_content());
 		$this->assertEquals('valid.jpg', $crawler->filter('span.file-name > a')->text());
 
 		// Get attach id, the link looks similar to ./download/attachment/3
