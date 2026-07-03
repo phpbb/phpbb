@@ -22,6 +22,7 @@ use Doctrine\DBAL\Platforms\SQLitePlatform;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use Doctrine\DBAL\Schema\AbstractAsset;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
+use Doctrine\DBAL\Schema\Column;
 use Doctrine\DBAL\Schema\Index;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
@@ -39,6 +40,9 @@ use phpbb\db\doctrine\table_helper;
  */
 class doctrine implements tools_interface
 {
+	private const MYSQL_MAX_INDEX_LENGTH = 1000;
+	private const MYSQL_UTF8_BYTES_PER_CHAR = 3;
+
 	/**
 	 * @var AbstractSchemaManager
 	 */
@@ -698,7 +702,7 @@ class doctrine implements tools_interface
 				$key_name = !str_starts_with($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
 
 				$options = [];
-				$this->schema_get_index_key_data($columns, $options);
+				$this->schema_get_index_key_data($columns, $options, $table, $dbms_name);
 
 				if ($key_data[0] === 'UNIQUE')
 				{
@@ -714,7 +718,8 @@ class doctrine implements tools_interface
 		switch ($dbms_name)
 		{
 			case 'mysql':
-				$table->addOption('collate', 'utf8_bin');
+				$table->addOption('charset', 'utf8');
+				$table->addOption('collation', 'utf8_bin');
 			break;
 		}
 	}
@@ -904,7 +909,7 @@ class doctrine implements tools_interface
 		}
 
 		$options = [];
-		$this->schema_get_index_key_data($columns, $options);
+		$this->schema_get_index_key_data($columns, $options, $table, $this->get_dbms_name());
 
 		$table->addIndex($columns, $index_name, [], $options);
 	}
@@ -963,7 +968,7 @@ class doctrine implements tools_interface
 		}
 
 		$options = [];
-		$this->schema_get_index_key_data($columns, $options);
+		$this->schema_get_index_key_data($columns, $options, $table, $this->get_dbms_name());
 
 		$table->addUniqueIndex($columns, $index_name, $options);
 	}
@@ -1022,20 +1027,116 @@ class doctrine implements tools_interface
 	 * @param array  $columns
 	 * @param array  $options
 	 */
-	protected function schema_get_index_key_data(array &$columns, array &$options): void
+	protected function schema_get_index_key_data(
+		array &$columns,
+		array &$options,
+		Table|null $table = null,
+		string|null $dbms_name = null
+	): void
 	{
 		if (!empty($columns))
 		{
-			$columns = array_map(function (string $column) use (&$options)
+			$columns_with_explicit_lengths = [];
+			$columns = array_map(function (string $column) use (&$options, &$columns_with_explicit_lengths)
 			{
 				if (preg_match('/^([a-zA-Z0-9_]+)(?:(?:\:|\()([0-9]{1,3})\)?)?$/', $column, $parts))
 				{
 					$options['lengths'][] = $parts[2] ?? null;
+					$columns_with_explicit_lengths[] = isset($parts[2]);
 					return $parts[1];
 				}
+
+				$columns_with_explicit_lengths[] = false;
 				return $column;
 			}, $columns);
+
+			if ($dbms_name === 'mysql' && $table !== null)
+			{
+				$this->schema_add_mysql_index_lengths($table, $columns, $options, $columns_with_explicit_lengths);
+			}
 		}
+	}
+
+	/**
+	 * Adds prefix lengths to MySQL string indexes that exceed MyISAM's key limit.
+	 *
+	 * @param Table $table
+	 * @param array $columns
+	 * @param array $options
+	 * @param array $columns_with_explicit_lengths
+	 */
+	private function schema_add_mysql_index_lengths(
+		Table $table,
+		array $columns,
+		array &$options,
+		array $columns_with_explicit_lengths
+	): void
+	{
+		$indexed_string_columns = [];
+		$index_length = 0;
+
+		foreach ($columns as $column_index => $column_name)
+		{
+			if (!$table->hasColumn($column_name))
+			{
+				continue;
+			}
+
+			$column = $table->getColumn($column_name);
+			if (!$this->is_mysql_indexed_string_column($column))
+			{
+				continue;
+			}
+
+			$length = $options['lengths'][$column_index] ?? null;
+			$length = ($length !== null) ? (int) $length : $this->get_mysql_indexed_string_column_length($column);
+			$index_length += $length * self::MYSQL_UTF8_BYTES_PER_CHAR;
+
+			if (empty($columns_with_explicit_lengths[$column_index]))
+			{
+				$indexed_string_columns[$column_index] = $column;
+			}
+		}
+
+		if ($index_length <= self::MYSQL_MAX_INDEX_LENGTH || empty($indexed_string_columns))
+		{
+			return;
+		}
+
+		$explicit_index_length = $index_length;
+		foreach ($indexed_string_columns as $column_index => $column)
+		{
+			$explicit_index_length -= $this->get_mysql_indexed_string_column_length($column)
+				* self::MYSQL_UTF8_BYTES_PER_CHAR;
+		}
+
+		$available_length = (int) floor(
+			max(0, self::MYSQL_MAX_INDEX_LENGTH - $explicit_index_length) / self::MYSQL_UTF8_BYTES_PER_CHAR
+		);
+		$length_per_column = (int) floor($available_length / count($indexed_string_columns));
+
+		if ($length_per_column < 1)
+		{
+			return;
+		}
+
+		foreach ($indexed_string_columns as $column_index => $column)
+		{
+			$options['lengths'][$column_index] = min(
+				$this->get_mysql_indexed_string_column_length($column),
+				$length_per_column
+			);
+		}
+	}
+
+	private function is_mysql_indexed_string_column(Column $column): bool
+	{
+		return in_array(Type::lookupName($column->getType()), ['ascii_string', 'string', 'string_ci', 'text'], true);
+	}
+
+	private function get_mysql_indexed_string_column_length(Column $column): int
+	{
+		return $column->getLength() ?? 255;
 	}
 
 	/**

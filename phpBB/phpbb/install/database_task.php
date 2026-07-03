@@ -14,7 +14,6 @@
 namespace phpbb\install;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Statement as DriverStmt;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
@@ -130,10 +129,10 @@ abstract class database_task extends task_base
 	/**
 	 * Bind values and execute a prepared statement.
 	 *
-	 * @param Statement|DriverStmt	$stmt	Prepared statement.
-	 * @param array					$params	Parameters.
+	 * @param Statement	$stmt	Prepared statement.
+	 * @param array		$params	Parameters.
 	 */
-	protected function exec_prepared_stmt($stmt, array $params)
+	protected function exec_prepared_stmt(Statement $stmt, array $params)
 	{
 		try
 		{
