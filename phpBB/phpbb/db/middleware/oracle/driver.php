@@ -13,9 +13,9 @@
 
 namespace phpbb\db\middleware\oracle;
 
-use Doctrine\DBAL\Connection as DoctrineConnection;
 use Doctrine\DBAL\Driver\Middleware\AbstractDriverMiddleware;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrine\DBAL\ServerVersionProvider;
 
 /**
  * Oracle Doctrine driver middleware.
@@ -26,15 +26,7 @@ class driver extends AbstractDriverMiddleware
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSchemaManager(DoctrineConnection $conn, AbstractPlatform $platform)
-	{
-		return new schema_manager($conn, $platform);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function createDatabasePlatformForVersion($version)
+	public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
 	{
 		return new platform();
 	}

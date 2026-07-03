@@ -14,7 +14,6 @@
 namespace phpbb\install;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\Exception as DriverException;
 use Doctrine\DBAL\Driver\Statement as DriverStmt;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Result;
@@ -142,9 +141,9 @@ abstract class database_task extends task_base
 			{
 				$stmt->bindValue($name, $val);
 			}
-			$stmt->execute();
+			$stmt->executeStatement();
 		}
-		catch (DriverException $e)
+		catch (Exception $e)
 		{
 			$this->report_error($e->getMessage());
 		}

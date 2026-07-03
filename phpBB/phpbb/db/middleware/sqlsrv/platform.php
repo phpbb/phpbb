@@ -27,16 +27,16 @@ class platform extends SQLServerPlatform
 	 *
 	 * Renames the default constraints to use the classic phpBB's names
 	 */
-	public function getDefaultConstraintDeclarationSQL($table, array $column)
+	protected function getDefaultConstraintDeclarationSQL(array $column): string
 	{
-		$sql = parent::getDefaultConstraintDeclarationSQL($table, $column);
+		$sql = parent::getDefaultConstraintDeclarationSQL($column);
 
 		return str_replace(
 			[
-				$this->generate_doctrine_identifier_name($table),
+				$this->generate_doctrine_identifier_name($column['name']),
 				$this->generate_doctrine_identifier_name($column['name']),
 			], [
-				$table,
+				$column['name'] . '_1',
 				$column['name'] . '_1',
 			],
 			$sql);
@@ -47,72 +47,42 @@ class platform extends SQLServerPlatform
 	 *
 	 * Renames the default constraints to use the classic phpBB's names
 	 */
-	public function getAlterTableSQL(TableDiff $diff)
+	public function getAlterTableSQL(TableDiff $diff): array
 	{
-		$sql = [];
-
-		// When dropping a column, if it has a default we need to drop the default constraint first
-		foreach ($diff->removedColumns as $column)
-		{
-			if (!$column->getAutoincrement())
-			{
-				$sql[] = $this->getDropConstraintSQL($this->generate_doctrine_default_constraint_name($diff->name, $column->getQuotedName($this)), $diff->name);
-			}
-		}
-
-		// When dropping a primary key, the constraint needs to be dropped
-		foreach ($diff->removedIndexes as $key => $index)
-		{
-			if ($index->isPrimary())
-			{
-				unset($diff->removedIndexes[$key]);
-				$sql[] = $this->getDropConstraintSQL($index->getQuotedName($this), $diff->name);
-			}
-		}
-
-		$sql = array_merge($sql, parent::getAlterTableSQL($diff));
+		$sql = parent::getAlterTableSQL($diff);
 
 		$doctrine_names = [];
 		$phpbb_names = [];
+		$table_name = $diff->getOldTable()->getName();
 
 		// OLD Table name
-		$doctrine_names[] = $this->generate_doctrine_identifier_name($diff->name);
-		$phpbb_names[] = $diff->name;
+		$doctrine_names[] = $this->generate_doctrine_identifier_name($table_name);
+		$phpbb_names[] = $table_name;
 
-		// NEW Table name if relevant
-		if ($diff->getNewName() !== false)
-		{
-			$doctrine_names[] = $this->generate_doctrine_identifier_name($diff->getNewName()->getName());
-			$phpbb_names[] = $diff->getNewName()->getName();
-		}
-
-		foreach ($diff->addedColumns as $column)
+		foreach ($diff->getAddedColumns() as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
 			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
-		foreach ($diff->removedColumns as $column)
+		foreach ($diff->getDroppedColumns() as $column)
 		{
 			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
 			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
-		foreach ($diff->renamedColumns as $column)
+		foreach ($diff->getChangedColumns() as $column)
 		{
-			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->getQuotedName($this));
-			$phpbb_names[] = $column->getQuotedName($this) . '_1';
-		}
+			$new_column = $column->getNewColumn();
+			$old_column = $column->getOldColumn();
 
-		foreach ($diff->changedColumns as $column)
-		{
-			$doctrine_names[] = $this->generate_doctrine_identifier_name($column->column->getQuotedName($this));
-			$phpbb_names[] = $column->column->getQuotedName($this) . '_1';
+			$doctrine_names[] = $this->generate_doctrine_identifier_name($new_column->getQuotedName($this));
+			$phpbb_names[] = $new_column->getQuotedName($this) . '_1';
 
-			if ($column->oldColumnName != $column->column->getQuotedName($this))
+			if ($old_column->getQuotedName($this) !== $new_column->getQuotedName($this))
 			{
-				$doctrine_names[] = $this->generate_doctrine_identifier_name($column->oldColumnName);
-				$phpbb_names[] = $column->oldColumnName . '_1';
+				$doctrine_names[] = $this->generate_doctrine_identifier_name($old_column->getQuotedName($this));
+				$phpbb_names[] = $old_column->getQuotedName($this) . '_1';
 			}
 		}
 
@@ -142,8 +112,4 @@ class platform extends SQLServerPlatform
 	 *
 	 * @return string
 	 */
-	private function generate_doctrine_default_constraint_name(string $table, string $column): string
-	{
-		return 'DF_' . $this->generate_doctrine_identifier_name($table) . '_' . $this->generate_doctrine_identifier_name($column);
-	}
 }

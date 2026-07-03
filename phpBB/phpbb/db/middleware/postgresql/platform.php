@@ -68,7 +68,7 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDefaultValueDeclarationSQL($column): string
+	public function getDefaultValueDeclarationSQL(array $column): string
 	{
 		if ($this->isSerialColumn($column))
 		{
@@ -81,7 +81,7 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getAlterTableSQL(TableDiff $diff)
+	public function getAlterTableSQL(TableDiff $diff): array
 	{
 		$sql = parent::getAlterTableSQL($diff);
 		$table_name = $diff->getOldTable()->getName();
@@ -119,7 +119,7 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function _getCreateTableSQL($name, array $columns, array $options = []): array
+	protected function _getCreateTableSQL(string $name, array $columns, array $options = []): array
 	{
 		$sql = [];
 		$post_sql = [];
