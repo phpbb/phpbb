@@ -28,7 +28,7 @@ class platform extends AbstractMySQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getAlterTableSQL(TableDiff $diff)
+	public function getAlterTableSQL(TableDiff $diff): array
 	{
 		$sql = parent::getAlterTableSQL($diff);
 		$table = $diff->getOldTable();
@@ -37,7 +37,7 @@ class platform extends AbstractMySQLPlatform
 		foreach ($columns as $column)
 		{
 			$column_name = $column->getName();
-			if (!empty($column->getAutoincrement()) && $table)
+			if ($column->getAutoincrement() && $table)
 			{
 				foreach ($sql as $i => $query)
 				{
