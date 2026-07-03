@@ -106,10 +106,6 @@ jobs:
             matrix:
                 include:
                     - php: '8.2'
-                      db: "mariadb:10.2"
-                    - php: '8.2'
-                      db: "mariadb:10.3"
-                    - php: '8.2'
                       db: "mariadb:10.4"
                     - php: '8.2'
                       db: "mariadb:10.6"
@@ -261,10 +257,6 @@ jobs:
             matrix:
                 include:
                     - php: '8.2'
-                      db: "postgres:9.5"
-                    - php: '8.2'
-                      db: "postgres:9.6"
-                    - php: '8.2'
                       db: "postgres:10"
                     - php: '8.2'
                       db: "postgres:11"
@@ -277,17 +269,17 @@ jobs:
                     - php: '8.2'
                       db: "postgres:15"
                     - php: '8.3'
-                      db: "postgres:9.5"
+                      db: "postgres:10"
                     - php: '8.4'
-                      db: "postgres:9.5"
+                      db: "postgres:10"
                     - php: '8.5'
-                      db: "postgres:9.5"
+                      db: "postgres:10"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
 
         services:
             postgres:
-                image: ${{ matrix.db != 'postgres:9.5' && matrix.db != 'postgres:9.6' && matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && 'postgres:10' || matrix.db }}
+                image: ${{ matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && 'postgres:10' || matrix.db }}
                 env:
                     POSTGRES_HOST: localhost
                     POSTGRES_USER: postgres

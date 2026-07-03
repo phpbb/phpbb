@@ -70,12 +70,12 @@ $lang = array_merge($lang, array(
 
 	<p>phpBB supports the following databases:</p>
 	<ul>
-		<li>MySQL 5.6 or above</li>
-		<li>MariaDB 10.2.7 or above</li>
-		<li>PostgreSQL 9.4 or above</li>
-		<li>SQLite 3.8.3 or above</li>
-		<li>MS SQL Server 2012 or above (via ODBC or the native adapter)</li>
-		<li>Oracle</li>
+		<li>MySQL 8.0 or above</li>
+		<li>MariaDB 10.5.2 or above</li>
+		<li>PostgreSQL 10.0 or above</li>
+		<li>SQLite 3.16 or above</li>
+		<li>MS SQL Server 2017 or above (via ODBC or the native adapter)</li>
+		<li>Oracle 18c or above</li>
 	</ul>
 
 	<p>Only those databases supported on your server will be displayed.',
@@ -203,12 +203,12 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_WRITABLE'		=> 'Both the database and the directory containing it must be writable.',
 	'INST_ERR_DB_NO_ERROR'			=> 'No error message given.',
 	'INST_ERR_PREFIX'				=> 'Tables with the specified prefix already exist, please choose an alternative.',
-	'INST_ERR_DB_NO_MARIADB'		=> 'The version of MariaDB installed on this machine is too old, it must be upgraded to at least 10.2.7.',
-	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 5.6.',
-	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2012 (11.0.2100.60)',
-	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.8.3.',
-	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed is too old, it must be upgraded to at least 12.1.0.2.',
-	'INST_ERR_DB_NO_POSTGRES'		=> 'The version of the PostgreSQL you have installed is too old, it must be upgraded to at least 9.4.',
+	'INST_ERR_DB_NO_MARIADB'		=> 'The version of MariaDB installed on this machine is too old, it must be upgraded to at least 10.5.2.',
+	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 8.0.',
+	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2017 (12.0.1000.159)',
+	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.16.',
+	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed is too old, it must be upgraded to at least 18c.',
+	'INST_ERR_DB_NO_POSTGRES'		=> 'The version of the PostgreSQL you have installed is too old, it must be upgraded to at least 10.0.',
 	'INST_ERR_DB_NO_POSTGRES_UTF8'	=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
 	'INST_SCHEMA_FILE_NOT_WRITABLE'	=> 'The schema file is not writable',
 
