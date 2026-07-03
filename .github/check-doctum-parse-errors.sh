@@ -11,16 +11,16 @@
 set -e
 
 if [ ! -f doctum.phar ]; then
-	# Download the latest (5.x.x) release if the file does not exist
+	# Download the latest release if the file does not exist
 	# Remove it to update your phar
-	curl -O https://doctum.long-term.support/releases/5/doctum.phar
+	curl -O https://doctum.long-term.support/releases/latest/doctum.phar
 	rm -f doctum.phar.sha256
-	curl -O https://doctum.long-term.support/releases/5/doctum.phar.sha256
+	curl -O https://doctum.long-term.support/releases/latest/doctum.phar.sha256
 	sha256sum --strict --check doctum.phar.sha256
 	rm -f doctum.phar.sha256
 	chmod +x ./doctum.phar
-	# You can fetch the latest (5.x.x) version code here:
-	# https://doctum.long-term.support/releases/5/VERSION
+	# You can fetch the latest version code here:
+	# https://doctum.long-term.support/releases/latest/VERSION
 fi
 # Show the version to inform users of the script
 ./doctum.phar version --text
