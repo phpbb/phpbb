@@ -171,6 +171,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected static function init_http_client()
 	{
 		self::$cookieJar = new CookieJar;
+		self::$session_id = null;
 
 		// Configure SSL verification for local development with self-signed certificates
 		$http_options = [];
