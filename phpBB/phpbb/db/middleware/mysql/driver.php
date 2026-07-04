@@ -26,7 +26,7 @@ class driver extends AbstractDriverMiddleware
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform
+	public function getDatabasePlatform(ServerVersionProvider $versionProvider): AbstractPlatform|platform
 	{
 		return new platform();
 	}
