@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class permission implements EventSubscriberInterface
 {
-	static public function getSubscribedEvents()
+	static public function getSubscribedEvents(): array
 	{
 		return array(
 			'core.permissions'	=> 'add_permissions',
