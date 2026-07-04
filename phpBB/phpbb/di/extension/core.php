@@ -13,7 +13,6 @@
 
 namespace phpbb\di\extension;
 
-use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Console\Output\OutputInterface;
