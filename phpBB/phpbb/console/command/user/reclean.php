@@ -57,7 +57,7 @@ class reclean extends command
 	 *
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('user:reclean')

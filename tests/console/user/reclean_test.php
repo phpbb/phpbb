@@ -22,7 +22,7 @@ class phpbb_console_user_reclean_test extends phpbb_console_user_base
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new reclean(
+		$application->addCommand(new reclean(
 			$this->user,
 			$this->db,
 			$this->language

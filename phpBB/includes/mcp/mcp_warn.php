@@ -27,6 +27,9 @@ class mcp_warn
 {
 	var $p_master;
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
+
 
 	function __construct($p_master)
 	{

@@ -27,6 +27,8 @@ if (!defined('IN_PHPBB'))
 class acp_ban
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{

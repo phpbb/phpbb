@@ -33,6 +33,8 @@ class acp_board
 {
 	var $u_action;
 	var $new_config;
+	var $tpl_name;
+	var $page_title;
 
 	/** @var config */
 	protected $config;

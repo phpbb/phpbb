@@ -42,7 +42,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
-		global $db, $config, $user, $auth, $cache, $phpbb_container;
+		global $db, $config, $user, $auth, $cache, $phpbb_container, $phpbb_dispatcher;
 
 		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
 							  ->disableOriginalConstructor()
@@ -62,6 +62,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_dispatcher = $this->phpbb_dispatcher;
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
 			$cache_driver,

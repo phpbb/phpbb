@@ -27,6 +27,8 @@ class mcp_logs
 {
 	var $u_action;
 	var $p_master;
+	var $page_title;
+	var $tpl_name;
 
 	function __construct($p_master)
 	{

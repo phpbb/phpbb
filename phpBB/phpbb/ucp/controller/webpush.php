@@ -322,7 +322,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->attributes->get('data', ''));
+		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
 
 		if (!$this->verify_endpoint($data['endpoint']))
 		{
@@ -412,7 +412,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->attributes->get('data', ''));
+		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
 
 		$endpoint = $data['endpoint'];
 

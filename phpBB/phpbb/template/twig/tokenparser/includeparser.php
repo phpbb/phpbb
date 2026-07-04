@@ -14,7 +14,7 @@
 
 namespace phpbb\template\twig\tokenparser;
 
-class includeparser extends \Twig\TokenParser\IncludeTokenParser
+class includeparser extends \Twig\TokenParser\AbstractTokenParser
 {
 	/**
 	* Parses a token and returns a node.
@@ -25,9 +25,30 @@ class includeparser extends \Twig\TokenParser\IncludeTokenParser
 	*/
 	public function parse(\Twig\Token $token) : \Twig\Node\Node
 	{
-		$expr = $this->parser->getExpressionParser()->parseExpression();
+		$expr = $this->parser->parseExpression();
 
-		list($variables, $only, $ignoreMissing) = $this->parseArguments();
+		$variables = null;
+		$only = false;
+		$ignoreMissing = false;
+		$stream = $this->parser->getStream();
+
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'with'))
+		{
+			$variables = $this->parser->parseExpression();
+		}
+
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'only'))
+		{
+			$only = true;
+		}
+
+		if ($stream->nextIf(\Twig\Token::NAME_TYPE, 'ignore'))
+		{
+			$stream->expect(\Twig\Token::NAME_TYPE, 'missing');
+			$ignoreMissing = true;
+		}
+
+		$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 
 		return new \phpbb\template\twig\node\includenode($expr, $variables, $only, $ignoreMissing, $token->getLine(), $this->getTag());
 	}

@@ -24,7 +24,7 @@ class revert extends \phpbb\console\command\db\migrate
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('db:revert')

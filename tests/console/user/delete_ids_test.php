@@ -22,7 +22,7 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new delete_id(
+		$application->addCommand(new delete_id(
 			$this->db,
 			$this->language,
 			$this->log,

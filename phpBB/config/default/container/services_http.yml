@@ -5,6 +5,10 @@ services:
             - '@event_dispatcher'
             - '@controller.resolver'
             - '@request_stack'
+            - '@controller.argument_resolver'
+
+    controller.argument_resolver:
+        class: phpbb\controller\argument_resolver
 
     # WARNING: The Symfony request does not escape the input and should be used very carefully
     #           prefer the phpbb request (service @request) as possible

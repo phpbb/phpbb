@@ -59,8 +59,6 @@ class routing extends AbstractExtension
 	/**
 	 * Borrowed from the Symfony Twig bridge routing extension
 	 *
-	 * @author Fabien Potencier <fabien@symfony.com>
-	 *
 	 * Determines at compile time whether the generated URL will be safe and thus
 	 * saving the unneeded automatic escaping for performance reasons.
 	 *
@@ -78,6 +76,7 @@ class routing extends AbstractExtension
 	 * - path('route', {'param1': 'value1', 'param2': 'value2'})
 	 * If param1 and param2 reference placeholder in the route, it would still be safe. But we don't know.
 	 *
+	 * @author Fabien Potencier <fabien@symfony.com>
 	 * @param Node $argsNode The arguments of the path/url function
 	 *
 	 * @return array An array with the contexts the URL is safe

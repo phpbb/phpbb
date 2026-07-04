@@ -22,10 +22,12 @@ if (!defined('IN_PHPBB'))
 class acp_permissions
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	var $permission_dropdown;
 
 	/**
-	 * @var $phpbb_permissions \phpbb\permissions
+	 * @var \phpbb\permissions $phpbb_permissions
 	 */
 	protected $permissions;
 

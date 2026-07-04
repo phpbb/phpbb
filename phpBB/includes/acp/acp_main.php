@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class acp_main
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	private $php_ini;
 
 	function main($id, $mode)

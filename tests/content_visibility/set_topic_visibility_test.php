@@ -80,7 +80,7 @@ class phpbb_content_visibility_set_topic_visibility_test extends phpbb_database_
 	*/
 	public function test_set_topic_visibility($visibility, $topic_id, $forum_id, $user_id, $time, $reason, $force_update_all, $expected_posts, $expected_topic)
 	{
-		global $cache, $db, $auth, $phpbb_root_path, $phpEx;
+		global $cache, $db, $auth, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
 
 		$cache = new phpbb_mock_cache;
 		$db = $this->new_dbal();

@@ -25,6 +25,7 @@ class acp_database
 	protected $temp;
 	public $u_action;
 	public $page_title;
+	public $tpl_name;
 
 	function main($id, $mode)
 	{

@@ -62,14 +62,14 @@ class cron_runner_listener implements EventSubscriberInterface
 	public function on_kernel_terminate(TerminateEvent $event)
 	{
 		$request = $event->getRequest();
-		$controller_name = $request->get('_route');
+		$controller_name = $request->attributes->get('_route');
 
 		if ($controller_name !== 'phpbb_cron_run')
 		{
 			return;
 		}
 
-		$cron_type = $request->get('cron_type');
+		$cron_type = $request->attributes->get('cron_type');
 
 		if ($this->cron_lock->acquire())
 		{
@@ -93,7 +93,7 @@ class cron_runner_listener implements EventSubscriberInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public static function getSubscribedEvents()
+	public static function getSubscribedEvents(): array
 	{
 		return array(
 			KernelEvents::TERMINATE		=> 'on_kernel_terminate',

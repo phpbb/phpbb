@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class acp_prune
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{

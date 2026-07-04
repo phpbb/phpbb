@@ -14,7 +14,7 @@
 namespace phpbb\di\extension;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Extension\Extension;
 
 /**
 * Container config extension
@@ -37,7 +37,7 @@ class config extends Extension
 	*
 	* @throws \InvalidArgumentException When provided tag is not defined in this extension
 	*/
-	public function load(array $configs, ContainerBuilder $container)
+	public function load(array $configs, ContainerBuilder $container): void
 	{
 		$parameters = array(
 			'core.adm_relative_path'	=> $this->config_php->get('phpbb_adm_relative_path') ? $this->config_php->get('phpbb_adm_relative_path') : 'adm/',

@@ -26,7 +26,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 			'add_tables' => array(
 				$this->table_prefix . 'attachments'	=> array(
 					'COLUMNS'	=> array(
-						'attach_id'	=> array('UINT', NULL, 'auto_increment'),
+						'attach_id'	=> array('UINT', null, 'auto_increment'),
 						'post_msg_id'	=> array('UINT', 0),
 						'topic_id'	=> array('UINT', 0),
 						'in_message'	=> array('BOOL', 0),
@@ -69,7 +69,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'acl_options'	=> array(
 					'COLUMNS'	=> array(
-						'auth_option_id'	=> array('UINT', NULL, 'auto_increment'),
+						'auth_option_id'	=> array('UINT', null, 'auto_increment'),
 						'auth_option'	=> array('VCHAR:50', ''),
 						'is_global'	=> array('BOOL', 0),
 						'is_local'	=> array('BOOL', 0),
@@ -83,7 +83,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'acl_roles'	=> array(
 					'COLUMNS'	=> array(
-						'role_id'	=> array('UINT', NULL, 'auto_increment'),
+						'role_id'	=> array('UINT', null, 'auto_increment'),
 						'role_name'	=> array('VCHAR_UNI', ''),
 						'role_description'	=> array('TEXT_UNI', ''),
 						'role_type'	=> array('VCHAR:10', ''),
@@ -125,7 +125,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'banlist'	=> array(
 					'COLUMNS'	=> array(
-						'ban_id'	=> array('UINT', NULL, 'auto_increment'),
+						'ban_id'	=> array('UINT', null, 'auto_increment'),
 						'ban_userid'	=> array('UINT', 0),
 						'ban_ip'	=> array('VCHAR:40', ''),
 						'ban_email'	=> array('VCHAR_UNI:100', ''),
@@ -173,7 +173,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'bots'	=> array(
 					'COLUMNS'	=> array(
-						'bot_id'	=> array('UINT', NULL, 'auto_increment'),
+						'bot_id'	=> array('UINT', null, 'auto_increment'),
 						'bot_active'	=> array('BOOL', 1),
 						'bot_name'	=> array('STEXT_UNI', ''),
 						'user_id'	=> array('UINT', 0),
@@ -214,7 +214,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'disallow'	=> array(
 					'COLUMNS'	=> array(
-						'disallow_id'	=> array('UINT', NULL, 'auto_increment'),
+						'disallow_id'	=> array('UINT', null, 'auto_increment'),
 						'disallow_username'	=> array('VCHAR_UNI:255', ''),
 					),
 					'PRIMARY_KEY'	=> 'disallow_id',
@@ -222,7 +222,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'drafts'	=> array(
 					'COLUMNS'	=> array(
-						'draft_id'	=> array('UINT', NULL, 'auto_increment'),
+						'draft_id'	=> array('UINT', null, 'auto_increment'),
 						'user_id'	=> array('UINT', 0),
 						'topic_id'	=> array('UINT', 0),
 						'forum_id'	=> array('UINT', 0),
@@ -238,7 +238,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'extensions'	=> array(
 					'COLUMNS'	=> array(
-						'extension_id'	=> array('UINT', NULL, 'auto_increment'),
+						'extension_id'	=> array('UINT', null, 'auto_increment'),
 						'group_id'	=> array('UINT', 0),
 						'extension'	=> array('VCHAR:100', ''),
 					),
@@ -247,7 +247,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'extension_groups'	=> array(
 					'COLUMNS'	=> array(
-						'group_id'	=> array('UINT', NULL, 'auto_increment'),
+						'group_id'	=> array('UINT', null, 'auto_increment'),
 						'group_name'	=> array('VCHAR_UNI', ''),
 						'cat_id'	=> array('TINT:2', 0),
 						'allow_group'	=> array('BOOL', 0),
@@ -262,7 +262,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'forums'	=> array(
 					'COLUMNS'	=> array(
-						'forum_id'	=> array('UINT', NULL, 'auto_increment'),
+						'forum_id'	=> array('UINT', null, 'auto_increment'),
 						'parent_id'	=> array('UINT', 0),
 						'left_id'	=> array('UINT', 0),
 						'right_id'	=> array('UINT', 0),
@@ -343,7 +343,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'groups'	=> array(
 					'COLUMNS'	=> array(
-						'group_id'	=> array('UINT', NULL, 'auto_increment'),
+						'group_id'	=> array('UINT', null, 'auto_increment'),
 						'group_type'	=> array('TINT:4', 1),
 						'group_founder_manage'	=> array('BOOL', 0),
 						'group_name'	=> array('VCHAR_CI', ''),
@@ -371,7 +371,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'icons'	=> array(
 					'COLUMNS'	=> array(
-						'icons_id'	=> array('UINT', NULL, 'auto_increment'),
+						'icons_id'	=> array('UINT', null, 'auto_increment'),
 						'icons_url'	=> array('VCHAR', ''),
 						'icons_width'	=> array('TINT:4', 0),
 						'icons_height'	=> array('TINT:4', 0),
@@ -386,7 +386,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'lang'	=> array(
 					'COLUMNS'	=> array(
-						'lang_id'	=> array('TINT:4', NULL, 'auto_increment'),
+						'lang_id'	=> array('TINT:4', null, 'auto_increment'),
 						'lang_iso'	=> array('VCHAR:30', ''),
 						'lang_dir'	=> array('VCHAR:30', ''),
 						'lang_english_name'	=> array('VCHAR_UNI:100', ''),
@@ -401,7 +401,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'log'	=> array(
 					'COLUMNS'	=> array(
-						'log_id'	=> array('UINT', NULL, 'auto_increment'),
+						'log_id'	=> array('UINT', null, 'auto_increment'),
 						'log_type'	=> array('TINT:4', 0),
 						'user_id'	=> array('UINT', 0),
 						'forum_id'	=> array('UINT', 0),
@@ -439,7 +439,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'modules'	=> array(
 					'COLUMNS'	=> array(
-						'module_id'	=> array('UINT', NULL, 'auto_increment'),
+						'module_id'	=> array('UINT', null, 'auto_increment'),
 						'module_enabled'	=> array('BOOL', 1),
 						'module_display'	=> array('BOOL', 1),
 						'module_basename'	=> array('VCHAR', ''),
@@ -488,7 +488,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'posts'	=> array(
 					'COLUMNS'	=> array(
-						'post_id'	=> array('UINT', NULL, 'auto_increment'),
+						'post_id'	=> array('UINT', null, 'auto_increment'),
 						'topic_id'	=> array('UINT', 0),
 						'forum_id'	=> array('UINT', 0),
 						'poster_id'	=> array('UINT', 0),
@@ -528,7 +528,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'privmsgs'	=> array(
 					'COLUMNS'	=> array(
-						'msg_id'	=> array('UINT', NULL, 'auto_increment'),
+						'msg_id'	=> array('UINT', null, 'auto_increment'),
 						'root_level'	=> array('UINT', 0),
 						'author_id'	=> array('UINT', 0),
 						'icon_id'	=> array('UINT', 0),
@@ -561,7 +561,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'privmsgs_folder'	=> array(
 					'COLUMNS'	=> array(
-						'folder_id'	=> array('UINT', NULL, 'auto_increment'),
+						'folder_id'	=> array('UINT', null, 'auto_increment'),
 						'user_id'	=> array('UINT', 0),
 						'folder_name'	=> array('VCHAR_UNI', ''),
 						'pm_count'	=> array('UINT', 0),
@@ -574,7 +574,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'privmsgs_rules'	=> array(
 					'COLUMNS'	=> array(
-						'rule_id'	=> array('UINT', NULL, 'auto_increment'),
+						'rule_id'	=> array('UINT', null, 'auto_increment'),
 						'user_id'	=> array('UINT', 0),
 						'rule_check'	=> array('UINT', 0),
 						'rule_connection'	=> array('UINT', 0),
@@ -612,7 +612,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'profile_fields'	=> array(
 					'COLUMNS'	=> array(
-						'field_id'	=> array('UINT', NULL, 'auto_increment'),
+						'field_id'	=> array('UINT', null, 'auto_increment'),
 						'field_name'	=> array('VCHAR_UNI', ''),
 						'field_type'	=> array('TINT:4', 0),
 						'field_ident'	=> array('VCHAR:20', ''),
@@ -667,7 +667,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'ranks'	=> array(
 					'COLUMNS'	=> array(
-						'rank_id'	=> array('UINT', NULL, 'auto_increment'),
+						'rank_id'	=> array('UINT', null, 'auto_increment'),
 						'rank_title'	=> array('VCHAR_UNI', ''),
 						'rank_min'	=> array('UINT', 0),
 						'rank_special'	=> array('BOOL', 0),
@@ -678,7 +678,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'reports'	=> array(
 					'COLUMNS'	=> array(
-						'report_id'	=> array('UINT', NULL, 'auto_increment'),
+						'report_id'	=> array('UINT', null, 'auto_increment'),
 						'reason_id'	=> array('USINT', 0),
 						'post_id'	=> array('UINT', 0),
 						'user_id'	=> array('UINT', 0),
@@ -692,7 +692,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'reports_reasons'	=> array(
 					'COLUMNS'	=> array(
-						'reason_id'	=> array('USINT', NULL, 'auto_increment'),
+						'reason_id'	=> array('USINT', null, 'auto_increment'),
 						'reason_title'	=> array('VCHAR_UNI', ''),
 						'reason_description'	=> array('MTEXT_UNI', ''),
 						'reason_order'	=> array('USINT', 0),
@@ -712,7 +712,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'search_wordlist'	=> array(
 					'COLUMNS'	=> array(
-						'word_id'	=> array('UINT', NULL, 'auto_increment'),
+						'word_id'	=> array('UINT', null, 'auto_increment'),
 						'word_text'	=> array('VCHAR_UNI', ''),
 						'word_common'	=> array('BOOL', 0),
 						'word_count'	=> array('UINT', 0),
@@ -774,7 +774,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'sitelist'	=> array(
 					'COLUMNS'	=> array(
-						'site_id'	=> array('UINT', NULL, 'auto_increment'),
+						'site_id'	=> array('UINT', null, 'auto_increment'),
 						'site_ip'	=> array('VCHAR:40', ''),
 						'site_hostname'	=> array('VCHAR', ''),
 						'ip_exclude'	=> array('BOOL', 0),
@@ -784,7 +784,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'smilies'	=> array(
 					'COLUMNS'	=> array(
-						'smiley_id'	=> array('UINT', NULL, 'auto_increment'),
+						'smiley_id'	=> array('UINT', null, 'auto_increment'),
 // We may want to set 'code' to VCHAR:50 or check if unicode support is possible... at the moment only ASCII characters are allowed.
 						'code'	=> array('VCHAR_UNI:50', ''),
 						'emotion'	=> array('VCHAR_UNI:50', ''),
@@ -802,7 +802,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'styles'	=> array(
 					'COLUMNS'	=> array(
-						'style_id'	=> array('USINT', NULL, 'auto_increment'),
+						'style_id'	=> array('USINT', null, 'auto_increment'),
 						'style_name'	=> array('VCHAR_UNI:255', ''),
 						'style_copyright'	=> array('VCHAR_UNI', ''),
 						'style_active'	=> array('BOOL', 1),
@@ -821,7 +821,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'styles_template'	=> array(
 					'COLUMNS'	=> array(
-						'template_id'	=> array('USINT', NULL, 'auto_increment'),
+						'template_id'	=> array('USINT', null, 'auto_increment'),
 						'template_name'	=> array('VCHAR_UNI:255', ''),
 						'template_copyright'	=> array('VCHAR_UNI', ''),
 						'template_path'	=> array('VCHAR:100', ''),
@@ -850,7 +850,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'styles_theme'	=> array(
 					'COLUMNS'	=> array(
-						'theme_id'	=> array('USINT', NULL, 'auto_increment'),
+						'theme_id'	=> array('USINT', null, 'auto_increment'),
 						'theme_name'	=> array('VCHAR_UNI:255', ''),
 						'theme_copyright'	=> array('VCHAR_UNI', ''),
 						'theme_path'	=> array('VCHAR:100', ''),
@@ -866,7 +866,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'styles_imageset'	=> array(
 					'COLUMNS'	=> array(
-						'imageset_id'	=> array('USINT', NULL, 'auto_increment'),
+						'imageset_id'	=> array('USINT', null, 'auto_increment'),
 						'imageset_name'	=> array('VCHAR_UNI:255', ''),
 						'imageset_copyright'	=> array('VCHAR_UNI', ''),
 						'imageset_path'	=> array('VCHAR:100', ''),
@@ -879,7 +879,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'styles_imageset_data'	=> array(
 					'COLUMNS'	=> array(
-						'image_id'	=> array('USINT', NULL, 'auto_increment'),
+						'image_id'	=> array('USINT', null, 'auto_increment'),
 						'image_name'	=> array('VCHAR:200', ''),
 						'image_filename'	=> array('VCHAR:200', ''),
 						'image_lang'	=> array('VCHAR:30', ''),
@@ -895,7 +895,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'topics'	=> array(
 					'COLUMNS'	=> array(
-						'topic_id'	=> array('UINT', NULL, 'auto_increment'),
+						'topic_id'	=> array('UINT', null, 'auto_increment'),
 						'forum_id'	=> array('UINT', 0),
 						'icon_id'	=> array('UINT', 0),
 						'topic_attachment'	=> array('BOOL', 0),
@@ -992,7 +992,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'users'	=> array(
 					'COLUMNS'	=> array(
-						'user_id'	=> array('UINT', NULL, 'auto_increment'),
+						'user_id'	=> array('UINT', null, 'auto_increment'),
 						'user_type'	=> array('TINT:2', 0),
 						'group_id'	=> array('UINT', 3),
 						'user_permissions'	=> array('MTEXT', ''),
@@ -1078,7 +1078,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'warnings'	=> array(
 					'COLUMNS'	=> array(
-						'warning_id'	=> array('UINT', NULL, 'auto_increment'),
+						'warning_id'	=> array('UINT', null, 'auto_increment'),
 						'user_id'	=> array('UINT', 0),
 						'post_id'	=> array('UINT', 0),
 						'log_id'	=> array('UINT', 0),
@@ -1089,7 +1089,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 
 				$this->table_prefix . 'words'	=> array(
 					'COLUMNS'	=> array(
-						'word_id'	=> array('UINT', NULL, 'auto_increment'),
+						'word_id'	=> array('UINT', null, 'auto_increment'),
 						'word'	=> array('VCHAR_UNI', ''),
 						'replacement'	=> array('VCHAR_UNI', ''),
 					),

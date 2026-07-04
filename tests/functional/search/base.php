@@ -241,6 +241,14 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$this->login();
 		$this->admin_login();
 
+		$topic = $this->create_topic(2, 'Search cache pagination topic', 'Search cache pagination post 0');
+		for ($i = 1; $i <= 30; $i++)
+		{
+			$this->create_post(2, $topic['topic_id'], 'Re: Search cache pagination topic', 'Search cache pagination post ' . $i);
+		}
+		$this->delete_search_index();
+		$this->create_search_index();
+
 		$crawler = self::request('GET', 'search.php?author_id=2&sr=posts');
 		$posts_found_text = $crawler->filter('.searchresults-title')->text();
 
@@ -248,11 +256,11 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		preg_match('!(\d+)!', $posts_found_text, $matches);
 		$posts_count = (int) $matches[1];
 
-		$this->assertStringContainsString("Search found $posts_count matches", $posts_found_text, $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_count match", $posts_found_text, $this->search_backend);
 
 		// Set this value to cache less results than total count
 		$sql = 'UPDATE ' . CONFIG_TABLE . '
-			SET config_value = ' . floor($posts_count / 3) . "
+			SET config_value = ' . max(1, floor($posts_count / 3)) . "
 			WHERE config_name = '" . $this->db->sql_escape('search_block_size') . "'";
 		$this->db->sql_query($sql);
 
@@ -261,7 +269,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form = $crawler->selectButton('Submit')->form();
 		$values = $form->getValues();
 		$current_posts_per_page = $values['config[posts_per_page]'];
-		$values['config[posts_per_page]'] = floor($posts_count / 10);
+		$values['config[posts_per_page]'] = max(1, floor($posts_count / 10));
 		$form->setValues($values);
 		$crawler = self::submit($form);
 		$this->assertEquals(1, $crawler->filter('.successbox')->count(), $this->search_backend);
@@ -274,7 +282,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$pagination = $crawler->filter('.pagination')->eq(0);
 		$posts_found_text = $pagination->text();
 
-		$this->assertStringContainsString("Search found $posts_count matches", $posts_found_text, $this->search_backend);
+		$this->assertStringContainsString("Search found $posts_count match", $posts_found_text, $this->search_backend);
 
 		// Filter all search result page links on the 1st page
 		$pagination = $pagination->filter('li > a')->reduce(
@@ -378,6 +386,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		$form->setValues($values);
 		$crawler = self::submit($form);
 		$this->assertEquals(1, $crawler->filter('.successbox')->count(), $this->search_backend);
+
+		$this->delete_topic($topic['topic_id']);
 	}
 
 	protected function create_search_index($backend = null)
