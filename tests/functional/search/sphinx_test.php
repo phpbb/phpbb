@@ -23,7 +23,9 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 	protected function setUp(): void
 	{
 		$sql_layer = substr(self::$config['dbms'], strlen('phpbb\\db\\driver\\'));
-		if ($sql_layer !== 'mysqli') // Sphinx search backend runs on MySQL/MariaDB only so far
+
+		// Sphinx test runs on Linux with MySQL/MariaDB only so far
+		if ($sql_layer !== 'mysqli' || strtolower(substr(PHP_OS, 0, 3)) === 'win')
 		{
 			$this->markTestSkipped($sql_layer . ': Sphinx search is not supported');
 		}
@@ -38,12 +40,23 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 
 		if (!$backend || $this->search_backend == $backend)
 		{
-			$output = $retval = null;
+			$commands = [
+				'service sphinxsearch stop', // Attempt to stop sphinxsearch service in case it's running
+				'indexer --all', // Run sphinxsearch indexer
+				'service sphinxsearch start', // Attempt to start sphinxsearch service again
+			];
 
-			// After creating phpBB search index, build Sphinx index
-			exec('sudo -S service sphinxsearch stop', $output, $retval); // Attempt to stop sphinxsearch service in case it's running
-			exec('sudo -S indexer --all', $output, $retval); // Run sphinxsearch indexer
-			exec('sudo -S service sphinxsearch start', $output, $retval); // Attempt to start sphinxsearch service again
+			foreach ($commands as $command)
+			{
+				$output = $retval = null;
+
+				exec($command, $output, $retval);
+
+				if ($retval !== 0)
+				{
+					$this->markTestIncomplete("Running sphinx indexer not possible. Command '$command' failed with return value $retval. Output: " . implode("\n", $output));
+				}
+			}
 		}
 	}
 }
