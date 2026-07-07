@@ -465,8 +465,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -542,8 +541,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -582,8 +580,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => $data_provider,
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -612,8 +609,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://test.endpoint.com/send/candy/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
@@ -658,8 +654,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']

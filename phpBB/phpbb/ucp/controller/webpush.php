@@ -318,7 +318,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
+		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
 		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
 		$previous_endpoint = is_string($data['previous_endpoint'] ?? null) ? $data['previous_endpoint'] : '';
 
@@ -479,7 +479,7 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->getContent() ?: '');
+		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
 		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
 
 		$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
