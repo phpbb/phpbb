@@ -67,7 +67,7 @@ class diff
 	/**
 	* returns the number of new (added) lines in a given diff.
 	*
-	* @since Text_Diff 1.1.0
+	* @since 1.1.0
 	*
 	* @return integer The number of new lines
 	*/
@@ -90,7 +90,7 @@ class diff
 	/**
 	* Returns the number of deleted (removed) lines in a given diff.
 	*
-	* @since Text_Diff 1.1.0
+	* @since 1.1.0
 	*
 	* @return integer The number of deleted lines
 	*/

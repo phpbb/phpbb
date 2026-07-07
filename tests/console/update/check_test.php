@@ -121,7 +121,7 @@ class phpbb_console_command_check_test extends phpbb_test_case
 		$container->set('version_helper', $this->version_helper);
 
 		$application = new Application();
-		$application->add(new check($user, $config, $container, $this->language));
+		$application->addCommand(new check($user, $config, $container, $this->language));
 
 		$command = $application->find('update:check');
 		return new CommandTester($command);

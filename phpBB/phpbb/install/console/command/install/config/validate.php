@@ -56,7 +56,7 @@ class validate extends \phpbb\console\command\command
 	 *
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('install:config:validate')

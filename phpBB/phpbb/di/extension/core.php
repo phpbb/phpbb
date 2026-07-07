@@ -145,7 +145,7 @@ class core extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface|container_configuration|null
+	public function getConfiguration(array $config, ContainerBuilder $container): \Symfony\Component\Config\Definition\ConfigurationInterface|null
 	{
 		$r = new \ReflectionClass('\phpbb\di\extension\container_configuration');
 		$container->addResource(new FileResource($r->getFileName()));

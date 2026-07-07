@@ -73,7 +73,7 @@ class update extends \phpbb\console\command\command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('update')
