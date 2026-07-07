@@ -103,7 +103,7 @@ class extension_base extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface|null
+	public function getConfiguration(array $config, ContainerBuilder $container): \Symfony\Component\Config\Definition\ConfigurationInterface|null
 	{
 		$reflected = new \ReflectionClass($this);
 		$namespace = $reflected->getNamespaceName();

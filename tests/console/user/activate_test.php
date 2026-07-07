@@ -33,7 +33,7 @@ class phpbb_console_user_activate_test extends phpbb_console_user_base
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new activate(
+		$application->addCommand(new activate(
 			$this->user,
 			$this->config,
 			$this->language,
