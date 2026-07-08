@@ -13,6 +13,7 @@
 
 namespace phpbb\db\migration\data\v33x;
 
+use phpbb\db\migration\exception;
 use phpbb\db\migration\migration;
 
 class ai_crawler_bots extends migration
@@ -20,19 +21,21 @@ class ai_crawler_bots extends migration
 	public static function depends_on(): array
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\bot_update_v2',
-			'\phpbb\db\migration\data\v33x\guest_session_config',
+			'\phpbb\db\migration\data\v33x\add_ai_crawlers_group',
 		];
 	}
 
 	public function update_data(): array
 	{
 		return [
-			['custom', [[$this, 'add_bots']]],
+			['custom', [[$this, 'add_ai_crawlers']]],
 		];
 	}
 
-	public function add_bots(): void
+	/**
+	 * @throws exception
+	 */
+	public function add_ai_crawlers(): void
 	{
 		$bots = [
 			// 'BotName' => 'Agent partial name',
@@ -105,7 +108,7 @@ class ai_crawler_bots extends migration
 			{
 				$sql = 'SELECT group_id, group_colour
 					FROM ' . $this->table_prefix . 'groups
-					WHERE ' . $this->db->sql_build_array('SELECT', ['group_name' => 'BOTS']);
+					WHERE ' . $this->db->sql_build_array('SELECT', ['group_name' => 'AI_CRAWLERS']);
 				$result = $this->db->sql_query($sql);
 				$group_row = $this->db->sql_fetchrow($result);
 				$this->db->sql_freeresult($result);
@@ -113,8 +116,7 @@ class ai_crawler_bots extends migration
 				// Default fallback, should never get here
 				if (!count($group_row))
 				{
-					$group_row['group_id'] = 6;
-					$group_row['group_colour'] = '9E8DA7';
+					throw new exception('Failed to retrieve group info for AI_CRAWLERS group.');
 				}
 			}
 

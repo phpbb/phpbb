@@ -301,6 +301,7 @@ $lang = array_merge($lang, array(
 	'TASK_CREATE_TABLES'				=> 'Creating tables',
 
 	// Install data
+	'TASK_ADD_AI_CRAWLERS'		=> 'Registering AI crawlers',
 	'TASK_ADD_BOTS'				=> 'Registering bots',
 	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
 	'TASK_ADD_MODULES'			=> 'Installing modules',
