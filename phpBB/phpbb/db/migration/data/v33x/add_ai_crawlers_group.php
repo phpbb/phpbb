@@ -29,20 +29,20 @@ class add_ai_crawlers_group extends migration
 	public function update_data(): array
 	{
 		return [
-			['custom', [[$this, 'add_ai_crawlers_group']]],
+			['custom', [[$this, 'add_crawlers_group']]],
 		];
 	}
 
 	/**
 	 * @throws exception
 	 */
-	public function add_ai_crawlers_group(): void
+	public function add_crawlers_group(): void
 	{
 		$sql = 'SELECT group_id
 			FROM ' . $this->table_prefix . 'groups
 			WHERE ' . $this->db->sql_build_array('SELECT', ['group_name' => 'AI_CRAWLERS']);
 		$result = $this->db->sql_query($sql);
-		$group_exists = (bool)$this->db->sql_fetchfield('group_id');
+		$group_exists = (bool) $this->db->sql_fetchfield('group_id');
 		$this->db->sql_freeresult($result);
 
 		if ($group_exists)
