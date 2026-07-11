@@ -136,4 +136,20 @@ class phpbb_controller_controller_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $arg_resolver->getArguments($symfony_request, $input));
 	}
+
+	public function test_get_arguments_missing_union_argument_uses_controller_context()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$symfony_request = new Request();
+
+		try
+		{
+			$arg_resolver->getArguments($symfony_request, array(new foo\controller(), 'handle_union_fail'));
+			$this->fail('Expected missing controller argument exception');
+		}
+		catch (\phpbb\controller\exception $e)
+		{
+			$this->assertSame(array(1, 'foo\controller:handle_union_fail', 'no_default'), $e->get_parameters());
+		}
+	}
 }
