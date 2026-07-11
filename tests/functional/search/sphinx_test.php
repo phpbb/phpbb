@@ -20,6 +20,19 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 {
 	protected $search_backend = '\phpbb\search\fulltext_sphinx';
 
+	protected function setUp(): void
+	{
+		$sql_layer = substr(self::$config['dbms'], strlen('phpbb\\db\\driver\\'));
+
+		// Sphinx test runs on Linux with MySQL/MariaDB only so far
+		if ($sql_layer !== 'mysqli' || strtolower(substr(PHP_OS, 0, 3)) === 'win')
+		{
+			$this->markTestSkipped($sql_layer . ': Sphinx search is not supported');
+		}
+
+		parent::setUp();
+	}
+
 	protected function create_search_index($backend = null)
 	{
 		parent::create_search_index($backend);
