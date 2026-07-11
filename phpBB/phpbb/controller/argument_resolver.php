@@ -96,7 +96,8 @@ class argument_resolver implements ArgumentResolverInterface
 				}
 				else
 				{
-					throw new \phpbb\controller\exception('CONTROLLER_ARGUMENT_VALUE_MISSING', [$param->getPosition() + 1, '', $param->name]);
+					$context = $this->get_controller_context($controller);
+					throw new \phpbb\controller\exception('CONTROLLER_ARGUMENT_VALUE_MISSING', [$param->getPosition() + 1, $context, $param->name]);
 				}
 			}
 			else if ($param->getType() instanceof \ReflectionNamedType && $param->getType()->getName() === Request::class)
@@ -109,19 +110,25 @@ class argument_resolver implements ArgumentResolverInterface
 			}
 			else
 			{
-				if (is_array($controller))
-				{
-					[$object, $method] = $controller;
-					$context = get_class($object) . ':' . $method;
-				}
-				else
-				{
-					$context = '';
-				}
+				$context = $this->get_controller_context($controller);
 				throw new \phpbb\controller\exception('CONTROLLER_ARGUMENT_VALUE_MISSING', [$param->getPosition() + 1, $context, $param->name]);
 			}
 		}
 
 		return $arguments;
+	}
+
+	/**
+	 * Returns the controller context used in missing argument error messages.
+	 */
+	protected function get_controller_context(callable $controller): string
+	{
+		if (is_array($controller))
+		{
+			[$object, $method] = $controller;
+			return get_class($object) . ':' . $method;
+		}
+
+		return '';
 	}
 }
