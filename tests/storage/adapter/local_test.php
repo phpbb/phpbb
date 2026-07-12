@@ -15,13 +15,6 @@ require_once __DIR__ . '/local_test_case.php';
 
 class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 {
-	protected function setUp(): void
-	{
-		parent::setUp();
-
-		$this->adapter->configure(['path' => 'test_path']);
-	}
-
 	public function test_delete_file(): void
 	{
 		// Given

@@ -20,7 +20,7 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 	private $cache_dir;
 
 	/** @var \phpbb\cache\driver\file */
-	private  $cache_file;
+	private $cache_file;
 
 	public function getDataSet()
 	{
@@ -38,11 +38,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 
 		$this->cache_file = new \phpbb\cache\driver\file($this->cache_dir);
 		$this->driver = $this->cache_file;
-	}
-
-	protected function tearDown(): void
-	{
-		parent::tearDown();
 	}
 
 	public function test_read_not_readable()

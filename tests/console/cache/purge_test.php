@@ -32,6 +32,8 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	{
 		global $phpbb_root_path, $phpEx;
 
+		parent::setUp();
+
 		vfsStream::setup('phpbb', null, array(
 			'cache' => array(),
 		));
@@ -40,7 +42,6 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 		$this->cache = new \phpbb\cache\driver\file($this->cache_dir);
 
 		$this->db = $this->createMock('\phpbb\db\driver\driver_interface');
-		$tools_factory = new \phpbb\db\tools\factory();
 		$this->db_tools = $this->createMock('\phpbb\db\tools\doctrine');
 
 		$this->config = new \phpbb\config\config(array('assets_version' => 1));

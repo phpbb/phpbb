@@ -67,14 +67,17 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 			'txt' => array('display_cat' => attachment_category::NONE),
 		)));
 
+		$png = file_get_contents(__DIR__ . '/fixtures/png.png');
+		$txt = file_get_contents(__DIR__ . '/fixtures/txt.txt');
+
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		vfsStream::setup('phpbb', null, array(
 			'files' => array(
-				'test_png_1' => file_get_contents(__DIR__ . '/fixtures/png.png'),
-				'test_png_2' => file_get_contents(__DIR__ . '/fixtures/png.png'),
-				'thumb_test_png_2' => file_get_contents(__DIR__ . '/fixtures/png.png'),
-				'test_txt' => file_get_contents(__DIR__ . '/fixtures/txt.txt'),
+				'test_png_1' => $png,
+				'test_png_2' => $png,
+				'thumb_test_png_2' => $png,
+				'test_txt' => $txt,
 			),
 			'tmp' => array(),
 		));

@@ -15,10 +15,10 @@ use phpbb\update\controller;
 use phpbb\update\get_updates;
 use phpbb\filesystem\filesystem;
 use phpbb\language\language;
+use org\bovigo\vfs\vfsStream;
 
 class phpbb_update_controller_test extends \phpbb_test_case
 {
-	private $filesystem;
 	private $filesystem_mock;
 	private $updater_mock;
 	private $language_mock;
@@ -26,22 +26,15 @@ class phpbb_update_controller_test extends \phpbb_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path;
+		parent::setUp();
 
-		$this->filesystem = new filesystem();
 		$this->filesystem_mock = $this->createMock(filesystem::class);
 		$this->updater_mock = $this->createMock(get_updates::class);
 		$this->language_mock = $this->createMock(language::class);
-		$this->phpbb_root_path = $phpbb_root_path;
-	}
-
-	protected function tearDown(): void
-	{
-		$this->filesystem->remove([
-			$this->phpbb_root_path . 'store/update.zip',
-			$this->phpbb_root_path . 'store/update.zip.sig',
-			$this->phpbb_root_path . 'store/update',
-		]);
+		vfsStream::setup('phpbb', null, array(
+			'store' => array(),
+		));
+		$this->phpbb_root_path = vfsStream::url('phpbb') . '/';
 	}
 
 	public function test_download_fails(): void
@@ -250,10 +243,7 @@ class phpbb_update_controller_test extends \phpbb_test_case
 
 	public function test_copy_fails(): void
 	{
-		$update_path = $this->phpbb_root_path . 'store/update.zip';
-		$this->filesystem->touch($update_path); // Simulate existing update file
-		$this->filesystem->touch($update_path . '.sig'); // Simulate existing signature file
-		$this->filesystem->mkdir($this->phpbb_root_path . 'store/update');
+		[$update_path] = $this->create_update_files();
 
 		$this->filesystem_mock->expects($this->any())
 			->method('exists')
@@ -286,10 +276,7 @@ class phpbb_update_controller_test extends \phpbb_test_case
 
 	public function test_copy_success(): void
 	{
-		$update_path = $this->phpbb_root_path . 'store/update.zip';
-		$this->filesystem->touch($update_path); // Simulate existing update file
-		$this->filesystem->touch($update_path . '.sig'); // Simulate existing signature file
-		$this->filesystem->mkdir($this->phpbb_root_path . 'store/update');
+		[$update_path] = $this->create_update_files();
 
 		$this->filesystem_mock->expects($this->any())
 			->method('exists')
@@ -317,13 +304,7 @@ class phpbb_update_controller_test extends \phpbb_test_case
 
 	public function test_successful_update_process(): void
 	{
-		$update_path = $this->phpbb_root_path . 'store/update.zip';
-		$signature_path = $update_path . '.sig';
-		$update_dir = $this->phpbb_root_path . 'store/update';
-
-		$this->filesystem->touch($update_path);
-		$this->filesystem->touch($signature_path);
-		$this->filesystem->mkdir($update_dir);
+		[$update_path, $signature_path, $update_dir] = $this->create_update_files(true);
 
 		$this->filesystem_mock->expects($this->any())
 			->method('exists')
@@ -347,5 +328,23 @@ class phpbb_update_controller_test extends \phpbb_test_case
 
 		$response = $controller->handle('https://example.com/update.zip');
 		$this->assertEquals(['status' => 'done'], $response);
+	}
+
+	private function create_update_files(bool $with_install_dir = false): array
+	{
+		$update_path = $this->phpbb_root_path . 'store/update.zip';
+		$signature_path = $update_path . '.sig';
+		$update_dir = $this->phpbb_root_path . 'store/update';
+
+		touch($update_path);
+		touch($signature_path);
+		mkdir($update_dir);
+
+		if ($with_install_dir)
+		{
+			mkdir($this->phpbb_root_path . 'install');
+		}
+
+		return array($update_path, $signature_path, $update_dir);
 	}
 }

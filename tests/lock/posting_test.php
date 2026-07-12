@@ -29,6 +29,8 @@ class phpbb_lock_posting_test extends phpbb_test_case
 
 	public function setUp(): void
 	{
+		parent::setUp();
+
 		vfsStream::setup('phpbb', null, array(
 			'tmp' => array(),
 		));

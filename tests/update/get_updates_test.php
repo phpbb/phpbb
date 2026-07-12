@@ -53,11 +53,6 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 		$this->update = new get_updates($this->filesystem, base64_encode($this->public_key), $this->phpbb_root_path);
 	}
 
-	public function tearDown(): void
-	{
-		parent::tearDown();
-	}
-
 	public function test_download_success()
 	{
 		$response_mock = $this->createMock(Response::class);

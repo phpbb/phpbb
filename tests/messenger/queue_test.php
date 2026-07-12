@@ -31,6 +31,8 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 	 */
 	protected function setUp(): void
 	{
+		parent::setUp();
+
 		$this->config = new config([
 				'last_queue_run'	=> time() - 30,
 				'queue_interval'	=> 600,
