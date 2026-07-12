@@ -47,9 +47,7 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 		$this->assertIsResource($stream);
 		$this->assertEquals('abc', stream_get_contents($stream));
 
-		// Clean test
 		fclose($stream);
-		unlink($this->path . 'file.txt');
 	}
 
 	public function test_write()
@@ -64,9 +62,5 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 
 		// Then
 		$this->assertFileContains($this->path . 'file2.txt', 'abc');
-
-		// Clean test
-		unlink($this->path . 'file.txt');
-		unlink($this->path . 'file2.txt');
 	}
 }

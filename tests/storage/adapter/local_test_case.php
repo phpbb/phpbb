@@ -12,6 +12,7 @@
  */
 
 use FastImageSize\FastImageSize;
+use org\bovigo\vfs\vfsStream;
 use phpbb\mimetype\extension_guesser;
 use phpbb\mimetype\guesser;
 use phpbb\storage\adapter\local;
@@ -29,7 +30,11 @@ class phpbb_local_test_case extends phpbb_test_case
 		parent::setUp();
 
 		$this->filesystem = new \phpbb\filesystem\filesystem();
-		$phpbb_root_path = getcwd() . DIRECTORY_SEPARATOR;
+		$phpbb_root_path = vfsStream::url('phpbb') . '/';
+
+		vfsStream::setup('phpbb', null, array(
+			'test_path' => array(),
+		));
 
 		$this->adapter = new local(
 			$this->filesystem,
@@ -37,7 +42,6 @@ class phpbb_local_test_case extends phpbb_test_case
 		);
 
 		$this->path = $phpbb_root_path . 'test_path/';
-		mkdir($this->path);
 	}
 
 	protected function tearDown(): void
@@ -45,7 +49,6 @@ class phpbb_local_test_case extends phpbb_test_case
 		parent::tearDown();
 
 		$this->adapter = null;
-		rmdir($this->path);
 	}
 
 	/**

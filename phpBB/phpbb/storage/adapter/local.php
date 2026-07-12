@@ -65,7 +65,16 @@ class local implements adapter_interface
 	 */
 	public function configure(array $options): void
 	{
-		$this->root_path = filesystem_helper::realpath($this->phpbb_root_path . $options['path']) . DIRECTORY_SEPARATOR;
+		$path = $this->phpbb_root_path . $options['path'];
+		$real_path = filesystem_helper::realpath($path);
+
+		if ($real_path === false && file_exists($path))
+		{
+			// Some stream wrappers, such as vfsStream, do not support realpath().
+			$real_path = filesystem_helper::clean_path($path);
+		}
+
+		$this->root_path = $real_path . DIRECTORY_SEPARATOR;
 	}
 
 	/**
