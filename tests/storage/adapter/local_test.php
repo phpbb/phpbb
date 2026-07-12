@@ -15,6 +15,16 @@ require_once __DIR__ . '/local_test_case.php';
 
 class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 {
+	protected function setUp(): void
+	{
+		parent::setUp();
+
+		// Normally this would use $this->adapter->configure(['path' => 'test_path']);
+		// but local::configure() uses realpath(), which vfsStream does not support.
+		$root_path = new ReflectionProperty($this->adapter, 'root_path');
+		$root_path->setValue($this->adapter, $this->path);
+	}
+
 	public function test_delete_file(): void
 	{
 		// Given

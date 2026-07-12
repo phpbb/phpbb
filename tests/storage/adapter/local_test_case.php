@@ -35,10 +35,6 @@ class phpbb_local_test_case extends phpbb_test_case
 		);
 
 		$this->path = vfsStream::url('phpbb/test_path') . '/';
-
-		// local::configure() uses realpath(), which vfsStream does not support.
-		$root_path = new ReflectionProperty($this->adapter, 'root_path');
-		$root_path->setValue($this->adapter, $this->path);
 	}
 
 	/**
