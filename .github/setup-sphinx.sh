@@ -29,12 +29,15 @@ PHPBB_TEST_DBUSER="root"
 PHPBB_TEST_DBPASSWD=""
 
 sudo service sphinxsearch stop
+sudo mkdir -p "$SPHINX_DATA_DIR"
 sudo mkdir -p "$SPHINX_DATA_DIR/log"
-sudo chown "sphinxsearch" "$SPHINX_DATA_DIR/log"
+sudo chown -R "sphinxsearch":"sphinxsearch" "$SPHINX_DATA_DIR"
+sudo chmod 775 "$SPHINX_DATA_DIR"
+sudo chmod 775 "$SPHINX_DATA_DIR/log"
 
 # Generate configuration file for Sphinx
 echo "
-source source_phpbb_${ID}_main 
+source source_phpbb_${ID}_main
 {
 	type = mysql # mysql or pgsql
 	sql_host =  $PHPBB_TEST_DBHOST
@@ -141,3 +144,4 @@ searchd
 sudo mv "$SPHINX_CONF" "/etc/sphinxsearch/sphinx.conf"
 sudo sed -i "s/START=no/START=yes/g" "/etc/default/sphinxsearch"
 sudo chmod 777 "/var/run/sphinxsearch"
+sudo service sphinxsearch stop
