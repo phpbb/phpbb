@@ -15,7 +15,7 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 {
 	protected function get_container_filename()
 	{
-		return $this->phpbb_root_path . '../../tmp/container.' . $this->php_ext;
+		return ($this->cache_dir ?: $this->phpbb_root_path . '../../tmp/') . 'container.' . $this->php_ext;
 	}
 
 	/**
@@ -25,7 +25,7 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 	 */
 	protected function get_autoload_filename()
 	{
-		return $this->phpbb_root_path . '../../tmp/autoload.' . $this->php_ext;
+		return ($this->cache_dir ?: $this->phpbb_root_path . '../../tmp/') . 'autoload.' . $this->php_ext;
 	}
 
 	/**

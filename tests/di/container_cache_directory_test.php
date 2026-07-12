@@ -15,32 +15,30 @@ namespace
 {
 	require_once __DIR__ . '/fixtures/manager_mock.php';
 
+	use org\bovigo\vfs\vfsStream;
+
 	class container_cache_directory_test extends \phpbb_test_case //phpbb_di_container_test
 	{
 		protected $config_php;
 
-		/**
-		* @var \phpbb\di\container_builder
-		*/
-		protected $builder;
 		protected $phpbb_root_path;
-		protected $filename;
 
 		public function setUp(): void
 		{
 			$this->phpbb_root_path = __DIR__ . '/';
+			vfsStream::setup('phpbb', null, array(
+				'cache' => array(
+					'test' => array(),
+					'override' => array(),
+					'mock' => array(),
+				),
+			));
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
-
-			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
-			if (is_file($this->filename))
-			{
-				unlink($this->filename);
-			}
 
 			parent::setUp();
 		}
 
-		public function tearDown(): void
+		protected function tearDown(): void
 		{
 			unset($_SERVER['PHPBB____core__cache_dir']);
 
@@ -49,15 +47,16 @@ namespace
 
 		public function test_cache_directory_can_be_overridden()
 		{
-			$new_cache_directory = $this->phpbb_root_path . 'fixtures/overwrite-cache-directory/test/';
+			$new_cache_directory = vfsStream::url('phpbb/cache/override') . '/';
 
 			// This is how one overrides the cache directory.
 			// The file cache driver will now write to a new directory.
 			$_SERVER['PHPBB____core__cache_dir'] = $new_cache_directory;
 
-			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
-			$this->builder->with_config($this->config_php);
-			$container = $this->builder->get_container();
+			$builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
+			$builder->with_cache_dir(vfsStream::url('phpbb/cache/mock') . '/');
+			$builder->with_config($this->config_php);
+			$container = $builder->get_container();
 
 			$this->assertEquals($container->getParameter('core.cache_dir'), $new_cache_directory);
 		}
@@ -69,32 +68,20 @@ namespace
 		 */
 		public function test_container_and_autoload_cache()
 		{
-			$default_cache_directory = $this->phpbb_root_path . 'fixtures/cache/test/';
+			$default_cache_directory = vfsStream::url('phpbb/cache/test') . '/';
 			unset($_SERVER['PHPBB____core__cache_dir']);
-
-			// Make sure our test directory will be empty.
-			if (is_dir($default_cache_directory))
-			{
-				array_map('unlink', glob($default_cache_directory . '/*'));
-			}
-			else
-			{
-				mkdir($default_cache_directory, 0777, true);
-			}
 
 			// Use the normal container_builder
 			$builder = new \phpbb\di\container_builder($this->phpbb_root_path . 'fixtures/', 'php');
+			$builder->with_cache_dir($default_cache_directory);
 			$builder->with_config($this->config_php);
 
 			$container = $builder->get_container();
 
-			$files_written_to_cache = array_map('basename', glob($default_cache_directory . '/*'));
+			$files_written_to_cache = $this->get_cache_files($default_cache_directory);
 
 			$this->assertNotEmpty(preg_grep('/autoload_.+.php/', $files_written_to_cache), 'There should be an autoload file in the cache directory.');
 			$this->assertNotEmpty(preg_grep('/container_.+.php/', $files_written_to_cache), 'There should be an container file in the cache directory.');
-
-			// Cleanup the cache directory to prevent class redeclaration errors.
-			array_map('unlink', glob($default_cache_directory . '/*'));
 		}
 
 		/**
@@ -103,19 +90,9 @@ namespace
 		 */
 		public function test_autoload_and_container_cache_are_written_to_overriden_cache_directory()
 		{
-			$new_cache_directory = $this->phpbb_root_path . 'fixtures/overwrite-cache-directory/test/';
+			$new_cache_directory = vfsStream::url('phpbb/cache/override') . '/';
 
 			$_SERVER['PHPBB____core__cache_dir'] = $new_cache_directory;
-
-			// Make sure our test directory will be empty.
-			if (is_dir($new_cache_directory))
-			{
-				array_map('unlink', glob($new_cache_directory . '/*'));
-			}
-			else
-			{
-				mkdir($new_cache_directory, 0777, true);
-			}
 
 			// Use the normal container_builder
 			$builder = new \phpbb\di\container_builder($this->phpbb_root_path . 'fixtures/', 'php');
@@ -123,13 +100,15 @@ namespace
 
 			$container = $builder->get_container();
 
-			$files_written_to_cache = array_map('basename', glob($new_cache_directory."/*"));
+			$files_written_to_cache = $this->get_cache_files($new_cache_directory);
 
 			$this->assertNotEmpty(preg_grep('/autoload_.+.php/', $files_written_to_cache), 'There should be an autoload file in the cache directory.');
 			$this->assertNotEmpty(preg_grep('/container_.+.php/', $files_written_to_cache), 'There should be an container file in the cache directory.');
+		}
 
-			array_map('unlink', glob($new_cache_directory . '/*'));
-
+		private function get_cache_files(string $cache_directory): array
+		{
+			return array_diff(scandir($cache_directory), array('.', '..'));
 		}
 	}
 }

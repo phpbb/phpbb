@@ -16,6 +16,8 @@ namespace
 	require_once __DIR__ . '/fixtures/manager_mock.php';
 	require_once __DIR__ . '/fixtures/ext/vendor/enabled_4/di/extension.php';
 
+	use org\bovigo\vfs\vfsStream;
+
 	class phpbb_di_create_container_test extends \phpbb_test_case
 	{
 		protected $config_php;
@@ -26,19 +28,21 @@ namespace
 		protected $builder;
 		protected $phpbb_root_path;
 		protected $filename;
+		protected $cache_dir;
 
 		protected function setUp(): void
 		{
 			$this->phpbb_root_path = __DIR__ . '/';
+			vfsStream::setup('phpbb', null, array(
+				'cache' => array(),
+			));
+			$this->cache_dir = vfsStream::url('phpbb/cache') . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
 			$this->builder = new phpbb_mock_phpbb_di_container_builder($this->phpbb_root_path . 'fixtures/', 'php');
+			$this->builder->with_cache_dir($this->cache_dir);
 			$this->builder->with_config($this->config_php);
 
-			$this->filename = $this->phpbb_root_path . '../tmp/container.php';
-			if (is_file($this->filename))
-			{
-				unlink($this->filename);
-			}
+			$this->filename = $this->cache_dir . 'container.php';
 
 			parent::setUp();
 		}
