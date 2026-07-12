@@ -33,6 +33,15 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 		parent::setUp();
 	}
 
+	protected function tearDown(): void
+	{
+		// Reset search backend to default after test
+		parent::delete_search_index();
+		parent::create_search_index('\phpbb\search\fulltext_native');
+
+		parent::tearDown();
+	}
+
 	protected function create_search_index($backend = null)
 	{
 		parent::create_search_index($backend);
@@ -41,9 +50,7 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 		if (!$backend || $this->search_backend == $backend)
 		{
 			$commands = [
-				'service sphinxsearch stop', // Attempt to stop sphinxsearch service in case it's running
-				'indexer --all', // Run sphinxsearch indexer
-				'service sphinxsearch start', // Attempt to start sphinxsearch service again
+				'indexer --all --rotate', // Run sphinxsearch indexer
 			];
 
 			foreach ($commands as $command)
@@ -57,19 +64,6 @@ class phpbb_functional_search_sphinx_test extends phpbb_functional_search_base
 					$this->markTestIncomplete("Running sphinx indexer not possible. Command '$command' failed with return value $retval. Output: " . implode("\n", $output));
 				}
 			}
-		}
-	}
-
-	public function test_search_backend()
-	{
-		// Sphinx test runs on Linux with MySQL/MariaDB only so far
-		if ($this->db->sql_layer != 'mysqli' || strtolower(substr(PHP_OS, 0, 3)) === 'win')
-		{
-			$this->markTestIncomplete('Sphinx Tests are not supported');
-		}
-		else
-		{
-			parent::test_search_backend();
 		}
 	}
 }
