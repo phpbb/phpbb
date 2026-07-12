@@ -15,7 +15,7 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 {
 	protected function get_container_filename()
 	{
-		return ($this->cache_dir ?: $this->phpbb_root_path . '../../tmp/') . 'container.' . $this->php_ext;
+		return $this->get_cache_filename('container.' . $this->php_ext);
 	}
 
 	/**
@@ -25,7 +25,12 @@ class phpbb_mock_phpbb_di_container_builder extends \phpbb\di\container_builder
 	 */
 	protected function get_autoload_filename()
 	{
-		return ($this->cache_dir ?: $this->phpbb_root_path . '../../tmp/') . 'autoload.' . $this->php_ext;
+		return $this->get_cache_filename('autoload.' . $this->php_ext);
+	}
+
+	protected function get_cache_filename($filename)
+	{
+		return rtrim($this->cache_dir ?: $this->phpbb_root_path . '../../tmp/', '/\\') . '/' . $filename;
 	}
 
 	/**
