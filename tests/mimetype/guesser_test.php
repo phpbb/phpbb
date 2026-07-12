@@ -16,6 +16,8 @@ namespace phpbb\mimetype;
 require_once __DIR__ . '/null_guesser.php';
 require_once __DIR__ . '/incorrect_guesser.php';
 
+use org\bovigo\vfs\vfsStream;
+
 function function_exists($name)
 {
 	return guesser_test::$function_exists;
@@ -31,6 +33,7 @@ class guesser_test extends \phpbb_test_case
 	protected $guesser_no_fileinfo;
 	protected $path;
 	protected $jpg_file;
+	protected $jpg_file_with_extension;
 	protected $phpbb_root_path;
 
 	protected function setUp(): void
@@ -53,6 +56,12 @@ class guesser_test extends \phpbb_test_case
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->path = __DIR__;
 		$this->jpg_file = $this->path . '/fixtures/jpg';
+		vfsStream::setup('phpbb', null, array(
+			'fixtures' => array(
+				'jpg.jpg' => file_get_contents($this->jpg_file),
+			),
+		));
+		$this->jpg_file_with_extension = vfsStream::url('phpbb/fixtures/jpg.jpg');
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -196,9 +205,7 @@ class guesser_test extends \phpbb_test_case
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
-		@copy($this->jpg_file, $this->jpg_file . '.jpg');
-		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file . '.jpg'));
-		@unlink($this->jpg_file . '.jpg');
+		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file_with_extension));
 	}
 
 	public function test_sort_priority()

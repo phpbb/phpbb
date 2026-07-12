@@ -14,6 +14,7 @@
 use phpbb\attachment\attachment_category;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use org\bovigo\vfs\vfsStream;
 use phpbb\console\command\thumbnail\generate;
 use phpbb\console\command\thumbnail\delete;
 use phpbb\console\command\thumbnail\recreate;
@@ -30,6 +31,8 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 	protected $phpEx;
 	protected $phpbb_root_path;
 	protected $application;
+	protected $storage_path;
+	protected $temp_path;
 
 	public function getDataSet()
 	{
@@ -66,53 +69,38 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 
 		$phpbb_filesystem = new \phpbb\filesystem\filesystem();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		vfsStream::setup('phpbb', null, array(
+			'files' => array(
+				'test_png_1' => file_get_contents(__DIR__ . '/fixtures/png.png'),
+				'test_png_2' => file_get_contents(__DIR__ . '/fixtures/png.png'),
+				'thumb_test_png_2' => file_get_contents(__DIR__ . '/fixtures/png.png'),
+				'test_txt' => file_get_contents(__DIR__ . '/fixtures/txt.txt'),
+			),
+			'tmp' => array(),
+		));
+		$this->storage_path = vfsStream::url('phpbb/files') . '/';
+		$this->temp_path = vfsStream::url('phpbb/tmp');
 
 		$this->storage = $this->createMock('\phpbb\storage\storage');
-		$this->storage->method('write')->willReturnCallback(function ($path, $data) use ($phpbb_root_path) {
-			file_put_contents($phpbb_root_path . 'files/' . $path, $data);
+		$this->storage->method('write')->willReturnCallback(function ($path, $data) {
+			file_put_contents($this->storage_path . $path, is_resource($data) ? stream_get_contents($data) : $data);
 		});
-		$this->storage->method('read')->willReturnCallback(function ($path) use ($phpbb_root_path) {
-			return fopen($phpbb_root_path . 'files/' . $path, 'rb');
+		$this->storage->method('read')->willReturnCallback(function ($path) {
+			return fopen($this->storage_path . $path, 'rb');
 		});
-		$this->storage->method('delete')->willReturnCallback(function ($path) use ($phpbb_root_path) {
-			unlink($phpbb_root_path . 'files/' . $path);
+		$this->storage->method('delete')->willReturnCallback(function ($path) {
+			unlink($this->storage_path . $path);
 		});
 
 		$this->temp = $this->createMock('\phpbb\filesystem\temp');
 		$this->temp->method('get_dir')->willReturnCallback(function () {
-			return sys_get_temp_dir();
+			return $this->temp_path;
 		});
 
 		$this->application = new Application();
 		$this->application->add(new generate($this->user, $this->db, $this->cache, $this->language, $this->storage, $this->temp, $this->phpbb_root_path, $this->phpEx));
 		$this->application->add(new delete($this->user, $this->db, $this->language, $this->storage));
 		$this->application->add(new recreate($this->user, $this->language));
-
-		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_1');
-		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/test_png_2');
-		copy(__DIR__ . '/fixtures/png.png', $this->phpbb_root_path . 'files/thumb_test_png_2');
-		copy(__DIR__ . '/fixtures/txt.txt', $this->phpbb_root_path . 'files/test_txt');
-	}
-
-	protected function tearDown(): void
-	{
-		parent::tearDown();
-
-		$delete_files = [
-			$this->phpbb_root_path . 'files/test_png_1',
-			$this->phpbb_root_path . 'files/test_png_2',
-			$this->phpbb_root_path . 'files/test_txt',
-			$this->phpbb_root_path . 'files/thumb_test_png_1',
-			$this->phpbb_root_path . 'files/thumb_test_png_2'
-		];
-
-		foreach ($delete_files as $file)
-		{
-			if (file_exists($file))
-			{
-				unlink($file);
-			}
-		}
 	}
 
 	public function test_thumbnails()
@@ -120,25 +108,25 @@ class phpbb_console_command_thumbnail_test extends phpbb_database_test_case
 		$command_tester = $this->get_command_tester('thumbnail:generate');
 		$exit_status = $command_tester->execute([]);
 
-		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(true, file_exists($this->storage_path . 'thumb_test_png_1'));
+		self::assertSame(true, file_exists($this->storage_path . 'thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->storage_path . 'thumb_test_txt'));
 		self::assertSame(0, $exit_status);
 
 		$command_tester = $this->get_command_tester('thumbnail:delete');
 		$exit_status = $command_tester->execute([]);
 
-		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(false, file_exists($this->storage_path . 'thumb_test_png_1'));
+		self::assertSame(false, file_exists($this->storage_path . 'thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->storage_path . 'thumb_test_txt'));
 		self::assertSame(0, $exit_status);
 
 		$command_tester = $this->get_command_tester('thumbnail:recreate');
 		$exit_status = $command_tester->execute([]);
 
-		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_1'));
-		self::assertSame(true, file_exists($this->phpbb_root_path . 'files/thumb_test_png_2'));
-		self::assertSame(false, file_exists($this->phpbb_root_path . 'files/thumb_test_txt'));
+		self::assertSame(true, file_exists($this->storage_path . 'thumb_test_png_1'));
+		self::assertSame(true, file_exists($this->storage_path . 'thumb_test_png_2'));
+		self::assertSame(false, file_exists($this->storage_path . 'thumb_test_txt'));
 		self::assertSame(0, $exit_status);
 	}
 

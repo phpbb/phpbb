@@ -13,11 +13,21 @@
 
 class phpbb_lock_flock_test extends phpbb_test_case
 {
+	protected $path;
+
+	protected function setUp(): void
+	{
+		parent::setUp();
+
+		\org\bovigo\vfs\vfsStream::setup('phpbb', null, array(
+			'tmp' => array(),
+		));
+		$this->path = \org\bovigo\vfs\vfsStream::url('phpbb/tmp/precious');
+	}
+
 	public function test_lock()
 	{
-		$path = __DIR__ . '/../tmp/precious';
-
-		$lock = new \phpbb\lock\flock($path);
+		$lock = new \phpbb\lock\flock($this->path);
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
 		$lock->release();
@@ -25,9 +35,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 
 	public function test_consecutive_locking()
 	{
-		$path = __DIR__ . '/../tmp/precious';
-
-		$lock = new \phpbb\lock\flock($path);
+		$lock = new \phpbb\lock\flock($this->path);
 		$ok = $lock->acquire();
 		$this->assertTrue($ok);
 		$this->assertTrue($lock->owns_lock());
@@ -50,13 +58,11 @@ class phpbb_lock_flock_test extends phpbb_test_case
 	/* This hangs the process.
 	public function test_concurrent_locking_fail()
 	{
-		$path = __DIR__ . '/../tmp/precious';
-
-		$lock1 = new \phpbb\lock\flock($path);
+		$lock1 = new \phpbb\lock\flock($this->path);
 		$ok = $lock1->acquire();
 		$this->assertTrue($ok);
 
-		$lock2 = new \phpbb\lock\flock($path);
+		$lock2 = new \phpbb\lock\flock($this->path);
 		$ok = $lock2->acquire();
 		$this->assertFalse($ok);
 
@@ -73,6 +79,7 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$this->markTestSkipped('pcntl extension and pcntl_fork are required for this test');
 		}
 
+		// vfsStream lock state is not shared across forked processes.
 		$path = __DIR__ . '/../tmp/precious';
 
 		$pid = pcntl_fork();
