@@ -14,6 +14,7 @@
 use phpbb\config\config;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\messenger\queue;
+use org\bovigo\vfs\vfsStream;
 
 class phpbb_messenger_queue_test extends phpbb_test_case
 {
@@ -42,12 +43,10 @@ class phpbb_messenger_queue_test extends phpbb_test_case
 			->onlyMethods(['getIterator', 'add_service_class'])
 			->getMock();
 
-		$this->cache_file = __DIR__ . '/../tmp/queue_test';
-
-		if (file_exists($this->cache_file))
-		{
-			@unlink($this->cache_file);
-		}
+		vfsStream::setup('phpbb', null, array(
+			'tmp' => array(),
+		));
+		$this->cache_file = vfsStream::url('phpbb/tmp/queue_test');
 
 		$this->messenger_queue = $this->getMockBuilder('phpbb\messenger\queue')
 			->setConstructorArgs([

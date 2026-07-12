@@ -13,6 +13,8 @@
 
 require_once __DIR__ . '/common_test_case.php';
 
+use org\bovigo\vfs\vfsStream;
+
 class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 {
 	private $cache_dir;
@@ -29,15 +31,10 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 	{
 		parent::setUp();
 
-		$this->cache_dir = __DIR__ . '/../tmp/cache/';
-
-		if (file_exists($this->cache_dir))
-		{
-			// cache directory possibly left after aborted
-			// or failed run earlier
-			$this->remove_cache_dir();
-		}
-		$this->create_cache_dir();
+		vfsStream::setup('phpbb', null, array(
+			'cache' => array(),
+		));
+		$this->cache_dir = vfsStream::url('phpbb/cache') . '/';
 
 		$this->cache_file = new \phpbb\cache\driver\file($this->cache_dir);
 		$this->driver = $this->cache_file;
@@ -45,11 +42,6 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 
 	protected function tearDown(): void
 	{
-		if (file_exists($this->cache_dir))
-		{
-			$this->remove_cache_dir();
-		}
-
 		parent::tearDown();
 	}
 
@@ -188,21 +180,4 @@ class phpbb_cache_file_driver_test extends phpbb_cache_common_test_case
 		$this->assertEquals($expectedVarExpires, $reflectionCacheVarExpires->getValue($this->cache_file));
 	}
 
-	private function create_cache_dir()
-	{
-		$this->get_test_case_helpers()->makedirs($this->cache_dir);
-	}
-
-	private function remove_cache_dir()
-	{
-		$iterator = new DirectoryIterator($this->cache_dir);
-		foreach ($iterator as $file)
-		{
-			if ($file != '.' && $file != '..')
-			{
-				unlink($this->cache_dir . '/' . $file);
-			}
-		}
-		rmdir($this->cache_dir);
-	}
 }
