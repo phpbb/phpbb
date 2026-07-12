@@ -208,6 +208,10 @@ class factory implements \phpbb\textformatter\cache_interface
 			}
 
 			$filename = $this->cache_dir . $file;
+			if (!is_file($filename))
+			{
+				continue;
+			}
 
 			// Only remove the file if it's not the current renderer
 			if (!$renderer_file || substr($filename, -strlen($renderer_file)) !== $renderer_file)

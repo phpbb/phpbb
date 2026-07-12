@@ -154,6 +154,10 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 		$old_file = $this->get_cache_dir() . 's9e_foo.php';
 		touch($old_file);
 
+		// Create a fake cache directory that should not be removed
+		$old_directory = $this->get_cache_dir() . 's9e_directory';
+		mkdir($old_directory);
+
 		// Create a current renderer
 		extract($factory->regenerate());
 		$new_file = $this->get_cache_dir() . get_class($renderer) . '.php';
@@ -163,6 +167,7 @@ class phpbb_textformatter_s9e_factory_test extends phpbb_database_test_case
 
 		$this->assertFileExists($new_file, 'The current renderer has been deleted');
 		$this->assertFileDoesNotExist($old_file, 'The old renderer has not been deleted');
+		$this->assertDirectoryExists($old_directory, 'A cache directory has been deleted');
 	}
 
 	public function test_local_url()
