@@ -200,8 +200,15 @@ class factory implements \phpbb\textformatter\cache_interface
 		$renderer_data = $this->cache->get($this->cache_key_renderer);
 		$renderer_file = ($renderer_data) ? $renderer_data['class'] . '.php' : null;
 
-		foreach (glob($this->cache_dir . 's9e_*') as $filename)
+		foreach (scandir($this->cache_dir) ?: array() as $file)
 		{
+			if (strpos($file, 's9e_') !== 0)
+			{
+				continue;
+			}
+
+			$filename = $this->cache_dir . $file;
+
 			// Only remove the file if it's not the current renderer
 			if (!$renderer_file || substr($filename, -strlen($renderer_file)) !== $renderer_file)
 			{
