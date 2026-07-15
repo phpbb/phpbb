@@ -73,42 +73,59 @@ class phpbb_lock_flock_test extends phpbb_test_case
 			$this->markTestSkipped('pcntl extension and pcntl_fork are required for this test');
 		}
 
-		$path = __DIR__ . '/../tmp/precious';
+		// vfsStream lock state is not shared across forked processes.
+		$path = tempnam(sys_get_temp_dir(), 'phpbb_flock_');
+		if ($path === false)
+		{
+			$this->markTestSkipped('Unable to create temporary lock file');
+		}
+		unlink($path);
 
 		$pid = pcntl_fork();
+		if ($pid === -1)
+		{
+			$this->fail('Unable to fork process');
+		}
+
 		if ($pid)
 		{
-			// parent
-			// wait 0.5 s, acquire the lock, note how long it took
-			sleep(1);
-
-			$lock = new \phpbb\lock\flock($path);
-			$start = microtime(true);
-			$ok = $lock->acquire();
-			$delta = microtime(true) - $start;
-			$this->assertTrue($ok);
-			$this->assertTrue($lock->owns_lock());
-			$this->assertGreaterThan(0.5, $delta, 'First lock acquired too soon');
-
-			$lock->release();
-			$this->assertFalse($lock->owns_lock());
-
-			// acquire again, this should be instantaneous
-			$start = microtime(true);
-			$ok = $lock->acquire();
-			$delta = microtime(true) - $start;
-			$this->assertTrue($ok);
-			$this->assertTrue($lock->owns_lock());
-			$this->assertLessThan(0.1, $delta, 'Second lock not acquired instantaneously');
-
-			// reap the child
 			$status = null;
-			pcntl_waitpid($pid, $status);
+			try
+			{
+				// parent
+				// wait 1s, acquire the lock, note how long it took
+				sleep(1);
+
+				$lock = new \phpbb\lock\flock($path);
+				$start = microtime(true);
+				$ok = $lock->acquire();
+				$delta = microtime(true) - $start;
+				$this->assertTrue($ok);
+				$this->assertTrue($lock->owns_lock());
+				$this->assertGreaterThan(0.5, $delta, 'First lock acquired too soon');
+
+				$lock->release();
+				$this->assertFalse($lock->owns_lock());
+
+				// acquire again, this should be instantaneous
+				$start = microtime(true);
+				$ok = $lock->acquire();
+				$delta = microtime(true) - $start;
+				$this->assertTrue($ok);
+				$this->assertTrue($lock->owns_lock());
+				$this->assertLessThan(0.1, $delta, 'Second lock not acquired instantaneously');
+			}
+			finally
+			{
+				// reap the child and remove the temporary lock file
+				pcntl_waitpid($pid, $status);
+				@unlink($path . '.lock');
+			}
 		}
 		else
 		{
 			// child
-			// immediately acquire the lock and sleep for 2 s
+			// immediately acquire the lock and sleep for 2s
 			$lock = new \phpbb\lock\flock($path);
 			$ok = $lock->acquire();
 			$this->assertTrue($ok);
