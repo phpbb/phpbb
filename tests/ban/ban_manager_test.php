@@ -23,7 +23,7 @@ class ban_manager_test extends \phpbb_session_test_case
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/sessions_banlist.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

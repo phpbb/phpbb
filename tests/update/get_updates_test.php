@@ -32,7 +32,7 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 
 	private $phpbb_root_path;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $phpbb_root_path;
 
@@ -47,7 +47,7 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 		$this->update = new get_updates($this->filesystem, base64_encode($this->public_key), $this->phpbb_root_path);
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		if (file_exists($this->file_path))
 		{

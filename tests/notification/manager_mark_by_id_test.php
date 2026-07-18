@@ -20,7 +20,7 @@ class phpbb_notification_manager_mark_by_id_test extends phpbb_tests_notificatio
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/notification.xml');
 	}
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -30,7 +30,7 @@ class phpbb_notification_manager_mark_by_id_test extends phpbb_tests_notificatio
 		}
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		if (strpos($this->get_database_config()['dbms'], 'mssql') !== false)
 		{
@@ -344,7 +344,6 @@ class phpbb_notification_manager_mark_by_id_test extends phpbb_tests_notificatio
 		$this->assertEquals(1, $loaded_user2_after['unread_count'], 'User 2 should still have 1 unread notification');
 	}
 }
-
 
 
 
