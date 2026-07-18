@@ -26,7 +26,7 @@ class phpbb_lock_posting_test extends phpbb_test_case
 	/** @var posting */
 	protected $lock;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->cache = new file_cache(__DIR__ . '/../tmp/');
 		$this->cache->purge(); // ensure cache is clean

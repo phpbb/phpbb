@@ -17,7 +17,7 @@ class phpbb_notification_submit_post_type_forum_test extends phpbb_notification_
 {
 	protected $item_type = 'notification.type.forum';
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $auth, $cache, $config, $db, $phpbb_container, $phpbb_dispatcher, $lang, $user, $request, $phpEx, $phpbb_root_path, $user_loader, $phpbb_log;
 
