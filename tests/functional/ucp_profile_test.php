@@ -133,14 +133,14 @@ class phpbb_functional_ucp_profile_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
 
-		// Restore the original email and MX-check setting so the shared board
-		// state is left unchanged for the rest of the suite.
-		$crawler = self::request('GET', 'ucp.php?i=ucp_profile&mode=reg_details');
-		$form = $crawler->selectButton('submit')->form();
-		$form['cur_password'] = 'adminadmin';
-		$form['email'] = $original_email;
-		$crawler = self::submit($form);
-		$this->assertContainsLang('PROFILE_UPDATED', $crawler->filter('#message')->text());
+		// Restore the original email directly. Restoring it through the UCP
+		// form would fail with EMAIL_TAKEN whenever earlier tests in the suite
+		// have created users through create_user(), whose default address is
+		// the same nobody@example.com the admin account is installed with.
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_email = '" . $this->db->sql_escape($original_email) . "'
+			WHERE username_clean = 'admin'";
+		$this->db->sql_query($sql);
 
 		$this->db->sql_query('UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '" . $this->db->sql_escape($original_check_mx) . "'
