@@ -16,10 +16,8 @@
 */
 class phpbb_functional_acp_storage_settings_test extends phpbb_functional_test_case
 {
-	public function test_storage_settings()
+	public function test_storage_settings_no_changes()
 	{
-		global $phpbb_root_path;
-
 		$this->add_lang(['common', 'acp/storage']);
 		$this->login();
 		$this->admin_login();
@@ -32,6 +30,15 @@ class phpbb_functional_acp_storage_settings_test extends phpbb_functional_test_c
 		$crawler = self::submit($form);
 		$this->assertContainsLang('INFORMATION', $crawler->filter('div[class="errorbox"] > h3')->text());
 		$this->assertContainsLang('STORAGE_NO_CHANGES', $crawler->filter('div[class="errorbox"] > p')->text());
+	}
+
+	public function test_local_storage_settings()
+	{
+		global $phpbb_root_path;
+
+		$this->add_lang(['common', 'acp/storage']);
+		$this->login();
+		$this->admin_login();
 
 		// Test empty storage paths - invalid
 		$crawler = self::request('GET', 'adm/index.php?i=acp_storage&mode=settings&sid=' . $this->sid);
