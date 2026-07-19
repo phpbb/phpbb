@@ -1003,12 +1003,12 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .row .pagination li span {
 	font-size: var(--ps-font-tiny);
 	border-radius: 2px;
-	min-width: calc(var(--ps-font-tiny) + 6px);
 	width: auto;
+	min-width: calc(var(--ps-font-tiny) + 6px);
 	height: calc(var(--ps-font-normal) + 6px);
-	padding: 1px 5px;
-	box-sizing: border-box;
 	text-align: center;
+	box-sizing: border-box;
+	padding: 1px 5px;
 }
 
 /* jQuery popups
