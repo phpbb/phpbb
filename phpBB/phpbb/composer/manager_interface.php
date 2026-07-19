@@ -85,6 +85,13 @@ interface manager_interface
 	public function get_available_packages();
 
 	/**
+	 * Returns managed packages with a newer compatible version in the cached catalog
+	 *
+	 * @return array The package names associated to their available definition.
+	 */
+	public function get_available_updates();
+
+	/**
 	 * Reset the cache
 	 */
 	public function reset_cache();

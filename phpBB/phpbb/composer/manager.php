@@ -14,6 +14,9 @@
 namespace phpbb\composer;
 
 use Composer\IO\IOInterface;
+use Composer\Package\Loader\ValidatingArrayLoader;
+use Composer\Semver\Comparator;
+use Composer\Semver\VersionParser;
 use phpbb\cache\driver\driver_interface;
 use phpbb\composer\exception\runtime_exception;
 
@@ -76,6 +79,7 @@ class manager implements manager_interface
 	 */
 	public function install(array $packages, IOInterface|null $io = null)
 	{
+		$io ??= new \phpbb\composer\io\null_io();
 		$packages = $this->normalize_version($packages);
 
 		$already_managed = array_intersect(array_keys($this->get_managed_packages()), array_keys($packages));
@@ -93,7 +97,7 @@ class manager implements manager_interface
 
 		$this->post_install($packages, $io);
 
-		$this->managed_packages = null;
+		$this->invalidate_installed_packages();
 	}
 
 	/**
@@ -123,6 +127,7 @@ class manager implements manager_interface
 	 */
 	public function update(array $packages, IOInterface|null $io = null)
 	{
+		$io ??= new \phpbb\composer\io\null_io();
 		$packages = $this->normalize_version($packages);
 
 		$not_managed = array_diff_key($packages, $this->get_managed_packages());
@@ -139,6 +144,8 @@ class manager implements manager_interface
 		$this->installer->install($managed_packages, array_keys($packages), $io);
 
 		$this->post_update($packages, $io);
+
+		$this->invalidate_installed_packages();
 	}
 
 	/**
@@ -168,6 +175,7 @@ class manager implements manager_interface
 	 */
 	public function remove(array $packages, IOInterface|null $io = null)
 	{
+		$io ??= new \phpbb\composer\io\null_io();
 		$packages = $this->normalize_version($packages);
 
 		$not_managed = array_diff_key($packages, $this->get_managed_packages());
@@ -185,7 +193,7 @@ class manager implements manager_interface
 
 		$this->post_remove($packages, $io);
 
-		$this->managed_packages = null;
+		$this->invalidate_installed_packages();
 	}
 
 	/**
@@ -266,6 +274,62 @@ class manager implements manager_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_available_updates()
+	{
+		$available_packages = $this->available_packages ?? $this->cache->get('_composer_' . $this->package_type . '_available');
+		if (!is_array($available_packages) || !$available_packages)
+		{
+			return [];
+		}
+
+		$installed_versions = $this->installer->get_installed_package_versions($this->package_type);
+		$version_parser = new VersionParser();
+		$updates = [];
+
+		foreach ($available_packages as $package)
+		{
+			if (!is_array($package))
+			{
+				continue;
+			}
+
+			$package_name = $package['composer_name'] ?? '';
+			if (!is_string($package_name) || $package_name === '' || !isset($installed_versions[$package_name]) || !is_string($installed_versions[$package_name]))
+			{
+				continue;
+			}
+
+			try
+			{
+				$available_version = $package['normalized_version'] ?? null;
+				if (!is_string($available_version))
+				{
+					if (!isset($package['version']) || !is_string($package['version']))
+					{
+						continue;
+					}
+
+					$available_version = $version_parser->normalize($package['version']);
+				}
+
+				if (Comparator::greaterThan($available_version, $installed_versions[$package_name]))
+				{
+					$updates[$package_name] = $package;
+				}
+			}
+			catch (\UnexpectedValueException $e)
+			{
+				// An invalid or incomplete catalog entry must not advertise an update.
+				continue;
+			}
+		}
+
+		return $updates;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function reset_cache()
 	{
 		$this->cache->destroy('_composer_' . $this->package_type . '_available');
@@ -306,14 +370,24 @@ class manager implements manager_interface
 	protected function normalize_version(array $packages)
 	{
 		$normalized_packages = [];
+		$version_parser = new VersionParser();
 
 		foreach ($packages as $package => $version)
 		{
 			if (is_numeric($package))
 			{
+				if (!is_string($version) || $version === '')
+				{
+					throw new runtime_exception($this->exception_prefix, 'INVALID_PACKAGE');
+				}
+
 				if (strpos($version, ':') !== false)
 				{
-					$parts = explode(':', $version);
+					$parts = explode(':', $version, 2);
+					if ($parts[0] === '' || $parts[1] === '')
+					{
+						throw new runtime_exception($this->exception_prefix, 'INVALID_PACKAGE');
+					}
 					$normalized_packages[$parts[0]] = $parts[1];
 				}
 				else
@@ -323,10 +397,40 @@ class manager implements manager_interface
 			}
 			else
 			{
+				if (!is_string($version) || $version === '')
+				{
+					throw new runtime_exception($this->exception_prefix, 'INVALID_PACKAGE');
+				}
 				$normalized_packages[$package] = $version;
 			}
 		}
 
+		foreach ($normalized_packages as $package => $version)
+		{
+			if (ValidatingArrayLoader::hasPackageNamingError($package, true) !== null)
+			{
+				throw new runtime_exception($this->exception_prefix, 'INVALID_PACKAGE');
+			}
+
+			try
+			{
+				$version_parser->parseConstraints($version);
+			}
+			catch (\UnexpectedValueException $e)
+			{
+				throw new runtime_exception($this->exception_prefix, 'INVALID_PACKAGE');
+			}
+		}
+
 		return $normalized_packages;
+	}
+
+	/**
+	 * Clear request-local installed package state after Composer changes it.
+	 */
+	private function invalidate_installed_packages(): void
+	{
+		$this->managed_packages = null;
+		$this->all_managed_packages = null;
 	}
 }

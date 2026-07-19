@@ -46,7 +46,7 @@ class extension_manager extends manager
 	/**
 	 * @var array
 	 */
-	private $enabled_extensions;
+	private $enabled_extensions = [];
 
 	/**
 	 * @var bool Enables extensions when installing them?
@@ -144,14 +144,39 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
 			catch (\Exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), [], 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
+		}
+	}
+
+	/**
+	 * Keep extensions operational if dependency resolution or installation fails after they were disabled.
+	 */
+	public function update(array $packages, IOInterface|null $io = null)
+	{
+		try
+		{
+			parent::update($packages, $io);
+		}
+		catch (\Exception $e)
+		{
+			foreach ($this->enabled_extensions as $package)
+			{
+				try
+				{
+					$this->extension_manager->enable($package);
+				}
+				catch (\Exception $ignored)
+				{
+					// Preserve the original Composer/lifecycle failure for the caller.
+				}
+			}
+
+			throw $e;
 		}
 	}
 
@@ -212,27 +237,22 @@ class extension_manager extends manager
 		{
 			try
 			{
-				if ($this->extension_manager->is_enabled($package))
+				if ($this->purge_on_remove && $this->extension_manager->is_configured($package))
 				{
-					if ($this->purge_on_remove)
-					{
-						$this->extension_manager->purge($package);
-					}
-					else
-					{
-						$this->extension_manager->disable($package);
-					}
+					$this->extension_manager->purge($package);
+				}
+				else if (!$this->purge_on_remove && $this->extension_manager->is_enabled($package))
+				{
+					$this->extension_manager->disable($package);
 				}
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
 			catch (\Exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), [], 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
 		}
 	}

@@ -45,6 +45,8 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS_MANAGED_WITH_ENABLE_ERROR'		=> 'The “%s” extension has been installed but an error occurred while enabling it.',
 	'EXTENSIONS_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
 	'EXTENSIONS_NOT_MANAGED'					=> 'The “%s” extension is not being managed.',
+	'EXTENSIONS_LIFECYCLE_ERROR'				=> 'The “%s” extension could not be safely disabled or purged, so Composer did not change its files.',
+	'EXTENSIONS_INVALID_PACKAGE'				=> 'The requested Composer package name or version constraint is invalid.',
 
 	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
 	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
@@ -117,6 +119,8 @@ $lang = array_merge($lang, array(
 	'INSTALLED_MANUALLY'	=> 'Installed manually',
 
 	'RETURN_TO_EXTENSION_LIST'	=> 'Return to the extension list',
+	'RETURN_TO_EXTENSION_MANAGER'	=> 'Back to the Extension Manager',
+	'RETURN_TO_EXTENSION_CATALOG'	=> 'Back to the Extension Catalog',
 
 	'EXT_DETAILS'			=> 'Extension Details',
 	'DISPLAY_NAME'			=> 'Display Name',
@@ -161,15 +165,28 @@ $lang = array_merge($lang, array(
 	'ENABLE_PACKAGIST_CONFIRM'		=> 'Are you sure you want to search packagist?',
 	'COMPOSER_REPOSITORIES'			=> 'Repositories',
 	'COMPOSER_REPOSITORIES_EXPLAIN'	=> 'Add URLs to Composer repositories of phpBB extensions to search here, one per line (must be the base url of the packages.json file).',
+	'RESTORE_DEFAULT_REPOSITORIES'	=> 'Restore defaults',
+	'RESTORE_DEFAULT_REPOSITORIES_EXPLAIN'	=> 'Restore the repositories supplied with phpBB. The change is not saved until you submit this form.',
 	'NO_EXTENSION_AVAILABLE'		=> 'There are no extension available for your board',
 
 	'EXTENSION_MANAGED_SUCCESS'		=> 'The extension %s is now being managed automatically.',
 	'EXTENSIONS_INSTALLED'			=> 'Extensions successfully installed.',
 	'EXTENSIONS_REMOVED'			=> 'Extensions successfully removed.',
 	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated.',
+	'EXTENSIONS_INSTALL_CONFIRM'	=> 'Installing “%s” will download and run extension code on this board. Only continue if you trust its publisher and repository.',
+	'EXTENSIONS_UPDATE_CONFIRM'	=> 'Updating “%s” will download and run new extension code on this board. Only continue if you trust its publisher and repository.',
+	'EXTENSIONS_REMOVE_CONFIRM'	=> 'Are you sure you want to remove “%s”? Depending on your catalog settings, its data may also be permanently purged.',
+	'EXTENSIONS_MANAGE_CONFIRM'	=> 'Are you sure you want Composer to replace the manually installed files for “%s”?',
+	'EXTENSIONS_ACTION_NOT_ALLOWED'	=> 'The requested package action is not allowed. The catalog may have changed; return to the catalog and try again.',
+	'EXTENSIONS_INVALID_STABILITY'	=> 'The selected minimum stability is invalid.',
+	'EXTENSIONS_INVALID_REPOSITORY'	=> '“%s” is not a valid secure Composer repository URL. Repository URLs must use HTTPS and must not contain credentials.',
 
 	'EXTENSIONS_CATALOG_NOT_AVAILABLE'	=> 'The extensions catalog is not available',
-	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'In order to use the catalog, the following files and directories must be writable: ext/ vendor-ext/ composer-ext.json and composer-ext.lock',
+	'EXTENSIONS_COMPOSER_NOT_WRITABLE'	=> 'In order to use the catalog, the following files and directories must be writable: ext/ vendor-ext/ store/ composer-ext.json and composer-ext.lock',
+	'COMPOSER_OPERATION_LOCK_FAILED'		=> 'The Composer operation could not obtain an exclusive lock. Check that the store directory is writable and try again.',
+	'COMPOSER_OPERATION_IN_PROGRESS'		=> 'Another Composer operation is already in progress. Wait for it to finish and try again.',
+	'COMPOSER_CANNOT_INSTALL'				=> 'Composer could not complete the requested package changes.',
+	'COMPOSER_CANNOT_RESTORE'				=> 'Composer failed and phpBB could not restore the previous extension manifest and lockfile. Check composer-ext.json and composer-ext.lock before trying another package operation.',
 
 	'STABILITY_STABLE'	=> 'stable',
 	'STABILITY_RC'		=> 'RC',

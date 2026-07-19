@@ -42,6 +42,8 @@
 			</dt>
 			<dd>
 				<textarea id="repositories" name="repositories" rows="5" cols="30">{{ settings.repositories|join('\n') }}</textarea>
+				<br />
+				<input class="button2" type="button" id="restore_default_repositories" value="{{ lang('RESTORE_DEFAULT_REPOSITORIES') }}" title="{{ lang('RESTORE_DEFAULT_REPOSITORIES_EXPLAIN') }}" data-default-repositories="{{ settings.default_repositories|json_encode|e('html_attr') }}" />
 			</dd>
 		</dl>
 		<dl>
@@ -126,5 +128,20 @@
 		{% include('pagination.html') %}
 	</div>
 {% endif %}
+
+<script>
+(function() {
+	'use strict';
+
+	var restoreButton = document.getElementById('restore_default_repositories');
+	var repositories = document.getElementById('repositories');
+
+	if (restoreButton && repositories) {
+		restoreButton.addEventListener('click', function() {
+			repositories.value = JSON.parse(restoreButton.dataset.defaultRepositories).join('\n');
+		});
+	}
+}());
+</script>
 
 {% include('overall_footer.html') %}
