@@ -13,8 +13,14 @@
 
 class manager_test extends phpbb_database_test_case
 {
+	/** @var \phpbb\di\service_collection */
+	protected $collection;
+
 	/** @var \phpbb\config\db_text */
 	protected $config_text;
+
+	/** @var \phpbb_mock_container_builder */
+	protected $container_mock;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -27,6 +33,15 @@ class manager_test extends phpbb_database_test_case
 
 	/** @var \phpbb\profilefields\manager */
 	protected $manager;
+
+	/** @var \phpbb\request\request */
+	protected $request;
+
+	/** @var \phpbb\template\template */
+	protected $template;
+
+	/** @var \phpbb\user */
+	protected $user;
 
 	/** @var string Table prefix */
 	protected $table_prefix;
@@ -44,7 +59,9 @@ class manager_test extends phpbb_database_test_case
 		parent::setUp();
 
 		global $phpbb_root_path, $phpEx, $table_prefix;
+		global $cache, $user;
 
+		$cache = new phpbb_mock_cache();
 		$this->db			= $this->new_dbal();
 		$this->db_tools		= $this->getMockBuilder('\phpbb\db\tools\tools')
 			->setConstructorArgs([$this->db])
@@ -52,24 +69,25 @@ class manager_test extends phpbb_database_test_case
 		$this->config_text	= new \phpbb\config\db_text($this->db, $table_prefix . 'config_text');
 		$this->table_prefix	= $table_prefix;
 
-		$container	= new phpbb_mock_container_builder();
+		$this->container_mock	= new phpbb_mock_container_builder();
 		$dispatcher	= new phpbb_mock_event_dispatcher();
 
-		$request	= $this->getMockBuilder('\phpbb\request\request')
+		$this->request	= $this->getMockBuilder('\phpbb\request\request')
 			->disableOriginalConstructor()
 			->getMock();
-		$template	= $this->getMockBuilder('\phpbb\template\template')
+		$this->template	= $this->getMockBuilder('\phpbb\template\template')
 			->disableOriginalConstructor()
 			->getMock();
 
 		$auth		= new \phpbb\auth\auth();
 		$language	= new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
-		$collection = new \phpbb\di\service_collection($container);
-		$user		= new \phpbb\user($language, '\phpbb\datetime');
-		$user->data['user_id'] = 2;
-		$user->ip = '';
+		$this->collection = new \phpbb\di\service_collection($this->container_mock);
+		$this->user		= new \phpbb\user($language, '\phpbb\datetime');
+		$this->user->data['user_id'] = 2;
+		$this->user->ip = '';
+		$user = $this->user;
 
-		$this->log	= new \phpbb\log\log($this->db, $user, $auth, $dispatcher, $phpbb_root_path, 'adm/', $phpEx, $table_prefix . 'log');
+		$this->log	= new \phpbb\log\log($this->db, $this->user, $auth, $dispatcher, $phpbb_root_path, 'adm/', $phpEx, $table_prefix . 'log');
 
 		$this->manager = new \phpbb\profilefields\manager(
 			$auth,
@@ -79,10 +97,10 @@ class manager_test extends phpbb_database_test_case
 			$dispatcher,
 			$language,
 			$this->log,
-			$request,
-			$template,
-			$collection,
-			$user,
+			$this->request,
+			$this->template,
+			$this->collection,
+			$this->user,
 			$table_prefix . 'profile_fields',
 			$table_prefix . 'profile_fields_data',
 			$table_prefix . 'profile_fields_lang',
@@ -182,5 +200,146 @@ class manager_test extends phpbb_database_test_case
 		// Test that the config entry was removed
 		$saved = $this->config_text->get('foo_bar_type.saved');
 		$this->assertEquals($saved, null, 'All disable profile fields should be removed');
+	}
+
+	public function test_generate_profile_fields_template_data_simple()
+	{
+		$profile_field_string = new \phpbb\profilefields\type\type_string($this->request, $this->template, $this->user);
+		$this->container_mock->set('profile_field_string', $profile_field_string);
+
+		$this->collection->add('profile_field_string');
+
+		$profile_row = [
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => false, 'field_contact_url' => ''], 'value' => 'John Doe'],
+		];
+
+		$result = $this->manager->generate_profile_fields_template_data($profile_row, false);
+
+		$this->assertArrayHasKey('row', $result);
+		$this->assertArrayHasKey('blockrow', $result);
+
+		$this->assertEquals([
+			'PROFILE_USERNAME_IDENT'		=> 'username',
+			'PROFILE_USERNAME_VALUE'		=> 'John Doe',
+			'PROFILE_USERNAME_VALUE_RAW'	=> 'John Doe',
+			'PROFILE_USERNAME_CONTACT'		=> '',
+			'PROFILE_USERNAME_DESC'			=> '',
+			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
+			'PROFILE_USERNAME_NAME'			=> 'user',
+			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'S_PROFILE_USERNAME_CONTACT'	=> false,
+			'S_PROFILE_USERNAME'			=> true
+			],
+			$result['row']
+		);
+
+		$this->assertEquals([
+				'PROFILE_FIELD_IDENT'		=> 'username',
+				'PROFILE_FIELD_VALUE'		=> 'John Doe',
+				'PROFILE_FIELD_VALUE_RAW'	=> 'John Doe',
+				'PROFILE_FIELD_CONTACT'		=> '',
+				'PROFILE_FIELD_DESC'			=> '',
+				'PROFILE_FIELD_TYPE'			=> 'profile_field_string',
+				'PROFILE_FIELD_NAME'			=> 'user',
+				'PROFILE_FIELD_EXPLAIN'		=> null,
+				'S_PROFILE_CONTACT'	=> false,
+				'S_PROFILE_USERNAME'			=> true
+			],
+			$result['blockrow'][0]
+		);
+	}
+
+	public function test_generate_profile_fields_template_data_invalid_contact_field()
+	{
+		$profile_field_string = new \phpbb\profilefields\type\type_string($this->request, $this->template, $this->user);
+		$this->container_mock->set('profile_field_string', $profile_field_string);
+
+		$this->collection->add('profile_field_string');
+
+		$profile_row = [
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => '%s'], 'value' => 'John Doe'],
+		];
+
+		$result = $this->manager->generate_profile_fields_template_data($profile_row);
+
+		$this->assertArrayHasKey('row', $result);
+		$this->assertArrayHasKey('blockrow', $result);
+
+		$this->assertEquals([
+			'PROFILE_USERNAME_IDENT'		=> 'username',
+			'PROFILE_USERNAME_VALUE'		=> 'John Doe',
+			'PROFILE_USERNAME_VALUE_RAW'	=> 'John Doe',
+			'PROFILE_USERNAME_CONTACT'		=> '',
+			'PROFILE_USERNAME_DESC'			=> '',
+			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
+			'PROFILE_USERNAME_NAME'			=> 'user',
+			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'S_PROFILE_USERNAME_CONTACT'	=> false,
+			'S_PROFILE_USERNAME'			=> true
+		],
+			$result['row']
+		);
+
+		$this->assertEquals([
+			'PROFILE_FIELD_IDENT'		=> 'username',
+			'PROFILE_FIELD_VALUE'		=> 'John Doe',
+			'PROFILE_FIELD_VALUE_RAW'	=> 'John Doe',
+			'PROFILE_FIELD_CONTACT'		=> '',
+			'PROFILE_FIELD_DESC'		=> '',
+			'PROFILE_FIELD_TYPE'		=> 'profile_field_string',
+			'PROFILE_FIELD_NAME'		=> 'user',
+			'PROFILE_FIELD_EXPLAIN'		=> null,
+			'S_PROFILE_CONTACT'			=> false,
+			'S_PROFILE_USERNAME'		=> true
+		],
+			$result['blockrow'][0]
+		);
+	}
+
+	public function test_generate_profile_fields_template_data_valid_contact_field()
+	{
+		$profile_field_string = new \phpbb\profilefields\type\type_string($this->request, $this->template, $this->user);
+		$this->container_mock->set('profile_field_string', $profile_field_string);
+
+		$this->collection->add('profile_field_string');
+
+		$profile_row = [
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => 'http://foo.bar/%s'], 'value' => 'John_Doe'],
+		];
+
+		$result = $this->manager->generate_profile_fields_template_data($profile_row);
+
+		$this->assertArrayHasKey('row', $result);
+		$this->assertArrayHasKey('blockrow', $result);
+
+		$this->assertEquals([
+			'PROFILE_USERNAME_IDENT'		=> 'username',
+			'PROFILE_USERNAME_VALUE'		=> 'John_Doe',
+			'PROFILE_USERNAME_VALUE_RAW'	=> 'John_Doe',
+			'PROFILE_USERNAME_CONTACT'		=> 'http://foo.bar/John_Doe',
+			'PROFILE_USERNAME_DESC'			=> '',
+			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
+			'PROFILE_USERNAME_NAME'			=> 'user',
+			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'S_PROFILE_USERNAME_CONTACT'	=> true,
+			'S_PROFILE_USERNAME'			=> true
+		],
+			$result['row']
+		);
+
+		$this->assertEquals([
+			'PROFILE_FIELD_IDENT'		=> 'username',
+			'PROFILE_FIELD_VALUE'		=> 'John_Doe',
+			'PROFILE_FIELD_VALUE_RAW'	=> 'John_Doe',
+			'PROFILE_FIELD_CONTACT'		=> 'http://foo.bar/John_Doe',
+			'PROFILE_FIELD_DESC'		=> '',
+			'PROFILE_FIELD_TYPE'		=> 'profile_field_string',
+			'PROFILE_FIELD_NAME'		=> 'user',
+			'PROFILE_FIELD_EXPLAIN'		=> null,
+			'S_PROFILE_CONTACT'			=> true,
+			'S_PROFILE_USERNAME'		=> true
+		],
+			$result['blockrow'][0]
+		);
 	}
 }
