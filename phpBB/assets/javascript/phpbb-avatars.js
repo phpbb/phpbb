@@ -171,7 +171,9 @@
 					return;
 				}
 
-				const $submitButton = this.$form.find('fieldset > input[type=submit]').first();
+				// Restrict to the form's own submit area; avatar driver sections may
+				// contain their own submit buttons (e.g. the gallery's "Go" button)
+				const $submitButton = this.$form.find('fieldset.submit-buttons, fieldset.quick').find('input[type=submit]').first();
 
 				const avatarCanvas = phpbb.avatars.cropper.getCroppedCanvas({
 					maxWidth: 4096, // High values for max quality cropping
