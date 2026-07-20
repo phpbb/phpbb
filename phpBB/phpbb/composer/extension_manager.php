@@ -227,11 +227,8 @@ class extension_manager extends manager
 	 */
 	public function pre_remove(array $packages, IOInterface|null $io = null)
 	{
-		if ($this->purge_on_remove)
-		{
-			/** @psalm-suppress InvalidArgument */
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
-		}
+		/** @psalm-suppress InvalidArgument */
+		$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
 
 		foreach ($packages as $package => $version)
 		{
@@ -253,6 +250,14 @@ class extension_manager extends manager
 			catch (\Exception $e)
 			{
 				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
+			}
+
+			// Removing the files of a configured extension would leave an invalid
+			// entry in the extension manager. Respect the no-purge setting by
+			// requiring the administrator to delete its data explicitly first.
+			if (!$this->purge_on_remove && $this->extension_manager->is_configured($package))
+			{
+				throw new runtime_exception($this->exception_prefix, 'REMOVE_REQUIRES_PURGE', [$package]);
 			}
 		}
 	}

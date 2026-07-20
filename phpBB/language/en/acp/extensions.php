@@ -46,6 +46,7 @@ $lang = array_merge($lang, array(
 	'EXTENSIONS_NOT_INSTALLED'					=> 'The “%s” extension is not installed.',
 	'EXTENSIONS_NOT_MANAGED'					=> 'The “%s” extension is not being managed.',
 	'EXTENSIONS_LIFECYCLE_ERROR'				=> 'The “%s” extension could not be safely disabled or purged, so Composer did not change its files.',
+	'EXTENSIONS_REMOVE_REQUIRES_PURGE'			=> 'The “%s” extension still has stored data, so Composer did not remove its files. Delete the extension’s data first or enable “Purge extensions while removing”.',
 	'EXTENSIONS_INVALID_PACKAGE'				=> 'The requested Composer package name or version constraint is invalid.',
 
 	'ENABLING_EXTENSIONS'	=> 'Enabling extensions',
@@ -159,7 +160,9 @@ $lang = array_merge($lang, array(
 
 	'EXTENSIONS_CATALOG_SETTINGS'	=> 'Extensions catalog settings',
 	'ENABLE_ON_INSTALL'				=> 'Enable extensions while installing',
+	'ENABLE_ON_INSTALL_EXPLAIN'		=> 'If enabled, newly installed extensions will immediately begin running on your board.',
 	'PURGE_ON_REMOVE'				=> 'Purge extensions while removing',
+	'PURGE_ON_REMOVE_EXPLAIN'		=> 'If disabled, extensions with stored data must be disabled and have their data deleted manually before Composer can remove their files.',
 	'ENABLE_PACKAGIST'				=> 'Search packagist',
 	'ENABLE_PACKAGIST_EXPLAIN'		=> 'Search packagist for phpBB extensions. Beware that packagist may contain extensions not validated by the phpBB Extension Customisations Team.',
 	'ENABLE_PACKAGIST_CONFIRM'		=> 'Are you sure you want to search packagist?',
