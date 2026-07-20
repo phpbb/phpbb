@@ -297,6 +297,36 @@ class phpbb_pagination_pagination_test extends phpbb_template_template_test_case
 				20,
 				10,
 			),
+			array(
+				2,
+				20,
+				0,
+			),
+			array(
+				9,
+				20,
+				0,
+			),
+			array(
+				11,
+				20,
+				10,
+			),
+			array(
+				19,
+				20,
+				10,
+			),
+			array(
+				25,
+				20,
+				10,
+			),
+			array(
+				-11,
+				20,
+				0,
+			),
 		);
 	}
 
