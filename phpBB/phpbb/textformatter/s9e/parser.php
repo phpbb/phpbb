@@ -302,6 +302,25 @@ class parser implements \phpbb\textformatter\parser_interface
 	}
 
 	/**
+	* Filter an EMOJI tag to reject shortcodes that consist of raw codepoints
+	*
+	* Sequences of hexadecimal digits between colons such as ":123c:" commonly
+	* appear as segments of IPv6 addresses and should remain plain text rather
+	* than be rendered as an emoji image
+	*
+	* @param  Tag    $tag      The EMOJI tag
+	* @param  string $tag_text Original text consumed by the tag
+	* @return void
+	*/
+	static public function filter_emoji(Tag $tag, $tag_text)
+	{
+		if (preg_match('/^:[0-3][0-9a-f]{3,4}(?:-[0-9a-f]{4,5})*:$/D', $tag_text))
+		{
+			$tag->invalidate();
+		}
+	}
+
+	/**
 	* Filter a flash object's height
 	*
 	* @see bbcode_firstpass::bbcode_flash()

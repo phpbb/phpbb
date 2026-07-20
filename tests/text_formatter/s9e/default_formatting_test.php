@@ -320,6 +320,26 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 					$container->get('text_formatter.renderer')->set_viewsmilies(false);
 				}
 			),
+			array(
+				// PHPBB-17655 - Segments of IPv6 addresses should not be rendered as emoji
+				'IPv6: 2a09:bac3:616e:123c::1d1:f0',
+				'IPv6: 2a09:bac3:616e:123c::1d1:f0'
+			),
+			array(
+				'IPv6: 2607:fb90:ec1d:0e17:e0c6:af94:1224:28a8',
+				'IPv6: 2607:fb90:ec1d:0e17:e0c6:af94:1224:28a8'
+			),
+			array(
+				// Raw codepoint shortcodes are rejected as they cannot be told apart
+				// from segments of IPv6 addresses
+				'Codepoints: :264d: :1f600: :1234:',
+				'Codepoints: :264d: :1f600: :1234:'
+			),
+			array(
+				// Emoji shortnames keep working
+				'Shortname: :joy:',
+				'Shortname: <img alt=":joy:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg">'
+			),
 		);
 	}
 }
