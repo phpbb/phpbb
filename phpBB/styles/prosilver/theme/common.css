@@ -843,7 +843,7 @@ fieldset.fields1 dl.pmlist dd.recipients {
 	vertical-align: middle;
 }
 
-.pagination li a, .pagination li span {
+.pagination li a, .pagination li > span {
 	border-radius: 2px;
 	padding: 2px 5px;
 }
