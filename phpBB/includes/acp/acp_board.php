@@ -570,6 +570,15 @@ class acp_board
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
+			if ($config_name == 'avatar_filesize')
+			{
+				$size_var = $request->variable($config_name, '');
+
+				$config_value = (int) $config_value;
+
+				$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
+			}
+
 			if ($submit)
 			{
 				if (isset($data['type']) && strpos($data['type'], 'password') === 0 && $config_value === '********')
@@ -1026,6 +1035,20 @@ class acp_board
 		}
 
 		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
+	}
+
+	/**
+	* Adjust the maximum avatar filesize config var for display
+	*/
+	function max_avatar_filesize($value, $key = '')
+	{
+		// Determine size var and adjust the value accordingly
+		$filesize = get_formatted_filesize($value, false, array('mb', 'kb', 'b'));
+		$size_var = $filesize['si_identifier'];
+		$value = $filesize['value'];
+
+		// size and maxlength must not be specified for input of type number
+		return '<input type="number" id="' . $key . '" min="0" max="999999999999999" step="any" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}
 
 	/**
