@@ -18,7 +18,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class phpbb_mention_controller_test extends phpbb_database_test_case
 {
-	protected $controller_helper, $db, $container, $user, $config, $auth, $cache, $form_helper;
+	protected $controller_helper, $db, $container, $user, $config, $auth, $cache, $form_helper, $user_loader;
+
+	protected string $phpbb_root_path;
+
+	protected string $php_ext;
 
 	/**
 	 * @var \phpbb\mention\controller\mention
@@ -39,7 +43,10 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
-		global $cache, $phpbb_dispatcher, $lang, $user, $phpEx, $phpbb_root_path, $user_loader;
+		global $cache, $phpbb_dispatcher, $lang, $user, $phpEx, $phpbb_root_path;
+
+		$this->phpbb_root_path = $phpbb_root_path;
+		$this->php_ext = $phpEx;
 
 		// Database
 		$this->db = $this->new_dbal();
@@ -55,7 +62,9 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			 ->method('acl_get')
 			 ->willReturnMap([
 					['u_mention', 0, true],
+					['u_viewprofile', 0, true],
 					['f_mention', 1, true],
+					['f_read', 1, true],
 				]);
 
 		// Config
@@ -93,13 +102,13 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
 
 		// User
-		$user = $this->createMock('\phpbb\user');
-		$user->ip = '';
-		$user->data = array(
-			'user_id'       => 2,
-			'username'      => 'myself',
-			'is_registered' => true,
-			'user_colour'   => '',
+		$this->user = $this->createMock('\phpbb\user');
+		$this->user->ip = '';
+		$this->user->data = array(
+			'user_id'		=> 2,
+			'username'		=> 'myself',
+			'is_registered'	=> true,
+			'user_colour'	=> '',
 		);
 
 		// Request
@@ -112,7 +121,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, USERS_TABLE);
+		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, USERS_TABLE);
 
 		// Controller helper
 		$this->controller_helper = $this->createMock('\phpbb\controller\helper');
@@ -122,8 +131,8 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 
 		$loader = new YamlFileLoader($this->container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_mention.yml');
-		$this->container->set('user_loader', $user_loader);
-		$this->container->set('user', $user);
+		$this->container->set('user_loader', $this->user_loader);
+		$this->container->set('user', $this->user);
 		$this->container->set('language', $lang);
 		$this->container->set('config', $this->config);
 		$this->container->set('dbal.conn', $this->db);
@@ -152,7 +161,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 				$phpEx
 			),
 			$this->getMockBuilder('\phpbb\template\template')->disableOriginalConstructor()->getMock(),
-			$user
+			$this->user
 		));
 		$this->container->set('text_formatter.utils', new \phpbb\textformatter\s9e\utils());
 		$this->container->set(
@@ -160,7 +169,7 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			new \phpbb\textformatter\s9e\mention_helper(
 				$this->db,
 				$this->auth,
-				$user,
+				$this->user,
 				$phpbb_root_path,
 				$phpEx
 			)
@@ -237,6 +246,14 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'name'     => 'team_member_normal',
 						'type'     => 'u',
 						'id'       => 5,
+						'avatar'   => [],
+						'rank'     => '',
+						'priority' => 1,
+					],
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
 						'avatar'   => [],
 						'rank'     => '',
 						'priority' => 1,
@@ -363,6 +380,14 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'priority' => 1,
 					],
 					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [],
+						'rank'     => '',
+						'priority' => 1,
+					],
+					[
 						'name'     => 'replier',
 						'type'     => 'u',
 						'id'       => 4,
@@ -476,6 +501,14 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 						'priority' => 1,
 					],
 					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [],
+						'rank'     => '',
+						'priority' => 1,
+					],
+					[
 						'name'     => 'team_member_normal',
 						'type'     => 'u',
 						'id'       => 5,
@@ -532,6 +565,14 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 			]],
 			['test', 1, [
 				'names' => [
+					[
+						'name'     => 'test',
+						'type'     => 'u',
+						'id'       => 8,
+						'avatar'   => [],
+						'rank'     => '',
+						'priority' => 1,
+					],
 					[
 						'name'     => 'test',
 						'type'     => 'u',
@@ -872,5 +913,269 @@ class phpbb_mention_controller_test extends phpbb_database_test_case
 
 		$response = $this->controller->handle();
 		$this->assertInstanceOf(RedirectResponse::class, $response);
+	}
+
+	public function test_user_no_viewprofile()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(false);
+
+		$user_source = new \phpbb\mention\source\user(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertTrue($user_source->get($names, 'rep', 0));
+		$this->assertEmpty($names);
+
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(true);
+
+		$user_source = new \phpbb\mention\source\user(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$this->assertTrue($user_source->get($names, 'rep', 0));
+		$this->assertEquals([0 => [
+			'name'		=> 'replier',
+			'type'		=> 'u',
+			'id'		=> 4,
+			'avatar'	=> [],
+			'rank'		=> '',
+			'priority'	=> 0,
+		]], $names);
+	}
+
+	public function test_group_no_viewprofile()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(false);
+
+		$group_source = new \phpbb\mention\source\group(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->container->get('group_helper'),
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertTrue($group_source->get($names, 'rep', 0));
+		$this->assertEmpty($names);
+
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(true);
+
+		$group_source = new \phpbb\mention\source\group(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->container->get('group_helper'),
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$this->assertTrue($group_source->get($names, 'Nor', 0));
+		$this->assertEquals([0 => [
+			'name'		=> 'Normal group',
+			'type'		=> 'g',
+			'id'		=> 1,
+			'avatar'	=> [],
+			'rank'		=> '',
+			'priority'	=> 0,
+		]], $names);
+	}
+
+	public function test_topic_no_f_read()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('f_read', 1)
+			->willReturn(false);
+
+		$topic_source = new \phpbb\mention\source\topic(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertTrue($topic_source->get($names, 'p', 1));
+		$this->assertEmpty($names);
+
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('f_read', 1)
+			->willReturn(true);
+
+		$topic_source = new \phpbb\mention\source\topic(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$this->assertTrue($topic_source->get($names, 'p', 1));
+		$this->assertEquals([0 => [
+			'name'		=> 'poster',
+			'type'		=> 'u',
+			'id'		=> 3,
+			'avatar'	=> [],
+			'rank'		=> '',
+			'priority'	=> 5,
+		]], $names);
+	}
+
+	public function test_user_no_fetch_all_with_more()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(true);
+
+		$this->config->offsetSet('mention_batch_size', 1);
+
+		$user_source = new \phpbb\mention\source\team(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertFalse($user_source->get($names, 't', 0));
+		$this->assertEquals([0 => [
+			'name'		=> 'team_member_hidden',
+			'type'		=> 'u',
+			'id'		=> 6,
+			'avatar'	=> [],
+			'rank'		=> '',
+			'priority'	=> 1,
+		]], $names);
+	}
+
+	public function test_user_no_fetch_all_with_no_more()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(true);
+
+		$this->config->offsetSet('mention_batch_size', 2);
+
+		$user_source = new \phpbb\mention\source\team(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->user_loader,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertTrue($user_source->get($names, 'team', 0));
+		$this->assertEquals([
+			[
+				'name'		=> 'team_member_hidden',
+				'type'		=> 'u',
+				'id'		=> 6,
+				'avatar'	=> [],
+				'rank'		=> '',
+				'priority'	=> 1,
+			],
+			[
+				'name'		=> 'team_member_normal',
+				'type'		=> 'u',
+				'id'		=> 5,
+				'avatar'	=> [],
+				'rank'		=> '',
+				'priority'	=> 1,
+			]
+			], $names);
+	}
+
+	public function test_group_no_fetch_all()
+	{
+		$auth = $this->getMockBuilder('\phpbb\auth\auth')
+			->disableOriginalConstructor()
+			->getMock();
+
+		$auth->method('acl_get')
+			->with('u_viewprofile')
+			->willReturn(true);
+
+		$this->config->offsetSet('mention_batch_size', 0);
+
+		$group_source = new \phpbb\mention\source\group(
+			$auth,
+			$this->config,
+			$this->db,
+			$this->container->get('group_helper'),
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+
+		$names = [];
+
+		$this->assertFalse($group_source->get($names, 'Nor', 0));
+		$this->assertEquals([], $names);
 	}
 }

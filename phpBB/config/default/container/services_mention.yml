@@ -24,19 +24,20 @@ services:
     mention.source.base_group:
         abstract: true
         arguments:
-            - '@dbal.conn'
+            - '@auth'
             - '@config'
+            - '@dbal.conn'
             - '@group_helper'
             - '@user'
-            - '@auth'
             - '%core.root_path%'
             - '%core.php_ext%'
 
     mention.source.base_user:
         abstract: true
         arguments:
-            - '@dbal.conn'
+            - '@auth'
             - '@config'
+            - '@dbal.conn'
             - '@user_loader'
             - '%core.root_path%'
             - '%core.php_ext%'

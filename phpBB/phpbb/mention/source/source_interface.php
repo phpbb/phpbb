@@ -35,4 +35,11 @@ interface source_interface
 	 * @return int Priority (defaults to 1)
 	 */
 	public function get_priority(array $row): int;
+
+	/**
+	 * Check whether the current user has permission to use this source
+	 *
+	 * @return bool True if user can use the source, false otherwise
+	 */
+	public function can_use_source(): bool;
 }

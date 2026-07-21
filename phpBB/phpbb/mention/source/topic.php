@@ -30,6 +30,26 @@ class topic extends base_user
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get(array &$names, string $keyword, int $topic_id): bool
+	{
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . (int) $topic_id;
+		$result = $this->db->sql_query($sql);
+		$forum_id = (int) $this->db->sql_fetchfield('forum_id');
+		$this->db->sql_freeresult($result);
+
+		if (!$forum_id || !$this->auth->acl_get('f_read', $forum_id))
+		{
+			return true;
+		}
+
+		return parent::get($names, $keyword, $topic_id);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function query(string $keyword, int $topic_id): string
 	{
 		/*

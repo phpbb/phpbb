@@ -129,7 +129,6 @@ class mention
 	 */
 	protected function can_mention(int $forum_id, int $topic_id): bool
 	{
-		// Retrieve forum_id for topic_id
 		if ($topic_id)
 		{
 			$sql = 'SELECT forum_id
@@ -140,13 +139,14 @@ class mention
 			$this->db->sql_freeresult($result);
 		}
 
-		// No forum id, aborting here
 		if (!$forum_id)
 		{
 			return false;
 		}
 
-		return $this->config['allow_mentions'] && $this->auth->acl_get('u_mention') && $this->auth->acl_get('f_mention', $forum_id);
+		return $this->config['allow_mentions']
+			&& $this->auth->acl_get('u_mention')
+			&& $this->auth->acl_get('f_mention', $forum_id);
 	}
 
 	/**

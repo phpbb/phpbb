@@ -32,6 +32,14 @@ class user extends base_user
 	/**
 	 * {@inheritdoc}
 	 */
+	public function can_use_source(): bool
+	{
+		return $this->auth->acl_get('u_viewprofile');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	protected function query(string $keyword, int $topic_id): string
 	{
 		return $this->db->sql_build_query('SELECT', [
