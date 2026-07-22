@@ -57,10 +57,10 @@ class add_ai_crawlers_group extends migration
 
 		$group_id = 0;
 		$group_attributes = [
-			'colour'			=> '7D9EAE',
-			'legend'			=> 0,
-			'max_recipients'	=> 5,
-			'founder_manage'	=> 0,
+			'group_colour'			=> '7D9EAE',
+			'group_legend'			=> 0,
+			'group_max_recipients'	=> 5,
+			'group_founder_manage'	=> 0,
 		];
 
 		$error = group_create($group_id, GROUP_SPECIAL, 'AI_CRAWLERS', '', $group_attributes);

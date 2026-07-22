@@ -54,8 +54,8 @@ class guest_session_config extends migration
 	public function update_data(): array
 	{
 		return [
-			['config.add', ['session_guest_gc', 300]],
-			['config.add', ['session_guest_length', 300]],
+			['config.add', ['session_guest_gc', 900]],
+			['config.add', ['session_guest_length', 900]],
 			['config.add', ['session_guest_last_gc', 0, true]],
 		];
 	}
