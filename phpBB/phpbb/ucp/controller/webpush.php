@@ -215,7 +215,7 @@ class webpush
 			$user_lang = $row['user_lang'];
 
 			$expected_push_token = hash('sha256', $user_form_token . $push_token);
-			if ($expected_push_token === $token)
+			if (hash_equals($expected_push_token, $token))
 			{
 				if ($user_lang !== $this->language->get_used_language())
 				{
