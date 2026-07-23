@@ -1,6 +1,6 @@
 Subject: "{SITENAME}" - phpBB update available
 
-Hello,
+Hello {USERNAME},
 
 This is a notification to inform you that a new update is available for your phpBB installation.
 

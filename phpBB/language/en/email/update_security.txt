@@ -1,6 +1,6 @@
 Subject: "{SITENAME}" - phpBB security update available
 
-Hello,
+Hello {USERNAME},
 
 This is a notification to inform you that a security update has been released for your phpBB installation.
 

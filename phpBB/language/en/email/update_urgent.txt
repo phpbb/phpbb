@@ -1,0 +1,14 @@
+Subject: "{SITENAME}" - phpBB urgent update required
+
+Hello {USERNAME},
+
+This is a notification to inform you that an urgent security update has been released for your phpBB installation and should be installed immediately.
+
+Your current version is {CURRENT_VERSION}, and a new version, {NEW_VERSION}, is available which includes urgent security fixes. We recommend updating your forum to ensure your installation remains secure and protected.
+
+You can view the release details and download the update packages by visiting the link below:
+{U_UPDATE_LINK}
+
+For assistance with the update process, please refer to the documentation or visit the phpBB support forums.
+
+{EMAIL_SIG}
