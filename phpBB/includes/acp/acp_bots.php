@@ -23,6 +23,9 @@ class acp_bots
 {
 	var $u_action;
 
+	/** @var string[] Valid bots groups */
+	protected $valid_bot_groups = ['AI_CRAWLERS', 'BOTS'];
+
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $template, $cache, $request, $phpbb_log, $phpbb_container;
@@ -214,7 +217,7 @@ class acp_bots
 						if ($action == 'add')
 						{
 							$bot_group_name = $request->variable('bot_group', 'BOTS');
-							if ($bot_group_name !== 'BOTS' && $bot_group_name !== 'AI_CRAWLERS')
+							if (!in_array($bot_group_name, $this->valid_bot_groups))
 							{
 								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
@@ -300,14 +303,14 @@ class acp_bots
 
 							// Update group if it contains valid value
 							$bot_group_name = $request->variable('bot_group', 'BOTS');
-							if ($bot_group_name === 'BOTS' || $bot_group_name === 'AI_CRAWLERS')
+							if (in_array($bot_group_name, $this->valid_bot_groups))
 							{
 								$sql = 'SELECT g.group_id, g.group_name
 									FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
 									WHERE ug.user_id = ' . (int) $row['user_id'] . '
 										AND ug.group_id = g.group_id
 										AND g.group_type = ' . GROUP_SPECIAL . '
-										AND ' . $db->sql_in_set('group_name', ['BOTS', 'AI_CRAWLERS']);
+										AND ' . $db->sql_in_set('group_name', $this->valid_bot_groups);
 								$result = $db->sql_query($sql);
 								$current_group = $db->sql_fetchrow($result);
 								$db->sql_freeresult($result);
@@ -351,7 +354,7 @@ class acp_bots
 							AND ug.user_id = u.user_id
 							AND g.group_id = ug.group_id
 							AND g.group_type = " . GROUP_SPECIAL . '
-							AND ' . $db->sql_in_set('g.group_name', ['BOTS', 'AI_CRAWLERS']);
+							AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups);
 					$result = $db->sql_query($sql);
 					$bot_row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -394,7 +397,7 @@ class acp_bots
 				$sql = 'SELECT group_id, group_name
 					FROM ' . GROUPS_TABLE . "
 					WHERE group_type = " . GROUP_SPECIAL . "
-						AND " . $db->sql_in_set('group_name', ['BOTS', 'AI_CRAWLERS']) . "
+						AND " . $db->sql_in_set('group_name', $this->valid_bot_groups) . "
 					ORDER BY group_name ASC";
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
@@ -456,7 +459,7 @@ class acp_bots
 				AND ug.user_id = u.user_id
 				AND g.group_id = ug.group_id
 				AND g.group_type = ' . GROUP_SPECIAL . '
-				AND ' . $db->sql_in_set('g.group_name', ['BOTS', 'AI_CRAWLERS']);
+				AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups);
 		$result = $db->sql_query($sql);
 		$total_bots = (int) $db->sql_fetchfield('total_bots');
 		$db->sql_freeresult($result);
@@ -476,7 +479,7 @@ class acp_bots
 				AND ug.user_id = u.user_id
 				AND g.group_id = ug.group_id
 				AND g.group_type = ' . GROUP_SPECIAL . '
-				AND ' . $db->sql_in_set('g.group_name', ['BOTS', 'AI_CRAWLERS']) . "
+				AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups) . "
 			ORDER BY u.user_lastvisit DESC, b.bot_name ASC";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
