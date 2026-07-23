@@ -37,4 +37,24 @@ class phpbb_dbal_schema_test extends phpbb_database_test_case
 
 		$this->assertEquals($value, $row['config_value']);
 	}
+
+	public function test_config_value_4_byte()
+	{
+		$db = $this->new_dbal();
+
+		$value = "\xF0\x9F\x9A\x80"; // "rocket" emoji
+		$sql = "INSERT INTO phpbb_config
+			(config_name, config_value)
+			VALUES ('4bytes', '$value')";
+		$db->sql_query($sql);
+
+		$sql = "SELECT config_value
+			FROM phpbb_config
+			WHERE config_name = '4bytes'";
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$this->assertEquals($value, $row['config_value']);
+	}
 }

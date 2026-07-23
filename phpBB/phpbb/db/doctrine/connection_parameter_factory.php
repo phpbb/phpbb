@@ -143,9 +143,13 @@ class connection_parameter_factory
 	 */
 	private static function enrich_parameters(array $params) : array
 	{
-		if (in_array($params['driver'], ['mysqli', 'pdo_mysql', 'pgsql', 'pdo_pgsql', 'oci8', 'pdo_oci']))
+		if (in_array($params['driver'], ['pgsql', 'pdo_pgsql', 'oci8', 'pdo_oci']))
 		{
 			$params['charset'] = 'UTF8';
+		}
+		else if (in_array($params['driver'], ['mysqli', 'pdo_mysql']))
+		{
+			$params['charset'] = 'utf8mb4';
 		}
 
 		if ($params['driver'] === 'pdo_mysql' && extension_loaded('pdo_mysql'))

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_migrations">
+		<column>migration_name</column>
+		<column>migration_depends_on</column>
+		<column>migration_schema_done</column>
+		<column>migration_data_done</column>
+		<column>migration_data_state</column>
+		<column>migration_start_time</column>
+		<column>migration_end_time</column>
+	</table>
+	<table name="phpbb_config">
+		<column>config_name</column>
+		<column>config_value</column>
+	</table>
+	<table name="phpbb_config_text">
+		<column>config_name</column>
+		<column>config_value</column>
+	</table>
+	<table name="phpbb_oauth_accounts">
+		<column>user_id</column>
+		<column>provider</column>
+		<column>oauth_provider_id</column>
+	</table>
+	<table name="phpbb_oauth_tokens">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_token</column>
+	</table>
+	<table name="phpbb_oauth_states">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_state</column>
+	</table>
+	<table name="phpbb_ext">
+		<column>ext_name</column>
+		<column>ext_active</column>
+		<column>ext_state</column>
+	</table>
+	<table name="phpbb_notification_types">
+		<column>notification_type_id</column>
+		<column>notification_type_name</column>
+		<column>notification_type_enabled</column>
+	</table>
+	<table name="phpbb_search_wordlist">
+		<column>word_id</column>
+		<column>word_text</column>
+		<column>word_common</column>
+		<column>word_count</column>
+	</table>
+	<table name="phpbb_storage">
+		<column>file_id</column>
+		<column>file_path</column>
+		<column>storage</column>
+		<column>filesize</column>
+	</table>
+	<table name="phpbb_styles">
+		<column>style_id</column>
+		<column>style_name</column>
+		<column>style_copyright</column>
+		<column>style_active</column>
+		<column>style_path</column>
+		<column>bbcode_bitfield</column>
+		<column>style_parent_id</column>
+		<column>style_parent_tree</column>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_password</column>
+		<column>user_passchg</column>
+		<column>user_email</column>
+		<column>user_type</column>
+		<column>user_login_attempts</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+	</table>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_name</column>
+		<column>group_type</column>
+		<column>group_desc</column>
+	</table>
+	<table name="phpbb_login_attempts">
+		<column>attempt_ip</column>
+		<column>attempt_browser</column>
+		<column>attempt_forwarded_for</column>
+		<column>attempt_time</column>
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+	</table>
+    <table name="phpbb_posts">
+        <column>post_id</column>
+        <column>post_text</column>
+        <column>poster_id</column>
+        <column>post_attachment</column>
+	</table>
+</dataset>

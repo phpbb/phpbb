@@ -406,6 +406,22 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Returns index name prefixed with the table shortname (if applicable).
+	 *
+	 * @param string $index_name Index name to prefix.
+	 * @param string $table_name Table name to generate prefix from.
+	 *
+	 * @return string Index name prefixed with the table shortname (if applicable)
+	 */
+	public function generate_index_name(string $index_name, string $table_name): string
+	{
+		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
+		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+
+		return $index_name;
+	}
+
+	/**
 	 * Returns an array of the table index names and relevant data in format
 	 * [
 	 *		[$index_name] = [
@@ -663,7 +679,6 @@ class doctrine implements tools_interface
 		}
 
 		$table = $schema->createTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 		$dbms_name = $this->connection->getDatabasePlatform()->getName();
 
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -689,7 +704,7 @@ class doctrine implements tools_interface
 			foreach ($table_data['KEYS'] as $key_name => $key_data)
 			{
 				$columns = (is_array($key_data[1])) ? $key_data[1] : [$key_data[1]];
-				$key_name = !str_starts_with($key_name, $short_table_name) ? self::add_prefix($key_name, $short_table_name) : $key_name;
+				$key_name = $this->generate_index_name($key_name, $table_name);
 
 				$options = [];
 				$this->schema_get_index_key_data($columns, $options);
@@ -708,7 +723,7 @@ class doctrine implements tools_interface
 		switch ($dbms_name)
 		{
 			case 'mysql':
-				$table->addOption('collate', 'utf8_bin');
+				$table->addOption('collate', 'utf8mb4_bin');
 			break;
 		}
 	}
@@ -889,8 +904,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = $this->generate_index_name($index_name, $table_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -917,13 +931,12 @@ class doctrine implements tools_interface
 	protected function schema_rename_index(Schema $schema, string $table_name, string $index_name_old, string $index_name_new, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 
 		if (!$table->hasIndex($index_name_old))
 		{
-			$index_name_old = !str_starts_with($index_name_old, $short_table_name) ? self::add_prefix($index_name_old, $short_table_name) : self::remove_prefix($index_name_old, $short_table_name);
+			$index_name_old = $this->generate_index_name($index_name_old, $table_name);
 		}
-		$index_name_new = !str_starts_with($index_name_new, $short_table_name) ? self::add_prefix($index_name_new, $short_table_name) : $index_name_new;
+		$index_name_new = $this->generate_index_name($index_name_new, $table_name);
 
 		if ($safe_check && !$table->hasIndex($index_name_old))
 		{
@@ -948,8 +961,7 @@ class doctrine implements tools_interface
 	{
 		$columns = (is_array($column)) ? $column : [$column];
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
-		$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : $index_name;
+		$index_name = $this->generate_index_name($index_name, $table_name);
 
 		if ($safe_check && $table->hasIndex($index_name))
 		{
@@ -975,11 +987,10 @@ class doctrine implements tools_interface
 	protected function schema_index_drop(Schema $schema, string $table_name, string $index_name, bool $safe_check = false): void
 	{
 		$table = $schema->getTable($table_name);
-		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 
 		if (!$table->hasIndex($index_name))
 		{
-			$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : self::remove_prefix($index_name, $short_table_name);
+			$index_name = $this->generate_index_name($index_name, $table_name);
 		}
 
 		if ($safe_check && !$table->hasIndex($index_name))

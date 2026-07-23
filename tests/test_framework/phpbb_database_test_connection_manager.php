@@ -151,7 +151,7 @@ class phpbb_database_test_connection_manager
 		switch ($this->config['dbms'])
 		{
 			case 'phpbb\db\driver\mysqli':
-				$this->pdo->exec('SET NAMES utf8');
+				$this->pdo->exec('SET NAMES utf8mb4');
 
 				/*
 				* The phpBB MySQL drivers set the STRICT_ALL_TABLES and
