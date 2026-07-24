@@ -462,6 +462,42 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		$this->assertEquals($expected_users, $notified_users2, 'Assert that expected users stay the same after replying to same topic');
 	}
 
+	public function test_notify_banned_user(): void
+	{
+		$subscription = $this->create_subscription_for_user(2);
+
+		// The ban manager logs the action and excludes the acting user from the ban
+		$this->user->data['user_id'] = ANONYMOUS;
+		$this->user->ip = '127.0.0.1';
+
+		// Ban the only user that would be notified
+		$start_time = new \DateTime();
+		$end_time = new \DateTime();
+		$end_time->setTimestamp(0);
+		$this->container->get('ban.manager')->ban('user', ['poster'], $start_time, $end_time, '');
+
+		$post_data = [
+			'forum_id'		=> '1',
+			'post_id'		=> '4',
+			'topic_id'		=> '2',
+			'post_time'		=> 1349413322,
+			'poster_id'		=> 1,
+			'topic_title'	=> '',
+			'post_subject'	=> '',
+			'post_username'	=> '',
+			'forum_name'	=> '',
+		];
+
+		// Notifying only banned users should not cause an error
+		$this->notifications->add_notifications('notification.type.post', $post_data);
+
+		// The queue should have been emptied, calling notify again should have no effect
+		$this->notification_method_webpush->notify();
+
+		$messages = $this->get_messages_for_subscription($subscription['clientHash']);
+		$this->assertEmpty($messages, 'Failed asserting that banned user has not received messages.');
+	}
+
 	/**
 	 * @dataProvider data_notification_webpush
 	 */
