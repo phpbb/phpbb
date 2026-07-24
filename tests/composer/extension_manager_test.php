@@ -21,6 +21,9 @@ use phpbb\composer\io\null_io;
 use phpbb\extension\manager as phpbb_extension_manager;
 use phpbb\filesystem\filesystem;
 
+/**
+ * Tests Composer-managed phpBB extension lifecycle handling.
+ */
 class extension_manager_test extends \phpbb_test_case
 {
 	public function test_remove_without_purge_disables_extension_and_preserves_files(): void
@@ -94,6 +97,13 @@ class extension_manager_test extends \phpbb_test_case
 		$this->addToAssertionCount(1);
 	}
 
+	/**
+	 * Creates an extension manager with mocked dependencies.
+	 *
+	 * @param phpbb_extension_manager $phpbb_extension_manager phpBB extension manager
+	 *
+	 * @return extension_manager Composer extension manager
+	 */
 	private function get_manager(phpbb_extension_manager $phpbb_extension_manager): extension_manager
 	{
 		$installer = $this->getMockBuilder(installer::class)

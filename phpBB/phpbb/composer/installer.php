@@ -135,7 +135,7 @@ class installer
 	}
 
 	/**
-	 * Update the current installed set of packages
+	 * Updates the currently installed set of packages.
 	 *
 	 * @param array $packages Packages to install.
 	 *        Each entry may be a name or an array associating a version constraint to a name
@@ -172,9 +172,9 @@ class installer
 	}
 
 	/**
-	 * Update the current installed set of packages
+	 * Updates the currently installed set of packages.
 	 *
-	 * /!\ Doesn't change the current working directory
+	 * Does not change the current working directory.
 	 *
 	 * @param array $packages Packages to install.
 	 *        Each entry may be a name or an array associating a version constraint to a name
@@ -257,9 +257,9 @@ class installer
 	}
 
 	/**
-	 * Returns the exact installed versions of packages of the supplied type(s)
+	 * Returns the exact installed versions of packages of the supplied type(s).
 	 *
-	 * /!\ Doesn't change the current working directory
+	 * Does not change the current working directory.
 	 *
 	 * @param string|array $types Returns only the packages with the given type(s)
 	 *
@@ -342,7 +342,7 @@ class installer
 	}
 
 	/**
-	 * Returns the exact installed versions of packages of the supplied type(s)
+	 * Returns the exact installed versions of packages of the supplied type(s).
 	 *
 	 * @param string|array $types Returns only the packages with the given type(s)
 	 *
@@ -672,7 +672,7 @@ class installer
 	}
 
 	/**
-	 * Check whether a requirement/conflict intersects any available exact constraint.
+	 * Checks whether a requirement/conflict intersects any available exact constraint.
 	 *
 	 * @param ConstraintInterface $constraint Constraint to test
 	 * @param ConstraintInterface[] $available_constraints Available constraints
@@ -692,7 +692,7 @@ class installer
 	}
 
 	/**
-	 * Get exact versions of packages provided by phpBB's generated root package.
+	 * Gets exact versions of packages provided by phpBB's generated root package.
 	 *
 	 * @param Composer|PartialComposer $composer Composer instance
 	 * @return array<string, ConstraintInterface[]>
@@ -719,7 +719,7 @@ class installer
 	}
 
 	/**
-	 * Get exact constraints for platform packages available to Composer.
+	 * Gets exact constraints for platform packages available to Composer.
 	 *
 	 * @param Composer|PartialComposer $composer Composer instance
 	 * @return array<string, ConstraintInterface[]>
@@ -738,7 +738,7 @@ class installer
 	}
 
 	/**
-	 * Create a repository set matching Composer's installation priority behavior.
+	 * Creates a repository set matching Composer's installation priority behavior.
 	 *
 	 * @param array $repositories Composer repositories
 	 * @param string $minimum_stability Minimum package stability
@@ -757,9 +757,11 @@ class installer
 	}
 
 	/**
-	 * Sort packages the same way as a prefer-stable Composer update.
+	 * Sorts packages the same way as a prefer-stable Composer update.
 	 *
 	 * @param PackageInterface[] $package_versions Package versions to sort in place
+	 *
+	 * @return void
 	 */
 	private function sort_package_versions(array &$package_versions): void
 	{
@@ -779,7 +781,7 @@ class installer
 	}
 
 	/**
-	 * Generates and write the json file used to install the set of packages
+	 * Generates and writes the JSON file used to install the set of packages.
 	 *
 	 * @param array $packages Packages to update.
 	 *        Each entry may be a name or an array associating a version constraint to a name
@@ -914,7 +916,7 @@ class installer
 	}
 
 	/**
-	 * Remove temporarily unavailable configured repositories when Packagist can provide a fallback.
+	 * Removes temporarily unavailable configured repositories when Packagist can provide a fallback.
 	 *
 	 * @param array $repository_configs Composer repository configuration
 	 * @param array $repositories Instantiated Composer repositories
@@ -969,7 +971,7 @@ class installer
 	}
 
 	/**
-	 * Resolve the highest compatible versions for the given package names
+	 * Resolves the highest compatible versions for the given package names
 	 * based on repositories and phpBB/PHP constraints from the provided Composer instance.
 	 *
 	 * @param array $package_names list of package names to resolve
@@ -1054,7 +1056,11 @@ class installer
 	}
 
 	/**
-	 * Restore the json file overridden by generate_ext_json_file()
+	 * Restores the JSON file overridden by generate_ext_json_file().
+	 *
+	 * @return void
+	 *
+	 * @throws runtime_exception
 	 */
 	protected function restore_ext_json_file()
 	{
@@ -1119,7 +1125,7 @@ class installer
 	}
 
 	/**
-	 * Generate the repositories entry of the packages json file
+	 * Generates the repositories entry of the packages JSON file.
 	 *
 	 * @return array repositories entry
 	 */

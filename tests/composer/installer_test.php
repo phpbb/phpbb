@@ -25,6 +25,9 @@ use phpbb\composer\io\null_io;
 use phpbb\filesystem\filesystem;
 use phpbb\request\request;
 
+/**
+ * Tests Composer extension installer repository and compatibility handling.
+ */
 class installer_test extends \phpbb_test_case
 {
 	public function test_packagist_keeps_configured_repositories_non_canonical(): void
@@ -132,11 +135,23 @@ class installer_test extends \phpbb_test_case
 		$this->assertArrayNotHasKey('phpbb/viglink', $versions);
 	}
 
+	/**
+	 * Creates the testable Composer installer.
+	 *
+	 * @return test_installer
+	 */
 	private function get_installer(): test_installer
 	{
 		return new test_installer('./', new filesystem(), new request(null, false));
 	}
 
+	/**
+	 * Creates a mocked Composer repository.
+	 *
+	 * @param array $config Composer repository configuration
+	 *
+	 * @return ComposerRepository
+	 */
 	private function get_repository(array $config): ComposerRepository
 	{
 		$repository = $this->getMockBuilder(ComposerRepository::class)
@@ -148,6 +163,13 @@ class installer_test extends \phpbb_test_case
 		return $repository;
 	}
 
+	/**
+	 * Creates a phpBB extension package with an installer constraint.
+	 *
+	 * @param string $installer_constraint Composer Installers constraint
+	 *
+	 * @return CompletePackage
+	 */
 	private function get_extension(string $installer_constraint): CompletePackage
 	{
 		$extension = new CompletePackage('phpbb/viglink', 'dev-dev/4.0', 'dev-dev/4.0');
@@ -160,16 +182,38 @@ class installer_test extends \phpbb_test_case
 		return $extension;
 	}
 
+	/**
+	 * Creates a package requirement link.
+	 *
+	 * @param string $target     Required package name
+	 * @param string $constraint Required package constraint
+	 *
+	 * @return Link
+	 */
 	private function get_link(string $target, string $constraint): Link
 	{
 		return new Link('phpbb/viglink', $target, $this->parse_constraint($constraint), Link::TYPE_REQUIRE, $constraint);
 	}
 
+	/**
+	 * Parses a Composer version constraint.
+	 *
+	 * @param string $constraint Composer version constraint
+	 *
+	 * @return ConstraintInterface
+	 */
 	private function parse_constraint(string $constraint): ConstraintInterface
 	{
 		return (new VersionParser())->parseConstraints($constraint);
 	}
 
+	/**
+	 * Runs compatibility filtering for an extension package.
+	 *
+	 * @param CompletePackage $extension Extension package
+	 *
+	 * @return array Compatible extension versions
+	 */
 	private function get_compatible_versions(CompletePackage $extension): array
 	{
 		$installer = $this->get_installer();

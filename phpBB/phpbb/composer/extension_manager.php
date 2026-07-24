@@ -44,7 +44,7 @@ class extension_manager extends manager
 	protected $root_path;
 
 	/**
-	 * @var array
+	 * @var string[] Extensions that must be re-enabled after an update
 	 */
 	private $enabled_extensions = [];
 
@@ -154,7 +154,9 @@ class extension_manager extends manager
 	}
 
 	/**
-	 * Keep extensions operational if dependency resolution or installation fails after they were disabled.
+	 * Updates extensions and restores their enabled state if Composer fails.
+	 *
+	 * {@inheritdoc}
 	 */
 	public function update(array $packages, IOInterface|null $io = null)
 	{

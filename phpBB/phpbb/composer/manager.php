@@ -356,16 +356,16 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Normalize a packages/version array. Every entry can have 3 different forms:
+	 * Normalizes a packages/version array. Every entry can have 3 different forms:
 	 *  - $package => $version
 	 *  - $indice => $package:$version
 	 *  - $indice => $package
-	 * They are converted to he form:
+	 * They are converted to the form:
 	 *  - $package => $version ($version is set to '*' for the third form)
 	 *
-	 * @param array $packages
+	 * @param array $packages Packages to normalize
 	 *
-	 * @return array
+	 * @return array Normalized packages and version constraints
 	 */
 	protected function normalize_version(array $packages)
 	{
@@ -426,7 +426,9 @@ class manager implements manager_interface
 	}
 
 	/**
-	 * Clear request-local installed package state after Composer changes it.
+	 * Clears request-local installed package state after Composer changes it.
+	 *
+	 * @return void
 	 */
 	private function invalidate_installed_packages(): void
 	{

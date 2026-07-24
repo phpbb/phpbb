@@ -17,8 +17,16 @@ use phpbb\cache\driver\driver_interface;
 use phpbb\composer\installer;
 use phpbb\composer\manager;
 
+/**
+ * Tests Composer package manager update discovery.
+ */
 class manager_test extends \phpbb_test_case
 {
+	/**
+	 * Provides installed and catalog versions for update discovery tests.
+	 *
+	 * @return array<string, array>
+	 */
 	public static function get_available_updates_data(): array
 	{
 		return [
@@ -31,6 +39,14 @@ class manager_test extends \phpbb_test_case
 	}
 
 	/**
+	 * Tests whether only newer compatible catalog versions are offered.
+	 *
+	 * @param string $installed_version Installed normalized version
+	 * @param array  $catalog_version   Catalog package definition
+	 * @param bool   $expected          Whether an update is expected
+	 *
+	 * @return void
+	 *
 	 * @dataProvider get_available_updates_data
 	 */
 	public function test_get_available_updates(string $installed_version, array $catalog_version, bool $expected): void
@@ -60,6 +76,11 @@ class manager_test extends \phpbb_test_case
 		$this->assertSame($expected, isset($updates['vendor/extension']));
 	}
 
+	/**
+	 * Tests that update discovery does not fetch a missing catalog.
+	 *
+	 * @return void
+	 */
 	public function test_get_available_updates_does_not_fetch_missing_catalog(): void
 	{
 		$installer = $this->getMockBuilder(installer::class)
