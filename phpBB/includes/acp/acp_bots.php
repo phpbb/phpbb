@@ -331,6 +331,11 @@ class acp_bots
 											) . " WHERE user_id = " . (int) $row['user_id'] . "
 												AND group_id = " . (int) $current_group['group_id'];
 										$db->sql_query($sql);
+
+										$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', [
+												'group_id' => (int) $new_group['group_id']]
+											) . ' WHERE user_id = ' . (int) $row['user_id'];
+										$db->sql_query($sql);
 									}
 								}
 							}
