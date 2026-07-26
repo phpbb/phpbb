@@ -1059,6 +1059,34 @@ class session
 	}
 
 	/**
+	* Anonymous session garbage collection
+	*
+	* Removes expired anonymous (guest) sessions using the shorter session_guest_length
+	* TTL. This is intentionally independent of session_gc() so it can be scheduled
+	* on a much tighter interval without touching registered-user session data.
+	*/
+	public function session_guest_gc(): void
+	{
+		global $db, $config;
+
+		if (!$this->time_now)
+		{
+			$this->time_now = time();
+		}
+
+		$guest_session_length = isset($config['session_guest_length'])
+			? min((int) $config['session_guest_length'], (int) $config['session_length'])
+			: (int) $config['session_length'];
+
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . ANONYMOUS . '
+				AND session_time < ' . (int) ($this->time_now - $guest_session_length);
+		$db->sql_query($sql);
+
+		$config->set('session_guest_last_gc', $this->time_now, false);
+	}
+
+	/**
 	* Sets a cookie
 	*
 	* Sets a cookie of the given name with the specified data for the given length of time. If no time is specified, a session cookie will be set.

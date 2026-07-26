@@ -25,15 +25,19 @@ class acp_bots
 	var $tpl_name;
 	var $page_title;
 
+	/** @var string[] Valid bots groups */
+	protected $valid_bot_groups = ['AI_CRAWLERS', 'BOTS'];
+
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $template, $cache, $request, $phpbb_log;
+		global $config, $db, $user, $template, $cache, $request, $phpbb_log, $phpbb_container;
 		global $phpbb_root_path, $phpEx;
 
 		$action = $request->variable('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = $request->is_set_post('submit');
 		$mark	= $request->variable('mark', array(0));
 		$bot_id	= $request->variable('id', 0);
+		$start	= $request->variable('start', 0);
 
 		if (isset($_POST['add']))
 		{
@@ -214,9 +218,15 @@ class acp_bots
 						// New bot? Create a new user and group entry
 						if ($action == 'add')
 						{
+							$bot_group_name = $request->variable('bot_group', 'BOTS');
+							if (!in_array($bot_group_name, $this->valid_bot_groups))
+							{
+								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+							}
+
 							$sql = 'SELECT group_id, group_colour
 								FROM ' . GROUPS_TABLE . "
-								WHERE group_name = 'BOTS'
+								WHERE group_name = '" . $db->sql_escape($bot_group_name) . "'
 									AND group_type = " . GROUP_SPECIAL;
 							$result = $db->sql_query($sql);
 							$group_row = $db->sql_fetchrow($result);
@@ -293,6 +303,45 @@ class acp_bots
 								user_update_name($row['bot_name'], $bot_row['bot_name']);
 							}
 
+							// Update group if it contains valid value
+							$bot_group_name = $request->variable('bot_group', 'BOTS');
+							if (in_array($bot_group_name, $this->valid_bot_groups))
+							{
+								$sql = 'SELECT g.group_id, g.group_name
+									FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
+									WHERE ug.user_id = ' . (int) $row['user_id'] . '
+										AND ug.group_id = g.group_id
+										AND g.group_type = ' . GROUP_SPECIAL . '
+										AND ' . $db->sql_in_set('group_name', $this->valid_bot_groups);
+								$result = $db->sql_query($sql);
+								$current_group = $db->sql_fetchrow($result);
+								$db->sql_freeresult($result);
+
+								if ($current_group && $current_group['group_name'] !== $bot_group_name)
+								{
+									$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . "
+										WHERE group_name = '" . $db->sql_escape($bot_group_name) . "'
+											AND group_type = " . GROUP_SPECIAL;
+									$result = $db->sql_query($sql);
+									$new_group = $db->sql_fetchrow($result);
+									$db->sql_freeresult($result);
+
+									if ($new_group)
+									{
+										$sql = 'UPDATE ' . USER_GROUP_TABLE . ' SET ' . $db->sql_build_array('UPDATE', [
+												'group_id' => (int) $new_group['group_id']]
+											) . " WHERE user_id = " . (int) $row['user_id'] . "
+												AND group_id = " . (int) $current_group['group_id'];
+										$db->sql_query($sql);
+
+										$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', [
+												'group_id' => (int) $new_group['group_id']]
+											) . ' WHERE user_id = ' . (int) $row['user_id'];
+										$db->sql_query($sql);
+									}
+								}
+							}
+
 							$log = 'UPDATED';
 						}
 
@@ -305,10 +354,14 @@ class acp_bots
 				}
 				else if ($bot_id)
 				{
-					$sql = 'SELECT b.*, u.user_lang, u.user_style
-						FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
+					$sql = 'SELECT b.*, u.user_lang, u.user_style, g.group_name
+						FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . " g
 						WHERE b.bot_id = $bot_id
-							AND u.user_id = b.user_id";
+							AND u.user_id = b.user_id
+							AND ug.user_id = u.user_id
+							AND g.group_id = ug.group_id
+							AND g.group_type = " . GROUP_SPECIAL . '
+							AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups);
 					$result = $db->sql_query($sql);
 					$bot_row = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -339,6 +392,35 @@ class acp_bots
 
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
+				// Build bot group options
+				$current_group = 'BOTS';
+				if ($action == 'edit' && !$submit && !empty($bot_row['group_name']))
+				{
+					$current_group = $bot_row['group_name'];
+				}
+				else if ($submit)
+				{
+					$current_group = $request->variable('bot_group', 'BOTS');
+				}
+
+				$bot_group_options = [];
+				$sql = 'SELECT group_id, group_name
+					FROM ' . GROUPS_TABLE . "
+					WHERE group_type = " . GROUP_SPECIAL . "
+						AND " . $db->sql_in_set('group_name', $this->valid_bot_groups) . "
+					ORDER BY group_name ASC";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$selected = ($current_group === $row['group_name']) ? ' selected="selected"' : '';
+					$bot_group_options[] = [
+						'VALUE'			=> $row['group_name'],
+						'SELECTED'		=> $selected,
+						'OPTION'		=> $user->lang['G_' . $row['group_name']],
+					];
+				}
+				$db->sql_freeresult($result);
+
 				$template->assign_vars(array(
 					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
@@ -354,6 +436,11 @@ class acp_bots
 						'id'		=> 'bot_active',
 						'name'		=> 'bot_active',
 						'options'	=> $s_active_options,
+					],
+					'S_BOT_GROUP_OPTIONS' => [
+						'id'		=> 'bot_group',
+						'name'		=> 'bot_group',
+						'options'	=> $bot_group_options,
 					],
 					'S_STYLE_OPTIONS'	=> [
 						'id'		=> 'bot_style',
@@ -388,16 +475,38 @@ class acp_bots
 			$s_options .= '<option value="' . $value . '">' . $user->lang[$lang] . '</option>';
 		}
 
+		$pagination = $phpbb_container->get('pagination');
+
+		// Count total bots for pagination
+		$sql = 'SELECT COUNT(*) AS total_bots
+			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
+			WHERE u.user_id = b.user_id
+				AND ug.user_id = u.user_id
+				AND g.group_id = ug.group_id
+				AND g.group_type = ' . GROUP_SPECIAL . '
+				AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups);
+		$result = $db->sql_query($sql);
+		$total_bots = (int) $db->sql_fetchfield('total_bots');
+		$db->sql_freeresult($result);
+
+		$start = $pagination->validate_start($start, $config['topics_per_page'], $total_bots);
+
+		$pagination->generate_template_pagination($this->u_action, 'pagination', 'start', $total_bots, $config['topics_per_page'], $start);
+
 		$template->assign_vars(array(
-			'U_ACTION'		=> $this->u_action,
+			'U_ACTION'		=> $this->u_action . "&amp;start=$start",
 			'S_BOT_OPTIONS'	=> $s_options)
 		);
 
-		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit
-			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u
+		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit, u.user_colour, g.group_name
+			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
 			WHERE u.user_id = b.user_id
-			ORDER BY u.user_lastvisit DESC, b.bot_name ASC';
-		$result = $db->sql_query($sql);
+				AND ug.user_id = u.user_id
+				AND g.group_id = ug.group_id
+				AND g.group_type = ' . GROUP_SPECIAL . '
+				AND ' . $db->sql_in_set('g.group_name', $this->valid_bot_groups) . "
+			ORDER BY u.user_lastvisit DESC, b.bot_name ASC";
+		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -406,7 +515,9 @@ class acp_bots
 
 			$template->assign_block_vars('bots', array(
 				'BOT_NAME'		=> $row['bot_name'],
+				'BOT_GROUP'		=> (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
 				'BOT_ID'		=> $row['bot_id'],
+				'USER_COLOUR'	=> $row['user_colour'],
 				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
 
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
