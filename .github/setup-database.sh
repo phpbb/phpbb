@@ -18,6 +18,8 @@ if [ "$DB" == "postgres" ]
 then
 	psql -c 'DROP DATABASE IF EXISTS phpbb_tests;' -U postgres
 	psql -c 'create database phpbb_tests;' -U postgres
+	psql -c "ALTER DATABASE phpbb_tests SET statement_timeout = '60s';" -U postgres
+	psql -c "ALTER DATABASE phpbb_tests SET lock_timeout = '30s';" -U postgres
 fi
 
 if [ "$MYISAM" == '1' ]

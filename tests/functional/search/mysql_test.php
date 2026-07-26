@@ -28,9 +28,12 @@ class phpbb_functional_search_mysql_test extends phpbb_functional_search_base
 		// Some versions of MariaDB might not return any results in the search
 		// until the table has been optimized or the index deleted and re-created.
 		$db = $this->get_db();
-		$db->sql_return_on_error(true);
-		$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE;
-		$db->sql_query($sql);
-		$db->sql_return_on_error(false);
+		if (stripos($db->sql_server_info(true), 'mariadb') !== false)
+		{
+			$db->sql_return_on_error(true);
+			$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE;
+			$db->sql_query($sql);
+			$db->sql_return_on_error(false);
+		}
 	}
 }
