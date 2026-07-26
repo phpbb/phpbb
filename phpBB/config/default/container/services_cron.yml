@@ -158,6 +158,16 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.tidy_guest_sessions:
+        class: phpbb\cron\task\core\tidy_guest_sessions
+        arguments:
+            - '@config'
+            - '@user'
+        calls:
+            - [set_name, [cron.task.core.tidy_guest_sessions]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.tidy_warnings:
         class: phpbb\cron\task\core\tidy_warnings
         arguments:

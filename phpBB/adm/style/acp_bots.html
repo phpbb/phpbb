@@ -44,6 +44,12 @@
 		</dd>
 	</dl>
 	<dl>
+		<dt><label for="{{ S_BOT_GROUP_OPTIONS.id }}">{{ lang('BOT_GROUP') ~ lang('COLON') }}</label><br /><span>{{ lang('BOT_GROUP_EXPLAIN') }}</span></dt>
+		<dd>
+			{{ FormsSelect(S_BOT_GROUP_OPTIONS) }}
+		</dd>
+	</dl>
+	<dl>
 		<dt><label for="bot_agent">{L_BOT_AGENT}{L_COLON}</label><br /><span>{L_BOT_AGENT_EXPLAIN}</span></dt>
 		<dd><input name="bot_agent" type="text" id="bot_agent" value="{BOT_AGENT}" maxlength="255" /></dd>
 	</dl>
@@ -68,10 +74,17 @@
 
 	<form id="acp_bots" method="post" action="{U_ACTION}">
 
+	{% if pagination %}
+	<div class="pagination top-pagination">
+		{% include 'pagination.html' %}
+	</div>
+	{% endif %}
+
 	<table class="table1 zebra-table">
 	<thead>
 	<tr>
 		<th>{L_BOT_NAME}</th>
+		<th>{L_BOT_GROUP}</th>
 		<th>{L_BOT_LAST_VISIT}</th>
 		<th colspan="3">{L_OPTIONS}</th>
 		<th>{L_MARK}</th>
@@ -80,7 +93,8 @@
 	<tbody>
 	<!-- BEGIN bots -->
 		<tr>
-			<td style="width: 50%;">{bots.BOT_NAME}</td>
+			<td style="width: 35%;{% if bots.USER_COLOUR %} font-weight: bold; color: {{ '#' ~ bots.USER_COLOUR|e('html_attr') }}{% endif %}">{bots.BOT_NAME}</td>
+			<td style="width: 15%;">{bots.BOT_GROUP}</td>
 			<td style="width: 15%; white-space: nowrap;" align="center">&nbsp;{bots.LAST_VISIT}&nbsp;</td>
 			<td style="text-align: center;">&nbsp;<a href="{bots.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{bots.L_ACTIVATE_DEACTIVATE}</a>&nbsp;</td>
 			<td style="text-align: center;">&nbsp;<a href="{bots.U_EDIT}">{L_EDIT}</a>&nbsp;</td>
@@ -90,6 +104,12 @@
 	<!-- END bots -->
 	</tbody>
 	</table>
+
+	{% if pagination %}
+	<div class="pagination">
+		{% include 'pagination.html' %}
+	</div>
+	{% endif %}
 
 	<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 		<input class="button2" name="add" type="submit" value="{L_BOT_ADD}" />

@@ -331,6 +331,7 @@ $lang = array_merge($lang, array(
 		2	=> '%d guests',
 	),
 	'G_ADMINISTRATORS'			=> 'Administrators',
+	'G_AI_CRAWLERS'				=> 'AI Crawlers',
 	'G_BOTS'					=> 'Bots',
 	'G_GUESTS'					=> 'Guests',
 	'G_REGISTERED'				=> 'Registered users',
