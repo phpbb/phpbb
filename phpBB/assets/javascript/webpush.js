@@ -75,7 +75,7 @@ function PhpbbWebpush() {
 	};
 
 	/**
-	 * If subscribing is disabled, hide the dropdown toggle and update the subscription button text
+	 * Disable subscribing buttons, update subscribe button text and hide dropdown toggle
 	 *
 	 * @returns {void}
 	 */
@@ -95,7 +95,7 @@ function PhpbbWebpush() {
 	}
 
 	/**
-	 * Update button state depending on the notification state
+	 * Update button state depending on notification state
 	 *
 	 * @returns {Promise<void>}
 	 */
@@ -129,7 +129,7 @@ function PhpbbWebpush() {
 	}
 
 	/**
-	 * Check whether a subscription is valid
+	 * Check whether subscription is valid
 	 *
 	 * @param {PushSubscription} subscription
 	 * @returns {boolean}

@@ -652,7 +652,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		}
 
 		// Insert a permanently-removed.invalid subscription for the first user.
-		// This simulates a dead subscription whose endpoint can never resolve (RFC 6761).
+		// Simulate a dead subscription whose endpoint can never resolve (RFC 6761).
 		$first_user_id = array_key_first($expected_users);
 		$dead_endpoint = 'https://permanently-removed.invalid/fcm/send/test_dead_subscription';
 		$this->insert_subscription_for_user($first_user_id, $dead_endpoint);
@@ -671,7 +671,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 		// Send notifications — should trigger cleanup of the permanently-removed subscription
 		$this->notifications->add_notifications($notification_type, $post_data);
 
-		// The dead subscription should have been silently deleted
+		// Confirm that the dead subscription was silently deleted
 		$this->assertEquals(0, $this->get_subscription_count(), 'Expected permanently-removed subscription to be deleted');
 
 		// Verify no admin log was written — unlike real delivery failures (which log errors),
@@ -687,10 +687,10 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 	public function test_push_token_map_is_per_user(): void
 	{
-		// Verifies that when multiple users are notified about the same item,
-		// each user's push token is stored and used independently.
-		// Previously the map was keyed [type_id][item_id], so the last user's
-		// token overwrote all others, making every other user's token invalid.
+		// Verify that each user's push token is stored and used independently when
+		// multiple users are notified about the same item. Avoid keying the map by
+		// [type_id][item_id], which lets the last user's token overwrite all others
+		// and makes every other user's token invalid.
 		$subscription_info = [];
 		$expected_users = [2 => ['user_id' => '2'], 3 => ['user_id' => '3'], 4 => ['user_id' => '4']];
 		foreach ($expected_users as $user_id => $user_data)
@@ -1123,14 +1123,14 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 	/**
 	 * Create a real subscription via the push testing service for the given user, then overwrite
-	 * its endpoint with the specified value. This gives a subscription with valid encryption keys
-	 * (required for payload encryption) but an endpoint that will never resolve — used for testing
-	 * dead/sentinel endpoints such as permanently-removed.invalid.
+	 * its endpoint with the specified value. Retain valid encryption keys (required for payload
+	 * encryption) while using an endpoint that will never resolve to test dead/sentinel endpoints
+	 * such as permanently-removed.invalid.
 	 */
 	protected function insert_subscription_for_user(int $user_id, string $endpoint): void
 	{
 		// Get a real subscription from the push testing service so the p256dh/auth keys are
-		// valid base64url-encoded EC keys that the library can actually encrypt against.
+		// kept as valid base64url-encoded EC keys that the library can encrypt against.
 		$subscription_data = $this->create_subscription_for_user($user_id);
 
 		// Overwrite the endpoint to the dead one we want to test with.
