@@ -478,7 +478,7 @@ class acp_bots
 			'S_BOT_OPTIONS'	=> $s_options)
 		);
 
-		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit, g.group_name
+		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit, u.user_colour, g.group_name
 			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
 			WHERE u.user_id = b.user_id
 				AND ug.user_id = u.user_id
@@ -497,6 +497,7 @@ class acp_bots
 				'BOT_NAME'		=> $row['bot_name'],
 				'BOT_GROUP'		=> (isset($user->lang['G_' . $row['group_name']])) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
 				'BOT_ID'		=> $row['bot_id'],
+				'USER_COLOUR'	=> $row['user_colour'],
 				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
 
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",

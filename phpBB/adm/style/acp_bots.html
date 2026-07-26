@@ -90,7 +90,7 @@
 	<tbody>
 	<!-- BEGIN bots -->
 		<tr>
-			<td style="width: 35%;">{bots.BOT_NAME}</td>
+			<td style="width: 35%;{% if bots.USER_COLOUR %} font-weight: bold; color: {{ '#' ~ bots.USER_COLOUR|e('html_attr') }}{% endif %}">{bots.BOT_NAME}</td>
 			<td style="width: 15%;">{bots.BOT_GROUP}</td>
 			<td style="width: 15%; white-space: nowrap;" align="center">&nbsp;{bots.LAST_VISIT}&nbsp;</td>
 			<td style="text-align: center;">&nbsp;<a href="{bots.U_ACTIVATE_DEACTIVATE}" data-ajax="activate_deactivate">{bots.L_ACTIVATE_DEACTIVATE}</a>&nbsp;</td>
