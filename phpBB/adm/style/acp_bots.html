@@ -44,13 +44,10 @@
 		</dd>
 	</dl>
 	<dl>
-		<dt><label for="bot_group">{{ lang('BOT_GROUP') ~ lang('COLON') }}</label><br /><span>{{ lang('BOT_GROUP_EXPLAIN') }}</span></dt>
+		<dt><label for="{{ S_BOT_GROUP_OPTIONS.id }}">{{ lang('BOT_GROUP') ~ lang('COLON') }}</label><br /><span>{{ lang('BOT_GROUP_EXPLAIN') }}</span></dt>
 		<dd>
-			<select id="bot_group" name="bot_group">
-				{% for group in S_BOT_GROUP_OPTIONS %}
-					<option value="{{ group.VALUE }}"{{ group.SELECTED }}>{{ group.OPTION }}</option>
-				{% endfor %}
-			</select></dd>
+			{{ FormsSelect(S_BOT_GROUP_OPTIONS) }}
+		</dd>
 	</dl>
 	<dl>
 		<dt><label for="bot_agent">{L_BOT_AGENT}{L_COLON}</label><br /><span>{L_BOT_AGENT_EXPLAIN}</span></dt>

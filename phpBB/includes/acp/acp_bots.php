@@ -414,9 +414,9 @@ class acp_bots
 				{
 					$selected = ($current_group === $row['group_name']) ? ' selected="selected"' : '';
 					$bot_group_options[] = [
-						'VALUE'			=> $row['group_name'],
-						'SELECTED'		=> $selected,
-						'OPTION'		=> $user->lang['G_' . $row['group_name']],
+						'value'			=> $row['group_name'],
+						'selected'		=> $selected,
+						'label'			=> $user->lang['G_' . $row['group_name']],
 					];
 				}
 				$db->sql_freeresult($result);
