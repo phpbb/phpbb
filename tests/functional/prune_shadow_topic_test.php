@@ -133,12 +133,24 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 
 		// Try to ensure that the cron can actually run before we start to wait for it
 		usleep(100000);
-		$cron_lock = new \phpbb\lock\db('cron_lock', new \phpbb\config\db($this->db, new \phpbb\cache\driver\dummy(), 'phpbb_config'), $this->db);
-		while (!$cron_lock->acquire())
+		$lock_acquired = false;
+		$lock_timeout = microtime(true) + 30;
+		do
 		{
-			// do nothing
+			// Reload the config so a lock released by the cron process is visible.
+			$cron_lock = new \phpbb\lock\db('cron_lock', new \phpbb\config\db($this->db, new \phpbb\cache\driver\dummy(), 'phpbb_config'), $this->db);
+			if ($cron_lock->acquire())
+			{
+				$cron_lock->release();
+				$lock_acquired = true;
+				break;
+			}
+
+			usleep(100000);
 		}
- 		$cron_lock->release();
+		while (microtime(true) < $lock_timeout);
+
+		$this->assertTrue($lock_acquired, 'Cron lock was not released within 30 seconds');
 
 		$this->assert_forum_details($this->data['forums']['Prune Shadow'], array(
 			'forum_posts_approved'		=> 0,
