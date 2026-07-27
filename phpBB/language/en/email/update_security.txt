@@ -6,8 +6,8 @@ This is a notification to inform you that a security update has been released fo
 
 Your current version is {CURRENT_VERSION}, and a new version, {NEW_VERSION}, is available which includes important security fixes. We recommend updating your forum to ensure your installation remains secure and protected.
 
-You can view the release details and download the update packages by visiting the link below:
-{U_UPDATE_LINK}
+You can view the release details in the Admin Control Panel of your phpBB installation or by visiting the official phpBB website.
+{U_BOARD}
 
 For assistance with the update process, please refer to the documentation or visit the phpBB support forums.
 

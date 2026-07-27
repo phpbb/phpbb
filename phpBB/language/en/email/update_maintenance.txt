@@ -6,8 +6,8 @@ This is a notification to inform you that a new update is available for your php
 
 Your current version is {CURRENT_VERSION}, and the latest available version is {NEW_VERSION}. It is highly recommended that you keep your forum up to date to ensure the highest level of security, stability, and performance.
 
-You can view the release details and download the update packages by visiting the link below:
-{U_UPDATE_LINK}
+You can view the release details in the Admin Control Panel of your phpBB installation or by visiting the official phpBB website.
+{U_BOARD}
 
 For assistance with the update process, please refer to the documentation or visit the phpBB support forums.
 

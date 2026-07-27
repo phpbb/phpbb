@@ -126,7 +126,7 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 			->with(
 				$this->equalTo('notification.type.update_maintenance'),
 				$this->callback(function ($type_data) use ($update_data) {
-					$this->assertArrayHasKey('item_id', $type_data);
+					$this->assertEquals(1089886753, $type_data['item_id']);
 					$this->assertEquals('update_maintenance', $type_data['template']);
 					$this->assertEquals('3.1.0', $type_data['current_version']);
 					$this->assertEquals($update_data['current'], $type_data['new_version']);

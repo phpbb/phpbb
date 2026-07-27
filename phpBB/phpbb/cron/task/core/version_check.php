@@ -100,7 +100,7 @@ class version_check extends base
 	{
 		$template = $this->get_template_name($update_data);
 		$type_data = [
-			'item_id' => (int) (microtime(true) * 1000),
+			'item_id' => (int) sprintf('%u', crc32($template . $update_data['current'])),
 			'template' => $template,
 			'current_version' => $this->config['version'],
 			'new_version' => $update_data['current'],

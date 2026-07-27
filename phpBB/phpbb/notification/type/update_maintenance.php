@@ -117,7 +117,8 @@ class update_maintenance extends base
 	*/
 	public function get_url()
 	{
-		return $this->get_data('announcement') ?: $this->get_data('download');
+		// Can't redirect to ACP without exposing session ID
+		return '';
 	}
 
 	/**
@@ -136,7 +137,6 @@ class update_maintenance extends base
 		return [
 			'CURRENT_VERSION' => $this->get_data('current_version'),
 			'NEW_VERSION' => $this->get_data('new_version'),
-			'U_UPDATE_LINK' => $this->get_data('announcement') ?: $this->get_data('download'),
 		];
 	}
 
