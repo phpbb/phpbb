@@ -881,6 +881,20 @@ class acp_groups
 				$s_action_options = '';
 				$options = array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE');
 
+				/**
+				 * Modify the list of available quick actions for a group.
+				 *
+				 * @event core.acp_manage_group_action_options_before
+				 * @var	int		group_id	The current group ID.
+				 * @var array	options		An array of HTML for the action select element.
+				 * @since 3.3.16-b3
+				 */
+				$vars = array(
+					'group_id',
+					'options',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_action_options_before', compact($vars)));
+
 				foreach ($options as $option => $lang)
 				{
 					$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
@@ -938,6 +952,22 @@ class acp_groups
 				$db->sql_freeresult($result);
 
 				return;
+			break;
+
+			default:
+				/**
+				 * Handle any unspecified action for groups.
+				 *
+				 * @event core.acp_manage_group_default_action
+				 * @var	string	action				The current action.
+				 * @var	int		group_id			The current group ID.
+				 * @since 3.3.16-b3
+				 */
+				$vars = array(
+					'action',
+					'group_id',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.acp_manage_group_default_action', compact($vars)));
 			break;
 		}
 
