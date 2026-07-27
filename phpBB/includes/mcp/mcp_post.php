@@ -156,7 +156,7 @@ function mcp_post_details($id, $mode, $action)
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '
 				AND in_message = 0
-			ORDER BY filetime DESC, post_msg_id ASC';
+			ORDER BY attach_id DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))

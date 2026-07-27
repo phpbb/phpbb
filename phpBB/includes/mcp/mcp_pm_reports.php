@@ -132,7 +132,7 @@ class mcp_pm_reports
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $pm_id . '
 							AND in_message = 1
-						ORDER BY filetime DESC';
+						ORDER BY attach_id DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

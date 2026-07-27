@@ -37,7 +37,7 @@ abstract class attachments_base extends base
 				ATTACHMENTS_TABLE => 'a'
 			),
 			'WHERE'    => 'a.in_message = 0 ',
-			'ORDER_BY' => 'a.filetime DESC, a.post_msg_id ASC',
+			'ORDER_BY' => 'a.attach_id DESC, a.post_msg_id ASC',
 		);
 
 		if (!empty($post_ids))
