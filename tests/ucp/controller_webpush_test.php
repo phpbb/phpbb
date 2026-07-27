@@ -69,7 +69,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
 		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$this->request = $this->createMock(\phpbb\request\request_interface::class);
+		$this->request = $this->createMock(request_interface::class);
 		$this->template = $this->createMock(\Twig\Environment::class);
 		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
 
@@ -465,12 +465,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
-		]));
+		]);
 
 		$response = $this->controller->subscribe($symfony_request);
 
@@ -495,6 +494,45 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		], $row);
 	}
 
+	public static function data_subscribe_missing_endpoint(): array
+	{
+		return [
+			'missing_endpoint'	=> [[
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+			'null_endpoint'		=> [[
+				'endpoint'			=> null,
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+			'array_endpoint'	=> [[
+				'endpoint'			=> ['https://fcm.googleapis.com/fcm/send/test_endpoint'],
+				'expiration_time'	=> 0,
+				'keys'				=> ['p256dh' => 'test_p256dh', 'auth' => 'test_auth'],
+			]],
+		];
+	}
+
+	/**
+	 * @dataProvider data_subscribe_missing_endpoint
+	 */
+	public function test_subscribe_missing_endpoint(array $payload): void
+	{
+		$this->form_helper->method('check_form_tokens')->willReturn(true);
+		$this->request->method('is_ajax')->willReturn(true);
+		$this->user->data['user_id'] = 2;
+		$this->user->data['is_bot'] = false;
+		$this->user->data['user_type'] = USER_NORMAL;
+
+		$symfony_request = $this->create_symfony_request($payload);
+
+		$this->expectException(http_exception::class);
+		$this->expectExceptionMessage('NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
+
+		$this->controller->subscribe($symfony_request);
+	}
+
 	public function test_subscribe_unsupported_endpoint()
 	{
 		$this->form_helper->method('check_form_tokens')->willReturn(true);
@@ -503,12 +541,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
-		]));
+		]);
 
 		$this->expectException(http_exception::class);
 		$this->expectExceptionMessage('NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
@@ -543,12 +580,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => $data_provider,
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
-		]));
+		]);
 
 		$response = $this->controller->subscribe($symfony_request);
 
@@ -573,12 +609,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://test.endpoint.com/send/candy/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
-		]));
+		]);
 
 		$response = $this->controller->subscribe($symfony_request);
 
@@ -619,12 +654,11 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->user->data['is_bot'] = false;
 		$this->user->data['user_type'] = USER_NORMAL;
 
-		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
-		$symfony_request->method('getContent')->willReturn(json_encode([
+		$symfony_request = $this->create_symfony_request([
 			'endpoint' => 'https://fcm.googleapis.com/fcm/send/test_endpoint',
 			'expiration_time' => 0,
 			'keys' => ['p256dh' => 'test_p256dh', 'auth' => 'test_auth']
-		]));
+		]);
 
 		$response = $this->controller->subscribe($symfony_request);
 
@@ -664,5 +698,137 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		$this->db->sql_freeresult($result);
 
 		$this->assertEmpty($row);
+	}
+
+	public function test_subscribe_replaces_previous_subscription(): void
+	{
+		$this->dispatcher->method('trigger_event')
+			->with(
+				$this->equalTo('core.ucp_webpush_controller_verify_endpoint'),
+				$this->anything()
+			)
+			->willReturnCallback(function($event_name, $args) {
+				return $args;
+			});
+		$this->form_helper->method('check_form_tokens')->willReturn(true);
+		$this->request->method('is_ajax')->willReturn(true);
+		$this->user->data['user_id'] = 2;
+		$this->user->data['is_bot'] = false;
+		$this->user->data['user_type'] = USER_NORMAL;
+
+		$sql = 'INSERT INTO phpbb_push_subscriptions ' . $this->db->sql_build_array('INSERT', [
+			'user_id'			=> 2,
+			'endpoint'			=> 'https://fcm.googleapis.com/fcm/send/old_endpoint',
+			'expiration_time'	=> 0,
+			'p256dh'			=> 'old_p256dh',
+			'auth'				=> 'old_auth',
+		]);
+		$this->db->sql_query($sql);
+
+		$symfony_request = $this->create_symfony_request([
+			'endpoint' => 'https://fcm.googleapis.com/fcm/send/new_endpoint',
+			'previous_endpoint' => 'https://fcm.googleapis.com/fcm/send/old_endpoint',
+			'expirationTime' => 42000,
+			'keys' => ['p256dh' => 'new_p256dh', 'auth' => 'new_auth']
+		]);
+
+		$response = $this->controller->subscribe($symfony_request);
+
+		$this->assertInstanceOf(JsonResponse::class, $response);
+		$this->assertEquals(['success' => true, 'form_tokens' => $this->form_helper->get_form_tokens(webpush::FORM_TOKEN_UCP)], json_decode($response->getContent(), true));
+
+		$subscriptions = $this->get_all_subscriptions(2);
+		$this->assertCount(1, $subscriptions);
+		$this->assertEquals([
+			'user_id' => '2',
+			'endpoint' => 'https://fcm.googleapis.com/fcm/send/new_endpoint',
+			'p256dh' => 'new_p256dh',
+			'auth' => 'new_auth',
+			'expiration_time' => '42',
+			'subscription_id' => '2',
+		], $subscriptions[0]);
+	}
+
+	public function test_subscribe_invalid_payload_preserves_existing_subscription(): void
+	{
+		$this->dispatcher->method('trigger_event')
+			->with(
+				$this->equalTo('core.ucp_webpush_controller_verify_endpoint'),
+				$this->anything()
+			)
+			->willReturnCallback(function($event_name, $args) {
+				return $args;
+			});
+		$this->form_helper->method('check_form_tokens')->willReturn(true);
+		$this->request->method('is_ajax')->willReturn(true);
+		$this->user->data['user_id'] = 2;
+		$this->user->data['is_bot'] = false;
+		$this->user->data['user_type'] = USER_NORMAL;
+
+		$sql = 'INSERT INTO phpbb_push_subscriptions ' . $this->db->sql_build_array('INSERT', [
+			'user_id'			=> 2,
+			'endpoint'			=> 'https://fcm.googleapis.com/fcm/send/old_endpoint',
+			'expiration_time'	=> 10,
+			'p256dh'			=> 'old_p256dh',
+			'auth'				=> 'old_auth',
+		]);
+		$this->db->sql_query($sql);
+
+		$symfony_request = $this->create_symfony_request([
+			'endpoint' => 'https://fcm.googleapis.com/fcm/send/new_endpoint',
+			'previous_endpoint' => 'https://fcm.googleapis.com/fcm/send/old_endpoint',
+			'expirationTime' => 42000,
+			'keys' => ['auth' => 'new_auth']
+		]);
+
+		$this->expectException(http_exception::class);
+		$this->expectExceptionMessage('AJAX_ERROR_TEXT');
+
+		try
+		{
+			$this->controller->subscribe($symfony_request);
+		}
+		finally
+		{
+			$subscriptions = $this->get_all_subscriptions(2);
+			$this->assertCount(1, $subscriptions);
+			$this->assertEquals([
+				'user_id' => '2',
+				'endpoint' => 'https://fcm.googleapis.com/fcm/send/old_endpoint',
+				'p256dh' => 'old_p256dh',
+				'auth' => 'old_auth',
+				'expiration_time' => '10',
+				'subscription_id' => '1',
+			], $subscriptions[0]);
+		}
+	}
+
+	private function create_symfony_request(array $data): \phpbb\symfony_request
+	{
+		$phpbb_request = $this->createMock(\phpbb\request\request_interface::class);
+		$phpbb_request->method('get_super_global')->willReturnMap([
+			[\phpbb\request\request_interface::POST, ['data' => json_encode($data)]],
+			[\phpbb\request\request_interface::GET, []],
+			[\phpbb\request\request_interface::SERVER, []],
+			[\phpbb\request\request_interface::FILES, []],
+			[\phpbb\request\request_interface::COOKIE, []],
+		]);
+		return new \phpbb\symfony_request($phpbb_request);
+	}
+
+	private function get_all_subscriptions(int $user_id): array
+	{
+		$sql = 'SELECT *
+			FROM phpbb_push_subscriptions
+			WHERE user_id = ' . $user_id . '
+			ORDER BY subscription_id ASC';
+		$result = $this->db->sql_query($sql);
+		$rows = [];
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$rows[] = $row;
+		}
+		$this->db->sql_freeresult($result);
+		return $rows;
 	}
 }

@@ -1,20 +1,20 @@
 <script>
 	phpbbWebpushOptions = {
-		serviceWorkerUrl: '{{ U_WEBPUSH_WORKER_URL }}',
-		subscribeUrl: '{{ U_WEBPUSH_SUBSCRIBE }}',
-		unsubscribeUrl: '{{ U_WEBPUSH_UNSUBSCRIBE }}',
+		serviceWorkerUrl: '{{ U_WEBPUSH_WORKER_URL|e('js') }}',
+		subscribeUrl: '{{ U_WEBPUSH_SUBSCRIBE|e('js') }}',
+		unsubscribeUrl: '{{ U_WEBPUSH_UNSUBSCRIBE|e('js') }}',
 		ajaxErrorTitle: '{{ lang_js('AJAX_ERROR_TITLE') }}',
-		vapidPublicKey: '{{ VAPID_PUBLIC_KEY }}',
+		vapidPublicKey: '{{ VAPID_PUBLIC_KEY|e('js') }}',
 		formTokens: {
-			creationTime: '{{ WEBPUSH_FORM_TOKENS.creation_time }}',
-			formToken: '{{ WEBPUSH_FORM_TOKENS.form_token }}',
+			creationTime: {{ WEBPUSH_FORM_TOKENS.creation_time|int }},
+			formToken: '{{ WEBPUSH_FORM_TOKENS.form_token|e('js') }}',
 		},
 		subscriptions: [
 		{% for sub in SUBSCRIPTIONS %}
-			{endpoint: '{{ sub.endpoint }}', expiration: '{{ sub.expiration }}' },
+			{endpoint: '{{ sub.endpoint|e('js') }}', expirationTime: {{ sub.expirationTime|int }} },
 		{% endfor %}
 		],
-	}
+	};
 </script>
 
 {% INCLUDEJS(T_ASSETS_PATH ~ '/javascript/webpush.js') %}
