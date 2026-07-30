@@ -24,12 +24,6 @@ abstract class phpbb_database_test_case extends TestCase
 
 	protected $fixture_xml_data;
 
-	protected static $schema_file;
-
-	protected static $phpbb_schema_copy;
-
-	protected static $install_schema_file;
-
 	/**
 	 * @var \Doctrine\DBAL\Connection[]
 	 */
@@ -56,47 +50,8 @@ abstract class phpbb_database_test_case extends TestCase
 			$finder->set_extensions($setup_extensions)
 				->extension_directory('/migrations');
 		}
-		$classes = $finder->get_classes();
-
-		$schema_sha1 = sha1(serialize($classes));
-		self::$schema_file = __DIR__ . '/../tmp/' . $schema_sha1 . '.json';
-		self::$install_schema_file = __DIR__ . '/../../phpBB/install/schemas/schema.json';
-
-		if (!file_exists(self::$schema_file))
-		{
-			global $table_prefix;
-
-			$db = new \phpbb\db\driver\sqlite3();
-			// Some local setups may not configure a DB driver. If the configured
-			// 'dbms' is null, skip this test instead of failing with a TypeError in
-			// the connection factory which expects a non-null driver name.
-			$mock_config = new phpbb_mock_config_php_file();
-			if ($mock_config->get('dbms') === null)
-			{
-				self::markTestSkipped('Skipping schema generator tests: dbms is not configured (null) in local environment.');
-			}
-			$doctrine = \phpbb\db\doctrine\connection_factory::get_connection($mock_config);
-			$factory = new \phpbb\db\tools\factory();
-			$db_tools = $factory->get($doctrine, true);
-			$db_tools->set_table_prefix($table_prefix);
-
-			$schema_generator = new \phpbb\db\migration\schema_generator($classes, new \phpbb\config\config(array()), $db, $db_tools, $phpbb_root_path, $phpEx, $table_prefix, self::get_core_tables());
-			file_put_contents(self::$schema_file, json_encode($schema_generator->get_schema()));
-		}
-
-		copy(self::$schema_file, self::$install_schema_file);
 
 		parent::setUpBeforeClass();
-	}
-
-	public static function tearDownAfterClass(): void
-	{
-		if (file_exists(self::$install_schema_file))
-		{
-			unlink(self::$install_schema_file);
-		}
-
-		parent::tearDownAfterClass();
 	}
 
 	protected function tearDown(): void
