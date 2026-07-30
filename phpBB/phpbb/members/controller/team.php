@@ -430,8 +430,6 @@ class team
 			'U_BREADCRUMB' => $this->helper->route('phpbb_members_team'),
 		]);
 
-		make_jumpbox(append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}"));
-
 		// Render
 		return $this->helper->render('memberlist_team.html', $this->language->lang('THE_TEAM'));
 	}
