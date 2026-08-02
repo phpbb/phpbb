@@ -25,6 +25,7 @@
 		</row>
 	</table>
 	<table name="phpbb_sessions">
+		<column>id</column>
 		<column>session_id</column>
 		<column>session_user_id</column>
 		<column>session_ip</column>
@@ -33,6 +34,7 @@
 		<column>session_page</column>
 		<column>session_time</column>
 		<row>
+			<value>1</value>
 			<value>anon_session00000000000000000000</value>
 			<value>1</value>
 			<value>127.0.0.1</value>
@@ -42,6 +44,7 @@
 			<value>1500000005</value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>bar_session000000000000000000000</value>
 			<value>4</value>
 			<value>127.0.0.1</value>
@@ -51,6 +54,7 @@
 			<value>1500000000</value>
 		</row>
 		<row>
+			<value>3</value>
 			<value>bar_session000000000000000000002</value>
 			<value>4</value>
 			<value>127.0.0.1</value>
@@ -60,6 +64,7 @@
 			<value>1400000000</value>
 		</row>
 		<row>
+			<value>4</value>
 			<value>foo_session000000000000000000000</value>
 			<value>5</value>
 			<value>127.0.0.1</value>
@@ -69,6 +74,7 @@
 			<value>1500000000</value>
 		</row>
 		<row>
+			<value>5</value>
 			<value>foo_session000000000000000000002</value>
 			<value>5</value>
 			<value>127.0.0.1</value>

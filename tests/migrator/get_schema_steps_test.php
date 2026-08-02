@@ -91,9 +91,6 @@ class get_schema_steps_test extends phpbb_test_case
 					),
 				),
 				array(
-					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table1')))),
-					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table2')))),
-					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table3')))),
 					array('dbtools.perform_schema_changes', array(array('add_tables'	=> array(
 						'foo'	=> array(
 							'COLUMNS'			=> array(
@@ -112,14 +109,27 @@ class get_schema_steps_test extends phpbb_test_case
 							'PRIMARY_KEY'		=> array('barfoo'),
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('change_columns'	=> array(
+					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table1')))),
+					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table2')))),
+					array('dbtools.perform_schema_changes', array(array('drop_tables'	=> array('table3')))),
+					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
 						'table1'	=> array(
-							'column1'	=> array('foo'),
+							'index1'	=> 'column1',
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('change_columns'	=> array(
+					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
 						'table1'	=> array(
-							'column2'	=> array('bar'),
+							'index2'	=> 'column2',
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
+						'table2'	=> array(
+							'index1'	=> 'column1',
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
+						'table2'	=> array(
+							'index2'	=> 'column2',
 						),
 					)))),
 					array('dbtools.perform_schema_changes', array(array('add_columns'	=> array(
@@ -132,22 +142,42 @@ class get_schema_steps_test extends phpbb_test_case
 							'column2'	=> array('bar'),
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('drop_keys'	=> array(
+					array('dbtools.perform_schema_changes', array(array('change_columns'	=> array(
+						'table1'	=> array(
+							'column1'	=> array('foo'),
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('change_columns'	=> array(
+						'table1'	=> array(
+							'column2'	=> array('bar'),
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('drop_columns'	=> array(
 						'table1'	=> array(
 							0 => 'column1',
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('drop_keys'	=> array(
+					array('dbtools.perform_schema_changes', array(array('drop_columns'	=> array(
 						'table1'	=> array(
 							1 => 'column2',
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('drop_columns'	=> array(
+					array('dbtools.perform_schema_changes', array(array('add_unique_index'	=> array(
+						'table1'	=> array(
+							'index1'	=> 'column1',
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('add_unique_index'	=> array(
+						'table1'	=> array(
+							'index2'	=> 'column2',
+						),
+					)))),
+					array('dbtools.perform_schema_changes', array(array('drop_keys'	=> array(
 						'table1'	=> array(
 							0 => 'column1',
 						),
 					)))),
-					array('dbtools.perform_schema_changes', array(array('drop_columns'	=> array(
+					array('dbtools.perform_schema_changes', array(array('drop_keys'	=> array(
 						'table1'	=> array(
 							1 => 'column2',
 						),
@@ -160,36 +190,6 @@ class get_schema_steps_test extends phpbb_test_case
 					)))),
 					array('dbtools.perform_schema_changes', array(array('add_primary_keys'	=> array(
 						'table3' => array('foobar'),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_unique_index'	=> array(
-						'table1'	=> array(
-							'index1'	=> 'column1',
-						),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_unique_index'	=> array(
-						'table1'	=> array(
-							'index2'	=> 'column2',
-						),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
-						'table1'	=> array(
-							'index1'	=> 'column1',
-						),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
-						'table1'	=> array(
-							'index2'	=> 'column2',
-						),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
-						'table2'	=> array(
-							'index1'	=> 'column1',
-						),
-					)))),
-					array('dbtools.perform_schema_changes', array(array('add_index'	=> array(
-						'table2'	=> array(
-							'index2'	=> 'column2',
-						),
 					)))),
 				),
 			),
