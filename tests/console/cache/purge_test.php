@@ -90,7 +90,7 @@ class phpbb_console_command_cache_purge_test extends phpbb_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new purge($this->user, $this->cache, $this->db, $this->db_tools, $this->createMock('\phpbb\auth\auth'), new \phpbb\log\dummy(), $this->config));
+		$application->addCommand(new purge($this->user, $this->cache, $this->db, $this->db_tools, $this->createMock('\phpbb\auth\auth'), new \phpbb\log\dummy(), $this->config));
 
 		$command = $application->find('cache:purge');
 		return new CommandTester($command);

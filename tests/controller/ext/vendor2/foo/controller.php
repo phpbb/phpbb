@@ -26,6 +26,11 @@ class controller
 		return new Response('Test_fail', 200);
 	}
 
+	public function handle_union_fail(int|string $no_default)
+	{
+		return new Response('Test_union_fail', 200);
+	}
+
 	public function __invoke()
 	{
 		$this->handle();

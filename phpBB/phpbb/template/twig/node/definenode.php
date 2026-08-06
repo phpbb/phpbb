@@ -25,8 +25,7 @@ class definenode extends \Twig\Node\Node
 	/**
 	* Compiles the node to PHP.
 	*
-	* @param \Twig\Compiler A Twig\Compiler instance
-	* @return void
+	* @param \Twig\Compiler $compiler A Twig\Compiler instance
 	*/
 	public function compile(\Twig\Compiler $compiler): void
 	{

@@ -282,7 +282,7 @@ class manager
 	/**
 	* Replace "error" strings with their real, localized form
 	*
-	* @param \phpbb\user phpBB User object
+	* @param \phpbb\user $user phpBB User object
 	* @param array	$error Array containing error strings
 	*        Key values can either be a string with a language key or an array
 	*        that will be passed to vsprintf() with the language key in the

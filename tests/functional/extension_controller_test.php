@@ -95,7 +95,7 @@ class phpbb_functional_extension_controller_test extends phpbb_functional_test_c
 	{
 		$crawler = self::request('GET', 'index.php/foo/baz', array(), false);
 		$this->assert_response_html(500);
-		$this->assertStringContainsString('Controller "foo\bar\controller\controller::baz" requires the "$test" argument that could not be resolved', $crawler->filter('body')->text());
+		$this->assertStringContainsString('Missing value for argument #1: test in class foo\bar\controller\controller:baz', $crawler->filter('body')->text());
 	}
 
 	/**

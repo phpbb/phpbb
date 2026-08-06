@@ -14,10 +14,8 @@
 namespace phpbb\passwords\driver;
 
 /**
-*
-* @version Version 0.1 / slightly modified for phpBB 3.1.x (using $H$ as hash type identifier)
-*
 * Portable PHP password hashing framework.
+* (Version 0.1 / slightly modified for phpBB 3.1.x using $H$ as hash type identifier)
 *
 * Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
 * the public domain.
@@ -38,6 +36,8 @@ namespace phpbb\passwords\driver;
 *
 * Obviously, since this code is in the public domain, the above are not
 * requirements (there can be none), but merely suggestions.
+*
+* @version 0.1
 *
 */
 

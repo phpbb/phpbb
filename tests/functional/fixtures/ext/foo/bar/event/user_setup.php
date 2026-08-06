@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class user_setup implements EventSubscriberInterface
 {
-	static public function getSubscribedEvents()
+	static public function getSubscribedEvents(): array
 	{
 		return array(
 			'core.user_setup'	=> 'add_global_translations',

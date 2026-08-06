@@ -130,7 +130,6 @@ class phpbb_migrator_revert_data_merge_test extends phpbb_test_case
 
 		$ref = new ReflectionClass($migrator);
 		$state_prop = $ref->getProperty('migration_state');
-		$state_prop->setAccessible(true);
 		$state_prop->setValue($migrator, [
 			$migration_name => [
 				'migration_depends_on'	=> [],
@@ -144,7 +143,6 @@ class phpbb_migrator_revert_data_merge_test extends phpbb_test_case
 
 		// Call the protected try_revert() directly via reflection.
 		$try_revert = $ref->getMethod('try_revert');
-		$try_revert->setAccessible(true);
 		$try_revert->invoke($migrator, $migration_name);
 
 		$this->assertEquals(

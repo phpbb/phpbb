@@ -453,7 +453,6 @@ class phpbb_download_download_allowed_test extends phpbb_test_case
 
 		$controller_reflection = new \ReflectionClass($this->attachment_controller);
 		$method_reflection = $controller_reflection->getMethod('download_allowed');
-		$method_reflection->setAccessible(true);
 		$result = $method_reflection->invoke($this->attachment_controller);
 		$this->assertEquals($expected, $result, $message);
 	}
