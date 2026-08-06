@@ -12,6 +12,8 @@
 */
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use org\bovigo\vfs\vfsStream;
+use org\bovigo\vfs\vfsStreamWrapper;
 
 class phpbb_test_case_helpers
 {
@@ -358,21 +360,23 @@ class phpbb_test_case_helpers
 	*/
 	public function set_s9e_services(ContainerInterface|null $container = null, $fixture = null, $styles_path = null)
 	{
-		static $first_run;
 		global $config, $phpbb_container, $phpbb_dispatcher, $phpbb_root_path, $phpEx, $request, $user;
 
-		$cache_dir = __DIR__ . '/../tmp/';
-
-		// Remove old cache files on first run
-		if (!isset($first_run))
+		$vfs_root = vfsStreamWrapper::getRoot();
+		if ($vfs_root === null)
 		{
-			$first_run = 1;
-
-			array_map('unlink', array_merge(
-				glob($cache_dir . 'data_s9e_*'),
-				glob($cache_dir . 's9e_*')
+			$vfs_root = vfsStream::setup('phpbb', null, array(
+				's9e_cache' => array(),
 			));
 		}
+		else if (!$vfs_root->hasChild('s9e_cache'))
+		{
+			vfsStream::create(array(
+				's9e_cache' => array(),
+			), $vfs_root);
+		}
+
+		$cache_dir = vfsStream::url($vfs_root->getName() . '/s9e_cache') . '/';
 
 		if (!isset($container))
 		{

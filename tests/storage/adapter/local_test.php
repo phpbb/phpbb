@@ -19,7 +19,10 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 	{
 		parent::setUp();
 
-		$this->adapter->configure(['path' => 'test_path']);
+		// Normally this would use $this->adapter->configure(['path' => 'test_path']);
+		// but local::configure() uses realpath(), which vfsStream does not support.
+		$root_path = new ReflectionProperty($this->adapter, 'root_path');
+		$root_path->setValue($this->adapter, $this->path);
 	}
 
 	public function test_delete_file(): void
@@ -47,9 +50,7 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 		$this->assertIsResource($stream);
 		$this->assertEquals('abc', stream_get_contents($stream));
 
-		// Clean test
 		fclose($stream);
-		unlink($this->path . 'file.txt');
 	}
 
 	public function test_write()
@@ -64,9 +65,5 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 
 		// Then
 		$this->assertFileContains($this->path . 'file2.txt', 'abc');
-
-		// Clean test
-		unlink($this->path . 'file.txt');
-		unlink($this->path . 'file2.txt');
 	}
 }

@@ -16,6 +16,8 @@ namespace phpbb\mimetype;
 require_once __DIR__ . '/null_guesser.php';
 require_once __DIR__ . '/incorrect_guesser.php';
 
+use org\bovigo\vfs\vfsStream;
+
 function function_exists($name)
 {
 	return guesser_test::$function_exists;
@@ -23,19 +25,24 @@ function function_exists($name)
 
 class guesser_test extends \phpbb_test_case
 {
+	// Keep these fixtures on the real filesystem to exercise FileBinaryMimeTypeGuesser.
+	const UPLOAD_FIXTURE_PATH = __DIR__ . '/../upload/fixture/';
+
 	public static $function_exists = false;
 
 	protected $fileinfo_supported = false;
 
 	protected $guesser;
 	protected $guesser_no_fileinfo;
-	protected $path;
 	protected $jpg_file;
+	protected $jpg_file_with_extension;
 	protected $phpbb_root_path;
 
 	protected function setUp(): void
 	{
 		global $phpbb_root_path;
+
+		parent::setUp();
 
 		$guessers = array(
 			new \Symfony\Component\Mime\FileinfoMimeTypeGuesser(),
@@ -51,8 +58,15 @@ class guesser_test extends \phpbb_test_case
 		$this->guesser_no_fileinfo = new \phpbb\mimetype\guesser(array($guessers[2]));
 
 		$this->guesser = new \phpbb\mimetype\guesser($guessers);
-		$this->path = __DIR__;
-		$this->jpg_file = $this->path . '/fixtures/jpg';
+		$jpg = file_get_contents(__DIR__ . '/fixtures/jpg');
+		vfsStream::setup('phpbb', null, array(
+			'fixtures' => array(
+				'jpg' => $jpg,
+				'jpg.jpg' => $jpg,
+			),
+		));
+		$this->jpg_file = vfsStream::url('phpbb/fixtures/jpg');
+		$this->jpg_file_with_extension = vfsStream::url('phpbb/fixtures/jpg.jpg');
 		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
@@ -79,7 +93,7 @@ class guesser_test extends \phpbb_test_case
 		{
 			$this->markTestSkipped('Unable to run tests depending on fileinfo if it is not available');
 		}
-		$this->assertEquals($expected, $this->guesser->guess($this->path . '/../upload/fixture/' . $file));
+		$this->assertEquals($expected, $this->guesser->guess(self::UPLOAD_FIXTURE_PATH . $file));
 	}
 
 	public static function data_guess_files_no_fileinfo()
@@ -96,7 +110,7 @@ class guesser_test extends \phpbb_test_case
 	*/
 	public function test_guess_files_no_fileinfo($expected, $file)
 	{
-		$this->assertEquals($expected, $this->guesser_no_fileinfo->guess($this->path . '/../upload/fixture/' . $file));
+		$this->assertEquals($expected, $this->guesser_no_fileinfo->guess(self::UPLOAD_FIXTURE_PATH . $file));
 	}
 
 	public function test_file_not_readable()
@@ -196,9 +210,7 @@ class guesser_test extends \phpbb_test_case
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
-		@copy($this->jpg_file, $this->jpg_file . '.jpg');
-		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file . '.jpg'));
-		@unlink($this->jpg_file . '.jpg');
+		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file_with_extension));
 	}
 
 	public function test_sort_priority()
