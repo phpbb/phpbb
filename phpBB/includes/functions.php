@@ -539,8 +539,8 @@ function phpbb_timezone_select($user, $default = '', $truncate = false)
 * Marks a topic as posted to
 *
 * @param string $mode (all, topics, topic, post)
-* @param int|bool $forum_id Used in all, topics, and topic mode
-* @param int|bool $topic_id Used in topic and post mode
+* @param array|int|false $forum_id Used in all, topics, and topic mode
+* @param int|false $topic_id Used in topic and post mode
 * @param int $post_time 0 means current time(), otherwise to set a specific mark time
 * @param int $user_id can only be used with $mode == 'post'
 */
