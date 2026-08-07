@@ -1045,8 +1045,10 @@ class session
 		$captcha_factory = $phpbb_container->get('captcha.factory');
 		$captcha_factory->garbage_collect($config['captcha_plugin']);
 
+		// Keep attempts for at least the maximum login cooldown time, so an
+		// active cooldown does not lose its reference timestamp to the cleanup.
 		$sql = 'DELETE FROM ' . LOGIN_ATTEMPT_TABLE . '
-			WHERE attempt_time < ' . (time() - (int) $config['ip_login_limit_time']);
+			WHERE attempt_time < ' . (time() - max((int) $config['ip_login_limit_time'], (int) $config['login_cooldown_max']));
 		$db->sql_query($sql);
 
 		/**

@@ -201,6 +201,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_unreads_search', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_user_activity', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_user_activity_limit', '5000');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('login_cooldown_max', '600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('login_cooldown_min', '60');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_autologin_time', '0');
