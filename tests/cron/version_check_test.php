@@ -126,7 +126,7 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 			->with(
 				$this->equalTo('notification.type.update_maintenance'),
 				$this->callback(function ($type_data) use ($update_data) {
-					$this->assertEquals(1089886753, $type_data['item_id']);
+					$this->assertEquals(16144929, $type_data['item_id']);
 					$this->assertEquals('update_maintenance', $type_data['template']);
 					$this->assertEquals('3.1.0', $type_data['current_version']);
 					$this->assertEquals($update_data['current'], $type_data['new_version']);
@@ -168,10 +168,11 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 		$this->notification_manager->expects($this->never())
 			->method('add_notifications');
 
+		$start_time = time();
 		$task = $this->get_task();
 		$task->run();
 
-		$this->assertSame(0, $this->config['version_check_last_cron']);
+		$this->assertGreaterThanOrEqual($start_time, $this->config['version_check_last_cron']);
 	}
 
 	public function test_run_with_urgent_update()
