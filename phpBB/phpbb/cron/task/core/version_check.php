@@ -71,15 +71,15 @@ class version_check extends base
 			{
 				$this->notify_admins($updates_available);
 			}
-
-			// Update the last check time
-			$this->config->set('version_check_last_cron', time());
 		}
 		catch (\phpbb\exception\runtime_exception $e)
 		{
 			// Log the exception but don't throw it, as we don't want to break the cron task if the version check fails
 			// @todo: add logging here if needed
 		}
+
+		// Update the last check time
+		$this->config->set('version_check_last_cron', time());
 	}
 
 	/**
