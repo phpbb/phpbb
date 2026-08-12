@@ -16,6 +16,8 @@ namespace phpbb\cron\task\core;
 use phpbb\config\config;
 use phpbb\cron\task\base;
 use phpbb\db\driver\driver_interface;
+use phpbb\exception\runtime_exception;
+use phpbb\log\log_interface;
 use phpbb\notification\manager;
 use phpbb\user;
 use phpbb\version_helper;
@@ -31,6 +33,9 @@ class version_check extends base
 	/** @var driver_interface */
 	protected $db;
 
+	/** @var log_interface */
+	protected $log;
+
 	/** @var user */
 	protected $user;
 
@@ -42,15 +47,15 @@ class version_check extends base
 	 *
 	 * @param config $config
 	 * @param version_helper $version_helper
-	 * @param driver_interface $db
+	 * @param log_interface $log
 	 * @param user $user
 	 * @param manager $notification_manager
 	 */
-	public function __construct(config $config, version_helper $version_helper, driver_interface $db, user $user, manager $notification_manager)
+	public function __construct(config $config, version_helper $version_helper, log_interface $log, user $user, manager $notification_manager)
 	{
 		$this->config = $config;
 		$this->version_helper = $version_helper;
-		$this->db = $db;
+		$this->log = $log;
 		$this->user = $user;
 		$this->notification_manager = $notification_manager;
 	}
@@ -72,10 +77,10 @@ class version_check extends base
 				$this->notify_admins($updates_available);
 			}
 		}
-		catch (\phpbb\exception\runtime_exception $e)
+		catch (runtime_exception $e)
 		{
 			// Log the exception but don't throw it, as we don't want to break the cron task if the version check fails
-			// @todo: add logging here if needed
+			$this->log->add('admin', $this->user->id(), $this->user->ip, 'LOG_VERSION_CHECK_FAIL', false, [$e->getMessage()]);
 		}
 
 		// Update the last check time
@@ -98,14 +103,20 @@ class version_check extends base
 	 */
 	protected function notify_admins(array $update_data): void
 	{
+		// We need at least the current version info, skip if it's not available
+		if (empty($update_data['current']))
+		{
+			return;
+		}
+
 		$template = $this->get_template_name($update_data);
 		$type_data = [
 			'item_id' => crc32($template . $update_data['current']) & 0xFFFFFF,
 			'template' => $template,
 			'current_version' => $this->config['version'],
 			'new_version' => $update_data['current'],
-			'announcement' => $update_data['announcement'],
-			'download' => $update_data['download'],
+			'announcement' => $update_data['announcement'] ?? '',
+			'download' => $update_data['download'] ?? '',
 		];
 
 		$this->notification_manager->add_notifications('notification.type.update_maintenance', $type_data);

@@ -24,8 +24,8 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\version_helper */
 	protected $version_helper;
 
-	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\db\driver\driver_interface */
-	protected $db;
+	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\log\log_interface */
+	protected $log;
 
 	/** @var \PHPUnit\Framework\MockObject\MockObject|\phpbb\user */
 	protected $user;
@@ -47,7 +47,8 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 			->disableOriginalConstructor()
 			->getMock();
 
-		$this->db = $this->getMockBuilder('\phpbb\db\driver\driver_interface')
+		$this->log = $this->getMockBuilder('\phpbb\log\log')
+			->disableOriginalConstructor()
 			->getMock();
 
 		$this->user = $this->getMockBuilder('\phpbb\user')
@@ -64,7 +65,7 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 		return new version_check(
 			$this->config,
 			$this->version_helper,
-			$this->db,
+			$this->log,
 			$this->user,
 			$this->notification_manager
 		);
@@ -274,5 +275,21 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 
 		$task = $this->get_task();
 		$task->run();
+	}
+
+	public function test_notify_admins_with_empty_current_version()
+	{
+		$update_data = array(
+			'announcement' => 'https://www.phpbb.com/announcement',
+			'download' => 'https://www.phpbb.com/download',
+		);
+
+		$this->notification_manager->expects($this->never())
+			->method('add_notifications');
+
+		$task = $this->get_task();
+		$notify_admins_method = new ReflectionMethod($task, 'notify_admins');
+		$notify_admins_method->setAccessible(true);
+		$notify_admins_method->invoke($task, $update_data);
 	}
 }
