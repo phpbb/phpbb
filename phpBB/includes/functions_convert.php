@@ -447,16 +447,88 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 	}
 }
 
+/**
+* Copy a file into the storage system.
+*
+* @param \phpbb\storage\storage	$storage	Storage to write the file to
+* @param string					$source		Absolute path of the source file
+* @param string					$target		Target path relative to the storage root
+* @return bool	Whether the file is present in the storage afterwards
+*/
+function _copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target)
+{
+	// A file that is already stored is treated as successfully copied, mirroring
+	// the non-overwriting behaviour of copy_file().
+	if ($storage->exists($target))
+	{
+		return true;
+	}
+
+	$fp = @fopen($source, 'rb');
+
+	if ($fp === false)
+	{
+		return false;
+	}
+
+	try
+	{
+		$storage->write($target, $fp);
+		$copied = true;
+	}
+	catch (\phpbb\storage\exception\storage_exception $e)
+	{
+		$copied = false;
+	}
+
+	fclose($fp);
+
+	return $copied;
+}
+
+/**
+* Recursively copy the contents of a directory into the storage system.
+*
+* @param \phpbb\storage\storage	$storage		Storage to write the files to
+* @param string					$source_dir		Absolute path of the source directory
+* @param string					$target_dir		Target directory relative to the storage root
+* @return void
+*/
+function _copy_dir_to_storage(\phpbb\storage\storage $storage, $source_dir, $target_dir = '')
+{
+	$source_dir = rtrim($source_dir, '/') . '/';
+	$target_dir = ($target_dir !== '') ? rtrim($target_dir, '/') . '/' : '';
+
+	$handle = @opendir($source_dir);
+
+	if ($handle === false)
+	{
+		return;
+	}
+
+	while (($entry = readdir($handle)) !== false)
+	{
+		if ($entry === '.' || $entry === '..')
+		{
+			continue;
+		}
+
+		if (is_dir($source_dir . $entry))
+		{
+			_copy_dir_to_storage($storage, $source_dir . $entry, $target_dir . $entry);
+		}
+		else if (is_file($source_dir . $entry))
+		{
+			_copy_file_to_storage($storage, $source_dir . $entry, $target_dir . $entry);
+		}
+	}
+
+	closedir($handle);
+}
+
 function import_attachment_files($category_name = '')
 {
-	global $config, $convert, $db, $user;
-
-	$sql = 'SELECT config_value AS upload_path
-		FROM ' . CONFIG_TABLE . "
-		WHERE config_name = 'storage\\attachment\\config\\path'";
-	$result = $db->sql_query($sql);
-	$config['upload_path'] = $db->sql_fetchfield('upload_path');
-	$db->sql_freeresult($result);
+	global $convert, $user, $phpbb_container;
 
 	$relative_path = empty($convert->convertor['source_path_absolute']);
 
@@ -465,9 +537,11 @@ function import_attachment_files($category_name = '')
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_UPLOAD_DIR'], 'import_attachment_files()'), __LINE__, __FILE__);
 	}
 
-	if (is_dir(relative_base(path($convert->convertor['upload_path'], $relative_path), $relative_path)))
+	$source_dir = relative_base(path($convert->convertor['upload_path'], $relative_path), $relative_path);
+
+	if (is_dir($source_dir))
 	{
-		copy_dir($convert->convertor['upload_path'], path($config['upload_path']) . $category_name, true, false, true, $relative_path);
+		_copy_dir_to_storage($phpbb_container->get('storage.attachment'), $source_dir, $category_name);
 	}
 }
 
@@ -505,7 +579,17 @@ function base64_unpack($string)
 
 function _import_check($config_var, $source, $use_target)
 {
-	global $convert, $config;
+	global $convert, $config, $phpbb_container;
+
+	// Asset types that are managed by the storage system are written through it
+	// instead of being copied to a fixed path on the local disk. Other types
+	// (ranks, smilies, ...) are not storage-backed and keep using copy_file().
+	$storage_services = array(
+		'upload_path'	=> 'storage.attachment',
+		'avatar_path'	=> 'storage.avatar',
+	);
+
+	$use_storage = isset($storage_services[$config_var]);
 
 	$result = array(
 		'orig_source'	=> $source,
@@ -513,8 +597,10 @@ function _import_check($config_var, $source, $use_target)
 		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
 	);
 
-	// copy file will prepend $phpBB_root_path
-	$target = $config[$config_var] . '/' . utf8_basename(($use_target === false) ? $source : $use_target);
+	$filename = utf8_basename(($use_target === false) ? $source : $use_target);
+
+	// copy_file will prepend $phpbb_root_path; storage paths are relative to the storage root
+	$target = ($use_storage) ? $filename : $config[$config_var] . '/' . $filename;
 
 	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
 	{
@@ -523,9 +609,18 @@ function _import_check($config_var, $source, $use_target)
 
 	$result['source'] = $source;
 
-	if (file_exists(relative_base($source, $result['relative_path'], __LINE__, __FILE__)))
+	$source_path = relative_base($source, $result['relative_path'], __LINE__, __FILE__);
+
+	if (file_exists($source_path))
 	{
-		$result['copied'] = copy_file($source, $target, false, false, $result['relative_path']);
+		if ($use_storage)
+		{
+			$result['copied'] = _copy_file_to_storage($phpbb_container->get($storage_services[$config_var]), $source_path, $target);
+		}
+		else
+		{
+			$result['copied'] = copy_file($source, $target, false, false, $result['relative_path']);
+		}
 	}
 
 	if ($result['copied'])
@@ -547,7 +642,7 @@ function import_attachment($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user, $phpbb_container;
 
 	// check for trailing slash
 	if (rtrim($convert->convertor['upload_path'], '/') === '')
@@ -570,11 +665,12 @@ function import_attachment($source, $use_target = false)
 			{
 				$thumb_source = $convert->convertor['upload_path'] . $thumb_source;
 			}
-			$thumb_target = $config['upload_path'] . '/thumb_' . $result['target'];
 
-			if (file_exists(relative_base($thumb_source, $result['relative_path'], __LINE__, __FILE__)))
+			$thumb_source_path = relative_base($thumb_source, $result['relative_path'], __LINE__, __FILE__);
+
+			if (file_exists($thumb_source_path))
 			{
-				copy_file($thumb_source, $thumb_target, false, false, $result['relative_path']);
+				_copy_file_to_storage($phpbb_container->get('storage.attachment'), $thumb_source_path, 'thumb_' . $result['target']);
 			}
 		}
 	}
