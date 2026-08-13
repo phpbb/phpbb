@@ -90,13 +90,46 @@ class doctrine implements tools_interface
 	}
 
 	/**
+	 * Limit introspection to assets carrying the table prefix, so that tables
+	 * not created by phpBB sharing the database cannot break schema changes,
+	 * e.g. by using column types unknown to Doctrine.
+	 *
 	 * @return Schema
 	 *
 	 * @throws Exception
 	 */
 	protected function get_schema(): Schema
 	{
-		return $this->get_schema_manager()->introspectSchema();
+		$configuration = $this->connection->getConfiguration();
+		$previous_filter = $configuration->getSchemaAssetsFilter();
+
+		if ((string) $this->table_prefix !== '')
+		{
+			$configuration->setSchemaAssetsFilter(
+				function ($asset) use ($previous_filter): bool
+				{
+					if ($previous_filter !== null && !$previous_filter($asset))
+					{
+						return false;
+					}
+
+					$name = $asset instanceof AbstractAsset ? $asset->getName() : (string) $asset;
+
+					// Case-insensitive: some databases fold identifier case,
+					// e.g. MySQL with lower_case_table_names set.
+					return str_starts_with(strtolower($name), strtolower($this->table_prefix));
+				}
+			);
+		}
+
+		try
+		{
+			return $this->get_schema_manager()->introspectSchema();
+		}
+		finally
+		{
+			$configuration->setSchemaAssetsFilter($previous_filter);
+		}
 	}
 
 	/**
