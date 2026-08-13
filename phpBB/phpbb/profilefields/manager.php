@@ -332,6 +332,7 @@ class manager
 
 			$tpl_fields[] = [
 				'PROFILE_FIELD_IDENT'	=> $field_ident,
+				'PROFILE_FIELD_ICON'	=> $field_data['field_icon'],
 				'PROFILE_FIELD_TYPE'	=> $field_data['field_type'],
 				'PROFILE_FIELD_NAME'	=> $profile_field->get_field_name($field_data['lang_name']),
 				'PROFILE_FIELD_EXPLAIN'	=> $this->language->lang($field_data['lang_explain']),
@@ -484,6 +485,7 @@ class manager
 
 			$tpl_fields['row'] += [
 				"PROFILE_{$ident_upper}_IDENT"		=> $ident,
+				"PROFILE_{$ident_upper}_ICON"		=> $ident_ary['data']['field_icon'],
 				"PROFILE_{$ident_upper}_VALUE"		=> $value,
 				"PROFILE_{$ident_upper}_VALUE_RAW"	=> $value_raw,
 				"PROFILE_{$ident_upper}_CONTACT"	=> $contact_url,
@@ -498,6 +500,7 @@ class manager
 
 			$tpl_fields['blockrow'][] = [
 				'PROFILE_FIELD_IDENT'		=> $ident,
+				'PROFILE_FIELD_ICON'		=> $ident_ary['data']['field_icon'],
 				'PROFILE_FIELD_VALUE'		=> $value,
 				'PROFILE_FIELD_VALUE_RAW'	=> $value_raw,
 				'PROFILE_FIELD_CONTACT'		=> $contact_url,

@@ -14,7 +14,7 @@ const IGNORED_FILES = [
 
 // ESLint rule configurations
 const FORMATTING_RULES = {
-	'quotes': ['error', 'single'],
+	'quotes': ['error', 'single', { "allowTemplateLiterals": true }],
 	'comma-dangle': ['error', 'always-multiline'],
 	'block-spacing': 'error',
 	'array-bracket-spacing': ['error', 'always'],
