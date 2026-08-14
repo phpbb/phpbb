@@ -1,0 +1,13 @@
+{% if S_RECAPTCHA_AVAILABLE %}
+	<noscript>
+		<div>{{ lang('RECAPTCHA_NOSCRIPT') }}</div>
+	</noscript>
+
+	<script src="{{ U_RECAPTCHA_SCRIPT }}" async defer></script>
+
+	{# The g-recaptcha class is used in JavaScript #}
+	<input class="g-recaptcha" type="hidden" name="recaptcha_action" value="{{ RECAPTCHA_ACTION }}" data-recaptcha-v3="{{ RECAPTCHA_KEY }}">
+	<input type="hidden" name="recaptcha_token" value="">
+{% else %}
+	{{ lang('RECAPTCHA_NOT_AVAILABLE') }}
+{% endif %}

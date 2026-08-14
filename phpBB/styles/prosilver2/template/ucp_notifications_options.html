@@ -1,0 +1,72 @@
+{% include('ucp_header.html') %}
+
+<form id="ucp" method="post" action="{{ S_UCP_ACTION }}"{{ S_FORM_ENCTYPE }}>
+
+	<h2 class="cp-title">{{ TITLE }}</h2>
+	{% if NOTIFICATIONS_WEBPUSH_ENABLE %}
+		<div class="panel">
+			<div class="inner">
+				<fieldset>
+					<dl>
+						<dt><label for="subscribe_webpush">{{ lang('NOTIFY_WEBPUSH_ENABLE') ~ lang('COLON') }}</label><br><span>{{ lang('NOTIFY_WEBPUSH_ENABLE_EXPLAIN') }}</span></dt>
+						<dd>
+							<input id="subscribe_webpush" type="submit" name="subscribe_webpush" value="{{ lang('NOTIFY_WEBPUSH_SUBSCRIBE') }}" class="button1 button button-form" data-l-err="{{ lang('INFORMATION') }}" data-l-msg="{{ lang('NOTIFY_WEB_PUSH_DENIED') }}" data-disabled-msg="{{ lang('NOTIFY_WEB_PUSH_DISABLED') }}">
+							<input id="unsubscribe_webpush" type="submit" name="unsubscribe_webpush" value="{{ lang('NOTIFY_WEBPUSH_UNSUBSCRIBE') }}" class="button1 button button-form hidden">
+						</dd>
+					</dl>
+				</fieldset>
+			</div>
+		</div>
+	{% endif %}
+	<div class="panel">
+		<div class="inner">
+			<p class="cp-desc">{{ TITLE_EXPLAIN }}</p>
+
+			<table class="table1">
+				<thead>
+					<tr>
+						<th>{{ lang('NOTIFICATION_TYPE') }}</th>
+						{% for method in notification_methods %}
+							<th class="mark">{{ method.NAME }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+				{% for notification_type in notification_types %}
+					{% if notification_type.GROUP_NAME %}
+						<tr class="bg3">
+							<td colspan="{{ NOTIFICATION_TYPES_COLS }}">{{ notification_type.GROUP_NAME }}</td>
+						</tr>
+					{% else %}
+						<tr class="{% if loop.index is even %}bg1{% else %}bg2{% endif %}">
+							<td>
+								{{ notification_type.NAME }}
+								{% if notification_type.EXPLAIN %}<br>&nbsp; &nbsp;{{ notification_type.EXPLAIN }}{% endif %}
+							</td>
+							{% for notification_method in notification_type.notification_methods %}
+								{% apply spaceless %}
+									<td class="mark">
+										<input type="checkbox" name="{{ notification_type.TYPE }}_{{ notification_method.METHOD }}"{% if notification_method.SUBSCRIBED %} checked="checked"{% endif %}{% if not notification_method.AVAILABLE %} disabled="disabled"{% endif %}/></td>
+								{% endapply %}
+							{% endfor %}
+						</tr>
+					{% endif %}
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	{% if notification_types or notification_list %}
+		<fieldset class="display-actions">
+			<input type="hidden" name="form_time" value="{{ FORM_TIME }}" />
+			{{ S_HIDDEN_FIELDS }}
+			<input type="submit" name="submit" value="{% if MODE == 'notification_options' %}{{ lang('SUBMIT') }}{% else %}{{ lang('MARK_READ') }}{% endif %}" class="button1 button button-form" />
+			<div><a href="#" onclick="$('#ucp input:checkbox').prop('checked', true); return false;">{{ lang('MARK_ALL') }}</a> &bull; <a href="#" onclick="$('#ucp input:checkbox').prop('checked', false); return false;">{{ lang('UNMARK_ALL') }}</a></div>
+			{{ S_FORM_TOKEN }}
+		</fieldset>
+	{% endif %}
+
+</form>
+
+{% include('ucp_footer.html') %}

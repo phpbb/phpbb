@@ -1,0 +1,75 @@
+<script>
+phpbb.plupload = {
+	i18n: {
+		'b': '{LA_BYTES_SHORT}',
+		'kb': '{LA_KB}',
+		'mb': '{LA_MB}',
+		'gb': '{LA_GB}',
+		'tb': '{LA_TB}',
+		'Add Files': '{LA_PLUPLOAD_ADD_FILES}',
+		'Add files to the upload queue and click the start button.': '{LA_PLUPLOAD_ADD_FILES_TO_QUEUE}',
+		'Close': '{LA_PLUPLOAD_CLOSE}',
+		'Drag files here.': '{LA_PLUPLOAD_DRAG}',
+		'Duplicate file error.': '{LA_PLUPLOAD_DUPLICATE_ERROR}',
+		'File: %s': '{LA_PLUPLOAD_FILE}',
+		'File: %s, size: %d, max file size: %d': '{LA_PLUPLOAD_FILE_DETAILS}',
+		'File count error.': '{LA_PLUPLOAD_ERR_FILE_COUNT}',
+		'File extension error.': '{LA_PLUPLOAD_EXTENSION_ERROR}',
+		'File size error.': '{LA_PLUPLOAD_SIZE_ERROR}',
+		'File too large:': '{LA_PLUPLOAD_ERR_FILE_TOO_LARGE}',
+		'Filename': '{LA_PLUPLOAD_FILENAME}',
+		'Generic error.': '{LA_PLUPLOAD_GENERIC_ERROR}',
+		'HTTP Error.': '{LA_PLUPLOAD_HTTP_ERROR}',
+		'Image format either wrong or not supported.': '{LA_PLUPLOAD_IMAGE_FORMAT}',
+		'Init error.': '{LA_PLUPLOAD_INIT_ERROR}',
+		'IO error.': '{LA_PLUPLOAD_IO_ERROR}',
+		'Invalid file extension:': '{LA_PLUPLOAD_ERR_FILE_INVALID_EXT}',
+		'N/A': '{LA_PLUPLOAD_NOT_APPLICABLE}',
+		'Runtime ran out of available memory.': '{LA_PLUPLOAD_ERR_RUNTIME_MEMORY}',
+		'Security error.': '{LA_PLUPLOAD_SECURITY_ERROR}',
+		'Select files': '{LA_PLUPLOAD_SELECT_FILES}',
+		'Size': '{LA_PLUPLOAD_SIZE}',
+		'Start Upload': '{LA_PLUPLOAD_START_UPLOAD}',
+		'Start uploading queue': '{LA_PLUPLOAD_START_CURRENT_UPLOAD}',
+		'Status': '{LA_PLUPLOAD_STATUS}',
+		'Stop Upload': '{LA_PLUPLOAD_STOP_UPLOAD}',
+		'Stop current upload': '{LA_PLUPLOAD_STOP_CURRENT_UPLOAD}',
+		"Upload URL might be wrong or doesn't exist.": '{LA_PLUPLOAD_ERR_UPLOAD_URL}',
+		'Uploaded %d/%d files': '{LA_PLUPLOAD_UPLOADED}',
+		'%d files queued': '{LA_PLUPLOAD_FILES_QUEUED}',
+		'%s already present in the queue.': '{LA_PLUPLOAD_ALREADY_QUEUED}'
+	},
+	config: {
+		runtimes: 'html5',
+		url: '{S_PLUPLOAD_URL}',
+		max_file_size: '{FILESIZE}b',
+		chunk_size: '{CHUNK_SIZE}b',
+		unique_names: true,
+		filters: {
+			mime_types: [
+				{FILTERS}
+			],
+			mime_types_max_file_size: [
+				{FILTERS}
+			],
+		},
+		{S_RESIZE}
+		headers: {'X-PHPBB-USING-PLUPLOAD': '1', 'X-Requested-With': 'XMLHttpRequest'},
+		file_data_name: 'fileupload',
+		multipart_params: {'add_file': '{LA_ADD_FILE}'},
+		form_hook: '#postform',
+		browse_button: 'add_files',
+		drop_element : 'message',
+	},
+	lang: {
+		ERROR: '{LA_ERROR}',
+		TOO_MANY_ATTACHMENTS: '{LA_TOO_MANY_ATTACHMENTS}',
+		FORM_INVALID: '{LA_FORM_INVALID}',
+	},
+	order: '{ATTACH_ORDER}',
+	maxFiles: {MAX_ATTACHMENTS},
+	data: {S_ATTACH_DATA},
+}
+</script>
+<!-- INCLUDEJS {T_ASSETS_PATH}/plupload/plupload.full.min.js -->
+<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/plupload.js -->
