@@ -597,6 +597,11 @@ class ucp_main
 				if ($submit && $edit)
 				{
 					$draft_subject = $request->variable('subject', '', true);
+					/**
+					 * Replace Emojis and other 4bit UTF-8 chars not allowed by MySQL to UCR/NCR.
+					 * Using their Numeric Character Reference's Hexadecimal notation.
+					 */
+					$draft_subject = utf8_encode_ucr($draft_subject);
 					$draft_message = $request->variable('message', '', true);
 					if (check_form_key('ucp_draft'))
 					{
