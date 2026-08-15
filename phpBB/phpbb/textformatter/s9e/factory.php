@@ -364,6 +364,12 @@ class factory implements \phpbb\textformatter\cache_interface
 		</xsl:choose>';
 		$tag->template = '<xsl:choose><xsl:when test="$S_VIEWSMILIES">' . str_replace('class="emoji"', 'class="emoji smilies"', $tag->template) . '</xsl:when><xsl:otherwise><xsl:value-of select="."/></xsl:otherwise></xsl:choose>';
 
+		// Reject shortcodes that consist of raw codepoints in hexadecimal such as ":123c:",
+		// which commonly appear as segments of IPv6 addresses
+		$tag->filterChain
+			->append(__NAMESPACE__ . '\\parser::filter_emoji')
+			->addParameterByName('tagText');
+
 		/**
 		* Modify the s9e\TextFormatter configurator after the default settings are set
 		*
