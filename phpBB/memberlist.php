@@ -958,9 +958,9 @@ switch ($mode)
 		{
 			// Generate the navlinks based on the selected topic
 			$navlinks_sql_array = [
-				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, 
-					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, 
-					f.forum_options, t.topic_title',
+				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
+					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
+					f.forum_options, t.topic_title, t.topic_visibility',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
 					TOPICS_TABLE  => 't',
@@ -972,6 +972,13 @@ switch ($mode)
 			$result = $db->sql_query($sql);
 			$topic_data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+			if (!$phpbb_content_visibility->is_visible('topic', $topic_data['forum_id'], $topic_data))
+			{
+				trigger_error('NO_TOPIC');
+			}
 
 			generate_forum_nav($topic_data);
 			$template->assign_block_vars('navlinks', array(
