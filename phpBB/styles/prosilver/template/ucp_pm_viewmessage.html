@@ -108,36 +108,59 @@
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_list_before -->
 			<!-- IF $SHOW_PM_POST_BUTTONS -->
 			<ul class="post-buttons">
-				<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
-				<!-- IF U_EDIT -->
-					<li>
-						<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
-							{{ Icon('font', 'pencil', lang('BUTTON_EDIT'), true, 'fas c-button-icon') }}
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- IF U_DELETE -->
-					<li>
-						<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
-							{{ Icon('font', 'xmark', lang('BUTTON_DELETE'), true, 'fas c-button-icon') }}
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- IF U_REPORT -->
-					<li>
-						<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
-							{{ Icon('font', 'exclamation', lang('BUTTON_REPORT'), true, 'fas c-button-icon') }}
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- IF U_QUOTE -->
-					<li>
-						<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
-							{{ Icon('font', 'quote-left', lang('BUTTON_QUOTE'), true, 'fas c-button-icon') }}
-						</a>
-					</li>
-				<!-- ENDIF -->
-				<!-- EVENT ucp_pm_viewmessage_post_buttons_after -->
+				{% with {'pm_post_buttons_hide_text': true} %}
+					{% block pm_post_buttons %}
+						{% EVENT ucp_pm_viewmessage_post_buttons_before %}
+
+						{% if U_EDIT %}
+							<li>
+								<a href="{{ U_EDIT }}" title="{{ lang('POST_EDIT_PM') }}" class="button button-icon-only">
+									{{ Icon('font', 'pencil', lang('BUTTON_EDIT'), pm_post_buttons_hide_text, 'fas c-button-icon') }}
+								</a>
+							</li>
+						{% endif %}
+						{% if U_DELETE %}
+							<li>
+								<a href="{{ U_DELETE }}" title="{{ lang('DELETE_MESSAGE') }}" class="button button-icon-only">
+									{{ Icon('font', 'xmark', lang('BUTTON_DELETE'), pm_post_buttons_hide_text, 'fas c-button-icon') }}
+								</a>
+							</li>
+						{% endif %}
+						{% if U_REPORT %}
+							<li>
+								<a href="{{ U_REPORT }}" title="{{ lang('REPORT_PM') }}" class="button button-icon-only">
+									{{ Icon('font', 'exclamation', lang('BUTTON_REPORT'), pm_post_buttons_hide_text, 'fas c-button-icon') }}
+								</a>
+							</li>
+						{% endif %}
+						{% if U_QUOTE %}
+							<li>
+								<a href="{{ U_QUOTE }}" title="{{ lang('POST_QUOTE_PM') }}" class="button button-icon-only">
+									{{ Icon('font', 'quote-left', lang('BUTTON_QUOTE'), pm_post_buttons_hide_text, 'fas c-button-icon') }}
+								</a>
+							</li>
+						{% endif %}
+
+						{% EVENT ucp_pm_viewmessage_post_buttons_after %}
+					{% endblock pm_post_buttons %}
+				{% endwith %}
+
+				<li class="post-buttons-responsive-menu dropdown-container">
+					<a href="javascript:void(0);" class="button button-icon-only post-button-responsive dropdown-toggle">
+						{{ Icon('font', 'bars', '', true, 'fas c-button-icon') }}
+					</a>
+					<div class="dropdown">
+						<div class="pointer">
+							<div class="pointer-inner"></div>
+						</div>
+
+						<ul class="dropdown-contents">
+							{% with {'pm_post_buttons_hide_text': false} %}
+								{{ block('pm_post_buttons', _self) }}
+							{% endwith %}
+						</ul>
+					</div>
+				</li>
 			</ul>
 			<!-- ENDIF -->
 			<!-- EVENT ucp_pm_viewmessage_post_buttons_list_after -->
