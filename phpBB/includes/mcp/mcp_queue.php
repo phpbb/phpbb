@@ -1336,6 +1336,7 @@ class mcp_queue
 
 			foreach ($post_info as $post_id => $post_data)
 			{
+				$topic_id = (int) $post_data['topic_id'];
 				$disapprove_all_posts_in_topic = $topic_information[$topic_id]['topic_posts_approved'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id];
