@@ -28,7 +28,7 @@ class phpbb_functional_update_maintenance_test extends phpbb_functional_test_cas
 		$notifications = [
 			['template' => 'update_maintenance', 'current_version' => '3.2.0', 'new_version' => '3.3.0', 'lang_key' => 'NOTIFICATION_UPDATE_MAINTENANCE'],
 			['template' => 'update_security', 'current_version' => '3.2.0', 'new_version' => '3.3.1', 'lang_key' => 'NOTIFICATION_UPDATE_SECURITY'],
-			['template' => 'update_urgent', 'current_version' => '3.2.0', 'new_version' => '3.3.2', 'lang_key' => 'NOTIFICATION_UPDATE_URGENT'],
+			['template' => 'update_critical', 'current_version' => '3.2.0', 'new_version' => '3.3.2', 'lang_key' => 'NOTIFICATION_UPDATE_CRITICAL'],
 		];
 
 		foreach ($notifications as $i => $data)

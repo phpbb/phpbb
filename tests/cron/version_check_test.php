@@ -176,11 +176,11 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 		$this->assertGreaterThanOrEqual($start_time, $this->config['version_check_last_cron']);
 	}
 
-	public function test_run_with_urgent_update()
+	public function test_run_with_critical_update()
 	{
 		$update_data = array(
 			'current' => '3.1.1',
-			'urgent' => '3.1.2',
+			'critical' => '3.1.2',
 			'announcement' => 'https://www.phpbb.com/announcement',
 			'download' => 'https://www.phpbb.com/download',
 		);
@@ -204,7 +204,7 @@ class phpbb_cron_task_core_version_check_test extends phpbb_test_case
 			->with(
 				$this->equalTo('notification.type.update_maintenance'),
 				$this->callback(function ($type_data) {
-					$this->assertEquals('update_urgent', $type_data['template']);
+					$this->assertEquals('update_critical', $type_data['template']);
 					return true;
 				})
 			);

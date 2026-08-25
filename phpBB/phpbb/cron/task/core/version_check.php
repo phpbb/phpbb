@@ -42,6 +42,15 @@ class version_check extends base
 	/** @var manager */
 	protected $notification_manager;
 
+	/** @var string Template name for critical updates */
+	public const UPDATE_CRITICAL = 'update_critical';
+
+	/** @var string Template name for maintenance updates */
+	public const UPDATE_MAINTENANCE = 'update_maintenance';
+
+	/** @var string Template name for security updates */
+	public const UPDATE_SECURITY = 'update_security';
+
 	/**
 	 * Constructor
 	 *
@@ -132,16 +141,16 @@ class version_check extends base
 	{
 		$current_version = $this->config['version'];
 
-		if (!empty($update_data['urgent']) && $this->version_helper->compare($update_data['urgent'], $current_version, '>'))
+		if (!empty($update_data['critical']) && $this->version_helper->compare($update_data['critical'], $current_version, '>'))
 		{
-			return 'update_urgent';
+			return self::UPDATE_CRITICAL;
 		}
 
 		if (!empty($update_data['security']) && $this->version_helper->compare($update_data['security'], $current_version, '>'))
 		{
-			return 'update_security';
+			return self::UPDATE_SECURITY;
 		}
 
-		return 'update_maintenance';
+		return self::UPDATE_MAINTENANCE;
 	}
 }

@@ -68,7 +68,7 @@ class version_helper
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'version',
-			'urgent'		=> 'version',
+			'critical'		=> 'version',
 		),
 		'unstable' => array(
 			'current'		=> 'version',
@@ -76,7 +76,7 @@ class version_helper
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
 			'security'		=> 'version',
-			'urgent'		=> 'version',
+			'critical'		=> 'version',
 		),
 	);
 

@@ -13,6 +13,8 @@
 
 namespace phpbb\notification\type;
 
+use phpbb\cron\task\core\version_check;
+
 class update_maintenance extends base
 {
 	/** @var string[] Notification options */
@@ -99,14 +101,14 @@ class update_maintenance extends base
 		$new_version = $this->get_data('new_version');
 		$current_version = $this->get_data('current_version');
 
-		if ($template === 'update_security')
+		if ($template === version_check::UPDATE_SECURITY)
 		{
 			return $this->language->lang('NOTIFICATION_UPDATE_SECURITY', $current_version, $new_version);
 		}
 
-		if ($template === 'update_urgent')
+		if ($template === version_check::UPDATE_CRITICAL)
 		{
-			return $this->language->lang('NOTIFICATION_UPDATE_URGENT', $current_version, $new_version);
+			return $this->language->lang('NOTIFICATION_UPDATE_CRITICAL', $current_version, $new_version);
 		}
 
 		return $this->language->lang('NOTIFICATION_UPDATE_MAINTENANCE', $current_version, $new_version);
@@ -126,7 +128,7 @@ class update_maintenance extends base
 	*/
 	public function get_email_template()
 	{
-		return $this->get_data('template') ?: 'update_maintenance';
+		return $this->get_data('template') ?: version_check::UPDATE_MAINTENANCE;
 	}
 
 	/**
