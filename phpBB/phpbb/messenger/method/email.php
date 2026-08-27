@@ -303,6 +303,44 @@ class email extends base
 		$vars = ['headers'];
 		extract($this->dispatcher->trigger_event('core.modify_email_headers', compact($vars)));
 
+		$envelope_sender = $this->config['board_email'];
+		foreach (['Sender', 'Return-Path'] as $sender_header)
+		{
+			if (!isset($headers[$sender_header]))
+			{
+				continue;
+			}
+			$envelope_sender = $headers[$sender_header] instanceof Address
+				? $headers[$sender_header]->getAddress()
+				: $headers[$sender_header];
+			break;
+		}
+
+		/**
+		 * Modify the email envelope sender before the message is sent or queued
+		 *
+		 * The value inherits a Sender or Return-Path changed by the earlier
+		 * header event. The null reverse path is not supported. Header entries
+		 * may be changed to keep Return-Path consistent with the envelope sender.
+		 *
+		 * @event core.modify_email_envelope_sender
+		 * @var string envelope_sender The RFC 5321 envelope sender address
+		 * @var array  headers         Array containing email header entries
+		 * @since 3.3.18-RC1
+		 * @changed 4.0.0-a3 Header entries use Symfony Mailer compatible values
+		 */
+		$vars = ['envelope_sender', 'headers'];
+		extract($this->dispatcher->trigger_event('core.modify_email_envelope_sender', compact($vars)));
+
+		if (!is_string($envelope_sender)
+			|| preg_match('/[\r\n]/', $envelope_sender)
+			|| !preg_match('/^' . get_preg_expression('email') . '$/iD', $envelope_sender))
+		{
+			$envelope_sender = $this->config['board_email'];
+		}
+
+		$headers['Sender'] = new Address($envelope_sender);
+
 		foreach ($headers as $header => $value)
 		{
 			$this->header($header, $value);
