@@ -528,6 +528,26 @@ class messenger
 	}
 
 	/**
+	* Return a valid email envelope sender or the configured board email
+	*
+	* @param mixed $envelope_sender Email envelope sender to validate
+	* @return string
+	*/
+	static function get_valid_envelope_sender($envelope_sender)
+	{
+		global $config;
+
+		if (!is_string($envelope_sender)
+			|| preg_match('/[\r\n]/', $envelope_sender)
+			|| !preg_match('/^' . get_preg_expression('email') . '$/iD', $envelope_sender))
+		{
+			return $config['board_email'];
+		}
+
+		return $envelope_sender;
+	}
+
+	/**
 	* Send out emails
 	*/
 	function msg_email()
@@ -621,6 +641,24 @@ class messenger
 
 		// Build header
 		$headers = $this->build_header($to, $cc, $bcc);
+		$envelope_sender = $config['board_email'];
+
+		/**
+		* Modify the email envelope sender before the message is sent or queued
+		*
+		* A modified value forces use of the -f parameter for the PHP mail
+		* transport even when email_force_sender is disabled. The null reverse
+		* path is not supported.
+		*
+		* @event core.modify_email_envelope_sender
+		* @var string envelope_sender The RFC 5321 envelope sender address
+		* @var array  headers         Mutable entries for keeping Return-Path or Sender consistent
+		* @since 3.3.18-RC1
+		*/
+		$vars = array('envelope_sender', 'headers');
+		extract($phpbb_dispatcher->trigger_event('core.modify_email_envelope_sender', compact($vars)));
+
+		$envelope_sender = $this->get_valid_envelope_sender($envelope_sender);
 
 		// Send message ...
 		if (!$use_queue)
@@ -630,11 +668,11 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers);
+				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers, $envelope_sender);
 			}
 			else
 			{
-				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $encode_eol, $err_msg);
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $encode_eol, $err_msg, $envelope_sender);
 			}
 
 			if (!$result)
@@ -650,7 +688,8 @@ class messenger
 				'addresses'		=> $this->addresses,
 				'subject'		=> $this->subject,
 				'msg'			=> $this->msg,
-				'headers'		=> $headers)
+				'headers'		=> $headers,
+				'envelope_sender' => $envelope_sender)
 			);
 		}
 
@@ -922,6 +961,7 @@ class queue
 			for ($i = 0; $i < $num_items; $i++)
 			{
 				// Make variables available...
+				$envelope_sender = $config['board_email'];
 				extract(array_shift($this->queue_data[$object]['data']));
 
 				switch ($object)
@@ -953,12 +993,12 @@ class queue
 
 							if ($config['smtp_delivery'])
 							{
-								$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
+								$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers, $envelope_sender);
 							}
 							else
 							{
 								$encode_eol = $config['smtp_delivery'] || PHP_VERSION_ID >= 80000 ? "\r\n" : PHP_EOL;
-								$result = phpbb_mail($to, $subject, $msg, $headers, $encode_eol, $err_msg);
+								$result = phpbb_mail($to, $subject, $msg, $headers, $encode_eol, $err_msg, $envelope_sender);
 							}
 
 							if (!$result)
@@ -1090,9 +1130,11 @@ class queue
 /**
 * Replacement or substitute for PHP's mail command
 */
-function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false, $envelope_sender = false)
 {
 	global $config, $user;
+
+	$envelope_sender = messenger::get_valid_envelope_sender($envelope_sender);
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
@@ -1222,7 +1264,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
+	$smtp->server_send('MAIL FROM:<' . $envelope_sender . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);
@@ -1932,9 +1974,11 @@ function mail_encode($str, $eol = "\r\n")
 /**
  * Wrapper for sending out emails with the PHP's mail function
  */
-function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
+function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg, $envelope_sender = false)
 {
 	global $config, $phpbb_root_path, $phpEx, $phpbb_dispatcher;
+
+	$envelope_sender = messenger::get_valid_envelope_sender($envelope_sender);
 
 	// Convert Numeric Character References to UTF-8 chars (ie. Emojis)
 	$subject = utf8_decode_ncr($subject);
@@ -1961,7 +2005,10 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	 * Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space
 	 * (Use '' as parameter to mail_encode() results in SPACE used)
 	 */
-	$additional_parameters = $config['email_force_sender'] ? '-f' . $config['board_email'] : '';
+	// A changed envelope sender requires -f regardless of email_force_sender.
+	$additional_parameters = ($config['email_force_sender'] || $envelope_sender !== $config['board_email'])
+		? '-f' . $envelope_sender
+		: '';
 
 	/**
 	 * Modify data before sending out emails with PHP's mail function
