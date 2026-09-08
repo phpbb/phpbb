@@ -83,6 +83,19 @@ services:
         tags:
             - { name: cron.task }
 
+    cron.task.core.version_check:
+        class: phpbb\cron\task\core\version_check
+        arguments:
+            - '@config'
+            - '@version_helper'
+            - '@log'
+            - '@user'
+            - '@notification_manager'
+        calls:
+            - [set_name, [cron.task.core.version_check]]
+        tags:
+            - { name: cron.task }
+
     cron.task.core.queue:
         class: phpbb\cron\task\core\queue
         arguments:
