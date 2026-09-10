@@ -213,7 +213,7 @@ class mcp_reports
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
 							AND filetime <= ' . (int) $report['report_time'] . '
-						ORDER BY filetime DESC';
+						ORDER BY attach_id DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

@@ -649,7 +649,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
 				AND is_orphan = 0
-			ORDER BY filetime DESC";
+			ORDER BY attach_id DESC";
 		$result = $db->sql_query($sql);
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);

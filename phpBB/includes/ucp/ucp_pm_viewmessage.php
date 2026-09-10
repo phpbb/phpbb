@@ -124,7 +124,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
 					AND in_message = 1
-				ORDER BY filetime DESC, post_msg_id ASC";
+				ORDER BY attach_id DESC, post_msg_id ASC";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
