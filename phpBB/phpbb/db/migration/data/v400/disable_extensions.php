@@ -18,10 +18,11 @@ use phpbb\db\migration\container_aware_migration;
 class disable_extensions extends container_aware_migration
 {
 	/**
-	 * @var array List of extensions included with phpBB
+	 * @var array phpBB extensions that should not be disabled, if present
 	 */
 	public static array $default_extensions = [
 		'phpbb/viglink',
+		'phpbb/teamsecurity',
 	];
 
 	public static function depends_on(): array
@@ -44,6 +45,7 @@ class disable_extensions extends container_aware_migration
 	 */
 	public function disable_enabled_extensions(): void
 	{
+		/** @var \phpbb\extension\manager $ext_manager */
 		$ext_manager = $this->container->get('ext.manager');
 
 		$enabled_extensions = array_keys($ext_manager->all_enabled());
