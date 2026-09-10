@@ -439,6 +439,94 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		);
 	}
 
+	public function test_modify_email_envelope_sender()
+	{
+		$this->config->set('board_contact', 'contact@yourdomain.com');
+		$this->config->set('board_contact_name', '');
+		$this->config->set('board_email', 'admin@yourdomain.com');
+
+		$this->dispatcher
+			->expects($this->exactly(2))
+			->method('trigger_event')
+			->willReturnCallback(function($event_name, $value_array) {
+				if ($event_name === 'core.modify_email_headers')
+				{
+					$value_array['headers']['Sender'] = new \Symfony\Component\Mime\Address('existing@yourdomain.com');
+				}
+				if ($event_name === 'core.modify_email_envelope_sender')
+				{
+					$this->assertEquals('existing@yourdomain.com', $value_array['envelope_sender']);
+					$value_array['envelope_sender'] = 'bounce@yourdomain.com';
+					$value_array['headers']['Return-Path'] = new \Symfony\Component\Mime\Address('bounce@yourdomain.com');
+				}
+
+				return $value_array;
+			});
+
+		$this->method_email->init();
+		$this->method_email->to('foo@bar.com');
+
+		$email_reflection = new \ReflectionClass($this->method_email);
+		$email_reflection->getMethod('build_headers')->invoke($this->method_email);
+		/** @var \Symfony\Component\Mime\Email $email */
+		$email = $email_reflection->getProperty('email')->getValue($this->method_email);
+
+		$this->assertEquals('bounce@yourdomain.com', $email->getSender()->getAddress());
+		$this->assertEquals(
+			'bounce@yourdomain.com',
+			$email->getHeaders()->get('Return-Path')->getAddress()->getAddress()
+		);
+		$this->assertEquals(
+			'bounce@yourdomain.com',
+			\Symfony\Component\Mailer\Envelope::create($email)->getSender()->getAddress()
+		);
+
+		/** @var \Symfony\Component\Mime\Email $queued_email */
+		$queued_email = unserialize(serialize($email));
+		$this->assertEquals('bounce@yourdomain.com', $queued_email->getSender()->getAddress());
+	}
+
+	/**
+	 * @dataProvider invalid_envelope_sender_data
+	 */
+	public function test_invalid_envelope_sender_falls_back_to_board_email($invalid_sender)
+	{
+		$this->config->set('board_contact', 'contact@yourdomain.com');
+		$this->config->set('board_contact_name', '');
+		$this->config->set('board_email', 'admin@yourdomain.com');
+
+		$this->dispatcher
+			->method('trigger_event')
+			->willReturnCallback(function($event_name, $value_array) use ($invalid_sender) {
+				if ($event_name === 'core.modify_email_envelope_sender')
+				{
+					$value_array['envelope_sender'] = $invalid_sender;
+				}
+
+				return $value_array;
+			});
+
+		$this->method_email->init();
+		$email_reflection = new \ReflectionClass($this->method_email);
+		$email_reflection->getMethod('build_headers')->invoke($this->method_email);
+		/** @var \Symfony\Component\Mime\Email $email */
+		$email = $email_reflection->getProperty('email')->getValue($this->method_email);
+
+		$this->assertEquals('admin@yourdomain.com', $email->getSender()->getAddress());
+	}
+
+	public static function invalid_envelope_sender_data()
+	{
+		return [
+			'empty'				=> [''],
+			'invalid email'		=> ['not-an-email'],
+			'null reverse path'	=> ['<>'],
+			'header newline'	=> ["bounce@example.com\r\nBcc: victim@example.com"],
+			'non-string'		=> [['bounce@example.com']],
+			'null'				=> [null],
+		];
+	}
+
 	public function test_set_mail_priority()
 	{
 		$email_reflection = new \ReflectionClass($this->method_email);
