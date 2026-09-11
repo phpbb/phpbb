@@ -352,6 +352,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_REPORT_PM_CLOSED'				=> 'Your report on a private message is closed by a moderator',
 	'NOTIFICATION_TYPE_TOPIC'							=> 'Someone creates a topic in a forum to which you are subscribed',
 	'NOTIFICATION_TYPE_ADMIN_ACTIVATE_USER'				=> 'User requiring activation',
+	'NOTIFICATION_TYPE_UPDATE_MAINTENANCE'				=> 'phpBB update notifications',
 
 	'NOTIFY_METHOD'					=> 'Notification method',
 	'NOTIFY_METHOD_BOTH'			=> 'Both',
