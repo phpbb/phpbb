@@ -13,6 +13,8 @@
 
 require_once __DIR__ . '/../mock/filespec.php';
 
+use org\bovigo\vfs\vfsStream;
+
 class phpbb_fileupload_test extends phpbb_test_case
 {
 	private $path;
@@ -67,6 +69,14 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$guessers[2]->set_priority(-2);
 		$guessers[3]->set_priority(-2);
 		$this->mimetype_guesser = new \phpbb\mimetype\guesser($guessers);
+		vfsStream::setup('phpbb', null, array(
+			'fixture' => array(
+				'jpg' => file_get_contents(__DIR__ . '/fixture/jpg'),
+				'copies' => array(),
+			),
+		));
+		$this->path = vfsStream::url('phpbb/fixture') . '/';
+		$this->phpbb_root_path = vfsStream::url('phpbb') . '/';
 
 		$this->container = new phpbb_mock_container_builder();
 		$this->container->set('files.filespec', new \phpbb\files\filespec(
@@ -74,7 +84,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 			$this->language,
 			$this->php_ini,
 			new \FastImageSize\FastImageSize(),
-			$phpbb_root_path,
+			$this->phpbb_root_path,
 			new \phpbb\mimetype\guesser(array(
 				'mimetype.extension_guesser' => new \phpbb\mimetype\extension_guesser(),
 			))));
@@ -94,8 +104,6 @@ class phpbb_fileupload_test extends phpbb_test_case
 			$this->request
 		));
 
-		$this->path = __DIR__ . '/fixture/';
-		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	private function gen_valid_filespec()
@@ -136,15 +144,14 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$file = new \phpbb\files\filespec($this->filesystem, $this->language, $this->php_ini, new \FastImageSize\FastImageSize(), $this->phpbb_root_path);
 		$file->set_upload_ary(array(
 				'size'	=> 50,
-				'tmp_name'	=> __DIR__ . '/fixture/disallowed',
+				'tmp_name'	=> $this->path . 'disallowed',
 				'name'		=> 'disallowed.jpg',
 				'type'		=> 'image/jpg'
 			))
 			->set_upload_namespace($upload);
-		file_put_contents(__DIR__ . '/fixture/disallowed', '<body>' . file_get_contents(__DIR__ . '/fixture/jpg'));
+		file_put_contents($this->path . 'disallowed', '<body>' . file_get_contents(__DIR__ . '/fixture/jpg'));
 		$upload->common_checks($file);
 		$this->assertEquals('DISALLOWED_CONTENT', $file->error[0]);
-		unlink(__DIR__ . '/fixture/disallowed');
 	}
 
 	public function test_common_checks_invalid_filename()
@@ -195,7 +202,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
 		$this->assertFalse($file->additional_checks());
-		$this->assertTrue($file->move_file('../tests/upload/fixture/copies', true));
+		$this->assertTrue($file->move_file('fixture/copies', true));
 		$file->remove();
 	}
 
@@ -214,7 +221,7 @@ class phpbb_fileupload_test extends phpbb_test_case
 		];
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
-		$this->assertFalse($file->move_file('../tests/upload/fixture'));
+		$this->assertFalse($file->move_file('fixture'));
 		$this->assertFalse($file->get('file_moved'));
 		$this->assertEquals(1, count($file->error));
 	}
@@ -235,9 +242,8 @@ class phpbb_fileupload_test extends phpbb_test_case
 		];
 		$file = $upload->handle_upload('files.types.local', $this->path . 'jpg.jpg', $filedata);
 		$this->assertEquals(0, count($file->error));
-		$file->move_file('../tests/upload/fixture/copies', true);
+		$file->move_file('fixture/copies', true);
 		$this->assertEquals(0, count($file->error));
-		unlink($this->path . 'copies/jpg.jpg');
 	}
 
 	public function test_valid_dimensions()
