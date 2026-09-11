@@ -489,6 +489,12 @@ foreach ($compress_programs as $extension => $compress_command)
 	$package->run_command("$compress_command ./release_files/" . $package->get('release_filename') . '.' . $extension . ' ' . $package->get('package_name'));
 }
 
+// Package british language pack
+chdir($package->get('lang_directory'));
+$package->begin_status('Packaging British language pack for ' . $package->get('new_version_number'));
+$package->run_command('rm -v ./../release_files/' . $package->get('british_lang_filename') . ".zip");
+$package->run_command('zip -r ./../release_files/' . $package->get('british_lang_filename') . '.zip ' . $package->get('british_lang_filename'));
+
 // verify results
 chdir($package->locations['root']);
 $package->begin_status('********** Verifying packages **********');
