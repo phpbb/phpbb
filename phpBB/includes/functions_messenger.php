@@ -1097,6 +1097,9 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
+	// Escape leading dots as required by RFC 5321 section 4.5.2
+	$message = preg_replace('/^\./m', '..', $message);
+
 	if ($headers !== false)
 	{
 		if (!is_array($headers))
