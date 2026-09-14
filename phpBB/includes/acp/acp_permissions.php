@@ -27,7 +27,7 @@ class acp_permissions
 	var $permission_dropdown;
 
 	/**
-	 * @var $phpbb_permissions \phpbb\permissions
+	 * @var \phpbb\permissions $phpbb_permissions
 	 */
 	protected $permissions;
 

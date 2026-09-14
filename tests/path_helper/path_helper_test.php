@@ -461,7 +461,7 @@ class phpbb_path_helper_test extends phpbb_test_case
 	{
 		$symfony_request = $this->getMockBuilder('\phpbb\symfony_request')
 			->setConstructorArgs([new phpbb_mock_request()])
-			->onlyMethods(['get', 'getSchemeAndHttpHost', 'getBasePath', 'getPathInfo'])
+			->onlyMethods(['getSchemeAndHttpHost', 'getBasePath', 'getPathInfo'])
 			->getMock();
 		$symfony_request->method('getSchemeAndHttpHost')
 			->willReturn('http://www.phpbb.com');

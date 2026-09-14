@@ -25,7 +25,7 @@ class phpbb_console_user_add_test extends phpbb_console_user_base
 	public function get_command_tester($question_answers = [])
 	{
 		$application = new Application();
-		$application->add(new add(
+		$application->addCommand(new add(
 			$this->user,
 			$this->db,
 			$this->config,
