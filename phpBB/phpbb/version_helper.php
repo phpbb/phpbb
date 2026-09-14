@@ -61,20 +61,23 @@ class version_helper
 	/** @var \phpbb\file_downloader */
 	protected $file_downloader;
 
+	/** @var array[] Version file schema */
 	protected $version_schema = array(
 		'stable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
-			'security'		=> 'bool',
+			'security'		=> 'version',
+			'critical'		=> 'version',
 		),
 		'unstable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
-			'security'		=> 'bool',
+			'security'		=> 'version',
+			'critical'		=> 'version',
 		),
 	);
 

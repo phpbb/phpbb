@@ -303,6 +303,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_lock
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '4.0.0-a3-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version_check_interval', '60');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version_check_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('exts_composer_repositories', '["https://satis.phpbb.com/","https://www.phpbb.com/customise/db/composer/40/"]');
@@ -862,5 +864,6 @@ INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUE
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.topic', 0, 2, 'notification.method.email');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.forum', 0, 2, 'notification.method.board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.forum', 0, 2, 'notification.method.email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.update_maintenance', 0, 2, 'notification.method.email');
 
 # POSTGRES COMMIT #
