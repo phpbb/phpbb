@@ -246,9 +246,13 @@ class message
 		foreach ($this->recipients as $recipient)
 		{
 			$messenger->template($this->template, $recipient['lang']);
-			$messenger->replyto($this->sender_address);
 			$messenger->to($recipient['address'], $recipient['name']);
 			$messenger->im($recipient['jabber'], $recipient['username']);
+
+			if (strtolower($recipient['address']) !== strtolower($this->sender_address))
+			{
+				$messenger->replyto($this->sender_address);
+			}
 
 			$messenger->headers('X-AntiAbuse: Board servername - ' . $this->server_name);
 			$messenger->headers('X-AntiAbuse: User IP - ' . $this->sender_ip);
