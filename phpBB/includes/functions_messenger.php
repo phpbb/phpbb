@@ -1863,7 +1863,21 @@ class smtp_class
 function mail_encode($str, $eol = "\r\n")
 {
 	// Check if string contains ASCII only characters
-	$is_ascii = strlen($str) === utf8_strlen($str);
+	$is_ascii = preg_match('#^[\x00-\x7F]*$#D', $str) === 1;
+
+	// Plain ASCII strings without special characters do not need to be encoded.
+	// Encoding them anyway would trigger spam rules like SUBJ_EXCESS_QP and TO_EXCESS_QP.
+	// '=' and '?' are treated as special so strings cannot be mistaken for encoded words.
+	$special_chars_pattern = '#[\x00-\x1F\x7F()<>@,;:\\\\".\[\]=?]#';
+	$can_be_unencoded = $str !== ''
+		&& $is_ascii
+		&& strlen($str) <= 75
+		&& preg_match($special_chars_pattern, $str) === 0;
+
+	if ($can_be_unencoded)
+	{
+		return $str;
+	}
 
 	$scheme = $is_ascii ? 'Q' : 'B';
 
