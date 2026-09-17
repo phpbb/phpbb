@@ -119,6 +119,11 @@ class connection_factory
 				Type::addType(case_insensitive_string::CASE_INSENSITIVE_STRING, case_insensitive_string::class);
 			}
 			$connection->getDatabasePlatform()->registerDoctrineTypeMapping('varchar_ci', case_insensitive_string::CASE_INSENSITIVE_STRING);
+
+			// MySQL's native ENUM type has no Doctrine mapping of its own; map it
+			// to string so introspecting tables not created by phpBB does not fail.
+			$connection->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
+
 			return $connection;
 		}
 		catch (Exception $e)
