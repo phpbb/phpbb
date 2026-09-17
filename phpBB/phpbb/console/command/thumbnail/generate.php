@@ -166,29 +166,60 @@ class generate extends \phpbb\console\command\command
 				$source = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_source');
 				$destination = $this->symfony_filesystem->tempnam($this->temp->get_dir(), 'thumbnail_destination');
 
-				file_put_contents($source, $this->storage->read($row['physical_filename']));
-
-				if (create_thumbnail($source, $destination, $row['mimetype']))
+				try
 				{
-					$this->storage->write('thumb_' . $row['physical_filename'], fopen($destination, 'rb'));
-
-					$thumbnail_created[] = (int) $row['attach_id'];
-
-					if (count($thumbnail_created) === 250)
+					$source_stream = $this->storage->read($row['physical_filename']);
+					try
 					{
-						$this->commit_changes($thumbnail_created);
-						$thumbnail_created = array();
+						file_put_contents($source, $source_stream);
+					}
+					finally
+					{
+						if (is_resource($source_stream))
+						{
+							fclose($source_stream);
+						}
 					}
 
-					$progress->setMessage($this->language->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
-				}
-				else
-				{
-					$progress->setMessage('<info>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
-				}
+					if (create_thumbnail($source, $destination, $row['mimetype']))
+					{
+						$dest_fp = fopen($destination, 'rb');
+						if ($dest_fp !== false)
+						{
+							try
+							{
+								$this->storage->write('thumb_' . $row['physical_filename'], $dest_fp);
+							}
+							finally
+							{
+								fclose($dest_fp);
+							}
 
-				@unlink($source);
-				@unlink($destination);
+							$thumbnail_created[] = (int) $row['attach_id'];
+
+							if (count($thumbnail_created) === 250)
+							{
+								$this->commit_changes($thumbnail_created);
+								$thumbnail_created = array();
+							}
+
+							$progress->setMessage($this->language->lang('CLI_THUMBNAIL_GENERATED', $row['real_filename'], $row['physical_filename']));
+						}
+						else
+						{
+							$progress->setMessage('<info>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
+						}
+					}
+					else
+					{
+						$progress->setMessage('<info>' . $this->language->lang('CLI_THUMBNAIL_SKIPPED', $row['real_filename'], $row['physical_filename']) . '</info>');
+					}
+				}
+				finally
+				{
+					@unlink($source);
+					@unlink($destination);
+				}
 			}
 
 			$progress->advance();
