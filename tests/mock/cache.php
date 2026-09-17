@@ -139,29 +139,20 @@ class phpbb_mock_cache implements \phpbb\cache\driver\driver_interface
 	}
 	public function sql_load($query)
 	{
+		return true;
 	}
 
 	/**
 	* {@inheritDoc}
 	*/
-	public function sql_save(\phpbb\db\driver\driver_interface $db, $query, $query_result, $ttl)
+	public function sql_save($query, $data, $ttl)
 	{
-		return $query_result;
+		return true;
 	}
-	public function sql_exists($query_id)
+
+	public function get_cache_id_from_sql_query($query)
 	{
-	}
-	public function sql_fetchrow($query_id)
-	{
-	}
-	public function sql_fetchfield($query_id, $field)
-	{
-	}
-	public function sql_rowseek($rownum, $query_id)
-	{
-	}
-	public function sql_freeresult($query_id)
-	{
+		return 'foo';
 	}
 
 	public function obtain_bots()

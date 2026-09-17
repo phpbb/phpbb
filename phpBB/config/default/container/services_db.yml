@@ -1,11 +1,10 @@
 services:
     dbal.conn:
-        class: phpbb\db\driver\factory
+        class: phpbb\db\driver\doctrine
         arguments:
-            - '@service_container'
+            - '@doctrine.connection'
 
-    dbal.conn.driver:
-        synthetic: true
+    dbal.conn.driver: '@dbal.conn'
 
     dbal.conn.doctrine:
         class: Doctrine\DBAL\Connection
