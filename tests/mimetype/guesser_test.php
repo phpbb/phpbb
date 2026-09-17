@@ -196,6 +196,7 @@ class guesser_test extends \phpbb_test_case
 		$guesser = new \phpbb\mimetype\guesser($guessers);
 		$this->assertEquals($expected[0], $guesser->guess($this->jpg_file));
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.jpg'));
+		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file, $this->jpg_file . '.JPG'));
 		@copy($this->jpg_file, $this->jpg_file . '.jpg');
 		$this->assertEquals($expected[1], $guesser->guess($this->jpg_file . '.jpg'));
 		@unlink($this->jpg_file . '.jpg');
