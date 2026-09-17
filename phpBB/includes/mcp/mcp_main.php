@@ -418,7 +418,7 @@ function change_topic_type($action, $topic_ids)
 
 		default:
 			$new_topic_type = POST_NORMAL;
-			$check_acl = false;
+			$check_acl = 'm_';
 			$l_new_type = (count($topic_ids) == 1) ? 'MCP_MAKE_NORMAL' : 'MCP_MAKE_NORMALS';
 		break;
 	}
