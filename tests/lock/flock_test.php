@@ -79,7 +79,10 @@ class phpbb_lock_flock_test extends phpbb_test_case
 		{
 			$this->markTestSkipped('Unable to create temporary lock file');
 		}
-		unlink($path);
+		if (!@unlink($path))
+		{
+			$this->markTestSkipped('Unable to remove temporary lock file');
+		}
 
 		$pid = pcntl_fork();
 		if ($pid === -1)

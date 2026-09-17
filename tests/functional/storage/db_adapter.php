@@ -60,10 +60,10 @@ class db_adapter implements adapter_interface
 			throw new storage_exception('STORAGE_CANNOT_OPEN_FILE', $path);
 		}
 
-		if (fwrite($stream, $content) === false)
+		if (fwrite($stream, $content) !== strlen($content))
 		{
 			fclose($stream);
-			throw new storage_exception('STORAGE_CANNOT_OPEN_FILE', $path);
+			throw new storage_exception('STORAGE_CANNOT_COPY_RESOURCE');
 		}
 
 		rewind($stream);
