@@ -1,4 +1,4 @@
-Subject: "{SITENAME}" - phpBB {NEW_VERSION} update available
+Subject: phpBB {NEW_VERSION} update available for "{SITENAME}"
 
 Hello {USERNAME},
 
