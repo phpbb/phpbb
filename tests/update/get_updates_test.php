@@ -14,6 +14,7 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
+use org\bovigo\vfs\vfsStream;
 use phpbb\filesystem\exception\filesystem_exception;
 use phpbb\filesystem\filesystem_interface;
 use phpbb\update\get_updates;
@@ -26,9 +27,9 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 	private $update;
 	private $public_key = 'atest_public_keyatest_public_keyatest_public_keyatest_public_key';
 
-	private $file_path = __DIR__ . '/../tmp/download.zip';
+	private $file_path;
 
-	private $signature_path = __DIR__ . '/../tmp/signature.sig';
+	private $signature_path;
 
 	private $phpbb_root_path;
 
@@ -42,24 +43,14 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 		$this->http_client = $this->createMock(Client::class);
 		$this->zipper = $this->createMock(ZipArchive::class);
 		$this->phpbb_root_path = $phpbb_root_path;
+		vfsStream::setup('phpbb', null, array(
+			'tmp' => array(),
+		));
+		$this->file_path = vfsStream::url('phpbb/tmp/download.zip');
+		$this->signature_path = vfsStream::url('phpbb/tmp/signature.sig');
 
 		// Set up the `get_updates` instance with injected mocks.
 		$this->update = new get_updates($this->filesystem, base64_encode($this->public_key), $this->phpbb_root_path);
-	}
-
-	public function tearDown(): void
-	{
-		if (file_exists($this->file_path))
-		{
-			unlink($this->file_path);
-		}
-
-		if (file_exists($this->signature_path))
-		{
-			unlink($this->signature_path);
-		}
-
-		parent::tearDown();
 	}
 
 	public function test_download_success()
@@ -115,9 +106,6 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 
 	public function test_validate_file_not_exist()
 	{
-		$file_path = __DIR__ . '/../tmp/download.zip';
-		$signature_path = __DIR__ . '/../tmp/signature.sig';
-
 		$keypair = sodium_crypto_sign_keypair();
 
 		$public_key = base64_encode(sodium_crypto_sign_publickey($keypair));
@@ -125,7 +113,7 @@ class phpbb_update_get_updates_test extends phpbb_test_case
 		$client_reflection = new \ReflectionProperty($this->update, 'public_key');
 		$client_reflection->setValue($this->update, $public_key);
 
-		$this->assertFalse($this->update->validate($file_path, $signature_path));
+		$this->assertFalse($this->update->validate($this->file_path, $this->signature_path));
 	}
 
 	public function test_validate_sig_not_exist()

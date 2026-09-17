@@ -11,15 +11,18 @@
 *
 */
 
+use org\bovigo\vfs\vfsStream;
+
 class phpbb_filespec_test extends phpbb_test_case
 {
 	const TEST_COUNT = 100;
 	const PREFIX = 'phpbb_';
 	const UPLOAD_MAX_FILESIZE = 1000;
+	const FIXTURE_PATH = __DIR__ . '/fixture/';
 
 	private $config;
 	private $filesystem;
-	public $path;
+	private $copy_path;
 
 	/** @var \phpbb\language\language */
 	protected $language;
@@ -47,23 +50,16 @@ class phpbb_filespec_test extends phpbb_test_case
 		$config['mime_triggers'] = 'body|head|html|img|plaintext|a href|pre|script|table|title';
 
 		$this->config = &$config;
-		$this->path = __DIR__ . '/fixture/';
-
-		// Create copies of the files for use in testing move_file
-		$iterator = new DirectoryIterator($this->path);
-		foreach ($iterator as $fileinfo)
-		{
-			if ($fileinfo->isDot() || $fileinfo->isDir())
-			{
-				continue;
-			}
-
-			copy($fileinfo->getPathname(), $this->path . 'copies/' . $fileinfo->getFilename() . '_copy');
-			if ($fileinfo->getFilename() === 'txt')
-			{
-				copy($fileinfo->getPathname(), $this->path . 'copies/' . $fileinfo->getFilename() . '_copy_2');
-			}
-		}
+		vfsStream::setup('phpbb', null, array(
+			'copies' => array(
+				'gif_copy' => file_get_contents(self::FIXTURE_PATH . 'gif'),
+				'jpg_copy' => file_get_contents(self::FIXTURE_PATH . 'jpg'),
+				'png_copy' => file_get_contents(self::FIXTURE_PATH . 'png'),
+				'txt_copy' => file_get_contents(self::FIXTURE_PATH . 'txt'),
+				'txt_copy_2' => file_get_contents(self::FIXTURE_PATH . 'txt'),
+			),
+		));
+		$this->copy_path = vfsStream::url('phpbb/copies') . '/';
 
 		$guessers = array(
 			new \Symfony\Component\Mime\FileinfoMimeTypeGuesser(),
@@ -104,16 +100,6 @@ class phpbb_filespec_test extends phpbb_test_case
 	protected function tearDown(): void
 	{
 		$this->config = array();
-
-		$iterator = new DirectoryIterator($this->path . 'copies');
-		foreach ($iterator as $fileinfo)
-		{
-			$name = $fileinfo->getFilename();
-			if ($name[0] !== '.')
-			{
-				unlink($fileinfo->getPathname());
-			}
-		}
 	}
 
 	public function test_empty_upload_ary()
@@ -146,7 +132,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec = $this->get_filespec();
 		$filespec->set_upload_namespace($upload);
 		$this->set_reflection_property($filespec, 'file_moved', true);
-		$this->set_reflection_property($filespec, 'filesize', $filespec->get_filesize($this->path . $filename));
+		$this->set_reflection_property($filespec, 'filesize', $filespec->get_filesize(self::FIXTURE_PATH . $filename));
 
 		$this->assertEquals($expected, $filespec->additional_checks());
 	}
@@ -183,7 +169,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	public function test_check_content($filename, $expected)
 	{
 		$disallowed_content = explode('|', $this->config['mime_triggers']);
-		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename));
+		$filespec = $this->get_filespec(array('tmp_name' => self::FIXTURE_PATH . $filename));
 		$this->assertEquals($expected, $filespec->check_content($disallowed_content));
 		// All files should pass if $disallowed_content is empty
 		$this->assertEquals(true, $filespec->check_content(array()));
@@ -323,7 +309,7 @@ class phpbb_filespec_test extends phpbb_test_case
 	 */
 	public function test_is_image($filename, $mimetype, $expected)
 	{
-		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
+		$filespec = $this->get_filespec(array('tmp_name' => self::FIXTURE_PATH . $filename, 'type' => $mimetype));
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
@@ -351,8 +337,8 @@ class phpbb_filespec_test extends phpbb_test_case
 			$this->markTestSkipped('Unable to test mimetype guessing without fileinfo support on Windows');
 		}
 
-		$filespec = $this->get_filespec(array('tmp_name' => $this->path . $filename, 'type' => $mimetype));
-		$filespec->get_mimetype($this->path . $filename);
+		$filespec = $this->get_filespec(array('tmp_name' => self::FIXTURE_PATH . $filename, 'type' => $mimetype));
+		$filespec->get_mimetype(self::FIXTURE_PATH . $filename);
 		$this->assertEquals($expected, $filespec->is_image());
 	}
 
@@ -381,7 +367,7 @@ class phpbb_filespec_test extends phpbb_test_case
 		$upload->max_filesize = self::UPLOAD_MAX_FILESIZE;
 
 		$filespec = $this->get_filespec(array(
-			'tmp_name' => $this->path . 'copies/' . $tmp_name,
+			'tmp_name' => $this->copy_path . $tmp_name,
 			'name' => $realname,
 			'type' => $mime_type,
 		));
@@ -389,8 +375,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$filespec->set_upload_namespace($upload);
 		$this->set_reflection_property($filespec, 'local', true);
 
-		$this->assertEquals($expected, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/' . $realname));
+		$destination = rtrim($this->copy_path, '/');
+		$this->assertEquals($expected, $filespec->move_file($destination));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($destination . '/' . $realname));
 		if ($error)
 		{
 			$this->assertEquals($error, $filespec->error[0]);
@@ -427,7 +414,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'name' => 'gif_moved',
 			'type' => 'image/gif',
 			'size' => '',
-			'tmp_name' => $this->path . 'copies/' . $tmp_name,
+			'tmp_name' => $this->copy_path . $tmp_name,
 			'error' => '',
 		);
 
@@ -445,8 +432,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->set_reflection_property($filespec, 'extension', 'gif');
 		$filespec->set_upload_namespace($upload);
 
-		$this->assertEquals($move_success, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/gif_moved'));
+		$destination = rtrim($this->copy_path, '/');
+		$this->assertEquals($move_success, $filespec->move_file($destination));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($destination . '/gif_moved'));
 		$this->assertSame($expected_error, $filespec->error);
 	}
 
@@ -494,7 +482,7 @@ class phpbb_filespec_test extends phpbb_test_case
 			'name' => 'gif_moved',
 			'type' => 'image/gif',
 			'size' => '',
-			'tmp_name' => $this->path . 'copies/gif_copy',
+			'tmp_name' => $this->copy_path . 'gif_copy',
 			'error' => '',
 		);
 
@@ -513,8 +501,9 @@ class phpbb_filespec_test extends phpbb_test_case
 		$this->set_reflection_property($filespec, 'extension', 'gif');
 		$filespec->set_upload_namespace($upload);
 
-		$this->assertEquals(true, $filespec->move_file($this->path . 'copies'));
-		$this->assertEquals($filespec->get('file_moved'), file_exists($this->path . 'copies/gif_moved'));
+		$destination = rtrim($this->copy_path, '/');
+		$this->assertEquals(true, $filespec->move_file($destination));
+		$this->assertEquals($filespec->get('file_moved'), file_exists($destination . '/gif_moved'));
 		$this->assertSame($expected_error, $filespec->error);
 	}
 

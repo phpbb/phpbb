@@ -14,6 +14,7 @@
 use phpbb\cache\driver\file as file_cache;
 use phpbb\config\config;
 use phpbb\lock\posting;
+use org\bovigo\vfs\vfsStream;
 
 class phpbb_lock_posting_test extends phpbb_test_case
 {
@@ -28,8 +29,13 @@ class phpbb_lock_posting_test extends phpbb_test_case
 
 	public function setUp(): void
 	{
-		$this->cache = new file_cache(__DIR__ . '/../tmp/');
-		$this->cache->purge(); // ensure cache is clean
+		parent::setUp();
+
+		vfsStream::setup('phpbb', null, array(
+			'tmp' => array(),
+		));
+
+		$this->cache = new file_cache(vfsStream::url('phpbb/tmp') . '/');
 		$this->config = new config([
 			'flood_interval' => 15,
 		]);

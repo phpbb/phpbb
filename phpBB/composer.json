@@ -70,7 +70,8 @@
 		"symfony/dom-crawler": "^7.4",
 		"symfony/http-client": "^7.4",
 		"vimeo/psalm": "^6.13.1",
-		"psalm/plugin-symfony": "^v5.1.0"
+		"psalm/plugin-symfony": "^v5.1.0",
+		"mikey179/vfsstream": "^1.6"
 	},
 	"extra": {
 		"branch-alias": {

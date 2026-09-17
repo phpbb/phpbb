@@ -11,11 +11,25 @@
 *
 */
 
+use org\bovigo\vfs\vfsStream;
+
 class phpbb_textformatter_s9e_renderer_test extends phpbb_test_case
 {
+	private $cache_dir;
+
+	protected function setUp(): void
+	{
+		parent::setUp();
+
+		vfsStream::setup('phpbb', null, array(
+			'cache' => array(),
+		));
+		$this->cache_dir = vfsStream::url('phpbb/cache') . '/';
+	}
+
 	public function get_cache_dir()
 	{
-		return __DIR__ . '/../../tmp/';
+		return $this->cache_dir;
 	}
 
 	public function test_load_from_cache()
