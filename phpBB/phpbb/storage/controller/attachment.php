@@ -76,6 +76,9 @@ class attachment
 	/** @var user */
 	protected $user;
 
+	/** @var string */
+	protected $phpbb_root_path;
+
 	/**
 	 * Constructor
 	 *
@@ -91,8 +94,9 @@ class attachment
 	 * @param storage				$storage
 	 * @param symfony_request		$symfony_request
 	 * @param user					$user
+	 * @param string				$phpbb_root_path
 	 */
-	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, extension_guesser $extension_guesser, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user)
+	public function __construct(auth $auth, service $cache, config $config, content_visibility $content_visibility, driver_interface $db, dispatcher_interface $dispatcher, extension_guesser $extension_guesser, language $language, request $request, storage $storage, symfony_request $symfony_request, user $user, string $phpbb_root_path = '')
 	{
 		$this->auth = $auth;
 		$this->cache = $cache;
@@ -106,6 +110,7 @@ class attachment
 		$this->storage = $storage;
 		$this->symfony_request = $symfony_request;
 		$this->user = $user;
+		$this->phpbb_root_path = $phpbb_root_path;
 	}
 
 	/**
@@ -291,7 +296,7 @@ class attachment
 
 		if ($this->config['storage\\attachment\\provider'] === local::class)
 		{
-			$response = new BinaryFileResponse($this->config['storage\\attachment\\config\\path'] . '/' . $attachment['physical_filename']);
+			$response = new BinaryFileResponse($this->phpbb_root_path . $this->config['storage\\attachment\\config\\path'] . '/' . $attachment['physical_filename']);
 		}
 		else
 		{
