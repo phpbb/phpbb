@@ -547,7 +547,7 @@ class acp_storage
 			switch ($definition_value['form_macro']['tag'])
 			{
 				case 'text':
-					if ($definition_value['form_macro']['type'] === 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
+					if ($definition_value['form_macro']['type'] === 'email' && !filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
