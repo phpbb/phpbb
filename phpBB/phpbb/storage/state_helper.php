@@ -83,6 +83,35 @@ class state_helper
 	}
 
 	/**
+	 * Get old provider for the specified storage
+	 *
+	 * @param string $storage_name
+	 *
+	 * @return string
+	 */
+	public function old_provider(string $storage_name): string
+	{
+		$state = $this->load_state();
+
+		return $state['storages'][$storage_name]['old_provider'] ?? $this->config['storage\\' . $storage_name . '\\provider'];
+	}
+
+	/**
+	 * Get old definition value for the specified storage
+	 *
+	 * @param string $storage_name
+	 * @param string $definition
+	 *
+	 * @return string
+	 */
+	public function old_definition_value(string $storage_name, string $definition): string
+	{
+		$state = $this->load_state();
+
+		return $state['storages'][$storage_name]['old_config'][$definition] ?? ($this->config['storage\\' . $storage_name . '\\config\\' . $definition] ?? '');
+	}
+
+	/**
 	 * Get the update type
 	 *
 	 * @return update_type
@@ -178,6 +207,37 @@ class state_helper
 	}
 
 	/**
+	 * Returns whether the configuration has been updated to the new storage
+	 *
+	 * @param string $storage_name Specific storage name
+	 *
+	 * @return bool
+	 */
+	public function is_config_updated(string $storage_name): bool
+	{
+		$state = $this->load_state();
+
+		return !empty($state['storages'][$storage_name]['config_updated']);
+	}
+
+	/**
+	 * Set whether the configuration has been updated
+	 *
+	 * @param bool $updated
+	 * @param string $storage_name Specific storage name
+	 *
+	 * @return void
+	 */
+	public function set_config_updated(bool $updated, string $storage_name): void
+	{
+		$state = $this->load_state();
+
+		$state['storages'][$storage_name]['config_updated'] = $updated;
+
+		$this->save_state($state);
+	}
+
+	/**
 	 * Get the storage names to be updated
 	 *
 	 * @return array
@@ -220,7 +280,9 @@ class state_helper
 		// Save in the state the selected storages and their new configuration
 		foreach ($modified_storages as $storage_name)
 		{
-			$state['storages'][$storage_name] = [];
+			$state['storages'][$storage_name] = [
+				'config_updated' => false,
+			];
 
 			$state['storages'][$storage_name]['provider'] = $request->variable([$storage_name, 'provider'], '');
 
@@ -230,6 +292,16 @@ class state_helper
 			{
 				/** @psalm-suppress InvalidArrayOffset */
 				$state['storages'][$storage_name]['config'][$definition] = $request->variable([$storage_name, $definition], '');
+			}
+
+			// Save old configuration to safely access the old adapter during deletion
+			$old_provider = $this->config['storage\\' . $storage_name . '\\provider'];
+			$state['storages'][$storage_name]['old_provider'] = $old_provider;
+			$old_options = $this->provider_collection->get_by_class($old_provider)->get_options();
+			$state['storages'][$storage_name]['old_config'] = [];
+			foreach (array_keys($old_options) as $definition)
+			{
+				$state['storages'][$storage_name]['old_config'][$definition] = $this->config['storage\\' . $storage_name . '\\config\\' . $definition] ?? '';
 			}
 		}
 

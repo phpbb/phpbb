@@ -136,6 +136,34 @@ class helper
 	}
 
 	/**
+	 * Get old storage adapter
+	 *
+	 * @param string $storage_name Storage adapter name
+	 *
+	 * @return mixed Storage adapter instance
+	 */
+	public function get_old_adapter(string $storage_name): mixed
+	{
+		static $adapters = [];
+
+		if (!isset($adapters[$storage_name]))
+		{
+			$provider_class = $this->state_helper->old_provider($storage_name);
+			$definitions = array_keys($this->get_provider_options($provider_class));
+
+			$options = [];
+			foreach ($definitions as $definition)
+			{
+				$options[$definition] = $this->state_helper->old_definition_value($storage_name, $definition);
+			}
+
+			$adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $provider_class, $options);
+		}
+
+		return $adapters[$storage_name];
+	}
+
+	/**
 	 * Delete configuration options for a given storage
 	 *
 	 * @param string $storage_name

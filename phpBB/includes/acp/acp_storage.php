@@ -211,8 +211,16 @@ class acp_storage
 				$this->db->sql_freeresult($result);
 
 				// Copied all files of a storage, increase storage index and reset file index
-				$this->state_helper->set_storage_index($this->state_helper->storage_index()+1);
+				$this->state_helper->set_storage_index($this->state_helper->storage_index() + 1);
 				$this->state_helper->set_file_index(0);
+
+				// Switch configuration for this storage immediately after its files are copied,
+				// ensuring the board uses the new storage before moving to the next storage or deleting old files.
+				if (!$this->state_helper->is_config_updated($storage_name))
+				{
+					$this->storage_helper->update_storage_config($storage_name);
+					$this->state_helper->set_config_updated(true, $storage_name);
+				}
 			}
 
 			// If update_type is move files, remove the old files
@@ -242,9 +250,9 @@ class acp_storage
 							return;
 						}
 
-						// remove file from old (current) adapter
-						$current_adapter = $this->storage_helper->get_current_adapter($storage_name);
-						$current_adapter->delete($row['file_path']);
+						// Remove file from old adapter
+						$old_adapter = $this->storage_helper->get_old_adapter($storage_name);
+						$old_adapter->delete($row['file_path']);
 
 						$this->state_helper->set_file_index($row['file_id']);
 					}
@@ -257,11 +265,13 @@ class acp_storage
 				}
 			}
 		}
-
-		// Here all files have been copied/moved, so save new configuration
-		foreach ($this->state_helper->storages() as $storage_name)
+		else
 		{
-			$this->storage_helper->update_storage_config($storage_name);
+			// If update_type is CONFIG, no files are copied or moved, so update all storage configurations
+			foreach ($this->state_helper->storages() as $storage_name)
+			{
+				$this->storage_helper->update_storage_config($storage_name);
+			}
 		}
 
 		$storages = $this->state_helper->storages();
