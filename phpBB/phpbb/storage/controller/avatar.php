@@ -66,10 +66,10 @@ class avatar extends controller
 	 */
 	protected function is_allowed(string $file): bool
 	{
-		$ext = substr(strrchr($file, '.'), 1);
+		$ext = strtolower((string) substr(strrchr($file, '.'), 1));
 
 		// If filename have point and have an allowed extension
-		return strpos($file, '.') && in_array($ext, $this->allowed_extensions, true);
+		return strpos($file, '.') !== false && in_array($ext, $this->allowed_extensions, true);
 	}
 
 	/**
