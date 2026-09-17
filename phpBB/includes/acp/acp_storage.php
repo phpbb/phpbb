@@ -477,15 +477,15 @@ class acp_storage
 
 		$sql = 'SELECT COUNT(file_id) as done_count
 			FROM ' . $this->storage_table . '
-			WHERE file_id <= ' . $file_index . "
+			WHERE file_id <= ' . (int) $file_index . "
 				AND storage = '" . $this->db->sql_escape($storage_name) . "'";
 		$result = $this->db->sql_query($sql);
 		$done_count = (int) $this->db->sql_fetchfield('done_count');
 		$this->db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(file_id) as remain_count
-			FROM ' . $this->storage_table . "
-			WHERE file_id > ' . $file_index . '
+			FROM ' . $this->storage_table . '
+			WHERE file_id > ' . (int) $file_index . "
 				AND storage = '" . $this->db->sql_escape($storage_name) . "'";
 		$result = $this->db->sql_query($sql);
 		$remain_count = (int) $this->db->sql_fetchfield('remain_count');
