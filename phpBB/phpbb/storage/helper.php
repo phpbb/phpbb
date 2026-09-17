@@ -194,7 +194,17 @@ class helper
 		$new_adapter = $this->get_new_adapter($storage_name);
 
 		$stream = $current_adapter->read($file);
-		$new_adapter->write($file, $stream);
+		try
+		{
+			$new_adapter->write($file, $stream);
+		}
+		finally
+		{
+			if (is_resource($stream))
+			{
+				fclose($stream);
+			}
+		}
 	}
 
 
