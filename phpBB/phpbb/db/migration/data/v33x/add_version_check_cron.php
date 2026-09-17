@@ -85,6 +85,6 @@ class add_version_check_cron extends container_aware_migration
 		$sql = 'DELETE FROM ' . USER_NOTIFICATIONS_TABLE . "
 			WHERE item_type = '" . self::NOTIFICATION_TYPE_UPDATE . "'
 				AND method = 'notification.method.email'";
-		$this->sql_query($sql);
+		$this->db->sql_query($sql);
 	}
 }
