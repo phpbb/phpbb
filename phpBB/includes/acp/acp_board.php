@@ -679,7 +679,7 @@ class acp_board
 							{
 								continue;
 							}
-							else if (!empty($cfg_array[$field]))
+							else if (!$submit && !empty($cfg_array[$field]))
 							{
 								// For display purposes, replace the secret with ******** and show last 4 characters
 								// to give the admin a hint what secret is used
