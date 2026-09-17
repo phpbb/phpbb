@@ -152,4 +152,78 @@ class phpbb_controller_controller_test extends phpbb_test_case
 			$this->assertSame(array(1, 'foo\controller:handle_union_fail', 'no_default'), $e->get_parameters());
 		}
 	}
+
+	public function test_get_arguments_injects_symfony_request_subclass()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$phpbb_request = $this->createMock(\phpbb\request\request_interface::class);
+		$phpbb_request->method('get_super_global')->willReturn([]);
+		$symfony_request = new \phpbb\symfony_request($phpbb_request);
+
+		$arguments = $arg_resolver->getArguments($symfony_request, array(new foo\controller(), 'handle_symfony_request'));
+		$this->assertSame(array($symfony_request), $arguments);
+	}
+
+	public function test_get_arguments_handles_variadic_parameter()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$symfony_request = new Request();
+
+		$arguments = $arg_resolver->getArguments($symfony_request, array(new foo\controller(), 'handle_variadic'));
+		$this->assertSame(array(), $arguments);
+	}
+
+	public function test_get_arguments_static_array_context()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$symfony_request = new Request();
+
+		try
+		{
+			$arg_resolver->getArguments($symfony_request, array(foo\controller::class, 'handle_static_fail'));
+			$this->fail('Expected missing controller argument exception');
+		}
+		catch (\phpbb\controller\exception $e)
+		{
+			$this->assertSame(array(1, 'foo\controller:handle_static_fail', 'no_default'), $e->get_parameters());
+		}
+	}
+
+	public function test_get_arguments_static_string_context()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$symfony_request = new Request();
+
+		try
+		{
+			$arg_resolver->getArguments($symfony_request, 'foo\controller::handle_static_fail');
+			$this->fail('Expected missing controller argument exception');
+		}
+		catch (\phpbb\controller\exception $e)
+		{
+			$this->assertSame(array(1, 'foo\controller:handle_static_fail', 'no_default'), $e->get_parameters());
+		}
+	}
+
+	public function test_get_arguments_invokable_context()
+	{
+		$arg_resolver = new \phpbb\controller\argument_resolver();
+		$symfony_request = new Request();
+
+		$invokable = new class {
+			public function __invoke(int $no_default)
+			{
+			}
+		};
+
+		try
+		{
+			$arg_resolver->getArguments($symfony_request, $invokable);
+			$this->fail('Expected missing controller argument exception');
+		}
+		catch (\phpbb\controller\exception $e)
+		{
+			$this->assertSame(array(1, get_class($invokable) . ':__invoke', 'no_default'), $e->get_parameters());
+		}
+	}
 }
