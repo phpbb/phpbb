@@ -56,6 +56,7 @@ class build_package
 			'new_version_number'	=> $_latest,
 			'short_version_number'	=> str_replace('.', '', $_latest),
 			'release_filename'		=> 'phpBB-' . $_latest,
+			'british_lang_filename'	=> 'british_english_' . preg_replace('/\./', '_', $_latest),
 			'last_version'			=> 'release-' . $_before,
 			'last_version_number'	=> $_before,
 		);
@@ -66,6 +67,7 @@ class build_package
 		$this->package_infos['files_directory'] = $this->locations['package_dir'] . 'files';
 		$this->package_infos['update_directory'] = $this->locations['package_dir'] . 'update';
 		$this->package_infos['release_directory'] = $this->locations['package_dir'] . 'release_files';
+		$this->package_infos['lang_directory'] = $this->locations['package_dir'] . 'language';
 
 		// Old packages always exclude the latest version. ;)
 		$this->old_packages = array();

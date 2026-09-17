@@ -23,6 +23,7 @@
 		<mkdir dir="build/dependencies" />
 		<mkdir dir="build/new_version" />
 		<mkdir dir="build/new_version/files" />
+		<mkdir dir="build/new_version/language" />
 		<mkdir dir="build/new_version/patches" />
 		<mkdir dir="build/new_version/release_files" />
 		<mkdir dir="build/new_version/update" />
@@ -192,6 +193,22 @@
 		<touch file="build/new_version/phpBB/config.php" />
 		<copy file="build/new_version/phpBB/vendor-ext/.htaccess" tofile="build/new_version/phpBB/vendor/.htaccess" />
 
+		<phingcall target="prepare-lang-pack" />
+	</target>
+
+	<target name="prepare-lang-pack">
+		<propertyregex property="langpack_version" subject="${newversion}" pattern="\.+?" replace="_" />
+		<mkdir dir="build/new_version/language/british_english_${langpack_version}" />
+
+		<!-- copy the language files into the language pack directory -->
+		<copy todir="build/new_version/language/british_english_${langpack_version}">
+			<fileset dir="build/new_version/phpBB3">
+				<include name="ext/phpbb/viglink/language/en/**" />
+				<include name="language/en/**" />
+				<include name="styles/prosilver/theme/en/**" />
+			</fileset>
+		</copy>
+		<copy file="phpBB/docs/LICENSE.txt" tofile="build/new_version/language/british_english_${langpack_version}/language/en/LICENSE" overwrite="true"/>
 	</target>
 
 	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">
