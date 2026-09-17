@@ -69,4 +69,10 @@ class phpbb_storage_adapter_local_test extends phpbb_local_test_case
 		unlink($this->path . 'file.txt');
 		unlink($this->path . 'file2.txt');
 	}
+
+	public function test_configure_non_existent_path(): void
+	{
+		$this->expectException(\phpbb\storage\exception\storage_exception::class);
+		$this->adapter->configure(['path' => 'non_existent_directory_12345']);
+	}
 }
