@@ -111,24 +111,28 @@ class ucp_resend
 
 			if (!$user_row)
 			{
+				// No user found, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
 
 			if ($user_row['user_type'] == USER_IGNORE)
 			{
+				// User is ignored, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
 
 			if (!$user_row['user_actkey'] && $user_row['user_type'] != USER_INACTIVE)
 			{
+				// User is active or has no actkey, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
 
 			if (!$user_row['user_actkey'] || ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_MANUAL))
 			{
+				// User is inactive and has no actkey or is manually deactivated, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
@@ -136,6 +140,7 @@ class ucp_resend
 			// Do not resend activation email if valid one still exists
 			if (!empty($user_row['user_actkey']) && (int) $user_row['user_actkey_expiration'] >= time())
 			{
+				// User has a valid activation key, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
@@ -150,6 +155,7 @@ class ucp_resend
 
 			if (!$row)
 			{
+				// User has no group, output the same message as if the email was sent to avoid giving away information about registered users
 				$this->output_resend_message();
 				return;
 			}
