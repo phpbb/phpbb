@@ -505,6 +505,9 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TOPIC_IN_QUEUE'		=> '<strong>Topic approval</strong> request by %1$s:',
 	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFICATION_ADMIN_ACTIVATE_USER'	=> '<strong>Activation required</strong> for deactivated or newly registered user: “%1$s”',
+	'NOTIFICATION_UPDATE_CRITICAL'		=> '<strong>phpBB %2$s update available - Critical update required</strong>: Your board is running %1$s and a new version that includes critical security fixes should be installed immediately.',
+	'NOTIFICATION_UPDATE_MAINTENANCE'	=> '<strong>phpBB %2$s update available</strong>: Your board is running %1$s and a new version is available.',
+	'NOTIFICATION_UPDATE_SECURITY'		=> '<strong>phpBB %2$s update available - Security update</strong>: Your board is running %1$s and a new version that includes security fixes is available. We recommend updating your board to keep it secure and protected.',
 	// Used in conjunction with NOTIFICATION_BOOKMARK and NOTIFICATION_POST.
 	'NOTIFICATION_MANY_OTHERS'			=> 'others',
 	'NOTIFICATION_X_OTHERS'				=> array(

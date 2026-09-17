@@ -187,6 +187,13 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.type.update_maintenance:
+        class: phpbb\notification\type\update_maintenance
+        shared: false
+        parent: notification.type.base
+        tags:
+            - { name: notification.type }
+
     notification.type.forum:
         class: phpbb\notification\type\forum
         shared: false
