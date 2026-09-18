@@ -240,8 +240,12 @@ class ucp_pm
 
 				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
-				$release = $request->variable('release', 0) === 1 &&
-					check_link_hash($request->variable('hash', ''), 'release_pm_messages');
+				$release = $request->variable('release', 0) === 1;
+
+				if (!check_link_hash($request->variable('hash', ''), 'release_pm_messages'))
+				{
+					trigger_error('FORM_INVALID');
+				}
 
 				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{
