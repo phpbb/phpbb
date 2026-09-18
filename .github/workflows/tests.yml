@@ -136,7 +136,13 @@ jobs:
                     - php: '8.4'
                       db: "mysql:9.7"
                     - php: '8.5'
-                      db: "mysql:8.4"
+                      db: "mariadb:10.4"
+                    - php: '8.5'
+                      db: "mysql:8.0"
+                    - php: '8.6'
+                      db: "mariadb:10.4"
+                    - php: '8.6'
+                      db: "mysql:8.0"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -283,6 +289,8 @@ jobs:
                     - php: '8.4'
                       db: "postgres:18"
                     - php: '8.5'
+                      db: "postgres:10"
+                    - php: '8.6'
                       db: "postgres:10"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -509,6 +517,8 @@ jobs:
                     - php: '8.4'
                       db: "postgres"
                     - php: '8.5'
+                      db: "postgres"
+                    - php: '8.6'
                       db: "postgres"
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
