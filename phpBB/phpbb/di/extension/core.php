@@ -13,13 +13,12 @@
 
 namespace phpbb\di\extension;
 
-use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Extension\Extension;
+use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use phpbb\filesystem\helper as filesystem_helper;
 
 /**
@@ -146,7 +145,7 @@ class core extends Extension
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getConfiguration(array $config, ContainerBuilder $container): ConfigurationInterface|container_configuration|null
+	public function getConfiguration(array $config, ContainerBuilder $container): \Symfony\Component\Config\Definition\ConfigurationInterface|null
 	{
 		$r = new \ReflectionClass('\phpbb\di\extension\container_configuration');
 		$container->addResource(new FileResource($r->getFileName()));

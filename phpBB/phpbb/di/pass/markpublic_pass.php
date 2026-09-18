@@ -28,7 +28,7 @@ class markpublic_pass implements CompilerPassInterface
 	* @param ContainerBuilder $container ContainerBuilder object
 	* @return void
 	*/
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		$service_definitions = $container->getDefinitions();
 		foreach ($service_definitions as $definition)

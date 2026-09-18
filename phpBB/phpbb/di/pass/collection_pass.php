@@ -29,7 +29,7 @@ class collection_pass implements CompilerPassInterface
 	* @param ContainerBuilder $container ContainerBuilder object
 	* @return void
 	*/
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		foreach ($container->findTaggedServiceIds('service_collection') as $id => $data)
 		{

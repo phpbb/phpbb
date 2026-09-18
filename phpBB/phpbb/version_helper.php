@@ -224,7 +224,7 @@ class version_helper
 
 		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
 		uksort($versions, function($version1, $version2) {
-			return $this->compare($version1, $version2, '>');
+			return $this->compare($version1, $version2);
 		});
 
 		// Find next available version from versions info.
@@ -270,7 +270,7 @@ class version_helper
 
 		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
 		uksort($versions, function($version1, $version2) {
-			return $this->compare($version1, $version2, '>');
+			return $this->compare($version1, $version2);
 		});
 
 		foreach ($versions as $branch => $data)

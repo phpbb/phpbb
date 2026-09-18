@@ -105,7 +105,7 @@ class phpbb_console_command_cron_list_test extends phpbb_test_case
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new cron_list($this->user, $this->cron_manager));
+		$application->addCommand(new cron_list($this->user, $this->cron_manager));
 
 		$command = $application->find('cron:list');
 		return new CommandTester($command);

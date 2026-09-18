@@ -20,7 +20,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class template_event_order implements EventSubscriberInterface
 {
-	static public function getSubscribedEvents()
+	static public function getSubscribedEvents(): array
 	{
 		return array(
 			'core.twig_event_tokenparser_constructor'	=> 'set_template_event_priority',

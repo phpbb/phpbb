@@ -26,7 +26,7 @@ namespace
 		protected $phpbb_root_path;
 		protected $filename;
 
-		public function setUp(): void
+		protected function setUp(): void
 		{
 			$this->phpbb_root_path = __DIR__ . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
@@ -59,7 +59,7 @@ namespace
 			$this->builder->with_config($this->config_php);
 			$container = $this->builder->get_container();
 
-			$this->assertEquals($container->getParameter('core.cache_dir'), $new_cache_directory);
+			$this->assertSame($new_cache_directory, $container->getParameter('core.cache_dir'));
 		}
 
 		/**
