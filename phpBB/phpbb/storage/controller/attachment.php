@@ -296,16 +296,29 @@ class attachment
 		else
 		{
 			$response = new StreamedResponse();
+			$storage = $this->storage;
+			$physical_filename = $attachment['physical_filename'];
 
-			$fp = $this->storage->read($attachment['physical_filename']);
+			$response->setCallback(function () use ($storage, $physical_filename) {
+				$fp = $storage->read($physical_filename);
+				$output = fopen('php://output', 'w+b');
 
-			$output = fopen('php://output', 'w+b');
-
-			$response->setCallback(function () use ($fp, $output) {
-				stream_copy_to_stream($fp, $output);
-				fclose($fp);
-				fclose($output);
-				flush();
+				try
+				{
+					stream_copy_to_stream($fp, $output);
+					flush();
+				}
+				finally
+				{
+					if (is_resource($fp))
+					{
+						fclose($fp);
+					}
+					if (is_resource($output))
+					{
+						fclose($output);
+					}
+				}
 
 				// Terminate script to avoid the execution of terminate events
 				// This avoids possible errors with db connection closed
