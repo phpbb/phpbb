@@ -557,7 +557,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_notifications_mark_subforums_read', ['id' => $root_data['forum_id'], 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_forum_mark_subforums_read', ['id' => $root_data['forum_id'], 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),

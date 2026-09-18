@@ -398,7 +398,7 @@ $template->assign_vars(array(
 	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($start == 0) ? '' : "&amp;start=$start")),
 	'U_CANONICAL'		=> generate_board_url() . '/' . append_sid("viewforum.$phpEx", "f=$forum_id" . (($start) ? "&amp;start=$start" : ''), true, ''),
-	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_notifications_mark_topics_read', ['id' => $forum_id, 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
+	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? $controller_helper->route('phpbb_forum_mark_topics_read', ['id' => $forum_id, 'hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 	'U_SEARCH_FORUM'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'fid%5B%5D=' . $forum_id),
 ));
 

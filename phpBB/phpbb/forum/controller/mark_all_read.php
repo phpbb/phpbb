@@ -11,7 +11,7 @@
  *
  */
 
-namespace phpbb\notification\controller;
+namespace phpbb\forum\controller;
 
 use phpbb\config\config;
 use phpbb\controller\helper;
@@ -79,9 +79,9 @@ class mark_all_read
 				$data = [
 					'NO_UNREAD_POSTS'	=> $this->language->lang('NO_UNREAD_POSTS'),
 					'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
-					'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_notifications_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
+					'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
 					'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
-					'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED')
+					'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED'),
 				];
 				return new JsonResponse($data);
 			}

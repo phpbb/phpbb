@@ -33,3 +33,36 @@ services:
             - '@template'
             - '%core.root_path%'
             - '%core.php_ext%'
+
+    forum.controller.mark_all_read:
+        class: phpbb\forum\controller\mark_all_read
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@user'
+
+    forum.controller.mark_subforums_read:
+        class: phpbb\forum\controller\mark_subforums_read
+        arguments:
+            - '@auth'
+            - '@config'
+            - '@controller.helper'
+            - '@forum.helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    forum.controller.mark_topics_read:
+        class: phpbb\forum\controller\mark_topics_read
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'

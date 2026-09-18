@@ -126,7 +126,7 @@ class index
 			'S_INDEX'					=> true,
 
 			'U_CANONICAL'		=> generate_board_url() . '/',
-			'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_notifications_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
+			'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()]) : '',
 			'U_MCP'				=> ($this->auth->acl_get('m_') || $this->auth->acl_getf_global('m_')) ? append_sid("{$this->phpbb_root_path}mcp.$this->phpEx", 'i=main&amp;mode=front') : '')
 		);
 
