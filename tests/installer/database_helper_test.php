@@ -75,6 +75,20 @@ class phpbb_installer_database_helper_test extends phpbb_test_case
 		$this->assertEquals($expected, $db_helper_mock->validate_table_prefix('sqlite3', $test_string));
 	}
 
+	public function test_get_database_server_version_uses_native_connection()
+	{
+		$connection = \Doctrine\DBAL\DriverManager::getConnection([
+			'driver' => 'sqlite3',
+			'memory' => true,
+		]);
+		$method = new \ReflectionMethod(\phpbb\install\helper\database::class, 'get_database_server_version');
+
+		$this->assertSame(
+			\SQLite3::version()['versionString'],
+			$method->invoke($this->database_helper, $connection, 'sqlite3')
+		);
+	}
+
 	// Data provider for the remove comments function
 	public static function comment_string_provider()
 	{

@@ -13,6 +13,7 @@
 
 namespace phpbb\install\helper;
 
+use Doctrine\DBAL\Connection;
 use phpbb\db\doctrine\connection_factory;
 use phpbb\install\exception\invalid_dbms_exception;
 use phpbb\filesystem\helper as filesystem_helper;
@@ -406,7 +407,7 @@ class database
 			}
 
 			// Check if database version is supported
-			$db_server_version = $doctrine_db->getServerVersion();
+			$db_server_version = $this->get_database_server_version($doctrine_db, $dbms);
 			switch ($dbms)
 			{
 				case 'mysqli':
@@ -477,5 +478,37 @@ class database
 		}
 
 		return (empty($errors)) ? true : $errors;
+	}
+
+	/**
+	 * Returns the database server version from Doctrine's native connection.
+	 *
+	 * DBAL 4 no longer exposes the server version through Connection. The native
+	 * connection remains the supported way to access driver-specific metadata.
+	 */
+	private function get_database_server_version(Connection $connection, string $dbms): string
+	{
+		$native_connection = $connection->getNativeConnection();
+
+		switch ($dbms)
+		{
+			case 'mysqli':
+				return $native_connection->server_info;
+
+			case 'sqlite3':
+				return \SQLite3::version()['versionString'];
+
+			case 'oracle':
+				$server_version = oci_server_version($native_connection);
+				if ($server_version !== false && preg_match('/\s+(\d+\.\d+\.\d+\.\d+\.\d+)\s+/', $server_version, $matches))
+				{
+					return $matches[1];
+				}
+
+				throw new \RuntimeException('Unable to determine the Oracle server version.');
+
+			default:
+				return $native_connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		}
 	}
 }

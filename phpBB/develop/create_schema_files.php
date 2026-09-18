@@ -75,7 +75,7 @@ $schema_manager_factory_mock = new class($schema_manager_mock) implements \Doctr
 	public function __construct($schema_manager) {
 		$this->schema_manager = $schema_manager;
 	}
-	public function createSchemaManager($connection): \Doctrine\DBAL\Schema\AbstractSchemaManager
+	public function createSchemaManager(\Doctrine\DBAL\Connection $connection): \Doctrine\DBAL\Schema\AbstractSchemaManager
 	{
 		return $this->schema_manager;
 	}

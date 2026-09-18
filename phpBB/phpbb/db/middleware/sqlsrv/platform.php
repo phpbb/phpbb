@@ -27,13 +27,19 @@ class platform extends SQLServerPlatform
 	 *
 	 * Renames the default constraints to use the classic phpBB's names
 	 */
-	protected function getDefaultConstraintDeclarationSQL(array $column): string
+	public function getDefaultConstraintDeclarationSQL($table, array $column): string
 	{
-		$sql = parent::getDefaultConstraintDeclarationSQL($column);
+		$sql = parent::getDefaultConstraintDeclarationSQL($table, $column);
 
 		return str_replace(
-			$this->generate_doctrine_identifier_name($column['name']),
-			$column['name'] . '_1',
+			[
+				$this->generate_doctrine_identifier_name($table),
+				$this->generate_doctrine_identifier_name($column['name']),
+			],
+			[
+				$table,
+				$column['name'] . '_1',
+			],
 			$sql
 		);
 	}
@@ -67,7 +73,7 @@ class platform extends SQLServerPlatform
 			$phpbb_names[] = $column->getQuotedName($this) . '_1';
 		}
 
-		foreach ($diff->getChangedColumns() as $column)
+		foreach ($diff->getModifiedColumns() as $column)
 		{
 			$new_column = $column->getNewColumn();
 			$old_column = $column->getOldColumn();

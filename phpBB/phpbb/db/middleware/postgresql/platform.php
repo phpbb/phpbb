@@ -16,6 +16,7 @@ namespace phpbb\db\middleware\postgresql;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Sequence;
+use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\TableDiff;
 use Doctrine\DBAL\Types\BigIntType;
 use Doctrine\DBAL\Types\IntegerType;
@@ -67,7 +68,7 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDefaultValueDeclarationSQL(array $column): string
+	public function getDefaultValueDeclarationSQL($column): string
 	{
 		if ($this->isSerialColumn($column))
 		{
@@ -118,7 +119,7 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function _getCreateTableSQL(string $name, array $columns, array $options = []): array
+	protected function _getCreateTableSQL($name, array $columns, array $options = []): array
 	{
 		$sql = [];
 		$post_sql = [];
@@ -183,15 +184,23 @@ class platform extends PostgreSQLPlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDropIndexSQL(string $name, string $table): string
+	public function getDropIndexSQL($index, $table = null): string
 	{
 		// If we have a primary or a unique index, we need to drop the constraint
 		// instead of the index itself or postgreSQL will reject the query.
-		if ($name === $table . '_pkey')
+		if (is_string($index) && $table !== null && $index === $this->tableName($table) . '_pkey')
 		{
-			return $this->getDropConstraintSQL($name, $table);
+			return $this->getDropConstraintSQL($index, $this->tableName($table));
 		}
 
-		return parent::getDropIndexSQL($name, $table);
+		return parent::getDropIndexSQL($index, $table);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	private function tableName($table): string
+	{
+		return $table instanceof Table ? $table->getName() : (string) $table;
 	}
 }

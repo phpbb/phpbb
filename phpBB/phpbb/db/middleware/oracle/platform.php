@@ -130,7 +130,7 @@ class platform extends OraclePlatform
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function getIdentitySequenceName(string $tableName): string
+	public function getIdentitySequenceName($tableName, $columnName = null): string
 	{
 		return $tableName . '_SEQ';
 	}
@@ -138,7 +138,7 @@ class platform extends OraclePlatform
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function getCreateAutoincrementSql(string $name, string $table, int $start = 1): array
+	public function getCreateAutoincrementSql($name, $table, $start = 1): array
 	{
 		$sql = parent::getCreateAutoincrementSql($name, $table, $start);
 

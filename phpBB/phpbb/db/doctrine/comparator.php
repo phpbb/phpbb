@@ -44,12 +44,14 @@ class comparator extends \Doctrine\DBAL\Schema\Comparator
 		$dropped_index_names = array_map([$this, 'get_index_name'], $dropped_indexes);
 
 		// When the type of a column changes, re-create the associated indices
-		foreach ($diff->getChangedColumns() as $column_name => $changed_column)
+		foreach ($diff->getModifiedColumns() as $changed_column)
 		{
 			if (!$changed_column->hasTypeChanged())
 			{
 				continue;
 			}
+
+			$column_name = strtolower($changed_column->getNewColumn()->getName());
 
 			foreach ($newTable->getIndexes() as $index_name => $index)
 			{
@@ -110,15 +112,19 @@ class comparator extends \Doctrine\DBAL\Schema\Comparator
 		}
 
 		return new TableDiff(
-			$diff->getOldTable(),
+			$newTable->getName(),
 			addedColumns: $diff->getAddedColumns(),
-			changedColumns: $diff->getChangedColumns(),
+			modifiedColumns: $diff->getModifiedColumns(),
 			droppedColumns: $diff->getDroppedColumns(),
 			addedIndexes: $added_indexes,
-			droppedIndexes: $dropped_indexes,
+			changedIndexes: $diff->getModifiedIndexes(),
+			removedIndexes: $dropped_indexes,
+			fromTable: $diff->getOldTable(),
 			renamedIndexes: $diff->getRenamedIndexes(),
 			addedForeignKeys: $diff->getAddedForeignKeys(),
-			droppedForeignKeys: $diff->getDroppedForeignKeys(),
+			changedForeignKeys: $diff->getModifiedForeignKeys(),
+			removedForeignKeys: $diff->getDroppedForeignKeys(),
+			renamedColumns: $diff->getRenamedColumns(),
 		);
 	}
 
