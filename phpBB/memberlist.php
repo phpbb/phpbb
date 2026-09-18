@@ -960,7 +960,7 @@ switch ($mode)
 			$navlinks_sql_array = [
 				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
 					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
-					f.forum_options, t.topic_title, t.topic_visibility',
+					f.forum_options, t.topic_title, t.topic_visibility, t.topic_poster',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
 					TOPICS_TABLE  => 't',
