@@ -15,7 +15,6 @@ namespace phpbb\storage;
 
 use phpbb\cache\driver\driver_interface as cache;
 use phpbb\db\driver\driver_interface as db;
-use phpbb\storage\exception\storage_exception;
 
 class file_tracker
 {
@@ -139,11 +138,10 @@ class file_tracker
 	/**
 	 * Get file size in bytes
 	 *
+	 * @param string $storage Storage name
 	 * @param string $path The file
 	 *
 	 * @return int Size in bytes.
-	 *
-	 * @throws storage_exception When unable to retrieve file size
 	 */
 	public function file_size(string $storage, string $path): int
 	{
@@ -159,7 +157,7 @@ class file_tracker
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return (int) $row['filesize'];
+		return (int) ($row['filesize'] ?? 0);
 	}
 
 	/**
