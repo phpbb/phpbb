@@ -124,7 +124,10 @@ class mark_subforums_read
 		$token = $this->request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
-			markread('topics', $forum_ids, false, $this->request->variable('mark_time', 0));
+			if (!empty($forum_ids))
+			{
+				markread('topics', $forum_ids, false, $this->request->variable('mark_time', 0));
+			}
 
 			if ($this->request->is_ajax())
 			{
