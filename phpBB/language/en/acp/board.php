@@ -416,11 +416,11 @@ $lang = array_merge($lang, array(
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
-	'AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'	=> 'Both the key and secret of each enabled OAuth service provider must be provided. Only one was provided for an OAuth service provider.',
-	'AUTH_PROVIDER_OAUTH_EXPLAIN'				=> 'Each OAuth provider requires a unique secret and key in order to authenticate with the external server. These should be supplied by the OAuth service when you register your website with them and should be entered exactly as provided to you.<br>Any service that does not have both a key and a secret entered here will not be available for use by the forum users. Also note, that user can still register and login using the DB authentication plug-in.',
-	'AUTH_PROVIDER_OAUTH_KEY'					=> 'Key',
+	'AUTH_PROVIDER_OAUTH_CLIENT_ID'				=> 'Client ID',
+	'AUTH_PROVIDER_OAUTH_CLIENT_SECRET'			=> 'Client secret',
+	'AUTH_PROVIDER_OAUTH_ERROR_ELEMENT_MISSING'	=> 'Both the client ID and client secret of each enabled OAuth 2.0 service provider must be provided. Only one was provided for an OAuth service provider.',
+	'AUTH_PROVIDER_OAUTH_EXPLAIN'				=> 'Each OAuth 2.0 provider requires a unique client ID and client secret to authenticate with the external server. These should be supplied by the OAuth provider when you register your website with it and should be entered exactly as provided.<br>Any service without both a client ID and client secret will not be available to forum users. Users can still register and sign in with the database authentication provider.',
 	'AUTH_PROVIDER_OAUTH_TITLE'					=> 'OAuth',
-	'AUTH_PROVIDER_OAUTH_SECRET'				=> 'Secret',
 
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username. Apache authentication can only be used with mod_php (not with a CGI version).',
 

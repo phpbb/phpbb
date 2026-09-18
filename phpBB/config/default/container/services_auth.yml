@@ -79,7 +79,6 @@ services:
         class: phpbb\auth\provider\oauth\service\bitly
         arguments:
             - '@config'
-            - '@request'
         tags:
             - { name: auth.provider.oauth.service }
 
@@ -87,7 +86,6 @@ services:
         class: phpbb\auth\provider\oauth\service\facebook
         arguments:
             - '@config'
-            - '@request'
         tags:
             - { name: auth.provider.oauth.service }
 
@@ -95,14 +93,5 @@ services:
         class: phpbb\auth\provider\oauth\service\google
         arguments:
             - '@config'
-            - '@request'
-        tags:
-            - { name: auth.provider.oauth.service }
-
-    auth.provider.oauth.service.twitter:
-        class: phpbb\auth\provider\oauth\service\twitter
-        arguments:
-            - '@config'
-            - '@request'
         tags:
             - { name: auth.provider.oauth.service }
