@@ -1553,9 +1553,6 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
-// Get delete reason for soft deleted topic
-$topic_delete_reason = array('topic_delete_reason' => $topic_data['topic_delete_reason']);
-
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
 {
@@ -1845,6 +1842,8 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 	}
 
 	// Deleting information
+	$effective_topic_delete_reason = '';
+
 	if ($row['post_visibility'] == ITEM_DELETED && $row['post_delete_user'])
 	{
 		// Get usernames for all following posts if not already stored
@@ -1884,10 +1883,16 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		{
 			$display_username = get_username_string('full', $row['post_delete_user'], $user_cache[$row['post_delete_user']]['username'], $user_cache[$row['post_delete_user']]['user_colour']);
 		}
+		// Only apply topic delete reason to the topic posts which are deleted together with the topic
+		$post_deleted_with_topic = ($topic_data['topic_visibility'] == ITEM_DELETED)
+			&& $row['post_delete_time'] == $topic_data['topic_delete_time']
+			&& $row['post_delete_user'] == $topic_data['topic_delete_user'];
 
-		if ($row['post_delete_reason'] || $topic_delete_reason['topic_delete_reason'])
+		$effective_topic_delete_reason = ($post_deleted_with_topic) ? $topic_data['topic_delete_reason'] : '';
+
+		if ($row['post_delete_reason'] || $effective_topic_delete_reason)
 		{
-			$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason']?: $topic_delete_reason['topic_delete_reason']);
+			$l_deleted_message = $user->lang('POST_DELETED_BY_REASON', $display_postername, $display_username, $user->format_date($row['post_delete_time'], false, true), $row['post_delete_reason'] ?: $effective_topic_delete_reason);
 		}
 		else
 		{
@@ -2057,7 +2062,7 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'EDIT_REASON'		=> $row['post_edit_reason'],
 		'DELETED_MESSAGE'	=> $l_deleted_by,
-		'DELETE_REASON'		=> $row['post_delete_reason'] ?: $topic_delete_reason['topic_delete_reason'],
+		'DELETE_REASON'		=> $row['post_delete_reason'] ?: $effective_topic_delete_reason,
 		'BUMPED_MESSAGE'	=> $l_bumped_by,
 
 		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'UNREAD_POST') : $user->img('icon_post_target', 'POST'),
