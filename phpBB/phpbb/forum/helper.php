@@ -56,13 +56,13 @@ class helper
 	 */
 	public function get_forums_rows(array|null $root_data): array|false
 	{
-		if (!$root_data)
+		if (empty($root_data['left_id']) || empty($root_data['right_id']))
 		{
 			$sql_where = '';
 		}
 		else
 		{
-			$sql_where = 'left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
+			$sql_where = 'left_id > ' . (int) $root_data['left_id'] . ' AND left_id < ' . (int) $root_data['right_id'];
 		}
 
 		// Display list of active topics for this category?
