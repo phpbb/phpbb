@@ -59,8 +59,10 @@ services:
     forum.controller.mark_topics_read:
         class: phpbb\forum\controller\mark_topics_read
         arguments:
+            - '@auth'
             - '@config'
             - '@controller.helper'
+            - '@forum.helper'
             - '@language'
             - '@request'
             - '@user'

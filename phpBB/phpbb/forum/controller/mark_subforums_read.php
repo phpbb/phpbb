@@ -94,6 +94,17 @@ class mark_subforums_read
 			trigger_error('NO_FORUM');
 		}
 
+		if (!$this->auth->acl_gets('f_list', 'f_read', $id))
+		{
+			if ($this->user->data['user_id'] != ANONYMOUS)
+			{
+				send_status_line(403, 'Forbidden');
+				trigger_error('SORRY_AUTH_READ');
+			}
+
+			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
+		}
+
 		$rows = $this->forum_helper->get_forums_rows($root_data);
 
 		$forum_ids = [];
