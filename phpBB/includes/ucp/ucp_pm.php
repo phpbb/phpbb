@@ -242,7 +242,7 @@ class ucp_pm
 				$num_not_moved = $num_removed = 0;
 				$release = $request->variable('release', 0) === 1;
 
-				if (!check_link_hash($request->variable('hash', ''), 'release_pm_messages'))
+				if ($release && !check_link_hash($request->variable('hash', ''), 'release_pm_messages'))
 				{
 					trigger_error('FORM_INVALID');
 				}
