@@ -446,8 +446,23 @@ class filespec_storage
 		{
 			$fp = fopen($this->filename, 'rb');
 
-			$storage->write($this->destination_file, $fp);
-			$this->file_moved = true;
+			if ($fp !== false)
+			{
+				try
+				{
+					$storage->write($this->destination_file, $fp);
+					$this->file_moved = true;
+				}
+				finally
+				{
+					fclose($fp);
+				}
+			}
+			else
+			{
+				$this->error[] = $this->language->lang($this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR', $this->destination_file);
+				$this->file_moved = false;
+			}
 		}
 		catch (\phpbb\storage\exception\storage_exception $e)
 		{
