@@ -1554,12 +1554,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 // Get delete reason for soft deleted topic
-$sql = 'SELECT topic_delete_reason FROM ' . TOPICS_TABLE . '
-	WHERE topic_id = ' . (int) $rowset_data['topic_id'];
-$result = $db->sql_query($sql);
-$topic_delete_reason = $db->sql_fetchrow($result);
-
-$db->sql_freeresult($result);
+$topic_delete_reason = array('topic_delete_reason' => $topic_data['topic_delete_reason']);
 
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])
