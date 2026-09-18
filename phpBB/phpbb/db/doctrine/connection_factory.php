@@ -123,7 +123,10 @@ class connection_factory
 		}
 		catch (Exception $e)
 		{
-			throw new runtime_exception('DB_CONNECTION_FAILED', [], $e);
+			$previous = $e instanceof \Exception
+				? $e
+				: new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+			throw new runtime_exception('DB_CONNECTION_FAILED', [], $previous);
 		}
 	}
 

@@ -37,7 +37,7 @@ class platform extends AbstractMySQLPlatform
 		foreach ($columns as $column)
 		{
 			$column_name = $column->getName();
-			if (!empty($column->getAutoincrement()) && $table)
+			if ($column->getAutoincrement() && $table)
 			{
 				foreach ($sql as $i => $query)
 				{

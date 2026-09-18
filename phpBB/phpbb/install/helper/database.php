@@ -406,8 +406,7 @@ class database
 			}
 
 			// Check if database version is supported
-			/** @psalm-suppress UndefinedInterfaceMethod */
-			$db_server_version = $doctrine_db->getWrappedConnection()->getServerVersion();
+			$db_server_version = $doctrine_db->getServerVersion();
 			switch ($dbms)
 			{
 				case 'mysqli':
