@@ -216,6 +216,13 @@ class oauth
 
 		switch ($result['status'])
 		{
+			case LOGIN_ERROR_COOLDOWN:
+				$error = phpbb_format_login_cooldown_message(
+					$this->language,
+					(isset($result['cooldown_time'])) ? (int) $result['cooldown_time'] : 0
+				);
+			break;
+
 			case LOGIN_ERROR_ATTEMPTS:
 				$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 				$captcha->init(confirm_type::LOGIN);
@@ -407,6 +414,13 @@ class oauth
 
 			switch ($result['status'])
 			{
+				case LOGIN_ERROR_COOLDOWN:
+					$login_error = phpbb_format_login_cooldown_message(
+						$this->language,
+						(isset($result['cooldown_time'])) ? (int) $result['cooldown_time'] : 0
+					);
+					break;
+
 				case LOGIN_ERROR_ATTEMPTS:
 					$captcha = $this->captcha_factory->get_instance($this->config['captcha_plugin']);
 					$captcha->init(confirm_type::LOGIN);
