@@ -428,9 +428,10 @@ function user_add($user_row, $cp_data = false, $notifications_data = null)
  * @param string	$mode				Mode of posts deletion (retain|remove)
  * @param mixed		$user_ids			Either an array of integers or an integer
  * @param bool		$retain_username	True if username should be retained, false otherwise
+ * @param bool		$rename_username	True if username should be renamed, false otherwise
  * @return bool
  */
-function user_delete($mode, $user_ids, $retain_username = true)
+function user_delete(string $mode, $user_ids, bool $retain_username = true, bool $rename_username = true) : bool
 {
 	global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container;
 	global $phpbb_root_path, $phpEx;
@@ -589,11 +590,21 @@ function user_delete($mode, $user_ids, $retain_username = true)
 		switch ($mode)
 		{
 			case 'retain':
-				if ($retain_username === false)
+				if ($retain_username === false || $rename_username)
 				{
-					$post_username = $user->lang['GUEST'];
+					// Generate an ID with the current date and a random number as prefix.
+					// This will help to separate guest posts of deleted accounts,
+					// if the user wants to have his nickname deleted, too.
+					if ($rename_username) {
+						$guest_id = date('Ymd') . rand(0, 99);
+						$post_username = $guest_id . "_" . $user->lang['GUEST'];
+					}
+					else // No renaming, just use the Guest name without anything.
+					{
+						$post_username = $user->lang['GUEST'];
+					}
 				}
-				else
+				else // Or we keep the username as it is
 				{
 					$post_username = $user_row['username'];
 				}
