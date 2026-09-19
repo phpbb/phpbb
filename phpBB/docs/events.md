@@ -2522,8 +2522,12 @@ topiclist_row_append
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
     + styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/ucp_main_bookmarks.html
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
+* Changed: 3.3.18-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_prepend
@@ -2532,8 +2536,12 @@ topiclist_row_prepend
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
     + styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/ucp_main_bookmarks.html
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
+* Changed: 3.3.18-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_topic_by_author_after
