@@ -595,7 +595,8 @@ function user_delete(string $mode, $user_ids, bool $retain_username = true, bool
 					// Generate an ID with the current date and a random number as prefix.
 					// This will help to separate guest posts of deleted accounts,
 					// if the user wants to have his nickname deleted, too.
-					if ($rename_username) {
+					if ($rename_username)
+					{
 						$guest_id = date('Ymd') . rand(0, 99);
 						$post_username = $guest_id . "_" . $user->lang['GUEST'];
 					}

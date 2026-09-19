@@ -89,7 +89,7 @@ $lang = array_merge($lang, array(
 	'REGISTERED_IP'			=> 'Registered from IP',
 
 	'RENAME_USERNAME'			=> 'Rename user',
-	'RENAME_USERNAME_EXPLAIN'	=> 'Rename the user during the process of deletion. The user will be named with an date-based id and the default guest name e.g. <samp>2026091812_Guest</samp>. Has not effect when user has no posts.',
+	'RENAME_USERNAME_EXPLAIN'	=> 'Rename the user during the process of deletion. The user will be named with a date-based id and the default guest name e.g. <samp>2026091812_Guest</samp>. Has no effect when posts get deleted.',
 	'RETAIN_POSTS'				=> 'Retain posts',
 
 	'SELECT_FORM'			=> 'Select form',
