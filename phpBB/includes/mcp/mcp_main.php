@@ -323,6 +323,24 @@ function lock_unlock($action, $ids)
 		{
 			return;
 		}
+
+		// Ensure user is topic_poster in addition to having f_user_lock permission
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $ids) . '
+				AND topic_poster = ' . (int) $user->data['user_id'];
+		$result = $db->sql_query($sql);
+		$ids = [];
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ids[] = (int) $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($ids))
+		{
+			return;
+		}
 	}
 	unset($orig_ids);
 
