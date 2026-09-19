@@ -250,7 +250,7 @@ class message
 			$messenger->to($recipient['address'], $recipient['name']);
 			$messenger->im($recipient['jabber'], $recipient['username']);
 
-			$messenger->headers('X-AntiAbuse: Board servername - ' . $this->server_name);
+			$messenger->headers('X-AntiAbuse: Board servername - ' . mail_encode($this->server_name));
 			$messenger->headers('X-AntiAbuse: User IP - ' . $this->sender_ip);
 
 			if ($this->sender_id)
@@ -259,7 +259,7 @@ class message
 			}
 			if ($this->sender_username)
 			{
-				$messenger->headers('X-AntiAbuse: Username - ' . $this->sender_username);
+				$messenger->headers('X-AntiAbuse: Username - ' . mail_encode($this->sender_username));
 			}
 
 			$messenger->subject(html_entity_decode($this->subject, ENT_COMPAT));
