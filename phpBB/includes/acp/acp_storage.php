@@ -550,8 +550,6 @@ class acp_storage
 		$this->validate_path($storage_name, $messages);
 
 		// Check options
-		$new_provider = $this->provider_collection->get_by_class($this->request->variable([$storage_name, 'provider'], ''));
-
 		foreach ($new_provider->get_options() as $definition_key => $definition_value)
 		{
 
