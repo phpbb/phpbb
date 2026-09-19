@@ -24,6 +24,13 @@ class update_maintenance extends base
 	];
 
 	/**
+	 * Permission to check for
+	 *
+	 * @var string Permission name
+	 */
+	protected $permission = 'a_board';
+
+	/**
 	* {@inheritdoc}
 	*/
 	public function get_type()
@@ -45,6 +52,16 @@ class update_maintenance extends base
 	public static function get_item_parent_id($type_data)
 	{
 		return 0;
+	}
+
+	/**
+	 * Is available
+	 */
+	public function is_available()
+	{
+		$has_permission = $this->auth->acl_get($this->permission);
+
+		return !empty($has_permission) || $this->user->data['user_type'] == USER_FOUNDER;
 	}
 
 	/**
