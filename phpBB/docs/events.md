@@ -2480,6 +2480,20 @@ search_results_topic_title_after
 * Since: 3.1.11-RC1
 * Purpose: Add data after search results topic title
 
+search_results_topic_title_append
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.18-RC1
+* Purpose: Add data directly after search results topic title
+
+search_results_topic_title_prepend
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.18-RC1
+* Purpose: Add data directly before search results topic title
+
 simple_footer_after
 ===
 * Locations:
