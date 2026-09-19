@@ -162,6 +162,11 @@ class acp_bots
 
 				if ($submit)
 				{
+					if (!$bot_row['bot_name'])
+					{
+						$error[] = $user->lang['ERR_BOT_NO_NAME'];
+					}
+
 					if (!$bot_row['bot_agent'] && !$bot_row['bot_ip'])
 					{
 						$error[] = $user->lang['ERR_BOT_NO_MATCHES'];
