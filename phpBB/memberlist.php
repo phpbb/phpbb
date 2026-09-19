@@ -773,7 +773,7 @@ switch ($mode)
 		{
 			$member['posts_in_queue'] = 0;
 		}
-		
+
 		// Check if the user account of the shown profile is banned
 		$sql = 'SELECT ban_userid
 			FROM ' . BANLIST_TABLE . '
