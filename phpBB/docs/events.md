@@ -1229,6 +1229,13 @@ mcp_topic_postrow_attachments_before
 * Since: 3.2.2-RC1
 * Purpose: Show additional content before attachments in mcp topic review
 
+mcp_topic_postrow_post_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.3.18-RC1
+* Purpose: Show additional content after postrow ends in mcp topic review
+
 mcp_topic_postrow_post_before
 ===
 * Locations:
