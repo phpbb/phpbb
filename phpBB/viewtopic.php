@@ -640,7 +640,7 @@ $source_type_permission = [
 	POST_GLOBAL		=> 'f_announce_global',
 	POST_STICKY		=> 'f_sticky',
 ];
-$has_source_type_permission = !isset($source_type_permission[$topic_data['topic_type']]) || $auth->acl_get($source_type_permission[$topic_data['topic_type']], $forum_id);
+$has_source_type_permission = $topic_data['topic_type'] == POST_NORMAL || $auth->acl_get($source_type_permission[$topic_data['topic_type']], $forum_id);
 
 $s_quickmod_action = append_sid(
 	"{$phpbb_root_path}mcp.$phpEx",
