@@ -44,6 +44,8 @@ class phpbb_console_user_delete_ids_test extends phpbb_console_user_base
 
 	public function test_delete()
 	{
+		global $user;
+
 		$command_tester = $this->get_command_tester();
 
 		$command_tester->setInputs(['yes', '']);

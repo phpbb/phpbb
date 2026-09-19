@@ -598,11 +598,11 @@ function user_delete(string $mode, $user_ids, bool $retain_username = true, bool
 					if ($rename_username)
 					{
 						$guest_id = date('Ymd') . rand(0, 99);
-						$post_username = $guest_id . "_" . $user->lang['GUEST'];
+						$post_username = $guest_id . "_" . $user->lang('GUEST');
 					}
 					else // No renaming, just use the Guest name without anything.
 					{
-						$post_username = $user->lang['GUEST'];
+						$post_username = $user->lang('GUEST');
 					}
 				}
 				else // Or we keep the username as it is
