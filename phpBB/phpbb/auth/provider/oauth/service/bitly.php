@@ -13,31 +13,26 @@
 
 namespace phpbb\auth\provider\oauth\service;
 
-use OAuth\Common\Http\Exception\TokenResponseException;
-use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
-use OAuth\OAuth2\Service\Exception\InvalidAuthorizationStateException;
+use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Token\AccessTokenInterface;
+use phpbb\auth\provider\oauth\provider\bitly as bitly_provider;
 
 /**
- * Bitly OAuth service
+ * Bitly OAuth service.
  */
 class bitly extends base
 {
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\request\request_interface */
-	protected $request;
-
 	/**
 	 * Constructor.
 	 *
-	 * @param \phpbb\config\config				$config		Config object
-	 * @param \phpbb\request\request_interface	$request	Request object
+	 * @param \phpbb\config\config $config Config object.
 	 */
-	public function __construct(\phpbb\config\config $config, \phpbb\request\request_interface $request)
+	public function __construct(\phpbb\config\config $config)
 	{
-		$this->config	= $config;
-		$this->request	= $request;
+		$this->config = $config;
 	}
 
 	/**
@@ -46,81 +41,42 @@ class bitly extends base
 	public function get_service_credentials()
 	{
 		return [
-			'key'		=> $this->config['auth_oauth_bitly_key'],
-			'secret'	=> $this->config['auth_oauth_bitly_secret'],
+			'key' => $this->config['auth_oauth_bitly_key'],
+			'secret' => $this->config['auth_oauth_bitly_secret'],
 		];
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function perform_auth_login()
+	public function get_provider(string $redirect_uri): AbstractProvider
 	{
-		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
-		}
+		$credentials = $this->get_service_credentials();
 
-		try
-		{
-			// This was a callback request, get the token and state
-			$this->service_provider->requestAccessToken(
-				$this->request->variable('code', ''),
-				$this->request->variable('state', '')
-			);
-		}
-		catch (AuthorizationStateNotFoundException|InvalidAuthorizationStateException|TokenResponseException $e)
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
-		}
-
-		try
-		{
-			// Send a request with it
-			$result = (array) json_decode($this->service_provider->request('user/info'), true);
-		}
-		catch (\OAuth\Common\Exception\Exception $e)
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
-		}
-
-		// Prevent SQL error
-		if (!isset($result['data']['login']))
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
-		}
-
-		// Return the unique identifier returned from bitly
-		return $result['data']['login'];
+		return new bitly_provider([
+			'clientId' => $credentials['key'],
+			'clientSecret' => $credentials['secret'],
+			'redirectUri' => $redirect_uri,
+			'urlAuthorize' => 'https://bitly.com/oauth/authorize',
+			'urlAccessToken' => 'https://api-ssl.bitly.com/oauth/access_token',
+			'urlResourceOwnerDetails' => 'https://api-ssl.bitly.com/v4/user',
+			'scopes' => [],
+			'responseResourceOwnerId' => 'login',
+		]);
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function perform_token_auth()
+	public function get_user_id(AbstractProvider $provider, AccessTokenInterface $token): string
 	{
-		if (!($this->service_provider instanceof \OAuth\OAuth2\Service\Bitly))
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
-		}
+		$login = $this->get_resource_owner($provider, $token)->getId();
 
-		try
-		{
-			// Send a request with it
-			$result = (array) json_decode($this->service_provider->request('user/info'), true);
-		}
-		catch (\OAuth\Common\Exception\Exception $e)
-		{
-			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
-		}
-
-		// Prevent SQL error
-		if (!isset($result['data']['login']))
+		if (!is_string($login) || $login === '')
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_RETURN_ERROR');
 		}
 
-		// Return the unique identifier
-		return $result['data']['login'];
+		return $login;
 	}
 }

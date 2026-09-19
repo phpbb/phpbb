@@ -13,12 +13,7 @@
 
 namespace phpbb\auth\provider\oauth;
 
-use OAuth\Common\Http\Exception\TokenResponseException;
-use OAuth\ServiceFactory;
-use OAuth\Common\Consumer\Credentials;
-use OAuth\Common\Service\ServiceInterface;
-use OAuth\OAuth1\Service\AbstractService as OAuth1Service;
-use OAuth\OAuth2\Service\AbstractService as OAuth2Service;
+use League\OAuth2\Client\Provider\AbstractProvider;
 use phpbb\auth\provider\base;
 use phpbb\auth\provider\db;
 use phpbb\auth\provider\oauth\service\exception;
@@ -187,8 +182,7 @@ class oauth extends base
 
 		try
 		{
-			/** @var OAuth1Service|OAuth2Service $service */
-			$service = $this->get_service($provider, $storage, $query);
+			$service = $this->get_service($provider, $query);
 		}
 		catch (\Exception $e)
 		{
@@ -199,19 +193,27 @@ class oauth extends base
 			];
 		}
 
-		if ($this->is_set_code($service))
+		if ($this->is_set_code())
 		{
-			$service_provider->set_external_service_provider($service);
-
 			try
 			{
-				$unique_id = $service_provider->perform_auth_login();
+				$state = $storage->consumeAuthorizationState($provider, $this->request->variable('state', ''));
+				if ($state['code_verifier'] !== '' && method_exists($service, 'setPkceCode'))
+				{
+					$service->setPkceCode($state['code_verifier']);
+				}
+
+				$token = $service->getAccessToken('authorization_code', [
+					'code' => $this->request->variable('code', ''),
+				]);
+				$storage->storeAccessToken($provider, $token);
+				$unique_id = $service_provider->get_user_id($service, $token);
 			}
-			catch (exception $e)
+			catch (\Throwable $e)
 			{
 				return [
 					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-					'error_msg'		=> $e->getMessage(),
+					'error_msg'	=> 'AUTH_PROVIDER_OAUTH_ERROR_REQUEST',
 					'user_row'		=> ['user_id' => ANONYMOUS],
 				];
 			}
@@ -246,7 +248,7 @@ class oauth extends base
 			 * @var array				row				User row
 			 * @var array				data			Provider data
 			 * @var	array				redirect_data	Data to be appended to the redirect url
-			 * @var ServiceInterface	service			OAuth service
+			 * @var AbstractProvider	service			OAuth service
 			 * @since 3.2.3-RC1
 			 * @changed 3.2.6-RC1						Added redirect_data
 			 * @psalm-var string[] $vars
@@ -336,7 +338,7 @@ class oauth extends base
 		}
 		else
 		{
-			return $this->set_redirect($service);
+			return $this->set_redirect($service, $storage, $service_provider, $provider);
 		}
 	}
 
@@ -585,7 +587,7 @@ class oauth extends base
 
 		try
 		{
-			$service = $this->get_service($link_data['oauth_service'], $storage, $query);
+			$service = $this->get_service($link_data['oauth_service'], $query);
 		}
 		catch (\Exception $e)
 		{
@@ -594,16 +596,16 @@ class oauth extends base
 
 		/** @var service_interface $service_provider */
 		$service_provider = $this->service_providers[$service_name];
-		$service_provider->set_external_service_provider($service);
 
 		try
 		{
 			// The user has already authenticated successfully, request to authenticate again
-			$unique_id = $service_provider->perform_token_auth();
+			$token = $storage->retrieve_access_token_by_session($service_name);
+			$unique_id = $service_provider->get_user_id($service, $token);
 		}
-		catch (exception $e)
+		catch (\Throwable $e)
 		{
-			return $e->getMessage();
+			return 'AUTH_PROVIDER_OAUTH_ERROR_REQUEST';
 		}
 
 		// Insert into table, they will be able to log in after this
@@ -639,25 +641,32 @@ class oauth extends base
 
 		try
 		{
-			/** @var OAuth1Service|OAuth2Service $service */
-			$service = $this->get_service($link_data['oauth_service'], $storage, $query);
+			$service = $this->get_service($link_data['oauth_service'], $query);
 		}
 		catch (\Exception $e)
 		{
 			return $e->getMessage();
 		}
 
-		if ($this->is_set_code($service))
+		if ($this->is_set_code())
 		{
-			$this->service_providers[$service_name]->set_external_service_provider($service);
-
 			try
 			{
-				$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+				$state = $storage->consumeAuthorizationState($link_data['oauth_service'], $this->request->variable('state', ''));
+				if ($state['code_verifier'] !== '' && method_exists($service, 'setPkceCode'))
+				{
+					$service->setPkceCode($state['code_verifier']);
+				}
+
+				$token = $service->getAccessToken('authorization_code', [
+					'code' => $this->request->variable('code', ''),
+				]);
+				$storage->storeAccessToken($link_data['oauth_service'], $token);
+				$unique_id = $this->service_providers[$service_name]->get_user_id($service, $token);
 			}
-			catch (exception $e)
+			catch (\Throwable $e)
 			{
-				return $e->getMessage();
+				return 'AUTH_PROVIDER_OAUTH_ERROR_REQUEST';
 			}
 
 			// Insert into table, they will be able to log in after this
@@ -673,7 +682,7 @@ class oauth extends base
 		}
 		else
 		{
-			$this->set_redirect($service);
+			$this->set_redirect($service, $storage, $this->service_providers[$service_name], $link_data['oauth_service']);
 
 			return false; // Not reached
 		}
@@ -722,60 +731,22 @@ class oauth extends base
 	 * Returns a new service object.
 	 *
 	 * @param string			$provider		The name of the provider
-	 * @param token_storage		$storage		Token storage object
 	 * @param array				$query			The query parameters used for the redirect uri
-	 * @return ServiceInterface
+	 * @return AbstractProvider
 	 * @throws exception						When OAuth service was not created
 	 */
-	protected function get_service($provider, token_storage $storage, $query)
+	protected function get_service($provider, $query)
 	{
 		$service_name = $this->get_service_name($provider);
 
-		/** @see service_interface::get_service_credentials */
-		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
-
-		/** @see service_interface::get_auth_scope */
-		$scopes = $this->service_providers[$service_name]->get_auth_scope();
-
 		$callback = generate_board_url(true) . $this->routing_helper->route('phpbb_ucp_oauth_authenticate_controller', $query);
 
-		// Setup the credentials for the requests
-		$credentials = new Credentials(
-			$service_credentials['key'],
-			$service_credentials['secret'],
-			$callback
-		);
-
-		$service_factory = new ServiceFactory;
-
-		// Allow providers to register a custom class or override the provider name
-		if ($class = $this->service_providers[$service_name]->get_external_service_class())
-		{
-			if (class_exists($class))
-			{
-				try
-				{
-					$service_factory->registerService($provider, $class);
-				}
-				catch (\OAuth\Common\Exception\Exception $e)
-				{
-					throw new exception('AUTH_PROVIDER_OAUTH_ERROR_INVALID_SERVICE_TYPE');
-				}
-			}
-			else
-			{
-				$provider = $class;
-			}
-		}
-
-		$service = $service_factory->createService($provider, $credentials, $storage, $scopes);
-
-		if (!$service)
+		if (!$this->service_providers->offsetExists($service_name))
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_SERVICE_NOT_CREATED');
 		}
 
-		return $service;
+		return $this->service_providers[$service_name]->get_provider($callback);
 	}
 
 	/**
@@ -841,54 +812,43 @@ class oauth extends base
 	/**
 	 * Returns whether or not the authorization code is set.
 	 *
-	 * @param OAuth1Service|OAuth2Service	$service	The external OAuth service
-	 * @return bool										Whether or not the authorization code is set in the URL
-	 *                       							for the respective OAuth service's version
+	 * @return bool	Whether or not the authorization code is set in the URL.
 	 */
-	protected function is_set_code($service)
+	protected function is_set_code()
 	{
-		switch ($service::OAUTH_VERSION)
-		{
-			case 1:
-				return $this->request->is_set('oauth_token', request_interface::GET);
-
-			case 2:
-				return $this->request->is_set('code', request_interface::GET);
-
-			default:
-				return false;
-		}
+		return $this->request->is_set('code', request_interface::GET);
 	}
 
 	/**
 	 * Sets a redirect to the authorization uri.
 	 *
-	 * @param OAuth1Service|OAuth2Service $service		The external OAuth service
-	 * @return array|never								Array if an error occurred, won't return on success
+	 * @param AbstractProvider	$service			The external OAuth service.
+	 * @param token_storage		$storage			Token storage.
+	 * @param service_interface	$service_provider	OAuth service provider.
+	 * @param string				$provider			OAuth provider name.
+	 * @return array|never									Array if an error occurred, won't return on success.
 	 */
-	protected function set_redirect($service)
+	protected function set_redirect(AbstractProvider $service, token_storage $storage, service_interface $service_provider, $provider)
 	{
-		$parameters = [];
-
-		if ($service::OAUTH_VERSION === 1)
+		try
 		{
-			try
-			{
-				$token		= $service->requestRequestToken();
-				$parameters	= ['oauth_token' => $token->getRequestToken()];
-			}
-			catch (TokenResponseException $e)
-			{
-				return [
-					'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
-					'error_msg'		=> $e->getMessage(),
-					'user_row'		=> ['user_id' => ANONYMOUS],
-				];
-			}
+			$authorization_url = $service->getAuthorizationUrl([
+				'scope' => $service_provider->get_auth_scope(),
+			]);
+			$storage->storeAuthorizationState($provider, $service->getState(), $service->getPkceCode() ?? '');
+		}
+		catch (\Throwable $e)
+		{
+			return [
+				'status' => LOGIN_ERROR_EXTERNAL_AUTH,
+				'error_msg' => 'AUTH_PROVIDER_OAUTH_ERROR_REQUEST',
+				'user_row' => ['user_id' => ANONYMOUS],
+			];
 		}
 
-		redirect($service->getAuthorizationUri($parameters), false, true);
+		redirect($authorization_url, false, true);
 
-		return []; // Never reached
+		return [];
 	}
+
 }
