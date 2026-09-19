@@ -465,8 +465,9 @@ class manager
 			$field_desc = '';
 			$contact_url = '';
 			$ident_upper = strtoupper($ident);
+			$field_is_contact = $ident_ary['data']['field_is_contact'];
 
-			if ($use_contact_fields && $ident_ary['data']['field_is_contact'])
+			if ($use_contact_fields && $field_is_contact)
 			{
 				$value = $profile_field->get_profile_contact_value($ident_ary['value'], $ident_ary['data']);
 				$field_desc = $this->language->lang($ident_ary['data']['field_contact_desc']);
@@ -478,7 +479,16 @@ class manager
 
 				if (strpos($ident_ary['data']['field_contact_url'], '%s') !== false)
 				{
-					$contact_url = sprintf($ident_ary['data']['field_contact_url'], $value);
+					$contact_url_value = sprintf($ident_ary['data']['field_contact_url'], $value);
+					$contact_url_scheme = parse_url($contact_url_value, PHP_URL_SCHEME);
+					if (!empty($contact_url_scheme) && in_array($contact_url_scheme, ['http', 'https', 'mailto']))
+					{
+						$contact_url = $contact_url_value;
+					}
+					else
+					{
+						$field_is_contact = false;
+					}
 				}
 			}
 
@@ -492,7 +502,7 @@ class manager
 				"PROFILE_{$ident_upper}_NAME"		=> $this->language->lang($ident_ary['data']['lang_name']),
 				"PROFILE_{$ident_upper}_EXPLAIN"	=> $this->language->lang($ident_ary['data']['lang_explain']),
 
-				"S_PROFILE_{$ident_upper}_CONTACT"	=> $ident_ary['data']['field_is_contact'],
+				"S_PROFILE_{$ident_upper}_CONTACT"	=> $field_is_contact,
 				"S_PROFILE_{$ident_upper}"			=> true,
 			];
 
@@ -506,7 +516,7 @@ class manager
 				'PROFILE_FIELD_NAME'		=> $this->language->lang($ident_ary['data']['lang_name']),
 				'PROFILE_FIELD_EXPLAIN'		=> $this->language->lang($ident_ary['data']['lang_explain']),
 
-				'S_PROFILE_CONTACT'			=> $ident_ary['data']['field_is_contact'],
+				'S_PROFILE_CONTACT'			=> $field_is_contact,
 				"S_PROFILE_{$ident_upper}"	=> true,
 			];
 		}

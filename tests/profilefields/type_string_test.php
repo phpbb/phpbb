@@ -30,7 +30,9 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 		$user->expects($this->any())
 			->method('lang')
 			->will($this->returnCallback(array($this, 'return_callback_implode')));
-		$config = new \phpbb\config\config([]);
+		$config = new \phpbb\config\config([
+			'server_name'		=> 'localhost',
+		]);
 
 		$request = $this->createMock('\phpbb\request\request');
 		$template = $this->createMock('\phpbb\template\template');
@@ -268,12 +270,12 @@ class phpbb_profilefield_type_string_test extends phpbb_test_case
 				'',
 				array('field_show_novalue' => false),
 				null,
-				'Field should simply output null for empty vlaue',
+				'Field should simply output null for empty value',
 			),
 			array(
 				'http://foobar.com',
 				array('field_show_novalue' => false),
-				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'<!-- m --><a class="postlink" href="http://foobar.com">http://foobar.com</a><!-- m -->',
 				'Field should output the given value and make it clickable',
 			),
 			array(
