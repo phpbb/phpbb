@@ -105,8 +105,22 @@ class mark_topics_read
 			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
 		}
 
-		// Handle marking posts
+		// Forum is passworded ... check whether access has been granted to this
+		// user this session, if not show login box
+		if (!empty($forum_data['forum_password']))
+		{
+			login_forum_box($forum_data);
+		}
+
 		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
+
+		// Topics only exist in standard forums (FORUM_POST). Redirect for categories or links.
+		if (isset($forum_data['forum_type']) && $forum_data['forum_type'] != FORUM_POST)
+		{
+			redirect($redirect);
+		}
+
+		// Handle marking posts
 		meta_refresh(3, $redirect);
 
 		$token = $this->request->variable('hash', '');

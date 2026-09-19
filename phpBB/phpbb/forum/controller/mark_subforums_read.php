@@ -105,6 +105,13 @@ class mark_subforums_read
 			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
 		}
 
+		// Forum is passworded ... check whether access has been granted to this
+		// user this session, if not show login box
+		if (!empty($root_data['forum_password']))
+		{
+			login_forum_box($root_data);
+		}
+
 		$rows = $this->forum_helper->get_forums_rows($root_data);
 
 		$forum_ids = [];
