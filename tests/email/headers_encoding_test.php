@@ -45,4 +45,50 @@ class phpbb_headers_encoding_test extends phpbb_test_case
 		$decoded_string = iconv_mime_decode($encoded_string, 0, $encoding);
 		$this->assertEquals(0, strcmp($header, $decoded_string));
 	}
+
+	public function headers_not_encoded_data()
+	{
+		return [
+			['example'],
+			['TEST SUBJECT'],
+			['Test subject with spaces'],
+			["underscore_name and-dash"],
+			[str_repeat('a', 75)],
+		];
+	}
+
+	/**
+	 * Plain ASCII headers without special characters must not be encoded,
+	 * unnecessary encoding triggers spam rules (SUBJ_EXCESS_QP, TO_EXCESS_QP)
+	 *
+	 * @dataProvider headers_not_encoded_data
+	 */
+	public function test_headers_not_encoded($header)
+	{
+		$this->assertSame($header, mail_encode($header));
+	}
+
+	public function headers_requiring_encoding_data()
+	{
+		return [
+			['name@example.com'],
+			['Doe, John'],
+			['"quoted"'],
+			['looks =?US-ASCII?Q?like?= encoded word'],
+			["contains\ta tab"],
+			[str_repeat('a', 76)],
+		];
+	}
+
+	/**
+	 * @dataProvider headers_requiring_encoding_data
+	 */
+	public function test_headers_requiring_encoding($header)
+	{
+		$encoded_string = mail_encode($header);
+		$this->assertStringStartsWith('=?US-ASCII?Q?', $encoded_string);
+
+		$decoded_string = iconv_mime_decode($encoded_string, 0, 'US-ASCII');
+		$this->assertEquals(0, strcmp($header, $decoded_string));
+	}
 }
