@@ -188,6 +188,11 @@
             <value>2</value>
             <value>0</value>
         </row>
+        <row>
+            <value>8</value>
+            <value>2</value>
+            <value>0</value>
+        </row>
     </table>
     <table name="phpbb_zebra">
         <column>user_id</column>
