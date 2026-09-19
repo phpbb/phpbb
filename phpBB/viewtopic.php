@@ -635,6 +635,12 @@ gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 
 // Quick mod tools
 $allow_change_type = ($auth->acl_get('m_', $forum_id) || ($user->data['is_registered'] && $user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
+$source_type_permission = [
+	POST_ANNOUNCE	=> 'f_announce',
+	POST_GLOBAL		=> 'f_announce_global',
+	POST_STICKY		=> 'f_sticky',
+];
+$has_source_type_permission = $topic_data['topic_type'] == POST_NORMAL || $auth->acl_get($source_type_permission[$topic_data['topic_type']], $forum_id);
 
 $s_quickmod_action = append_sid(
 	"{$phpbb_root_path}mcp.$phpEx",
@@ -659,10 +665,10 @@ $quickmod_array = array(
 	'merge'					=> array('MERGE_POSTS', $auth->acl_get('m_merge', $forum_id)),
 	'merge_topic'		=> array('MERGE_TOPIC', $auth->acl_get('m_merge', $forum_id)),
 	'fork'					=> array('FORK_TOPIC', $auth->acl_get('m_move', $forum_id)),
-	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', 'f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_NORMAL)),
-	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
-	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
-	'make_global'		=> array('MAKE_GLOBAL', ($allow_change_type && $auth->acl_get('f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
+	'make_normal'		=> array('MAKE_NORMAL', ($allow_change_type && $has_source_type_permission && $topic_data['topic_type'] != POST_NORMAL)),
+	'make_sticky'		=> array('MAKE_STICKY', ($allow_change_type && $has_source_type_permission && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY)),
+	'make_announce'	=> array('MAKE_ANNOUNCE', ($allow_change_type && $has_source_type_permission && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE)),
+	'make_global'	=> array('MAKE_GLOBAL', ($allow_change_type && $has_source_type_permission && $auth->acl_get('f_announce_global', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL)),
 	'topic_logs'			=> array('VIEW_TOPIC_LOGS', $auth->acl_get('m_', $forum_id)),
 );
 

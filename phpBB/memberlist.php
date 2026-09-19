@@ -528,17 +528,17 @@ switch ($mode)
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$form_name = 'admin';
+		}
+		else if ($user_id)
 		{
 			$form_name = 'user';
 		}
 		else if ($topic_id)
 		{
 			$form_name = 'topic';
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$form_name = 'admin';
 		}
 		else
 		{
@@ -564,7 +564,12 @@ switch ($mode)
 		$template_html = $form->get_template_file();
 		$form->render($template);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$navlink_name = $user->lang('CONTACT_ADMIN');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
+		}
+		else if ($user_id)
 		{
 			$navlink_name = $user->lang('SEND_EMAIL');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&u=$user_id");
@@ -575,7 +580,7 @@ switch ($mode)
 			$navlinks_sql_array = [
 				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
 					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
-					f.forum_options, t.topic_title',
+					f.forum_options, t.topic_title, t.topic_visibility, t.topic_poster',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
 					TOPICS_TABLE  => 't',
@@ -588,6 +593,13 @@ switch ($mode)
 			$topic_data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+			if (!$phpbb_content_visibility->is_visible('topic', $topic_data['forum_id'], $topic_data))
+			{
+				trigger_error('NO_TOPIC');
+			}
+
 			generate_forum_nav($topic_data);
 			$template->assign_block_vars('navlinks', array(
 				'BREADCRUMB_NAME'	=> $topic_data['topic_title'],
@@ -596,11 +608,6 @@ switch ($mode)
 
 			$navlink_name = $user->lang('EMAIL_TOPIC');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&t=$topic_id");
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$navlink_name = $user->lang('CONTACT_ADMIN');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
 		}
 
 		$template->assign_block_vars('navlinks', array(

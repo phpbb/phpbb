@@ -43,6 +43,7 @@ services:
         arguments:
             - '@auth'
             - '@config'
+            - '@content.visibility'
             - '@dbal.conn'
             - '@controller.helper'
             - '@user'

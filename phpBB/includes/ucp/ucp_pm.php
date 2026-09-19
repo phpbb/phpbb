@@ -243,7 +243,12 @@ class ucp_pm
 
 				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
-				$release = $request->variable('release', 0);
+				$release = $request->variable('release', 0) === 1;
+
+				if ($release && !check_link_hash($request->variable('hash', ''), 'release_pm_messages'))
+				{
+					trigger_error('FORM_INVALID');
+				}
 
 				if ($user->data['user_new_privmsg'] && ($action == 'view_folder' || $action == 'view_message'))
 				{
@@ -367,7 +372,7 @@ class ucp_pm
 					'CUR_FOLDER_NAME'		=> $folder_status ? $folder_status['folder_name'] : false,
 					'NUM_NOT_MOVED'			=> $num_not_moved,
 					'NUM_REMOVED'			=> $num_removed,
-					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1">', '</a>'),
+					'RELEASE_MESSAGE_INFO'	=> sprintf($user->lang['RELEASE_MESSAGES'], '<a href="' . $this->u_action . '&amp;folder=' . $folder_id . '&amp;release=1&amp;hash=' . generate_link_hash('release_pm_messages') .'">', '</a>'),
 					'NOT_MOVED_MESSAGES'	=> $user->lang('NOT_MOVED_MESSAGES', (int) $num_not_moved),
 					'RULE_REMOVED_MESSAGES'	=> $user->lang('RULE_REMOVED_MESSAGES', (int) $num_removed),
 

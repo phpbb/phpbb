@@ -601,15 +601,16 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	$module = ($pm) ? 'pm_reports' : 'reports';
 	$pm_prefix = ($pm) ? 'PM_' : '';
 
-	$sql = "SELECT r.$id_column
+	$sql = "SELECT r.$id_column, r.report_id
 		FROM " . REPORTS_TABLE . ' r
 		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . $pm_where;
 	$result = $db->sql_query($sql);
 
-	$post_id_list = array();
+	$post_id_list = $post_report_map = [];
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$post_id_list[] = $row[$id_column];
+		$post_report_map[$row[$id_column]] = $row['report_id'];
 	}
 	$db->sql_freeresult($result);
 	$post_id_list = array_unique($post_id_list);
@@ -628,6 +629,14 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		{
 			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
+		}
+		else
+		{
+			$report_id_list = [];
+			foreach ($post_id_list as $post_id)
+			{
+				$report_id_list[] = $post_report_map[$post_id];
+			}
 		}
 	}
 

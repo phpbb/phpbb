@@ -575,6 +575,13 @@ else
 	$post_data['quote_username'] = isset($post_data['username']) ? $post_data['username'] : '';
 }
 
+if ($mode == 'quote')
+{
+	$post_data['quote_poster_id'] = $post_data['poster_id'];
+	$post_data['quote_post_time'] = $post_data['post_time'];
+	unset($post_data['poster_id'], $post_data['post_time']);
+}
+
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
 $post_data['post_subject_md5']	= (isset($post_data['post_subject']) && $mode == 'edit') ? md5($post_data['post_subject']) : '';
 $post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
@@ -1754,12 +1761,12 @@ if ($generate_quote)
 	// Remove attachment bbcode tags from the quoted message to avoid mixing with the new post attachments if any
 	$message_parser->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#uis', '\\2', $message_parser->message);
 
-	$quote_attributes = array(
-						'author'  => $post_data['quote_username'],
-						'post_id' => $post_data['post_id'],
-						'time'    => $post_data['post_time'],
-						'user_id' => $post_data['poster_id'],
-	);
+	$quote_attributes = [
+		'author'	=> $post_data['quote_username'],
+		'post_id'	=> $post_data['post_id'],
+		'time'		=> $post_data['quote_post_time'],
+		'user_id'	=> $post_data['quote_poster_id'],
+	];
 
 	/**
 	* This event allows you to modify the quote attributes of the post being quoted

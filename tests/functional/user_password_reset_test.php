@@ -219,7 +219,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'		=> self::TEST_USER,
 			'email'			=> self::TEST_EMAIL,
 		]);
-		$this->assertContainsLang('ACCOUNT_DEACTIVATED', $crawler->filter('html')->text());
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
 	}
 
 	/**
@@ -227,7 +227,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	 */
 	public function test_resendActivation()
 	{
-		// User is deactivated and should have actkey, actkey should not exist
+		// User is deactivated and should have actkey
 		$this->get_user_data(self::TEST_USER);
 		$this->assertNotEmpty($this->user_data['user_actkey']);
 
@@ -246,12 +246,58 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'		=> self::TEST_USER,
 			'email'			=> self::TEST_EMAIL,
 		]);
-		$this->assertContainsLang('ACTIVATION_ALREADY_SENT', $crawler->filter('html')->text());
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
+	}
+
+	/**
+	 * @depends test_resendActivation
+	 */
+	public function test_resendUpdateExpiry()
+	{
+		// Change expiration of actkey to two days ago
+		$this->get_user_data(self::TEST_USER);
+		$previous_expiration = (int) strtotime('-2 days');
+		$db = $this->get_db();
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_actkey_expiration = ' . $previous_expiration . '
+			WHERE user_id = ' . (int) $this->user_data['user_id'];
+		$db->sql_query($sql);
+
+		$previous_expiration = $this->user_data['user_actkey_expiration'];
+		$this->assertNotEmpty($previous_expiration);
+		$this->assertNotEmpty($this->user_data['user_actkey']);
+
+		$this->add_lang('ucp');
+
+		$crawler = self::request('GET', 'ucp.php?mode=resend_act');
+		$this->assertContainsLang('UCP_RESEND', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=submit]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, [
+			'username'		=> self::TEST_USER,
+			'email'			=> self::TEST_EMAIL,
+		]);
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
+
+		// Act key and expiration should be updated
+		$this->get_user_data(self::TEST_USER);
+		$this->assertNotEmpty($this->user_data['user_actkey']);
+		$this->assertGreaterThan($this->user_data['user_actkey_expiration'], $previous_expiration + 600);
+
+		// Requesting again should not work as actkey is still valid
+		$crawler = self::request('GET', 'ucp.php?mode=resend_act');
+		$this->assertContainsLang('UCP_RESEND', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=submit]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, [
+			'username'		=> self::TEST_USER,
+			'email'			=> self::TEST_EMAIL,
+		]);
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
 	}
 
 	protected function get_user_data($username)
 	{
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_actkey, user_inactive_reason, reset_token, reset_token_expiration
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason, reset_token, reset_token_expiration, user_actkey_expiration
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $this->db->sql_escape($username) . "'";
 		$result = $this->db->sql_query($sql);
