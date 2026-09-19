@@ -114,6 +114,20 @@ class ucp_main
 					$db->sql_freeresult($result);
 				}
 
+				/**
+				 * Modify UCP front topic data before it is processed.
+				 *
+				 * @event core.ucp_main_front_modify_topic_data
+				 * @var array topic_list Topic IDs displayed on the UCP front page
+				 * @var array rowset     Topic rows keyed by topic ID
+				 * @since 3.3.18-RC1
+				 */
+				$vars = array(
+					'topic_list',
+					'rowset',
+				);
+				extract($phpbb_dispatcher->trigger_event('core.ucp_main_front_modify_topic_data', compact($vars)));
+
 				$topic_forum_list = array();
 				foreach ($rowset as $t_id => $row)
 				{
@@ -902,14 +916,36 @@ class ucp_main
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-		$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
+		$topic_list = $rowset = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = (isset($row['b_topic_id'])) ? $row['b_topic_id'] : $row['topic_id'];
 
 			$topic_list[] = $topic_id;
 			$rowset[$topic_id] = $row;
+		}
+		$db->sql_freeresult($result);
 
+		/**
+		 * Modify subscribed/bookmarked topic data before it is processed.
+		 *
+		 * @event core.ucp_main_topiclist_modify_topic_data
+		 * @var string mode                 Topic-list mode ('subscribed' or 'bookmarks')
+		 * @var array  topic_list           Topic IDs displayed on the current page
+		 * @var array  rowset               Topic rows keyed by topic ID
+		 * @since 3.3.18-RC1
+		 */
+		$vars = array(
+			'mode',
+			'topic_list',
+			'rowset',
+		);
+		extract($phpbb_dispatcher->trigger_event('core.ucp_main_topiclist_modify_topic_data', compact($vars)));
+
+		$topic_forum_list = $global_announce_list = array();
+		foreach ($topic_list as $topic_id)
+		{
+			$row = $rowset[$topic_id];
 			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $topic_id;
 
@@ -918,7 +954,6 @@ class ucp_main
 				$global_announce_list[] = $topic_id;
 			}
 		}
-		$db->sql_freeresult($result);
 
 		$topic_tracking_info = array();
 		if ($config['load_db_lastread'])
