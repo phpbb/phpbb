@@ -773,7 +773,7 @@ switch ($mode)
 		{
 			$member['posts_in_queue'] = 0;
 		}
-		
+
 		// Check if the user account of the shown profile is banned
 		$sql = 'SELECT ban_userid
 			FROM ' . BANLIST_TABLE . '
@@ -969,8 +969,8 @@ switch ($mode)
 		{
 			// Generate the navlinks based on the selected topic
 			$navlinks_sql_array = [
-				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, 
-					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, 
+				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
+					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
 					f.forum_options, t.topic_title',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
