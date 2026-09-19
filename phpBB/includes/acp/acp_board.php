@@ -675,6 +675,21 @@ class acp_board
 							continue;
 						}
 
+						if (substr($field, -7) === '_secret')
+						{
+							// Do not update secret fields if the content starts with ********
+							if ($submit && strpos($cfg_array[$field], '********') === 0)
+							{
+								continue;
+							}
+							else if (!$submit && !empty($cfg_array[$field]))
+							{
+								// For display purposes, replace the secret with ******** and show last 4 characters
+								// to give the admin a hint what secret is used
+								$cfg_array[$field] = '********' . substr($cfg_array[$field], -4);
+							}
+						}
+
 						$old_auth_config[$field] = $this->new_config[$field];
 						$config_value = $cfg_array[$field];
 						$this->new_config[$field] = $config_value;
