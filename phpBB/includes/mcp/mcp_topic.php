@@ -34,7 +34,7 @@ function mcp_topic_view($id, $mode, $action)
 	$user->add_lang('viewtopic');
 
 	$topic_id = $request->variable('t', 0);
-	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
+	$topic_info = phpbb_get_topic_data(array($topic_id), 'f_read', true);
 
 	if (!count($topic_info))
 	{
