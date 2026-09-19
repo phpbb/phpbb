@@ -912,17 +912,17 @@ switch ($mode)
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$form_name = 'admin';
+		}
+		else if ($user_id)
 		{
 			$form_name = 'user';
 		}
 		else if ($topic_id)
 		{
 			$form_name = 'topic';
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$form_name = 'admin';
 		}
 		else
 		{
@@ -949,7 +949,12 @@ switch ($mode)
 		$template_html = $form->get_template_file();
 		$form->render($template);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$navlink_name = $user->lang('CONTACT_ADMIN');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
+		}
+		else if ($user_id)
 		{
 			$navlink_name = $user->lang('SEND_EMAIL');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&u=$user_id");
@@ -981,11 +986,6 @@ switch ($mode)
 
 			$navlink_name = $user->lang('EMAIL_TOPIC');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&t=$topic_id");
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$navlink_name = $user->lang('CONTACT_ADMIN');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
 		}
 
 		$template->assign_block_vars('navlinks', array(
