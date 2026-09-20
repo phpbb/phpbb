@@ -52,6 +52,7 @@
 	<ul>
 		<li><a href="#v400a1">Changes since 4.0.0-a1</a></li>
 		<li><a href="#v33x">Changes since 3.3.x</a></li>
+		<li><a href="#v3317">Changes since 3.3.17</a></li>
 		<li><a href="#v3316">Changes since 3.3.16</a></li>
 		<li><a href="#v3316rc1">Changes since 3.3.16-RC1</a></li>
 		<li><a href="#v3315">Changes since 3.3.15</a></li>
@@ -707,7 +708,47 @@
 				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17544">PHPBB-17544</a>] - Support Codespaces on master</li>
 			</ul>
 
-			<a name="v3316rc1"></a><h3>Changes since 3.3.16</h3>
+			<a name="v3317"></a><h3>Changes since 3.3.17</h3>
+			<h4>Bug</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17134">PHPBB-17134</a>] - BBCode UID Throwing Deprecation Errors</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17607">PHPBB-17607</a>] - Missing language key for copy_file in convertor</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17652">PHPBB-17652</a>] - set_custom_style() in acp_extensions uses hardcoded adm path instead of   $phpbb_admin_path</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17662">PHPBB-17662</a>] - Inline attachments are not sorted correctly in other topic viewers</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17694">PHPBB-17694</a>] - Incorrect &quot;disapprove whole topic&quot; detection due to undefined $topic_id in disapprove_posts()</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17697">PHPBB-17697</a>] - Bot can be added with no name</li>
+			</ul>
+			<h4>Improvement</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17623">PHPBB-17623</a>] - switch twitter to x in profile</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17640">PHPBB-17640</a>] - Add php event for custom quick actions in groups</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17643">PHPBB-17643</a>] - Github actions merging branches should only occur in source repo</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17656">PHPBB-17656</a>] - Add shorter guest session time and AI bots group</li>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17661">PHPBB-17661</a>] - Add event to 'View topic' in MCP to modify template</li>
+			</ul>
+			<h4>New Feature</h4>
+			<ul>
+				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17665">PHPBB-17665</a>] - Add automatic admin notifications on security updates</li>
+			</ul>
+			<h4>Security & Hardening</h4>
+			<ul>
+				<li>[SECURITY-298] - Resend rate limiting incorrectly updating expiration time</li>
+				<li>[SECURITY-300] - Attachment comment hijacking by other users</li>
+				<li>[SECURITY-301] - Reflected XSS via data passed to registration page</li>
+				<li>[SECURITY-303] - Potential stored XSS for string profile fields when allowing any character</li>
+				<li>[SECURITY-305] - Missing permission type check when applying role based permissions</li>
+				<li>[SECURITY-306] - Disclosure of hidden or unapproved topic title when emailing topic</li>
+				<li>[SECURITY-307] - Banned Users can email members despite ban status:</li>
+				<li>[SECURITY-308] - Releasing of held private messages missing CSRF protection</li>
+				<li>[SECURITY-309] - Missing encoding of username in anti abuse header</li>
+				<li>[SECURITY-310] - MCP topic view mixing access checks for post and topic</li>
+				<li>[SECURITY-311] - Moderators with f_user_lock permission may close other user's topics</li>
+				<li>[SECURITY-312] - Unauthenticated SMTP Command Injection via Contact Form</li>
+				<li>[SECURITY-313] - Moderators can close/delete reports outside their forum permissions</li>
+				<li>[SECURITY-314] - MCP make normal action for topics missing check for forum-scoped moderators</li>
+			</ul>
+
+			<a name="v3316"></a><h3>Changes since 3.3.16</h3>
 			<h4>Bug</h4>
 			<ul>
 				<li>[<a href="https://tracker.phpbb.com/browse/PHPBB-17639">PHPBB-17639</a>] - Installation under PHP 8.4 failed with timeout detection reason check_filesystem.php</li>
