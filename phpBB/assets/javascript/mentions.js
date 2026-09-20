@@ -53,11 +53,7 @@
 		 * @return {string} Avatar HTML
 		 */
 		function getAvatar(data, type) {
-			if (data.html === '' && data.src === '') {
-				return defaultAvatar(type);
-			}
-
-			if (data.html === '') {
+			if (data.src) {
 				const $avatarImg = $($('[data-id="mention-media-avatar-img"]').html());
 				$avatarImg.attr({
 					src: data.src,
@@ -68,9 +64,7 @@
 				return $avatarImg.get(0).outerHTML;
 			}
 
-			const $avatarImg = $(data.html);
-			$avatarImg.addClass('mention-media-avatar');
-			return $avatarImg.get(0).outerHTML;
+			return defaultAvatar(type);
 		}
 
 		/**
@@ -339,7 +333,7 @@
 			$avatarSpan.html(avatar);
 
 			const $nameSpan = $($('[data-id="mention-name-span"]').html());
-			$nameSpan.html(itemData.name + rank);
+			$nameSpan.text(itemData.name).append(rank);
 
 			return $avatarSpan.get(0).outerHTML + $nameSpan.get(0).outerHTML;
 		}
