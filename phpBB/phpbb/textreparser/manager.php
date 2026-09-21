@@ -61,7 +61,7 @@ class manager
 		if ($this->resume_data === null)
 		{
 			$resume_data = $this->config_text->get('reparser_resume');
-			$this->resume_data = !empty($resume_data) ? unserialize($resume_data) : array();
+			$this->resume_data = !empty($resume_data) ? unserialize($resume_data, ['allowed_classes' => false]) : array();
 		}
 
 		return isset($this->resume_data[$name]) ? $this->resume_data[$name] : array();
