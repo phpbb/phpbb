@@ -50,24 +50,17 @@ class add_ai_crawlers_group extends migration
 			return;
 		}
 
-		if (!function_exists('group_create'))
-		{
-			include($this->phpbb_root_path . 'includes/functions_user.' . $this->php_ext);
-		}
-
-		$group_id = 0;
-		$group_attributes = [
+		$sql = 'INSERT INTO ' .  $this->table_prefix . 'groups ' . $this->db->sql_build_array('INSERT', [
+			'group_name'			=> 'AI_CRAWLERS',
+			'group_type'			=> GROUP_SPECIAL,
+			'group_founder_manage'	=> 0,
 			'group_colour'			=> '7D9EAE',
 			'group_legend'			=> 0,
+			'group_avatar'			=> '',
+			'group_desc'			=> '',
+			'group_desc_uid'		=> '',
 			'group_max_recipients'	=> 5,
-			'group_founder_manage'	=> 0,
-		];
-
-		$error = group_create($group_id, GROUP_SPECIAL, 'AI_CRAWLERS', '', $group_attributes);
-
-		if ($error)
-		{
-			throw new exception('Failed to create AI_CRAWLERS group.');
-		}
+		]);
+		$this->sql_query($sql);
 	}
 }
