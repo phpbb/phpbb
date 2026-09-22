@@ -297,7 +297,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 	protected function get_user_data($username)
 	{
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason, reset_token, reset_token_expiration, user_actkey_expiration
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_actkey, user_inactive_reason, reset_token, reset_token_expiration, user_actkey_expiration
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $this->db->sql_escape($username) . "'";
 		$result = $this->db->sql_query($sql);

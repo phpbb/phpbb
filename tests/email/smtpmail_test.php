@@ -12,36 +12,166 @@
  */
 
 use phpbb\config\config;
+use phpbb\language\language;
+use phpbb\language\language_file_loader;
+use phpbb\messenger\method\email;
+use phpbb\messenger\queue;
+use phpbb\path_helper;
+use phpbb\symfony_request;
+use phpbb\template\assets_bag;
 
 class phpbb_email_smtpmail_test extends phpbb_test_case
 {
 	/** @var array Servers started by start_smtp_server() */
 	protected $smtp_servers = [];
 
+	/** @var string */
+	protected $cache_path;
+
+	/** @var config */
+	protected $config;
+
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
+	/** @var string */
+	protected $email_templates_path;
+
+	/** @var language */
+	protected $language;
+
+	/** @var \phpbb\log\log_interface */
+	protected $log;
+
+	/** @var email */
+	protected $method_email;
+
+	/** @var path_helper */
+	protected $path_helper;
+
+	/** @var queue */
+	protected $queue;
+
+	/** @var \phpbb\request\request_interface */
+	protected $request;
+
+	/** @var \phpbb\di\service_collection */
+	protected $twig_extensions_collection;
+
+	/** @var \phpbb\template\twig\lexer */
+	protected $twig_lexer;
+
+	/** @var \phpbb\user */
+	protected $user;
+
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $config, $user;
+		global $config, $request, $symfony_request, $user, $phpbb_root_path, $phpEx;
 
-		if (!function_exists('smtpmail'))
-		{
-			include($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-		}
-
-		$config = new config([
+		$this->config = new config([
+			'force_server_vars'			=> false,
+			// Sending via the queue silently drops the email and would make these tests useless.
+			'email_package_size'		=> 0,
+			'smtp_delivery'				=> true,
 			'smtp_host' 				=> '127.0.0.1',
 			'smtp_port' 				=> 25,
 			'smtp_username' 			=> '',
 			'smtp_password' 			=> '',
-			'smtp_auth_method' 			=> 'PLAIN',
 			'smtp_verify_peer' 			=> true,
 			'smtp_verify_peer_name'		=> true,
 			'smtp_allow_self_signed'	=> true,
 			'board_email' 				=> 'nobody@example.com',
+			'board_contact'				=> 'nobody@example.com',
+			'board_contact_name'		=> '',
+			'board_email_sig'			=> '-- Thanks, The Management',
+			'sitename'					=> 'yourdomain.com',
+			'default_lang'				=> 'en',
 		]);
+		$config = $this->config;
 
-		$user = new phpbb_mock_user;
-
+		$this->cache_path = $phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/twig';
+		$this->email_templates_path = __DIR__ . '/templates';
 		$this->smtp_servers = [];
+
+		$this->dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
+			->disableOriginalConstructor()
+			->getMock();
+		$this->dispatcher->method('trigger_event')
+			->willReturnCallback(function($event_name, $value_array) {
+				return $value_array;
+			});
+
+		$this->language = new language(new language_file_loader($phpbb_root_path, $phpEx));
+		$this->queue = $this->createMock(queue::class);
+
+		$this->request = new phpbb_mock_request;
+		$request = $this->request;
+		$symfony_request = new symfony_request(new phpbb_mock_request);
+
+		$this->user = new \phpbb\user($this->language, '\phpbb\datetime');
+		$user = $this->user;
+		$user->page['root_script_path'] = 'phpbb/';
+		$this->user->host = 'yourdomain.com';
+
+		// Data required by \phpbb\messenger\method\base::error()
+		$this->user->data['user_id'] = 2;
+		$this->user->session_id = 'abcdef';
+		$this->user->ip = '127.0.0.1';
+
+		$this->path_helper = new path_helper(
+			$symfony_request,
+			$this->request,
+			$phpbb_root_path,
+			$phpEx
+		);
+
+		$phpbb_container = new phpbb_mock_container_builder;
+		$this->twig_extensions_collection = new \phpbb\di\service_collection($phpbb_container);
+		$assets_bag = new assets_bag();
+		$twig = new \phpbb\template\twig\environment(
+			$assets_bag,
+			$this->config,
+			new \phpbb\filesystem\filesystem(),
+			$this->path_helper,
+			$this->cache_path,
+			null,
+			new \phpbb\template\twig\loader(''),
+			$this->dispatcher,
+			[
+				'cache'			=> false,
+				'debug'			=> false,
+				'auto_reload'	=> true,
+				'autoescape'	=> false,
+			]
+		);
+		$this->twig_lexer = new \phpbb\template\twig\lexer($twig);
+		$this->log = $this->createMock(\phpbb\log\log_interface::class);
+
+		$this->method_email = new email(
+			$assets_bag,
+			$this->config,
+			$this->dispatcher,
+			$this->language,
+			$this->queue,
+			$this->path_helper,
+			$this->request,
+			$this->twig_extensions_collection,
+			$this->twig_lexer,
+			$this->user,
+			$phpbb_root_path,
+			$this->cache_path,
+			new phpbb_mock_extension_manager(
+				__DIR__ . '/',
+				[
+					'vendor2/foo' => [
+						'ext_name'	=> 'vendor2/foo',
+						'ext_active'	=> '1',
+						'ext_path'	=> 'ext/vendor2/foo/',
+					],
+				]
+			),
+			$this->log
+		);
 	}
 
 	protected function tearDown(): void
@@ -67,28 +197,27 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 	 * Start a scripted SMTP server in a forked child process.
 	 *
 	 * The child accepts a single connection, responds to the SMTP commands sent
-	 * by smtpmail() and logs every line the client sends to a temporary file.
+	 * by the Symfony Mailer SmtpTransport and logs every line the client sends
+	 * to a temporary file.
 	 *
 	 * @param array $options	Server behaviour options
 	 *							greeting			Banner sent on connect
 	 *							reject_pattern		Regex matched against RCPT TO lines that get a 550 response
-	 *							advertise_auth		Whether to advertise AUTH PLAIN LOGIN via EHLO
-	 * @return array			Array containing the child process id and the log file path
+	 *							advertise_auth		Whether to advertise AUTH PLAIN via EHLO
+	 * @return array			Array containing the child process id, the log file path and the port
 	 */
-	protected function start_smtp_server(array $options = array())
+	protected function start_smtp_server(array $options = [])
 	{
-		global $config;
-
 		if (!function_exists('pcntl_fork'))
 		{
 			$this->markTestSkipped('The pcntl extension is not available.');
 		}
 
-		$options = array_merge(array(
-			'greeting'		=> '220 test.example.com ESMTP ready',
+		$options = array_merge([
+			'greeting'			=> '220 test.example.com ESMTP ready',
 			'reject_pattern'	=> null,
 			'advertise_auth'	=> false,
-		), $options);
+		], $options);
 
 		$server = @stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
 		$this->assertNotFalse($server, 'Unable to create test SMTP server socket: ' . $errstr);
@@ -111,15 +240,12 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 			exit(0);
 		}
 
-		$config['smtp_host'] = '127.0.0.1';
-		$config['smtp_port'] = $port;
-
-		$this->smtp_servers[] = array(
+		$this->smtp_servers[] = [
 			'pid'		=> $pid,
 			'log_file'	=> $log_file,
-		);
+		];
 
-		return array($pid, $log_file);
+		return [$pid, $log_file, $port];
 	}
 
 	/**
@@ -132,6 +258,8 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 	 */
 	protected function stop_smtp_server($pid, $log_file)
 	{
+		$this->shutdown_transport();
+
 		pcntl_waitpid($pid, $status);
 		$log = file_get_contents($log_file);
 		@unlink($log_file);
@@ -145,6 +273,61 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 		}
 
 		return $log;
+	}
+
+	/**
+	 * Point the Symfony Mailer transport at the scripted SMTP server.
+	 *
+	 * @param int	$port	Port the scripted SMTP server is listening on
+	 * @param string $dsn	Optional userinfo part for the DSN (e.g. testuser:secret)
+	 */
+	protected function connect_transport($port, $dsn = '')
+	{
+		$credentials = ($dsn) ? $dsn . '@' : '';
+		$this->method_email->set_dsn("smtp://$credentials" . "127.0.0.1:$port");
+		$this->method_email->set_transport();
+	}
+
+	/**
+	 * Close the connection kept open by the Symfony Mailer transport.
+	 *
+	 * A QUIT command is sent first if the session was started, otherwise the
+	 * underlying stream is terminated, so that the scripted SMTP server sees
+	 * the end of the client dialogue and can be collected.
+	 */
+	protected function shutdown_transport()
+	{
+		$transport = $this->method_email->get_transport();
+
+		if (method_exists($transport, 'stop'))
+		{
+			try
+			{
+				$transport->stop();
+			}
+			catch (\Symfony\Component\Mailer\Exception\TransportExceptionInterface $e)
+			{
+				// The server may already have closed the connection
+			}
+		}
+
+		if (method_exists($transport, 'getStream'))
+		{
+			$transport->getStream()->terminate();
+		}
+	}
+
+	/**
+	 * Capture the error messages written to the log by the mailer.
+	 *
+	 * @param array $errors	Array the messages are appended to
+	 */
+	protected function register_error_log(&$errors)
+	{
+		$this->log->method('add')
+			->willReturnCallback(function($mode, $user_id, $log_ip, $log_operation, $log_time = false, $additional_data = []) use (&$errors) {
+				$errors[] = $additional_data[0];
+			});
 	}
 
 	/**
@@ -163,6 +346,7 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 			return;
 		}
 
+		stream_set_timeout($conn, 2);
 		$log = @fopen($log_file, 'wb');
 		@fwrite($conn, $options['greeting'] . "\r\n");
 
@@ -191,7 +375,7 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 			}
 			elseif (preg_match('#^EHLO#i', $cmd))
 			{
-				$auth = ($options['advertise_auth']) ? '250 AUTH PLAIN LOGIN' : '250 OK';
+				$auth = ($options['advertise_auth']) ? '250 AUTH PLAIN' : '250 OK';
 				@fwrite($conn, "250-test.example.com\r\n" . $auth . "\r\n");
 			}
 			elseif (preg_match('#^HELO#i', $cmd))
@@ -200,8 +384,16 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 			}
 			elseif (preg_match('#^AUTH#i', $cmd))
 			{
-				$expect_auth_data = true;
-				@fwrite($conn, "334 \r\n");
+				// AUTH PLAIN <base64> authenticates in a single command
+				if (count(preg_split('#\s+#', $cmd, 3)) === 3)
+				{
+					@fwrite($conn, "235 2.7.0 Authentication successful\r\n");
+				}
+				else
+				{
+					$expect_auth_data = true;
+					@fwrite($conn, "334 \r\n");
+				}
 			}
 			elseif (preg_match('#^MAIL FROM:#i', $cmd))
 			{
@@ -243,7 +435,7 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 		@fclose($server);
 	}
 
-	public function empty_subject_data(): array
+	public static function empty_subject_data(): array
 	{
 		return [
 			[''],
@@ -257,101 +449,86 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 	 */
 	public function test_empty_subject($subject)
 	{
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		[$pid, $log_file, $port] = $this->start_smtp_server();
 
-		$err_msg = '';
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$this->assertFalse(smtpmail($addresses, $subject, 'Email message', $err_msg));
-		$this->assertStringContainsString('No email subject specified', $err_msg);
-	}
+		$this->method_email->to('test@example.com');
+		$this->method_email->subject($subject);
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-	public function test_empty_message()
-	{
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		$result = $this->method_email->send();
+		$log = $this->stop_smtp_server($pid, $log_file);
 
-		$err_msg = '';
-
-		$this->assertFalse(smtpmail($addresses, 'A subject', '   ', $err_msg));
-		$this->assertStringContainsString('Email message was blank', $err_msg);
+		// An empty subject no longer causes an error, the mailer falls back
+		// to the language string for the missing subject.
+		$this->assertTrue($result);
+		$this->assertStringContainsString('Subject: ' . $this->language->lang('NO_EMAIL_SUBJECT'), $log);
 	}
 
 	public function test_connect_failure()
 	{
-		global $config;
-
 		// Reserve an ephemeral port and close it again so that connecting to it fails immediately.
 		$server = @stream_socket_server('tcp://127.0.0.1:0', $errno, $errstr);
 		$this->assertNotFalse($server, 'Unable to create test socket: ' . $errstr);
-		$config['smtp_port'] = (int) substr(strrchr(stream_socket_get_name($server, false), ':'), 1);
+		$port = (int) substr(strrchr(stream_socket_get_name($server, false), ':'), 1);
 		fclose($server);
 
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$err_msg = '';
+		$this->method_email->to('test@example.com');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$this->assertFalse(smtpmail($addresses, 'A subject', 'A message', $err_msg));
-		$this->assertStringContainsString('Could not connect to smtp host', $err_msg);
+		$errors = [];
+		$this->register_error_log($errors);
+
+		$this->assertFalse($this->method_email->send());
+		$this->assertNotEmpty($errors);
+		$this->assertStringContainsString('EMAIL', $errors[0]);
 	}
 
 	public function test_greeting_failure()
 	{
-		list($pid, $log_file) = $this->start_smtp_server(['greeting' => '554 No SMTP service here']);
+		list($pid, $log_file, $port) = $this->start_smtp_server(['greeting' => '554 No SMTP service here']);
 
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$err_msg = '';
+		$this->method_email->to('test@example.com');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$result = smtpmail($addresses, 'A subject', 'A message', $err_msg);
-		$this->stop_smtp_server($pid, $log_file);
+		$errors = [];
+		$this->register_error_log($errors);
+
+		$result = $this->method_email->send();
+		$log = $this->stop_smtp_server($pid, $log_file);
 
 		$this->assertFalse($result);
-		$this->assertStringContainsString('Ran into problems sending Mail', $err_msg);
+		$this->assertNotEmpty($errors);
+		$this->assertStringContainsString('554', $errors[0]);
 	}
 
 	public function test_send_mail()
 	{
-		list($pid, $log_file) = $this->start_smtp_server();
+		[$pid, $log_file, $port] = $this->start_smtp_server();
 
-		$addresses = [
-			'to' => [
-				['email' => 'john@example.com', 'name' => 'John'],
-				['email' => 'tim@example.com', 'name' => ''],
-			],
-			'bcc' => [
-				['email' => 'secret@example.com', 'name' => 'Secret'],
-			],
-			'cc' => [
-				['email' => 'copy@example.com', 'name' => 'Copy'],
-			],
-		];
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$headers = [
-			'From: Test <test@example.com>',
-			'Reply-To: test@example.com',
-			'Cc: cc-strip@example.com',
-			'Bcc: bcc-strip@example.com',
-			'X-Custom: yes',
-		];
+		$this->method_email->to('john@example.com', 'John');
+		$this->method_email->to('tim@example.com');
+		$this->method_email->bcc('secret@example.com', 'Secret');
+		$this->method_email->cc('copy@example.com', 'Copy');
+		$this->method_email->reply_to('test@example.com');
+		$this->method_email->header('X-Custom', 'yes');
+		$this->method_email->subject('Test subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$err_msg = '';
-
-		$result = smtpmail($addresses, 'Test subject', "First line\nSecond line\n.dot begins\nFourth", $err_msg, $headers);
+		$result = $this->method_email->send();
 		$log = $this->stop_smtp_server($pid, $log_file);
 
 		$this->assertTrue($result);
@@ -360,117 +537,110 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 		$this->assertStringContainsString('MAIL FROM:<nobody@example.com>', $log);
 		$this->assertStringContainsString('RCPT TO:<john@example.com>', $log);
 		$this->assertStringContainsString('RCPT TO:<tim@example.com>', $log);
-		$this->assertStringContainsString('RCPT TO:<secret@example.com>', $log);
 		$this->assertStringContainsString('RCPT TO:<copy@example.com>', $log);
+		$this->assertStringContainsString('RCPT TO:<secret@example.com>', $log);
 
 		$this->assertStringContainsString('DATA', $log);
 		$this->assertStringContainsString('Subject: Test subject', $log);
-		$this->assertStringContainsString('=?US-ASCII?Q?John?= <john@example.com>', $log);
-		$this->assertStringContainsString('CC: =?US-ASCII?Q?Copy?= <copy@example.com>', $log);
+		$this->assertStringContainsString('John <john@example.com>', $log);
+		$this->assertStringContainsString('Cc: Copy <copy@example.com>', $log);
 
 		$this->assertStringContainsString('X-Custom: yes', $log);
 		$this->assertStringContainsString('Reply-To: test@example.com', $log);
 		$this->assertStringNotContainsString('Bcc:', $log);
-		$this->assertStringNotContainsString('cc-strip@example.com', $log);
-		$this->assertStringNotContainsString('bcc-strip@example.com', $log);
+		$this->assertStringNotContainsString('Secret', $log);
 
 		// Bare line feeds are converted to CRLF and leading dots are escaped
-		$this->assertStringContainsString("Second line\r\n..dot begins\r\nFourth", $log);
+		$this->assertStringContainsString("First line\r\nSecond line\r\n..dot begins\r\nFourth", $log);
 
 		// The message is terminated by a lone dot followed by QUIT
 		$this->assertStringContainsString(".\r\nQUIT", $log);
 	}
 
-	public function test_send_mail_with_string_headers()
+	public function test_custom_headers()
 	{
-		list($pid, $log_file) = $this->start_smtp_server();
+		[$pid, $log_file, $port] = $this->start_smtp_server();
 
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$headers = "From: Test <test@example.com>\nBcc: should-not-appear@example.com\nX-String-Header: ok";
+		$this->method_email->to('test@example.com');
+		$this->method_email->header('X-String-Header', 'ok');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$err_msg = '';
-
-		$result = smtpmail($addresses, 'A subject', 'A message', $err_msg, $headers);
+		$result = $this->method_email->send();
 		$log = $this->stop_smtp_server($pid, $log_file);
 
 		$this->assertTrue($result);
 		$this->assertStringContainsString('X-String-Header: ok', $log);
-		$this->assertStringNotContainsString('should-not-appear@example.com', $log);
 	}
 
-	public function test_rcpt_550_does_not_abort()
+	public function test_rcpt_rejected_returns_error()
 	{
-		list($pid, $log_file) = $this->start_smtp_server(['reject_pattern' => '#reject@#']);
+		[$pid, $log_file, $port] = $this->start_smtp_server(['reject_pattern' => '#reject@#']);
 
-		$addresses = [
-			'to' => [
-				['email' => 'good@example.com', 'name' => ''],
-				['email' => 'reject@example.com', 'name' => ''],
-			],
-		];
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		$err_msg = '';
+		$this->method_email->to('good@example.com');
+		$this->method_email->to('reject@example.com');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$result = smtpmail($addresses, 'A subject', 'A message', $err_msg);
+		$errors = [];
+		$this->register_error_log($errors);
+
+		$result = $this->method_email->send();
 		$log = $this->stop_smtp_server($pid, $log_file);
 
-		$this->assertTrue($result);
+		// A single rejected recipient now aborts the whole message.
+		$this->assertFalse($result);
+		$this->assertNotEmpty($errors);
 		$this->assertStringContainsString('RCPT TO:<good@example.com>', $log);
 		$this->assertStringContainsString('RCPT TO:<reject@example.com>', $log);
+		$this->assertStringContainsString('550', $errors[0]);
 	}
 
 	public function test_all_rcpt_rejected_returns_error()
 	{
-		global $user;
+		[$pid, $log_file, $port] = $this->start_smtp_server(['reject_pattern' => '#test@example.com#']);
 
-		$user = $this->getMockBuilder('phpbb_mock_user')
-			->setMethods(['session_begin'])
-			->getMock();
+		$this->method_email->init();
+		$this->connect_transport($port);
 
-		list($pid, $log_file) = $this->start_smtp_server(['reject_pattern' => '#test@example.com#']);
+		$this->method_email->to('test@example.com');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
+		$errors = [];
+		$this->register_error_log($errors);
 
-		$err_msg = '';
-
-		$result = smtpmail($addresses, 'A subject', 'A message', $err_msg);
-		$this->stop_smtp_server($pid, $log_file);
+		$result = $this->method_email->send();
+		$log = $this->stop_smtp_server($pid, $log_file);
 
 		$this->assertFalse($result);
-		$this->assertStringContainsString('possibly an invalid email address', $err_msg);
+		$this->assertNotEmpty($errors);
+		$this->assertStringContainsString('RCPT TO:<test@example.com>', $log);
+		$this->assertStringContainsString('550', $errors[0]);
 	}
 
 	public function test_smtp_auth_plain()
 	{
-		global $config;
+		[$pid, $log_file, $port] = $this->start_smtp_server(['advertise_auth' => true]);
 
-		$config['smtp_username'] = 'testuser';
-		$config['smtp_password'] = 'testpass';
+		$this->method_email->init();
+		$this->connect_transport($port, 'testuser:testpass');
 
-		list($pid, $log_file) = $this->start_smtp_server(['advertise_auth' => true]);
+		$this->method_email->to('test@example.com');
+		$this->method_email->subject('A subject');
+		$this->method_email->template('smtp_body', 'en', $this->email_templates_path);
 
-		$addresses = [
-			'to' => [
-				['email' => 'test@example.com', 'name' => ''],
-			],
-		];
-
-		$err_msg = '';
-
-		$result = smtpmail($addresses, 'A subject', 'A message', $err_msg);
+		$result = $this->method_email->send();
 		$log = $this->stop_smtp_server($pid, $log_file);
 
 		$this->assertTrue($result);
 		$this->assertStringContainsString('AUTH PLAIN', $log);
-		$this->assertStringContainsString(base64_encode("\0testuser\0testpass"), $log);
+		$this->assertStringContainsString(base64_encode("testuser\0testuser\0testpass"), $log);
 	}
 }
