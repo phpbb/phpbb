@@ -1,0 +1,4 @@
+First line
+Second line
+.dot begins
+Fourth
