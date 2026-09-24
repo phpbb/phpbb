@@ -2484,14 +2484,14 @@ search_results_topic_title_append
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
-* Since: 3.3.18-RC1
+* Since: 3.3.19-RC1
 * Purpose: Add data directly after search results topic title
 
 search_results_topic_title_prepend
 ===
 * Locations:
     + styles/prosilver/template/search_results.html
-* Since: 3.3.18-RC1
+* Since: 3.3.19-RC1
 * Purpose: Add data directly before search results topic title
 
 simple_footer_after
@@ -2541,7 +2541,7 @@ topiclist_row_append
     + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
-* Changed: 3.3.18-RC1 Added event to UCP topic lists
+* Changed: 3.3.19-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_prepend
@@ -2555,7 +2555,7 @@ topiclist_row_prepend
     + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
-* Changed: 3.3.18-RC1 Added event to UCP topic lists
+* Changed: 3.3.19-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_topic_by_author_after

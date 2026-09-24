@@ -120,7 +120,7 @@ class ucp_main
 				 * @event core.ucp_main_front_modify_topic_data
 				 * @var array topic_list Topic IDs displayed on the UCP front page
 				 * @var array rowset     Topic rows keyed by topic ID
-				 * @since 3.3.18-RC1
+				 * @since 3.3.19-RC1
 				 */
 				$vars = array(
 					'topic_list',
@@ -933,7 +933,7 @@ class ucp_main
 		 * @var string mode                 Topic-list mode ('subscribed' or 'bookmarks')
 		 * @var array  topic_list           Topic IDs displayed on the current page
 		 * @var array  rowset               Topic rows keyed by topic ID
-		 * @since 3.3.18-RC1
+		 * @since 3.3.19-RC1
 		 */
 		$vars = array(
 			'mode',
