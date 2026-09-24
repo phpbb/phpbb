@@ -1005,6 +1005,13 @@ index_body_stat_blocks_before
 * Since: 3.1.0-a1
 * Purpose: Add new statistic blocks above the Who Is Online and Board Statistics blocks
 
+login_body_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/login_body.html
+* Since: 3.3.19-RC1
+* Purpose: Add data before the login form's submit button
+
 mcp_ban_fields_after
 ===
 * Locations:
