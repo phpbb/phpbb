@@ -1313,6 +1313,13 @@ mcp_warn_user_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
 
+mcp_warn_user_rank_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.3.19-RC1
+* Purpose: Add data after the rank title/image in the MCP warn-user user summary
+
 memberlist_body_group_desc_after
 ===
 * Locations:
