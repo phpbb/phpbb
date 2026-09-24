@@ -280,6 +280,18 @@ abstract class base implements messenger_interface
 			}
 		}
 
+		/**
+		 * Allow an extension to add its own email template search path
+		 *
+		 * @event core.messenger_template_paths
+		 * @var	string	template_lang			Language being resolved for this email
+		 * @var	string	template_dir_prefix	Template subdirectory prefix
+		 * @var	array	template_paths			Filesystem paths searched for the template file
+		 * @since 4.0.0-a3
+		 */
+		$vars = ['template_lang', 'template_dir_prefix', 'template_paths'];
+		extract($this->dispatcher->trigger_event('core.messenger_template_paths', compact($vars)));
+
 		$this->set_template_paths($ext_template_paths, $template_paths);
 
 		$this->template->set_filenames([
