@@ -929,8 +929,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	bool	submit				Whether or not the form has been sumitted
 		* @var	bool	preview				Whether or not the signature is being previewed
 		* @var	array	error				Any error strings
+		* @var	array	address_list		Array of recipients, keyed 'u' (user ids)
+		*									and 'g' (group ids), each mapping id => 'to'|'bcc'
 		* @since 3.2.10-RC1
 		* @since 3.3.1-RC1
+		* @changed 3.3.19-RC1 Added address_list var
 		*/
 		$vars = [
 			'enable_bbcode',
@@ -942,6 +945,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'submit',
 			'preview',
 			'error',
+			'address_list',
 		];
 		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_after', compact($vars)));
 
