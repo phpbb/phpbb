@@ -1152,6 +1152,13 @@ mcp_move_destination_forum_before
 * Since: 3.2.8-RC1
 * Purpose: Add content before the destination select element in the move topic/post form
 
+mcp_notes_user_rank_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_notes_user.html
+* Since: 3.3.19-RC1
+* Purpose: Add data after the rank title/image in the MCP user-notes user summary
+
 mcp_post_additional_options
 ===
 * Locations:
