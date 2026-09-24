@@ -2,9 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="3.3.18" />
-	<property name="prevversion" value="3.3.17" />
-	<property name="olderversions" value="3.1.12, 3.2.11, 3.3.16" />
+	<property name="newversion" value="3.3.19" />
+	<property name="prevversion" value="3.3.18" />
+	<property name="olderversions" value="3.1.12, 3.2.11, 3.3.17" />
 	<!-- no configuration should be needed beyond this point -->
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
