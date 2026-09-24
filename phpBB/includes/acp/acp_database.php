@@ -163,7 +163,14 @@ class acp_database
 								throw new \phpbb\exception\runtime_exception('CANNOT_OPEN_FILE');
 							}
 
-							$storage->write($file, $fp);
+							try
+							{
+								$storage->write($file, $fp);
+							}
+							finally
+							{
+								fclose($fp);
+							}
 
 							// Remove file from tmp
 							@unlink($temp_dir . '/' . $file);
