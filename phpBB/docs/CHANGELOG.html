@@ -50,6 +50,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ul>
+		<li><a href="#v3318"">Chagnes since 3.3.18</a></li>
 		<li><a href="#v3317">Changes since 3.3.17</a></li>
 		<li><a href="#v3316">Changes since 3.3.16</a></li>
 		<li><a href="#v3316rc1">Changes since 3.3.16-RC1</a></li>
@@ -179,6 +180,26 @@
 		<div class="inner">
 
 		<div class="content">
+			<a name="v3318"></a><h3>Changes since 3.3.18</h3>
+			<h4>Security & Hardening</h4>
+			<ul>
+				<li>[SECURITY-298] - Resend rate limiting incorrectly updating expiration time</li>
+				<li>[SECURITY-300] - Attachment comment hijacking by other users</li>
+				<li>[SECURITY-301] - Reflected XSS via data passed to registration page</li>
+				<li>[SECURITY-302] - Hide oauth provider secrets in ACP</li>
+				<li>[SECURITY-303] - Potential stored XSS for string profile fields when allowing any character</li>
+				<li>[SECURITY-305] - Missing permission type check when applying role based permissions</li>
+				<li>[SECURITY-306] - Disclosure of hidden or unapproved topic title when emailing topic</li>
+				<li>[SECURITY-307] - Banned Users can email members despite ban status:</li>
+				<li>[SECURITY-308] - Releasing of held private messages missing CSRF protection</li>
+				<li>[SECURITY-309] - Missing encoding of username in anti abuse header</li>
+				<li>[SECURITY-310] - MCP topic view mixing access checks for post and topic</li>
+				<li>[SECURITY-311] - Moderators with f_user_lock permission may close other user's topics</li>
+				<li>[SECURITY-312] - Unauthenticated SMTP Command Injection via Contact Form</li>
+				<li>[SECURITY-313] - Moderators can close/delete reports outside their forum permissions</li>
+				<li>[SECURITY-314] - MCP make normal action for topics missing check for forum-scoped moderators</li>
+			</ul>
+
 			<a name="v3317"></a><h3>Changes since 3.3.17</h3>
 			<h4>Bug</h4>
 			<ul>
