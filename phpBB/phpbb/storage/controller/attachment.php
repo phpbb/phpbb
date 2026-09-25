@@ -235,12 +235,6 @@ class attachment
 			return new RedirectResponse($redirect);
 		}
 
-		// Check if the file exists in the storage table too
-		if (!$this->storage->exists($attachment['physical_filename']))
-		{
-			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
-		}
-
 		if ($thumbnail)
 		{
 			$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
@@ -249,6 +243,12 @@ class attachment
 		{
 			// Update download count
 			$this->phpbb_increment_downloads($attachment['attach_id']);
+		}
+
+		// Check if the file exists in the storage table too
+		if (!$this->storage->exists($attachment['physical_filename']))
+		{
+			throw new http_exception(404, 'ERROR_NO_ATTACHMENT');
 		}
 
 		/**
