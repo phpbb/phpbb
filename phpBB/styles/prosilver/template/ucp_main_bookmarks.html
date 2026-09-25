@@ -54,6 +54,7 @@
 						<img class="row-item-sub" src="{T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG}" alt="">
 					{% endif %}
 					<div class="list-inner">
+						{% EVENT topiclist_row_prepend %}
 						{% if topicrow.S_UNREAD_TOPIC %}
 							<a href="{{ topicrow.U_NEWEST_POST }}" class="topictitle unread">{{ topicrow.TOPIC_TITLE }}</a>
 						{% else %}
@@ -97,6 +98,7 @@
 							{L_LAST_POST} {L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} &laquo;
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">{topicrow.LAST_POST_TIME}</a>
 						</div>
+						{% EVENT topiclist_row_append %}
 					</div>
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
