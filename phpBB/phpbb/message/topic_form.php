@@ -16,6 +16,7 @@ namespace phpbb\message;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\content_visibility;
+use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
 use phpbb\user;
 
@@ -50,9 +51,9 @@ class topic_form extends form
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct(auth $auth, config $config, content_visibility $content_visibility, driver_interface $db, user $user, $phpbb_root_path, $phpEx)
+	public function __construct(auth $auth, config $config, content_visibility $content_visibility, driver_interface $db, helper $controller_helper, user $user, $phpbb_root_path, $phpEx)
 	{
-		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx);
+		parent::__construct($auth, $config, $db, $controller_helper, $user, $phpbb_root_path, $phpEx);
 		$this->content_visibility = $content_visibility;
 	}
 
