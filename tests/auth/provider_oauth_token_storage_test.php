@@ -11,8 +11,7 @@
 *
 */
 
-use OAuth\Common\Consumer\Credentials;
-use OAuth\OAuth2\Token\StdOAuth2Token;
+use League\OAuth2\Client\Token\AccessToken;
 use phpbb\auth\provider\oauth\token_storage;
 
 require_once __DIR__ . '/phpbb_not_a_token.php';
@@ -43,6 +42,14 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->token_storage_table = 'phpbb_oauth_tokens';
 		$this->state_table = 'phpbb_oauth_states';
 
+		// The base test schema predates the OAuth 2 client migration.
+		$db_tools_factory = new \phpbb\db\tools\factory();
+		$db_tools = $db_tools_factory->get($this->new_doctrine_dbal());
+		if (!$db_tools->sql_column_exists($this->token_storage_table, 'oauth_resource_owner_id'))
+		{
+			$db_tools->sql_column_add($this->token_storage_table, 'oauth_resource_owner_id', ['VCHAR:255', '']);
+		}
+
 		// Give the user a session_id that we will remember
 		$this->session_id = '12345';
 		$this->user->data['session_id'] = $this->session_id;
@@ -61,8 +68,8 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	public static function retrieveAccessToken_data()
 	{
 		return array(
-			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param')), null),
-			array(null, 'OAuth\Common\Storage\Exception\TokenNotFoundException'),
+			array(new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh', 'extra' => 'param']), null),
+			array(null, 'RuntimeException'),
 		);
 	}
 
@@ -94,7 +101,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 			$this->token_storage->retrieveAccessToken($this->service_name);
 			$this->fail('The token can not be deserialized and an exception should be thrown.');
 		}
-		catch (\OAuth\Common\Storage\Exception\TokenNotFoundException $e)
+		catch (\RuntimeException $e)
 		{
 		}
 
@@ -104,7 +111,11 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_retrieveAccessToken_from_db()
 	{
-		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
+		$expected_token = new AccessToken([
+			'access_token' => 'access',
+			'refresh_token' => 'refresh',
+			'resource_owner_id' => 'resource-owner',
+		]);
 
 		// Store a token in the database
 		$temp_storage = new token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
@@ -114,6 +125,10 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Test to see if the token can be retrieved
 		$stored_token = $this->token_storage->retrieveAccessToken($this->service_name);
 		$this->assertEquals($expected_token, $stored_token);
+		$this->assertSame('resource-owner', $stored_token->getResourceOwnerId());
+
+		$row = $this->get_token_row_by_session_id($this->session_id);
+		$this->assertSame('resource-owner', $row['oauth_resource_owner_id']);
 	}
 
 	/**
@@ -138,7 +153,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_retrieve_access_token_by_session_from_db()
 	{
-		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
+		$expected_token = new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh']);
 
 		// Store a token in the database
 		$temp_storage = new token_storage($this->db, $this->user,  $this->token_storage_table, $this->state_table);
@@ -152,13 +167,13 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_storeAccessToken()
 	{
-		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
+		$token = new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh', 'extra' => 'param']);
 		$this->token_storage->storeAccessToken($this->service_name, $token);
 
 		// Confirm that the token is cached
-		$extraParams = $this->token_storage->retrieveAccessToken($this->service_name)->getExtraParams();
-		$this->assertEquals( 'param', $extraParams['extra'] );
-		$this->assertEquals( 'access', $this->token_storage->retrieveAccessToken($this->service_name)->getAccessToken() );
+		$extraParams = $this->token_storage->retrieveAccessToken($this->service_name)->getValues();
+		$this->assertEquals('param', $extraParams['extra']);
+		$this->assertEquals('access', $this->token_storage->retrieveAccessToken($this->service_name)->getToken());
 
 		$row = $this->get_token_row_by_session_id($this->session_id);
 
@@ -170,7 +185,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 	{
 		return array(
 			array(null, false),
-			array(new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') ), true),
+			array(new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh', 'extra' => 'param']), true),
 		);
 	}
 
@@ -204,7 +219,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_clearToken()
 	{
-		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
+		$token = new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh', 'extra' => 'param']);
 		$this->token_storage->storeAccessToken($this->service_name, $token);
 
 		$this->token_storage->clearToken($this->service_name);
@@ -219,7 +234,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 	public function test_set_user_id()
 	{
-		$token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES, array('extra' => 'param') );
+		$token = new AccessToken(['access_token' => 'access', 'refresh_token' => 'refresh', 'extra' => 'param']);
 		$this->token_storage->storeAccessToken($this->service_name, $token);
 
 		$new_user_id = ANONYMOUS + 1;
@@ -292,37 +307,70 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 
 		$this->token_storage->clearAuthorizationState($this->service_name);
 		$this->assertFalse($this->token_storage->hasAuthorizationState($this->service_name));
-		$this->expectException(\OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException::class);
+		$this->expectException(\RuntimeException::class);
 		$this->token_storage->retrieveAuthorizationState($this->service_name);
 	}
 
 	public function test_retrieve_not_stored_state()
 	{
-		$this->expectException(\OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException::class);
+		$this->expectException(\RuntimeException::class);
 		$result = $this->token_storage->retrieveAuthorizationState($this->service_name);
 	}
 
-	public function test_validate_authorization_state_invalid()
+	public function test_consume_authorization_state_is_exact_and_one_time()
 	{
-		$credentials = new Credentials(
-			'my_key',
-			'my_secret',
-			'http://example.com/callback'
-		);
-		$google_service = new \OAuth\OAuth2\Service\Google(
-			$credentials,
-			$this->createMock(\OAuth\Common\Http\Client\ClientInterface::class),
-			$this->token_storage
-		);
-		$google_reflection = new \ReflectionClass($google_service);
-		$storage = $google_reflection->getProperty('storage');
-		$storage->setValue($google_service, $this->token_storage);
-
 		$expected_state = 'abc123_securestate';
-		$this->token_storage->storeAuthorizationState(\OAuth\OAuth2\Service\Google::class, $expected_state);
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state, 'verifier');
 
-		$this->expectException(\OAuth\OAuth2\Service\Exception\InvalidAuthorizationStateException::class);
+		$fresh_storage = new token_storage(
+			$this->db,
+			$this->user,
+			$this->token_storage_table,
+			$this->state_table
+		);
 
-		$google_service->requestAccessToken('does_not_matter', 'foobar');
+		$this->assertSame([
+			'state' => $expected_state,
+			'code_verifier' => 'verifier',
+		], $fresh_storage->consumeAuthorizationState($this->service_name, $expected_state));
+
+		$this->expectException(\RuntimeException::class);
+		$fresh_storage->consumeAuthorizationState($this->service_name, $expected_state);
+	}
+
+	public function test_consume_authorization_state_rejects_a_mismatched_state_without_consuming_it()
+	{
+		$expected_state = 'abc123_securestate';
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state);
+
+		try
+		{
+			$this->token_storage->consumeAuthorizationState($this->service_name, 'unexpected_state');
+			$this->fail('A mismatched authorization state must be rejected.');
+		}
+		catch (\RuntimeException $e)
+		{
+		}
+
+		$this->assertSame([
+			'state' => $expected_state,
+			'code_verifier' => '',
+		], $this->token_storage->consumeAuthorizationState($this->service_name, $expected_state));
+	}
+
+	public function test_consume_authorization_state_rejects_an_expired_state()
+	{
+		$expected_state = 'abc123_securestate';
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state);
+
+		$sql = 'UPDATE ' . $this->state_table . '
+			SET state_time = ' . (time() - 601) . "
+			WHERE user_id = '" . (int) ANONYMOUS . "'
+				AND session_id = '" . $this->db->sql_escape($this->session_id) . "'
+				AND provider = '" . $this->db->sql_escape($this->service_name) . "'";
+		$this->db->sql_query($sql);
+
+		$this->expectException(\RuntimeException::class);
+		$this->token_storage->consumeAuthorizationState($this->service_name, $expected_state);
 	}
 }

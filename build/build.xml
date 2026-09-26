@@ -469,13 +469,8 @@
 		<delete file="${dir}/vendor/guzzlehttp/streams/README.rst" />
 		<delete file="${dir}/vendor/guzzlehttp/streams/.travis.yml" />
 
-		<delete dir="${dir}/vendor/lusitanian/oauth/examples" />
-		<delete dir="${dir}/vendor/lusitanian/oauth/tests" />
-		<delete file="${dir}/vendor/lusitanian/oauth/.gitignore" />
-		<delete file="${dir}/vendor/lusitanian/oauth/.scrutinizer.yml" />
-		<delete file="${dir}/vendor/lusitanian/oauth/.travis.yml" />
-		<delete file="${dir}/vendor/lusitanian/oauth/phpunit.xml.dist" />
-		<delete file="${dir}/vendor/lusitanian/oauth/README.md" />
+		<delete file="${dir}/vendor/league/oauth2-client/phpunit.xml.dist" />
+		<delete file="${dir}/vendor/league/oauth2-client/README.md" />
 
 		<delete dir="${dir}/vendor/paragonie/random_compat/dist" />
 		<delete dir="${dir}/vendor/paragonie/random_compat/other" />
