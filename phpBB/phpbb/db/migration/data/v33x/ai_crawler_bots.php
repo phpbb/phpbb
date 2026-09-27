@@ -104,7 +104,7 @@ class ai_crawler_bots extends migration
 				continue;
 			}
 
-			if (!count($group_row))
+			if (empty($group_row))
 			{
 				$sql = 'SELECT group_id, group_colour
 					FROM ' . $this->table_prefix . 'groups
@@ -114,7 +114,7 @@ class ai_crawler_bots extends migration
 				$this->db->sql_freeresult($result);
 
 				// Default fallback, should never get here
-				if (!count($group_row))
+				if (empty($group_row))
 				{
 					throw new exception('Failed to retrieve group info for AI_CRAWLERS group.');
 				}
