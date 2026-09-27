@@ -39,7 +39,7 @@ self.addEventListener('push', event => {
 	}
 
 	event.waitUntil((async() => {
-		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION|e('js') }}';
+		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION|e("js") }}';
 		const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
 
 		// Force update if versions differ
