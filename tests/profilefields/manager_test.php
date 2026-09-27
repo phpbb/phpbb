@@ -210,7 +210,7 @@ class manager_test extends phpbb_database_test_case
 		$this->collection->add('profile_field_string');
 
 		$profile_row = [
-			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => false, 'field_contact_url' => ''], 'value' => 'John Doe'],
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'lang_explain' => '', 'field_contact_desc' => '', 'field_is_contact' => false, 'field_contact_url' => ''], 'value' => 'John Doe'],
 		];
 
 		$result = $this->manager->generate_profile_fields_template_data($profile_row, false);
@@ -226,7 +226,7 @@ class manager_test extends phpbb_database_test_case
 			'PROFILE_USERNAME_DESC'			=> '',
 			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
 			'PROFILE_USERNAME_NAME'			=> 'user',
-			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'PROFILE_USERNAME_EXPLAIN'		=> '',
 			'S_PROFILE_USERNAME_CONTACT'	=> false,
 			'S_PROFILE_USERNAME'			=> true
 			],
@@ -241,7 +241,7 @@ class manager_test extends phpbb_database_test_case
 				'PROFILE_FIELD_DESC'			=> '',
 				'PROFILE_FIELD_TYPE'			=> 'profile_field_string',
 				'PROFILE_FIELD_NAME'			=> 'user',
-				'PROFILE_FIELD_EXPLAIN'		=> null,
+				'PROFILE_FIELD_EXPLAIN'		=> '',
 				'S_PROFILE_CONTACT'	=> false,
 				'S_PROFILE_USERNAME'			=> true
 			],
@@ -257,7 +257,7 @@ class manager_test extends phpbb_database_test_case
 		$this->collection->add('profile_field_string');
 
 		$profile_row = [
-			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => '%s'], 'value' => 'John Doe'],
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'lang_explain' => '', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => '%s'], 'value' => 'John Doe'],
 		];
 
 		$result = $this->manager->generate_profile_fields_template_data($profile_row);
@@ -273,7 +273,7 @@ class manager_test extends phpbb_database_test_case
 			'PROFILE_USERNAME_DESC'			=> '',
 			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
 			'PROFILE_USERNAME_NAME'			=> 'user',
-			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'PROFILE_USERNAME_EXPLAIN'		=> '',
 			'S_PROFILE_USERNAME_CONTACT'	=> false,
 			'S_PROFILE_USERNAME'			=> true
 		],
@@ -288,7 +288,7 @@ class manager_test extends phpbb_database_test_case
 			'PROFILE_FIELD_DESC'		=> '',
 			'PROFILE_FIELD_TYPE'		=> 'profile_field_string',
 			'PROFILE_FIELD_NAME'		=> 'user',
-			'PROFILE_FIELD_EXPLAIN'		=> null,
+			'PROFILE_FIELD_EXPLAIN'		=> '',
 			'S_PROFILE_CONTACT'			=> false,
 			'S_PROFILE_USERNAME'		=> true
 		],
@@ -304,7 +304,7 @@ class manager_test extends phpbb_database_test_case
 		$this->collection->add('profile_field_string');
 
 		$profile_row = [
-			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => 'http://foo.bar/%s'], 'value' => 'John_Doe'],
+			'username' => ['data' => ['field_type' => 'profile_field_string', 'lang_name' => 'user', 'lang_explain' => '', 'field_contact_desc' => '', 'field_is_contact' => true, 'field_contact_url' => 'http://foo.bar/%s'], 'value' => 'John_Doe'],
 		];
 
 		$result = $this->manager->generate_profile_fields_template_data($profile_row);
@@ -320,7 +320,7 @@ class manager_test extends phpbb_database_test_case
 			'PROFILE_USERNAME_DESC'			=> '',
 			'PROFILE_USERNAME_TYPE'			=> 'profile_field_string',
 			'PROFILE_USERNAME_NAME'			=> 'user',
-			'PROFILE_USERNAME_EXPLAIN'		=> null,
+			'PROFILE_USERNAME_EXPLAIN'		=> '',
 			'S_PROFILE_USERNAME_CONTACT'	=> true,
 			'S_PROFILE_USERNAME'			=> true
 		],
@@ -335,7 +335,7 @@ class manager_test extends phpbb_database_test_case
 			'PROFILE_FIELD_DESC'		=> '',
 			'PROFILE_FIELD_TYPE'		=> 'profile_field_string',
 			'PROFILE_FIELD_NAME'		=> 'user',
-			'PROFILE_FIELD_EXPLAIN'		=> null,
+			'PROFILE_FIELD_EXPLAIN'		=> '',
 			'S_PROFILE_CONTACT'			=> true,
 			'S_PROFILE_USERNAME'		=> true
 		],
