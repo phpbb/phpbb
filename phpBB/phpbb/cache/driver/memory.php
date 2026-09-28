@@ -248,8 +248,9 @@ abstract class memory extends \phpbb\cache\driver\base
 
 			$temp[$query_id] = true;
 
-			// This must never expire
-			$this->_write('sql_' . $table_name, $temp, 0);
+			// Must outlive every cached query of this table. A ttl of 0 means
+			// "expire now" for some drivers (e.g. redis), so use the default ttl.
+			$this->_write('sql_' . $table_name, $temp);
 		}
 
 		// store them in the right place
