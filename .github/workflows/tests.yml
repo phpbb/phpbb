@@ -390,18 +390,21 @@ jobs:
                 include:
                     - php: '7.2'
                       db: "sqlite3"
+                      db_image: ''
                     - php: '7.2'
-                      db: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
+                      db: "mssql"
+                      db_image: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
                     - php: '7.2'
-                      db: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
+                      db: "mssql"
+                      db_image: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mssql:
-                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' && matrix.db != 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' && 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' || matrix.db }}
+                image: ${{ matrix.db_image }}
                 env:
                     SA_PASSWORD: "Pssw0rd_12"
                     ACCEPT_EULA: "y"
@@ -433,18 +436,6 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v6
 
-            - id: database-type
-              env:
-                  MATRIX_DB: ${{ matrix.db }}
-              run: |
-                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' ]
-                  then
-                      db='mssql'
-                  else
-                      db=$(echo "${MATRIX_DB%%:*}")
-                  fi
-                  echo "db=$db" >> $GITHUB_OUTPUT
-
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -470,7 +461,7 @@ jobs:
 
             - name: Setup environment for phpBB
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
@@ -478,20 +469,20 @@ jobs:
 
             - name: Setup database
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
                   MYISAM: '0'
               run: |
                   .github/setup-database.sh $DB $MYISAM
 
             - name: Run functional tests
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Functional Tests' --verbose --stop-on-error
 
             - name: Run unit tests
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --verbose --stop-on-error
 
