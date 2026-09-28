@@ -102,6 +102,7 @@ services:
             - '@storage.attachment'
             - '@symfony_request'
             - '@user'
+            - '%core.root_path%'
 
 # Helpers
     storage.state_helper:
