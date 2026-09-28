@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_config">
+		<column>config_name</column>
+		<column>config_value</column>
+		<row>
+			<value>auth_oauth_twitter_key</value>
+			<value>oauth1-consumer-key</value>
+		</row>
+		<row>
+			<value>auth_oauth_twitter_secret</value>
+			<value>oauth1-consumer-secret</value>
+		</row>
+	</table>
+	<table name="phpbb_oauth_tokens">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_token</column>
+		<row>
+			<value>2</value>
+			<value>legacy-session</value>
+			<value>auth.provider.oauth.service.example</value>
+			<value>legacy-token</value>
+		</row>
+	</table>
+	<table name="phpbb_oauth_states">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_state</column>
+		<column>state_time</column>
+		<row>
+			<value>2</value>
+			<value>legacy-session</value>
+			<value>auth.provider.oauth.service.example</value>
+			<value>legacy-state</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="phpbb_oauth_accounts">
+		<column>user_id</column>
+		<column>provider</column>
+		<column>oauth_provider_id</column>
+		<row>
+			<value>2</value>
+			<value>twitter</value>
+			<value>123456789</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>google</value>
+			<value>987654321</value>
+		</row>
+	</table>
+</dataset>

@@ -13,18 +13,17 @@
 
 namespace phpbb\auth\provider\oauth\service;
 
+use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Provider\GenericProvider;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
+
 /**
- * Base OAuth abstract class that all OAuth services should implement
+ * Base OAuth abstract class that all OAuth services should implement.
  */
 abstract class base implements service_interface
 {
-	/**
-	 * External OAuth service provider
-	 *
-	 * @var \OAuth\Common\Service\ServiceInterface
-	 */
-	protected $service_provider;
-
 	/**
 	 * {@inheritdoc}
 	 */
@@ -36,24 +35,50 @@ abstract class base implements service_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_external_service_class()
+	public function get_provider(string $redirect_uri): AbstractProvider
 	{
-		return '';
+		return new GenericProvider($this->get_provider_options($redirect_uri));
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Return common GenericProvider options for a service.
+	 *
+	 * @param string $redirect_uri
+	 * @return array
 	 */
-	public function get_external_service_provider()
+	protected function get_provider_options(string $redirect_uri): array
 	{
-		return $this->service_provider;
+		$credentials = $this->get_service_credentials();
+
+		return [
+			'clientId' => $credentials['key'],
+			'clientSecret' => $credentials['secret'],
+			'redirectUri' => $redirect_uri,
+		];
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Fetch the resource owner and translate provider failures to phpBB errors.
+	 *
+	 * @param AbstractProvider $provider
+	 * @param AccessTokenInterface $token
+	 * @return ResourceOwnerInterface
+	 * @throws exception
 	 */
-	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider)
+	protected function get_resource_owner(AbstractProvider $provider, AccessTokenInterface $token): ResourceOwnerInterface
 	{
-		$this->service_provider = $service_provider;
+		if (!($token instanceof AccessToken))
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
+
+		try
+		{
+			return $provider->getResourceOwner($token);
+		}
+		catch (\Throwable $e)
+		{
+			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST', 0, $e);
+		}
 	}
 }

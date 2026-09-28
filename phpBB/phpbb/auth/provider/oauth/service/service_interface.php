@@ -13,73 +13,43 @@
 
 namespace phpbb\auth\provider\oauth\service;
 
+use League\OAuth2\Client\Provider\AbstractProvider;
+use League\OAuth2\Client\Token\AccessTokenInterface;
+
 /**
- * OAuth service interface
+ * OAuth service interface.
  */
 interface service_interface
 {
 	/**
-	 * Returns an array of the scopes necessary for auth
+	 * Returns the scopes required for authentication.
 	 *
-	 * @return array	An array of the required scopes
+	 * @return array
 	 */
 	public function get_auth_scope();
 
 	/**
-	 * Returns an array containing the service credentials belonging to requested
-	 * service.
+	 * Returns the service credentials.
 	 *
-	 * @return array	An array containing the 'key' and the 'secret' of the
-	 *					service in the form:
-	 *						array(
-	 *							'key'		=> string
-	 *							'secret'	=> string
-	 *						)
+	 * @return array
 	 */
 	public function get_service_credentials();
 
 	/**
-	 * Returns the results of the authentication in json format
+	 * Return a provider configured for the supplied callback URI.
 	 *
-	 * @throws \phpbb\auth\provider\oauth\service\exception
-	 * @return string	The unique identifier returned by the service provider
-	 *					that is used to authenticate the user with phpBB.
+	 * @param string $redirect_uri
+	 * @return AbstractProvider
 	 */
-	public function perform_auth_login();
+	public function get_provider(string $redirect_uri): AbstractProvider;
 
 	/**
-	 * Returns the results of the authentication in json format
-	 * Use this function when the user already has an access token
+	 * Return the immutable provider identifier for an access token.
 	 *
-	 * @throws \phpbb\auth\provider\oauth\service\exception
-	 * @return string	The unique identifier returned by the service provider
-	 *					that is used to authenticate the user with phpBB.
+	 * @param AbstractProvider $provider
+	 * @param AccessTokenInterface $token
+	 * @return string
+	 * @throws exception
 	 */
-	public function perform_token_auth();
-
-	/**
-	 * Returns the class of external library service provider that has to be used.
-	 *
-	 * @return string	If the string is a class, it will register the provided string as a class,
-	 *						which later will be generated as the OAuth external service provider.
-	 * 					If the string is not a class, it will use this string,
-	 * 						trying to generate a service for the version 2 and 1 respectively:
-	 * 						\OAuth\OAuth2\Service\<string>
-	 * 					If the string is empty, it will default to OAuth's standard service classes,
-	 * 						trying to generate a service for the version 2 and 1 respectively:
-	 * 						\OAuth\OAuth2\Service\Facebook
-	 */
-	public function get_external_service_class();
-
-	/**
-	 * Returns the external library service provider once it has been set
-	 */
-	public function get_external_service_provider();
-
-	/**
-	 * Sets the external library service provider
-	 *
-	 * @param \OAuth\Common\Service\ServiceInterface	$service_provider
-	 */
-	public function set_external_service_provider(\OAuth\Common\Service\ServiceInterface $service_provider);
+	public function get_user_id(AbstractProvider $provider, AccessTokenInterface $token): string;
 }

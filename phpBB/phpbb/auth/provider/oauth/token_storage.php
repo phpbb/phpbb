@@ -13,16 +13,14 @@
 
 namespace phpbb\auth\provider\oauth;
 
-use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
-use OAuth\OAuth1\Token\StdOAuth1Token;
-use OAuth\Common\Token\TokenInterface;
-use OAuth\Common\Storage\TokenStorageInterface;
-use OAuth\Common\Storage\Exception\TokenNotFoundException;
+use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\AccessTokenInterface;
+use League\OAuth2\Client\Token\ResourceOwnerAccessTokenInterface;
 
 /**
  * OAuth storage wrapper for phpBB's cache
  */
-class token_storage implements TokenStorageInterface
+class token_storage
 {
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
@@ -36,11 +34,14 @@ class token_storage implements TokenStorageInterface
 	/** @var string OAuth table: state */
 	protected $oauth_state_table;
 
-	/** @var TokenInterface OAuth token */
+	/** @var AccessTokenInterface OAuth token */
 	protected $cachedToken;
 
 	/** @var string OAuth state */
 	protected $cachedState;
+
+	/** @var string|null PKCE verifier for the cached state */
+	protected $cachedCodeVerifier;
 
 	/**
 	 * Constructor.
@@ -66,7 +67,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceof TokenInterface)
+		if ($this->cachedToken instanceof AccessTokenInterface)
 		{
 			return $this->cachedToken;
 		}
@@ -87,15 +88,13 @@ class token_storage implements TokenStorageInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function storeAccessToken($service, TokenInterface $token)
+	public function storeAccessToken($service, AccessTokenInterface $token)
 	{
 		$service = $this->get_service_name_for_db($service);
 
 		$this->cachedToken = $token;
 
-		$data = [
-			'oauth_token'	=> $this->json_encode_token($token),
-		];
+		$data = $this->get_token_data($token);
 
 		$sql = 'UPDATE ' . $this->oauth_token_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $data) . '
@@ -114,7 +113,7 @@ class token_storage implements TokenStorageInterface
 			$data = [
 				'user_id'		=> (int) $this->user->data['user_id'],
 				'provider'		=> $service,
-				'oauth_token'	=> $this->json_encode_token($token),
+				...$this->get_token_data($token),
 				'session_id'	=> $this->user->data['session_id'],
 			];
 
@@ -133,7 +132,7 @@ class token_storage implements TokenStorageInterface
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken)
+		if ($this->cachedToken instanceof AccessTokenInterface)
 		{
 			return true;
 		}
@@ -197,16 +196,18 @@ class token_storage implements TokenStorageInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function storeAuthorizationState($service, $state)
+	public function storeAuthorizationState($service, $state, $code_verifier = '')
 	{
 		$service = $this->get_service_name_for_db($service);
 
 		$this->cachedState = $state;
+		$this->cachedCodeVerifier = $code_verifier;
 
 		$data = [
 			'user_id'		=> (int) $this->user->data['user_id'],
 			'provider'		=> $service,
 			'oauth_state'	=> $state,
+			'oauth_code_verifier' => $code_verifier,
 			'session_id'	=> $this->user->data['session_id'],
 			'state_time'	=> time(),
 		];
@@ -215,6 +216,48 @@ class token_storage implements TokenStorageInterface
 		$this->db->sql_query($sql);
 
 		return $this;
+	}
+
+	/**
+	 * Retrieve and consume an exact state for the current user/session.
+	 *
+	 * @param string $service
+	 * @param string $state
+	 * @return array State and code verifier.
+	 * @throws \RuntimeException
+	 */
+	public function consumeAuthorizationState($service, $state): array
+	{
+		$service = $this->get_service_name_for_db($service);
+		$data = [
+			'user_id' => (int) $this->user->data['user_id'],
+			'provider' => $service,
+			'oauth_state' => $state,
+			'session_id' => $this->user->data['session_id'],
+		];
+
+		$row = $this->get_state_row($data);
+		if (!$row || (int) $row['state_time'] < time() - 600)
+		{
+			throw new \RuntimeException('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
+
+		$sql = 'DELETE FROM ' . $this->oauth_state_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', $data);
+		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows())
+		{
+			throw new \RuntimeException('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
+		}
+
+		$this->cachedState = null;
+		$this->cachedCodeVerifier = null;
+
+		return [
+			'state' => $row['oauth_state'],
+			'code_verifier' => $row['oauth_code_verifier'],
+		];
 	}
 
 	/**
@@ -271,6 +314,7 @@ class token_storage implements TokenStorageInterface
 		$service = $this->get_service_name_for_db($service);
 
 		$this->cachedState = null;
+		$this->cachedCodeVerifier = null;
 
 		$sql = 'DELETE FROM ' . $this->oauth_state_table . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'] . "
@@ -292,6 +336,7 @@ class token_storage implements TokenStorageInterface
 	public function clearAllAuthorizationStates()
 	{
 		$this->cachedState = null;
+		$this->cachedCodeVerifier = null;
 
 		$sql = 'DELETE FROM ' . $this->oauth_state_table . '
 			WHERE user_id = ' . (int) $this->user->data['user_id'];
@@ -395,14 +440,14 @@ class token_storage implements TokenStorageInterface
 	 * Also checks if the token is a valid token.
 	 *
 	 * @param string	$service	The OAuth service provider name
-	 * @return TokenInterface
-	 * @throws TokenNotFoundException
+	 * @return AccessTokenInterface
+	 * @throws \RuntimeException
 	 */
 	public function retrieve_access_token_by_session($service)
 	{
 		$service = $this->get_service_name_for_db($service);
 
-		if ($this->cachedToken instanceof TokenInterface)
+		if ($this->cachedToken instanceof AccessTokenInterface)
 		{
 			return $this->cachedToken;
 		}
@@ -443,8 +488,8 @@ class token_storage implements TokenStorageInterface
 	 * Also checks if the token is a valid token.
 	 *
 	 * @param array		$data		The SQL WHERE data
-	 * @return TokenInterface
-	 * @throws TokenNotFoundException
+	 * @return AccessTokenInterface
+	 * @throws \RuntimeException
 	 */
 	protected function _retrieve_access_token($data)
 	{
@@ -452,17 +497,25 @@ class token_storage implements TokenStorageInterface
 
 		if (!$row)
 		{
-			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_NOT_STORED');
+			throw new \RuntimeException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_NOT_STORED');
 		}
 
-		$token = $this->json_decode_token($row['oauth_token']);
+		try
+		{
+			$token = $this->json_decode_token($row['oauth_token'], $row['oauth_resource_owner_id']);
+		}
+		catch (\RuntimeException $e)
+		{
+			$this->clearToken($data['provider']);
+			throw $e;
+		}
 
 		// Ensure that the token was serialized/unserialized correctly
-		if (!($token instanceof TokenInterface))
+		if (!($token instanceof AccessTokenInterface))
 		{
 			$this->clearToken($data['provider']);
 
-			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
+			throw new \RuntimeException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
 		$this->cachedToken = $token;
@@ -475,7 +528,7 @@ class token_storage implements TokenStorageInterface
 	 *
 	 * @param array $data The SQL WHERE data
 	 * @return string                The OAuth state, or empty string if not stored
-	 * @throws AuthorizationStateNotFoundException If state was not stored
+	 * @throws \RuntimeException If state was not stored
 	 */
 	protected function _retrieve_state(array $data): string
 	{
@@ -483,7 +536,7 @@ class token_storage implements TokenStorageInterface
 
 		if (!$row)
 		{
-			throw new AuthorizationStateNotFoundException('State not stored');
+			throw new \RuntimeException('State not stored');
 		}
 
 		$this->cachedState = $row['oauth_state'];
@@ -500,7 +553,7 @@ class token_storage implements TokenStorageInterface
 	 */
 	protected function get_access_token_row($data)
 	{
-		$sql = 'SELECT oauth_token
+		$sql = 'SELECT oauth_token, oauth_resource_owner_id
 			FROM ' . $this->oauth_token_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data);
 		$result = $this->db->sql_query($sql);
@@ -519,7 +572,7 @@ class token_storage implements TokenStorageInterface
 	 */
 	protected function get_state_row(array $data)
 	{
-		$sql = 'SELECT oauth_state, state_time
+		$sql = 'SELECT oauth_state, oauth_code_verifier, state_time
 			FROM ' . $this->oauth_state_table . '
 			WHERE ' . $this->db->sql_build_array('SELECT', $data) . '
 			ORDER BY state_time DESC';
@@ -531,71 +584,84 @@ class token_storage implements TokenStorageInterface
 	}
 
 	/**
-	 * A helper function that JSON encodes a TokenInterface's data.
+	 * A helper function that JSON encodes a League access token's data.
 	 *
-	 * @param TokenInterface	$token
-	 * @return false|string		The json encoded TokenInterface's data
+	 * @param AccessTokenInterface $token
+	 * @return false|string The json encoded token data
 	 */
-	public function json_encode_token(TokenInterface $token): false|string
+	public function json_encode_token(AccessTokenInterface $token): false|string
 	{
-		$members = [
-			'accessToken'	=> $token->getAccessToken(),
-			'endOfLife'		=> $token->getEndOfLife(),
-			'extraParams'	=> $token->getExtraParams(),
-			'refreshToken'	=> $token->getRefreshToken(),
-
-			'token_class'	=> get_class($token),
-		];
-
-		// Handle additional data needed for OAuth1 tokens
-		if ($token instanceof StdOAuth1Token)
-		{
-			$members['requestToken']		= $token->getRequestToken();
-			$members['requestTokenSecret']	= $token->getRequestTokenSecret();
-			$members['accessTokenSecret']	= $token->getAccessTokenSecret();
-		}
-
-		return json_encode($members);
+		return json_encode([
+			'access_token' => $token->getToken(),
+			'refresh_token' => $token->getRefreshToken(),
+			'expires' => $token->getExpires(),
+			'values' => $token instanceof AccessToken ? $token->getValues() : [],
+		]);
 	}
 
 	/**
-	 * A helper function that JSON decodes a data string and creates a TokenInterface.
+	 * A helper function that JSON decodes a data string and creates an AccessToken.
 	 *
-	 * @param string	$json			The json encoded TokenInterface's data
-	 * @return TokenInterface
-	 * @throws TokenNotFoundException
+	 * @param string	$json					The json encoded TokenInterface's data
+	 * @param string	$resource_owner_id	The persisted resource owner identifier
+	 * @return AccessTokenInterface
+	 * @throws \RuntimeException
 	 */
-	public function json_decode_token($json)
+	public function json_decode_token($json, $resource_owner_id = ''): AccessTokenInterface
 	{
 		$token_data = json_decode($json, true);
 
-		if ($token_data === null)
+		if (!is_array($token_data) || !is_string($token_data['access_token'] ?? null) || $token_data['access_token'] === '')
 		{
-			throw new TokenNotFoundException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
+			throw new \RuntimeException('AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED');
 		}
 
-		$token_class	= $token_data['token_class'];
-		$access_token	= $token_data['accessToken'];
-		$refresh_token	= $token_data['refreshToken'];
-		$endOfLife		= $token_data['endOfLife'];
-		$extra_params	= $token_data['extraParams'];
+		$values = is_array($token_data['values'] ?? null) ? $token_data['values'] : [];
+		$values = array_diff_key($values, array_flip([
+			'access_token',
+			'refresh_token',
+			'expires',
+			'expires_in',
+			'resource_owner_id',
+		]));
 
-		/**
-		 * Create the token
-		 * @var TokenInterface	$token
-		 */
-		$token = new $token_class($access_token, $refresh_token, TokenInterface::EOL_NEVER_EXPIRES, $extra_params);
-		$token->setEndOfLife($endOfLife);
+		$options = [
+			'access_token' => $token_data['access_token'],
+			'refresh_token' => $token_data['refresh_token'] ?? null,
+			...$values,
+		];
 
-		// Handle OAuth 1.0 specific elements
-		if ($token instanceof StdOAuth1Token)
+		if (is_string($resource_owner_id) && $resource_owner_id !== '')
 		{
-			$token->setRequestToken($token_data['requestToken']);
-			$token->setRequestTokenSecret($token_data['requestTokenSecret']);
-			$token->setAccessTokenSecret($token_data['accessTokenSecret']);
+			$options['resource_owner_id'] = $resource_owner_id;
 		}
 
-		return $token;
+		if (($token_data['expires'] ?? null) === 0)
+		{
+			$options['expires_in'] = 0;
+		}
+		else if (isset($token_data['expires']))
+		{
+			$options['expires'] = $token_data['expires'];
+		}
+
+		return new AccessToken($options);
+	}
+
+	/**
+	 * Returns the database fields for an access token.
+	 *
+	 * @param AccessTokenInterface $token
+	 * @return array
+	 */
+	protected function get_token_data(AccessTokenInterface $token): array
+	{
+		$resource_owner_id = $token instanceof ResourceOwnerAccessTokenInterface ? $token->getResourceOwnerId() : null;
+
+		return [
+			'oauth_token'				=> $this->json_encode_token($token),
+			'oauth_resource_owner_id'	=> is_string($resource_owner_id) ? $resource_owner_id : '',
+		];
 	}
 
 	/**

@@ -40,7 +40,7 @@
 			<value>2</value>
 			<value>897a897b797c8789997d7979879</value>
 			<value>auth.provider.oauth.service.google</value>
-			<value>{"accessToken":"ya29.YPHwCWVkrvwu1kgbYKiDNYaQ451ZuHy9OEQAGVME8if-WBzR-v7a9ftxbx41kaL)5VLEXB-6qJEvri","endOfLife":1429959670,"extraParams":{"token_type":"Bearer","id_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"},"refreshToken":null,"token_class":"OAuth\\\\OAuth2\\\\Token\\\\StdOAuth2Token"}</value>
+			<value>{"access_token":"ya29.YPHwCWVkrvwu1kgbYKiDNYaQ451ZuHy9OEQAGVME8if-WBzR-v7a9ftxbx41kaL)5VLEXB-6qJEvri","expires":1429959670,"refresh_token":null,"values":{"token_type":"Bearer","id_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30"}}}</value>
 		</row>
 	</table>
 </dataset>
