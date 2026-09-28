@@ -289,7 +289,7 @@ jobs:
 
         services:
             postgres:
-                image: ${{ matrix.db != 'postgres:10' && matrix.db != 'postgres:11' && matrix.db != 'postgres:12' && matrix.db != 'postgres:13' && matrix.db != 'postgres:14' && matrix.db != 'postgres:15' && 'postgres:10' || matrix.db }}
+                image: ${{ matrix.db }}
                 env:
                     POSTGRES_HOST: localhost
                     POSTGRES_USER: postgres
@@ -298,7 +298,7 @@ jobs:
                     - 5432:5432
                 options: >-
                     -v /var/run/postgresql:/var/run/postgresql
-                    --health-cmd pg_isready
+                    --health-cmd "pg_isready -U postgres"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
@@ -393,18 +393,21 @@ jobs:
                 include:
                     - php: '8.2'
                       db: "sqlite3"
-                    - php: '8.2'
-                      db: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
+                      db_image: ''
+                    - php: '7.2'
+                      db: "mssql"
+                      db_image: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
-                    - php: '8.2'
-                      db: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
+                    - php: '7.2'
+                      db: "mssql"
+                      db_image: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
         services:
             mssql:
-                image: ${{ matrix.db != 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' && matrix.db != 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' && 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' || matrix.db }}
+                image: ${{ matrix.db_image }}
                 env:
                     SA_PASSWORD: "Pssw0rd_12"
                     ACCEPT_EULA: "y"
@@ -436,18 +439,6 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v6
 
-            - id: database-type
-              env:
-                  MATRIX_DB: ${{ matrix.db }}
-              run: |
-                  if [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04' ] || [ $MATRIX_DB == 'mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04' ]
-                  then
-                      db='mssql'
-                  else
-                      db=$(echo "${MATRIX_DB%%:*}")
-                  fi
-                  echo "db=$db" >> $GITHUB_OUTPUT
-
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -472,7 +463,7 @@ jobs:
 
             - name: Setup environment for phpBB
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
@@ -480,7 +471,7 @@ jobs:
 
             - name: Setup database
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
                   MYISAM: '0'
               run: |
                   .github/setup-database.sh $DB $MYISAM
@@ -494,13 +485,13 @@ jobs:
 
             - name: Run functional tests
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Functional Tests' --display-all-issues --stop-on-error
 
             - name: Run unit tests
               env:
-                  DB: ${{steps.database-type.outputs.db}}
+                  DB: ${{ matrix.db }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --display-all-issues --stop-on-error
 
