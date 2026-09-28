@@ -108,7 +108,11 @@ class phpbb_email_smtpmail_test extends phpbb_test_case
 		if ($pid === 0)
 		{
 			$this->run_smtp_server($server, $log_file, $options);
-			exit(0);
+
+			// Replace the child process instead of calling exit(), as running
+			// PHP's shutdown would close resources shared with the parent,
+			// e.g. the PostgreSQL connection used by subsequent tests.
+			pcntl_exec('/usr/bin/env', ['true']);
 		}
 
 		$config['smtp_host'] = '127.0.0.1';
