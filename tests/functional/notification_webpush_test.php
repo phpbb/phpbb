@@ -114,6 +114,22 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		$this->assertCount(0, $crawler->filter('.webpush-subscribe'));
 	}
 
+	public function test_worker_resolves_relative_notification_urls()
+	{
+		self::request('GET', 'index.php/user/push/worker', [], false);
+		self::assert_response_status_code(200);
+
+		$response = self::$client->getResponse();
+		$content = $response->getContent();
+
+		$this->assertStringStartsWith('text/javascript', $response->getHeader('Content-Type'));
+		$this->assertMatchesRegularExpression(
+			"#new URL\\(event\\.notification\\.data\\.url, '[^']+/'\\)#",
+			$content
+		);
+		$this->assertStringContainsString('self.clients.openWindow(url.href)', $content);
+	}
+
 	protected function set_acp_option($option, $value)
 	{
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
