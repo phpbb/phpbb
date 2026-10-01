@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="{{ DEFAULT_LANG }}">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="refresh" content="30">
+		<title>{{ lang('BOARD_MAINTENANCE_TITLE', SITENAME) }}</title>
+		<style>{{ source('maintenance.css') }}</style>
+	</head>
+	<body>
+		<div class="card">
+			<div class="logo-container">
+				{{ Icon('svg', 'logo', SITENAME, true, 'logo-svg') }}
+			</div>
+			<div class="maintenance-message" id="msg">{{ lang('BOARD_MAINTENANCE') }}</div>
+			<div class="loader"></div>
+			<div class="links">
+			{%- for link in links %}
+				<a href="{{ link.URL|e('html') }}" target="_blank" rel="noopener">
+					{% if link.ICON %}<span>{{ link.ICON }}</span>{% endif %}
+					<span>{{ link.NAME }}</span>
+				</a>
+			{% endfor -%}
+			</div>
+			<div class="time" id="time"></div>
+		</div>
+
+		<script>
+			(function() {
+				const updateInitiated = {{ MAINTENANCE_INITIATED|default(0) }};
+				const langData = {{ LANG_DATA|raw }};
+				const defaultLang = '{{ DEFAULT_LANG }}';
+				const userLang = navigator.language || defaultLang;
+				const shortLang = userLang.toLowerCase().split('-')[0];
+				const language = langData[userLang.toLowerCase()] || langData[shortLang] || langData[defaultLang];
+
+				// Select localized message
+				document.getElementById('msg').textContent = language['BOARD_MAINTENANCE'];
+
+				// Handle timestamp
+				if (updateInitiated > 0) {
+					const date = new Date(updateInitiated * 1000);
+					const formatted = new Intl.DateTimeFormat(userLang, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+
+					// Display localized "Started on: [time]"
+					document.getElementById('time').textContent = language['BOARD_MAINTENANCE_START'].replace(/%1\$s/, formatted);
+				}
+			})();
+		</script>
+	</body>
+</html>
