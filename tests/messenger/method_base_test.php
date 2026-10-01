@@ -53,6 +53,8 @@ class phpbb_messenger_method_base_test extends \phpbb_test_case
 		$this->dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->dispatcher->method('trigger_event')
+			->willReturnArgument(1);
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new language(new language_file_loader($phpbb_root_path, $phpEx));
 		$this->queue = $this->createMock(queue::class);
