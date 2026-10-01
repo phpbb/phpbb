@@ -61,6 +61,6 @@ class add_ai_crawlers_group extends migration
 			'group_desc_uid'		=> '',
 			'group_max_recipients'	=> 5,
 		]);
-		$this->sql_query($sql);
+		$this->db->sql_query($sql);
 	}
 }
