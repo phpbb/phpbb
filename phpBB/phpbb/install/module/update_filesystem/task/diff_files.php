@@ -185,13 +185,13 @@ class diff_files extends task_base
 
 					unset($diff2);
 
-					if (!$empty && in_array($filename, $merge_conflicts))
-					{
-					$merge_conflicts[] = $filename;
-				}
-					else
+					if ($empty && in_array($filename, $merge_conflicts))
 					{
 						$file_is_merged = true;
+					}
+					else if (!in_array($filename, $merge_conflicts))
+					{
+						$merge_conflicts[] = $filename;
 					}
 				}
 
