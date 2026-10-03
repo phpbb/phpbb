@@ -448,8 +448,19 @@ class fulltext_sphinx implements search_backend_interface
 
 		$this->sphinx->SetFilter('deleted', array(0));
 
+		$clean_search_query = $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query));
+
+		if (strlen($this->search_query) && trim($clean_search_query) === '')
+		{
+			// No searchable terms are left after cleaning the search query,
+			// eg the user searched for a single parenthesis. An empty query
+			// would match all documents, so return no results instead. Author
+			// searches intentionally run with an empty query and are not affected.
+			return false;
+		}
+
 		$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
-		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+		$result = $this->sphinx->Query($search_query_prefix . $clean_search_query, $this->indexes);
 
 		// Could be connection to localhost:9312 failed (errno=111,
 		// msg=Connection refused) during rotate, retry if so
@@ -457,7 +468,7 @@ class fulltext_sphinx implements search_backend_interface
 		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 		{
 			usleep(self::SPHINX_CONNECT_WAIT_TIME);
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $clean_search_query, $this->indexes);
 		}
 
 		if ($this->sphinx->GetLastError())
@@ -480,7 +491,7 @@ class fulltext_sphinx implements search_backend_interface
 			$start = floor(($result_count - 1) / $per_page) * $per_page;
 
 			$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+			$result = $this->sphinx->Query($search_query_prefix . $clean_search_query, $this->indexes);
 
 			// Could be connection to localhost:9312 failed (errno=111,
 			// msg=Connection refused) during rotate, retry if so
@@ -488,7 +499,7 @@ class fulltext_sphinx implements search_backend_interface
 			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
 			{
 				usleep(self::SPHINX_CONNECT_WAIT_TIME);
-				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
+				$result = $this->sphinx->Query($search_query_prefix . $clean_search_query, $this->indexes);
 			}
 		}
 
@@ -747,6 +758,10 @@ class fulltext_sphinx implements search_backend_interface
 	 *    By default, only $, %, & and @ characters are indexed and searchable.
 	 *    String transformation is in backend only and not visible to the end user
 	 *    nor reflected in the results page URL or keyword highlighting.
+	 * 6. Unmatched quotation marks and parentheses as well as parenthesized groups
+	 *    and operators without any search term left are removed, as their incomplete
+	 *    syntax would otherwise make the whole query fail with a syntax error.
+	 *    Balanced groups like (either | or) are preserved.
 	 *
 	 * @param string	$search_string
 	 * @return string
@@ -774,7 +789,60 @@ class fulltext_sphinx implements search_backend_interface
 		 */
 		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);
 
-		return $search_string ?: '';
+		$search_string = $search_string ?: '';
+
+		// An unmatched quotation mark makes the whole query fail with a syntax error, remove it
+		if (substr_count($search_string, '"') % 2 !== 0)
+		{
+			$search_string = substr_replace($search_string, '', strrpos($search_string, '"'), 1);
+		}
+
+		// Remove parenthesized groups that contain no search term, eg "()" or "( +)"
+		do
+		{
+			$search_string = preg_replace('#\([^\p{L}\p{N}*"()]*\)#u', ' ', $search_string, -1, $count);
+		}
+		while ($count);
+
+		// Remove unmatched parentheses, ignoring those within quotation marks where they carry no meaning
+		$in_quotes = false;
+		$open_positions = [];
+		$unmatched_positions = [];
+		for ($i = 0; $i < strlen($search_string); $i++)
+		{
+			$char = $search_string[$i];
+			if ($char === '"')
+			{
+				$in_quotes = !$in_quotes;
+			}
+			else if (!$in_quotes && $char === '(')
+			{
+				$open_positions[] = $i;
+			}
+			else if (!$in_quotes && $char === ')')
+			{
+				if (count($open_positions))
+				{
+					array_pop($open_positions);
+				}
+				else
+				{
+					$unmatched_positions[] = $i;
+				}
+			}
+		}
+
+		$unmatched_positions = array_merge($unmatched_positions, $open_positions);
+		rsort($unmatched_positions);
+		foreach ($unmatched_positions as $position)
+		{
+			$search_string = substr_replace($search_string, '', $position, 1);
+		}
+
+		// Remove operators that lost their operand in the cleanup above, eg "+test -" or "(word |)"
+		$search_string = preg_replace('#(?<![^\s(])[+\-|]+(?![^\s)])#', '', $search_string);
+
+		return $search_string ?? '';
 	}
 
 	/**
