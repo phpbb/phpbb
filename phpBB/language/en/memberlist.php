@@ -123,11 +123,9 @@ $lang = array_merge($lang, array(
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
 	'SENDER_EMAIL_ADDRESS'	=> 'Your email address',
 	'SENDER_NAME'			=> 'Your name',
-	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
 	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',
 	'SEND_MESSAGE'			=> 'Message',
-	'SEND_YIM_MESSAGE'		=> 'Send YIM message',
 	'SORT_EMAIL'			=> 'Email',
 	'SORT_LAST_ACTIVE'		=> 'Last active',
 	'SORT_POST_COUNT'		=> 'Post count',
@@ -147,7 +145,6 @@ $lang = array_merge($lang, array(
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VIEW_FACEBOOK_PROFILE'	=> 'View Facebook Profile',
-	'VIEW_SKYPE_PROFILE'	=> 'View Skype Profile',
 	'VIEW_TWITTER_PROFILE'	=> 'View X Profile',
 	'VIEW_YOUTUBE_PROFILE'	=> 'View YouTube Profile',
 ));
