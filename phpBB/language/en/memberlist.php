@@ -135,6 +135,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
 	'USER_ADMIN'			=> 'Administer user',
 	'USER_BAN'				=> 'Banning',
+	'USER_BANNED'			=> 'Banned',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
 		0		=> 'No reminder sent at this time',
