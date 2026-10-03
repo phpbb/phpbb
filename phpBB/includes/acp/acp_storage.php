@@ -560,30 +560,17 @@ class acp_storage
 
 			switch ($definition_value['form_macro']['tag'])
 			{
-				case 'text':
-					if ($definition_value['form_macro']['type'] === 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
+				case 'input':
+				case 'textarea':
+					if (($definition_value['form_macro']['type'] ?? '') === 'email' && filter_var($value, FILTER_VALIDATE_EMAIL))
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_EMAIL_INCORRECT_FORMAT', $definition_title, $storage_title);
 					}
 
-					$maxlength = $definition_value['form_macro']['max'] ?? 255;
+					$maxlength = $definition_value['form_macro']['maxlength'] ?? $definition_value['form_macro']['max'] ?? 255;
 					if (strlen($value) > $maxlength)
 					{
 						$messages[] = $this->lang->lang('STORAGE_FORM_TYPE_TEXT_TOO_LONG', $definition_title, $storage_title);
-					}
-
-					if ($new_provider->get_name() === 'local' && $definition_key === 'path')
-					{
-						$path = $value;
-
-						if (empty($path))
-						{
-							$messages[] = $this->lang->lang('STORAGE_PATH_NOT_SET', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
-						}
-						else if (!$this->filesystem->exists($this->phpbb_root_path . $path) || !$this->filesystem->is_writable($this->phpbb_root_path . $path))
-						{
-							$messages[] = $this->lang->lang('STORAGE_PATH_NOT_EXISTS', $this->lang->lang('STORAGE_' . strtoupper($storage_name) . '_TITLE'));
-						}
 					}
 				break;
 
