@@ -430,6 +430,12 @@ class ucp_groups
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
 					}
 
+					// Special groups can only be managed from the ACP
+					if ($group_row['group_type'] == GROUP_SPECIAL)
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
+					}
+
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
@@ -1115,6 +1121,7 @@ class ucp_groups
 							WHERE ug.user_id = ' . $user->data['user_id'] . '
 								AND g.group_id = ug.group_id
 								AND ug.group_leader = 1
+								AND g.group_type <> ' . GROUP_SPECIAL . '
 							ORDER BY g.group_type DESC, g.group_name';
 						$result = $db->sql_query($sql);
 
