@@ -302,25 +302,6 @@ class parser implements \phpbb\textformatter\parser_interface
 	}
 
 	/**
-	* Filter an EMOJI tag to reject shortcodes that consist of raw codepoints
-	*
-	* Sequences of hexadecimal digits between colons such as ":123c:" commonly
-	* appear as segments of IPv6 addresses and should remain plain text rather
-	* than be rendered as an emoji image
-	*
-	* @param  Tag    $tag      The EMOJI tag
-	* @param  string $tag_text Original text consumed by the tag
-	* @return void
-	*/
-	static public function filter_emoji(Tag $tag, $tag_text)
-	{
-		if (preg_match('/^:[0-3][0-9a-f]{3,4}(?:-[0-9a-f]{4,5})*:$/D', $tag_text))
-		{
-			$tag->invalidate();
-		}
-	}
-
-	/**
 	* Filter a flash object's height
 	*
 	* @see bbcode_firstpass::bbcode_flash()
@@ -412,6 +393,37 @@ class parser implements \phpbb\textformatter\parser_interface
 		}
 
 		return $url;
+	}
+
+	/**
+	* Filter an EMOJI tag to reject shortcodes that are part of an IPv6 address
+	*
+	* Groups of an IPv6 address are made of up to four hexadecimal digits between
+	* colons and may match an emoji shortname such as ":abcd:" or a raw codepoint
+	* such as ":123c:". A shortcode of that shape is rejected when it is directly
+	* preceded or followed by another hexadecimal digit or a colon, which is the
+	* case for every group inside of an address, so that the address remains
+	* plain text. The same shortcodes keep working when written on their own.
+	*
+	* @param  Tag    $tag      The EMOJI tag
+	* @param  string $tag_text Original text consumed by the tag
+	* @param  string $text     Original text being parsed
+	* @return void
+	*/
+	static public function filter_emoji(Tag $tag, $tag_text, $text)
+	{
+		if (!preg_match('/^:[0-9a-f]{1,4}:$/D', $tag_text))
+		{
+			return;
+		}
+
+		$before = ($tag->getPos() > 0) ? $text[$tag->getPos() - 1] : '';
+		$after = substr($text, $tag->getPos() + $tag->getLen(), 1);
+
+		if ($before === ':' || ctype_xdigit($before) || $after === ':' || ctype_xdigit($after))
+		{
+			$tag->invalidate();
+		}
 	}
 
 	/**
