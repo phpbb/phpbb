@@ -297,11 +297,17 @@
 			// Hide placeholder avatar
 			this.$box.children('.avatar-placeholder').hide();
 
+			// Double the maximum allowed size for better usability, but keep the
+			// workspace within the avatar box so large size limits do not force
+			// the cropper to overflow the surrounding form
+			const maxBoxHeight = parseInt(this.$box.css('max-height'), 10) || Infinity;
+			const boxWidth = this.$box.width();
+
 			this.cropper = this.image.cropper({
 				aspectRatio: 1,
 				autoCropArea: 1,
-				minContainerHeight: this.allowedSizes.height.max * 2, // Double max size for better usability
-				minContainerWidth: this.allowedSizes.width.max * 2, // Double max size for better usability
+				minContainerHeight: Math.min(this.allowedSizes.height.max * 2, maxBoxHeight),
+				minContainerWidth: Math.min(this.allowedSizes.width.max * 2, boxWidth),
 			}).data('cropper');
 
 			this.image.off('crop.phpbb.avatars').on('crop.phpbb.avatars', phpbb.avatars.onCrop);
