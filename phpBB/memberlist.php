@@ -777,11 +777,9 @@ switch ($mode)
 		// Check if the user account of the shown profile is banned
 		$sql = 'SELECT ban_userid
 			FROM ' . BANLIST_TABLE . '
-			WHERE ban_userid <> 0';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrowset($result);
-		$ids = array_column($row, 'ban_userid');
-		$user_banned = in_array($user_id, $ids);
+			WHERE ban_userid = ' . (int) $user_id;
+		$result = $db->sql_query_limit($sql, 1);
+		$user_banned = (bool) $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// Define the main array of vars to assign to memberlist_view.html
@@ -799,7 +797,7 @@ switch ($mode)
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
-			'USER_BANNED'				=> $user_banned ? $user->lang['USER_BANNED'] : '',
+			'USER_BANNED'				=> $user_banned ? $user->lang('USER_BANNED') : '',
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'			=> $group_options,
