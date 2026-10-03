@@ -1002,11 +1002,11 @@ fieldset.fields1 dl.pmlist dd.recipients {
 .row .pagination li a,
 .row .pagination li span {
 	font-size: var(--ps-font-tiny);
+	text-align: center;
 	border-radius: 2px;
 	min-width: calc(var(--ps-font-tiny) + 6px);
 	height: calc(var(--ps-font-normal) + 6px);
 	padding: 1px 3px;
-	text-align: center;
 }
 
 .row .pagination li.ellipsis span {
