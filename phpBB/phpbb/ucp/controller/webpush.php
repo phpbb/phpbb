@@ -272,6 +272,7 @@ class webpush
 	{
 		$content = $this->template->render('push_worker.js.twig', [
 			'U_WEBPUSH_GET_NOTIFICATION'	=> $this->controller_helper->route('phpbb_ucp_push_get_notification_controller'),
+			'U_BOARD_URL'					=> generate_board_url(),
 			'ASSETS_VERSION'				=> $this->config['assets_version'],
 		]);
 

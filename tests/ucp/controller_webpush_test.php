@@ -401,9 +401,25 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 
 	public function test_worker()
 	{
-		$this->template->method('render')->willReturn('rendered_content');
-		$this->controller_helper->method('route')->willReturn('test_route');
 		$this->config['assets_version'] = '1.0';
+		$this->config['force_server_vars'] = true;
+		$this->config['server_protocol'] = 'https://';
+		$this->config['server_name'] = 'example.com';
+		$this->config['server_port'] = 443;
+		$this->config['script_path'] = '/forum';
+		$this->config['cookie_secure'] = true;
+		$this->controller_helper->expects($this->once())
+			->method('route')
+			->with('phpbb_ucp_push_get_notification_controller')
+			->willReturn('test_route');
+		$this->template->expects($this->once())
+			->method('render')
+			->with('push_worker.js.twig', [
+				'U_WEBPUSH_GET_NOTIFICATION'	=> 'test_route',
+				'U_BOARD_URL'					=> 'https://example.com/forum',
+				'ASSETS_VERSION'				=> '1.0',
+			])
+			->willReturn('rendered_content');
 
 		$response = $this->controller->worker();
 
