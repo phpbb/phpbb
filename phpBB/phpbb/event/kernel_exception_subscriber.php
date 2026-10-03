@@ -142,6 +142,20 @@ class kernel_exception_subscriber implements EventSubscriberInterface
 			$response->headers->add($exception->getHeaders());
 		}
 
+		// Log server errors (HTTP 5xx) to the PHP error log so they can be
+		// diagnosed. Client errors such as 404 or 403 are expected and are not
+		// logged, to avoid noise.
+		if ($response->getStatusCode() >= 500)
+		{
+			error_log(sprintf(
+				'%s: %s in %s on line %d',
+				get_class($exception),
+				$exception->getMessage(),
+				$exception->getFile(),
+				$exception->getLine()
+			) . "\n" . $exception->getTraceAsString());
+		}
+
 		$event->setResponse($response);
 	}
 
