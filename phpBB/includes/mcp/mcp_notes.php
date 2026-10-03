@@ -75,7 +75,7 @@ class mcp_notes
 	function mcp_notes_user_view($action)
 	{
 		global $config, $phpbb_log, $request, $phpbb_root_path, $phpEx;
-		global $template, $db, $user, $auth, $phpbb_container;
+		global $template, $db, $user, $auth, $phpbb_container, $phpbb_dispatcher;
 
 		$user_id = $request->variable('u', 0);
 		$username = $request->variable('username', '', true);
@@ -193,6 +193,18 @@ class mcp_notes
 		// Generate the appropriate user information for the user we are looking at
 		$rank_data = phpbb_get_user_rank($userrow, $userrow['user_posts']);
 		$avatar_img = phpbb_get_user_avatar($userrow);
+
+		/**
+		* Modify user data before it is assigned to the template on the MCP user-notes page
+		*
+		* @event core.mcp_notes_user_modify_template_vars
+		* @var	array	userrow		The entire user row
+		* @var	array	rank_data	Array with rank title/img for this user
+		* @var	string	avatar_img	Rendered avatar HTML for this user
+		* @since 3.3.19-RC1
+		*/
+		$vars = array('userrow', 'rank_data', 'avatar_img');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_notes_user_modify_template_vars', compact($vars)));
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
