@@ -50,7 +50,8 @@ $lang = array_merge($lang, array(
 	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
 
 	'EXTENSIONS_CATALOG'			=> 'Extensions Catalog',
-	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.<br><br><strong>Warning:</strong> Please be aware that the Extensions Catalog is currently in an Alpha development phase. Enabling this in a production environment carries a significant risk and is strongly discouraged.',
+	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.',
+	'EXTENSIONS_CATALOG_WARNING'	=> 'Please be aware that the Extensions Catalog is currently in an Alpha development phase. Enabling this in a production environment carries a significant risk and is strongly discouraged.',
 
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',
@@ -76,8 +77,8 @@ $lang = array_merge($lang, array(
 	'EXTENSION_DELETE_DATA_EXPLAIN'	=> 'Deleting an extension’s data removes all of its data and settings. The extension files are retained so it can be enabled again.',
 	'EXTENSION_DISABLE_EXPLAIN'		=> 'Disabling an extension retains its files, data and settings but removes any functionality added by the extension.',
 	'EXTENSION_ENABLE_EXPLAIN'		=> 'Enabling an extension allows you to use it on your board.',
-	'EXTENSION_REMOVE_EXPLAIN'		=> 'Removing an extension removes all of its files, data and settings.',
-	'EXTENSION_UPDATE_EXPLAIN'		=> 'Updating an extension will install the latest version compatible with your board, removing old files and replacing them with new ones, and updating the database if necessary.',
+	'EXTENSION_REMOVE_EXPLAIN'		=> 'Removing an extension will remove all of its data and settings and delete the extension’s files from the filesystem.',
+	'EXTENSION_UPDATE_EXPLAIN'		=> 'Updating an extension will disable the currently installed extension and delete the extension’s files from the filesystem. The extension’s most recent compatible release will be uploaded to your board and re-enabled.',
 
 	'EXTENSION_DELETE_DATA_IN_PROGRESS'	=> 'The extension’s data is currently being deleted. Please do not leave or refresh this page until it is completed.',
 	'EXTENSION_DISABLE_IN_PROGRESS'	=> 'The extension is currently being disabled. Please do not leave or refresh this page until it is completed.',
@@ -93,7 +94,7 @@ $lang = array_merge($lang, array(
 
 	'EXTENSION_INSTALLING_HEADLINE'			=> 'Installing an extension',
 	'EXTENSION_INSTALLING_EXPLAIN_STEP1'	=> 'Download an extension from phpBB’s extensions database',
-	'EXTENSION_INSTALLING_EXPLAIN_STEP2'	=> 'Unzip the extension and upload it to the <samp>ext/</samp> directory of your phpBB board',
+	'EXTENSION_INSTALLING_EXPLAIN_STEP2'	=> 'Unzip the extension and upload it to the “ext/” directory of your phpBB board',
 	'EXTENSION_INSTALLING_EXPLAIN_STEP3'	=> 'Enable the extension, here in the Extensions manager',
 
 	'EXTENSION_REMOVING_HEADLINE'			=> 'Deleting an extension from your board',
@@ -178,6 +179,6 @@ $lang = array_merge($lang, array(
 	'STABILITY_DEV'		=> 'dev',
 
 	'COMPOSER_MINIMUM_STABILITY'			=> 'Minimum stability',
-	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use <samp>stable</samp> versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
+	'COMPOSER_MINIMUM_STABILITY_EXPLAIN'	=> 'Always use “stable” versions on a live forum. Non-stable versions may still be in development and could cause unexpected problems with your forum and should only be used for development purposes in local or staging environments.',
 
 ));
