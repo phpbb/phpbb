@@ -449,13 +449,19 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 /**
 * Copy a file into the storage system.
 *
-* @param \phpbb\storage\storage	$storage	Storage to write the file to
-* @param string					$source		Absolute path of the source file
-* @param string					$target		Target path relative to the storage root
+* Failures are reported through the convertor's error handler in the same way
+* copy_file() reports them, honouring $die_on_failure.
+*
+* @param \phpbb\storage\storage	$storage			Storage to write the file to
+* @param string					$source				Absolute path of the source file
+* @param string					$target				Target path relative to the storage root
+* @param bool					$die_on_failure		Whether a failed copy is a fatal error
 * @return bool	Whether the file is present in the storage afterwards
 */
-function _copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target)
+function phpbb_copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target, $die_on_failure = true)
 {
+	global $convert, $user;
+
 	// A file that is already stored is treated as successfully copied, mirroring
 	// the non-overwriting behaviour of copy_file().
 	if ($storage->exists($target))
@@ -467,6 +473,7 @@ function _copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target
 
 	if ($fp === false)
 	{
+		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $source, $storage->get_name() . '/' . $target), __LINE__, __FILE__, !$die_on_failure);
 		return false;
 	}
 
@@ -478,6 +485,7 @@ function _copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target
 	catch (\phpbb\storage\exception\storage_exception $e)
 	{
 		$copied = false;
+		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $source, $storage->get_name() . '/' . $target) . '<br />' . $user->lang($e->getMessage()), __LINE__, __FILE__, !$die_on_failure);
 	}
 
 	fclose($fp);
@@ -486,15 +494,25 @@ function _copy_file_to_storage(\phpbb\storage\storage $storage, $source, $target
 }
 
 /**
-* Recursively copy the contents of a directory into the storage system.
+* Copy the files of a directory into the storage system.
 *
-* @param \phpbb\storage\storage	$storage		Storage to write the files to
-* @param string					$source_dir		Absolute path of the source directory
-* @param string					$target_dir		Target directory relative to the storage root
+* Only the files of the directory itself are copied. The storage system has no
+* directories and the attachment storage references files by their name only,
+* thumbnails of a source board are imported by import_attachment(). Entries
+* starting with a dot, CVS and index.htm are skipped, just like copy_dir() does.
+* An unreadable source directory is reported through the convertor's error
+* handler in the same way copy_dir() reports it.
+*
+* @param \phpbb\storage\storage	$storage			Storage to write the files to
+* @param string					$source_dir			Absolute path of the source directory
+* @param string					$target_dir			Target directory relative to the storage root
+* @param bool					$die_on_failure		Whether a failed copy is a fatal error
 * @return void
 */
-function _copy_dir_to_storage(\phpbb\storage\storage $storage, $source_dir, $target_dir = '')
+function phpbb_copy_dir_to_storage(\phpbb\storage\storage $storage, $source_dir, $target_dir = '', $die_on_failure = true)
 {
+	global $convert, $user;
+
 	$source_dir = rtrim($source_dir, '/') . '/';
 	$target_dir = ($target_dir !== '') ? rtrim($target_dir, '/') . '/' : '';
 
@@ -502,23 +520,20 @@ function _copy_dir_to_storage(\phpbb\storage\storage $storage, $source_dir, $tar
 
 	if ($handle === false)
 	{
+		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_COULD_NOT_READ'], $source_dir), __LINE__, __FILE__);
 		return;
 	}
 
 	while (($entry = readdir($handle)) !== false)
 	{
-		if ($entry === '.' || $entry === '..')
+		if ($entry[0] == '.' || $entry == 'CVS' || $entry == 'index.htm')
 		{
 			continue;
 		}
 
-		if (is_dir($source_dir . $entry))
+		if (is_file($source_dir . $entry))
 		{
-			_copy_dir_to_storage($storage, $source_dir . $entry, $target_dir . $entry);
-		}
-		else if (is_file($source_dir . $entry))
-		{
-			_copy_file_to_storage($storage, $source_dir . $entry, $target_dir . $entry);
+			phpbb_copy_file_to_storage($storage, $source_dir . $entry, $target_dir . $entry, $die_on_failure);
 		}
 	}
 
@@ -540,7 +555,7 @@ function import_attachment_files($category_name = '')
 
 	if (is_dir($source_dir))
 	{
-		_copy_dir_to_storage($phpbb_container->get('storage.attachment'), $source_dir, $category_name);
+		phpbb_copy_dir_to_storage($phpbb_container->get('storage.attachment'), $source_dir, $category_name, true);
 	}
 }
 
@@ -614,7 +629,7 @@ function _import_check($config_var, $source, $use_target)
 	{
 		if ($use_storage)
 		{
-			$result['copied'] = _copy_file_to_storage($phpbb_container->get($storage_services[$config_var]), $source_path, $target);
+			$result['copied'] = phpbb_copy_file_to_storage($phpbb_container->get($storage_services[$config_var]), $source_path, $target, false);
 		}
 		else
 		{
@@ -669,7 +684,7 @@ function import_attachment($source, $use_target = false)
 
 			if (file_exists($thumb_source_path))
 			{
-				_copy_file_to_storage($phpbb_container->get('storage.attachment'), $thumb_source_path, 'thumb_' . $result['target']);
+				phpbb_copy_file_to_storage($phpbb_container->get('storage.attachment'), $thumb_source_path, 'thumb_' . $result['target'], false);
 			}
 		}
 	}
