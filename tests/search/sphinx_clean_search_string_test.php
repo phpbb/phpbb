@@ -63,6 +63,12 @@ class phpbb_search_sphinx_clean_search_string_test extends phpbb_test_case
 			// Operators without an operand are removed
 			['+test -) ', '+test  '],
 			['+(word |) ', '+(word ) '],
+			['+(| word) ', '+( word) '],
+			['| test', ' test'],
+			['test |', 'test '],
+			['test | | word', 'test | word'],
+			['test || word', 'test | word'],
+			['+(word | -) +test ', '+(word ) +test '],
 			// Unmatched quotation mark is removed
 			['+test +" ', '+test  '],
 			// Balanced groups and phrases are preserved
@@ -73,8 +79,18 @@ class phpbb_search_sphinx_clean_search_string_test extends phpbb_test_case
 			['+(a +"b )" +c) ', '+(a +"b )" +c) '],
 			// Hyphenated words keep their special treatment
 			['know-it-all', '("know it all"|knowitall*)'],
-			// Plain queries are left alone
+			// Plain queries and valid operators are left alone
 			['+test +word ', '+test +word '],
+			['+test -word', '+test -word'],
+			['test -word -other', 'test -word -other'],
+			['(test | word)', '(test | word)'],
+			['test | word | other', 'test | word | other'],
+			['test |word', 'test |word'],
+			['test|word', 'test|word'],
+			['((test | word) | other)', '((test | word) | other)'],
+			['+(test | word) +other', '+(test | word) +other'],
+			['+(test | word) -other', '+(test | word) -other'],
+			['test | "exact phrase"', 'test | "exact phrase"'],
 		];
 	}
 

@@ -839,8 +839,26 @@ class fulltext_sphinx implements search_backend_interface
 			$search_string = substr_replace($search_string, '', $position, 1);
 		}
 
-		// Remove operators that lost their operand in the cleanup above, eg "+test -" or "(word |)"
-		$search_string = preg_replace('#(?<![^\s(])[+\-|]+(?![^\s)])#', '', $search_string);
+		// Remove operators that lost their operand in the cleanup above, eg "+test -" or "(word |)".
+		// The + and - operators need a search term right after them while the | operator
+		// needs a search term on both sides. Repeat until nothing is left to remove as removing
+		// one operator can leave another one without an operand, eg "(word | -)"
+		do
+		{
+			$search_string = preg_replace(
+				[
+					'#(?<![^\s(|])[+\-]+(?![^\s)|])#',
+					'#(^|\()\s*\|+#',
+					'#\|+\s*(\)|$)#',
+					'#\|+(?:\s*\|+)+#',
+				],
+				['', '$1', '$1', '|'],
+				$search_string,
+				-1,
+				$count
+			);
+		}
+		while ($count);
 
 		return $search_string ?? '';
 	}
