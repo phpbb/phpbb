@@ -933,7 +933,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		*									and 'g' (group ids), each mapping id => 'to'|'bcc'
 		* @since 3.2.10-RC1
 		* @since 3.3.1-RC1
-		* @changed 3.3.19-RC1 Added address_list var
+		* @changed 3.3.20-RC1 Added address_list var
 		*/
 		$vars = [
 			'enable_bbcode',
