@@ -1009,7 +1009,7 @@ login_body_buttons_before
 ===
 * Locations:
     + styles/prosilver/template/login_body.html
-* Since: 3.3.19-RC1
+* Since: 3.3.20-RC1
 * Purpose: Add data before the login form's submit button
 
 mcp_ban_fields_after
