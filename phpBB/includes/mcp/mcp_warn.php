@@ -505,6 +505,18 @@ class mcp_warn
 		$avatar = $avatar_helper->get_user_avatar($user_row);
 		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
 
+		/**
+		* Modify user data before it is assigned to the template on the MCP warn-user page
+		*
+		* @event core.mcp_warn_user_modify_template_vars
+		* @var	array	user_row		The entire user row
+		* @var	array	user_rank_data	Array with rank title/img for this user
+		* @var	string	avatar_img		Rendered avatar HTML for this user
+		* @since 3.3.20-RC1
+		*/
+		$vars = array('user_row', 'user_rank_data', 'avatar_img');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_warn_user_modify_template_vars', compact($vars)));
+
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
