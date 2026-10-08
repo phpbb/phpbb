@@ -1012,6 +1012,20 @@ login_body_buttons_before
 * Since: 3.3.20-RC1
 * Purpose: Add data before the login form's submit button
 
+mcp_approve_ajax_reason_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_approve.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the disapproval reason in the AJAX approve/disapprove confirm box
+
+mcp_approve_reason_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_approve.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the disapproval reason on the approve/disapprove confirm page
+
 mcp_ban_fields_after
 ===
 * Locations:
