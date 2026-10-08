@@ -1924,7 +1924,19 @@ function group_correct_avatar($group_id, $old_entry)
 
 	try
 	{
-		$storage->write($new_filename, $storage->read($old_filename));
+		$stream = $storage->read($old_filename);
+		try
+		{
+			$storage->write($new_filename, $stream);
+		}
+		finally
+		{
+			if (is_resource($stream))
+			{
+				fclose($stream);
+			}
+		}
+
 		$storage->delete($old_filename);
 
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
