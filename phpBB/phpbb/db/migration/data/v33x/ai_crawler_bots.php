@@ -88,6 +88,19 @@ class ai_crawler_bots extends migration
 
 		$group_row = [];
 
+		// Agent strings already configured on the board, bots are matched
+		// case insensitively against the user agent in phpbb\session
+		$existing_agents = [];
+
+		$sql = 'SELECT bot_agent
+			FROM ' . $this->table_prefix . 'bots';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$existing_agents[] = strtolower($row['bot_agent']);
+		}
+		$this->db->sql_freeresult($result);
+
 		foreach ($bots as $bot_name => $bot_agent)
 		{
 			$bot_name_clean = utf8_clean_string($bot_name);
@@ -99,7 +112,9 @@ class ai_crawler_bots extends migration
 			$bot_exists = (bool) $this->db->sql_fetchfield('user_id');
 			$this->db->sql_freeresult($result);
 
-			if ($bot_exists)
+			// Skip bots that already exist by name or whose agent string is
+			// already covered by a bot the board administrator has configured
+			if ($bot_exists || in_array(strtolower($bot_agent), $existing_agents, true))
 			{
 				continue;
 			}
