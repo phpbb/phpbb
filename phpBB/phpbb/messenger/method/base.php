@@ -287,7 +287,7 @@ abstract class base implements messenger_interface
 		 * @var	string	template_lang			Language being resolved for this email
 		 * @var	string	template_dir_prefix	Template subdirectory prefix
 		 * @var	array	template_paths			Filesystem paths searched for the template file
-		 * @since 4.0.0-a3
+		 * @since 4.0.0-b1
 		 */
 		$vars = ['template_lang', 'template_dir_prefix', 'template_paths'];
 		extract($this->dispatcher->trigger_event('core.messenger_template_paths', compact($vars)));
