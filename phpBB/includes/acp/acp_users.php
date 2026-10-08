@@ -179,9 +179,10 @@ class acp_users
 
 				$user->add_lang('acp/ban');
 
-				$delete			= $request->variable('delete', 0);
-				$delete_type	= $request->variable('delete_type', '');
-				$ip				= $request->variable('ip', 'ip');
+				$delete					= $request->variable('delete', 0);
+				$delete_type			= $request->variable('delete_type', '');
+				$ip						= $request->variable('ip', 'ip');
+				$rename_username		= $request->variable('rename_username', 1);
 
 				/**
 				 * Run code at beginning of ACP users overview
@@ -229,7 +230,7 @@ class acp_users
 						{
 							if (confirm_box(true))
 							{
-								user_delete($delete_type, $user_id, $user_row['username']);
+								user_delete($delete_type, $user_id, $user_row['username'], $rename_username);
 
 								$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_USER_DELETED', false, array($user_row['username']));
 								trigger_error($user->lang['USER_DELETED'] . adm_back_link(
