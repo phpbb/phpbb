@@ -1303,7 +1303,7 @@ mcp_warn_post_rank_after
 ===
 * Locations:
     + styles/prosilver/template/mcp_warn_post.html
-* Since: 3.3.19-RC1
+* Since: 3.3.20-RC1
 * Purpose: Add data after the rank title/image in the MCP warn-post user summary
 
 mcp_warn_user_add_warning_field_after
