@@ -33,6 +33,12 @@ class helper
 	/** @var service_collection */
 	protected $adapter_collection;
 
+	/** @var array */
+	protected $current_adapters = [];
+
+	/** @var array */
+	protected $new_adapters = [];
+
 	/**
 	 * Constructor
 	 *
@@ -97,14 +103,12 @@ class helper
 	 */
 	public function get_current_adapter(string $storage_name): object
 	{
-		static $adapters = [];
-
-		if (!isset($adapters[$storage_name]))
+		if (!isset($this->current_adapters[$storage_name]))
 		{
-			$adapters[$storage_name] = $this->adapter_factory->get($storage_name);
+			$this->current_adapters[$storage_name] = $this->adapter_factory->get($storage_name);
 		}
 
-		return $adapters[$storage_name];
+		return $this->current_adapters[$storage_name];
 	}
 
 	/**
@@ -116,9 +120,7 @@ class helper
 	 */
 	public function get_new_adapter(string $storage_name): mixed
 	{
-		static $adapters = [];
-
-		if (!isset($adapters[$storage_name]))
+		if (!isset($this->new_adapters[$storage_name]))
 		{
 			$provider_class = $this->state_helper->new_provider($storage_name);
 			$definitions = array_keys($this->get_provider_options($provider_class));
@@ -129,10 +131,30 @@ class helper
 				$options[$definition] = $this->state_helper->new_definition_value($storage_name, $definition);
 			}
 
-			$adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $provider_class, $options);
+			$this->new_adapters[$storage_name] = $this->adapter_factory->get_with_options($storage_name, $provider_class, $options);
 		}
 
-		return $adapters[$storage_name];
+		return $this->new_adapters[$storage_name];
+	}
+
+	/**
+	 * Reset cached adapter instances
+	 *
+	 * @param string|null $storage_name Specific storage name or null to reset all
+	 *
+	 * @return void
+	 */
+	public function reset_adapters(string|null $storage_name = null): void
+	{
+		if ($storage_name === null)
+		{
+			$this->current_adapters = [];
+			$this->new_adapters = [];
+		}
+		else
+		{
+			unset($this->current_adapters[$storage_name], $this->new_adapters[$storage_name]);
+		}
 	}
 
 	/**
@@ -151,6 +173,8 @@ class helper
 		{
 			$this->config->delete('storage\\' . $storage_name . '\\config\\' . $definition);
 		}
+
+		$this->reset_adapters($storage_name);
 	}
 
 	/**
@@ -230,6 +254,8 @@ class helper
 			$new_definition_value = $this->state_helper->new_definition_value($storage_name, $definition);
 			$this->set_storage_definition($storage_name, $definition, $new_definition_value);
 		}
+
+		$this->reset_adapters($storage_name);
 	}
 
 }
