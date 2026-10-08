@@ -1317,7 +1317,7 @@ mcp_warn_user_rank_after
 ===
 * Locations:
     + styles/prosilver/template/mcp_warn_user.html
-* Since: 3.3.19-RC1
+* Since: 3.3.20-RC1
 * Purpose: Add data after the rank title/image in the MCP warn-user user summary
 
 memberlist_body_group_desc_after

@@ -500,7 +500,7 @@ class mcp_warn
 		* @var	array	user_row		The entire user row
 		* @var	array	user_rank_data	Array with rank title/img for this user
 		* @var	string	avatar_img		Rendered avatar HTML for this user
-		* @since 3.3.19-RC1
+		* @since 3.3.20-RC1
 		*/
 		$vars = array('user_row', 'user_rank_data', 'avatar_img');
 		extract($phpbb_dispatcher->trigger_event('core.mcp_warn_user_modify_template_vars', compact($vars)));
