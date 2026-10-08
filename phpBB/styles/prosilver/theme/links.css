@@ -113,6 +113,13 @@ a.lastsubject:hover {
 	text-decoration: none;
 }
 
+.postlink[href$=".pdf"]::after {
+	content: '\f1c1';
+	font-family: 'FontAwesome';
+	font-size: 13px;
+	padding: 0 3px;
+}
+
 .signature a, .signature a:hover {
 	border: none;
 	text-decoration: underline;
