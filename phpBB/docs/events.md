@@ -1156,7 +1156,7 @@ mcp_notes_user_rank_after
 ===
 * Locations:
     + styles/prosilver/template/mcp_notes_user.html
-* Since: 3.3.19-RC1
+* Since: 3.3.20-RC1
 * Purpose: Add data after the rank title/image in the MCP user-notes user summary
 
 mcp_post_additional_options
