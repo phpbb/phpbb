@@ -11,6 +11,7 @@
 
 	<fieldset>
 		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
+	<!-- EVENT acp_search_general_settings_prepend -->
 	<dl>
 		<dt><label for="load_search">{L_YES_SEARCH}{L_COLON}</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -47,6 +48,7 @@
 		<dt><label for="search_store_results">{L_SEARCH_STORE_RESULTS}{L_COLON}</label><br /><span>{L_SEARCH_STORE_RESULTS_EXPLAIN}</span></dt>
 		<dd><input id="search_store_results" type="number" min="0" max="999999" name="config[search_store_results]" value="{SEARCH_STORE_RESULTS}" /> {L_SECONDS}</dd>
 	</dl>
+	<!-- EVENT acp_search_general_settings_append -->
 	</fieldset>
 
 	<fieldset>
@@ -65,6 +67,8 @@
 		</fieldset>
 
 	<!-- END backend -->
+
+	<!-- EVENT acp_search_custom_settings -->
 
 	<fieldset>
 		<legend>{L_ACP_SUBMIT_CHANGES}</legend>
