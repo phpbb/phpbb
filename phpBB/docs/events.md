@@ -614,6 +614,27 @@ acp_ranks_list_header_before
 * Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
+acp_search_custom_settings
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add its own box (fieldset) for extension settings to the search settings in the ACP
+
+acp_search_general_settings_append
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add settings at the end of the general search settings section in the ACP
+
+acp_search_general_settings_prepend
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add settings before the general search settings section in the ACP
+
 acp_simple_footer_after
 ===
 * Location: adm/style/simple_footer.html
