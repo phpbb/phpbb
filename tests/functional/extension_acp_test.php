@@ -120,6 +120,13 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertStringNotContainsString('barfoo', $crawler->filter('.table1')->text());
 
 		$this->assertStringNotContainsString('vendor3/bar', $crawler->filter('.table1')->text());
+
+		// Action tooltips are rendered as title attributes and must not
+		// contain HTML, as it would be displayed literally. See PHPBB-16957.
+		foreach ($crawler->filter('a[title]') as $link)
+		{
+			$this->assertStringNotContainsString('<', $link->getAttribute('title'));
+		}
 	}
 
 	public function test_details()
@@ -266,6 +273,11 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('BROWSE_EXTENSIONS_DATABASE', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(0)->text());
 		$this->assertContainsLang('SETTINGS', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(1)->text());
 
+		// The alpha-phase warning is rendered by the template, separately
+		// from the HTML-free explanation. See PHPBB-16957.
+		$this->assertContainsLang('EXTENSIONS_CATALOG_EXPLAIN', $this->get_content());
+		$this->assertContainsLang('EXTENSIONS_CATALOG_WARNING', $this->get_content());
+
 		$form = $crawler->selectButton('Submit')->form();
 		$form['minimum_stability']->select('dev');
 		$form['repositories'] = 'https://satis.phpbb.com/';
@@ -337,6 +349,19 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		// Ensure installed extension appears in available extensions list
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
 		$this->assertStringContainsString('VigLink', $crawler->filter('strong[title="phpbb/viglink"]')->text());
+
+		// The composer-managed extension row offers the remove action; its
+		// tooltip carries the HTML-free explanation. See PHPBB-16957.
+		$viglink_row = $crawler->filter('tr')->reduce(
+			function ($node, $i)
+			{
+				return strpos($node->text(), 'VigLink') !== false;
+			}
+		);
+		$this->assertSame(
+			$this->lang('EXTENSION_REMOVE_EXPLAIN'),
+			$viglink_row->selectLink($this->lang('EXTENSION_REMOVE'))->attr('title')
+		);
 	}
 
 	public function test_extensions_catalog_updating_extension()
@@ -356,12 +381,18 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Update 'VigLink' enabled extension
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$viglink_update_link = $crawler->filter('tr')->reduce(
+		$viglink_update_node = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
 				return (bool) (strpos($node->text(), 'VigLink') !== false);
 			}
-		)->selectLink($this->lang('EXTENSION_UPDATE'))->link();
+		)->selectLink($this->lang('EXTENSION_UPDATE'));
+
+		// The update tooltip of the composer-managed extension carries the
+		// HTML-free explanation. See PHPBB-16957.
+		$this->assertSame($this->lang('EXTENSION_UPDATE_EXPLAIN'), $viglink_update_node->attr('title'));
+
+		$viglink_update_link = $viglink_update_node->link();
 		$crawler = self::$client->click($viglink_update_link);
 		$this->assertContainsLang('EXTENSIONS_UPDATED', $crawler->filter('.successbox > p')->text());
 		// Assert there's console log output
