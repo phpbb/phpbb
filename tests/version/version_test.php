@@ -1071,6 +1071,36 @@ class phpbb_version_helper_test extends phpbb_test_case
 				),
 				array(),
 			),
+			// Version data without eol and security keys
+			array(
+				'3.3.0',
+				'1.0.0',
+				array(
+					'3.3'	=> array(
+						'current'		=> '1.0.1',
+					),
+				),
+				array(
+					'current'		=> '1.0.1',
+				),
+			),
+			// Version data with null eol and security
+			array(
+				'3.3.0',
+				'1.0.0',
+				array(
+					'3.3'	=> array(
+						'current'		=> '1.0.1',
+						'eol'		=> null,
+						'security'	=> null,
+					),
+				),
+				array(
+					'current'		=> '1.0.1',
+					'eol'		=> null,
+					'security'	=> null,
+				),
+			),
 		);
 	}
 

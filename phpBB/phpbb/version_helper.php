@@ -336,7 +336,7 @@ class version_helper
 		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
 			if ($value === null && $self->compare($data['current'], $current_version, '>='))
 			{
-				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				if (empty($data['eol']) && (empty($data['security']) || $self->compare($data['security'], $data['current'], '<=')))
 				{
 					return $self->compare($data['current'], $current_version, '>') ? $data : array();
 				}
@@ -491,7 +491,7 @@ class version_helper
 					$version_data = array();
 					foreach ($this->version_schema[$stability_type] as $key => $value)
 					{
-						if (isset($old_version_data[$key]))
+						if (array_key_exists($key, $old_version_data))
 						{
 							$version_data[$key] = $old_version_data[$key];
 						}
@@ -533,8 +533,11 @@ class version_helper
 							throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
 					}
 				}
+				unset($value);
 			}
+			unset($version_data);
 		}
+		unset($versions_data);
 
 		return $versions_info;
 	}
