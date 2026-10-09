@@ -100,6 +100,8 @@ class db extends base
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
+		$user_login_attempts = (is_array($row) && $this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']);
+
 		if (($this->user->ip && !$this->config['ip_login_limit_use_forwarded']) ||
 			($this->user->forwarded_for && $this->config['ip_login_limit_use_forwarded']))
 		{
@@ -119,6 +121,25 @@ class db extends base
 			$attempts = (int) $this->db->sql_fetchfield('attempts');
 			$this->db->sql_freeresult($result);
 
+			$ip_login_attempts = ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
+
+			// Check the login cooldown before recording the current attempt,
+			// so attempts rejected by the cooldown do not extend it.
+			if (($user_login_attempts || $ip_login_attempts) && (int) $this->config['login_cooldown_min'])
+			{
+				$cooldown_time = $this->get_login_cooldown_remaining($row, $username_clean, $attempts);
+
+				if ($cooldown_time > 0)
+				{
+					return array(
+						'status'		=> LOGIN_ERROR_COOLDOWN,
+						'error_msg'		=> 'LOGIN_ERROR_COOLDOWN',
+						'user_row'		=> (is_array($row)) ? $row : array('user_id' => ANONYMOUS),
+						'cooldown_time'	=> $cooldown_time,
+					);
+				}
+			}
+
 			$attempt_data = array(
 				'attempt_ip'			=> $this->user->ip,
 				'attempt_browser'		=> trim(substr($this->user->browser, 0, 149)),
@@ -134,12 +155,10 @@ class db extends base
 		else
 		{
 			$attempts = 0;
+			$ip_login_attempts = false;
 		}
 
 		$login_error_attempts = 'LOGIN_ERROR_ATTEMPTS';
-
-		$user_login_attempts	= (is_array($row) && $this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts']);
-		$ip_login_attempts		= ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max']);
 
 		$show_captcha = $user_login_attempts || $ip_login_attempts;
 
@@ -253,5 +272,73 @@ class db extends base
 			'error_msg'		=> 'LOGIN_ERROR_PASSWORD',
 			'user_row'		=> $row,
 		);
+	}
+
+	/**
+	 * Get the remaining login cooldown time in seconds for the current attempt.
+	 *
+	 * The cooldown is keyed to the source of the failed attempts: exceeding
+	 * the per-IP threshold enforces a cooldown for the IP, while exceeding
+	 * the per-user threshold enforces it for the username and IP combination
+	 * only, so failed attempts by a third party do not lock the account owner
+	 * out. The cooldown length starts at login_cooldown_min seconds and grows
+	 * by the same amount for every further failed attempt beyond the
+	 * threshold, capped at login_cooldown_max seconds.
+	 *
+	 * @param array|false $row User row of the attempted username, false if the username does not exist
+	 * @param string $username_clean Clean version of the attempted username
+	 * @param int $attempts Number of recorded login attempts from the current IP
+	 * @return int Remaining cooldown time in seconds, 0 if no cooldown applies
+	 */
+	protected function get_login_cooldown_remaining($row, $username_clean, $attempts)
+	{
+		$cooldown_min = (int) $this->config['login_cooldown_min'];
+		$cooldown_max = max($cooldown_min, (int) $this->config['login_cooldown_max']);
+
+		if ($this->config['ip_login_limit_use_forwarded'])
+		{
+			$sql_ip_where = "attempt_forwarded_for = '" . $this->db->sql_escape($this->user->forwarded_for) . "'";
+		}
+		else
+		{
+			$sql_ip_where = "attempt_ip = '" . $this->db->sql_escape($this->user->ip) . "'";
+		}
+
+		$cooldown_end = 0;
+
+		if (is_array($row) && $this->config['max_login_attempts'] && $row['user_login_attempts'] >= $this->config['max_login_attempts'])
+		{
+			$sql = 'SELECT MAX(attempt_time) AS last_attempt
+				FROM ' . LOGIN_ATTEMPT_TABLE . "
+				WHERE username_clean = '" . $this->db->sql_escape($username_clean) . "'
+					AND $sql_ip_where";
+			$result = $this->db->sql_query($sql);
+			$last_attempt = (int) $this->db->sql_fetchfield('last_attempt');
+			$this->db->sql_freeresult($result);
+
+			if ($last_attempt)
+			{
+				$excess = (int) $row['user_login_attempts'] - (int) $this->config['max_login_attempts'];
+				$cooldown_end = $last_attempt + min($cooldown_max, $cooldown_min * ($excess + 1));
+			}
+		}
+
+		if ($this->config['ip_login_limit_max'] && $attempts >= $this->config['ip_login_limit_max'])
+		{
+			$sql = 'SELECT MAX(attempt_time) AS last_attempt
+				FROM ' . LOGIN_ATTEMPT_TABLE . "
+				WHERE $sql_ip_where";
+			$result = $this->db->sql_query($sql);
+			$last_attempt = (int) $this->db->sql_fetchfield('last_attempt');
+			$this->db->sql_freeresult($result);
+
+			if ($last_attempt)
+			{
+				$excess = $attempts - (int) $this->config['ip_login_limit_max'];
+				$cooldown_end = max($cooldown_end, $last_attempt + min($cooldown_max, $cooldown_min * ($excess + 1)));
+			}
+		}
+
+		return max(0, $cooldown_end - time());
 	}
 }
