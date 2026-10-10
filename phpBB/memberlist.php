@@ -775,14 +775,26 @@ switch ($mode)
 		}
 
 		// Check if the user account of the shown profile is banned
-		$sql = 'SELECT ban_userid
-			FROM ' . BANLIST_TABLE . '
-			WHERE ban_userid = ' . (int) $user_id . '
-			AND ban_exclude = 0
-			AND (ban_end = 0 OR ban_end >= ' . time() . ')';
-		$result = $db->sql_query_limit($sql, 1);
-		$user_banned = (bool) $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$user_banned = false;
+		if ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'])
+		{
+			$sql = 'SELECT ban_exclude
+				FROM ' . BANLIST_TABLE . '
+				WHERE ban_userid = ' . (int) $user_id . '
+					AND (ban_end = 0 OR ban_end >= ' . time() . ')';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!empty($row['ban_exclude']))
+				{
+					$user_banned = false;
+					break;
+				}
+
+				$user_banned = true;
+			}
+			$db->sql_freeresult($result);
+		}
 
 		// Define the main array of vars to assign to memberlist_view.html
 		$template_ary = array(
@@ -799,14 +811,14 @@ switch ($mode)
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
-			'USER_BANNED'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'] && $user_banned == true) ? $user->lang('USER_BANNED') : '',
+			'S_USER_BANNED'				=> $user_banned,
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'			=> $group_options,
 			'S_CUSTOM_FIELDS'			=> (isset($profile_fields['row']) && count($profile_fields['row'])) ? true : false,
 
 			'U_USER_ADMIN'				=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
-			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'] && $user_banned == false) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_BAN'				=> ($auth->acl_get('m_ban') && $user_id != $user->data['user_id']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_MCP_QUEUE'				=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
 			'U_SWITCH_PERMISSIONS'		=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}&amp;hash=" . generate_link_hash('switchperm')) : '',
