@@ -106,7 +106,7 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$auth->acl($user_data);
 		$this->assertEquals(1, $auth->acl_get($permission));
 
-		// Set u_hideonline to never
+		// Set the permission to never
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		// initially it should be a yes
 		$values = $form->getValues();
@@ -123,6 +123,13 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$user_data = $auth->obtain_user_data(2);
 		$auth->acl($user_data);
 		$this->assertEquals(0, $auth->acl_get($permission));
+
+		// Set it back to yes, so later tests and the board are not affected
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&{$object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
+		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
+		$form->setValues(array("setting[$object_id][0][$permission]" => '1'));
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($this->lang('AUTH_UPDATED'), $crawler->text());
 	}
 
 	public function test_forum_permissions_misc()
