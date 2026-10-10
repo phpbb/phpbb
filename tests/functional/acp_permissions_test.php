@@ -106,16 +106,6 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$auth->acl($user_data);
 		$this->assertEquals(1, $auth->acl_get($permission));
 
-		// Back up the global permissions of the user/group, restored at the end
-		$table = self::$config['table_prefix'] . ($object_name == 'user_id' ? 'acl_users' : 'acl_groups');
-		$sql = "SELECT *
-			FROM $table
-			WHERE $object_name = $object_id
-				AND forum_id = 0";
-		$result = $db->sql_query($sql);
-		$backup = $db->sql_fetchrowset($result);
-		$db->sql_freeresult($result);
-
 		// Set the permission to never
 		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
 		// initially it should be a yes
@@ -134,15 +124,12 @@ class phpbb_functional_acp_permissions_test extends phpbb_functional_test_case
 		$auth->acl($user_data);
 		$this->assertEquals(0, $auth->acl_get($permission));
 
-		// Restore the permissions and clear the cached ones
-		$sql = "DELETE FROM $table
-			WHERE $object_name = $object_id
-				AND forum_id = 0";
-		$db->sql_query($sql);
-		$db->sql_multi_insert($table, $backup);
-
-		$sql = 'UPDATE ' . self::$config['table_prefix'] . "users SET user_permissions = ''";
-		$db->sql_query($sql);
+		// Set it back to yes, so later tests and the board are not affected
+		$crawler = self::request('GET', "adm/index.php?i=acp_permissions&icat=16&mode=$mode&{$object_name}[0]=$object_id&type=$permission_type&sid=" . $this->sid);
+		$form = $crawler->selectButton($this->lang('APPLY_PERMISSIONS'))->form();
+		$form->setValues(array("setting[$object_id][0][$permission]" => '1'));
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($this->lang('AUTH_UPDATED'), $crawler->text());
 	}
 
 	public function test_forum_permissions_misc()
