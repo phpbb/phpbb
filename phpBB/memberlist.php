@@ -774,6 +774,28 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
+		// Check if the user account of the shown profile is banned
+		$user_banned = false;
+		if ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'])
+		{
+			$sql = 'SELECT ban_exclude
+				FROM ' . BANLIST_TABLE . '
+				WHERE ban_userid = ' . (int) $user_id . '
+					AND (ban_end = 0 OR ban_end >= ' . time() . ')';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!empty($row['ban_exclude']))
+				{
+					$user_banned = false;
+					break;
+				}
+
+				$user_banned = true;
+			}
+			$db->sql_freeresult($result);
+		}
+
 		// Define the main array of vars to assign to memberlist_view.html
 		$template_ary = array(
 			'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
@@ -789,6 +811,7 @@ switch ($mode)
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
+			'S_USER_BANNED'				=> $user_banned,
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'			=> $group_options,
