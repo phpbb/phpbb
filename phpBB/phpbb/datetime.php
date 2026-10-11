@@ -68,6 +68,13 @@ class datetime extends \DateTime
 		}
 
 		$format		= self::format_cache($format, $this->user);
+
+		// Use the format variants with translated am/pm literals if the language provides them
+		if ($format['meridiem'] !== null)
+		{
+			$format = array_merge($format, $format['meridiem'][parent::format('a')]);
+		}
+
 		$relative	= ($format['is_short'] && !$force_absolute);
 		$now		= new self($this->user, 'now', $this->user->timezone);
 
@@ -161,6 +168,7 @@ class datetime extends \DateTime
 				'format_short'	=> substr($format, 0, strpos($format, self::RELATIVE_WRAPPER)) . self::RELATIVE_WRAPPER . self::RELATIVE_WRAPPER . substr(strrchr($format, self::RELATIVE_WRAPPER), 1),
 				'format_long'	=> str_replace(self::RELATIVE_WRAPPER, '', $format),
 				'lang'			=> array_filter($user->lang['datetime'], 'is_string'),
+				'meridiem'		=> null,
 			);
 
 			// Short representation of month in format? Some languages use different terms for the long and short format of May
@@ -168,8 +176,66 @@ class datetime extends \DateTime
 			{
 				self::$format_cache[$lang][$format]['lang']['May'] = $user->lang['datetime']['May_short'];
 			}
+
+			// Ante/post meridiem in format? Prepare format variants with the translated am/pm as escaped literals
+			if (isset($user->lang['datetime']['MERIDIEM']) && is_array($user->lang['datetime']['MERIDIEM']))
+			{
+				$meridiem = array();
+				foreach (array('am', 'pm') as $key)
+				{
+					$meridiem[$key] = array(
+						'format_short'	=> self::localise_meridiem(self::$format_cache[$lang][$format]['format_short'], $key, $user->lang['datetime']['MERIDIEM']),
+						'format_long'	=> self::localise_meridiem(self::$format_cache[$lang][$format]['format_long'], $key, $user->lang['datetime']['MERIDIEM']),
+					);
+				}
+
+				// Only keep the variants if they differ from the original format, e.g. not for English
+				if ($meridiem['am']['format_long'] !== self::$format_cache[$lang][$format]['format_long'] || $meridiem['pm']['format_long'] !== self::$format_cache[$lang][$format]['format_long'])
+				{
+					self::$format_cache[$lang][$format]['meridiem'] = $meridiem;
+				}
+			}
 		}
 
 		return self::$format_cache[$lang][$format];
+	}
+
+	/**
+	* Replaces the unescaped am/pm format characters (a and A) with the escaped translation
+	*
+	* @param string $format Date format
+	* @param string $meridiem Either 'am' or 'pm'
+	* @param array $translations Translations of am, pm, AM and PM
+	* @return string Date format with translated am/pm literals
+	*/
+	static protected function localise_meridiem($format, $meridiem, array $translations)
+	{
+		$localised = '';
+		$length = strlen($format);
+
+		for ($i = 0; $i < $length; $i++)
+		{
+			$char = $format[$i];
+
+			if ($char === '\\')
+			{
+				// Escaped character, keep it together with its backslash
+				$localised .= substr($format, $i, 2);
+				$i++;
+				continue;
+			}
+
+			$key = ($char === 'A') ? strtoupper($meridiem) : $meridiem;
+			if (($char === 'a' || $char === 'A') && isset($translations[$key]) && $translations[$key] !== $key)
+			{
+				// Escape all ASCII characters so they are not interpreted as format characters
+				$localised .= preg_replace('/[\x00-\x7F]/', '\\\\$0', $translations[$key]);
+				continue;
+			}
+
+			$localised .= $char;
+		}
+
+		return $localised;
 	}
 }
