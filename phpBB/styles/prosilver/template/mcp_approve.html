@@ -18,6 +18,8 @@
 		</label>
 	<!-- ENDIF -->
 
+	{% EVENT mcp_approve_ajax_reason_after %}
+
 	<fieldset class="submit-buttons">
 		<input type="button" name="confirm" value="{YES_VALUE}" class="button1" />&nbsp;
 		<input type="button" name="cancel" value="{L_NO}" class="button2" />
@@ -58,6 +60,8 @@
 				<dd><textarea class="inputbox" name="reason" id="reason" rows="4" cols="40">{REASON}</textarea></dd>
 			</dl>
 		<!-- ENDIF -->
+
+		{% EVENT mcp_approve_reason_after %}
 
 		<dl class="fields2 nobg">
 			<dt>&nbsp;</dt>
