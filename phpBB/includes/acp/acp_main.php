@@ -749,7 +749,7 @@ class acp_main
 	*
 	* @return bool True if the setting results in UTF-8, false otherwise
 	*/
-	protected function is_effectively_utf8($value)
+	protected function is_effectively_utf8(?string $value): bool
 	{
 		$value = trim((string) $value);
 
