@@ -723,8 +723,8 @@ class acp_main
 				'S_MBSTRING_LOADED'						=> true,
 				'S_MBSTRING_FUNC_OVERLOAD_FAIL'			=> $func_overload && ($func_overload & (MB_OVERLOAD_MAIL | MB_OVERLOAD_STRING)),
 				'S_MBSTRING_ENCODING_TRANSLATION_FAIL'	=> $encoding_translation && ($encoding_translation != 0),
-				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !empty($http_input),
-				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !empty($http_output),
+				'S_MBSTRING_HTTP_INPUT_FAIL'			=> !$this->is_effectively_utf8($http_input),
+				'S_MBSTRING_HTTP_OUTPUT_FAIL'			=> !$this->is_effectively_utf8($http_output),
 				'S_DEFAULT_CHARSET_FAIL'				=> $default_charset !== null && strtolower($default_charset) !== 'utf-8',
 			]);
 		}
@@ -737,5 +737,37 @@ class acp_main
 
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
+	}
+
+	/**
+	* Check whether an mbstring HTTP encoding setting results in UTF-8
+	*
+	* An empty value inherits default_charset, which is checked separately.
+	* Any other value is resolved through mbstring so aliases like "utf8" are accepted.
+	*
+	* @param string|null $value Value returned by IniGetWrapper::getString()
+	*
+	* @return bool True if the setting results in UTF-8, false otherwise
+	*/
+	protected function is_effectively_utf8(?string $value): bool
+	{
+		$value = trim((string) $value);
+
+		if ($value === '')
+		{
+			return true;
+		}
+
+		try
+		{
+			// PHP < 8 returns false with a warning, PHP >= 8 throws a ValueError
+			$name = @mb_preferred_mime_name($value);
+		}
+		catch (\ValueError $e)
+		{
+			return false;
+		}
+
+		return $name !== false && strtoupper($name) === 'UTF-8';
 	}
 }
