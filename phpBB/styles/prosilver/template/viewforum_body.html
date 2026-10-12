@@ -268,7 +268,7 @@
 					<span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} <!-- EVENT viewforum_body_last_post_author_username_prepend -->{topicrow.LAST_POST_AUTHOR_FULL}<!-- EVENT viewforum_body_last_post_author_username_append -->
 						<!-- IF not S_IS_BOT and topicrow.U_LAST_POST -->
 							<a href="{topicrow.U_LAST_POST}" title="{L_GOTO_LAST_POST}">
-								{{ Icon('font', 'arrow-up-right-from-square', VIEW_LATEST_POST, true, 'fas c-last-post-icon') }}
+								{{ Icon('font', 'arrow-up-right-from-square', lang('VIEW_LATEST_POST'), true, 'fas c-last-post-icon') }}
 							</a>
 						<!-- ENDIF -->
 						<br /><time datetime="{topicrow.LAST_POST_TIME_RFC3339}">{topicrow.LAST_POST_TIME}</time>
