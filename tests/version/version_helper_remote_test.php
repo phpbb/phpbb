@@ -207,6 +207,7 @@ class version_helper_remote_test extends \phpbb_test_case
 				'current' => '1.0.1',
 				'download'	=> 'https://www.phpbb.com/customise/db/download/104136',
 				'announcement'	=> 'https://www.phpbb.com/customise/db/extension/boardrules/',
+				'eol'		=> NULL,
 				'security'	=> false,
 			))), 'VERSIONCHECK_INVALID_ENTRY'),
 			array('{
@@ -221,8 +222,38 @@ class version_helper_remote_test extends \phpbb_test_case
         }
     }
 }', true, array('stable' => array(), 'unstable' => array('1.0' => array(
+				'eol'		=> NULL,
 				'security'	=> false,
 			))), 'VERSIONCHECK_INVALID_ENTRY'),
+			// Unknown key next to a null eol (live version.phpbb.com data since 3.3.19)
+			array('{
+    "stable": {
+        "3.3": {
+            "current": "3.3.19",
+            "announcement": "https://www.phpbb.com/community/viewtopic.php?t=2675305",
+            "eol": null,
+            "security": "3.3.19",
+            "urgent": "3.3.19"
+        }
+    }
+}', true, array(
+				'stable' => array(
+					'3.3' => array(
+						'current' => '3.3.19',
+						'announcement' => 'https://www.phpbb.com/community/viewtopic.php?t=2675305',
+						'eol' => NULL,
+						'security' => '3.3.19',
+					),
+				),
+				'unstable' => array(
+					'3.3' => array(
+						'current' => '3.3.19',
+						'announcement' => 'https://www.phpbb.com/community/viewtopic.php?t=2675305',
+						'eol' => NULL,
+						'security' => '3.3.19',
+					),
+				),
+			)),
 		);
 	}
 
