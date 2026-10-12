@@ -3124,12 +3124,33 @@ function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more
 	$db->sql_query($sql);
 }
 
+/**
+ * Get ban end text options
+ *
+ * @param \phpbb\language\language $language
+ * @return array
+ */
+function phpbb_get_ban_end_text(\phpbb\language\language $language): array
+{
+	return [
+		0		=> $language->lang('PERMANENT'),
+		30		=> $language->lang('30_MINS'),
+		60		=> $language->lang('1_HOUR'),
+		360		=> $language->lang('6_HOURS'),
+		1440	=> $language->lang('1_DAY'),
+		10080	=> $language->lang('7_DAYS'),
+		20160	=> $language->lang('2_WEEKS'),
+		40320	=> $language->lang('1_MONTH'),
+		-1		=> $language->lang('UNTIL') . ' -&gt; ',
+	];
+}
+
 function display_ban_end_options()
 {
-	global $user, $template;
+	global $language, $template;
 
 	// Ban length options
-	$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['UNTIL'] . ' -&gt; ');
+	$ban_end_text = phpbb_get_ban_end_text($language);
 
 	$ban_end_options = '';
 	foreach ($ban_end_text as $length => $text)
@@ -3154,6 +3175,7 @@ function display_ban_options($mode)
 	$ban_rows = $ban_manager->get_bans($mode);
 
 	$banned_options = [];
+	$ban_end_text = phpbb_get_ban_end_text($language);
 
 	foreach ($ban_rows as $ban_row)
 	{
