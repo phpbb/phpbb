@@ -1,2 +1,16 @@
 imports:
     - { resource: ../../default/container/services.yml }
+
+services:
+    storage.adapter.db:
+        class: phpbb\tests\functional\storage\db_adapter
+        shared: false
+        arguments:
+            - '@config_text'
+        tags:
+            - { name: storage.adapter }
+
+    storage.provider.db:
+        class: phpbb\tests\functional\storage\db_provider
+        tags:
+            - { name: storage.provider }
