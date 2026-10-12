@@ -397,22 +397,11 @@ switch ($mode)
 		$user_banned = false;
 		if ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'])
 		{
-			$sql = 'SELECT ban_exclude
-				FROM ' . BANLIST_TABLE . '
-				WHERE ban_userid = ' . (int) $user_id . '
-					AND (ban_end = 0 OR ban_end >= ' . time() . ')';
-			$result = $db->sql_query($sql);
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!empty($row['ban_exclude']))
-				{
-					$user_banned = false;
-					break;
-				}
+			/** @var \phpbb\ban\manager $ban_manager */
+			$ban_manager = $phpbb_container->get('ban.manager');
+			$ban_row = $ban_manager->check(['user_id' => $user_id]);
 
-				$user_banned = true;
-			}
-			$db->sql_freeresult($result);
+			$user_banned = !empty($ban_row);
 		}
 
 		// Define the main array of vars to assign to memberlist_view.html
