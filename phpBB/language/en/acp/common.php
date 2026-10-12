@@ -392,9 +392,9 @@ $lang = array_merge($lang, array(
 	'ERROR_MBSTRING_ENCODING_TRANSLATION'			=> 'Transparent character encoding is improperly configured',
 	'ERROR_MBSTRING_ENCODING_TRANSLATION_EXPLAIN'	=> '<var>mbstring.encoding_translation</var> must be set to 0. You can check the current value on the <samp>PHP information</samp> page.',
 	'ERROR_MBSTRING_HTTP_INPUT'						=> 'HTTP input character conversion is improperly configured',
-	'ERROR_MBSTRING_HTTP_INPUT_EXPLAIN'				=> '<var>mbstring.http_input</var> must be left empty. You can check the current value on the <samp>PHP information</samp> page.',
+	'ERROR_MBSTRING_HTTP_INPUT_EXPLAIN'				=> '<var>mbstring.http_input</var> must be left empty or set to <samp>UTF-8</samp>. You can check the current value on the <samp>PHP information</samp> page.',
 	'ERROR_MBSTRING_HTTP_OUTPUT'					=> 'HTTP output character conversion is improperly configured',
-	'ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN'			=> '<var>mbstring.http_output</var> must be left empty. You can check the current value on the <samp>PHP information</samp> page.',
+	'ERROR_MBSTRING_HTTP_OUTPUT_EXPLAIN'			=> '<var>mbstring.http_output</var> must be left empty or set to <samp>UTF-8</samp>. You can check the current value on the <samp>PHP information</samp> page.',
 	'ERROR_DEFAULT_CHARSET'							=> 'Default charset is improperly configured',
 	'ERROR_DEFAULT_CHARSET_EXPLAIN'					=> '<var>default_charset</var> must be set to <samp>UTF-8</samp>. You can check the current value on the <samp>PHP information</samp> page.',
 
