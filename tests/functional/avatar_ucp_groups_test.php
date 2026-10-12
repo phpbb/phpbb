@@ -17,9 +17,33 @@ require_once __DIR__ . '/common_avatar_test_case.php';
  */
 class phpbb_functional_avatar_ucp_groups_test extends phpbb_functional_common_avatar_test_case
 {
+	/** @var int Group id of the group used for testing */
+	protected $group_id;
+
 	public function get_url()
 	{
-		return 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=5';
+		return 'ucp.php?i=ucp_groups&mode=manage&action=edit&g=' . $this->group_id;
+	}
+
+	protected function setUp(): void
+	{
+		parent::setUp();
+
+		// Special groups can not be managed from the UCP, so use a normal
+		// group with the admin user as group leader
+		$this->group_id = $this->get_group_id('avatar-group');
+		if (!$this->group_id)
+		{
+			$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&sid=' . $this->sid);
+			$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+			$crawler = self::submit($form, ['group_name' => 'avatar-group']);
+
+			$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+			self::submit($form, ['group_name' => 'avatar-group']);
+
+			$this->group_id = $this->get_group_id('avatar-group');
+			$this->add_user_group('avatar-group', ['admin'], false, true);
+		}
 	}
 
 	public static function avatar_ucp_groups_data()
