@@ -76,20 +76,16 @@ abstract class base implements reparser_interface
 		}
 
 		// Those BBCodes are disabled based on context and user permissions and that value is never
-		// stored in the database. Here we test whether they were used in the original text.
-		$bbcodes = array('flash', 'img', 'quote', 'url');
-		foreach ($bbcodes as $bbcode)
-		{
-			$field_name = 'enable_' . $bbcode . '_bbcode';
-			$record[$field_name] = $this->guess_bbcode($record, $bbcode);
-		}
-
-		// Magic URLs are tied to the URL BBCode, that's why if magic URLs are enabled we make sure
-		// that the URL BBCode is also enabled
-		if ($record['enable_magic_url'])
-		{
-			$record['enable_url_bbcode'] = true;
-		}
+		// stored in the database. However, when a user attempts to post a message that contains an
+		// unauthorized BBCode, the message is rejected. Therefore, messages found in the database
+		// should not contain any unauthorized BBCodes, which means it should be safe to enable all
+		// of them in bulk if they are not explicitly disabled in the record.
+		$record += [
+			'enable_flash_bbcode' => true,
+			'enable_img_bbcode'   => true,
+			'enable_quote_bbcode' => true,
+			'enable_url_bbcode'   => true,
+		];
 
 		return $record;
 	}
