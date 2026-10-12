@@ -320,6 +320,54 @@ class phpbb_textformatter_s9e_default_formatting_test extends phpbb_test_case
 					$container->get('text_formatter.renderer')->set_viewsmilies(false);
 				}
 			),
+			array(
+				// PHPBB-17655 - Segments of IPv6 addresses should not be rendered as emoji
+				'IPv6: 2a09:bac3:616e:123c::1d1:f0',
+				'IPv6: 2a09:bac3:616e:123c::1d1:f0'
+			),
+			array(
+				'IPv6: 2607:fb90:ec1d:0e17:e0c6:af94:1224:28a8',
+				'IPv6: 2607:fb90:ec1d:0e17:e0c6:af94:1224:28a8'
+			),
+			array(
+				// Segments that match emoji shortnames such as :abcd:, :a: or :ab:
+				'IPv6: 2001:db8:abcd::1',
+				'IPv6: 2001:db8:abcd::1'
+			),
+			array(
+				'IPv6: fe80::a:b:c:1',
+				'IPv6: fe80::a:b:c:1'
+			),
+			array(
+				'IPv6: 2001:db8:1:ab:cd::1',
+				'IPv6: 2001:db8:1:ab:cd::1'
+			),
+			array(
+				'IPv6: 2001:DB8:100::bee',
+				'IPv6: 2001:DB8:100::bee'
+			),
+			array(
+				'URL: http://[2001:db8:100::bee]/',
+				'URL: http://[2001:db8:100::bee]/'
+			),
+			array(
+				// The same shortnames keep working outside of an address
+				'Shortnames: :100: :a: :abcd: :bee:',
+				'Shortnames: <img alt=":100:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f4af.svg"> <img alt=":a:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f170.svg"> <img alt=":abcd:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f521.svg"> <img alt=":bee:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f41d.svg">'
+			),
+			array(
+				// Raw codepoint shortcodes keep working outside of an address
+				'Codepoints: :264d: :1f600:',
+				'Codepoints: <img alt=":264d:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/264d.svg"> <img alt=":1f600:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f600.svg">'
+			),
+			array(
+				'Shortname: :joy:',
+				'Shortname: <img alt=":joy:" class="emoji smilies" draggable="false" src="//cdn.jsdelivr.net/gh/twitter/twemoji@latest/assets/svg/1f602.svg">'
+			),
+			array(
+				'Time: 12:34:56',
+				'Time: 12:34:56'
+			),
 		);
 	}
 }
