@@ -66,6 +66,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');
 
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
+		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
+		$phpbb_container->setParameter('tables.push_subscriptions', 'phpbb_push_subscriptions');
 	}
 
 	 public static function first_last_post_data()
@@ -417,6 +419,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 					SESSIONS_KEYS_TABLE,
 					PRIVMSGS_FOLDER_TABLE,
 					PRIVMSGS_RULES_TABLE,
+					'phpbb_notification_push',
+					'phpbb_push_subscriptions',
 				),
 			),
 			array(
@@ -436,6 +440,8 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 					SESSIONS_KEYS_TABLE,
 					PRIVMSGS_FOLDER_TABLE,
 					PRIVMSGS_RULES_TABLE,
+					'phpbb_notification_push',
+					'phpbb_push_subscriptions',
 				),
 			),
 		);
