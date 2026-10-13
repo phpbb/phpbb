@@ -1,0 +1,23 @@
+{% if CONFIRM_TYPE_REGISTRATION %}
+<div class="panel captcha-panel">
+	<div class="inner">
+		<h3 class="captcha-title">{{ lang('CONFIRMATION') }}</h3>
+		<fieldset class="fields2">
+{% endif %}
+{% if S_TURNSTILE_AVAILABLE %}
+			<noscript>
+				<div>{{ lang('CAPTCHA_TURNSTILE_NOSCRIPT') }}</div>
+			</noscript>
+
+			<script src="{{ U_TURNSTILE_SCRIPT }}" async defer></script>
+
+			{# The cf-turnstile class is used in JavaScript #}
+			<div class="cf-turnstile" data-language="{{ lang('TURNSTILE_LANG') }}" data-sitekey="{{ TURNSTILE_SITEKEY }}"{% if TURNSTILE_THEME %} data-theme="{{ TURNSTILE_THEME }}"{% endif %}></div>
+{% else %}
+	{{ lang('CAPTCHA_TURNSTILE_NOT_AVAILABLE') }}
+{% endif %}
+{% if CONFIRM_TYPE_REGISTRATION %}
+		</fieldset>
+	</div>
+</div>
+{% endif %}

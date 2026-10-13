@@ -1,0 +1,25 @@
+<!-- INCLUDE simple_header.html -->
+
+<script>
+	var form_name = opener.form_name;
+	var text_name = opener.text_name;
+</script>
+<!-- INCLUDEJS {T_ASSETS_PATH}/javascript/editor.js -->
+
+<h2>{L_SMILIES}</h2>
+<div class="panel">
+	<div class="inner">
+		<!-- BEGIN smiley -->
+			<a href="#" onclick="initInsertions(); insert_text('{smiley.A_SMILEY_CODE}', true, true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
+		<!-- END smiley -->
+
+	</div>
+</div>
+<!-- IF .pagination -->
+	<div class="pagination">
+		<!-- INCLUDE pagination.html -->
+	</div>
+<!-- ENDIF -->
+<a href="#" onclick="window.close(); return false;">{L_CLOSE_WINDOW}</a>
+
+<!-- INCLUDE simple_footer.html -->

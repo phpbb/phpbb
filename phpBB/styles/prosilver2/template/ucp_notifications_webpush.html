@@ -1,0 +1,21 @@
+<script>
+	phpbbWebpushOptions = {
+		serviceWorkerUrl: '{{ U_WEBPUSH_WORKER_URL }}',
+		subscribeUrl: '{{ U_WEBPUSH_SUBSCRIBE }}',
+		unsubscribeUrl: '{{ U_WEBPUSH_UNSUBSCRIBE }}',
+		ajaxErrorTitle: '{{ lang('AJAX_ERROR_TITLE') }}',
+		vapidPublicKey: '{{ VAPID_PUBLIC_KEY }}',
+		formTokens: {
+			creationTime: '{{ WEBPUSH_FORM_TOKENS.creation_time }}',
+			formToken: '{{ WEBPUSH_FORM_TOKENS.form_token }}',
+		},
+		subscriptions: [
+		{% for sub in SUBSCRIPTIONS %}
+			{endpoint: '{{ sub.endpoint }}', expiration: '{{ sub.expiration }}' },
+		{% endfor %}
+		],
+	}
+</script>
+
+{% INCLUDEJS(T_ASSETS_PATH ~ '/javascript/webpush.js') %}
+

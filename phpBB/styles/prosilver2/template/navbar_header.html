@@ -1,0 +1,263 @@
+<div class="navbar" role="navigation">
+	<div class="inner">
+
+		<ul id="nav-main" class="nav-main linklist" role="menubar">
+			<li id="quick-links" class="quick-links dropdown-container responsive-menu{% if not S_DISPLAY_QUICK_LINKS and not S_DISPLAY_SEARCH %} hidden{% endif %}">
+				<a href="#" class="dropdown-trigger">
+					{{ Icon('font', 'bars', lang('QUICK_LINKS'), false) }}
+				</a>
+				<div class="dropdown">
+					<div class="pointer"><div class="pointer-inner"></div></div>
+					<ul class="dropdown-contents" role="menu">
+						{% EVENT navbar_header_quick_links_before %}
+
+						{% if S_DISPLAY_SEARCH %}
+							<li class="separator"></li>
+							{% if S_REGISTERED_USER %}
+								<li>
+									<a href="{{ U_SEARCH_SELF }}" role="menuitem">
+										{{ Icon('font', 'file', lang('SEARCH_SELF'), false, 'far icon icon-gray') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if S_USER_LOGGED_IN %}
+								<li>
+									<a href="{{ U_SEARCH_NEW }}" role="menuitem">
+										{{ Icon('font', 'file', lang('SEARCH_NEW'), false, 'far icon icon-red') }}
+									</a>
+								</li>
+							{% endif %}
+							{% if S_LOAD_UNREADS %}
+								<li>
+									<a href="{{ U_SEARCH_UNREAD }}" role="menuitem">
+										{{ Icon('font', 'file', lang('SEARCH_UNREAD'), false, 'far icon icon-red') }}
+									</a>
+								</li>
+							{% endif %}
+							<li>
+								<a href="{{ U_SEARCH_UNANSWERED }}" role="menuitem">
+									{{ Icon('font', 'file', lang('SEARCH_UNANSWERED'), false, 'far icon icon-gray') }}
+								</a>
+							</li>
+							<li>
+								<a href="{{ U_SEARCH_ACTIVE_TOPICS }}" role="menuitem">
+									{{ Icon('font', 'file-lines', lang('SEARCH_ACTIVE_TOPICS'), false, 'far icon icon-blue') }}
+								</a>
+							</li>
+							<li class="separator"></li>
+							<li>
+								<a href="{{ U_SEARCH }}" role="menuitem">
+									{{ Icon('font', 'search', lang('SEARCH'), false) }}
+								</a>
+							</li>
+						{% endif %}
+
+						{% if not S_IS_BOT and (S_DISPLAY_MEMBERLIST or U_TEAM) %}
+							<li class="separator"></li>
+							{% if S_DISPLAY_MEMBERLIST %}
+								<li>
+									<a href="{{ U_MEMBERLIST }}" role="menuitem">
+										{{ Icon('font', 'users', lang('MEMBERLIST'), false) }}
+									</a>
+								</li>
+							{% endif %}
+							{% if U_TEAM %}
+								<li>
+									<a href="{{ U_TEAM }}" role="menuitem">
+										{{ Icon('font', 'shield-halved', lang('THE_TEAM'), false) }}
+									</a>
+								</li>
+							{% endif %}
+						{% endif %}
+
+						{% EVENT navbar_header_quick_links_after %}
+
+						<li class="separator in-menu"></li>
+						{% block nav_main_left_side %}
+							{% EVENT overall_header_navigation_prepend %}
+							<li class="in-menu">
+								<a href="{{ U_FAQ }}" rel="help" title="{{ lang('FAQ_EXPLAIN') }}" role="menuitem">
+									{{ Icon('font', 'question-circle', lang('FAQ'), false) }}
+								</a>
+							</li>
+							{% EVENT overall_header_navigation_append %}
+						{% endblock nav_main_left_side %}
+					</ul>
+				</div>
+			</li>
+
+			{{ block('nav_main_left_side', _self) }}
+			{% if U_ACP %}
+				<li>
+					<a href="{{ U_ACP }}" title="{{ lang('ACP') }}" role="menuitem">
+						{{ Icon('font', 'gears', lang('ACP_SHORT'), false) }}
+					</a>
+				</li>
+			{% endif %}
+			{% if U_MCP %}
+				<li>
+					<a href="{{ U_MCP }}" title="{{ lang('MCP') }}" role="menuitem">
+						{{ Icon('font', 'gavel', lang('MCP_SHORT'), false) }}
+					</a>
+				</li>
+			{% endif %}
+
+			{% if S_REGISTERED_USER %}
+
+				{% EVENT navbar_header_user_profile_prepend %}
+
+				<li id="username_logged_in" class="rightside {% if CURRENT_USER_AVATAR_HTML %} no-bulletin{% endif %}">
+
+					{% EVENT navbar_header_username_prepend %}
+
+					<div class="header-profile dropdown-container">
+						<a href="{{ U_PROFILE }}" class="header-avatar dropdown-trigger">
+							{% if CURRENT_USER_AVATAR_HTML %}{{ CURRENT_USER_AVATAR_HTML }} {% endif %}
+							{{ CURRENT_USERNAME_SIMPLE }}
+							{{ Icon('font', 'caret-down', '', true, '', {'style': 'color: #' ~ CURRENT_USER_GROUP_COLOR}) }}
+						</a>
+						<div class="dropdown">
+							<div class="pointer"><div class="pointer-inner"></div></div>
+							<ul class="dropdown-contents" role="menu">
+								{% if U_RESTORE_PERMISSIONS %}
+									<li>
+										<a href="{{ U_RESTORE_PERMISSIONS }}">
+											{{ Icon('font', 'rotate', lang('RESTORE_PERMISSIONS'), false) }}
+										</a>
+									</li>
+								{% endif %}
+
+								{% EVENT navbar_header_profile_list_before %}
+
+								<li>
+									<a href="{{ U_PROFILE }}" title="{{ lang('PROFILE') }}" role="menuitem">
+										{{ Icon('font', 'sliders', lang('PROFILE'), false) }}
+									</a>
+								</li>
+								{% if U_USER_PROFILE %}
+									<li>
+										<a href="{{ U_USER_PROFILE }}" title="{{ lang('READ_PROFILE') }}" role="menuitem">
+											{{ Icon('font', 'user', lang('READ_PROFILE'), false) }}
+										</a>
+									</li>
+								{% endif %}
+
+								{% EVENT navbar_header_profile_list_after %}
+
+								<li class="separator"></li>
+								<li>
+									<a href="{{ U_LOGIN_LOGOUT }}" title="{{ lang('LOGIN_LOGOUT') }}" accesskey="x" role="menuitem">
+										{{ Icon('font', 'power-off', lang('LOGIN_LOGOUT'), false) }}
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					{% EVENT navbar_header_username_append %}
+
+				</li>
+				{% if S_DISPLAY_PM %}
+					<li class="rightside">
+						<a href="{{ U_PRIVATEMSGS }}" role="menuitem">
+							{{ Icon('font', 'inbox', lang('PRIVATE_MESSAGES'), false) }}<strong class="badge{% if not PRIVATE_MESSAGE_COUNT %} hidden{% endif %}"> {PRIVATE_MESSAGE_COUNT}</strong>
+						</a>
+					</li>
+				{% endif %}
+
+				{% if S_NOTIFICATIONS_DISPLAY %}
+					<li class="dropdown-container dropdown-{S_CONTENT_FLOW_END} rightside">
+						<a href="{{ U_VIEW_ALL_NOTIFICATIONS }}" id="notification-button" class="dropdown-trigger">
+							{{ Icon('font', 'bell', lang('NOTIFICATIONS'), false) }}<strong class="badge{% if not NOTIFICATIONS_COUNT %} hidden{% endif %}">{NOTIFICATIONS_COUNT}</strong>
+						</a>
+
+						{% include 'notification_dropdown.html' %}
+
+					</li>
+				{% endif %}
+
+			{% EVENT navbar_header_user_profile_append %}
+
+			{% elseif not S_IS_BOT %}
+				<li class="rightside" >
+					<a href="{{ U_LOGIN_LOGOUT }}" title="{{ lang('LOGIN_LOGOUT') }}" accesskey="x" role="menuitem">
+						{{ Icon('font', 'power-off', lang('LOGIN_LOGOUT'), false) }}
+					</a>
+				</li>
+				{% if S_REGISTER_ENABLED and not (S_SHOW_COPPA or S_REGISTRATION) %}
+					<li class="rightside">
+						<a href="{{ U_REGISTER }}" role="menuitem">
+							{{ Icon('font', 'pen-to-square', lang('REGISTER'), false) }}
+						</a>
+					</li>
+				{% endif %}
+
+				{% EVENT navbar_header_logged_out_content %}
+
+			{% endif %}
+		</ul>
+
+		<ul id="nav-breadcrumbs" class="nav-breadcrumbs linklist navlinks" role="menubar">
+			{% set MICRODATA = 'itemtype="https://schema.org/ListItem" itemprop="itemListElement" itemscope' %}
+			{% set navlink_position = 1 %}
+
+			{% EVENT overall_header_breadcrumbs_before %}
+
+			<li class="breadcrumbs" itemscope itemtype="https://schema.org/BreadcrumbList">
+				{% if U_SITE_HOME %}
+					<span class="crumb" {{ MICRODATA }}>
+						{% apply spaceless %}
+						<a itemprop="item" href="{{ U_SITE_HOME }}" data-navbar-reference="home">
+							{{ Icon('font', 'home', '', true, 'fas o-icon-baseline') }}
+							<span itemprop="name">{{ L_SITE_HOME }}</span>
+						</a>
+						{% endapply %}
+						<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
+					</span>
+				{% endif %}
+
+				{% EVENT overall_header_breadcrumb_prepend %}
+
+				<span class="crumb" {{ MICRODATA }}>
+					{% apply spaceless %}
+					<a itemprop="item" href="{{ U_INDEX }}" accesskey="h" data-navbar-reference="index">
+						{% if not U_SITE_HOME %}{{ Icon('font', 'home', '', true, 'fas o-icon-baseline') }}{% endif %}
+						<span itemprop="name">{{ L_INDEX }}</span>
+					</a>
+					{% endapply %}
+					<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
+				</span>
+
+				{% for navlink in navlinks %}
+					{% set NAVLINK_NAME = navlink.BREADCRUMB_NAME | default(navlink.FORUM_NAME) %}
+					{% set NAVLINK_LINK = navlink.U_BREADCRUMB | default(navlink.U_VIEW_FORUM) %}
+
+					{% EVENT overall_header_navlink_prepend %}
+					<span class="crumb" {{ MICRODATA }}{% if navlink.MICRODATA %} {{ navlink.MICRODATA }}{% endif %}>
+						{% apply spaceless %}
+						<a itemprop="item" href="{{ NAVLINK_LINK }}">
+							<span itemprop="name">{{ NAVLINK_NAME }}</span>
+						</a>
+						{% endapply %}
+						<meta itemprop="position" content="{{ navlink_position }}{% set navlink_position = navlink_position + 1 %}">
+					</span>
+					{% EVENT overall_header_navlink_append %}
+				{% endfor %}
+
+				{% EVENT overall_header_breadcrumb_append %}
+
+			</li>
+
+			{% EVENT overall_header_breadcrumbs_after %}
+
+			{% if S_DISPLAY_SEARCH and not S_IN_SEARCH %}
+				<li class="rightside responsive-search">
+					<a href="{{ U_SEARCH }}" title="{{ lang('SEARCH_ADV_EXPLAIN') }}" role="menuitem">
+						{{ Icon('font', 'search', lang('SEARCH'), true) }}
+					</a>
+				</li>
+			{% endif %}
+		</ul>
+
+	</div>
+</div>

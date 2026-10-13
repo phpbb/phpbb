@@ -1,0 +1,70 @@
+<!-- INCLUDE mcp_header.html -->
+
+<form method="post" id="mcp" action="{U_POST_ACTION}">
+
+<h2>{L_WARNED_USERS}</h2>
+
+<div class="panel">
+	<div class="inner">
+
+	<p>{L_WARNED_USERS_EXPLAIN}</p>
+
+	<!-- IF .user -->
+		<div class="action-bar bar-top">
+			<div class="pagination">
+				{TOTAL_USERS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+		<table class="table1">
+		<thead>
+			<tr>
+				<th class="name">{L_USERNAME}</th>
+				<th class="name">{L_WARNINGS}</th>
+				<th class="name">{L_LATEST_WARNING_TIME}</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+
+		<!-- BEGIN user -->
+			<tr class="<!-- IF user.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+				<td>{user.USERNAME_FULL}</td>
+				<td>{user.WARNINGS}</td>
+				<td>{user.WARNING_TIME}</td>
+				<td><a href="{user.U_NOTES}">{L_VIEW_NOTES}</a></td>
+			</tr>
+		<!-- END user -->
+		</tbody>
+		</table>
+
+		<div class="action-bar bottom">
+			<!-- INCLUDE display_options.html -->
+
+			<div class="pagination">
+				{TOTAL_USERS}
+				<!-- IF .pagination -->
+					<!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		</div>
+
+	<!-- ELSE -->
+		<p><strong>{L_NO_WARNINGS}</strong></p>
+	<!-- ENDIF -->
+
+	</div>
+
+{S_FORM_TOKEN}
+</div>
+
+</form>
+
+<!-- INCLUDE mcp_footer.html -->
