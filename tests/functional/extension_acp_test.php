@@ -266,6 +266,14 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertContainsLang('BROWSE_EXTENSIONS_DATABASE', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(0)->text());
 		$this->assertContainsLang('SETTINGS', $crawler->filter('fieldset[class="quick quick-left"] > span > a')->eq(1)->text());
 
+		$restore_repositories = $crawler->filter('#restore_default_repositories');
+		$this->assertCount(1, $restore_repositories);
+		$this->assertSame($this->lang('RESTORE_DEFAULT_REPOSITORIES'), $restore_repositories->attr('value'));
+		$this->assertSame([
+			'https://satis.phpbb.com/',
+			'https://www.phpbb.com/customise/db/composer/40/',
+		], json_decode($restore_repositories->attr('data-default-repositories'), true));
+
 		$form = $crawler->selectButton('Submit')->form();
 		$form['minimum_stability']->select('dev');
 		$form['repositories'] = 'https://satis.phpbb.com/';
@@ -279,6 +287,44 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Ensure catalog has any records in extensions list
 		$this->assertGreaterThan(0, $crawler->filter('tbody > tr > td > strong')->count());
+	}
+
+	public function test_extensions_catalog_cancelling_install()
+	{
+		$this->mock_extensions_catalog_cache();
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&action=install&extension=phpbb%2Fviglink&sid=' . $this->sid);
+		$this->assertContainsLang('CONFIRM', $crawler->filter('form#confirm h1')->text());
+
+		$form = $crawler->selectButton($this->lang('NO'))->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('ACP_EXTENSIONS_CATALOG', $this->get_content());
+		$this->assertGreaterThan(0, $crawler->selectLink($this->lang('INSTALL'))->count());
+
+		// A cancelled action originating in the manager returns to the manager
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&action=install&origin=manager&extension=phpbb%2Fviglink&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('NO'))->form();
+		$crawler = self::submit($form);
+		$this->assertStringContainsString('mode=main', $crawler->getUri());
+		$this->assertGreaterThan(0, $crawler->filter('.ext_enabled')->count());
+
+		// Arbitrary return URLs are not accepted
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&action=install&origin=https%3A%2F%2Fexample.com&extension=phpbb%2Fviglink&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('NO'))->form();
+		$crawler = self::submit($form);
+		$this->assertStringContainsString('mode=catalog', $crawler->getUri());
+		$this->assertStringNotContainsString('example.com', $crawler->getUri());
+	}
+
+	public function test_extensions_catalog_rejects_package_outside_catalog()
+	{
+		$this->mock_extensions_catalog_cache();
+		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=catalog&action=install&extension=example%2Funtrusted&sid=' . $this->sid);
+
+		$form = $crawler->selectButton($this->lang('YES'))->form();
+		$crawler = self::submit($form);
+		$this->assertContainsLang('EXTENSIONS_ACTION_NOT_ALLOWED', $crawler->filter('.errorbox')->text());
+		$this->assertStringContainsString('mode=main', $crawler->selectLink($this->lang('RETURN_TO_EXTENSION_MANAGER'))->link()->getUri());
+		$this->assertStringContainsString('mode=catalog', $crawler->selectLink($this->lang('RETURN_TO_EXTENSION_CATALOG'))->link()->getUri());
 	}
 
 	public function test_extensions_catalog_installing_extension()
@@ -330,7 +376,17 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 
 		// Attempt to install phpbb/viglink extension
 		$crawler = self::$client->click($viglink_install_link);
+		$this->assertContainsLang('CONFIRM', $crawler->filter('form#confirm h1')->text());
+		$this->assertStringContainsString('phpbb/viglink', $crawler->filter('fieldset > p')->text());
+		$form = $crawler->selectButton($this->lang('YES'))->form();
+		$crawler = self::submit($form);
+		$this->assertGreaterThan(0, $crawler->filter('.successbox > p')->count(), $crawler->filter('body')->text());
 		$this->assertContainsLang('EXTENSIONS_INSTALLED', $crawler->filter('.successbox > p')->text());
+		$back_links = $crawler->filter('.successbox > p a');
+		$this->assertContainsLang('RETURN_TO_EXTENSION_CATALOG', $back_links->eq(0)->text());
+		$this->assertContainsLang('RETURN_TO_EXTENSION_MANAGER', $back_links->eq(1)->text());
+		$this->assertStringContainsString('mode=catalog', $back_links->eq(0)->link()->getUri());
+		$this->assertStringContainsString('mode=main', $back_links->eq(1)->link()->getUri());
 		// Assert there's console log output
 		$this->assertStringContainsString('Locking phpbb/viglink', $crawler->filter('.console-output > pre')->text());
 
@@ -339,7 +395,7 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$this->assertStringContainsString('VigLink', $crawler->filter('strong[title="phpbb/viglink"]')->text());
 	}
 
-	public function test_extensions_catalog_updating_extension()
+	public function test_extensions_catalog_hides_update_for_current_extension()
 	{
 		// Enable 'VigLink' extension installed earlier
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
@@ -354,22 +410,18 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSION_ENABLE_SUCCESS', $crawler->filter('.successbox')->text());
 
-		// Update 'VigLink' enabled extension
+		// The installed version is the current catalog version, so no update is offered
+		$this->mock_extensions_catalog_cache();
 		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$viglink_update_link = $crawler->filter('tr')->reduce(
+		$viglink_row = $crawler->filter('tr')->reduce(
 			function ($node, $i)
 			{
 				return (bool) (strpos($node->text(), 'VigLink') !== false);
 			}
-		)->selectLink($this->lang('EXTENSION_UPDATE'))->link();
-		$crawler = self::$client->click($viglink_update_link);
-		$this->assertContainsLang('EXTENSIONS_UPDATED', $crawler->filter('.successbox > p')->text());
-		// Assert there's console log output
-		$this->assertStringContainsString('Updating packages', $crawler->filter('.console-output > pre')->text());
+		);
 
-		// Ensure installed extension still appears in available extensions list
-		$crawler = self::request('GET', 'adm/index.php?i=acp_extensions&mode=main&sid=' . $this->sid);
-		$this->assertStringContainsString('VigLink', $crawler->filter('strong[title="phpbb/viglink"]')->text());
+		$this->assertCount(0, $viglink_row->selectLink($this->lang('EXTENSION_UPDATE')));
+		$this->assertCount(1, $viglink_row->selectLink($this->lang('EXTENSION_REMOVE')));
 	}
 
 	public function test_extensions_catalog_removing_extension()
@@ -387,7 +439,14 @@ class phpbb_functional_extension_acp_test extends phpbb_functional_test_case
 		// Test extensions removal
 		// Remove 'VigLink' enabled extension
 		$crawler = self::$client->click($viglink_remove_link);
+		$form = $crawler->selectButton($this->lang('YES'))->form();
+		$crawler = self::submit($form);
 		$this->assertContainsLang('EXTENSIONS_REMOVED', $crawler->filter('.successbox > p')->text());
+		$back_links = $crawler->filter('.successbox > p a');
+		$this->assertContainsLang('RETURN_TO_EXTENSION_MANAGER', $back_links->eq(0)->text());
+		$this->assertContainsLang('RETURN_TO_EXTENSION_CATALOG', $back_links->eq(1)->text());
+		$this->assertStringContainsString('mode=main', $back_links->eq(0)->link()->getUri());
+		$this->assertStringContainsString('mode=catalog', $back_links->eq(1)->link()->getUri());
 		// Assert there's console log output
 		$this->assertStringContainsString('Removing phpbb/viglink', $crawler->filter('.console-output > pre')->text());
 
