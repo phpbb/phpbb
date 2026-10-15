@@ -1,4 +1,4 @@
-/* global phpbb, plupload, attachInline */
+/* global phpbb, plupload, moxie, attachInline */
 
 plupload.addI18n(phpbb.plupload.i18n);
 phpbb.plupload.ids = [];
@@ -456,12 +456,579 @@ phpbb.plupload.fileError = function(file, error) {
 		});
 };
 
+/**
+ * Resize state
+ */
+phpbb.plupload.resize = {
+	settings: phpbb.plupload.config.phpbb_resize || null,
+	useNative: null,
+	callbacks: [],
+};
+
+/**
+ * Known tags
+ */
+const TIFF_IMAGE_WIDTH = 0x0100;
+const TIFF_IMAGE_LENGTH = 0x0101;
+const EXIF_ORIENTATION = 0x0112;
+const EXIF_IMAGE_WIDTH = 0xA002;
+const EXIF_IMAGE_HEIGHT = 0xA003;
+const EXIF_IFD_POINTER = 0x8769;
+
+/**
+ * JPEG markers
+ */
+const JPEG_MARKER_PREFIX = 0xFF00;
+const JPEG_SOI = 0xFFD8;
+const JPEG_SOS = 0xFFDA;
+const JPEG_APP0 = 0xFFE0;
+const JPEG_APP1 = 0xFFE1;
+
+/**
+ * EXIF segment layout
+ */
+const EXIF_SIGNATURE = 0x45786966; // "Exif"
+const EXIF_TIFF_OFFSET = 10; // Marker, length and "Exif\0\0"
+const EXIF_MIN_LENGTH = 16; // Length, "Exif\0\0" and TIFF header
+const TIFF_LITTLE_ENDIAN = 0x4949; // "II"
+const TIFF_BIG_ENDIAN = 0x4D4D; // "MM"
+const TIFF_TYPE_SHORT = 3;
+const TIFF_TYPE_LONG = 4;
+const TIFF_ENTRY_SIZE = 12;
+
+/**
+ * Bytes read to find the EXIF segment and JFIF segment
+ */
+const EXIF_READ_SIZE = 131072;
+const JFIF_READ_SIZE = 64;
+
+/**
+ * Canvas size limit of iOS Safari
+ */
+const MAX_CANVAS_PIXELS = 16777216;
+
+/**
+ * Time in ms to wait for the orientation probe
+ */
+const PROBE_TIMEOUT = 3000;
+
+/**
+ * 2x1 JPEG with orientation 6, loads as 1x2 in browsers applying EXIF orientation
+ */
+const ORIENTATION_PROBE_JPEG = 'data:image/jpeg;base64,/9j/4QAiRXhpZgAATU0AKgAAAAgAAQESAAMAAAABAAYAAAAAAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wAARCAABAAIDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAT/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AIgAf//Z';
+
+/**
+ * Detect whether phpBB or plupload should resize images
+ */
+phpbb.plupload.detectNativeResize = function() {
+	const resize = phpbb.plupload.resize;
+
+	let probeTimer;
+
+	const setUseNative = function(useNative) {
+		if (resize.useNative !== null) {
+			return;
+		}
+
+		clearTimeout(probeTimer);
+		resize.useNative = useNative;
+
+		if (!useNative) {
+			phpbb.plupload.uploader.setOption('resize', resize.settings);
+		}
+
+		const callbacks = resize.callbacks;
+		resize.callbacks = [];
+		for (let i = 0; i < callbacks.length; i++) {
+			callbacks[i]();
+		}
+	};
+
+	// Check if all requirements are met for native resize
+	if (typeof moxie === 'undefined' || !window.URL || !window.FileReader || !window.DataView ||
+		!window.HTMLCanvasElement || !HTMLCanvasElement.prototype.toBlob) {
+		setUseNative(false);
+		return;
+	}
+
+	// Check if browser applies EXIF orientation
+	const image = new Image();
+	image.onload = function() {
+		setUseNative(image.naturalWidth === 1);
+	};
+	image.onerror = function() {
+		setUseNative(false);
+	};
+	image.src = ORIENTATION_PROBE_JPEG;
+
+	// Don't keep uploads waiting if the probe never loads
+	probeTimer = setTimeout(function() {
+		setUseNative(false);
+	}, PROBE_TIMEOUT);
+};
+
+/**
+ * Resize added image files
+ *
+ * @param {Array} files
+ * @param {function} callback
+ */
+phpbb.plupload.resizeFiles = function(files, callback) {
+	const resize = phpbb.plupload.resize;
+
+	// Wait for detection to finish
+	if (resize.settings && resize.useNative === null) {
+		resize.callbacks.push(function() {
+			phpbb.plupload.resizeFiles(files, callback);
+		});
+		return;
+	}
+
+	if (!resize.settings || !resize.useNative) {
+		callback();
+		return;
+	}
+
+	let pending = files.length + 1;
+	const done = function() {
+		if (--pending === 0) {
+			callback();
+		}
+	};
+
+	$.each(files, function(i, file) {
+		phpbb.plupload.resizeFile(file, resize.settings, done);
+	});
+	done();
+};
+
+/**
+ * Resize image file if needed
+ *
+ * @param {object} file			plupload.File
+ * @param {object} settings
+ * @param {function} callback
+ */
+phpbb.plupload.resizeFile = function(file, settings, callback) {
+	let called = false;
+
+	const fileDone = function() {
+		if (!called) {
+			called = true;
+			callback();
+		}
+	};
+
+	// Upload the original file if the wrapped function throws
+	const uploadOriginalOnError = function(fn) {
+		return function() {
+			try {
+				fn.apply(this, arguments);
+			} catch (e) {
+				if (called) {
+					throw e;
+				}
+				fileDone();
+			}
+		};
+	};
+
+	uploadOriginalOnError(function() {
+		const nativeFile = file.getNative();
+		const isJpeg = file.type === 'image/jpeg';
+
+		if (!nativeFile || (!isJpeg && file.type !== 'image/png')) {
+			fileDone();
+			return;
+		}
+
+		phpbb.plupload.readExif(nativeFile, isJpeg, uploadOriginalOnError(function(exif) {
+			const url = URL.createObjectURL(nativeFile);
+			const image = new Image();
+
+			image.onload = uploadOriginalOnError(function() {
+				URL.revokeObjectURL(url);
+
+				// Natural size has EXIF orientation applied
+				const scale = Math.min(1, settings.width / image.naturalWidth, settings.height / image.naturalHeight);
+				const orientation = exif ? phpbb.plupload.getExifOrientation(exif) : 1;
+
+				// Always process rotated JPEGs and metadata to strip
+				if (scale === 1 && !(exif && (orientation > 1 || !settings.preserve_headers))) {
+					fileDone();
+					return;
+				}
+
+				const canvas = phpbb.plupload.drawScaled(image,
+					Math.max(1, Math.round(image.naturalWidth * scale)),
+					Math.max(1, Math.round(image.naturalHeight * scale)));
+				const width = canvas.width;
+				const height = canvas.height;
+
+				const useResized = uploadOriginalOnError(function(resized) {
+					// File might have been removed while resizing
+					if (phpbb.plupload.uploader.getFile(file.id)) {
+						phpbb.plupload.replaceSource(file, resized);
+					}
+					fileDone();
+				});
+
+				canvas.toBlob(uploadOriginalOnError(function(blob) {
+					phpbb.plupload.releaseCanvas(canvas);
+
+					if (!blob) {
+						fileDone();
+						return;
+					}
+
+					if (exif && settings.preserve_headers) {
+						phpbb.plupload.setExifTags(exif, {
+							[EXIF_ORIENTATION]: 1,
+							[TIFF_IMAGE_WIDTH]: width,
+							[TIFF_IMAGE_LENGTH]: height,
+							[EXIF_IMAGE_WIDTH]: width,
+							[EXIF_IMAGE_HEIGHT]: height,
+						});
+						phpbb.plupload.removeExifThumbnail(exif);
+						phpbb.plupload.insertExif(blob, exif, useResized);
+					} else {
+						useResized(blob);
+					}
+				}), file.type, settings.quality / 100);
+			});
+			image.onerror = function() {
+				URL.revokeObjectURL(url);
+				fileDone();
+			};
+			image.src = url;
+		}));
+	})();
+};
+
+/**
+ * Downscale image in halving steps, limited to MAX_CANVAS_PIXELS
+ *
+ * @param {HTMLImageElement} image
+ * @param {int} width
+ * @param {int} height
+ * @returns {HTMLCanvasElement}
+ */
+phpbb.plupload.drawScaled = function(image, width, height) {
+	let source = image;
+	let sourceWidth = image.naturalWidth;
+	let sourceHeight = image.naturalHeight;
+	let canvas;
+
+	do {
+		let stepWidth = Math.max(width, Math.round(sourceWidth / 2));
+		let stepHeight = Math.max(height, Math.round(sourceHeight / 2));
+
+		if (stepWidth * stepHeight > MAX_CANVAS_PIXELS) {
+			const limit = Math.sqrt(MAX_CANVAS_PIXELS / (stepWidth * stepHeight));
+			stepWidth = Math.floor(stepWidth * limit);
+			stepHeight = Math.floor(stepHeight * limit);
+		}
+
+		canvas = document.createElement('canvas');
+		canvas.width = stepWidth;
+		canvas.height = stepHeight;
+
+		const context = canvas.getContext('2d');
+		if (!context) {
+			throw new Error('Canvas context unavailable');
+		}
+
+		context.imageSmoothingEnabled = true;
+		context.imageSmoothingQuality = 'high';
+		context.drawImage(source, 0, 0, stepWidth, stepHeight);
+
+		if (source !== image) {
+			phpbb.plupload.releaseCanvas(source);
+		}
+
+		source = canvas;
+		sourceWidth = stepWidth;
+		sourceHeight = stepHeight;
+	} while (sourceWidth > width || sourceHeight > height);
+
+	return canvas;
+};
+
+/**
+ * Free canvas memory, Safari doesn't release it reliably
+ *
+ * @param {HTMLCanvasElement} canvas
+ */
+phpbb.plupload.releaseCanvas = function(canvas) {
+	canvas.width = 0;
+	canvas.height = 0;
+};
+
+/**
+ * Replace uploaded data of file.
+ *
+ * @param {object} file	plupload.File
+ * @param {Blob} blob
+ */
+phpbb.plupload.replaceSource = function(file, blob) {
+	const source = file.getSource();
+	const destroy = file.destroy;
+	let nativeFile;
+
+	if (!source) {
+		return;
+	}
+
+	try {
+		nativeFile = new File([ blob ], file.name, { type: file.type });
+	} catch (e) {
+		nativeFile = blob;
+		nativeFile.name = file.name;
+	}
+
+	const resized = new moxie.file.File(source.ruid, nativeFile);
+
+	file.getSource = function() {
+		return resized;
+	};
+	file.destroy = function() {
+		source.destroy();
+		destroy.call(file);
+	};
+	file.size = resized.size;
+};
+
+/**
+ * Read EXIF segment of JPEG.
+ *
+ * @param {Blob} blob
+ * @param {boolean} isJpeg
+ * @param {function} callback	Receives Uint8Array or null
+ */
+phpbb.plupload.readExif = function(blob, isJpeg, callback) {
+	if (!isJpeg) {
+		callback(null);
+		return;
+	}
+
+	const reader = new FileReader();
+	reader.onload = function() {
+		const view = new DataView(reader.result);
+		let offset = 2;
+
+		if (view.byteLength < 4 || view.getUint16(0) !== JPEG_SOI) {
+			callback(null);
+			return;
+		}
+
+		while (offset + 4 <= view.byteLength) {
+			const marker = view.getUint16(offset);
+			const length = view.getUint16(offset + 2);
+
+			// Start of scan or malformed segment
+			if ((marker & JPEG_MARKER_PREFIX) !== JPEG_MARKER_PREFIX || marker === JPEG_SOS || length < 2) {
+				break;
+			}
+
+			// APP1 "Exif\0\0"
+			if (marker === JPEG_APP1 && length >= EXIF_MIN_LENGTH && offset + 2 + length <= view.byteLength &&
+				view.getUint32(offset + 4) === EXIF_SIGNATURE && view.getUint16(offset + 8) === 0) {
+				callback(new Uint8Array(reader.result.slice(offset, offset + 2 + length)));
+				return;
+			}
+
+			offset += 2 + length;
+		}
+
+		callback(null);
+	};
+	reader.onerror = function() {
+		callback(null);
+	};
+	reader.readAsArrayBuffer(blob.slice(0, EXIF_READ_SIZE));
+};
+
+/**
+ * Parse TIFF header of EXIF segment
+ *
+ * @param {Uint8Array} exif
+ * @returns {object|null}	View, byte order and IFD0 offset
+ */
+phpbb.plupload.readTiffHeader = function(exif) {
+	const view = new DataView(exif.buffer, exif.byteOffset, exif.byteLength);
+	const tiff = EXIF_TIFF_OFFSET;
+
+	if (view.byteLength < tiff + 8) {
+		return null;
+	}
+
+	const byteOrder = view.getUint16(tiff);
+	if (byteOrder !== TIFF_LITTLE_ENDIAN && byteOrder !== TIFF_BIG_ENDIAN) {
+		return null;
+	}
+
+	const littleEndian = byteOrder === TIFF_LITTLE_ENDIAN;
+
+	return {
+		view: view,
+		littleEndian: littleEndian,
+		ifd0Offset: view.getUint32(tiff + 4, littleEndian),
+	};
+};
+
+/**
+ * Iterate tags of IFD0 and Exif IFD.
+ *
+ * @param {Uint8Array} exif
+ * @param {function} visitor	Receives view, entry offset, tag, littleEndian
+ */
+phpbb.plupload.walkExifTags = function(exif, visitor) {
+	const header = phpbb.plupload.readTiffHeader(exif);
+
+	if (!header) {
+		return;
+	}
+
+	const view = header.view;
+	const littleEndian = header.littleEndian;
+
+	const walkIfd = function(ifdOffset, isMainIfd) {
+		const start = EXIF_TIFF_OFFSET + ifdOffset;
+
+		if (start + 2 > view.byteLength) {
+			return;
+		}
+
+		const count = view.getUint16(start, littleEndian);
+		for (let i = 0; i < count; i++) {
+			const entry = start + 2 + i * TIFF_ENTRY_SIZE;
+			if (entry + TIFF_ENTRY_SIZE > view.byteLength) {
+				return;
+			}
+
+			const tag = view.getUint16(entry, littleEndian);
+			visitor(view, entry, tag, littleEndian);
+
+			// Exif IFD pointer
+			if (isMainIfd && tag === EXIF_IFD_POINTER) {
+				walkIfd(view.getUint32(entry + 8, littleEndian), false);
+			}
+		}
+	};
+
+	walkIfd(header.ifd0Offset, true);
+};
+
+/**
+ * Unlink IFD1 with the embedded thumbnail of the original image
+ *
+ * @param {Uint8Array} exif
+ */
+phpbb.plupload.removeExifThumbnail = function(exif) {
+	const header = phpbb.plupload.readTiffHeader(exif);
+
+	if (!header) {
+		return;
+	}
+
+	const view = header.view;
+	const start = EXIF_TIFF_OFFSET + header.ifd0Offset;
+
+	if (start + 2 > view.byteLength) {
+		return;
+	}
+
+	// Next IFD offset follows the IFD0 entries
+	const nextIfd = start + 2 + view.getUint16(start, header.littleEndian) * TIFF_ENTRY_SIZE;
+	if (nextIfd + 4 <= view.byteLength) {
+		view.setUint32(nextIfd, 0, header.littleEndian);
+	}
+};
+
+/**
+ * Get EXIF orientation.
+ *
+ * @param {Uint8Array} exif
+ * @returns {int}
+ */
+phpbb.plupload.getExifOrientation = function(exif) {
+	let orientation = 1;
+
+	phpbb.plupload.walkExifTags(exif, function(view, entry, tag, littleEndian) {
+		if (tag === EXIF_ORIENTATION && view.getUint16(entry + 2, littleEndian) === TIFF_TYPE_SHORT) {
+			orientation = view.getUint16(entry + 8, littleEndian);
+		}
+	});
+
+	return orientation;
+};
+
+/**
+ * Update existing numeric EXIF tags.
+ *
+ * @param {Uint8Array} exif
+ * @param {object} values	Keyed by tag
+ */
+phpbb.plupload.setExifTags = function(exif, values) {
+	phpbb.plupload.walkExifTags(exif, function(view, entry, tag, littleEndian) {
+		if (!values.hasOwnProperty(tag)) {
+			return;
+		}
+
+		const type = view.getUint16(entry + 2, littleEndian);
+		if (type === TIFF_TYPE_SHORT) {
+			view.setUint16(entry + 8, values[tag], littleEndian);
+		} else if (type === TIFF_TYPE_LONG) {
+			view.setUint32(entry + 8, values[tag], littleEndian);
+		}
+	});
+};
+
+/**
+ * Insert EXIF segment into JPEG.
+ *
+ * @param {Blob} blob
+ * @param {Uint8Array} exif
+ * @param {function} callback
+ */
+phpbb.plupload.insertExif = function(blob, exif, callback) {
+	const reader = new FileReader();
+
+	reader.onload = function() {
+		const view = new DataView(reader.result);
+		let offset = 2;
+
+		if (view.byteLength < 4 || view.getUint16(0) !== JPEG_SOI) {
+			callback(blob);
+			return;
+		}
+
+		// Keep JFIF segment first
+		if (view.byteLength >= 6 && view.getUint16(2) === JPEG_APP0) {
+			const length = view.getUint16(4);
+
+			if (length >= 2 && offset + 2 + length <= blob.size) {
+				offset += 2 + length;
+			}
+		}
+
+		callback(new Blob([ blob.slice(0, offset), exif, blob.slice(offset) ], { type: blob.type }));
+	};
+	reader.onerror = function() {
+		callback(blob);
+	};
+	reader.readAsArrayBuffer(blob.slice(0, JFIF_READ_SIZE));
+};
 
 /**
  * Set up the Plupload object and get some basic data.
  */
 phpbb.plupload.uploader = new plupload.Uploader(phpbb.plupload.config);
 phpbb.plupload.initialize();
+
+if (phpbb.plupload.resize.settings) {
+	phpbb.plupload.detectNativeResize();
+}
 
 /**
  * Add a file filter to check for max file sizes per mime type.
@@ -644,7 +1211,9 @@ phpbb.plupload.uploader.bind('FilesAdded', function(up, files) {
 	phpbb.plupload.disableUploader();
 
 	// Start uploading the files once the user has selected them.
-	up.start();
+	phpbb.plupload.resizeFiles(files, function() {
+		up.start();
+	});
 });
 
 
