@@ -498,12 +498,22 @@ class mcp_queue
 
 					if (count($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
-							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
-							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id
-							ORDER BY ' . $sort_order_sql;
+						$sql = $db->sql_build_query('SELECT', array(
+							'SELECT'	=> 't.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour',
+							'FROM'		=> array(
+								POSTS_TABLE		=> 'p',
+								TOPICS_TABLE	=> 't',
+							),
+							'LEFT_JOIN'	=> array(
+								array(
+									'FROM'	=> array(USERS_TABLE => 'u'),
+									'ON'	=> 'u.user_id = p.poster_id',
+								),
+							),
+							'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+								AND t.topic_id = p.topic_id',
+							'ORDER_BY'	=> $sort_order_sql,
+						));
 
 						/**
 						* Alter sql query to get information on all posts in queue
@@ -609,6 +619,12 @@ class mcp_queue
 
 				foreach ($rowset as $row)
 				{
+					// Poster no longer exists in the users table, display post as guest post
+					if (!$is_topics && empty($row['username']))
+					{
+						$row['poster_id'] = ANONYMOUS;
+					}
+
 					if (empty($row['post_username']))
 					{
 						$row['post_username'] = $row['username'] ?: $user->lang['GUEST'];
