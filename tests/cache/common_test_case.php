@@ -103,4 +103,30 @@ abstract class phpbb_cache_common_test_case extends phpbb_database_test_case
 
 		$db->sql_close();
 	}
+
+	public function test_cache_sql_destroy_table()
+	{
+		global $db, $cache, $phpbb_root_path, $phpEx;
+		$config = new phpbb\config\config(array());
+		$db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$cache = new \phpbb\cache\service($this->driver, $config, $db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
+
+		$sql = "SELECT * FROM phpbb_config
+			WHERE config_name = 'foo'";
+
+		$result = $db->sql_query($sql, 300);
+		$expected = array('config_name' => 'foo', 'config_value' => '23', 'is_dynamic' => 0);
+		$this->assertEquals($expected, $db->sql_fetchrow($result));
+
+		$db->sql_query('DELETE FROM phpbb_config');
+
+		// Destroying the table must invalidate its cached queries
+		$cache->destroy('sql', 'phpbb_config');
+
+		$result = $db->sql_query($sql, 300);
+		$this->assertSame(false, $db->sql_fetchrow($result));
+
+		$db->sql_close();
+	}
 }
