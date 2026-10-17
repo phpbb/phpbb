@@ -1,0 +1,113 @@
+/**
+* phpBB 4.0 Maintenance Page Stylesheet
+*/
+
+body {
+	font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+	background: #f4f7f9;
+	color: #444444;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+	margin: 0;
+}
+
+.card {
+	text-align: center;
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+	width: 90%;
+	max-width: 500px;
+	padding: 3rem;
+}
+
+.logo-container {
+	width: 220px;
+	margin: 0 auto 2.5rem;
+}
+
+.logo-svg {
+	width: 100%;
+	height: auto;
+}
+
+.logo-svg > g {
+	fill: #0776bb;
+}
+
+.maintenance-message {
+	font-size: 1.15rem;
+	font-weight: 500;
+	line-height: 1.6;
+	color: #333333;
+	margin-bottom: 2rem;
+}
+
+.loader {
+	border: 3px solid #f3f3f3;
+	border-top: 3px solid #009bdf;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	margin: 0 auto;
+	animation: spin 1s linear infinite;
+}
+
+.time {
+	font-size: 0.85rem;
+	border-top: 1px solid #eeeeee;
+	color: #888888;
+	margin-top: 2.5rem;
+	padding-top: 1.2rem;
+}
+
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
+/* Social Links Styling */
+.links {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-top: 2rem;
+	gap: 1.5rem;
+}
+
+.links:empty {
+	display: none;
+}
+
+.links a {
+	font-weight: 500;
+	line-height: 1.25rem;
+	text-decoration: none;
+	color: #009bdf;
+	display: inline-flex;
+	align-items: center;
+	transition: color 0.2s;
+	gap: 0.35rem;
+}
+
+.links a span:first-child:not(:last-child) {
+	display: inline-flex;
+	flex-shrink: 0;
+	justify-content: center;
+	align-items: center;
+	width: 1.25rem;
+	height: 1.25rem;
+}
+
+.links a span:first-child:not(:last-child) svg {
+	width: 100%;
+	height: 100%;
+	fill: currentColor;
+}
+
+.links a:hover {
+	text-decoration: none;
+	color: #11589f;
+}

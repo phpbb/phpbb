@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="{{ DEFAULT_LANG }}">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta http-equiv="refresh" content="30">
+		<title>{{ lang('BOARD_MAINTENANCE_TITLE', SITENAME) }}</title>
+		<style>{{ source('maintenance.css') }}</style>
+	</head>
+	<body>
+		<div class="card">
+			<div class="logo-container">
+				{{ Icon('svg', 'phpbb_logo_large_cosmic', SITENAME, true, 'logo-svg') }}
+			</div>
+			<div class="maintenance-message" id="msg">{{ lang('BOARD_MAINTENANCE') }}</div>
+			<div class="loader"></div>
+			<div class="links">
+			{%- for link in links %}
+				<a href="{{ link.URL|e('html') }}" target="_blank" rel="noopener">
+					{% if link.ICON %}<span>{{ link.ICON }}</span>{% endif %}
+					<span>{{ link.NAME }}</span>
+				</a>
+			{% endfor -%}
+			</div>
+			<div class="time" id="time"></div>
+		</div>
+
+		<script>
+			(function() {
+				const updateInitiated = {{ MAINTENANCE_INITIATED|default(0) }};
+				const langData = {{ LANG_DATA|raw }};
+				const defaultLang = '{{ DEFAULT_LANG }}';
+				const userLang = navigator.language || defaultLang;
+
+				// Language packs use e.g. pt_br while browsers report pt-BR
+				const normalizeLang = lang => lang.toLowerCase().replace(/-/g, '_');
+				const fullLang = normalizeLang(userLang);
+				const candidates = [fullLang, fullLang.split('_')[0], normalizeLang(defaultLang), 'en'];
+
+				// Get string from the best matching language that provides it
+				const getString = key => {
+					for (const lang of candidates) {
+						if (langData[lang] && langData[lang][key]) {
+							return langData[lang][key];
+						}
+					}
+					return '';
+				};
+
+				// Select localized message, keep server rendered message otherwise
+				const message = getString('BOARD_MAINTENANCE');
+				if (message) {
+					document.getElementById('msg').textContent = message;
+				}
+
+				// Handle timestamp
+				const startText = getString('BOARD_MAINTENANCE_START');
+				if (updateInitiated > 0 && startText) {
+					const date = new Date(updateInitiated * 1000);
+					const formatted = new Intl.DateTimeFormat(userLang, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+
+					// Display localized "Started on: [time]"
+					document.getElementById('time').textContent = startText.replace(/%1\$s/, formatted);
+				}
+			})();
+		</script>
+	</body>
+</html>
