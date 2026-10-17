@@ -73,30 +73,38 @@ class extension_base extends Extension
 	{
 		$services_directory = false;
 		$services_file = false;
+		$additional_services_files = array();
 
 		if (file_exists($this->ext_path . 'config/' . $container->getParameter('core.environment') . '/container/environment.yml'))
 		{
-			$services_directory = $this->ext_path . 'config/' . $container->getParameter('core.environment') . '/container/';
+			$services_directory = 'config/' . $container->getParameter('core.environment') . '/container';
 			$services_file = 'environment.yml';
 		}
 		else if (!is_dir($this->ext_path . 'config/' . $container->getParameter('core.environment')))
 		{
 			if (file_exists($this->ext_path . 'config/default/container/environment.yml'))
 			{
-				$services_directory = $this->ext_path . 'config/default/container/';
+				$services_directory = 'config/default/container';
 				$services_file = 'environment.yml';
 			}
 			else if (!is_dir($this->ext_path . 'config/default') && file_exists($this->ext_path . '/config/services.yml'))
 			{
-				$services_directory = $this->ext_path . 'config';
+				$services_directory = 'config';
 				$services_file = 'services.yml';
 			}
 		}
 
 		if ($services_directory && $services_file)
 		{
-			$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($services_directory)));
+			$loader = new YamlFileLoader($container, new FileLocator(filesystem_helper::realpath($this->ext_path . $services_directory)));
 			$loader->load($services_file);
+
+			// Load additional services located in service_ prefixed Yaml files if any
+			$additional_services_files = $this->getServicesFilenames($services_directory, 'services_');
+			foreach ($additional_services_files as $file)
+			{
+				$loader->load($file);
+			}
 		}
 	}
 
@@ -135,5 +143,31 @@ class extension_base extends Extension
 	public function getAlias(): string
 	{
 		return str_replace('/', '_', $this->extension_name);
+	}
+
+	/**
+	 * Gets the array of the Yaml filenames.
+	 *
+	 * @param string $services_directory   Directory in the extension folder containing services files
+	 * @param string $services_file_prefix Services files prefix to look for
+	 *
+	 * @return array The services filenames array
+	 */
+	public function getServicesFilenames($services_directory, $services_file_prefix = '')
+	{
+		$services_files = array();
+		$finder = new \Symfony\Component\Finder\Finder();
+		$finder
+			->name("{$services_file_prefix}*.yml")
+			->path($services_directory)
+			->files()
+			->in($this->ext_path);
+
+		foreach ($finder as $file)
+		{
+			$services_files[] = $file->getBasename();
+		}
+
+		return $services_files;
 	}
 }
