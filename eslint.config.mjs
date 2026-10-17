@@ -28,7 +28,7 @@ const CODE_QUALITY_RULES = {
 	'eqeqeq': ['error', 'always'],
 	'curly': ['error', 'multi-line'],
 	'no-var': 'error',
-	'prefer-const': 'error',
+	'prefer-const': ['error', { ignoreReadBeforeAssign: true }],
 	'no-console': 'off',
 	'no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 };
