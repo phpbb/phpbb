@@ -578,6 +578,21 @@ class phpbb_dbal_migrator_test extends phpbb_database_test_case
 		$this->assertTrue($this->db_tools->sql_table_exists('phpbb_noid'));
 		$this->assertTrue($this->db_tools->sql_column_exists('phpbb_noid', 'id'));
 
+		// Insert rows without specifying the autoincrement column to verify
+		// that the sequence (PostgreSQL) / auto increment (MySQL) is wired up
+		// and generates the identifiers.
+		$this->db->sql_query("INSERT INTO {$this->table_prefix}noid (text) VALUES ('first')");
+		$this->db->sql_query("INSERT INTO {$this->table_prefix}noid (text) VALUES ('second')");
+
+		$result = $this->db->sql_query("SELECT id, text FROM {$this->table_prefix}noid ORDER BY id ASC");
+		$rows = $this->db->sql_fetchrowset($result);
+		$this->db->sql_freeresult($result);
+
+		$this->assertCount(2, $rows);
+		$this->assertSame('first', $rows[0]['text']);
+		$this->assertSame('second', $rows[1]['text']);
+		$this->assertSame([1, 2], [(int) $rows[0]['id'], (int) $rows[1]['id']]);
+
 		while ($this->migrator->migration_state('schema_add_autoincrement'))
 		{
 			$this->migrator->revert('schema_add_autoincrement');

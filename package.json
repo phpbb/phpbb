@@ -40,10 +40,11 @@
 	},
 	"homepage": "https://www.phpbb.com",
 	"devDependencies": {
-		"eslint": "^9.28.0",
+		"@stylistic/stylelint-plugin": "^5.3.1",
+		"eslint": "^10.13.0",
 		"globals": "^17.0.0",
-		"stylelint": "^14.7.0",
-		"stylelint-order": "^5.0.0",
+		"stylelint": "^17.16.0",
+		"stylelint-order": "^8.1.2",
 		"web-push-testing": "^1.1.1"
 	}
 }
