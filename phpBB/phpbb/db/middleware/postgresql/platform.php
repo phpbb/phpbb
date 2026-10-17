@@ -17,9 +17,6 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
 use Doctrine\DBAL\Schema\Sequence;
 use Doctrine\DBAL\Schema\TableDiff;
-use Doctrine\DBAL\Types\BigIntType;
-use Doctrine\DBAL\Types\IntegerType;
-use Doctrine\DBAL\Types\SmallIntType;
 use Doctrine\DBAL\Types\Type;
 
 /**
@@ -95,6 +92,7 @@ class platform extends PostgreSQLPlatform
 				$sequence = new Sequence($this->getIdentitySequenceName($table_name, $column_name));
 				$sequence_sql[] = $this->getCreateSequenceSQL($sequence);
 				$post_sql[] = 'ALTER SEQUENCE ' . $sequence->getName() . ' OWNED BY ' . $table_name . '.' . $column_name;
+				$post_sql[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT {{placeholder_sequence}}';
 			}
 		}
 		$sql = array_merge($sequence_sql, $sql, $post_sql);
@@ -150,20 +148,23 @@ class platform extends PostgreSQLPlatform
 	 */
 	private function isSerialColumn(array $column): bool
 	{
-		return isset($column['type'], $column['autoincrement'])
+		return isset($column['autoincrement'])
 			&& $column['autoincrement'] === true
-			&& $this->isNumericType($column['type']);
+			&& $this->isNumericType($column);
 	}
 
 	/**
 	 * Return if supplied type is of numeric type
 	 *
-	 * @param Type $type
+	 * @param array $column Column data
 	 * @return bool
 	 */
-	private function isNumericType(Type $type): bool
+	private function isNumericType(array $column): bool
 	{
-		return $type instanceof IntegerType || $type instanceof BigIntType || $type instanceof SmallIntType;
+		$column_type = $column['type'] ?? null;
+		$type_name = ($column_type instanceof Type) ? Type::lookupName($column_type) : (string) ($column['typeName'] ?? '');
+
+		return in_array($type_name, ['integer', 'bigint', 'smallint'], true);
 	}
 
 	/**
