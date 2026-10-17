@@ -171,7 +171,7 @@
 					return;
 				}
 
-				const $submitButton = this.$form.find('fieldset > input[type=submit]').first();
+				const $submitButton = this.$form.find('input[type=submit]').not('#avatar_options input[type=submit]').first();
 
 				const avatarCanvas = phpbb.avatars.cropper.getCroppedCanvas({
 					maxWidth: 4096, // High values for max quality cropping
