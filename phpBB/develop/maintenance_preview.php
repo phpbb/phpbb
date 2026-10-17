@@ -42,7 +42,7 @@ $template->set_filenames([
 ]);
 
 /** @var \phpbb\update\maintenance_generator $maintenance_generator */
-$maintenance_generator = $phpbb_container->get('update.maintenance_generator');
+$maintenance_generator = $phpbb_container->get('updater.maintenance_generator');
 
 // Generate the lock file
 $maintenance_generator->write_maintenance_lock([

@@ -13,7 +13,7 @@ services:
             - '@updater.get_updates'
             - '%core.root_path%'
 
-    update.maintenance_generator:
+    updater.maintenance_generator:
         class: phpbb\update\maintenance_generator
         arguments:
             - '@config'
