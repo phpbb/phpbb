@@ -112,7 +112,7 @@ function send_maintenance_screen(): void
 		return;
 	}
 
-	header('HTTP/1.1 503 Service Temporarily Unavailable');
+	http_response_code(503);
 	header('Retry-After: 600');
 	header('Cache-Control: no-store, no-cache, must-revalidate');
 	header('Pragma: no-cache');

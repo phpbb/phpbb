@@ -303,7 +303,7 @@ class phpbb_update_maintenance_generator_test extends phpbb_test_case
 		$this->assertSame('Wartung', $decoded['de']['BOARD_MAINTENANCE_TITLE']);
 	}
 
-	public function test_get_language_vars_missing_keys_default_to_empty_string(): void
+	public function test_get_language_vars_missing_keys_are_omitted(): void
 	{
 		$available_languages = [
 			['iso' => 'fr', 'local_name' => 'Français'],
@@ -334,8 +334,8 @@ class phpbb_update_maintenance_generator_test extends phpbb_test_case
 
 		$this->assertArrayHasKey('fr', $decoded);
 		$this->assertSame('Maintenance du forum', $decoded['fr']['BOARD_MAINTENANCE']);
-		$this->assertSame('', $decoded['fr']['BOARD_MAINTENANCE_START']);
-		$this->assertSame('', $decoded['fr']['BOARD_MAINTENANCE_TITLE']);
+		$this->assertArrayNotHasKey('BOARD_MAINTENANCE_START', $decoded['fr']);
+		$this->assertArrayNotHasKey('BOARD_MAINTENANCE_TITLE', $decoded['fr']);
 	}
 
 	public function test_write_maintenance_lock_maintenance_initiated_is_current_timestamp(): void

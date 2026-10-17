@@ -48,6 +48,7 @@ class maintenance_generator
 	 * @param array $social_links Social links to pass to the template
 	 * @return void
 	 * @throws ExceptionInterface If writing of maintenance lock file fails
+	 * @throws \JsonException If language data can't be encoded
 	 */
 	public function write_maintenance_lock(array $social_links = []): void
 	{
@@ -82,6 +83,7 @@ class maintenance_generator
 	 *
 	 * @param array $social_links Optional social links with icon, url, and name to be displayed
 	 * @return void
+	 * @throws \JsonException If language data can't be encoded
 	 */
 	protected function assign_template_vars(array $social_links): void
 	{
@@ -99,7 +101,7 @@ class maintenance_generator
 		// Assign general data for maintenance page
 		$this->template->assign_vars([
 			'DEFAULT_LANG'				=> $this->config['default_lang'],
-			'LANG_DATA'					=> json_encode($this->get_language_vars()),
+			'LANG_DATA'					=> json_encode($this->get_language_vars(), JSON_THROW_ON_ERROR | JSON_HEX_TAG),
 			'MAINTENANCE_INITIATED'		=> $maintenance_start,
 			'SITENAME'					=> $this->config['sitename'],
 		]);
@@ -123,12 +125,12 @@ class maintenance_generator
 			// Load the necessary language file for this language
 			$this->lang_loader->load('common', $lang_data['iso'], $current_lang);
 
-			// Get the required language variables
-			$language_vars[$lang_data['iso']] = [
+			// Get the required language variables, missing ones will fall back to the default language in the page
+			$language_vars[strtolower($lang_data['iso'])] = array_filter([
 				'BOARD_MAINTENANCE'			=> $current_lang['BOARD_MAINTENANCE'] ?? '',
 				'BOARD_MAINTENANCE_START'	=> $current_lang['BOARD_MAINTENANCE_START'] ?? '',
 				'BOARD_MAINTENANCE_TITLE'	=> $current_lang['BOARD_MAINTENANCE_TITLE'] ?? '',
-			];
+			]);
 		}
 
 		return $language_vars;

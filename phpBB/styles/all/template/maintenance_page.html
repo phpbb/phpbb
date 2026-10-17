@@ -10,7 +10,7 @@
 	<body>
 		<div class="card">
 			<div class="logo-container">
-				{{ Icon('svg', 'logo', SITENAME, true, 'logo-svg') }}
+				{{ Icon('svg', 'phpbb_logo_large_cosmic', SITENAME, true, 'logo-svg') }}
 			</div>
 			<div class="maintenance-message" id="msg">{{ lang('BOARD_MAINTENANCE') }}</div>
 			<div class="loader"></div>
@@ -31,19 +31,36 @@
 				const langData = {{ LANG_DATA|raw }};
 				const defaultLang = '{{ DEFAULT_LANG }}';
 				const userLang = navigator.language || defaultLang;
-				const shortLang = userLang.toLowerCase().split('-')[0];
-				const language = langData[userLang.toLowerCase()] || langData[shortLang] || langData[defaultLang];
 
-				// Select localized message
-				document.getElementById('msg').textContent = language['BOARD_MAINTENANCE'];
+				// Language packs use e.g. pt_br while browsers report pt-BR
+				const normalizeLang = lang => lang.toLowerCase().replace(/-/g, '_');
+				const fullLang = normalizeLang(userLang);
+				const candidates = [fullLang, fullLang.split('_')[0], normalizeLang(defaultLang), 'en'];
+
+				// Get string from the best matching language that provides it
+				const getString = key => {
+					for (const lang of candidates) {
+						if (langData[lang] && langData[lang][key]) {
+							return langData[lang][key];
+						}
+					}
+					return '';
+				};
+
+				// Select localized message, keep server rendered message otherwise
+				const message = getString('BOARD_MAINTENANCE');
+				if (message) {
+					document.getElementById('msg').textContent = message;
+				}
 
 				// Handle timestamp
-				if (updateInitiated > 0) {
+				const startText = getString('BOARD_MAINTENANCE_START');
+				if (updateInitiated > 0 && startText) {
 					const date = new Date(updateInitiated * 1000);
 					const formatted = new Intl.DateTimeFormat(userLang, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
 
 					// Display localized "Started on: [time]"
-					document.getElementById('time').textContent = language['BOARD_MAINTENANCE_START'].replace(/%1\$s/, formatted);
+					document.getElementById('time').textContent = startText.replace(/%1\$s/, formatted);
 				}
 			})();
 		</script>
