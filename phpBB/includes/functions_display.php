@@ -880,7 +880,7 @@ function get_forum_parents(&$forum_data)
 		}
 		else
 		{
-			$forum_parents = unserialize($forum_data['forum_parents']);
+			$forum_parents = unserialize($forum_data['forum_parents'], ['allowed_classes' => false]);
 		}
 	}
 
