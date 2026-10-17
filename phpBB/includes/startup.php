@@ -35,8 +35,8 @@ if (version_compare(PHP_VERSION, '8.2.0', '<'))
  */
 if (is_file($phpbb_root_path . 'store/UPDATE_LOCK.php'))
 {
-	// Check if we should bypass (e.g., for the active update process)
-	if (!defined('IN_INSTALL'))
+	// Check if we should bypass (e.g., for the active update process or CLI commands)
+	if (!defined('IN_INSTALL') && PHP_SAPI !== 'cli')
 	{
 		send_maintenance_screen();
 	}
