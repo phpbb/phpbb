@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_name</column>
+		<column>group_type</column>
+		<column>group_colour</column>
+		<column>group_desc</column>
+		<column>group_desc_uid</column>
+		<row>
+			<value>6</value>
+			<value>BOTS</value>
+			<value>3</value>
+			<value>9E8DA7</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>AI_CRAWLERS</value>
+			<value>3</value>
+			<value>7D9EAE</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_type</column>
+		<column>group_id</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>10</value>
+			<value>Some Bot</value>
+			<value>some bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>GPTBot [Bot]</value>
+			<value>gptbot [bot]</value>
+			<value>2</value>
+			<value>8</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>ClaudeBot [Bot]</value>
+			<value>claudebot [bot]</value>
+			<value>2</value>
+			<value>8</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>Other Bot</value>
+			<value>other bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_user_group">
+		<column>group_id</column>
+		<column>user_id</column>
+		<column>group_leader</column>
+		<column>user_pending</column>
+		<row>
+			<value>6</value>
+			<value>10</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>11</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>12</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>13</value>
+			<value>0</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="phpbb_bots">
+		<column>bot_id</column>
+		<column>bot_active</column>
+		<column>bot_name</column>
+		<column>user_id</column>
+		<column>bot_agent</column>
+		<column>bot_ip</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>Some Bot</value>
+			<value>10</value>
+			<value>GPTBot/</value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>GPTBot [Bot]</value>
+			<value>11</value>
+			<value>gptbot/</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>ClaudeBot [Bot]</value>
+			<value>12</value>
+			<value>ClaudeBot/</value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>Other Bot</value>
+			<value>13</value>
+			<value>claudebot/</value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
