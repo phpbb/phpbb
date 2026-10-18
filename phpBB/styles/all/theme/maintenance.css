@@ -20,11 +20,14 @@ body {
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 	width: 90%;
 	max-width: 500px;
+	box-sizing: border-box;
 	padding: 3rem;
+	overflow-wrap: break-word;
 }
 
 .logo-container {
 	width: 220px;
+	max-width: 100%;
 	margin: 0 auto 2.5rem;
 }
 
