@@ -47,6 +47,12 @@
 					return '';
 				};
 
+				// Select localized title, keep server rendered title otherwise
+				const titleTemplate = getString('BOARD_MAINTENANCE_TITLE');
+				if (titleTemplate) {
+					document.title = titleTemplate.replace(/%1\$s/, '{{ SITENAME|e("js") }}');
+				}
+
 				// Select localized message, keep server rendered message otherwise
 				const message = getString('BOARD_MAINTENANCE');
 				if (message) {
