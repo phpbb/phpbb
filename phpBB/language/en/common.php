@@ -993,6 +993,16 @@ $lang = array_merge($lang, array(
 		'Oct'		=> 'Oct',
 		'Nov'		=> 'Nov',
 		'Dec'		=> 'Dec',
+
+		// Ante meridiem and post meridiem for the "a" (lowercase) and "A" (uppercase) date format characters.
+		// These entries are required for all languages. Translate them if your language writes am/pm
+		// differently from English, otherwise keep the English values unchanged.
+		'MERIDIEM'	=> array(
+			'am'	=> 'am',
+			'pm'	=> 'pm',
+			'AM'	=> 'AM',
+			'PM'	=> 'PM',
+		),
 	),
 
 	// Timezones can be translated. We use this for the Etc/GMT timezones here,
