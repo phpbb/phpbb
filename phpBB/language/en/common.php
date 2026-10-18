@@ -995,8 +995,8 @@ $lang = array_merge($lang, array(
 		'Dec'		=> 'Dec',
 
 		// Ante meridiem and post meridiem for the "a" (lowercase) and "A" (uppercase) date format characters.
-		// Translate these if your language writes am/pm differently from English; this block can be omitted
-		// if they are the same. Untranslated entries fall back to the English am/pm.
+		// These entries are required for all languages. Translate them if your language writes am/pm
+		// differently from English, otherwise keep the English values unchanged.
 		'MERIDIEM'	=> array(
 			'am'	=> 'am',
 			'pm'	=> 'pm',
