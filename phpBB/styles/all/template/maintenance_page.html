@@ -37,6 +37,12 @@
 				const fullLang = normalizeLang(userLang);
 				const candidates = [fullLang, fullLang.split('_')[0], normalizeLang(defaultLang), 'en'];
 
+				// First available language becomes the document language
+				const docLang = candidates.find(lang => langData[lang]);
+				if (docLang) {
+					document.documentElement.lang = docLang.replace(/_/g, '-');
+				}
+
 				// Get string from the best matching language that provides it
 				const getString = key => {
 					for (const lang of candidates) {
