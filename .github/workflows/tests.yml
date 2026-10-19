@@ -124,6 +124,8 @@ jobs:
                     - php: '8.2'
                       db: "mariadb:12.3"
                     - php: '8.2'
+                      db: "mariadb:13.0"
+                    - php: '8.2'
                       db: "mysql:8.0"
                       db_alias: "MySQL Slow Tests"
                       SLOWTESTS: 1
@@ -147,6 +149,8 @@ jobs:
                       db: "mysql:8.4"
                     - php: '8.5'
                       db: "mysql:9.4"
+                    - php: '8.5'
+                      db: "mysql:9.7"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -410,15 +414,15 @@ jobs:
                       db_image: ''
                     - php: '8.2'
                       db: "mssql"
-                      db_image: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
+                      db_image: "mcr.microsoft.com/mssql/server:2019-CU32-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
                     - php: '8.2'
                       db: "mssql"
-                      db_image: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
+                      db_image: "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
                     - php: '8.2'
                       db: "mssql"
-                      db_image: "mcr.microsoft.com/mssql/server:2025-CU6-ubuntu-22.04"
+                      db_image: "mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-22.04"
                       db_alias: 'MSSQL 2025'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
