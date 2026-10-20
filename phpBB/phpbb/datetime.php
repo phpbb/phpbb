@@ -208,7 +208,7 @@ class datetime extends \DateTime
 	* @param array $translations Translations of am, pm, AM and PM
 	* @return string Date format with translated am/pm literals
 	*/
-	static protected function localise_meridiem($format, $meridiem, array $translations)
+	protected static function localise_meridiem($format, $meridiem, array $translations)
 	{
 		$localised = '';
 		$length = strlen($format);
