@@ -351,6 +351,7 @@ class mcp_warn
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
 		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
+		$avatar_img = $avatar['html'];
 
 		/**
 		* Modify user data before it is assigned to the template on the MCP warn-post page
@@ -517,6 +518,7 @@ class mcp_warn
 
 		$avatar = $avatar_helper->get_user_avatar($user_row);
 		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
+		$avatar_img = $avatar['html'];
 
 		/**
 		* Modify user data before it is assigned to the template on the MCP warn-user page
