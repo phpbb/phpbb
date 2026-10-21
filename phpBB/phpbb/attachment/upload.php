@@ -244,8 +244,23 @@ class upload
 			{
 				// Move the thumbnail from temp folder to the storage
 				$fp = fopen($destination, 'rb');
+				if ($fp !== false)
+				{
+					try
+					{
+						$this->storage->write($destination_name, $fp);
+					}
+					finally
+					{
+						fclose($fp);
+					}
+				}
+				else
+				{
+					$this->file_data['thumbnail'] = 0;
+				}
 
-				$this->storage->write($destination_name, $fp);
+				@unlink($destination);
 			}
 			else
 			{
