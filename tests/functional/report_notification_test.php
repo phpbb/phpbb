@@ -66,6 +66,9 @@ class phpbb_functional_report_notification_test extends phpbb_functional_test_ca
 		$crawler = self::request('GET', $original_url);
 		$this->assertStringContainsString($this->lang('NO_REPORT'), $crawler->text());
 		$this->assertCount(0, $crawler->filter('input[name="report_id_list[]"]'));
+
+		// Leave the shared fixture post available to subsequent report tests.
+		$this->close_report($second_url);
 	}
 
 	public function test_pm_report_notification_after_close()
