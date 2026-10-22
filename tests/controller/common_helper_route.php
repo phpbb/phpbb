@@ -232,17 +232,20 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 	public static function helper_url_data_index(): array
 	{
 		return [
-			[false, false, '/' . static::path_to_app() . 'index.php', 'index route without rewrite'],
-			[false, true, '/' . static::path_to_app() . 'index.php?style=3', 'index route without rewrite and style'],
-			[true, false, '/' . static::path_to_app(), 'index route with rewrite'],
-			[true, true, '/' . static::path_to_app() . '?style=3', 'index route with rewrite and style'],
+			[false, false, [], '/' . static::path_to_app() . 'index.php', 'index route without rewrite'],
+			[false, true, [], '/' . static::path_to_app() . 'index.php?style=3', 'index route without rewrite and style'],
+			[true, false, [], '/' . static::path_to_app(), 'index route with rewrite'],
+			[true, true, [], '/' . static::path_to_app() . '?style=3', 'index route with rewrite and style'],
+			[false, false, ['hash' => 'abc'], '/' . static::path_to_app() . 'index.php?hash=abc', 'index route without rewrite and parameters'],
+			[false, false, ['hash' => 'abc', 'mark' => '1'], '/' . static::path_to_app() . 'index.php?hash=abc&mark=1', 'index route without rewrite and multiple parameters'],
+			[true, false, ['hash' => 'abc'], '/' . static::path_to_app() . '?hash=abc', 'index route with rewrite and parameters'],
 		];
 	}
 
 	/**
 	* @dataProvider helper_url_data_index()
 	*/
-	public function test_helper_url_index($enable_mod_rewrite, $with_style, $expected, $description)
+	public function test_helper_url_index($enable_mod_rewrite, $with_style, $params, $expected, $description)
 	{
 		global $_EXTRA_URL;
 
@@ -273,7 +276,7 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 				$this->admin_path,
 				$this->php_ext
 			);
-			static::assertSame($expected, $this->helper->route('index_controller', array(), false), $description);
+			static::assertSame($expected, $this->helper->route('index_controller', $params, false), $description);
 		}
 		finally
 		{

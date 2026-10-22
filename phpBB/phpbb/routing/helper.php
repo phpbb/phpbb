@@ -153,9 +153,11 @@ class helper
 
 		// Remove the trailing slash added to the index route after the front controller
 		$index_url = 'index.' . $this->php_ext;
-		if ($route_url === $index_url . '/' || str_ends_with($route_url, '/' . $index_url . '/'))
+		$route_url_parts = explode('?', $route_url, 2);
+		if ($route_url_parts[0] === $index_url . '/' || str_ends_with($route_url_parts[0], '/' . $index_url . '/'))
 		{
-			$route_url = substr($route_url, 0, -1);
+			$route_url_parts[0] = substr($route_url_parts[0], 0, -1);
+			$route_url = implode('?', $route_url_parts);
 		}
 
 		return append_sid($route_url . $anchor, false, $is_amp, $session_id, true);
