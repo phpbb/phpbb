@@ -2274,7 +2274,30 @@ for ($i = 0, $end = count($post_list); $i < $end; ++$i)
 unset($rowset, $user_cache);
 
 // Update topic view and if necessary attachment view counters ... but only for humans and if this is the first 'page view'
-if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($user->data['session_page'], '&t=' . $topic_id) === false || isset($user->data['session_created'])))
+$update_view_counters = isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($user->data['session_page'], '&t=' . $topic_id) === false || isset($user->data['session_created']));
+
+/**
+* Modify whether the topic view counter and attachment download
+* counters are updated for this page view
+*
+* @event core.viewtopic_modify_view_counter_update
+* @var	bool	update_view_counters	Whether to increase the topic view count and the attachment download counts
+* @var	array	update_count			IDs of the attachments whose download count will be increased
+* @var	int		forum_id				Forum ID
+* @var	int		topic_id				Topic ID
+* @var	array	topic_data				Array with topic data
+* @since 3.3.20-RC1
+*/
+$vars = array(
+	'update_view_counters',
+	'update_count',
+	'forum_id',
+	'topic_id',
+	'topic_data',
+);
+extract($phpbb_dispatcher->trigger_event('core.viewtopic_modify_view_counter_update', compact($vars)));
+
+if ($update_view_counters)
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
