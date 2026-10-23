@@ -988,6 +988,14 @@ class doctrine implements tools_interface
 		$table = $schema->getTable($table_name);
 		$short_table_name = table_helper::generate_shortname(self::remove_prefix($table_name, $this->table_prefix));
 
+		// Legacy migrations pass the unprefixed key name. Prefer that table's
+		// generated name if an unrelated unprefixed key is also present.
+		$prefixed_name = self::add_prefix($index_name, $short_table_name);
+		if (!str_starts_with($index_name, $short_table_name) && $table->hasIndex($prefixed_name))
+		{
+			$index_name = $prefixed_name;
+		}
+
 		if (!$table->hasIndex($index_name))
 		{
 			$index_name = !str_starts_with($index_name, $short_table_name) ? self::add_prefix($index_name, $short_table_name) : self::remove_prefix($index_name, $short_table_name);

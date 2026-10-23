@@ -40,6 +40,13 @@ class comparator extends \Doctrine\DBAL\Schema\Comparator
 		$diff = parent::compareTables($oldTable, $newTable);
 		$added_indexes = $diff->getAddedIndexes();
 		$dropped_indexes = $diff->getDroppedIndexes();
+
+		// Preserve changed index definitions when rebuilding the table diff.
+		foreach ($diff->getModifiedIndexes() as $index)
+		{
+			$dropped_indexes[] = $oldTable->getIndex($index->getName());
+			$added_indexes[] = $index;
+		}
 		$added_index_names = array_map([$this, 'get_index_name'], $added_indexes);
 		$dropped_index_names = array_map([$this, 'get_index_name'], $dropped_indexes);
 
