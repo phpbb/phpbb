@@ -229,6 +229,68 @@ abstract class phpbb_controller_common_helper_route extends phpbb_database_test_
 		static::assertEquals($expected, $this->helper->route($route, $params, $is_amp, $session_id), $description);
 	}
 
+	public static function helper_url_data_index(): array
+	{
+		return [
+			[false, false, [], '/' . static::path_to_app() . 'index.php', 'index route without rewrite'],
+			[false, true, [], '/' . static::path_to_app() . 'index.php?style=3', 'index route without rewrite and style'],
+			[true, false, [], '/' . static::path_to_app(), 'index route with rewrite'],
+			[true, true, [], '/' . static::path_to_app() . '?style=3', 'index route with rewrite and style'],
+			[false, false, ['hash' => 'abc'], '/' . static::path_to_app() . 'index.php?hash=abc', 'index route without rewrite and parameters'],
+			[false, false, ['hash' => 'abc', 'mark' => '1'], '/' . static::path_to_app() . 'index.php?hash=abc&mark=1', 'index route without rewrite and multiple parameters'],
+			[true, false, ['hash' => 'abc'], '/' . static::path_to_app() . '?hash=abc', 'index route with rewrite and parameters'],
+		];
+	}
+
+	/**
+	* @dataProvider helper_url_data_index()
+	*/
+	public function test_helper_url_index($enable_mod_rewrite, $with_style, $params, $expected, $description)
+	{
+		global $_EXTRA_URL;
+
+		$previous_extra_url = $_EXTRA_URL ?? null;
+		$_EXTRA_URL = $with_style ? array('style=3') : array();
+
+		try
+		{
+			$mock_container = new phpbb_mock_container_builder();
+			$mock_container->set('cron.task_collection', []);
+
+			$this->config = new \phpbb\config\config(array('enable_mod_rewrite' => $enable_mod_rewrite ? '1' : '0'));
+			$this->routing_helper = new \phpbb\routing\helper($this->config, $this->router, $this->symfony_request, $this->request, $this->root_path, 'php');
+			$this->helper = new phpbb_mock_controller_helper(
+				$this->auth,
+				$this->cache,
+				$this->config,
+				new \phpbb\cron\manager($mock_container, $this->routing_helper, $this->root_path, 'php', null),
+				$this->db,
+				$this->dispatcher,
+				$this->language,
+				$this->request,
+				$this->routing_helper,
+				$this->symfony_request,
+				$this->template,
+				$this->user,
+				$this->root_path,
+				$this->admin_path,
+				$this->php_ext
+			);
+			static::assertSame($expected, $this->helper->route('index_controller', $params, false), $description);
+		}
+		finally
+		{
+			if ($previous_extra_url === null)
+			{
+				unset($_EXTRA_URL);
+			}
+			else
+			{
+				$_EXTRA_URL = $previous_extra_url;
+			}
+		}
+	}
+
 	public static function helper_url_data_with_rewrite()
 	{
 		return array(
