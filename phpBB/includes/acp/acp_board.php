@@ -536,6 +536,12 @@ class acp_board
 			}
 		}
 
+		// Normalize the server name before validation so whitespace-only values are rejected
+		if ($mode == 'server' && isset($cfg_array['server_name']))
+		{
+			$cfg_array['server_name'] = trim($cfg_array['server_name']);
+		}
+
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 

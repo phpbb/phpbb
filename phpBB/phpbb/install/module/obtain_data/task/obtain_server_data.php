@@ -79,7 +79,7 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 		$cookie_secure		= $this->io_handler->get_input('cookie_secure', $cookie_secure);
 		$server_protocol	= $this->io_handler->get_input('server_protocol', $server_protocol);
 		$force_server_vars	= $this->io_handler->get_input('force_server_vars', 0);
-		$server_name		= $this->io_handler->get_input('server_name', $server_name, true);
+		$server_name		= trim($this->io_handler->get_input('server_name', $server_name, true));
 		$server_port		= $this->io_handler->get_input('server_port', $server_port);
 		$script_path		= $this->io_handler->get_input('script_path', $script_path, true);
 
@@ -102,15 +102,14 @@ class obtain_server_data extends \phpbb\install\task_base implements \phpbb\inst
 
 		// Check if data is sent
 		$data_submitted = $this->io_handler->get_input('submit_server', false);
-		$server_data_valid = true;
 
-		if ($data_submitted && trim($server_name) === '')
+		if ($data_submitted && $server_name === '')
 		{
 			$this->io_handler->add_error_message('INST_ERR_MISSING_SERVER_NAME');
-			$server_data_valid = false;
+			$data_submitted = false;
 		}
 
-		if ($data_submitted && $server_data_valid)
+		if ($data_submitted)
 		{
 			$this->install_config->set('cookie_secure', $cookie_secure);
 			$this->install_config->set('server_protocol', $server_protocol);
