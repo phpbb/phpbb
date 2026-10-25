@@ -232,6 +232,9 @@ $lang = array_merge($lang, array(
 	'SERVER_CONFIG'				=> 'Server configuration',
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
+
+	// Errors
+	'INST_ERR_MISSING_SERVER_NAME'	=> 'You must specify a domain name.',
 ));
 
 // Default database schema entries...
