@@ -239,7 +239,11 @@ class message
 				$messenger_method->set_use_queue(false);
 				$messenger_method->template($this->template, $recipient['lang']);
 				$messenger_method->set_addresses($recipient);
-				$messenger_method->reply_to($this->sender_address);
+
+				if (strtolower($recipient['user_email']) !== strtolower($this->sender_address))
+				{
+					$messenger_method->reply_to($this->sender_address);
+				}
 
 				$messenger_method->header('X-AntiAbuse', 'Board servername - ' . $this->server_name);
 				$messenger_method->header('X-AntiAbuse', 'User IP - ' . $this->sender_ip);
