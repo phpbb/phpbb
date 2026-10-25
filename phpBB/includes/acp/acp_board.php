@@ -419,7 +419,7 @@ class acp_board
 						'legend3'				=> 'SERVER_URL_SETTINGS',
 						'force_server_vars'		=> array('lang' => 'FORCE_SERVER_VARS',	'validate' => 'bool',			'type' => 'radio:yes_no', 'explain' => true),
 						'server_protocol'		=> array('lang' => 'SERVER_PROTOCOL',	'validate' => 'string',			'type' => 'text:10:10', 'explain' => true),
-						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',			'type' => 'text:40:255', 'explain' => true),
+						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string:1:255',		'type' => 'text:40:255', 'explain' => true),
 						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int:0:99999',			'type' => 'number:0:99999', 'explain' => true),
 						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'validate' => 'script_path',	'type' => 'text::255', 'explain' => true),
 
@@ -542,6 +542,12 @@ class acp_board
 					$error[] = $this->language->lang('URL_SCHEME_INVALID', $this->language->lang('ALLOWED_SCHEMES_LINKS'), $scheme);
 				}
 			}
+		}
+
+		// Normalize the server name before validation so whitespace-only values are rejected
+		if ($mode == 'server' && isset($cfg_array['server_name']))
+		{
+			$cfg_array['server_name'] = trim($cfg_array['server_name']);
 		}
 
 		// We validate the complete config if wished
