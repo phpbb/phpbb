@@ -43,17 +43,17 @@ class phpbb_installer_obtain_server_data_test extends phpbb_test_case
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
 		$filesystem = $this->createMock('\phpbb\filesystem\filesystem');
 		$php_ini = $this->getMockBuilder('\bantu\IniGetWrapper\IniGetWrapper')
-			->setMethods(array('getInt', 'getBytes'))
+			->onlyMethods(['getNumeric', 'getBytes'])
 			->getMock();
-		$php_ini->method('getInt')
+		$php_ini->method('getNumeric')
 			->willReturn(-1);
 		$php_ini->method('getBytes')
 			->willReturn(-1);
 
 		$this->config = new config($filesystem, $php_ini, $phpbb_root_path);
 
-		$this->input = array();
-		$this->errors = array();
+		$this->input = [];
+		$this->errors = [];
 
 		$this->io_handler = $this->createMock(iohandler_interface::class);
 		$this->io_handler->method('is_secure')
