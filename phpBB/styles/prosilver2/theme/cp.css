@@ -1,0 +1,378 @@
+/* -------------------------------------------------------------- /*
+	$Contorl Panel
+/* -------------------------------------------------------------- */
+
+/* stylelint-disable selector-max-compound-selectors */
+/* stylelint-disable selector-no-qualifying-type */
+
+/* Main CP box
+---------------------------------------- */
+.cp-menu {
+	float: left;
+	width: 19%;
+	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+.cp-main {
+	float: left;
+	width: 81%;
+}
+
+.cp-main .content {
+	padding: 0;
+}
+
+.panel-container .panel p {
+	font-size: 11px;
+}
+
+.panel-container .panel ol {
+	font-size: 11px;
+	margin-left: 22px;
+}
+
+.panel-container .panel li.row {
+	border-top: 1px solid transparent;
+	border-bottom: 1px solid transparent;
+}
+
+ul.cplist {
+	border-top: 1px solid transparent;
+	margin-bottom: 5px;
+}
+
+.panel-container .panel li.header dd,
+.panel-container .panel li.header dt {
+	margin-bottom: 2px;
+}
+
+.panel-container table.table1 {
+	margin-bottom: 10px;
+}
+
+.panel-container table.table1 thead th {
+	font-weight: bold;
+	border-bottom: 1px solid transparent;
+	padding: 5px;
+}
+
+.panel-container table.table1 tbody th {
+	font-style: italic;
+	background-color: transparent !important;
+	border-bottom: none;
+}
+
+.cp-main .pm-message {
+	border: 1px solid transparent;
+	float: none;
+	width: auto;
+	margin: 10px 0;
+}
+
+.pm-message h2 {
+	padding-bottom: 5px;
+}
+
+.cp-main .postbody h3,
+.cp-main .box2 h3 {
+	margin-top: 0;
+}
+
+.panel-container .postbody p.author {
+	font-size: 11px;
+}
+
+.cp-main .buttons {
+	margin-left: 0;
+}
+
+.cp-main ul.linklist {
+	margin: 0;
+}
+
+/* MCP Specific tweaks */
+.mcp-main .postbody {
+	width: 100%;
+}
+
+.tabs-container h2 {
+	float: left;
+	margin-bottom: 0;
+}
+
+/* CP tabs shared
+---------------------------------------- */
+.tabs,
+.minitabs {
+	line-height: normal;
+}
+
+.tabs > ul,
+.minitabs > ul {
+	position: relative;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.tabs .tab,
+.minitabs .tab {
+	font-size: 10px;
+	font-weight: bold;
+	line-height: 14px;
+	display: block;
+	float: left;
+}
+
+.tabs .tab > a,
+.minitabs .tab > a {
+	white-space: nowrap;
+	text-decoration: none;
+	position: relative;
+	display: block;
+	padding: 5px 9px;
+	cursor: pointer;
+}
+
+/* CP tabbed menu
+---------------------------------------- */
+.tabs {
+	margin: 20px 0 0 7px;
+}
+
+.tabs .tab > a {
+	border: 1px solid transparent;
+	border-radius: 4px 4px 0 0;
+	margin: 1px 1px 0 0;
+}
+
+.tabs .activetab > a {
+	margin-top: 0;
+	padding-bottom: 7px;
+}
+
+/* Mini tabbed menu used in MCP
+---------------------------------------- */
+.minitabs {
+	float: right;
+	max-width: 50%;
+	margin: 15px 7px 0 0;
+}
+
+.minitabs .tab {
+	float: right;
+}
+
+.minitabs .tab > a {
+	border-radius: 5px 5px 0 0;
+	margin-left: 2px;
+}
+
+.minitabs .tab > a:hover {
+	text-decoration: none;
+}
+
+/* Responsive tabs
+---------------------------------------- */
+.responsive-tab {
+	position: relative;
+}
+
+.responsive-tab > a.responsive-tab-link {
+	font-size: 16px;
+	line-height: 14px;
+	text-decoration: none;
+	position: relative;
+	display: block;
+	width: 16px;
+}
+
+.responsive-tab .responsive-tab-link:before {
+	border-top: 6px double rgba(0, 0, 0, 0);
+	border-bottom: 2px solid rgba(0, 0, 0, 0);
+	position: absolute;
+	top: 7px;
+	left: 10px;
+	width: 14px;
+	height: 2px;
+	content: "";
+}
+
+.tabs .dropdown,
+.minitabs .dropdown {
+	font-size: 11px;
+	font-weight: normal;
+	top: 20px;
+	margin-right: -2px;
+}
+
+.minitabs .dropdown {
+	margin-right: -4px;
+}
+
+.tabs .dropdown-up .dropdown,
+.minitabs .dropdown-up .dropdown {
+	top: auto;
+	bottom: 20px;
+}
+
+.tabs .dropdown li {
+	text-align: right;
+}
+
+.minitabs .dropdown li {
+	text-align: left;
+}
+
+/* UCP navigation menu
+---------------------------------------- */
+
+/* Container for sub-navigation list */
+.navigation {
+	width: 100%;
+	padding-top: 36px;
+}
+
+.navigation ul {
+	list-style: none;
+}
+
+/* Default list state */
+.navigation li {
+	font-weight: bold;
+	display: inline;
+	margin: 1px 0;
+	padding: 0;
+}
+
+/* Link styles for the sub-section links */
+.navigation a {
+	font-size: 10px;
+	text-decoration: none;
+	display: block;
+	margin: 1px 0;
+	padding: 5px;
+}
+
+.navigation a:hover {
+	text-decoration: none;
+}
+
+/* Preferences pane layout
+---------------------------------------- */
+.cp-main h2 {
+	border-bottom: none;
+	margin-left: 10px;
+	padding: 0;
+}
+
+/* Friends list */
+.cp-mini {
+	font-size: 10px;
+	border-radius: 7px;
+	overflow-y: auto;
+	max-height: 200px;
+	margin: 10px 15px 10px 5px;
+	padding: 5px 10px;
+}
+
+dl.mini dt {
+	font-weight: bold;
+}
+
+dl.mini dd {
+	padding-top: 4px;
+}
+
+.friend-online {
+	font-weight: bold;
+}
+
+.friend-offline {
+	font-style: italic;
+}
+
+/* PM Styles
+---------------------------------------- */
+
+/* Defined rules list for PM options */
+ol.def-rules {
+	padding-left: 0;
+}
+
+ol.def-rules li {
+	line-height: 18px;
+	padding: 1px;
+}
+
+/* PM marking colours */
+.pmlist li.bg1 {
+	padding: 0 3px;
+}
+
+.pmlist li.bg2 {
+	padding: 0 3px;
+}
+
+/* DEPRECATED 3.2.6
+.pmlist li.pm_message_reported_colour,
+.pm_message_reported_colour {
+	border-right-color: transparent;
+	border-left-color: transparent;
+}
+*/
+
+.pmlist li.pm_message_reported_colour,
+.pm_message_reported_colour,
+.pmlist li.pm_marked_colour,
+.pm_marked_colour,
+.pmlist li.pm_replied_colour,
+.pm_replied_colour,
+.pmlist li.pm_friend_colour,
+.pm_friend_colour,
+.pmlist li.pm_foe_colour,
+.pm_foe_colour {
+	border: solid 3px transparent;
+	border-width: 0 3px;
+	padding: 0;
+}
+
+.pm-legend {
+	border-right-width: 0;
+	border-left-width: 10px;
+	border-left-style: solid;
+	margin-bottom: 3px;
+	padding-left: 3px;
+}
+
+/* Avatar gallery */
+.gallery label {
+	text-align: center;
+	border: 1px solid transparent;
+	position: relative;
+	float: left;
+	width: auto;
+	margin: 10px;
+	padding: 5px;
+}
+
+.c-cropper-avatar-box {
+	min-height: 240px;
+	max-height: 400px;
+}
+
+p.notification-title,
+p.notification-forum,
+p.notification-reason,
+p.notification-time {
+	line-height: 14px;
+	margin-bottom: 4px;
+}
+
+p.notification-time {
+	margin-bottom: 0;
+}
+
+/* stylelint-enable selector-max-compound-selectors */
+/* stylelint-enable selector-no-qualifying-type */
