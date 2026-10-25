@@ -817,9 +817,11 @@ function merge_posts($topic_id, $to_topic_id)
 	}
 
 	$sync_forums = array();
+	$topic_views = 0;
 	foreach ($topic_data as $data)
 	{
 		$sync_forums[$data['forum_id']] = $data['forum_id'];
+		$topic_views = max($topic_views, $data['topic_views']);
 	}
 
 	$topic_data = $topic_data[$to_topic_id];
@@ -891,6 +893,13 @@ function merge_posts($topic_id, $to_topic_id)
 
 			// If the topic no longer exist, we will update the bookmarks table.
 			phpbb_update_rows_avoiding_duplicates($db, BOOKMARKS_TABLE, 'topic_id', array($topic_id), $to_topic_id);
+
+			// If the topic no longer exists, carry its view count over to the
+			// destination topic like merge_topics() does (maximum, not sum)
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_views = ' . $topic_views . '
+				WHERE topic_id = ' . $to_topic_id;
+			$db->sql_query($sql);
 		}
 
 		// Re-sync the topics and forums because the auto-sync was deactivated in the call of move_posts()
