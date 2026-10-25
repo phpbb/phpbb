@@ -72,6 +72,11 @@
 		"vimeo/psalm": "^6.13.1",
 		"psalm/plugin-symfony": "^v5.1.0"
 	},
+	"autoload-dev": {
+		"psr-4": {
+			"phpbb\\tests\\functional\\storage\\": "../tests/functional/storage/"
+		}
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "4.0.x-dev"
