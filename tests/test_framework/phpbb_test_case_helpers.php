@@ -82,7 +82,7 @@ class phpbb_test_case_helpers
 				restore_error_handler();
 				throw new Exception($errstr, $errno);
 			},
-			$errno
+			E_ALL ^ E_DEPRECATED
 		);
 
 		$this->expectedTriggerError = true;
