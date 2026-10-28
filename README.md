@@ -51,3 +51,5 @@ Branch  | Description | GitHub Actions |
 
 ## 🔋 Powered by
 [![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)
+
+This project is tested with BrowserStack.
