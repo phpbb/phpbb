@@ -112,11 +112,15 @@ jobs:
                     - php: '8.2'
                       db: "mariadb:10.6"
                     - php: '8.2'
-                      db: "mariadb:10.9"
-                    - php: '8.2'
-                      db: "mariadb:10.10"
-                    - php: '8.2'
                       db: "mariadb:10.11"
+                    - php: '8.2'
+                      db: "mariadb:11.4"
+                    - php: '8.2'
+                      db: "mariadb:11.8"
+                    - php: '8.2'
+                      db: "mariadb:12.3"
+                    - php: '8.2'
+                      db: "mariadb:13.0"
                     - php: '8.2'
                       db: "mysql:8.0"
                       db_alias: "MySQL Slow Tests"
@@ -130,15 +134,13 @@ jobs:
                     - php: '8.2'
                       db: "mysql:8.4"
                     - php: '8.2'
-                      db: "mysql:9.4"
+                      db: "mysql:9.7"
                     - php: '8.3'
                       db: "mysql:8.0"
                     - php: '8.4'
                       db: "mysql:8.4"
                     - php: '8.5'
                       db: "mysql:8.4"
-                    - php: '8.5'
-                      db: "mysql:9.4"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -151,7 +153,7 @@ jobs:
                 ports:
                     - 3306:3306
                 options: >-
-                    --health-cmd="mysqladmin ping"
+                    --health-cmd="mariadb-admin ping || mysqladmin ping"
                     --health-interval=10s
                     --health-timeout=5s
                     --health-retries=3
@@ -278,6 +280,12 @@ jobs:
                       db: "postgres:14"
                     - php: '8.2'
                       db: "postgres:15"
+                    - php: '8.2'
+                      db: "postgres:16"
+                    - php: '8.2'
+                      db: "postgres:17"
+                    - php: '8.2'
+                      db: "postgres:18"
                     - php: '8.3'
                       db: "postgres:10"
                     - php: '8.4'
@@ -396,12 +404,16 @@ jobs:
                       db_image: ''
                     - php: '8.2'
                       db: "mssql"
-                      db_image: "mcr.microsoft.com/mssql/server:2019-CU27-ubuntu-20.04"
+                      db_image: "mcr.microsoft.com/mssql/server:2019-CU32-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
                     - php: '8.2'
                       db: "mssql"
-                      db_image: "mcr.microsoft.com/mssql/server:2022-CU13-ubuntu-22.04"
+                      db_image: "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
+                    - php: '8.2'
+                      db: "mssql"
+                      db_image: "mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-22.04"
+                      db_alias: 'MSSQL 2025'
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -414,7 +426,7 @@ jobs:
                 ports:
                     - 1433:1433
                 options: >-
-                    --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_CI_AS\" || exit 1"
+                    --health-cmd="PATH=$PATH:/opt/mssql-tools18/bin:/opt/mssql-tools/bin sqlcmd -C -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_CI_AS\" || exit 1"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
@@ -501,8 +513,11 @@ jobs:
         timeout-minutes: 20
         strategy:
             matrix:
-                php: ['8.2']
-                db: ['postgres']
+                include:
+                    - php: '8.2'
+                      db: "postgres"
+                    - php: '8.5'
+                      db: "postgres"
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
 
