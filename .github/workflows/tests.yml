@@ -23,7 +23,7 @@ jobs:
             matrix:
                 include:
                     - db: 'none'
-                      php: '8.2'
+                      php: '8.4'
                       NOTESTS: 1
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -107,40 +107,42 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:10.4"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:10.6"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:10.11"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:11.4"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:11.8"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:12.3"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mariadb:13.0"
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mysql:8.0"
                       db_alias: "MySQL Slow Tests"
                       SLOWTESTS: 1
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mysql:8.0"
                       db_alias: "MyISAM Tests"
                       MYISAM: 1
-                    - php: '8.2'
-                      db: "mysql:8.0"
-                    - php: '8.2'
-                      db: "mysql:8.4"
-                    - php: '8.2'
-                      db: "mysql:9.7"
-                    - php: '8.3'
+                    - php: '8.4'
                       db: "mysql:8.0"
                     - php: '8.4'
                       db: "mysql:8.4"
+                    - php: '8.4'
+                      db: "mysql:9.7"
                     - php: '8.5'
-                      db: "mysql:8.4"
+                      db: "mariadb:10.4"
+                    - php: '8.5'
+                      db: "mysql:8.0"
+                    - php: '8.6'
+                      db: "mariadb:10.4"
+                    - php: '8.6'
+                      db: "mysql:8.0"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db_alias != '' && matrix.db_alias || matrix.db }}
 
@@ -268,29 +270,27 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '8.2'
-                      db: "postgres:10"
-                    - php: '8.2'
-                      db: "postgres:11"
-                    - php: '8.2'
-                      db: "postgres:12"
-                    - php: '8.2'
-                      db: "postgres:13"
-                    - php: '8.2'
-                      db: "postgres:14"
-                    - php: '8.2'
-                      db: "postgres:15"
-                    - php: '8.2'
-                      db: "postgres:16"
-                    - php: '8.2'
-                      db: "postgres:17"
-                    - php: '8.2'
-                      db: "postgres:18"
-                    - php: '8.3'
-                      db: "postgres:10"
                     - php: '8.4'
                       db: "postgres:10"
+                    - php: '8.4'
+                      db: "postgres:11"
+                    - php: '8.4'
+                      db: "postgres:12"
+                    - php: '8.4'
+                      db: "postgres:13"
+                    - php: '8.4'
+                      db: "postgres:14"
+                    - php: '8.4'
+                      db: "postgres:15"
+                    - php: '8.4'
+                      db: "postgres:16"
+                    - php: '8.4'
+                      db: "postgres:17"
+                    - php: '8.4'
+                      db: "postgres:18"
                     - php: '8.5'
+                      db: "postgres:10"
+                    - php: '8.6'
                       db: "postgres:10"
 
         name: PHP ${{ matrix.php }} - ${{ matrix.db }}
@@ -399,18 +399,18 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "sqlite3"
                       db_image: ''
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mssql"
                       db_image: "mcr.microsoft.com/mssql/server:2019-CU32-ubuntu-20.04"
                       db_alias: 'MSSQL 2019'
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mssql"
                       db_image: "mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04"
                       db_alias: 'MSSQL 2022'
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "mssql"
                       db_image: "mcr.microsoft.com/mssql/server:2025-CU9-ubuntu-22.04"
                       db_alias: 'MSSQL 2025'
@@ -514,9 +514,11 @@ jobs:
         strategy:
             matrix:
                 include:
-                    - php: '8.2'
+                    - php: '8.4'
                       db: "postgres"
                     - php: '8.5'
+                      db: "postgres"
+                    - php: '8.6'
                       db: "postgres"
 
         name: Windows - PHP ${{ matrix.php }} - ${{ matrix.db }}
