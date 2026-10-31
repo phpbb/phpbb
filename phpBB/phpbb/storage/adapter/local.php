@@ -73,7 +73,8 @@ class local implements adapter_interface
 	 */
 	public function read(string $path)
 	{
-		$stream = @fopen($this->root_path . $path, 'rb');
+		$full_path = $this->resolve_path($path);
+		$stream = @fopen($full_path, 'rb');
 
 		if (!$stream)
 		{
@@ -88,7 +89,8 @@ class local implements adapter_interface
 	 */
 	public function write(string $path, $resource): int
 	{
-		$stream = @fopen($this->root_path . $path, 'w+b');
+		$full_path = $this->resolve_path($path);
+		$stream = @fopen($full_path, 'w+b');
 
 		if (!$stream)
 		{
@@ -111,14 +113,39 @@ class local implements adapter_interface
 	 */
 	public function delete(string $path): void
 	{
+		$full_path = $this->resolve_path($path);
+
 		try
 		{
-			$this->filesystem->remove($this->root_path . $path);
+			$this->filesystem->remove($full_path);
 		}
 		catch (filesystem_exception $e)
 		{
 			throw new storage_exception('STORAGE_CANNOT_DELETE', $path, array(), $e);
 		}
+	}
+
+	/**
+	 * Resolves and validates that the file is directly within the storage root directory
+	 *
+	 * @param string $path Path relative to storage root
+	 *
+	 * @return string Full path within the storage directory
+	 * @throws storage_exception When path traverses outside storage root, contains subdirectories, or is invalid
+	 */
+	protected function resolve_path(string $path): string
+	{
+		if ($path === ''
+			|| $path === '.'
+			|| str_contains($path, '/')
+			|| str_contains($path, '\\')
+			|| str_contains($path, '..')
+			|| str_contains($path, "\0"))
+		{
+			throw new storage_exception('STORAGE_INVALID_PATH', $path);
+		}
+
+		return $this->root_path . $path;
 	}
 
 	/**

@@ -78,4 +78,5 @@ $lang = array_merge($lang, [
 
 	'STORAGE_PATH_NOT_EXISTS'		=> '“%1$s” path does not exist or is not writable.',
 	'STORAGE_PATH_NOT_SET'			=> '“%1$s” path is not set.',
+	'STORAGE_INVALID_PATH'			=> 'Path “%1$s” is invalid.',
 ]);
