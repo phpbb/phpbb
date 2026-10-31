@@ -740,6 +740,15 @@ class doctrine implements tools_interface
 			return;
 		}
 
+		$table = $schema->getTable($table_name);
+		foreach ($schema->getSequences() as $sequence)
+		{
+			if ($this->isSequenceAutoIncrementsFor($sequence, $table))
+			{
+				$schema->dropSequence($sequence->getName());
+			}
+		}
+
 		$schema->dropTable($table_name);
 	}
 
@@ -1215,7 +1224,8 @@ class doctrine implements tools_interface
 
 		$column = $table->getColumn($pkColumns[0]);
 
-		if (! $column->getAutoincrement())
+		// Oracle introspection does not mark trigger-backed identity columns as autoincrement.
+		if (!$column->getAutoincrement() && !($this->connection->getDatabasePlatform() instanceof OraclePlatform))
 		{
 			return false;
 		}
@@ -1224,7 +1234,7 @@ class doctrine implements tools_interface
 		$tableName         = $table->getShortestName($table->getNamespaceName());
 		$tableSequenceName = sprintf('%s_seq', $tableName);
 
-		return $tableSequenceName === $sequenceName;
+		return strtolower($tableSequenceName) === strtolower($sequenceName);
 	}
 
 	/**
