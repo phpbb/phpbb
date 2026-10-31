@@ -195,7 +195,7 @@ class phpbb_functions_user_delete_user_test extends phpbb_database_test_case
 	{
 		global $cache, $config, $db, $user, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
-		$this->assertFalse(user_delete($mode, 2, $retain_username));
+		$this->assertFalse(user_delete($mode, 2, $retain_username, false));
 
 		$sql = 'SELECT post_id, poster_id, post_username
 			FROM ' . POSTS_TABLE . '
