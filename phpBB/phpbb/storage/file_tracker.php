@@ -74,6 +74,11 @@ class file_tracker
 	 */
 	public function track_files(string $storage, array $files): void
 	{
+		if (empty($files))
+		{
+			return;
+		}
+
 		$sql_ary = [];
 		foreach ($files as $file)
 		{
