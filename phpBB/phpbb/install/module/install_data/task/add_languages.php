@@ -13,6 +13,7 @@
 
 namespace phpbb\install\module\install_data\task;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement as DriverStatement;
 use Doctrine\DBAL\Statement;
 use phpbb\install\database_task;
@@ -52,6 +53,9 @@ class add_languages extends database_task
 	 */
 	protected $stmt;
 
+	/** @var Connection */
+	protected $conn;
+
 	/**
 	 * Constructor
 	 *
@@ -72,7 +76,8 @@ class add_languages extends database_task
 		$this->language_helper	= $language_helper;
 		$this->lang_table		= $container->get_parameter('tables.lang');
 
-		parent::__construct(self::get_doctrine_connection($db_helper, $config), $this->iohandler,true);
+		$this->conn = self::get_doctrine_connection($db_helper, $config);
+		parent::__construct($this->conn, $this->iohandler, true);
 	}
 
 	/**
@@ -102,7 +107,11 @@ class add_languages extends database_task
 		]);
 
 		$installed_languages = $this->config->get('installed_languages', []);
-		$installed_languages[] = (int) $this->get_last_insert_id();
+		// Oracle uses sequences and does not implement Doctrine's lastInsertId().
+		$installed_languages[] = (int) $this->conn->fetchOne(
+			'SELECT lang_id FROM ' . $this->lang_table . ' WHERE lang_iso = ?',
+			[$value['iso']]
+		);
 		$this->config->set('installed_languages', $installed_languages);
 	}
 

@@ -178,6 +178,8 @@ class create_search_index extends database_task
 	 */
 	protected function execute_step($key, $value) : void
 	{
+		// Doctrine's Oracle driver returns unquoted column names in uppercase.
+		$value = array_change_key_case($value, CASE_LOWER);
 		$this->search_indexer->index(
 			'post',
 			(int) $value['post_id'],
