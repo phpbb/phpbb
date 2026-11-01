@@ -64,7 +64,7 @@ class mysql_ssl
 	 *
 	 * @param string|null $ca_file CA file from config.php; empty means the system's trusted CAs.
 	 *
-	 * @return array{0: string|null, 1: string|null} CA file and CA directory, at least one of them set.
+	 * @return array [CA file or null, CA directory or null], at least one of them set.
 	 *
 	 * @throws InvalidArgumentException If no trusted CAs can be found.
 	 */
