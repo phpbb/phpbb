@@ -254,6 +254,47 @@ class version_helper_remote_test extends \phpbb_test_case
 					),
 				),
 			)),
+			// Unknown key in a later branch must not overwrite data of the previous branch
+			array('{
+    "stable": {
+        "3.2": {
+            "current": "3.2.11",
+            "eol": "https://www.phpbb.com/community/viewtopic.php?t=2675305",
+            "security": "3.2.11"
+        },
+        "3.3": {
+            "current": "3.3.19",
+            "eol": null,
+            "security": "3.3.19",
+            "urgent": "3.3.19"
+        }
+    }
+}', true, [
+				'stable' => [
+					'3.2' => [
+						'current' => '3.2.11',
+						'eol' => 'https://www.phpbb.com/community/viewtopic.php?t=2675305',
+						'security' => '3.2.11',
+					],
+					'3.3' => [
+						'current' => '3.3.19',
+						'eol' => null,
+						'security' => '3.3.19',
+					],
+				],
+				'unstable' => [
+					'3.2' => [
+						'current' => '3.2.11',
+						'eol' => 'https://www.phpbb.com/community/viewtopic.php?t=2675305',
+						'security' => '3.2.11',
+					],
+					'3.3' => [
+						'current' => '3.3.19',
+						'eol' => null,
+						'security' => '3.3.19',
+					],
+				],
+			]),
 		);
 	}
 
