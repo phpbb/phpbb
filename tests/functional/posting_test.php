@@ -188,6 +188,58 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->assertEquals(5, $crawler->filter('*[data-poll-option-id]')->count());
 	}
 
+	public function test_poll_vote_only_counted_once()
+	{
+		$this->login();
+		$this->add_lang('viewtopic');
+
+		$post = $this->create_topic(
+			2,
+			'[ticket/17768] Test Poll Voting',
+			'Submitting a vote multiple times should only count once.',
+			array('poll_title' => 'Poll Title', 'poll_option_text' => "A\nB")
+		);
+
+		$crawler = self::request('GET', "viewtopic.php?t={$post['topic_id']}&sid={$this->sid}");
+		$option_ids = $crawler->filter('input[name="vote_id[]"]')->each(function ($node) {
+			return (int) $node->attr('value');
+		});
+		$this->assertCount(2, $option_ids);
+
+		// Voting for an option that does not exist in the poll should be rejected
+		$invalid_form = $crawler->selectButton($this->lang('SUBMIT_VOTE'))->form();
+		$invalid_form->disableValidation();
+		$invalid_form['vote_id'][0]->select(max($option_ids) + 1);
+		$invalid_crawler = self::submit($invalid_form);
+		$this->assertStringContainsString($this->lang('NO_VOTE_OPTION'), $invalid_crawler->filter('#message')->text());
+
+		// Both forms are fetched before voting, the second one is submitted after the first vote was cast
+		$form = $crawler->selectButton($this->lang('SUBMIT_VOTE'))->form();
+		$stale_form = $crawler->selectButton($this->lang('SUBMIT_VOTE'))->form();
+
+		$form['vote_id'][0]->select($option_ids[0]);
+		$crawler = self::submit($form);
+		$this->assertStringContainsString($this->lang('VOTE_SUBMITTED'), $crawler->filter('#message')->text());
+
+		$stale_form['vote_id'][1]->select($option_ids[1]);
+		self::submit($stale_form);
+
+		$db = $this->get_db();
+		$sql = 'SELECT COUNT(*) AS num_votes
+			FROM ' . POLL_VOTES_TABLE . '
+			WHERE topic_id = ' . (int) $post['topic_id'];
+		$result = $db->sql_query($sql);
+		$this->assertEquals(1, (int) $db->sql_fetchfield('num_votes'));
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT SUM(poll_option_total) AS total_votes
+			FROM ' . POLL_OPTIONS_TABLE . '
+			WHERE topic_id = ' . (int) $post['topic_id'];
+		$result = $db->sql_query($sql);
+		$this->assertEquals(1, (int) $db->sql_fetchfield('total_votes'));
+		$db->sql_freeresult($result);
+	}
+
 	protected function set_quote_depth($depth)
 	{
 		$crawler = self::request('GET', 'adm/index.php?sid=' . $this->sid . '&i=acp_board&mode=post');
