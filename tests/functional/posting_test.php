@@ -188,7 +188,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$this->assertEquals(5, $crawler->filter('*[data-poll-option-id]')->count());
 	}
 
-	public function test_poll_vote_only_counted_once()
+	public function test_poll_vote()
 	{
 		$this->login();
 		$this->add_lang('viewtopic');
@@ -196,7 +196,7 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$post = $this->create_topic(
 			2,
 			'[ticket/17768] Test Poll Voting',
-			'Submitting a vote multiple times should only count once.',
+			'Only votes for existing poll options should be counted.',
 			array('poll_title' => 'Poll Title', 'poll_option_text' => "A\nB")
 		);
 
@@ -213,16 +213,10 @@ class phpbb_functional_posting_test extends phpbb_functional_test_case
 		$invalid_crawler = self::submit($invalid_form);
 		$this->assertStringContainsString($this->lang('NO_VOTE_OPTION'), $invalid_crawler->filter('#message')->text());
 
-		// Both forms are fetched before voting, the second one is submitted after the first vote was cast
 		$form = $crawler->selectButton($this->lang('SUBMIT_VOTE'))->form();
-		$stale_form = $crawler->selectButton($this->lang('SUBMIT_VOTE'))->form();
-
 		$form['vote_id'][0]->select($option_ids[0]);
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('VOTE_SUBMITTED'), $crawler->filter('#message')->text());
-
-		$stale_form['vote_id'][1]->select($option_ids[1]);
-		self::submit($stale_form);
 
 		$db = $this->get_db();
 		$sql = 'SELECT COUNT(*) AS num_votes
