@@ -830,6 +830,13 @@ forumlist_body_category_header_row_prepend
 * Since: 3.1.5-RC1
 * Purpose: Add content before the header row of the category on the forum list.
 
+forumlist_body_forum_desc_after
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the forum description on the forum list.
+
 forumlist_body_forum_image_after
 ===
 * Locations:
