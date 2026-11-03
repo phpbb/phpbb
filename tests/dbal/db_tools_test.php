@@ -463,6 +463,28 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		));
 	}
 
+	public function test_perform_schema_changes_replaces_index_with_same_name()
+	{
+		// Drop a unique index and add it back with another column, in one schema change
+		$this->tools->perform_schema_changes([
+			'drop_keys'			=> [
+				'prefix_table_name'	=> ['i_comp_uniq'],
+			],
+			'add_unique_index'	=> [
+				'prefix_table_name'	=> [
+					'i_comp_uniq'	=> ['c_vchar_size', 'c_usint', 'c_uint'],
+				],
+			],
+		]);
+
+		$index_name = \phpbb\db\doctrine\table_helper::generate_shortname('table_name') . '_i_comp_uniq';
+		$this->assertTrue($this->tools->sql_unique_index_exists('prefix_table_name', $index_name));
+
+		$indexes = $this->doctrine_db->createSchemaManager()->listTableIndexes('prefix_table_name');
+		$this->assertArrayHasKey($index_name, $indexes);
+		$this->assertSame(['c_vchar_size', 'c_usint', 'c_uint'], $indexes[$index_name]->getColumns());
+	}
+
 	public function test_index_exists()
 	{
 		$this->assertTrue($this->tools->sql_index_exists('prefix_table_name', \phpbb\db\doctrine\table_helper::generate_shortname('table_name') . '_i_simple'));
