@@ -158,6 +158,13 @@
 					<!-- ENDIF -->
 					</dd>
 				</dl>
+				<!-- IF USER_HAS_POSTS -->
+				<dl>
+					<dt><label for="rename_username">{L_RENAME_USERNAME}{L_COLON}</label><br /><span>{L_RENAME_USERNAME_EXPLAIN}</span></dt>
+					<dd><label><input type="radio" class="radio" name="rename_username" value="1" id="rename_username" checked="checked"> {L_YES}</label>
+						<label><input type="radio" class="radio" name="rename_username" value="0"> {L_NO}</label></dd>
+				</dl>
+				<!-- ENDIF -->
 				<p class="quick">
 					<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 					<input type="hidden" name="delete" value="1" />
