@@ -63,7 +63,7 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 	{
 		$this->migration->add_ai_crawlers();
 
-		$sql = 'SELECT bot_name, bot_agent, user_id
+		$sql = 'SELECT bot_name, bot_agent, bot_ip, user_id
 			FROM phpbb_bots
 			ORDER BY bot_id ASC';
 		$result = $this->db->sql_query($sql);
@@ -82,6 +82,9 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		$this->assertSame('meta-external', $bots[2]['bot_agent']);
 		$this->assertSame('IP Bot', $bots[3]['bot_name']);
 		$this->assertSame('', $bots[3]['bot_agent']);
+		$this->assertSame('Pinned Bot', $bots[4]['bot_name']);
+		$this->assertSame('PerplexityBot/', $bots[4]['bot_agent']);
+		$this->assertSame('10.0.0.1', $bots[4]['bot_ip']);
 
 		// No second bot for an agent string the administrator's bots already
 		// match: case insensitively, with a wildcard, or as a partial string
@@ -94,14 +97,16 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		$this->assertNotContains('Meta-ExternalAds [Bot]', $bot_names);
 		$this->assertNotContains('Meta-ExternalFetcher [Bot]', $bot_names);
 
-		// The other AI crawlers are still added, a bot matching by IP only
-		// does not block any of them
+		// The other AI crawlers are still added: a bot matching by IP only
+		// does not block any of them, and a bot restricted to an IP address
+		// does not stand in for the crawler with the same agent string
 		$this->assertContains('OAI-SearchBot [Bot]', $bot_names);
 		$this->assertContains('Meta-WebIndexer [Bot]', $bot_names);
 		$this->assertContains('FacebookBot [Bot]', $bot_names);
 		$this->assertContains('PerplexityBot [Bot]', $bot_names);
 		$this->assertContains('CCBot [Bot]', $bot_names);
-		$this->assertCount(22, $bots);
+		$this->assertSame(2, count(array_keys(array_map('strtolower', array_column($bots, 'bot_agent')), 'perplexitybot/', true)));
+		$this->assertCount(23, $bots);
 
 		$sql = 'SELECT user_id, group_id
 			FROM phpbb_users

@@ -68,6 +68,15 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>14</value>
+			<value>Pinned Bot</value>
+			<value>pinned bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_bots">
 		<column>bot_id</column>
@@ -107,6 +116,14 @@
 			<value>13</value>
 			<value></value>
 			<value>127.0.0.1</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>Pinned Bot</value>
+			<value>14</value>
+			<value>PerplexityBot/</value>
+			<value>10.0.0.1</value>
 		</row>
 	</table>
 </dataset>

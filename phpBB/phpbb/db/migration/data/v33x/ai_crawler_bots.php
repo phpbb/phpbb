@@ -88,15 +88,20 @@ class ai_crawler_bots extends migration
 
 		$group_row = [];
 
-		// Agent strings of the bots already configured on the board
+		// Agent strings of the bots already configured on the board. A bot
+		// restricted to an IP address only matches visitors from that address,
+		// so it does not stand in for a bot matched by agent string alone
 		$existing_agents = [];
 
-		$sql = 'SELECT bot_agent
+		$sql = 'SELECT bot_agent, bot_ip
 			FROM ' . $this->table_prefix . 'bots';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			$existing_agents[] = $row['bot_agent'];
+			if (!$row['bot_ip'])
+			{
+				$existing_agents[] = $row['bot_agent'];
+			}
 		}
 		$this->db->sql_freeresult($result);
 

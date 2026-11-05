@@ -33,7 +33,9 @@ class remove_duplicate_ai_crawler_bots extends migration
 
 	/**
 	 * Remove AI crawler bots added by the ai_crawler_bots migration whose
-	 * agent string was already configured on the board by an older bot
+	 * agent string was already configured on the board by an older bot.
+	 * Only exact (case insensitive) agent matches between bots without an
+	 * IP restriction are removed.
 	 */
 	public function remove_duplicate_bots(): void
 	{
@@ -50,7 +52,7 @@ class remove_duplicate_ai_crawler_bots extends migration
 		}
 
 		$sql_ary = [
-			'SELECT'	=> 'b.bot_id, b.user_id, b.bot_agent, u.group_id',
+			'SELECT'	=> 'b.bot_id, b.user_id, b.bot_agent, b.bot_ip, u.group_id',
 			'FROM'		=> [$this->table_prefix . 'bots' => 'b'],
 			'LEFT_JOIN'	=> [
 				[
@@ -63,21 +65,30 @@ class remove_duplicate_ai_crawler_bots extends migration
 		$sql = $this->db->sql_build_query('SELECT', $sql_ary);
 		$result = $this->db->sql_query($sql);
 
-		// An AI crawler whose agent string an older bot already matches is a
-		// duplicate, the older bot is kept
-		$kept_agents = [];
+		// Bots are matched case insensitively against the user agent in
+		// phpbb\session, so the oldest bot per agent string is kept. Bots
+		// restricted to an IP address are neither removed nor stand in for
+		// another bot, they only match visitors from that address
+		$known_agents = [];
 		$bot_ids = $user_ids = [];
 
 		while ($row = $this->db->sql_fetchrow($result))
 		{
-			if ($row['bot_agent'] !== '' && (int) $row['group_id'] === $group_id && $this->agent_is_matched($row['bot_agent'], $kept_agents))
+			if ($row['bot_ip'])
+			{
+				continue;
+			}
+
+			$bot_agent = strtolower($row['bot_agent']);
+
+			if ($bot_agent !== '' && isset($known_agents[$bot_agent]) && (int) $row['group_id'] === $group_id)
 			{
 				$bot_ids[] = (int) $row['bot_id'];
 				$user_ids[] = (int) $row['user_id'];
 				continue;
 			}
 
-			$kept_agents[] = $row['bot_agent'];
+			$known_agents[$bot_agent] = true;
 		}
 		$this->db->sql_freeresult($result);
 
@@ -100,27 +111,5 @@ class remove_duplicate_ai_crawler_bots extends migration
 		}
 
 		$this->db->sql_transaction('commit');
-	}
-
-	/**
-	 * Check whether one of the configured bot agents matches an agent string
-	 * the same way \phpbb\session matches bots against the user agent:
-	 * case insensitively, with * as a wildcard
-	 *
-	 * @param string $agent Agent string of the bot to check
-	 * @param array $bot_agents Agent strings of the older bots that are kept
-	 * @return bool
-	 */
-	protected function agent_is_matched(string $agent, array $bot_agents): bool
-	{
-		foreach ($bot_agents as $bot_agent)
-		{
-			if ($bot_agent !== '' && preg_match('#' . str_replace('\*', '.*?', preg_quote($bot_agent, '#')) . '#i', $agent))
-			{
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

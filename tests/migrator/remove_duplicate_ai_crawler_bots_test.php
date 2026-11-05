@@ -47,12 +47,14 @@ class phpbb_migrator_remove_duplicate_ai_crawler_bots_test extends phpbb_databas
 	{
 		$this->migration->remove_duplicate_bots();
 
-		// The AI crawlers whose agent string the administrator's older bots
-		// match, case insensitively or by wildcard, are gone; the other AI
-		// crawlers and the administrator's own newer duplicate are kept
-		$this->assertSame([1, 2, 4, 6, 7, 8], $this->get_ids('phpbb_bots', 'bot_id'));
-		$this->assertSame([10, 11, 13, 15, 16, 17], $this->get_ids('phpbb_users', 'user_id'));
-		$this->assertSame([10, 11, 13, 15, 16, 17], $this->get_ids('phpbb_user_group', 'user_id'));
+		// Only the AI crawler whose agent string exactly matches (case
+		// insensitively) the administrator's older bot is gone. Kept: the
+		// crawler an older wildcard agent would match, the crawler whose older
+		// twin is restricted to an IP address, the crawler restricted to an IP
+		// address itself, and the administrator's own newer duplicate
+		$this->assertSame([1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12], $this->get_ids('phpbb_bots', 'bot_id'));
+		$this->assertSame([10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21], $this->get_ids('phpbb_users', 'user_id'));
+		$this->assertSame([10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21], $this->get_ids('phpbb_user_group', 'user_id'));
 	}
 
 	public function test_nothing_to_remove_without_group()
@@ -63,8 +65,8 @@ class phpbb_migrator_remove_duplicate_ai_crawler_bots_test extends phpbb_databas
 
 		$this->migration->remove_duplicate_bots();
 
-		$this->assertSame([1, 2, 3, 4, 5, 6, 7, 8], $this->get_ids('phpbb_bots', 'bot_id'));
-		$this->assertSame([10, 11, 12, 13, 14, 15, 16, 17], $this->get_ids('phpbb_users', 'user_id'));
+		$this->assertSame(range(1, 12), $this->get_ids('phpbb_bots', 'bot_id'));
+		$this->assertSame(range(10, 21), $this->get_ids('phpbb_users', 'user_id'));
 	}
 
 	protected function get_ids($table, $column)
