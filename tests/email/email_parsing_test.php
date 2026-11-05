@@ -21,9 +21,10 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user;
+		global $phpbb_container, $config, $phpbb_root_path, $phpEx, $request, $user, $phpbb_dispatcher;
 
 		$phpbb_container = new phpbb_mock_container_builder;
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
 		$config = new \phpbb\config\config(array(
 			'board_email_sig'     => '-- Thanks, The Management',

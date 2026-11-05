@@ -206,7 +206,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '', $template_path = '', $template_dir_prefix = '')
 	{
-		global $config, $phpbb_root_path, $user;
+		global $config, $phpbb_root_path, $user, $phpbb_dispatcher;
 
 		$template_dir_prefix = (!$template_dir_prefix || $template_dir_prefix[0] === '/') ? $template_dir_prefix : '/' . $template_dir_prefix;
 
@@ -277,6 +277,18 @@ class messenger
 				);
 			}
 		}
+
+		/**
+		* Allow an extension to add its own email template search path
+		*
+		* @event core.messenger_template_paths
+		* @var	string	template_lang			Language being resolved for this email
+		* @var	string	template_dir_prefix	Template subdirectory prefix
+		* @var	array	template_paths			Filesystem paths searched for the template file
+		* @since 3.3.20-RC1
+		*/
+		$vars = array('template_lang', 'template_dir_prefix', 'template_paths');
+		extract($phpbb_dispatcher->trigger_event('core.messenger_template_paths', compact($vars)));
 
 		$this->set_template_paths($ext_template_paths, $template_paths);
 
