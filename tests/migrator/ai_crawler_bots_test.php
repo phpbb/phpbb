@@ -71,20 +71,37 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		$this->db->sql_freeresult($result);
 
 		$bot_names = array_column($bots, 'bot_name');
-		$bot_agents = array_map('strtolower', array_column($bots, 'bot_agent'));
 
-		// The administrator's bot with the same agent string is kept as is
+		// The administrator's bots are kept as they are
 		$this->assertSame('Some Bot', $bots[0]['bot_name']);
 		$this->assertSame('gptbot/', $bots[0]['bot_agent']);
 		$this->assertSame(10, (int) $bots[0]['user_id']);
+		$this->assertSame('Claude Bots', $bots[1]['bot_name']);
+		$this->assertSame('Claude*', $bots[1]['bot_agent']);
+		$this->assertSame('Meta Bots', $bots[2]['bot_name']);
+		$this->assertSame('meta-external', $bots[2]['bot_agent']);
+		$this->assertSame('IP Bot', $bots[3]['bot_name']);
+		$this->assertSame('', $bots[3]['bot_agent']);
 
-		// No second bot for the already configured agent string
+		// No second bot for an agent string the administrator's bots already
+		// match: case insensitively, with a wildcard, or as a partial string
 		$this->assertNotContains('GPTBot [Bot]', $bot_names);
-		$this->assertSame(1, count(array_keys($bot_agents, 'gptbot/', true)));
+		$this->assertNotContains('ClaudeBot [Bot]', $bot_names);
+		$this->assertNotContains('Claude-User [Bot]', $bot_names);
+		$this->assertNotContains('Claude-SearchBot [Bot]', $bot_names);
+		$this->assertNotContains('Claude-Web [Bot]', $bot_names);
+		$this->assertNotContains('Meta-ExternalAgent [Bot]', $bot_names);
+		$this->assertNotContains('Meta-ExternalAds [Bot]', $bot_names);
+		$this->assertNotContains('Meta-ExternalFetcher [Bot]', $bot_names);
 
-		// The other AI crawlers are still added to the AI crawlers group
-		$this->assertContains('ClaudeBot [Bot]', $bot_names);
-		$this->assertSame(count($bot_agents), count(array_unique($bot_agents)));
+		// The other AI crawlers are still added, a bot matching by IP only
+		// does not block any of them
+		$this->assertContains('OAI-SearchBot [Bot]', $bot_names);
+		$this->assertContains('Meta-WebIndexer [Bot]', $bot_names);
+		$this->assertContains('FacebookBot [Bot]', $bot_names);
+		$this->assertContains('PerplexityBot [Bot]', $bot_names);
+		$this->assertContains('CCBot [Bot]', $bot_names);
+		$this->assertCount(22, $bots);
 
 		$sql = 'SELECT user_id, group_id
 			FROM phpbb_users
@@ -95,7 +112,7 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 
 		$sql = 'SELECT user_id, group_id
 			FROM phpbb_users
-			WHERE ' . $this->db->sql_build_array('SELECT', ['username_clean' => utf8_clean_string('ClaudeBot [Bot]')]);
+			WHERE ' . $this->db->sql_build_array('SELECT', ['username_clean' => utf8_clean_string('PerplexityBot [Bot]')]);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

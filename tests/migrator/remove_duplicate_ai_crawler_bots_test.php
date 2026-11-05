@@ -47,11 +47,12 @@ class phpbb_migrator_remove_duplicate_ai_crawler_bots_test extends phpbb_databas
 	{
 		$this->migration->remove_duplicate_bots();
 
-		// The AI crawler duplicating the administrator's older bot is gone,
-		// the administrator's own newer duplicate in the bots group is kept
-		$this->assertSame([1, 3, 4], $this->get_ids('phpbb_bots', 'bot_id'));
-		$this->assertSame([10, 12, 13], $this->get_ids('phpbb_users', 'user_id'));
-		$this->assertSame([10, 12, 13], $this->get_ids('phpbb_user_group', 'user_id'));
+		// The AI crawlers whose agent string the administrator's older bots
+		// match, case insensitively or by wildcard, are gone; the other AI
+		// crawlers and the administrator's own newer duplicate are kept
+		$this->assertSame([1, 2, 4, 6, 7, 8], $this->get_ids('phpbb_bots', 'bot_id'));
+		$this->assertSame([10, 11, 13, 15, 16, 17], $this->get_ids('phpbb_users', 'user_id'));
+		$this->assertSame([10, 11, 13, 15, 16, 17], $this->get_ids('phpbb_user_group', 'user_id'));
 	}
 
 	public function test_nothing_to_remove_without_group()
@@ -62,8 +63,8 @@ class phpbb_migrator_remove_duplicate_ai_crawler_bots_test extends phpbb_databas
 
 		$this->migration->remove_duplicate_bots();
 
-		$this->assertSame([1, 2, 3, 4], $this->get_ids('phpbb_bots', 'bot_id'));
-		$this->assertSame([10, 11, 12, 13], $this->get_ids('phpbb_users', 'user_id'));
+		$this->assertSame([1, 2, 3, 4, 5, 6, 7, 8], $this->get_ids('phpbb_bots', 'bot_id'));
+		$this->assertSame([10, 11, 12, 13, 14, 15, 16, 17], $this->get_ids('phpbb_users', 'user_id'));
 	}
 
 	protected function get_ids($table, $column)

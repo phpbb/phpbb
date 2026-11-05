@@ -41,6 +41,33 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>11</value>
+			<value>Claude Bots</value>
+			<value>claude bots</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>Meta Bots</value>
+			<value>meta bots</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>IP Bot</value>
+			<value>ip bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_bots">
 		<column>bot_id</column>
@@ -56,6 +83,30 @@
 			<value>10</value>
 			<value>gptbot/</value>
 			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>Claude Bots</value>
+			<value>11</value>
+			<value>Claude*</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>Meta Bots</value>
+			<value>12</value>
+			<value>meta-external</value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>IP Bot</value>
+			<value>13</value>
+			<value></value>
+			<value>127.0.0.1</value>
 		</row>
 	</table>
 </dataset>
