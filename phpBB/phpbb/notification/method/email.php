@@ -186,13 +186,15 @@ class email extends messenger_base
 		$messenger_method->set_list_unsubscribe($unsubscribe_url);
 		$vars['U_UNSUBSCRIBE'] = $unsubscribe_url;
 
-		// Translated templates use these variables, they should work without login as well
-		foreach (['U_STOP_WATCHING_FORUM', 'U_STOP_WATCHING_TOPIC'] as $template_var)
+		// Stop watching links should work without login as well
+		if (isset($vars['U_STOP_WATCHING_FORUM']))
 		{
-			if (isset($vars[$template_var]))
-			{
-				$vars[$template_var] = $unsubscribe_url;
-			}
+			$vars['U_STOP_WATCHING_FORUM'] = $unsubscribe_url;
+		}
+
+		if (isset($vars['U_STOP_WATCHING_TOPIC']))
+		{
+			$vars['U_STOP_WATCHING_TOPIC'] = $unsubscribe_url;
 		}
 
 		return $vars;
