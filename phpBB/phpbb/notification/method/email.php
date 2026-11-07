@@ -262,6 +262,12 @@ class email extends messenger_base
 	 */
 	public function check_unsubscribe_params(array $user_row, array $params): bool
 	{
+		// Skip signing if user id doesn't even match
+		if ((int) $params['user_id'] !== ((int) $user_row['user_id']))
+		{
+			return false;
+		}
+
 		$signature = $this->sign_unsubscribe($user_row, [
 			(int) $params['user_id'],
 			(string) $params['type'],
@@ -270,9 +276,7 @@ class email extends messenger_base
 			(int) $params['time'],
 		]);
 
-		return $signature !== null
-			&& (int) $params['user_id'] === (int) $user_row['user_id']
-			&& hash_equals($signature, (string) $params['hash']);
+		return $signature !== null && hash_equals($signature, (string) $params['hash']);
 	}
 
 	/**
@@ -291,7 +295,7 @@ class email extends messenger_base
 		$secret = (string) $this->config['email_unsubscribe_secret'];
 		$email = (string) ($user_row['user_email'] ?? '');
 
-		if ($secret === '' || $email === '')
+		if (empty($secret) || empty($email))
 		{
 			return null;
 		}
