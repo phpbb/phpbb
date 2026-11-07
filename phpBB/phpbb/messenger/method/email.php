@@ -585,4 +585,13 @@ class email extends base
 	{
 		$this->headers->addHeader($header_name, $header_value);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_list_unsubscribe(string $url): void
+	{
+		$this->additional_headers['List-Unsubscribe'] = '<' . $url . '>';
+		$this->additional_headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
+	}
 }

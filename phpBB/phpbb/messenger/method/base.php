@@ -499,7 +499,5 @@ abstract class base implements messenger_interface
 	 */
 	public function set_list_unsubscribe(string $url): void
 	{
-		$this->additional_headers['List-Unsubscribe'] = '<' . $url . '>';
-		$this->additional_headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
 	}
 }
