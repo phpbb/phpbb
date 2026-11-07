@@ -147,9 +147,11 @@ class email_unsubscribe
 			return $this->handle_one_click($user_row, $type_option);
 		}
 
-		$item_title = in_array($params['watch_mode'], ['topic', 'forum'], true)
-			? $this->get_watched_item_title($params['user_id'], $params['watch_mode'], $params['watch_id'])
-			: null;
+		$item_title = null;
+		if ($params['watch_mode'] === 'topic' || $params['watch_mode'] === 'forum')
+		{
+			$item_title = $this->get_watched_item_title($params['user_id'], $params['watch_mode'], $params['watch_id']);
+		}
 
 		if ($this->request->is_set_post('unsubscribe'))
 		{
@@ -251,7 +253,7 @@ class email_unsubscribe
 		[$table, $column] = $this->get_watch_table($mode);
 
 		$sql = 'DELETE FROM ' . $table . '
-			WHERE ' . $column . ' = ' . $item_id . '
+			WHERE ' . $column . ' = ' . (int) $item_id . '
 				AND user_id = ' . $user_id;
 		$this->db->sql_query($sql);
 	}
@@ -286,7 +288,7 @@ class email_unsubscribe
 
 		$sql = 'UPDATE ' . $this->users_table . '
 			SET user_allow_massemail = 0
-			WHERE user_id = ' . $user_id;
+			WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 	}
 
@@ -306,9 +308,19 @@ class email_unsubscribe
 			return null;
 		}
 
-		$sql = $mode === 'topic'
-			? 'SELECT topic_title AS title FROM ' . $this->topics_table . ' WHERE topic_id = ' . $item_id
-			: 'SELECT forum_name AS title FROM ' . $this->forums_table . ' WHERE forum_id = ' . $item_id;
+		if ($mode === 'topic')
+		{
+			$sql = 'SELECT topic_title AS title
+				FROM ' . $this->topics_table . '
+				WHERE topic_id = ' . (int) $item_id;
+		}
+		else
+		{
+			$sql = 'SELECT forum_name AS title
+				FROM ' . $this->forums_table . '
+				WHERE forum_id = ' . (int) $item_id;
+		}
+
 		$result = $this->db->sql_query($sql);
 		$title = $this->db->sql_fetchfield('title');
 		$this->db->sql_freeresult($result);
@@ -331,8 +343,8 @@ class email_unsubscribe
 
 		$sql = 'SELECT user_id
 			FROM ' . $table . '
-			WHERE ' . $column . ' = ' . $item_id . '
-				AND user_id = ' . $user_id;
+			WHERE ' . $column . ' = ' . (int) $item_id . '
+				AND user_id = ' . (int) $user_id;
 		$result = $this->db->sql_query($sql);
 		$watching = $this->db->sql_fetchfield('user_id') !== false;
 		$this->db->sql_freeresult($result);
@@ -349,9 +361,7 @@ class email_unsubscribe
 	 */
 	protected function get_watch_table(string $mode): array
 	{
-		return $mode === 'topic'
-			? [$this->topics_watch_table, 'topic_id']
-			: [$this->forums_watch_table, 'forum_id'];
+		return $mode === 'topic' ? [$this->topics_watch_table, 'topic_id'] : [$this->forums_watch_table, 'forum_id'];
 	}
 
 	/**
@@ -375,7 +385,7 @@ class email_unsubscribe
 	{
 		$sql = 'SELECT user_id, user_email, user_type
 			FROM ' . $this->users_table . '
-			WHERE user_id = ' . $user_id . '
+			WHERE user_id = ' . (int) $user_id . '
 				AND user_id <> ' . ANONYMOUS . '
 				AND user_type <> ' . USER_IGNORE;
 		$result = $this->db->sql_query($sql);
@@ -396,9 +406,8 @@ class email_unsubscribe
 	 */
 	protected function log_action(array $user_row, string $operation, array $data = []): void
 	{
-		$this->log->add('user', (int) $user_row['user_id'], $this->user->ip, $operation, false, array_merge([
-			'reportee_id' => (int) $user_row['user_id'],
-		], $data));
+		$data = array_merge(['reportee_id' => (int) $user_row['user_id']], $data);
+		$this->log->add('user', (int) $user_row['user_id'], $this->user->ip, $operation, false, $data);
 	}
 
 	/**

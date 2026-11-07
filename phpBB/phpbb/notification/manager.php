@@ -719,7 +719,7 @@ class manager
 		{
 			$type = $this->get_item_type_class($type_name);
 		}
-		catch (\Exception $e)
+		catch (\Exception)
 		{
 			return null;
 		}
