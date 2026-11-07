@@ -130,13 +130,6 @@ interface type_interface
 	public function get_redirect_url();
 
 	/**
-	* URL to unsubscribe to this notification
-	*
-	* @param string|bool $method Method name to unsubscribe from (email|etc), False to unsubscribe from all notifications for this item
-	*/
-	public function get_unsubscribe_url($method);
-
-	/**
 	* Get the user's avatar (the user who caused the notification typically)
 	*
 	* @return array

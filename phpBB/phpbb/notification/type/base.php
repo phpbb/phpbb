@@ -334,14 +334,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 
 	/**
-	* {@inheritDoc}
-	*/
-	public function get_unsubscribe_url($method = false)
-	{
-		return false;
-	}
-
-	/**
 	* Get the CSS style class of the notification (fall back)
 	*
 	* @return string
