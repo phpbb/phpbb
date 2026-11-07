@@ -704,6 +704,52 @@ class manager
 	}
 
 	/**
+	 * Get the preference a notification type is stored under
+	 *
+	 * Several types can share one preference, e.g. notification.type.approve_post
+	 * is stored as moderation_queue.
+	 *
+	 * @param string $type_name Notification type name
+	 *
+	 * @return array|null Array with the keys id and lang, null if the type does not exist (anymore)
+	 */
+	public function get_subscription_option(string $type_name): array|null
+	{
+		try
+		{
+			$type = $this->get_item_type_class($type_name);
+		}
+		catch (\Exception $e)
+		{
+			return null;
+		}
+
+		$option = $type::$notification_option ?: [];
+
+		return [
+			'id'	=> $option['id'] ?? $type->get_type(),
+			'lang'	=> $option['lang'] ?? 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
+		];
+	}
+
+	/**
+	 * Disable all subscriptions of a user for one notification method
+	 *
+	 * @param int $user_id
+	 * @param string $method Notification method name
+	 *
+	 * @return void
+	 */
+	public function disable_subscriptions(int $user_id, string $method): void
+	{
+		$sql = 'UPDATE ' . $this->user_notifications_table . '
+			SET notify = 0
+			WHERE user_id = ' . $user_id . "
+				AND method = '" . $this->db->sql_escape($method) . "'";
+		$this->db->sql_query($sql);
+	}
+
+	/**
 	* Add a subscription
 	*
 	* @param string $item_type Type identifier of the subscription
