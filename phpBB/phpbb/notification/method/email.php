@@ -13,6 +13,7 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\messenger\method\messenger_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
 use phpbb\user_loader;
@@ -163,6 +164,38 @@ class email extends messenger_base
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_parent_id !== false ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '');
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_message_vars(messenger_interface $messenger_method, type_interface $notification, array $user): array
+	{
+		$vars = parent::get_message_vars($messenger_method, $notification, $user);
+
+		$watch_item = $notification->get_unsubscribe_watch_item();
+		$unsubscribe_url = $this->get_unsubscribe_url($user, $notification->get_type(), $watch_item['mode'] ?? '', $watch_item['id'] ?? 0);
+
+		if ($unsubscribe_url === null)
+		{
+			$vars['U_UNSUBSCRIBE'] = $vars['U_NOTIFICATION_SETTINGS'];
+
+			return $vars;
+		}
+
+		$messenger_method->set_list_unsubscribe($unsubscribe_url);
+		$vars['U_UNSUBSCRIBE'] = $unsubscribe_url;
+
+		// Translated templates use these variables, they should work without login as well
+		foreach (['U_STOP_WATCHING_FORUM', 'U_STOP_WATCHING_TOPIC'] as $template_var)
+		{
+			if (isset($vars[$template_var]))
+			{
+				$vars[$template_var] = $unsubscribe_url;
+			}
+		}
+
+		return $vars;
 	}
 
 	/**

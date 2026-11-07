@@ -12,7 +12,9 @@
  */
 
 use phpbb\config\config;
+use phpbb\messenger\method\email as email_messenger;
 use phpbb\notification\method\email;
+use phpbb\notification\type\post;
 
 class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 {
@@ -137,6 +139,77 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		$params = $method->get_unsubscribe_params($user_row, 'notification.type.post');
 
 		$this->assertTrue($method->check_unsubscribe_params($user_row, $params));
+	}
+
+	/**
+	 * Run the protected message hook the way messenger_base does while sending
+	 */
+	protected function get_message_vars(string $secret, array $template_vars, array|null $watch_item, email_messenger $messenger): array
+	{
+		global $config, $request, $symfony_request, $user;
+
+		$config = new config([
+			'force_server_vars'	=> 1,
+			'server_protocol'	=> 'https://',
+			'server_name'		=> 'example.com',
+			'server_port'		=> 443,
+			'script_path'		=> '/',
+		]);
+		$request = new phpbb_mock_request();
+		$user = new phpbb_mock_user();
+		$user->page['root_script_path'] = '/';
+		$symfony_request = $this->createMock(\phpbb\symfony_request::class);
+
+		$notification = $this->createMock(post::class);
+		$notification->method('get_type')->willReturn('notification.type.post');
+		$notification->method('get_email_template_variables')->willReturn($template_vars);
+		$notification->method('get_unsubscribe_watch_item')->willReturn($watch_item);
+
+		$method = $this->get_method($secret);
+
+		return (new \ReflectionMethod($method, 'get_message_vars'))->invoke($method, $messenger, $notification, self::USER_ROW);
+	}
+
+	public function test_email_gets_unsubscribe_link_and_header(): void
+	{
+		$header_url = '';
+		$messenger = $this->createMock(email_messenger::class);
+		$messenger->expects($this->once())->method('set_list_unsubscribe')->willReturnCallback(function (string $url) use (&$header_url) {
+			$header_url = $url;
+		});
+
+		$vars = $this->get_message_vars('secret', [
+			'U_STOP_WATCHING_TOPIC'	=> 'https://example.com/viewtopic.php?uid=2&t=1&unwatch=topic',
+			'U_TOPIC'				=> 'https://example.com/viewtopic.php?t=1',
+		], ['mode' => 'topic', 'id' => 1], $messenger);
+
+		$this->assertStringContainsString('/index.php/notifications/unsubscribe?u=2&t=notification.type.post&m=topic&i=1&', $vars['U_UNSUBSCRIBE']);
+		$this->assertStringNotContainsString('sid=', $vars['U_UNSUBSCRIBE']);
+		$this->assertSame($vars['U_UNSUBSCRIBE'], $header_url);
+		$this->assertSame($vars['U_UNSUBSCRIBE'], $vars['U_STOP_WATCHING_TOPIC']);
+		$this->assertSame('https://example.com/viewtopic.php?t=1', $vars['U_TOPIC']);
+		$this->assertArrayNotHasKey('U_STOP_WATCHING_FORUM', $vars);
+	}
+
+	public function test_type_without_watched_item(): void
+	{
+		$vars = $this->get_message_vars('secret', [], null, $this->createMock(email_messenger::class));
+
+		$this->assertStringContainsString('&m=&i=0&', $vars['U_UNSUBSCRIBE']);
+	}
+
+	public function test_email_falls_back_to_settings_if_link_can_not_be_signed(): void
+	{
+		$old_url = 'https://example.com/viewtopic.php?uid=2&t=1&unwatch=topic';
+
+		$messenger = $this->createMock(email_messenger::class);
+		$messenger->expects($this->never())->method('set_list_unsubscribe');
+
+		$vars = $this->get_message_vars('', ['U_STOP_WATCHING_TOPIC' => $old_url], ['mode' => 'topic', 'id' => 1], $messenger);
+
+		$this->assertSame($vars['U_NOTIFICATION_SETTINGS'], $vars['U_UNSUBSCRIBE']);
+		$this->assertNotEmpty($vars['U_UNSUBSCRIBE']);
+		$this->assertSame($old_url, $vars['U_STOP_WATCHING_TOPIC']);
 	}
 
 	public static function watch_item_data(): array
