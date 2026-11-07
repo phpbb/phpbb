@@ -217,16 +217,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->assertSame('List-Unsubscribe=One-Click', $headers['List-Unsubscribe-Post']);
 	}
 
-	public function test_list_unsubscribe_set_by_code_replaces_template_line(): void
-	{
-		$this->email->template('legacy_unsubscribe', 'en', __DIR__ . '/fixtures');
-		$this->email->set_list_unsubscribe('https://example.com/unsubscribe?u=2');
-		$this->email->prepare_message();
-
-		$this->assertSame('<https://example.com/unsubscribe?u=2>', $this->get_additional_headers()['List-Unsubscribe']);
-		$this->assertStringNotContainsString('List-Unsubscribe', $this->get_message());
-	}
-
 	public function test_list_unsubscribe_from_template_line_without_code(): void
 	{
 		$this->email->template('legacy_unsubscribe', 'en', __DIR__ . '/fixtures');

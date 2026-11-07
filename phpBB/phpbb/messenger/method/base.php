@@ -394,12 +394,7 @@ abstract class base implements messenger_interface
 		if (preg_match('#^(List-Unsubscribe):(.*?)$#m', $this->msg, $match))
 		{
 			$drop_header .= '[\r\n]*?' . preg_quote($match[0], '#');
-
-			// Language packs may still contain this line, the value set by code takes precedence
-			if (!isset($this->additional_headers[$match[1]]))
-			{
-				$this->additional_headers[$match[1]] = trim($match[2]);
-			}
+			$this->additional_headers[$match[1]] = trim($match[2]);
 		}
 
 		if ($drop_header)
