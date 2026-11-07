@@ -155,7 +155,7 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 
 	public function test_invalid_link(): void
 	{
-		self::$client->request('GET', self::$root_url . $this->get_link(['k' => str_repeat('0', 64)]));
+		self::$client->request('GET', self::$root_url . $this->get_link(['hash' => str_repeat('0', 64)]));
 
 		$this->assertSame(404, self::$client->getResponse()->getStatusCode());
 		$this->assertContainsLang('EMAIL_UNSUBSCRIBE_LINK_INVALID', self::$client->getResponse()->getContent());
@@ -163,7 +163,7 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 
 	public function test_post_with_invalid_link_changes_nothing(): void
 	{
-		self::$client->request('POST', self::$root_url . $this->get_link(['k' => str_repeat('0', 64)]), ['List-Unsubscribe' => 'One-Click']);
+		self::$client->request('POST', self::$root_url . $this->get_link(['hash' => str_repeat('0', 64)]), ['List-Unsubscribe' => 'One-Click']);
 
 		$this->assertSame(404, self::$client->getResponse()->getStatusCode());
 		$this->assertSame(1, $this->get_notify('notification.type.post'));

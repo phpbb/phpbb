@@ -214,16 +214,16 @@ class email extends messenger_base
 	public function get_unsubscribe_params(array $user_row, string $type_name, string $watch_mode = '', int $watch_id = 0): array|null
 	{
 		$params = [
-			'u'	=> (int) $user_row['user_id'],
-			't'	=> $type_name,
-			'm'	=> $watch_mode,
-			'i'	=> $watch_id,
-			'd'	=> time(),
+			'user_id'		=> (int) $user_row['user_id'],
+			'type'			=> $type_name,
+			'watch_mode'	=> $watch_mode,
+			'watch_id'		=> $watch_id,
+			'time'			=> time(),
 		];
 
 		$signature = $this->sign_unsubscribe($user_row, array_values($params));
 
-		return $signature === null ? null : $params + ['k' => $signature];
+		return $signature === null ? null : $params + ['hash' => $signature];
 	}
 
 	/**
@@ -256,23 +256,23 @@ class email extends messenger_base
 	 * Check the signature of unsubscribe link parameters
 	 *
 	 * @param array $user_row	User row, requires user_id and user_email
-	 * @param array $params		Link parameters with the keys u, t, m, i, d and k
+	 * @param array $params		Link parameters with the keys user_id, type, watch_mode, watch_id, time and hash
 	 *
 	 * @return bool True if the link is valid for this user
 	 */
 	public function check_unsubscribe_params(array $user_row, array $params): bool
 	{
 		$signature = $this->sign_unsubscribe($user_row, [
-			(int) $params['u'],
-			(string) $params['t'],
-			(string) $params['m'],
-			(int) $params['i'],
-			(int) $params['d'],
+			(int) $params['user_id'],
+			(string) $params['type'],
+			(string) $params['watch_mode'],
+			(int) $params['watch_id'],
+			(int) $params['time'],
 		]);
 
 		return $signature !== null
-			&& (int) $params['u'] === (int) $user_row['user_id']
-			&& hash_equals($signature, (string) $params['k']);
+			&& (int) $params['user_id'] === (int) $user_row['user_id']
+			&& hash_equals($signature, (string) $params['hash']);
 	}
 
 	/**

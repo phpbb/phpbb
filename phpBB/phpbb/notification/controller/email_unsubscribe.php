@@ -125,30 +125,30 @@ class email_unsubscribe
 		$this->language->add_lang('ucp');
 
 		$params = [
-			'u'	=> $this->request->variable('u', 0, false, request_interface::GET),
-			't'	=> $this->request->variable('t', '', false, request_interface::GET),
-			'm'	=> $this->request->variable('m', '', false, request_interface::GET),
-			'i'	=> $this->request->variable('i', 0, false, request_interface::GET),
-			'd'	=> $this->request->variable('d', 0, false, request_interface::GET),
-			'k'	=> $this->request->variable('k', '', false, request_interface::GET),
+			'user_id'		=> $this->request->variable('user_id', 0),
+			'type'			=> $this->request->variable('type', ''),
+			'watch_mode'	=> $this->request->variable('watch_mode', ''),
+			'watch_id'		=> $this->request->variable('watch_id', 0),
+			'time'			=> $this->request->variable('time', 0),
+			'hash'			=> $this->request->variable('hash', ''),
 		];
 
-		$user_row = $this->get_user_row($params['u']);
+		$user_row = $this->get_user_row($params['user_id']);
 
 		if ($user_row === null || !$this->email_method->check_unsubscribe_params($user_row, $params))
 		{
 			return $this->message('EMAIL_UNSUBSCRIBE_LINK_INVALID', Response::HTTP_NOT_FOUND);
 		}
 
-		$type_option = $this->manager->get_subscription_option($params['t']);
+		$type_option = $this->manager->get_subscription_option($params['type']);
 
 		if ($this->request->variable('List-Unsubscribe', '', false, request_interface::POST) === 'One-Click')
 		{
 			return $this->handle_one_click($user_row, $type_option);
 		}
 
-		$item_title = in_array($params['m'], ['topic', 'forum'], true)
-			? $this->get_watched_item_title($params['u'], $params['m'], $params['i'])
+		$item_title = in_array($params['watch_mode'], ['topic', 'forum'], true)
+			? $this->get_watched_item_title($params['user_id'], $params['watch_mode'], $params['watch_id'])
 			: null;
 
 		if ($this->request->is_set_post('unsubscribe'))
@@ -166,7 +166,7 @@ class email_unsubscribe
 		$type_label = $type_option !== null && $this->language->is_set($type_option['lang']) ? $this->language->lang($type_option['lang']) : '';
 
 		$this->template->assign_vars([
-			'EMAIL_UNSUBSCRIBE_ITEM'	=> $item_title !== null ? $this->language->lang('EMAIL_UNSUBSCRIBE_SCOPE_' . strtoupper($params['m']), censor_text($item_title)) : '',
+			'EMAIL_UNSUBSCRIBE_ITEM'	=> $item_title !== null ? $this->language->lang('EMAIL_UNSUBSCRIBE_SCOPE_' . strtoupper($params['watch_mode']), censor_text($item_title)) : '',
 			'EMAIL_UNSUBSCRIBE_TYPE'	=> $type_option !== null ? ($type_label !== '' ? $this->language->lang('EMAIL_UNSUBSCRIBE_SCOPE_TYPE', $type_label) : $this->language->lang('EMAIL_UNSUBSCRIBE_SCOPE_TYPE_GENERIC')) : '',
 			'U_EMAIL_UNSUBSCRIBE'		=> $this->helper->route('phpbb_notifications_unsubscribe', $params),
 		]);
@@ -212,7 +212,7 @@ class email_unsubscribe
 
 		if ($scope === 'item' && $item_title !== null)
 		{
-			$this->unsubscribe_item($user_id, $params['m'], $params['i']);
+			$this->unsubscribe_item($user_id, $params['watch_mode'], $params['watch_id']);
 			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
 
 			return true;

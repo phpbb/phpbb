@@ -167,7 +167,7 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 
 	public function test_invalid_signature_changes_nothing(): void
 	{
-		$response = $this->handle(2, post: ['List-Unsubscribe' => 'One-Click'], overrides: ['k' => str_repeat('0', 64)]);
+		$response = $this->handle(2, post: ['List-Unsubscribe' => 'One-Click'], overrides: ['hash' => str_repeat('0', 64)]);
 
 		$this->assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
 		$this->assertSame(1, $this->get_notify(2, 'notification.type.post'));

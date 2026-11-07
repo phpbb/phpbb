@@ -46,10 +46,10 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		$method = $this->get_method();
 		$params = $method->get_unsubscribe_params(self::USER_ROW, 'notification.type.post', 'topic', 5);
 
-		$this->assertSame(2, $params['u']);
-		$this->assertSame('notification.type.post', $params['t']);
-		$this->assertSame('topic', $params['m']);
-		$this->assertSame(5, $params['i']);
+		$this->assertSame(2, $params['user_id']);
+		$this->assertSame('notification.type.post', $params['type']);
+		$this->assertSame('topic', $params['watch_mode']);
+		$this->assertSame(5, $params['watch_id']);
 		$this->assertTrue($method->check_unsubscribe_params(self::USER_ROW, $params));
 	}
 
@@ -64,13 +64,13 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 	public static function tampered_params_data(): array
 	{
 		return [
-			'user'		=> ['u', 3],
-			'type'		=> ['t', 'notification.type.pm'],
-			'mode'		=> ['m', 'forum'],
-			'item'		=> ['i', 6],
-			'date'		=> ['d', 1],
-			'signature'	=> ['k', str_repeat('0', 64)],
-			'empty'		=> ['k', ''],
+			'user'		=> ['user_id', 3],
+			'type'		=> ['type', 'notification.type.pm'],
+			'mode'		=> ['watch_mode', 'forum'],
+			'item'		=> ['watch_id', 6],
+			'date'		=> ['time', 1],
+			'signature'	=> ['hash', str_repeat('0', 64)],
+			'empty'		=> ['hash', ''],
 		];
 	}
 
@@ -127,7 +127,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		$this->assertNull($method->get_unsubscribe_params($user_row, 'notification.type.post'));
 		$this->assertNull($method->get_unsubscribe_url($user_row, 'notification.type.post'));
 		$this->assertFalse($method->check_unsubscribe_params($user_row, [
-			'u' => 2, 't' => 'notification.type.post', 'm' => '', 'i' => 0, 'd' => 1, 'k' => '',
+			'user_id' => 2, 'type' => 'notification.type.post', 'watch_mode' => '', 'watch_id' => 0, 'time' => 1, 'hash' => '',
 		]));
 	}
 
@@ -183,7 +183,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 			'U_TOPIC'				=> 'https://example.com/viewtopic.php?t=1',
 		], ['mode' => 'topic', 'id' => 1], $messenger);
 
-		$this->assertStringContainsString('/index.php/notifications/unsubscribe?u=2&t=notification.type.post&m=topic&i=1&', $vars['U_UNSUBSCRIBE']);
+		$this->assertStringContainsString('/index.php/notifications/unsubscribe?user_id=2&type=notification.type.post&watch_mode=topic&watch_id=1&', $vars['U_UNSUBSCRIBE']);
 		$this->assertStringNotContainsString('sid=', $vars['U_UNSUBSCRIBE']);
 		$this->assertSame($vars['U_UNSUBSCRIBE'], $header_url);
 		$this->assertSame($vars['U_UNSUBSCRIBE'], $vars['U_STOP_WATCHING_TOPIC']);
@@ -195,7 +195,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 	{
 		$vars = $this->get_message_vars('secret', [], null, $this->createMock(email_messenger::class));
 
-		$this->assertStringContainsString('&m=&i=0&', $vars['U_UNSUBSCRIBE']);
+		$this->assertStringContainsString('&watch_mode=&watch_id=0&', $vars['U_UNSUBSCRIBE']);
 	}
 
 	public function test_email_falls_back_to_settings_if_link_can_not_be_signed(): void
