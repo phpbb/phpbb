@@ -130,6 +130,13 @@ interface type_interface
 	public function get_redirect_url();
 
 	/**
+	* Get the item the user is watching if that caused this notification
+	*
+	* @return array|null Array with the keys mode ('topic' or 'forum') and id, null if there is no such item
+	*/
+	public function get_unsubscribe_watch_item(): array|null;
+
+	/**
 	* Get the user's avatar (the user who caused the notification typically)
 	*
 	* @return array

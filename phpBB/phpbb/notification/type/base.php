@@ -334,6 +334,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	*/
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function get_unsubscribe_watch_item(): array|null
+	{
+		return null;
+	}
+
+	/**
 	* Get the CSS style class of the notification (fall back)
 	*
 	* @return string
