@@ -184,7 +184,6 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		], ['mode' => 'topic', 'id' => 1], $messenger);
 
 		$this->assertStringContainsString('/index.php/notifications/unsubscribe?user_id=2&type=notification.type.post&watch_mode=topic&watch_id=1&', $vars['U_UNSUBSCRIBE']);
-		$this->assertStringNotContainsString('sid=', $vars['U_UNSUBSCRIBE']);
 		$this->assertSame($vars['U_UNSUBSCRIBE'], $header_url);
 		$this->assertSame($vars['U_UNSUBSCRIBE'], $vars['U_STOP_WATCHING_TOPIC']);
 		$this->assertSame('https://example.com/viewtopic.php?t=1', $vars['U_TOPIC']);

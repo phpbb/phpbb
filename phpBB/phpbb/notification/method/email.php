@@ -231,9 +231,9 @@ class email extends messenger_base
 	/**
 	 * Create the absolute URL of an unsubscribe link
 	 *
-	 * The controller helper is not used on purpose. Its routes get the session ID
-	 * of the current user, who is not the recipient of the email, and depend on the
-	 * script the email is being sent from.
+	 * Links in emails are opened outside of the board, so the URL is built without
+	 * the controller helper. It has to be absolute, use plain & separators and must
+	 * not depend on the request the email is sent from, e.g. cron or the CLI.
 	 *
 	 * @param array $user_row		User row, requires user_id and user_email
 	 * @param string $type_name		Notification type name the email was sent for
