@@ -530,18 +530,10 @@ class manager
 
 			foreach ($this->notification_types as $type_name => $data)
 			{
-				/** @var type\base $type */
-				$type = $this->get_item_type_class($type_name);
+				$options = $this->get_subscription_option($type_name);
 
-				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
+				if ($options !== null && $options['type']->is_available())
 				{
-					$options = array_merge(array(
-						'type'	=> $type,
-						'id'	=> $type->get_type(),
-						'lang'	=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
-						'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
-					), (($type::$notification_option !== false) ? $type::$notification_option : array()));
-
 					$this->subscription_types[$options['group']][$options['id']] = $options;
 				}
 			}
@@ -711,7 +703,7 @@ class manager
 	 *
 	 * @param string $type_name Notification type name
 	 *
-	 * @return array|null Array with the keys id and lang, null if the type does not exist (anymore)
+	 * @return array|null Array with at least the keys type, id, lang and group, null if the type does not exist (anymore)
 	 */
 	public function get_subscription_option(string $type_name): array|null
 	{
@@ -724,12 +716,12 @@ class manager
 			return null;
 		}
 
-		$option = $type::$notification_option ?: [];
-
-		return [
-			'id'	=> $option['id'] ?? $type->get_type(),
-			'lang'	=> $option['lang'] ?? 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
-		];
+		return array_merge([
+			'type'	=> $type,
+			'id'	=> $type->get_type(),
+			'lang'	=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
+			'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+		], $type::$notification_option ?: []);
 	}
 
 	/**
