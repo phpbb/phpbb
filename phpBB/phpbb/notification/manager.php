@@ -735,9 +735,11 @@ class manager
 	public function disable_subscriptions(int $user_id, string $method): void
 	{
 		$sql = 'UPDATE ' . $this->user_notifications_table . '
-			SET notify = 0
-			WHERE user_id = ' . $user_id . "
-				AND method = '" . $this->db->sql_escape($method) . "'";
+			SET ' . $this->db->sql_build_array('UPDATE', ['notify' => 0]) . '
+			WHERE ' . $this->db->sql_build_array('SELECT', [
+				'user_id'	=> $user_id,
+				'method'	=> $method,
+			]);
 		$this->db->sql_query($sql);
 	}
 

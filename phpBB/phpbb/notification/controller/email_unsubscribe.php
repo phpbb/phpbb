@@ -253,8 +253,10 @@ class email_unsubscribe
 		[$table, $column] = $this->get_watch_table($mode);
 
 		$sql = 'DELETE FROM ' . $table . '
-			WHERE ' . $column . ' = ' . (int) $item_id . '
-				AND user_id = ' . $user_id;
+			WHERE ' . $this->db->sql_build_array('DELETE', [
+				$column		=> $item_id,
+				'user_id'	=> $user_id,
+			]);
 		$this->db->sql_query($sql);
 	}
 
@@ -287,7 +289,7 @@ class email_unsubscribe
 		$this->manager->disable_subscriptions($user_id, $this->email_method->get_type());
 
 		$sql = 'UPDATE ' . $this->users_table . '
-			SET user_allow_massemail = 0
+			SET ' . $this->db->sql_build_array('UPDATE', ['user_allow_massemail' => 0]) . '
 			WHERE user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 	}
@@ -343,8 +345,10 @@ class email_unsubscribe
 
 		$sql = 'SELECT user_id
 			FROM ' . $table . '
-			WHERE ' . $column . ' = ' . (int) $item_id . '
-				AND user_id = ' . (int) $user_id;
+			WHERE ' . $this->db->sql_build_array('SELECT', [
+				$column		=> $item_id,
+				'user_id'	=> $user_id,
+			]);
 		$result = $this->db->sql_query($sql);
 		$watching = $this->db->sql_fetchfield('user_id') !== false;
 		$this->db->sql_freeresult($result);
