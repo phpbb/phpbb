@@ -394,7 +394,12 @@ abstract class base implements messenger_interface
 		if (preg_match('#^(List-Unsubscribe):(.*?)$#m', $this->msg, $match))
 		{
 			$drop_header .= '[\r\n]*?' . preg_quote($match[0], '#');
-			$this->additional_headers[$match[1]] = trim($match[2]);
+
+			// Language packs may still contain this line, the value set by code takes precedence
+			if (!isset($this->additional_headers[$match[1]]))
+			{
+				$this->additional_headers[$match[1]] = trim($match[2]);
+			}
 		}
 
 		if ($drop_header)
@@ -492,5 +497,14 @@ abstract class base implements messenger_interface
 	 */
 	public function header(string $header_name, mixed $header_value): void
 	{
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_list_unsubscribe(string $url): void
+	{
+		$this->additional_headers['List-Unsubscribe'] = '<' . $url . '>';
+		$this->additional_headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
 	}
 }

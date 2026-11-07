@@ -1,0 +1,6 @@
+Subject: Legacy
+List-Unsubscribe: <https://example.com/legacy>
+
+Body
+
+{EMAIL_SIG}

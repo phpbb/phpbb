@@ -191,4 +191,111 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->assertStringNotContainsString('EMAIL_SIG', $msg);
 		$this->assertStringNotContainsString('U_STOP_WATCHING_FORUM', $msg);
 	}
+
+	protected function get_additional_headers(): array
+	{
+		$reflection = new ReflectionProperty($this->email, 'additional_headers');
+
+		return $reflection->getValue($this->email);
+	}
+
+	protected function get_message(): string
+	{
+		$reflection = new ReflectionProperty($this->email, 'msg');
+
+		return $reflection->getValue($this->email);
+	}
+
+	public function test_list_unsubscribe_set_by_code(): void
+	{
+		$this->email->template('topic_notify', 'en');
+		$this->email->set_list_unsubscribe('https://example.com/unsubscribe?u=2');
+		$this->email->prepare_message();
+
+		$headers = $this->get_additional_headers();
+		$this->assertSame('<https://example.com/unsubscribe?u=2>', $headers['List-Unsubscribe']);
+		$this->assertSame('List-Unsubscribe=One-Click', $headers['List-Unsubscribe-Post']);
+	}
+
+	public function test_list_unsubscribe_set_by_code_replaces_template_line(): void
+	{
+		$this->email->template('legacy_unsubscribe', 'en', __DIR__ . '/fixtures');
+		$this->email->set_list_unsubscribe('https://example.com/unsubscribe?u=2');
+		$this->email->prepare_message();
+
+		$this->assertSame('<https://example.com/unsubscribe?u=2>', $this->get_additional_headers()['List-Unsubscribe']);
+		$this->assertStringNotContainsString('List-Unsubscribe', $this->get_message());
+	}
+
+	public function test_list_unsubscribe_from_template_line_without_code(): void
+	{
+		$this->email->template('legacy_unsubscribe', 'en', __DIR__ . '/fixtures');
+		$this->email->prepare_message();
+
+		$headers = $this->get_additional_headers();
+		$this->assertSame('<https://example.com/legacy>', $headers['List-Unsubscribe']);
+		$this->assertArrayNotHasKey('List-Unsubscribe-Post', $headers);
+		$this->assertStringNotContainsString('List-Unsubscribe', $this->get_message());
+	}
+
+	public static function unsubscribe_template_data(): array
+	{
+		return [
+			['admin_activate'],
+			['bookmark'],
+			['group_request'],
+			['mention'],
+			['pm_report_closed'],
+			['pm_report_deleted'],
+			['post_approved'],
+			['post_disapproved'],
+			['post_in_queue'],
+			['privmsg_notify'],
+			['quote'],
+			['report_closed'],
+			['report_deleted'],
+			['report_pm'],
+			['report_pm_closed'],
+			['report_post'],
+			['topic_approved'],
+			['topic_disapproved'],
+			['topic_in_queue'],
+			['update_critical'],
+			['update_maintenance'],
+			['update_security'],
+		];
+	}
+
+	/**
+	 * @dataProvider unsubscribe_template_data
+	 */
+	public function test_templates_contain_unsubscribe_link(string $template): void
+	{
+		$url = 'https://example.com/unsubscribe?u=2&k=abc';
+
+		$this->email->template($template, 'en');
+		$this->email->assign_vars(['U_UNSUBSCRIBE' => $url]);
+		$this->email->prepare_message();
+
+		$this->assertStringContainsString("\n" . $url . "\n", $this->get_message());
+		$this->assertStringNotContainsString('<!--', $this->get_message());
+	}
+
+	public static function template_without_link_data(): array
+	{
+		return array_filter(self::unsubscribe_template_data(), function (array $template) {
+			return !in_array($template[0], ['bookmark', 'mention', 'quote'], true);
+		});
+	}
+
+	/**
+	 * @dataProvider template_without_link_data
+	 */
+	public function test_templates_hide_unsubscribe_text_without_link(string $template): void
+	{
+		$this->email->template($template, 'en');
+		$this->email->prepare_message();
+
+		$this->assertStringNotContainsString('If you no longer wish to receive these emails', $this->get_message());
+	}
 }
