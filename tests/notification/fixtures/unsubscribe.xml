@@ -5,9 +5,11 @@
 		<column>forum_name</column>
 		<column>forum_desc</column>
 		<column>forum_rules</column>
+		<column>forum_parents</column>
 		<row>
 			<value>1</value>
 			<value>Forum title</value>
+			<value></value>
 			<value></value>
 			<value></value>
 		</row>
