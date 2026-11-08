@@ -430,6 +430,12 @@ class ucp_groups
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
 					}
 
+					// Special groups and groups with admin permissions can only be managed from the ACP
+					if ($group_row['group_type'] == GROUP_SPECIAL || phpbb_filter_admin_group_ids([$group_id]))
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP_ACP'] . $return_page, E_USER_WARNING);
+					}
+
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
@@ -1117,9 +1123,20 @@ class ucp_groups
 								AND ug.group_leader = 1
 							ORDER BY g.group_type DESC, g.group_name';
 						$result = $db->sql_query($sql);
+						$leader_groups = $db->sql_fetchrowset($result);
+						$db->sql_freeresult($result);
 
-						while ($value = $db->sql_fetchrow($result))
+						$admin_group_ids = phpbb_filter_admin_group_ids(array_column($leader_groups, 'group_id'));
+						$restricted_groups = false;
+
+						foreach ($leader_groups as $value)
 						{
+							if ($value['group_type'] == GROUP_SPECIAL || in_array((int) $value['group_id'], $admin_group_ids, true))
+							{
+								$restricted_groups = true;
+								continue;
+							}
+
 							$template->assign_block_vars('leader', array(
 								'GROUP_NAME'	=> $group_helper->get_name($value['group_name']),
 								'GROUP_DESC'	=> generate_text_for_display($value['group_desc'], $value['group_desc_uid'], $value['group_desc_bitfield'], $value['group_desc_options']),
@@ -1131,7 +1148,8 @@ class ucp_groups
 								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}")
 							);
 						}
-						$db->sql_freeresult($result);
+
+						$template->assign_var('S_LEADER_GROUPS_RESTRICTED', $restricted_groups);
 
 					break;
 				}

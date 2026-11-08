@@ -668,6 +668,7 @@ $lang = array_merge($lang, array(
 	'ZOOM_OUT'			=> 'Zoom out',
 
 	'GROUPS_EXPLAIN'	=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you additional permissions to view content or increase your capabilities in other areas.',
+	'GROUPS_MANAGE_EXPLAIN'	=> 'Group leaders may change the details of their usergroups, such as the name, description, colour, rank or avatar, and add, remove or approve members. Depending on your permissions, some of these options may not be available.',
 	'GROUP_LEADER'		=> 'Leaderships',
 	'GROUP_MEMBER'		=> 'Memberships',
 	'GROUP_PENDING'		=> 'Pending memberships',
