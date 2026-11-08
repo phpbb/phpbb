@@ -431,7 +431,7 @@ class ucp_groups
 					// Special groups and groups with admin permissions can only be managed from the ACP
 					if ($group_row['group_type'] == GROUP_SPECIAL || phpbb_filter_admin_group_ids([$group_id]))
 					{
-						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP_ACP'] . $return_page, E_USER_WARNING);
 					}
 
 					$group_name = $group_row['group_name'];
@@ -1126,11 +1126,13 @@ class ucp_groups
 						$db->sql_freeresult($result);
 
 						$admin_group_ids = phpbb_filter_admin_group_ids(array_column($leader_groups, 'group_id'));
+						$restricted_groups = false;
 
 						foreach ($leader_groups as $value)
 						{
 							if ($value['group_type'] == GROUP_SPECIAL || in_array((int) $value['group_id'], $admin_group_ids, true))
 							{
+								$restricted_groups = true;
 								continue;
 							}
 
@@ -1145,6 +1147,8 @@ class ucp_groups
 								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}")
 							);
 						}
+
+						$template->assign_var('S_LEADER_GROUPS_RESTRICTED', $restricted_groups);
 
 					break;
 				}

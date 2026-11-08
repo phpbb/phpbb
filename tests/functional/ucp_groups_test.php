@@ -26,16 +26,17 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 	}
 
 	/**
-	* Create a normal group with the admin user as group leader
+	* Create a normal group with the given user as group leader
 	*
 	* Special groups and groups with admin permissions can not be managed from
 	* the UCP, so the UCP management tests need a regular group led by the
-	* admin user.
+	* user.
 	*
 	* @param string $group_name Name of the group
+	* @param string $leader Username of the group leader
 	* @return int Group id of the created group
 	*/
-	protected function create_manage_group($group_name = 'manage-group')
+	protected function create_manage_group($group_name = 'manage-group', $leader = 'admin')
 	{
 		$group_id = $this->get_group_id($group_name);
 		if ($group_id)
@@ -54,12 +55,12 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 
 		$group_id = $this->get_group_id($group_name);
 
-		// Make admin group leader
+		// Make user group leader
 		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&action=list&g=' . $group_id . '&sid=' . $this->sid);
 		$form = $crawler->filter('input[name=addusers]')->selectButton($this->lang('SUBMIT'))->form();
 		$crawler = self::submit($form, [
 			'leader'	=> 1,
-			'usernames'	=> 'admin',
+			'usernames'	=> $leader,
 		]);
 
 		$this->assertContainsLang('GROUP_MODS_ADDED', $crawler->filter('#main')->text());
@@ -180,18 +181,21 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 	public function test_manage_special_group_denied()
 	{
 		$this->group_manage_login();
+		$this->add_lang('groups');
 
 		// The Administrators group is not listed on the UCP manage groups page
 		// even though the admin user is its group leader
 		$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&sid=' . $this->sid);
 		$this->assertStringNotContainsString('action=edit&amp;g=5', $crawler->html());
+		$this->assertContainsLang('GROUPS_MANAGE_EXPLAIN', $crawler->text());
+		$this->assertContainsLang('GROUP_LEADER_RESTRICTED', $crawler->text());
 
 		// Special groups can not be managed from the UCP
 		$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&action=edit&g=5&sid=' . $this->sid);
-		$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP', $crawler->text());
+		$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP_ACP', $crawler->text());
 
 		$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&action=list&g=5&sid=' . $this->sid);
-		$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP', $crawler->text());
+		$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP_ACP', $crawler->text());
 	}
 
 	public function admin_group_data()
@@ -208,6 +212,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 	public function test_manage_admin_group_denied($assign_method, $group_name)
 	{
 		$this->group_manage_login();
+		$this->add_lang('groups');
 		$group_id = $this->create_manage_group($group_name);
 
 		// As long as the group has no admin permissions the leader can manage it
@@ -215,7 +220,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->assertStringContainsString('action=edit&amp;g=' . $group_id, $crawler->html());
 
 		$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&action=list&g=' . $group_id . '&sid=' . $this->sid);
-		$this->assertStringNotContainsString($this->lang('NOT_ALLOWED_MANAGE_GROUP'), $crawler->text());
+		$this->assertStringNotContainsString($this->lang('NOT_ALLOWED_MANAGE_GROUP_ACP'), $crawler->text());
 
 		$this->$assign_method($group_id);
 
@@ -226,8 +231,24 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		foreach (['edit', 'list'] as $action)
 		{
 			$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&action=' . $action . '&g=' . $group_id . '&sid=' . $this->sid);
-			$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP', $crawler->text());
+			$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP_ACP', $crawler->text());
 		}
+	}
+
+	public function test_manage_no_restricted_groups_info()
+	{
+		$this->create_user('manage-leader-user');
+		$this->group_manage_login();
+		$this->add_lang('groups');
+		$group_id = $this->create_manage_group('manage-leader-group', 'manage-leader-user');
+		$this->logout();
+
+		// A user that only leads regular groups gets no info about restricted groups
+		$this->login('manage-leader-user');
+		$crawler = self::request('GET', 'ucp.php?i=groups&mode=manage&sid=' . $this->sid);
+		$this->assertStringContainsString('action=edit&amp;g=' . $group_id, $crawler->html());
+		$this->assertContainsLang('GROUPS_MANAGE_EXPLAIN', $crawler->text());
+		$this->assertStringNotContainsString($this->lang('GROUP_LEADER_RESTRICTED'), $crawler->text());
 	}
 
 	public function test_create_request_group()
