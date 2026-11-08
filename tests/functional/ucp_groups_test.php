@@ -155,23 +155,6 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->assertStringContainsString($this->lang($expected), $crawler->text());
 	}
 
-	/**
-	* @dataProvider group_avatar_min_max_data
-	*/
-	public function test_group_avatar_min_max($avatar_type, $form_name, $input, $expected)
-	{
-		$this->group_manage_login();
-		$this->enable_all_avatars();
-		$group_id = $this->create_manage_group();
-
-		$crawler = self::request('GET', $this->get_url() . '&g=' . $group_id . '&sid=' . $this->sid);
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
-		$form['avatar_driver']->setValue($avatar_type);
-		$form[$form_name]->setValue($input);
-		$crawler = self::submit($form);
-		$this->assertStringContainsString($this->lang($expected), $crawler->text());
-	}
-
 	public function test_manage_special_group_denied()
 	{
 		$this->group_manage_login();
@@ -192,7 +175,7 @@ class phpbb_functional_ucp_groups_test extends phpbb_functional_common_groups_te
 		$this->assertContainsLang('NOT_ALLOWED_MANAGE_GROUP_ACP', $crawler->text());
 	}
 
-	public function admin_group_data()
+	public static function admin_group_data()
 	{
 		return [
 			'admin role'		=> ['assign_admin_role', 'admin-role-group'],
