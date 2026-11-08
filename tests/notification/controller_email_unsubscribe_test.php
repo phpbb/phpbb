@@ -50,7 +50,7 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->email_method = new email(
 			$this->createMock(\phpbb\user_loader::class),
 			$this->createMock(\phpbb\user::class),
-			new config(['email_unsubscribe_secret' => 'secret']),
+			new config(['email_unsubscribe_secret' => 'secret', 'email_unsubscribe_expire_days' => 365]),
 			$this->createMock(\phpbb\db\driver\driver_interface::class),
 			'',
 			'php',
@@ -90,10 +90,20 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		};
 	}
 
-	protected function handle(int $user_id, string $type = 'notification.type.post', string $mode = 'topic', int $item_id = 1, array $post = [], array $overrides = []): Response
+	protected function handle(int $user_id, string $type = 'notification.type.post', string $mode = 'topic', int $item_id = 1, array $post = [], array $overrides = [], bool $resign = false): Response
 	{
 		$email = ['2' => 'two@example.com', '3' => 'three@example.com', '4' => 'four@example.com'][$user_id];
-		$params = $this->email_method->get_unsubscribe_params(['user_id' => $user_id, 'user_email' => $email], $type, $mode, $item_id);
+		$user_row = ['user_id' => $user_id, 'user_email' => $email];
+		$params = $this->email_method->get_unsubscribe_params($user_row, $type, $mode, $item_id);
+
+		// Sign overridden parameters, e.g. to create links of the past
+		if ($resign)
+		{
+			$params = array_merge($params, $overrides);
+			unset($params['hash']);
+			$params['hash'] = (new \ReflectionMethod($this->email_method, 'sign_unsubscribe'))->invoke($this->email_method, $user_row, array_values($params));
+			$overrides = [];
+		}
 
 		$helper = $this->createMock(\phpbb\controller\helper::class);
 		$helper->method('route')->willReturn('action');
@@ -181,6 +191,16 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame('no-referrer', $response->headers->get('Referrer-Policy'));
 		$this->assertSame('noindex', $response->headers->get('X-Robots-Tag'));
 		$this->assertStringContainsString('no-store', $response->headers->get('Cache-Control'));
+	}
+
+	public function test_expired_link_changes_nothing(): void
+	{
+		$response = $this->handle(2, post: ['List-Unsubscribe' => 'One-Click'], overrides: ['time' => time() - 400 * 86400], resign: true);
+
+		$this->assertSame(Response::HTTP_GONE, $response->getStatusCode());
+		$this->assertSame('EMAIL_UNSUBSCRIBE_LINK_EXPIRED', $response->getContent());
+		$this->assertSame(1, $this->get_notify(2, 'notification.type.post'));
+		$this->assertSame(1, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
 	}
 
 	public function test_one_click_stops_type_only(): void

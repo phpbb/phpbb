@@ -19,7 +19,7 @@ class email_unsubscribe extends migration
 {
 	public function effectively_installed(): bool
 	{
-		return $this->config->offsetExists('email_unsubscribe_secret');
+		return $this->config->offsetExists('email_unsubscribe_secret') && $this->config->offsetExists('email_unsubscribe_expire_days');
 	}
 
 	public static function depends_on(): array
@@ -33,6 +33,7 @@ class email_unsubscribe extends migration
 	{
 		return [
 			['config.add', ['email_unsubscribe_secret', bin2hex(random_bytes(32))]],
+			['config.add', ['email_unsubscribe_expire_days', 365]],
 		];
 	}
 
@@ -40,6 +41,7 @@ class email_unsubscribe extends migration
 	{
 		return [
 			['config.remove', ['email_unsubscribe_secret']],
+			['config.remove', ['email_unsubscribe_expire_days']],
 		];
 	}
 }

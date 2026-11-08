@@ -27,7 +27,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		'user_inactive_reason'	=> 0,
 	];
 
-	protected function get_method(string $secret = 'secret'): email
+	protected function get_method(string $secret = 'secret', int $expire_days = 365): email
 	{
 		$routes = new \Symfony\Component\Routing\RouteCollection();
 		$routes->add('phpbb_notifications_unsubscribe', new \Symfony\Component\Routing\Route('/notifications/unsubscribe'));
@@ -38,7 +38,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		return new email(
 			$this->createMock(\phpbb\user_loader::class),
 			$this->createMock(\phpbb\user::class),
-			new config(['email_unsubscribe_secret' => $secret]),
+			new config(['email_unsubscribe_secret' => $secret, 'email_unsubscribe_expire_days' => $expire_days]),
 			$this->createMock(\phpbb\db\driver\driver_interface::class),
 			'',
 			'php',
@@ -46,6 +46,29 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 			$this->createMock(\phpbb\di\service_collection::class),
 			$router
 		);
+	}
+
+	public static function expiry_data(): array
+	{
+		return [
+			'new link'				=> [365, 0, false],
+			'one day before limit'	=> [365, 364, false],
+			'past limit'			=> [365, 366, true],
+			'short limit'			=> [7, 8, true],
+			'never expires'			=> [0, 10000, false],
+		];
+	}
+
+	/**
+	 * @dataProvider expiry_data
+	 */
+	public function test_link_expiry(int $expire_days, int $age_days, bool $expired): void
+	{
+		$method = $this->get_method('secret', $expire_days);
+		$params = $method->get_unsubscribe_params(self::USER_ROW, 'notification.type.post');
+		$params['time'] -= $age_days * 86400;
+
+		$this->assertSame($expired, $method->is_unsubscribe_link_expired($params));
 	}
 
 	public function test_valid_link(): void

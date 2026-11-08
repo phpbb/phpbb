@@ -194,6 +194,7 @@ $lang = array_merge($lang, array(
 	'EMAIL_UNSUBSCRIBE'			=> 'Unsubscribe from emails',
 	'EMAIL_UNSUBSCRIBE_DONE'	=> 'Your email preferences have been updated.',
 	'EMAIL_UNSUBSCRIBE_EXPLAIN'	=> 'Choose which emails you no longer want to receive. You do not need to log in.',
+	'EMAIL_UNSUBSCRIBE_LINK_EXPIRED'	=> 'This unsubscribe link has expired. Log in to manage your notification settings.',
 	'EMAIL_UNSUBSCRIBE_LINK_INVALID'	=> 'This unsubscribe link is not valid. It may belong to an email address that has since been changed.',
 	'EMAIL_UNSUBSCRIBE_SCOPE_ALL'		=> 'All emails from this board, including emails from administrators. Essential account emails such as password resets are still sent.',
 	'EMAIL_UNSUBSCRIBE_SCOPE_FORUM'		=> 'New posts in the forum “%s”',

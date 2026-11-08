@@ -307,6 +307,20 @@ class email extends messenger_base
 	}
 
 	/**
+	 * Check if an unsubscribe link is older than the board allows
+	 *
+	 * @param array $params	Link parameters, requires time
+	 *
+	 * @return bool True if the link has expired
+	 */
+	public function is_unsubscribe_link_expired(array $params): bool
+	{
+		$expire_days = (int) $this->config['email_unsubscribe_expire_days'];
+
+		return $expire_days > 0 && (int) $params['time'] < time() - $expire_days * 86400;
+	}
+
+	/**
 	 * Create the signature of an unsubscribe link
 	 *
 	 * Runs while notifications are being sent, so an address with invalid encoding

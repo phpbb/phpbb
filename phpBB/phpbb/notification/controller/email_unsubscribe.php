@@ -140,6 +140,11 @@ class email_unsubscribe
 			return $this->message('EMAIL_UNSUBSCRIBE_LINK_INVALID', Response::HTTP_NOT_FOUND);
 		}
 
+		if ($this->email_method->is_unsubscribe_link_expired($params))
+		{
+			return $this->message('EMAIL_UNSUBSCRIBE_LINK_EXPIRED', Response::HTTP_GONE);
+		}
+
 		$type_option = $this->manager->get_subscription_option($params['type']);
 
 		if ($this->request->variable('List-Unsubscribe', '', false, request_interface::POST) === 'One-Click')
