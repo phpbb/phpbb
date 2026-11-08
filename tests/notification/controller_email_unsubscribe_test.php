@@ -203,9 +203,39 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame(1, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
 	}
 
-	public function test_one_click_stops_type_only(): void
+	public function test_one_click_stops_watching_topic_only(): void
 	{
 		$response = $this->handle(2, post: ['List-Unsubscribe' => 'One-Click']);
+
+		$this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+		$this->assertFalse($this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
+		$this->assertSame(0, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 3));
+		$this->assertSame(1, $this->get_watch_status('phpbb_forums_watch', 'forum_id', 2));
+		$this->assertSame(1, $this->get_notify(2, 'notification.type.post'));
+		$this->assertSame(1, $this->get_massemail(2));
+	}
+
+	public function test_one_click_stops_watching_forum_only(): void
+	{
+		$this->handle(2, 'notification.type.forum', 'forum', 1, ['List-Unsubscribe' => 'One-Click']);
+
+		$this->assertFalse($this->get_watch_status('phpbb_forums_watch', 'forum_id', 2));
+		$this->assertSame(1, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
+		$this->assertFalse($this->get_notify(2, 'notification.type.forum'));
+	}
+
+	public function test_one_click_for_item_no_longer_watched(): void
+	{
+		$response = $this->handle(4, post: ['List-Unsubscribe' => 'One-Click']);
+
+		// Turning off the whole type instead would add a row with notify = 0
+		$this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+		$this->assertFalse($this->get_notify(4, 'notification.type.post'));
+	}
+
+	public function test_one_click_stops_type_only(): void
+	{
+		$response = $this->handle(2, 'notification.type.post', '', 0, ['List-Unsubscribe' => 'One-Click']);
 
 		$this->assertSame(Response::HTTP_OK, $response->getStatusCode());
 		$this->assertSame(0, $this->get_notify(2, 'notification.type.post'));

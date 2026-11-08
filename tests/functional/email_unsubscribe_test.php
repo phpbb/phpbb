@@ -180,16 +180,16 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 		$this->assertSame(404, self::$client->getResponse()->getStatusCode());
 	}
 
-	public function test_one_click_stops_type_only_and_needs_no_cookies(): void
+	public function test_one_click_stops_watching_topic_only_and_needs_no_cookies(): void
 	{
 		self::$client->getCookieJar()->clear();
 		self::$client->request('POST', self::$root_url . $this->get_link(), ['List-Unsubscribe' => 'One-Click']);
 
 		$this->assertSame(200, self::$client->getResponse()->getStatusCode());
-		$this->assertSame(0, $this->get_notify('notification.type.post'));
+		$this->assertFalse($this->is_watching());
+		$this->assertSame(1, $this->get_notify('notification.type.post'));
 		$this->assertSame(1, $this->get_notify('notification.type.quote'));
 		$this->assertSame(1, $this->get_massemail());
-		$this->assertTrue($this->is_watching());
 	}
 
 	public function test_unsubscribe_from_item(): void
@@ -254,7 +254,7 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 		self::$client->request('POST', self::$root_url . $this->get_link(), ['List-Unsubscribe' => 'One-Click']);
 
 		$this->assertSame(200, self::$client->getResponse()->getStatusCode());
-		$this->assertSame(0, $this->get_notify('notification.type.post'));
+		$this->assertFalse($this->is_watching());
 	}
 
 	public function test_actions_are_logged_for_the_user(): void
@@ -282,6 +282,7 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 		{
 			self::$client->request('POST', self::$root_url . $link, ['List-Unsubscribe' => 'One-Click']);
 			$this->assertSame(1, $this->get_notify('notification.type.post'));
+			$this->assertTrue($this->is_watching());
 		}
 		finally
 		{

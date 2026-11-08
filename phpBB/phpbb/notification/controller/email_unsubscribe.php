@@ -147,15 +147,15 @@ class email_unsubscribe
 
 		$type_option = $this->manager->get_subscription_option($params['type']);
 
-		if ($this->request->variable('List-Unsubscribe', '', false, request_interface::POST) === 'One-Click')
-		{
-			return $this->handle_one_click($user_row, $type_option);
-		}
-
 		$item_title = null;
-		if ($params['watch_mode'] === 'topic' || $params['watch_mode'] === 'forum')
+		if ($this->has_watch_item($params))
 		{
 			$item_title = $this->get_watched_item_title($params['user_id'], $params['watch_mode'], $params['watch_id']);
+		}
+
+		if ($this->request->variable('List-Unsubscribe', '', false, request_interface::POST) === 'One-Click')
+		{
+			return $this->handle_one_click($user_row, $params, $type_option, $item_title);
 		}
 
 		if ($this->request->is_set_post('unsubscribe'))
@@ -184,13 +184,31 @@ class email_unsubscribe
 	/**
 	 * Handle a one-click request sent by a mail client
 	 *
+	 * Emails caused by watching a topic or forum only stop watching that item,
+	 * like the stop watching link in the email does. All other emails turn off
+	 * their notification type.
+	 *
 	 * @param array $user_row
+	 * @param array $params
 	 * @param array|null $type_option
+	 * @param string|null $item_title
 	 *
 	 * @return Response
 	 */
-	protected function handle_one_click(array $user_row, array|null $type_option): Response
+	protected function handle_one_click(array $user_row, array $params, array|null $type_option, string|null $item_title): Response
 	{
+		if ($this->has_watch_item($params))
+		{
+			// Mail clients may repeat the request, an item that is no longer watched needs no change
+			if ($item_title !== null)
+			{
+				$this->unsubscribe_item((int) $user_row['user_id'], $params['watch_mode'], $params['watch_id']);
+				$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
+			}
+
+			return $this->message('EMAIL_UNSUBSCRIBE_DONE');
+		}
+
 		if ($type_option === null)
 		{
 			return $this->message('EMAIL_UNSUBSCRIBE_LINK_INVALID', Response::HTTP_NOT_FOUND);
@@ -359,6 +377,18 @@ class email_unsubscribe
 		$this->db->sql_freeresult($result);
 
 		return $watching;
+	}
+
+	/**
+	 * Check if the link was created for an email caused by watching a topic or forum
+	 *
+	 * @param array $params
+	 *
+	 * @return bool
+	 */
+	protected function has_watch_item(array $params): bool
+	{
+		return $params['watch_mode'] === 'topic' || $params['watch_mode'] === 'forum';
 	}
 
 	/**
