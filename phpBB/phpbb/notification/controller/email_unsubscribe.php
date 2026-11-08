@@ -170,7 +170,7 @@ class email_unsubscribe
 			}
 		}
 
-		$type_label = $type_option !== null && $this->language->is_set($type_option['lang']) ? $this->language->lang($type_option['lang']) : '';
+		$type_label = $type_option !== null ? $this->get_type_label($type_option) : '';
 
 		$this->template->assign_vars([
 			'EMAIL_UNSUBSCRIBE_ITEM'	=> $item_title !== null ? $this->language->lang('EMAIL_UNSUBSCRIBE_SCOPE_' . strtoupper($params['watch_mode']), censor_text($item_title)) : '',
@@ -215,7 +215,7 @@ class email_unsubscribe
 		}
 
 		$this->unsubscribe_type((int) $user_row['user_id'], $type_option['id']);
-		$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$type_option['id']]);
+		$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
 
 		return $this->message('EMAIL_UNSUBSCRIBE_DONE');
 	}
@@ -246,7 +246,7 @@ class email_unsubscribe
 		if ($scope === 'type' && $type_option !== null)
 		{
 			$this->unsubscribe_type($user_id, $type_option['id']);
-			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$type_option['id']]);
+			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
 
 			return true;
 		}
@@ -377,6 +377,20 @@ class email_unsubscribe
 		$this->db->sql_freeresult($result);
 
 		return $watching;
+	}
+
+	/**
+	 * Get the readable name of a notification preference
+	 *
+	 * Extensions may not have loaded the language strings of their types here.
+	 *
+	 * @param array $type_option	Preference as returned by manager::get_subscription_option()
+	 *
+	 * @return string Name of the preference, empty if there is none
+	 */
+	protected function get_type_label(array $type_option): string
+	{
+		return $this->language->is_set($type_option['lang']) ? $this->language->lang($type_option['lang']) : '';
 	}
 
 	/**

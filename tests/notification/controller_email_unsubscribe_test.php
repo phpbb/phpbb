@@ -35,6 +35,12 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 	/** @var array Template variables of the rendered page */
 	protected $template_vars;
 
+	/** @var array Language strings known to the controller, keys are returned for all others */
+	protected $lang_strings = [];
+
+	/** @var array Log entries added by the controller */
+	protected $log_entries = [];
+
 	public function getDataSet()
 	{
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/unsubscribe.xml');
@@ -115,7 +121,15 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		});
 
 		$language = $this->createMock(\phpbb\language\language::class);
-		$language->method('lang')->willReturnArgument(0);
+		$language->method('is_set')->willReturnCallback(fn ($key) => isset($this->lang_strings[$key]));
+		$language->method('lang')->willReturnCallback(fn ($key) => $this->lang_strings[$key] ?? $key);
+
+		$log = $this->createMock(\phpbb\log\log_interface::class);
+		$log->method('add')->willReturnCallback(function ($mode, $user_id, $ip, $operation, $time, $data) {
+			$this->log_entries[] = [$operation, $data];
+
+			return 1;
+		});
 
 		$template = $this->createMock(\phpbb\template\template::class);
 		$template->method('assign_vars')->willReturnCallback(function (array $vars) use ($template) {
@@ -129,7 +143,7 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 			$this->email_method,
 			$helper,
 			$language,
-			new \phpbb\log\dummy(),
+			$log,
 			$this->manager,
 			new phpbb_mock_request(array_merge($params, $overrides), $post),
 			$template,
@@ -306,6 +320,26 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame(0, $this->get_notify(2, 'notification.type.post'));
 		$this->assertSame(1, $this->get_notify(2, 'moderation_queue'));
 		$this->assertSame(1, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
+	}
+
+	public static function type_log_data(): array
+	{
+		return [
+			'readable name'		=> [['NOTIFICATION_TYPE_POST' => 'Replies to watched topics'], 'Replies to watched topics'],
+			'missing string'	=> [[], 'notification.type.post'],
+		];
+	}
+
+	/**
+	 * @dataProvider type_log_data
+	 */
+	public function test_unsubscribe_type_logs_type_name(array $lang_strings, string $expected): void
+	{
+		$this->lang_strings = $lang_strings;
+
+		$this->handle(2, post: ['unsubscribe' => 'Unsubscribe', 'scope' => 'type']);
+
+		$this->assertSame([['LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', ['reportee_id' => 2, $expected]]], $this->log_entries);
 	}
 
 	public function test_unsubscribe_disabled_type_stays_disabled(): void
