@@ -499,6 +499,9 @@ class email extends base
 
 		if ($break)
 		{
+			// Reset the object, the next message must not inherit this one's headers
+			$this->init();
+
 			return true;
 		}
 
@@ -542,6 +545,10 @@ class email extends base
 			catch (TransportExceptionInterface $e)
 			{
 				$this->error($e->getDebug());
+
+				// Reset the object, the next message must not inherit this one's headers
+				$this->init();
+
 				return false;
 			}
 
