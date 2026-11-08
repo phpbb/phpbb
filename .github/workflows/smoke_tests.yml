@@ -1,0 +1,135 @@
+name: Smoke tests
+
+on:
+    workflow_dispatch:
+
+jobs:
+    # Reduced test set with one run each for MySQL, PostgreSQL and SQLite
+    smoke-tests:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.5'
+                      db: 'mysql'
+                      mysql_image: 'mysql:8.4'
+                      postgres_image: ''
+                    - php: '8.5'
+                      db: 'postgres'
+                      mysql_image: ''
+                      postgres_image: 'postgres:18'
+                    - php: '8.2'
+                      db: 'sqlite3'
+                      mysql_image: ''
+                      postgres_image: ''
+
+        name: Smoke - PHP ${{ matrix.php }} - ${{ matrix.mysql_image || matrix.postgres_image || matrix.db }}
+
+        services:
+            mysql:
+                image: ${{ matrix.mysql_image }}
+                env:
+                    MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                    MYSQL_DATABASE: phpbb_tests
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mariadb-admin ping || mysqladmin ping"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=3
+
+            postgres:
+                image: ${{ matrix.postgres_image }}
+                env:
+                    POSTGRES_HOST: localhost
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                ports:
+                    - 5432:5432
+                options: >-
+                    -v /var/run/postgresql:/var/run/postgresql
+                    --health-cmd "pg_isready -U postgres"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+            redis:
+                image: redis
+                options: >-
+                    --health-cmd "redis-cli ping"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                ports:
+                    - 6379:6379
+
+        steps:
+            - name: Update Ubuntu package lists
+              run: |
+                  sudo apt-get update -y  --allow-releaseinfo-change
+
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo, mysqli, pdo_mysql, pgsql, pdo_pgsql, sqlite3, pdo_sqlite
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              env:
+                  PHP_VERSION: ${{ matrix.php }}
+              run: |
+                  cd phpBB
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{ matrix.db }}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Setup node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+            - name: Setup node dependencies
+              run: npm ci
+
+            - name: Lint tests
+              if: ${{ matrix.db == 'mysql' }}
+              run: phpBB/vendor/bin/phpunit tests/lint_test.php
+
+            - name: Run functional tests
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Functional Tests' --display-all-issues --stop-on-error
+
+            - name: Run unit tests
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --display-all-issues --stop-on-error
