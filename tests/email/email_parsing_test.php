@@ -274,7 +274,8 @@ class phpbb_email_parsing_test extends phpbb_test_case
 	public static function template_without_link_data(): array
 	{
 		return array_filter(self::unsubscribe_template_data(), function (array $template) {
-			return !in_array($template[0], ['bookmark', 'mention', 'quote'], true);
+			// Only sent as notifications, which always set U_UNSUBSCRIBE
+			return !in_array($template[0], ['bookmark', 'mention', 'privmsg_notify', 'quote'], true);
 		});
 	}
 
