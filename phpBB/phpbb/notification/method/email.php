@@ -15,6 +15,7 @@ namespace phpbb\notification\method;
 
 use phpbb\messenger\method\messenger_interface;
 use phpbb\notification\type\type_interface;
+use phpbb\routing\router;
 use phpbb\user;
 use phpbb\user_loader;
 use phpbb\config\config;
@@ -28,9 +29,6 @@ use phpbb\di\service_collection;
 
 class email extends messenger_base
 {
-	/** @var string Path of the phpbb_notifications_unsubscribe route */
-	public const UNSUBSCRIBE_PATH = '/notifications/unsubscribe';
-
 	/** @var user */
 	protected $user;
 
@@ -46,6 +44,12 @@ class email extends messenger_base
 	/** @var service_collection */
 	protected $messenger;
 
+	/** @var router */
+	protected $router;
+
+	/** @var string|null Path of the unsubscribe route, loaded on first use */
+	protected $unsubscribe_path;
+
 	/**
 	 * Notification Method email Constructor
 	 *
@@ -57,6 +61,7 @@ class email extends messenger_base
 	 * @param string $php_ext
 	 * @param string $notification_emails_table
 	 * @param service_collection $messenger
+	 * @param router $router
 	 */
 	public function __construct(
 		user_loader $user_loader,
@@ -66,7 +71,8 @@ class email extends messenger_base
 		$phpbb_root_path,
 		$php_ext,
 		$notification_emails_table,
-		service_collection $messenger
+		service_collection $messenger,
+		router $router
 	)
 	{
 		parent::__construct($messenger, $user_loader, $phpbb_root_path, $php_ext);
@@ -75,6 +81,7 @@ class email extends messenger_base
 		$this->config = $config;
 		$this->db = $db;
 		$this->notification_emails_table = $notification_emails_table;
+		$this->router = $router;
 	}
 
 	/**
@@ -251,7 +258,25 @@ class email extends messenger_base
 			return null;
 		}
 
-		return generate_board_url() . "/index.{$this->php_ext}" . self::UNSUBSCRIBE_PATH . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+		return generate_board_url() . "/index.{$this->php_ext}" . $this->get_unsubscribe_path() . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+	}
+
+	/**
+	 * Get the path of the unsubscribe route
+	 *
+	 * Only the path is taken from the router, its URL generator depends on the
+	 * request context of the current request.
+	 *
+	 * @return string
+	 */
+	protected function get_unsubscribe_path(): string
+	{
+		if ($this->unsubscribe_path === null)
+		{
+			$this->unsubscribe_path = $this->router->get_routes()->get('phpbb_notifications_unsubscribe')->getPath();
+		}
+
+		return $this->unsubscribe_path;
 	}
 
 	/**

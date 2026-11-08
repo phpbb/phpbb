@@ -75,7 +75,8 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 			'',
 			'php',
 			'phpbb_notification_emails',
-			$this->createMock(\phpbb\di\service_collection::class)
+			$this->createMock(\phpbb\di\service_collection::class),
+			$this->createMock(\phpbb\routing\router::class)
 		);
 	}
 
@@ -83,8 +84,7 @@ class phpbb_functional_email_unsubscribe_test extends phpbb_functional_test_case
 	{
 		$params = $this->get_email_method()->get_unsubscribe_params($this->user_row, 'notification.type.post', 'topic', self::TOPIC_ID);
 
-		// The path constant is used in emails as well, this fails if it differs from the route
-		return 'index.php' . \phpbb\notification\method\email::UNSUBSCRIBE_PATH . '?' . http_build_query(array_merge($params, $overrides));
+		return 'index.php/notifications/unsubscribe?' . http_build_query(array_merge($params, $overrides));
 	}
 
 	protected function is_watching(): bool

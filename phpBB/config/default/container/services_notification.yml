@@ -239,6 +239,7 @@ services:
             - '%core.php_ext%'
             - '%tables.notification_emails%'
             - '@messenger.method_collection'
+            - '@router'
         tags:
             - { name: notification.method }
 

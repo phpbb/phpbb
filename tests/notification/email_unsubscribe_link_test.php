@@ -29,6 +29,12 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 
 	protected function get_method(string $secret = 'secret'): email
 	{
+		$routes = new \Symfony\Component\Routing\RouteCollection();
+		$routes->add('phpbb_notifications_unsubscribe', new \Symfony\Component\Routing\Route('/notifications/unsubscribe'));
+
+		$router = $this->createMock(\phpbb\routing\router::class);
+		$router->method('get_routes')->willReturn($routes);
+
 		return new email(
 			$this->createMock(\phpbb\user_loader::class),
 			$this->createMock(\phpbb\user::class),
@@ -37,7 +43,8 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 			'',
 			'php',
 			'phpbb_notification_emails',
-			$this->createMock(\phpbb\di\service_collection::class)
+			$this->createMock(\phpbb\di\service_collection::class),
+			$router
 		);
 	}
 

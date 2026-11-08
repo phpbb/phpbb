@@ -55,7 +55,8 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 			'',
 			'php',
 			'phpbb_notification_emails',
-			$this->createMock(\phpbb\di\service_collection::class)
+			$this->createMock(\phpbb\di\service_collection::class),
+			$this->createMock(\phpbb\routing\router::class)
 		);
 
 		$this->manager = new class(
