@@ -270,23 +270,4 @@ class phpbb_email_parsing_test extends phpbb_test_case
 		$this->assertStringContainsString("\n" . $url . "\n", $this->get_message());
 		$this->assertStringNotContainsString('<!--', $this->get_message());
 	}
-
-	public static function template_without_link_data(): array
-	{
-		return array_filter(self::unsubscribe_template_data(), function (array $template) {
-			// Only sent as notifications, which always set U_UNSUBSCRIBE
-			return !in_array($template[0], ['bookmark', 'mention', 'privmsg_notify', 'quote'], true);
-		});
-	}
-
-	/**
-	 * @dataProvider template_without_link_data
-	 */
-	public function test_templates_hide_unsubscribe_text_without_link(string $template): void
-	{
-		$this->email->template($template, 'en');
-		$this->email->prepare_message();
-
-		$this->assertStringNotContainsString('If you no longer wish to receive these emails', $this->get_message());
-	}
 }

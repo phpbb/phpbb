@@ -4,9 +4,7 @@ Hello {USERNAME},
 
 The report you filed on the post "{POST_SUBJECT}" in "{TOPIC_TITLE}" at "{SITENAME}" was deleted by a moderator or by an administrator.
 
-<!-- IF U_UNSUBSCRIBE -->
 If you no longer wish to receive these emails, click the following link:
 {U_UNSUBSCRIBE}
 
-<!-- ENDIF -->
 {EMAIL_SIG}

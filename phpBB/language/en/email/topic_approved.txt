@@ -7,9 +7,7 @@ Your topic "{TOPIC_TITLE}" at "{SITENAME}" was approved by a moderator or admini
 If you want to view the topic, click the following link:
 {U_VIEW_TOPIC}
 
-<!-- IF U_UNSUBSCRIBE -->
 If you no longer wish to receive these emails, click the following link:
 {U_UNSUBSCRIBE}
 
-<!-- ENDIF -->
 {EMAIL_SIG}

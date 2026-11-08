@@ -10,9 +10,7 @@ You can view your reported post by clicking on the following link:
 
 You have requested that you be notified on this event, remember that you can always choose not to be notified of closed post reports by changing the appropriate setting in your profile.
 
-<!-- IF U_UNSUBSCRIBE -->
 If you no longer wish to receive these emails, click the following link:
 {U_UNSUBSCRIBE}
 
-<!-- ENDIF -->
 {EMAIL_SIG}
