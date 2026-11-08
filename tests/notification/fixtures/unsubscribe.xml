@@ -50,12 +50,14 @@
 		</row>
 	</table>
 	<table name="phpbb_user_notifications">
+		<column>id</column>
 		<column>item_type</column>
 		<column>item_id</column>
 		<column>user_id</column>
 		<column>method</column>
 		<column>notify</column>
 		<row>
+			<value>1</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>2</value>
@@ -63,6 +65,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>2</value>
 			<value>moderation_queue</value>
 			<value>0</value>
 			<value>2</value>
@@ -70,6 +73,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>3</value>
 			<value>notification.type.quote</value>
 			<value>0</value>
 			<value>2</value>
@@ -77,6 +81,7 @@
 			<value>0</value>
 		</row>
 		<row>
+			<value>4</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>2</value>
@@ -84,6 +89,7 @@
 			<value>1</value>
 		</row>
 		<row>
+			<value>5</value>
 			<value>notification.type.post</value>
 			<value>0</value>
 			<value>3</value>
