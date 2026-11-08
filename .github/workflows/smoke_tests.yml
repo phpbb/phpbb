@@ -6,21 +6,21 @@ on:
 jobs:
     # Reduced test set with one run each for MySQL, PostgreSQL and SQLite
     smoke-tests:
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-latest
         timeout-minutes: 30
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - php: '8.4'
+                    - php: '8.5'
                       db: 'mysql'
-                      mysql_image: 'mysql:8.0'
+                      mysql_image: 'mysql:8.4'
                       postgres_image: ''
-                    - php: '8.4'
+                    - php: '8.5'
                       db: 'postgres'
                       mysql_image: ''
-                      postgres_image: 'postgres:14'
-                    - php: '7.2'
+                      postgres_image: 'postgres:18'
+                    - php: '8.2'
                       db: 'sqlite3'
                       mysql_image: ''
                       postgres_image: ''
@@ -36,7 +36,7 @@ jobs:
                 ports:
                     - 3306:3306
                 options: >-
-                    --health-cmd="mysqladmin ping"
+                    --health-cmd="mariadb-admin ping || mysqladmin ping"
                     --health-interval=10s
                     --health-timeout=5s
                     --health-retries=3
@@ -78,7 +78,7 @@ jobs:
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
-                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, mysqli, sqlite, pdo_sqlite, intl, gd, exif, iconv, sqlsrv, pdo_sqlsrv, ldap
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo, mysqli, pdo_mysql, pgsql, pdo_pgsql, sqlite3, pdo_sqlite
                   coverage: none
 
             - name: Get Composer Cache Directory
@@ -88,14 +88,13 @@ jobs:
               run: |
                   cd phpBB
                   echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-                  echo "version=${PHP_VERSION%.*}" >> $GITHUB_OUTPUT
                   cd ..
 
             - name: Cache Composer dependencies
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: composer-${{ steps.composer-cache.outputs.version }}-${{ hashFiles('phpBB/composer.lock') }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
 
             - name: Setup environment for phpBB
               env:
@@ -112,6 +111,13 @@ jobs:
               run: |
                   .github/setup-database.sh $DB $MYISAM
 
+            - name: Setup node
+              uses: actions/setup-node@v6
+              with:
+                  node-version: 24
+            - name: Setup node dependencies
+              run: npm ci
+
             - name: Lint tests
               if: ${{ matrix.db == 'mysql' }}
               run: phpBB/vendor/bin/phpunit tests/lint_test.php
@@ -120,10 +126,10 @@ jobs:
               env:
                   DB: ${{ matrix.db }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Functional Tests' --verbose --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Functional Tests' --display-all-issues --stop-on-error
 
             - name: Run unit tests
               env:
                   DB: ${{ matrix.db }}
               run: |
-                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --verbose --stop-on-error
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --display-all-issues --stop-on-error
