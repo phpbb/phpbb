@@ -112,6 +112,11 @@ jobs:
               run: |
                   .github/setup-database.sh $DB $MYISAM
 
+            - name: Setup SPHINX
+              if: ${{ matrix.db == 'mysql' }}
+              run: |
+                  .github/setup-sphinx.sh
+
             - name: Lint tests
               if: ${{ matrix.db == 'mysql' }}
               run: phpBB/vendor/bin/phpunit tests/lint_test.php
