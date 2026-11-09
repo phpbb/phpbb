@@ -74,6 +74,8 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	*/
 	protected function notify_using_messenger(string $notify_method, string $template_dir_prefix = ''): void
 	{
+		global $phpbb_dispatcher;
+
 		if (empty($this->queue))
 		{
 			return;
@@ -114,6 +116,23 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				continue;
 			}
 
+			$template_vars = array_merge([
+				'USERNAME'					=> $user['username'],
+				'U_NOTIFICATION_SETTINGS'	=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
+			], $notification->get_email_template_variables());
+
+			/**
+			 * Modify the template variables of a notification email before it is rendered
+			 *
+			 * @event core.notification_method_messenger_modify_template_vars
+			 * @var	type_interface	notification	The notification being sent (read-only)
+			 * @var	array			user			The recipient's user row (read-only)
+			 * @var	array			template_vars	Template variables about to be assigned to the email
+			 * @since 3.3.20-RC1
+			 */
+			$vars = ['notification', 'user', 'template_vars'];
+			extract($phpbb_dispatcher->trigger_event('core.notification_method_messenger_modify_template_vars', compact($vars)));
+
 			/**
 			 * @var \phpbb\messenger\method\messenger_interface $messenger_method
 			 * @psalm-suppress UndefinedMethod
@@ -124,10 +143,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				{
 					$messenger_method->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
 					$messenger_method->set_addresses($user);
-					$messenger_method->assign_vars(array_merge([
-						'USERNAME'					=> $user['username'],
-						'U_NOTIFICATION_SETTINGS'	=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
-					], $notification->get_email_template_variables()));
+					$messenger_method->assign_vars($template_vars);
 
 					$messenger_method->send();
 
