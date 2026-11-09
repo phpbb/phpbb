@@ -118,6 +118,7 @@ class mark_topics_read
 		if (isset($forum_data['forum_type']) && $forum_data['forum_type'] != FORUM_POST)
 		{
 			redirect($redirect);
+			return;
 		}
 
 		// Handle marking posts

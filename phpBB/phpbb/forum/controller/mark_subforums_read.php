@@ -94,7 +94,7 @@ class mark_subforums_read
 			trigger_error('NO_FORUM');
 		}
 
-		if (!$this->auth->acl_gets('f_list', 'f_read', $id))
+		if (!$this->auth->acl_gets('f_list', 'f_list_topics', 'f_read', $id))
 		{
 			if ($this->user->data['user_id'] != ANONYMOUS)
 			{
@@ -112,25 +112,25 @@ class mark_subforums_read
 			login_forum_box($root_data);
 		}
 
-		$rows = $this->forum_helper->get_forums_rows($root_data);
-
-		$forum_ids = [];
-		foreach ($rows as $row)
-		{
-			$forum_id = $row['forum_id'];
-
-			if ($this->auth->acl_get('f_list', $forum_id))
-			{
-				$forum_ids[] = $forum_id;
-			}
-		}
-
 		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
 		meta_refresh(3, $redirect);
 
 		$token = $this->request->variable('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
+			$rows = $this->forum_helper->get_forums_rows($root_data);
+
+			$forum_ids = [];
+			foreach ($rows as $row)
+			{
+				$forum_id = $row['forum_id'];
+
+				if ($this->auth->acl_get('f_list', $forum_id))
+				{
+					$forum_ids[] = $forum_id;
+				}
+			}
+
 			if (!empty($forum_ids))
 			{
 				markread('topics', $forum_ids, false, $this->request->variable('mark_time', 0));
