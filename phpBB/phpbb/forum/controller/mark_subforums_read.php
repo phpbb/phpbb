@@ -16,11 +16,13 @@ namespace phpbb\forum\controller;
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\controller\helper;
+use phpbb\exception\http_exception;
 use phpbb\forum\helper as forum_helper;
 use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class mark_subforums_read
 {
@@ -81,9 +83,11 @@ class mark_subforums_read
 	 * Handle marking forums read
 	 *
 	 * @param int $id Forum ID
-	 * @return void|JsonResponse
+	 * @return Response
+	 *
+	 * @throws http_exception
 	 */
-	public function handle(int $id)
+	public function handle(int $id): Response
 	{
 		$this->language->add_lang('viewforum');
 
@@ -91,15 +95,14 @@ class mark_subforums_read
 
 		if (!$root_data)
 		{
-			trigger_error('NO_FORUM');
+			throw new http_exception(404, 'NO_FORUM');
 		}
 
 		if (!$this->auth->acl_gets('f_list', 'f_list_topics', 'f_read', $id))
 		{
 			if ($this->user->data['user_id'] != ANONYMOUS)
 			{
-				send_status_line(403, 'Forbidden');
-				trigger_error('SORRY_AUTH_READ');
+				throw new http_exception(403, 'SORRY_AUTH_READ');
 			}
 
 			login_box('', $this->language->lang('LOGIN_VIEWFORUM'));
@@ -115,47 +118,45 @@ class mark_subforums_read
 		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
 		meta_refresh(3, $redirect);
 
+		$return_message = $this->language->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
+
 		$token = $this->request->variable('hash', '');
-		if (check_link_hash($token, 'global'))
+		if (!check_link_hash($token, 'global'))
 		{
-			$rows = $this->forum_helper->get_forums_rows($root_data);
-
-			$forum_ids = [];
-			foreach ($rows as $row)
-			{
-				$forum_id = $row['forum_id'];
-
-				if ($this->auth->acl_get('f_list', $forum_id))
-				{
-					$forum_ids[] = $forum_id;
-				}
-			}
-
-			if (!empty($forum_ids))
-			{
-				markread('topics', $forum_ids, false, $this->request->variable('mark_time', 0));
-			}
-
-			if ($this->request->is_ajax())
-			{
-				// Tell the ajax script what language vars and URL need to be replaced
-				$data = [
-					'NO_UNREAD_POSTS'	=> $this->language->lang('NO_UNREAD_POSTS'),
-					'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
-					'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_subforums_read', ['id' => $root_data['forum_id'], 'hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
-					'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
-					'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED')
-				];
-				return new JsonResponse($data);
-			}
-
-			$message = sprintf($this->language->lang('RETURN_FORUM'), '<a href="' . $redirect . '">', '</a>');
-			trigger_error($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $message);
+			return $this->controller_helper->message($return_message);
 		}
-		else
+
+		$rows = $this->forum_helper->get_forums_rows($root_data);
+
+		$forum_ids = [];
+		foreach ($rows as $row)
 		{
-			$message = sprintf($this->language->lang('RETURN_FORUM'), '<a href="' . $redirect . '">', '</a>');
-			trigger_error($message);
+			$forum_id = $row['forum_id'];
+
+			if ($this->auth->acl_get('f_list', $forum_id))
+			{
+				$forum_ids[] = $forum_id;
+			}
 		}
+
+		if (!empty($forum_ids))
+		{
+			markread('topics', $forum_ids, false, $this->request->variable('mark_time', 0));
+		}
+
+		if ($this->request->is_ajax())
+		{
+			// Tell the ajax script what language vars and URL need to be replaced
+			$data = [
+				'NO_UNREAD_POSTS'	=> $this->language->lang('NO_UNREAD_POSTS'),
+				'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
+				'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_subforums_read', ['id' => $root_data['forum_id'], 'hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
+				'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
+				'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED')
+			];
+			return new JsonResponse($data);
+		}
+
+		return $this->controller_helper->message($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $return_message);
 	}
 }

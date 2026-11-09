@@ -12,9 +12,11 @@
 */
 
 use phpbb\config\config;
+use phpbb\exception\http_exception;
 use phpbb\forum\controller\mark_subforums_read;
 use phpbb\forum\helper as forum_helper;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 {
@@ -78,6 +80,10 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			->willReturnCallback(function ($route, $params = [], $is_amp = true) {
 				return 'http://localhost/phpBB/' . $route;
 			});
+		$this->controller_helper->method('message')
+			->willReturnCallback(function ($message, $parameters = [], $title = 'INFORMATION', $code = 200) {
+				return new Response($message, $code);
+			});
 
 		$this->forum_helper = $this->createMock(forum_helper::class);
 
@@ -129,8 +135,6 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 	{
 		$this->forum_helper->method('get_forum_data')->with(999)->willReturn(false);
 
-		$this->setExpectedTriggerError(E_USER_NOTICE, 'NO_FORUM');
-
 		$controller = new mark_subforums_read(
 			$this->auth,
 			$this->config,
@@ -142,7 +146,17 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$controller->handle(999);
+
+		try
+		{
+			$controller->handle(999);
+			$this->fail('Expected http_exception was not thrown');
+		}
+		catch (http_exception $e)
+		{
+			$this->assertSame(404, $e->getStatusCode());
+			$this->assertSame('NO_FORUM', $e->getMessage());
+		}
 	}
 
 	public function test_handle_unauthorized_registered_user(): void
@@ -157,8 +171,6 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(false);
 		$this->user->data['user_id'] = 2;
 
-		$this->setExpectedTriggerError(E_USER_NOTICE, 'SORRY_AUTH_READ');
-
 		$controller = new mark_subforums_read(
 			$this->auth,
 			$this->config,
@@ -170,7 +182,19 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$controller->handle(10);
+
+		try
+		{
+			$controller->handle(10);
+			$this->fail('Expected http_exception was not thrown');
+		}
+		catch (http_exception $e)
+		{
+			$this->assertSame(403, $e->getStatusCode());
+			$this->assertSame('SORRY_AUTH_READ', $e->getMessage());
+		}
+
+		$this->assertFalse($this->markread_called);
 	}
 
 	public function test_handle_invalid_hash(): void
@@ -191,8 +215,6 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 		]);
 		$this->request->method('is_ajax')->willReturn(false);
 
-		$this->setExpectedTriggerError(E_USER_NOTICE);
-
 		$controller = new mark_subforums_read(
 			$this->auth,
 			$this->config,
@@ -204,9 +226,12 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$controller->handle(10);
+		$response = $controller->handle(10);
 
 		$this->assertFalse($this->markread_called);
+		$this->assertInstanceOf(Response::class, $response);
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertStringNotContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 
 	public function test_handle_valid_hash_ajax_with_subforums(): void
@@ -324,8 +349,6 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 		]);
 		$this->request->method('is_ajax')->willReturn(false);
 
-		$this->setExpectedTriggerError(E_USER_NOTICE);
-
 		$controller = new mark_subforums_read(
 			$this->auth,
 			$this->config,
@@ -337,11 +360,16 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$controller->handle(10);
+		$response = $controller->handle(10);
 
 		$this->assertTrue($this->markread_called);
 		$this->assertEquals('topics', $this->markread_args['mode']);
 		$this->assertEquals([20], $this->markread_args['forum_id']);
+
+		$this->assertInstanceOf(Response::class, $response);
+		$this->assertNotInstanceOf(JsonResponse::class, $response);
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertStringContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 
 	public function test_handle_passworded_forum_with_access(): void

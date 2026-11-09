@@ -12,8 +12,10 @@
 */
 
 use phpbb\config\config;
+use phpbb\exception\http_exception;
 use phpbb\forum\controller\mark_all_read;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_forum_controller_mark_all_read_test extends phpbb_test_case
 {
@@ -59,6 +61,10 @@ class phpbb_forum_controller_mark_all_read_test extends phpbb_test_case
 		$this->controller_helper->method('route')
 			->willReturnCallback(function ($route, $params = [], $is_amp = true) {
 				return 'http://localhost/phpBB/' . $route;
+			});
+		$this->controller_helper->method('message')
+			->willReturnCallback(function ($message, $parameters = [], $title = 'INFORMATION', $code = 200) {
+				return new Response($message, $code);
 			});
 
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
@@ -112,12 +118,13 @@ class phpbb_forum_controller_mark_all_read_test extends phpbb_test_case
 		]);
 		$this->request->method('is_ajax')->willReturn(false);
 
-		$this->setExpectedTriggerError(E_USER_NOTICE);
-
 		$controller = new mark_all_read($this->config, $this->controller_helper, $this->language, $this->request, $this->user);
-		$controller->handle();
+		$response = $controller->handle();
 
 		$this->assertFalse($this->markread_called);
+		$this->assertInstanceOf(Response::class, $response);
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertStringNotContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 
 	public function test_handle_valid_hash_ajax_registered(): void
@@ -195,14 +202,17 @@ class phpbb_forum_controller_mark_all_read_test extends phpbb_test_case
 		]);
 		$this->request->method('is_ajax')->willReturn(false);
 
-		$this->setExpectedTriggerError(E_USER_NOTICE);
-
 		$controller = new mark_all_read($this->config, $this->controller_helper, $this->language, $this->request, $this->user);
-		$controller->handle();
+		$response = $controller->handle();
 
 		$this->assertTrue($this->markread_called);
 		$this->assertEquals('all', $this->markread_args['mode']);
 		$this->assertFalse($this->markread_args['forum_id']);
 		$this->assertEquals(1600000000, $this->markread_args['post_time']);
+
+		$this->assertInstanceOf(Response::class, $response);
+		$this->assertNotInstanceOf(JsonResponse::class, $response);
+		$this->assertSame(200, $response->getStatusCode());
+		$this->assertStringContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 }

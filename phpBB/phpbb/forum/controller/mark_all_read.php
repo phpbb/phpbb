@@ -19,6 +19,7 @@ use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class mark_all_read
 {
@@ -58,9 +59,9 @@ class mark_all_read
 	/**
 	 * Handle marking everything read
 	 *
-	 * @return void|JsonResponse
+	 * @return Response
 	 */
-	public function handle()
+	public function handle(): Response
 	{
 		$this->language->add_lang('viewforum');
 
@@ -68,31 +69,29 @@ class mark_all_read
 		$redirect = $this->controller_helper->route('phpbb_index_controller');
 		meta_refresh(3, $redirect);
 
+		$return_message = $this->language->lang('RETURN_INDEX', '<a href="' . $redirect . '">', '</a>');
+
 		$token = $this->request->variable('hash', '');
-		if (check_link_hash($token, 'global'))
+		if (!check_link_hash($token, 'global'))
 		{
-			markread('all', false, false, $this->request->variable('mark_time', 0));
-
-			if ($this->request->is_ajax())
-			{
-				// Tell the ajax script what language vars and URL need to be replaced
-				$data = [
-					'NO_UNREAD_POSTS'	=> $this->language->lang('NO_UNREAD_POSTS'),
-					'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
-					'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
-					'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
-					'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED'),
-				];
-				return new JsonResponse($data);
-			}
-
-			$message = sprintf($this->language->lang('RETURN_INDEX'), '<a href="' . $redirect . '">', '</a>');
-			trigger_error($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $message);
+			return $this->controller_helper->message($return_message);
 		}
-		else
+
+		markread('all', false, false, $this->request->variable('mark_time', 0));
+
+		if ($this->request->is_ajax())
 		{
-			$message = sprintf($this->language->lang('RETURN_INDEX'), '<a href="' . $redirect . '">', '</a>');
-			trigger_error($message);
+			// Tell the ajax script what language vars and URL need to be replaced
+			$data = [
+				'NO_UNREAD_POSTS'	=> $this->language->lang('NO_UNREAD_POSTS'),
+				'UNREAD_POSTS'		=> $this->language->lang('UNREAD_POSTS'),
+				'U_MARK_FORUMS'		=> ($this->user->data['is_registered'] || $this->config['load_anon_lastread']) ? $this->controller_helper->route('phpbb_forum_mark_all_read', ['hash' => generate_link_hash('global'), 'mark_time' => time()], false) : '',
+				'MESSAGE_TITLE'		=> $this->language->lang('INFORMATION'),
+				'MESSAGE_TEXT'		=> $this->language->lang('FORUMS_MARKED'),
+			];
+			return new JsonResponse($data);
 		}
+
+		return $this->controller_helper->message($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $return_message);
 	}
 }
