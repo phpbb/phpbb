@@ -316,12 +316,19 @@ class pagination
 	*/
 	public function validate_start($start, $per_page, $num_items)
 	{
-		if ($start < 0 || $start >= $num_items)
+		if ($start < 0 || $num_items <= 0)
 		{
-			return ($start < 0 || $num_items <= 0) ? 0 : floor(($num_items - 1) / $per_page) * $per_page;
+			return 0;
 		}
 
-		return $start;
+		if ($start >= $num_items)
+		{
+			$start = $num_items - 1;
+		}
+
+		// Align the start value with the beginning of its page, so the
+		// displayed items always match the page shown in the pagination
+		return (int) floor($start / $per_page) * $per_page;
 	}
 
 	/**
