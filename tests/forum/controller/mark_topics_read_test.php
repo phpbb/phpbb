@@ -16,7 +16,6 @@ use phpbb\exception\http_exception;
 use phpbb\forum\controller\mark_topics_read;
 use phpbb\forum\helper as forum_helper;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
@@ -349,15 +348,33 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 		$this->assertStringContainsString($this->language->lang('TOPICS_MARKED'), $response->getContent());
 	}
 
-	public function test_handle_non_post_forum_redirects(): void
+	public static function non_post_forum_types_data(): array
+	{
+		return [
+			'category'	=> [FORUM_CAT],
+			'link'		=> [FORUM_LINK],
+		];
+	}
+
+	/**
+	 * @dataProvider non_post_forum_types_data
+	 */
+	public function test_handle_non_post_forum_throws(int $forum_type): void
 	{
 		$forum_data = [
 			'forum_id' => 5,
-			'forum_name' => 'Category Forum',
-			'forum_type' => FORUM_CAT,
+			'forum_name' => 'Non-post Forum',
+			'forum_type' => $forum_type,
 		];
 		$this->forum_helper->method('get_forum_data')->with(5)->willReturn($forum_data);
 		$this->auth->method('acl_gets')->with('f_read', 'f_list_topics', 5)->willReturn(true);
+
+		$valid_hash = generate_link_hash('global');
+		$this->request->method('variable')->willReturnMap([
+			['hash', '', $valid_hash],
+			['mark_time', 0, 1600000000],
+		]);
+		$this->request->method('is_ajax')->willReturn(true);
 
 		$controller = new mark_topics_read(
 			$this->auth,
@@ -370,12 +387,19 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$response = $controller->handle(5);
+
+		try
+		{
+			$controller->handle(5);
+			$this->fail('Expected http_exception was not thrown');
+		}
+		catch (http_exception $e)
+		{
+			$this->assertSame(400, $e->getStatusCode());
+			$this->assertSame('NO_TOPICS', $e->getMessage());
+		}
 
 		$this->assertFalse($this->markread_called);
-		$this->assertInstanceOf(RedirectResponse::class, $response);
-		$this->assertStringContainsString('viewforum.' . $this->php_ext, $response->getTargetUrl());
-		$this->assertStringContainsString('f=5', $response->getTargetUrl());
 	}
 
 	public function test_handle_passworded_forum_with_access(): void

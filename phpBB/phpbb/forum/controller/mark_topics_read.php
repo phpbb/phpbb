@@ -22,7 +22,6 @@ use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\user;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class mark_topics_read
@@ -116,13 +115,13 @@ class mark_topics_read
 			login_forum_box($forum_data);
 		}
 
-		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
-
-		// Topics only exist in standard forums (FORUM_POST). Redirect for categories or links.
+		// Topics only exist in standard forums (FORUM_POST), there is nothing to mark in categories or links
 		if (isset($forum_data['forum_type']) && $forum_data['forum_type'] != FORUM_POST)
 		{
-			return new RedirectResponse($redirect);
+			throw new http_exception(400, 'NO_TOPICS');
 		}
+
+		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
 
 		// Handle marking posts
 		meta_refresh(3, $redirect);
