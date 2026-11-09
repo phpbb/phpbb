@@ -161,14 +161,14 @@ class email_unsubscribe
 
 		if ($this->request->variable('List-Unsubscribe', '', false, request_interface::POST) === 'One-Click')
 		{
-			return $this->handle_one_click($user_row, $params, $type_option, $item_title);
+			return $this->handle_one_click($params, $type_option, $item_title);
 		}
 
 		if ($this->request->is_set_post('unsubscribe'))
 		{
 			$scope = $this->request->variable('scope', '', false, request_interface::POST);
 
-			if ($this->apply_scope($scope, $user_row, $params, $type_option, $item_title))
+			if ($this->apply_scope($scope, $params, $type_option, $item_title))
 			{
 				$this->template->assign_vars(['S_EMAIL_UNSUBSCRIBE_DONE' => true]);
 
@@ -194,22 +194,21 @@ class email_unsubscribe
 	 * like the stop watching link in the email does. All other emails turn off
 	 * their notification type.
 	 *
-	 * @param array $user_row
 	 * @param array $params
 	 * @param array|null $type_option
 	 * @param string|null $item_title
 	 *
 	 * @return Response
 	 */
-	protected function handle_one_click(array $user_row, array $params, array|null $type_option, string|null $item_title): Response
+	protected function handle_one_click(array $params, array|null $type_option, string|null $item_title): Response
 	{
 		if ($this->has_watch_item($params))
 		{
 			// Mail clients may repeat the request, an item that is no longer watched needs no change
 			if ($item_title !== null)
 			{
-				$this->unsubscribe_item((int) $user_row['user_id'], $params['watch_mode'], $params['watch_id']);
-				$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
+				$this->unsubscribe_item($params['user_id'], $params['watch_mode'], $params['watch_id']);
+				$this->log_action($params['user_id'], 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
 			}
 
 			return $this->message('EMAIL_UNSUBSCRIBE_DONE');
@@ -221,10 +220,10 @@ class email_unsubscribe
 		}
 
 		// Mail clients may repeat the request, a type that is already turned off needs no change
-		if ($this->manager->is_subscribed((int) $user_row['user_id'], $type_option['id'], $this->email_method->get_type()))
+		if ($this->manager->is_subscribed($params['user_id'], $type_option['id'], $this->email_method->get_type()))
 		{
-			$this->unsubscribe_type((int) $user_row['user_id'], $type_option['id']);
-			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
+			$this->unsubscribe_type($params['user_id'], $type_option['id']);
+			$this->log_action($params['user_id'], 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
 		}
 
 		return $this->message('EMAIL_UNSUBSCRIBE_DONE');
@@ -234,37 +233,34 @@ class email_unsubscribe
 	 * Apply the scope chosen on the unsubscribe page
 	 *
 	 * @param string $scope
-	 * @param array $user_row
 	 * @param array $params
 	 * @param array|null $type_option
 	 * @param string|null $item_title
 	 *
 	 * @return bool False if the scope is not available for this link
 	 */
-	protected function apply_scope(string $scope, array $user_row, array $params, array|null $type_option, string|null $item_title): bool
+	protected function apply_scope(string $scope, array $params, array|null $type_option, string|null $item_title): bool
 	{
-		$user_id = (int) $user_row['user_id'];
-
 		if ($scope === 'item' && $item_title !== null)
 		{
-			$this->unsubscribe_item($user_id, $params['watch_mode'], $params['watch_id']);
-			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
+			$this->unsubscribe_item($params['user_id'], $params['watch_mode'], $params['watch_id']);
+			$this->log_action($params['user_id'], 'LOG_USER_EMAIL_UNSUBSCRIBE_ITEM', [$item_title]);
 
 			return true;
 		}
 
 		if ($scope === 'type' && $type_option !== null)
 		{
-			$this->unsubscribe_type($user_id, $type_option['id']);
-			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
+			$this->unsubscribe_type($params['user_id'], $type_option['id']);
+			$this->log_action($params['user_id'], 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
 
 			return true;
 		}
 
 		if ($scope === 'all')
 		{
-			$this->unsubscribe_all($user_id);
-			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_ALL');
+			$this->unsubscribe_all($params['user_id']);
+			$this->log_action($params['user_id'], 'LOG_USER_EMAIL_UNSUBSCRIBE_ALL');
 
 			return true;
 		}
@@ -323,7 +319,7 @@ class email_unsubscribe
 
 		$sql = 'UPDATE ' . $this->users_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', ['user_allow_massemail' => 0]) . '
-			WHERE user_id = ' . (int) $user_id;
+			WHERE user_id = ' . $user_id;
 		$this->db->sql_query($sql);
 	}
 
@@ -347,20 +343,20 @@ class email_unsubscribe
 		{
 			$sql = 'SELECT topic_title AS title
 				FROM ' . $this->topics_table . '
-				WHERE topic_id = ' . (int) $item_id;
+				WHERE topic_id = ' . $item_id;
 		}
 		else
 		{
 			$sql = 'SELECT forum_name AS title
 				FROM ' . $this->forums_table . '
-				WHERE forum_id = ' . (int) $item_id;
+				WHERE forum_id = ' . $item_id;
 		}
 
 		$result = $this->db->sql_query($sql);
 		$title = $this->db->sql_fetchfield('title');
 		$this->db->sql_freeresult($result);
 
-		return $title === false ? null : (string) $title;
+		return $title === false ? null : $title;
 	}
 
 	/**
@@ -448,7 +444,7 @@ class email_unsubscribe
 	{
 		$sql = 'SELECT user_id, user_email, user_type
 			FROM ' . $this->users_table . '
-			WHERE user_id = ' . (int) $user_id . '
+			WHERE user_id = ' . $user_id . '
 				AND user_id <> ' . ANONYMOUS . '
 				AND user_type <> ' . USER_IGNORE;
 		$result = $this->db->sql_query($sql);
@@ -461,16 +457,16 @@ class email_unsubscribe
 	/**
 	 * Add a log entry for the user the link was created for
 	 *
-	 * @param array $user_row
+	 * @param int $user_id
 	 * @param string $operation
 	 * @param array $data
 	 *
 	 * @return void
 	 */
-	protected function log_action(array $user_row, string $operation, array $data = []): void
+	protected function log_action(int $user_id, string $operation, array $data = []): void
 	{
-		$data = array_merge(['reportee_id' => (int) $user_row['user_id']], $data);
-		$this->log->add('user', (int) $user_row['user_id'], $this->user->ip, $operation, false, $data);
+		$data = array_merge(['reportee_id' => $user_id], $data);
+		$this->log->add('user', $user_id, $this->user->ip, $operation, false, $data);
 	}
 
 	/**
