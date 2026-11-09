@@ -540,4 +540,60 @@ class phpbb_dbal_db_tools_test extends phpbb_database_test_case
 		/* https://github.com/phpbb/phpbb/blob/aee5e373bca6cd20d44b99585d3b758276a2d7e6/phpBB/phpbb/db/tools/tools.php#L1488-L1517 */
 		$this->tools->sql_create_index('prefix_table_name', $too_long_index_name, array('c_timestamp'));
 	}
+
+	public function test_enum_mapped_to_string()
+	{
+		$this->assertSame('string', $this->doctrine_db->getDatabasePlatform()->getDoctrineTypeMapping('enum'));
+	}
+
+	public function test_schema_changes_with_unknown_column_type_in_foreign_table()
+	{
+		// Tables not created by phpBB can share the database and use column
+		// types Doctrine has no mapping for, e.g. MySQL's native ENUM type.
+		switch ($this->db->get_sql_layer())
+		{
+			case 'mysqli':
+				$create_foreign_table = "CREATE TABLE foreign_type_table (id INT NOT NULL, no_mapping ENUM('a', 'b') NOT NULL, PRIMARY KEY (id))";
+			break;
+
+			case 'postgres':
+				$this->db->sql_query("CREATE TYPE foreign_enum_type AS ENUM ('a', 'b')");
+				$create_foreign_table = 'CREATE TABLE foreign_type_table (id INT NOT NULL, no_mapping foreign_enum_type NOT NULL, PRIMARY KEY (id))';
+			break;
+
+			case 'sqlite3':
+				$create_foreign_table = 'CREATE TABLE foreign_type_table (id INT NOT NULL, no_mapping unknown_custom_type NOT NULL, PRIMARY KEY (id))';
+			break;
+
+			default:
+				$this->markTestSkipped('No foreign column type defined for this DBMS');
+		}
+
+		$this->db->sql_query($create_foreign_table);
+
+		try
+		{
+			$this->assertTrue($this->tools->sql_column_add('prefix_table_name', 'c_foreign_type', array('UINT', 0)));
+			$this->assertTrue($this->tools->sql_column_exists('prefix_table_name', 'c_foreign_type'));
+			$this->assertTrue($this->tools->sql_column_remove('prefix_table_name', 'c_foreign_type'));
+
+			$this->tools->sql_create_table('prefix_foreign_check', array(
+				'COLUMNS'		=> array(
+					'c_id'	=> array('UINT', 0),
+				),
+				'PRIMARY_KEY'	=> 'c_id',
+			));
+			$this->assertTrue($this->tools->sql_table_exists('prefix_foreign_check'));
+			$this->tools->sql_table_drop('prefix_foreign_check');
+		}
+		finally
+		{
+			$this->db->sql_query('DROP TABLE foreign_type_table');
+
+			if ($this->db->get_sql_layer() === 'postgres')
+			{
+				$this->db->sql_query('DROP TYPE foreign_enum_type');
+			}
+		}
+	}
 }

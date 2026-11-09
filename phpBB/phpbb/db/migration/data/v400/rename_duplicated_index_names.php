@@ -111,8 +111,21 @@ class rename_duplicated_index_names extends migration
 
 	public function get_tables_index_names()
 	{
+		self::$table_keys = [];
+
 		$schema_manager = $this->db_tools->get_connection()->createSchemaManager();
-		$table_names = $schema_manager->listTableNames();
+
+		// Only consider phpBB's own tables; the database can contain tables
+		// not created by phpBB whose indexes must not be renamed.
+		$table_names = array_filter(
+			$schema_manager->listTableNames(),
+			function (string $table_name): bool
+			{
+				// Case-insensitive: some databases fold identifier case,
+				// e.g. MySQL with lower_case_table_names set.
+				return str_starts_with(strtolower($table_name), strtolower($this->table_prefix));
+			}
+		);
 
 		if (!empty($table_names))
 		{
