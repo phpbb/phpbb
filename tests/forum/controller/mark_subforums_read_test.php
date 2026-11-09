@@ -154,7 +154,7 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			'right_id' => 10,
 		];
 		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
-		$this->auth->method('acl_gets')->with('f_list', 'f_read', 10)->willReturn(false);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(false);
 		$this->user->data['user_id'] = 2;
 
 		$this->setExpectedTriggerError(E_USER_NOTICE, 'SORRY_AUTH_READ');
@@ -182,8 +182,8 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			'right_id' => 10,
 		];
 		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
-		$this->auth->method('acl_gets')->with('f_list', 'f_read', 10)->willReturn(true);
-		$this->forum_helper->method('get_forums_rows')->willReturn([]);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(true);
+		$this->forum_helper->expects($this->never())->method('get_forums_rows');
 
 		$this->request->method('variable')->willReturnMap([
 			['hash', '', 'invalid_token'],
@@ -218,7 +218,7 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			'right_id' => 10,
 		];
 		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
-		$this->auth->method('acl_gets')->with('f_list', 'f_read', 10)->willReturn(true);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(true);
 
 		$this->forum_helper->method('get_forums_rows')->with($root_data)->willReturn([
 			['forum_id' => 20, 'forum_name' => 'Subforum 1'],
@@ -275,7 +275,7 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			'right_id' => 10,
 		];
 		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
-		$this->auth->method('acl_gets')->with('f_list', 'f_read', 10)->willReturn(true);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(true);
 		$this->forum_helper->method('get_forums_rows')->with($root_data)->willReturn([]);
 
 		$valid_hash = generate_link_hash('global');
@@ -311,7 +311,7 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			'right_id' => 10,
 		];
 		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
-		$this->auth->method('acl_gets')->with('f_list', 'f_read', 10)->willReturn(true);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(true);
 		$this->forum_helper->method('get_forums_rows')->with($root_data)->willReturn([
 			['forum_id' => 20, 'forum_name' => 'Subforum 1'],
 		]);
@@ -342,5 +342,54 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 		$this->assertTrue($this->markread_called);
 		$this->assertEquals('topics', $this->markread_args['mode']);
 		$this->assertEquals([20], $this->markread_args['forum_id']);
+	}
+
+	public function test_handle_passworded_forum_with_access(): void
+	{
+		global $db;
+
+		$db = $this->createMock(\phpbb\db\driver\driver_interface::class);
+		$db->method('sql_escape')->willReturnArgument(0);
+		$db->method('sql_query')->willReturn(true);
+		$db->method('sql_fetchrow')->willReturn(['forum_id' => 10]);
+
+		$root_data = [
+			'forum_id' => 10,
+			'forum_name' => 'Passworded Category',
+			'forum_password' => '$2y$10$hashedpassword',
+			'left_id' => 1,
+			'right_id' => 10,
+		];
+		$this->forum_helper->method('get_forum_data')->with(10)->willReturn($root_data);
+		$this->auth->method('acl_gets')->with('f_list', 'f_list_topics', 'f_read', 10)->willReturn(true);
+		$this->forum_helper->method('get_forums_rows')->with($root_data)->willReturn([
+			['forum_id' => 20, 'forum_name' => 'Subforum 1'],
+		]);
+		$this->auth->method('acl_get')->with('f_list', 20)->willReturn(true);
+
+		$valid_hash = generate_link_hash('global');
+		$this->request->method('variable')->willReturnMap([
+			['password', '', true, ''],
+			['hash', '', false, $valid_hash],
+			['mark_time', 0, false, 1600000000],
+		]);
+		$this->request->method('is_ajax')->willReturn(true);
+
+		$controller = new mark_subforums_read(
+			$this->auth,
+			$this->config,
+			$this->controller_helper,
+			$this->forum_helper,
+			$this->language,
+			$this->request,
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+		$response = $controller->handle(10);
+
+		$this->assertTrue($this->markread_called);
+		$this->assertEquals([20], $this->markread_args['forum_id']);
+		$this->assertInstanceOf(JsonResponse::class, $response);
 	}
 }

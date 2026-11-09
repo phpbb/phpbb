@@ -51,6 +51,9 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 	/** @var array */
 	protected $markread_args;
 
+	/** @var string|null */
+	protected $redirect_url;
+
 	protected function setUp(): void
 	{
 		global $config, $user, $request, $template, $phpbb_dispatcher, $phpbb_container, $phpbb_path_helper, $phpbb_root_path, $phpEx;
@@ -109,6 +112,7 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 
 		$this->markread_called = false;
 		$this->markread_args = [];
+		$this->redirect_url = null;
 		$phpbb_dispatcher = $this->createMock(\phpbb\event\dispatcher::class);
 		$phpbb_dispatcher->method('trigger_event')
 			->willReturnCallback(function ($eventName, $data = []) {
@@ -117,6 +121,11 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 					$this->markread_called = true;
 					$this->markread_args = $data;
 					$data['should_markread'] = false;
+				}
+				else if ($eventName === 'core.functions.redirect' && empty($data['return']))
+				{
+					$this->redirect_url = $data['url'];
+					$data['return'] = true;
 				}
 				return $data;
 			});
@@ -318,5 +327,78 @@ class phpbb_forum_controller_mark_topics_read_test extends phpbb_test_case
 		$this->assertTrue($this->markread_called);
 		$this->assertEquals('topics', $this->markread_args['mode']);
 		$this->assertEquals(5, $this->markread_args['forum_id']);
+	}
+
+	public function test_handle_non_post_forum_redirects(): void
+	{
+		$forum_data = [
+			'forum_id' => 5,
+			'forum_name' => 'Category Forum',
+			'forum_type' => FORUM_CAT,
+		];
+		$this->forum_helper->method('get_forum_data')->with(5)->willReturn($forum_data);
+		$this->auth->method('acl_gets')->with('f_read', 'f_list_topics', 5)->willReturn(true);
+
+		$controller = new mark_topics_read(
+			$this->auth,
+			$this->config,
+			$this->controller_helper,
+			$this->forum_helper,
+			$this->language,
+			$this->request,
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+		$controller->handle(5);
+
+		$this->assertFalse($this->markread_called);
+		$this->assertNotNull($this->redirect_url);
+		$this->assertStringContainsString('viewforum.' . $this->php_ext, $this->redirect_url);
+		$this->assertStringContainsString('f=5', $this->redirect_url);
+	}
+
+	public function test_handle_passworded_forum_with_access(): void
+	{
+		global $db;
+
+		$db = $this->createMock(\phpbb\db\driver\driver_interface::class);
+		$db->method('sql_escape')->willReturnArgument(0);
+		$db->method('sql_query')->willReturn(true);
+		$db->method('sql_fetchrow')->willReturn(['forum_id' => 5]);
+
+		$forum_data = [
+			'forum_id' => 5,
+			'forum_name' => 'Passworded Forum',
+			'forum_type' => FORUM_POST,
+			'forum_password' => '$2y$10$hashedpassword',
+		];
+		$this->forum_helper->method('get_forum_data')->with(5)->willReturn($forum_data);
+		$this->auth->method('acl_gets')->with('f_read', 'f_list_topics', 5)->willReturn(true);
+
+		$valid_hash = generate_link_hash('global');
+		$this->request->method('variable')->willReturnMap([
+			['password', '', true, ''],
+			['hash', '', false, $valid_hash],
+			['mark_time', 0, false, 1600000000],
+		]);
+		$this->request->method('is_ajax')->willReturn(true);
+
+		$controller = new mark_topics_read(
+			$this->auth,
+			$this->config,
+			$this->controller_helper,
+			$this->forum_helper,
+			$this->language,
+			$this->request,
+			$this->user,
+			$this->phpbb_root_path,
+			$this->php_ext
+		);
+		$response = $controller->handle(5);
+
+		$this->assertTrue($this->markread_called);
+		$this->assertEquals(5, $this->markread_args['forum_id']);
+		$this->assertInstanceOf(JsonResponse::class, $response);
 	}
 }
