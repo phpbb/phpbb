@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_groups">
+		<column>group_id</column>
+		<column>group_name</column>
+		<column>group_type</column>
+		<column>group_colour</column>
+		<column>group_desc</column>
+		<column>group_desc_uid</column>
+		<row>
+			<value>6</value>
+			<value>BOTS</value>
+			<value>3</value>
+			<value>9E8DA7</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>8</value>
+			<value>AI_CRAWLERS</value>
+			<value>3</value>
+			<value>7D9EAE</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_type</column>
+		<column>group_id</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>10</value>
+			<value>Some Bot</value>
+			<value>some bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>11</value>
+			<value>Claude Bots</value>
+			<value>claude bots</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>12</value>
+			<value>Meta Bots</value>
+			<value>meta bots</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>13</value>
+			<value>IP Bot</value>
+			<value>ip bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>14</value>
+			<value>Pinned Bot</value>
+			<value>pinned bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_bots">
+		<column>bot_id</column>
+		<column>bot_active</column>
+		<column>bot_name</column>
+		<column>user_id</column>
+		<column>bot_agent</column>
+		<column>bot_ip</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>Some Bot</value>
+			<value>10</value>
+			<value>gptbot/</value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>Claude Bots</value>
+			<value>11</value>
+			<value>Claude*</value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>Meta Bots</value>
+			<value>12</value>
+			<value>meta-external</value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>IP Bot</value>
+			<value>13</value>
+			<value></value>
+			<value>127.0.0.1</value>
+		</row>
+		<row>
+			<value>5</value>
+			<value>1</value>
+			<value>Pinned Bot</value>
+			<value>14</value>
+			<value>PerplexityBot/</value>
+			<value>10.0.0.1</value>
+		</row>
+	</table>
+</dataset>

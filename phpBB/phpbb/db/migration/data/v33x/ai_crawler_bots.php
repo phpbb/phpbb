@@ -88,6 +88,23 @@ class ai_crawler_bots extends migration
 
 		$group_row = [];
 
+		// Agent strings of the bots already configured on the board. A bot
+		// restricted to an IP address only matches visitors from that address,
+		// so it does not stand in for a bot matched by agent string alone
+		$existing_agents = [];
+
+		$sql = 'SELECT bot_agent, bot_ip
+			FROM ' . $this->table_prefix . 'bots';
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (!$row['bot_ip'])
+			{
+				$existing_agents[] = $row['bot_agent'];
+			}
+		}
+		$this->db->sql_freeresult($result);
+
 		foreach ($bots as $bot_name => $bot_agent)
 		{
 			$bot_name_clean = utf8_clean_string($bot_name);
@@ -99,7 +116,9 @@ class ai_crawler_bots extends migration
 			$bot_exists = (bool) $this->db->sql_fetchfield('user_id');
 			$this->db->sql_freeresult($result);
 
-			if ($bot_exists)
+			// Skip bots that already exist by name or whose agent string is
+			// already matched by a bot the board administrator has configured
+			if ($bot_exists || $this->agent_is_matched($bot_agent, $existing_agents))
 			{
 				continue;
 			}
@@ -151,5 +170,27 @@ class ai_crawler_bots extends migration
 			]);
 			$this->db->sql_query($sql);
 		}
+	}
+
+	/**
+	 * Check whether one of the configured bot agents matches an agent string
+	 * the same way \phpbb\session matches bots against the user agent:
+	 * case insensitively, with * as a wildcard
+	 *
+	 * @param string $agent Agent string of the bot about to be added
+	 * @param array $bot_agents Agent strings of the bots already configured
+	 * @return bool
+	 */
+	protected function agent_is_matched(string $agent, array $bot_agents): bool
+	{
+		foreach ($bot_agents as $bot_agent)
+		{
+			if ($bot_agent !== '' && preg_match('#' . str_replace('\*', '.*?', preg_quote($bot_agent, '#')) . '#i', $agent))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
