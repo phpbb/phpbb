@@ -7,4 +7,7 @@ To approve or deny this request for group membership please visit the following 
 
 {U_PENDING}
 
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
 {EMAIL_SIG}

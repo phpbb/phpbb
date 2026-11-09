@@ -530,18 +530,10 @@ class manager
 
 			foreach ($this->notification_types as $type_name => $data)
 			{
-				/** @var type\base $type */
-				$type = $this->get_item_type_class($type_name);
+				$options = $this->get_subscription_option($type_name);
 
-				if ($type instanceof \phpbb\notification\type\type_interface && $type->is_available())
+				if ($options !== null && $options['type']->is_available())
 				{
-					$options = array_merge(array(
-						'type'	=> $type,
-						'id'	=> $type->get_type(),
-						'lang'	=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
-						'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
-					), (($type::$notification_option !== false) ? $type::$notification_option : array()));
-
 					$this->subscription_types[$options['group']][$options['id']] = $options;
 				}
 			}
@@ -701,6 +693,81 @@ class manager
 		}
 
 		return $subscriptions;
+	}
+
+	/**
+	 * Get the preference a notification type is stored under
+	 *
+	 * Several types can share one preference, e.g. notification.type.approve_post
+	 * is stored as moderation_queue.
+	 *
+	 * @param string $type_name Notification type name
+	 *
+	 * @return array|null Array with at least the keys type, id, lang and group, null if the type does not exist (anymore)
+	 */
+	public function get_subscription_option(string $type_name): array|null
+	{
+		try
+		{
+			$type = $this->get_item_type_class($type_name);
+		}
+		catch (\Exception)
+		{
+			return null;
+		}
+
+		return array_merge([
+			'type'	=> $type,
+			'id'	=> $type->get_type(),
+			'lang'	=> 'NOTIFICATION_TYPE_' . strtoupper($type->get_type()),
+			'group'	=> 'NOTIFICATION_GROUP_MISCELLANEOUS',
+		], $type::$notification_option ?: []);
+	}
+
+	/**
+	 * Check if a user is subscribed to a notification preference with one method
+	 *
+	 * @param int $user_id
+	 * @param string $item_type Preference ID as returned by get_subscription_option()
+	 * @param string $method Notification method name
+	 *
+	 * @return bool
+	 */
+	public function is_subscribed(int $user_id, string $item_type, string $method): bool
+	{
+		$sql = 'SELECT notify
+			FROM ' . $this->user_notifications_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', [
+				'item_type'	=> $item_type,
+				'item_id'	=> 0,
+				'user_id'	=> $user_id,
+				'method'	=> $method,
+			]);
+		$result = $this->db->sql_query($sql);
+		$notify = $this->db->sql_fetchfield('notify');
+		$this->db->sql_freeresult($result);
+
+		// Without a row the method's default applies
+		return $notify === false ? in_array($method, $this->get_default_methods(), true) : (bool) $notify;
+	}
+
+	/**
+	 * Disable all subscriptions of a user for one notification method
+	 *
+	 * @param int $user_id
+	 * @param string $method Notification method name
+	 *
+	 * @return void
+	 */
+	public function disable_subscriptions(int $user_id, string $method): void
+	{
+		$sql = 'UPDATE ' . $this->user_notifications_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', ['notify' => 0]) . '
+			WHERE ' . $this->db->sql_build_array('SELECT', [
+				'user_id'	=> $user_id,
+				'method'	=> $method,
+			]);
+		$this->db->sql_query($sql);
 	}
 
 	/**

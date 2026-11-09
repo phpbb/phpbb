@@ -141,4 +141,12 @@ class forum extends \phpbb\notification\type\post
 			'U_STOP_WATCHING_FORUM'		=> generate_board_url() . "/viewforum.{$this->php_ext}?uid={$this->user_id}&f={$this->get_data('forum_id')}&unwatch=forum",
 		];
 	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function get_unsubscribe_watch_item(): array|null
+	{
+		return ['mode' => 'forum', 'id' => (int) $this->get_data('forum_id')];
+	}
 }

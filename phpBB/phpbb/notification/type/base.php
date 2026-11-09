@@ -336,9 +336,17 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	* {@inheritDoc}
 	*/
-	public function get_unsubscribe_url($method = false)
+	public function get_unsubscribe_watch_item(): array|null
 	{
-		return false;
+		return null;
+	}
+
+	/**
+	* {@inheritDoc}
+	*/
+	public function allows_email_unsubscribe(): bool
+	{
+		return true;
 	}
 
 	/**

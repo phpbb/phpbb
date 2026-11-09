@@ -11,4 +11,7 @@ You can view the release details in the Admin Control Panel of your phpBB instal
 
 For assistance with the update process, please refer to the documentation or visit the phpBB support forums.
 
+If you no longer wish to receive these emails, please update your notification settings here:
+{U_NOTIFICATION_SETTINGS}
+
 {EMAIL_SIG}

@@ -10,4 +10,9 @@ Use this link to view the user's profile:
 You may activate the account immediately by clicking on this link:
 {U_ACTIVATE}
 
+<!-- IF U_UNSUBSCRIBE -->
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
+<!-- ENDIF -->
 {EMAIL_SIG}

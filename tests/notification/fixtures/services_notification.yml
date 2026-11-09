@@ -1,6 +1,13 @@
 imports:
     - { resource: ../../../phpBB/config/default/container/services_notification.yml }
 
+parameters:
+    tables.forums: phpbb_forums
+    tables.forums_watch: phpbb_forums_watch
+    tables.topics: phpbb_topics
+    tables.topics_watch: phpbb_topics_watch
+    tables.users: phpbb_users
+
 services:
     notification_manager:
         synthetic: true
@@ -42,6 +49,9 @@ services:
         synthetic: true
 
     request:
+        synthetic: true
+
+    template:
         synthetic: true
 
     text_formatter.s9e.factory:

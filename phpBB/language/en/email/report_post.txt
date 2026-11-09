@@ -10,4 +10,7 @@ If you want to view the report, click the following link:
 If you want to view the post, click the following link:
 {U_VIEW_POST}
 
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
 {EMAIL_SIG}

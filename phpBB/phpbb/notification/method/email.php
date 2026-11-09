@@ -13,7 +13,9 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\messenger\method\messenger_interface;
 use phpbb\notification\type\type_interface;
+use phpbb\routing\router;
 use phpbb\user;
 use phpbb\user_loader;
 use phpbb\config\config;
@@ -42,6 +44,12 @@ class email extends messenger_base
 	/** @var service_collection */
 	protected $messenger;
 
+	/** @var router */
+	protected $router;
+
+	/** @var string|null Path of the unsubscribe route, loaded on first use */
+	protected $unsubscribe_path;
+
 	/**
 	 * Notification Method email Constructor
 	 *
@@ -53,6 +61,7 @@ class email extends messenger_base
 	 * @param string $php_ext
 	 * @param string $notification_emails_table
 	 * @param service_collection $messenger
+	 * @param router $router
 	 */
 	public function __construct(
 		user_loader $user_loader,
@@ -62,7 +71,8 @@ class email extends messenger_base
 		$phpbb_root_path,
 		$php_ext,
 		$notification_emails_table,
-		service_collection $messenger
+		service_collection $messenger,
+		router $router
 	)
 	{
 		parent::__construct($messenger, $user_loader, $phpbb_root_path, $php_ext);
@@ -71,6 +81,7 @@ class email extends messenger_base
 		$this->config = $config;
 		$this->db = $db;
 		$this->notification_emails_table = $notification_emails_table;
+		$this->router = $router;
 	}
 
 	/**
@@ -160,6 +171,184 @@ class email extends messenger_base
 			($user_id !== false ? ' AND ' . $this->db->sql_in_set('user_id', $user_id) : '') .
 			($item_parent_id !== false ? ' AND ' . $this->db->sql_in_set('item_parent_id', $item_parent_id, false, true) : '');
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function get_message_vars(messenger_interface $messenger_method, type_interface $notification, array $user): array
+	{
+		$vars = parent::get_message_vars($messenger_method, $notification, $user);
+
+		if (!$notification->allows_email_unsubscribe())
+		{
+			$vars['U_UNSUBSCRIBE'] = $vars['U_NOTIFICATION_SETTINGS'];
+
+			return $vars;
+		}
+
+		$watch_item = $notification->get_unsubscribe_watch_item();
+		$unsubscribe_url = $this->get_unsubscribe_url($user, $notification->get_type(), $watch_item['mode'] ?? '', $watch_item['id'] ?? 0);
+
+		if ($unsubscribe_url === null)
+		{
+			$vars['U_UNSUBSCRIBE'] = $vars['U_NOTIFICATION_SETTINGS'];
+
+			return $vars;
+		}
+
+		$messenger_method->set_list_unsubscribe($unsubscribe_url);
+		$vars['U_UNSUBSCRIBE'] = $unsubscribe_url;
+
+		// Stop watching links should work without login as well
+		if (isset($vars['U_STOP_WATCHING_FORUM']))
+		{
+			$vars['U_STOP_WATCHING_FORUM'] = $unsubscribe_url;
+		}
+
+		if (isset($vars['U_STOP_WATCHING_TOPIC']))
+		{
+			$vars['U_STOP_WATCHING_TOPIC'] = $unsubscribe_url;
+		}
+
+		return $vars;
+	}
+
+	/**
+	 * Create the signed parameters of an unsubscribe link
+	 *
+	 * Signatures cover the user's current email address, so changing the address
+	 * invalidates all earlier links of that user without storing anything per link.
+	 *
+	 * @param array $user_row		User row, requires user_id and user_email
+	 * @param string $type_name		Notification type name the email was sent for
+	 * @param string $watch_mode	'topic' or 'forum' if the email was caused by watching an item, empty otherwise
+	 * @param int $watch_id			ID of the watched topic or forum, 0 otherwise
+	 *
+	 * @return array|null Link parameters, null if they can't be signed
+	 */
+	public function get_unsubscribe_params(array $user_row, string $type_name, string $watch_mode = '', int $watch_id = 0): array|null
+	{
+		$params = [
+			'user_id'		=> (int) $user_row['user_id'],
+			'type'			=> $type_name,
+			'watch_mode'	=> $watch_mode,
+			'watch_id'		=> $watch_id,
+			'time'			=> time(),
+		];
+
+		$signature = $this->sign_unsubscribe($user_row, array_values($params));
+
+		return $signature === null ? null : $params + ['hash' => $signature];
+	}
+
+	/**
+	 * Create the absolute URL of an unsubscribe link
+	 *
+	 * Links in emails are opened outside of the board, so the URL is built without
+	 * the controller helper. It has to be absolute, use plain & separators and must
+	 * not depend on the request the email is sent from, e.g. cron or the CLI.
+	 *
+	 * @param array $user_row		User row, requires user_id and user_email
+	 * @param string $type_name		Notification type name the email was sent for
+	 * @param string $watch_mode	'topic' or 'forum' if the email was caused by watching an item, empty otherwise
+	 * @param int $watch_id			ID of the watched topic or forum, 0 otherwise
+	 *
+	 * @return string|null URL, null if the link can't be signed
+	 */
+	public function get_unsubscribe_url(array $user_row, string $type_name, string $watch_mode = '', int $watch_id = 0): string|null
+	{
+		$params = $this->get_unsubscribe_params($user_row, $type_name, $watch_mode, $watch_id);
+
+		if ($params === null)
+		{
+			return null;
+		}
+
+		return generate_board_url() . "/index.{$this->php_ext}" . $this->get_unsubscribe_path() . '?' . http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+	}
+
+	/**
+	 * Get the path of the unsubscribe route
+	 *
+	 * Only the path is taken from the router, its URL generator depends on the
+	 * request context of the current request.
+	 *
+	 * @return string
+	 */
+	protected function get_unsubscribe_path(): string
+	{
+		if ($this->unsubscribe_path === null)
+		{
+			$this->unsubscribe_path = $this->router->get_routes()->get('phpbb_notifications_unsubscribe')->getPath();
+		}
+
+		return $this->unsubscribe_path;
+	}
+
+	/**
+	 * Check the signature of unsubscribe link parameters
+	 *
+	 * @param array $user_row	User row, requires user_id and user_email
+	 * @param array $params		Link parameters with the keys user_id, type, watch_mode, watch_id, time and hash
+	 *
+	 * @return bool True if the link is valid for this user
+	 */
+	public function check_unsubscribe_params(array $user_row, array $params): bool
+	{
+		// Skip signing if user id doesn't even match
+		if ((int) $params['user_id'] !== ((int) $user_row['user_id']))
+		{
+			return false;
+		}
+
+		$signature = $this->sign_unsubscribe($user_row, [
+			(int) $params['user_id'],
+			(string) $params['type'],
+			(string) $params['watch_mode'],
+			(int) $params['watch_id'],
+			(int) $params['time'],
+		]);
+
+		return $signature !== null && hash_equals($signature, (string) $params['hash']);
+	}
+
+	/**
+	 * Check if an unsubscribe link is older than the board allows
+	 *
+	 * @param array $params	Link parameters, requires time
+	 *
+	 * @return bool True if the link has expired
+	 */
+	public function is_unsubscribe_link_expired(array $params): bool
+	{
+		$expire_days = (int) $this->config['email_unsubscribe_expire_days'];
+
+		return $expire_days > 0 && (int) $params['time'] < time() - $expire_days * 86400;
+	}
+
+	/**
+	 * Create the signature of an unsubscribe link
+	 *
+	 * Runs while notifications are being sent, so an address with invalid encoding
+	 * must not throw and stop the emails to other recipients.
+	 *
+	 * @param array $user_row	User row, requires user_email
+	 * @param array $fields		Fields to sign
+	 *
+	 * @return string|null Signature, null if there is no secret or email address to sign with
+	 */
+	protected function sign_unsubscribe(array $user_row, array $fields): string|null
+	{
+		$secret = (string) $this->config['email_unsubscribe_secret'];
+		$email = (string) ($user_row['user_email'] ?? '');
+
+		if (empty($secret) || empty($email))
+		{
+			return null;
+		}
+
+		return hash_hmac('sha256', json_encode([$email, $fields], JSON_INVALID_UTF8_SUBSTITUTE), $secret);
 	}
 
 	/**

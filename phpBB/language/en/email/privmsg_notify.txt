@@ -9,6 +9,7 @@ You can view your new message by clicking on the following link:
 
 {U_VIEW_MESSAGE}
 
-You have requested that you be notified on this event, remember that you can always choose not to be notified of new messages by changing the appropriate setting in your profile.
+You are receiving this email because you asked to be notified about new private messages. If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
 
 {EMAIL_SIG}
