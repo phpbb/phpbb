@@ -262,6 +262,17 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame(1, $this->get_watch_status('phpbb_topics_watch', 'topic_id', 2));
 	}
 
+	public function test_repeated_one_click_for_type_logs_once(): void
+	{
+		$this->handle(2, 'notification.type.post', '', 0, ['List-Unsubscribe' => 'One-Click']);
+		$response = $this->handle(2, 'notification.type.post', '', 0, ['List-Unsubscribe' => 'One-Click']);
+
+		$this->assertSame(Response::HTTP_OK, $response->getStatusCode());
+		$this->assertSame(0, $this->get_notify(2, 'notification.type.post'));
+		$this->assertCount(1, $this->log_entries);
+		$this->assertSame('LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', $this->log_entries[0][0]);
+	}
+
 	public function test_one_click_uses_shared_preference(): void
 	{
 		$this->handle(2, 'notification.type.approve_post', '', 0, ['List-Unsubscribe' => 'One-Click']);
@@ -409,6 +420,17 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame(0, $this->get_notify(2, 'moderation_queue'));
 		$this->assertSame(1, $this->get_notify(2, 'notification.type.post', 'notification.method.board'));
 		$this->assertSame(1, $this->get_notify(3, 'notification.type.post'));
+	}
+
+	public function test_manager_is_subscribed(): void
+	{
+		$this->assertTrue($this->manager->is_subscribed(2, 'notification.type.post', self::EMAIL));
+		$this->assertTrue($this->manager->is_subscribed(2, 'notification.type.post', 'notification.method.board'));
+		$this->assertFalse($this->manager->is_subscribed(4, 'notification.type.post', self::EMAIL));
+
+		$this->manager->disable_subscriptions(2, self::EMAIL);
+
+		$this->assertFalse($this->manager->is_subscribed(2, 'notification.type.post', self::EMAIL));
 	}
 
 	public function test_manager_subscription_option(): void

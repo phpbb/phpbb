@@ -725,6 +725,33 @@ class manager
 	}
 
 	/**
+	 * Check if a user is subscribed to a notification preference with one method
+	 *
+	 * @param int $user_id
+	 * @param string $item_type Preference ID as returned by get_subscription_option()
+	 * @param string $method Notification method name
+	 *
+	 * @return bool
+	 */
+	public function is_subscribed(int $user_id, string $item_type, string $method): bool
+	{
+		$sql = 'SELECT notify
+			FROM ' . $this->user_notifications_table . '
+			WHERE ' . $this->db->sql_build_array('SELECT', [
+				'item_type'	=> $item_type,
+				'item_id'	=> 0,
+				'user_id'	=> $user_id,
+				'method'	=> $method,
+			]);
+		$result = $this->db->sql_query($sql);
+		$notify = $this->db->sql_fetchfield('notify');
+		$this->db->sql_freeresult($result);
+
+		// Without a row the method's default applies
+		return $notify === false ? in_array($method, $this->get_default_methods(), true) : (bool) $notify;
+	}
+
+	/**
 	 * Disable all subscriptions of a user for one notification method
 	 *
 	 * @param int $user_id

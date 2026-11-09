@@ -220,8 +220,12 @@ class email_unsubscribe
 			return $this->message('EMAIL_UNSUBSCRIBE_LINK_INVALID', Response::HTTP_NOT_FOUND);
 		}
 
-		$this->unsubscribe_type((int) $user_row['user_id'], $type_option['id']);
-		$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
+		// Mail clients may repeat the request, a type that is already turned off needs no change
+		if ($this->manager->is_subscribed((int) $user_row['user_id'], $type_option['id'], $this->email_method->get_type()))
+		{
+			$this->unsubscribe_type((int) $user_row['user_id'], $type_option['id']);
+			$this->log_action($user_row, 'LOG_USER_EMAIL_UNSUBSCRIBE_TYPE', [$this->get_type_label($type_option) ?: $type_option['id']]);
+		}
 
 		return $this->message('EMAIL_UNSUBSCRIBE_DONE');
 	}
