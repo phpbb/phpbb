@@ -141,6 +141,15 @@ class update_maintenance extends base
 	/**
 	* {@inheritdoc}
 	*/
+	public function allows_email_unsubscribe(): bool
+	{
+		// Update emails can be about security fixes, a mail client button must not turn them off
+		return false;
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
 	public function get_email_template()
 	{
 		return $this->get_data('template') ?: version_check::UPDATE_MAINTENANCE;

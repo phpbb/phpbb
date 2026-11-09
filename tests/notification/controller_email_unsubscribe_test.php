@@ -17,6 +17,7 @@ use phpbb\notification\manager;
 use phpbb\notification\method\email;
 use phpbb\notification\type\approve_post;
 use phpbb\notification\type\post;
+use phpbb\notification\type\update_maintenance;
 use Symfony\Component\HttpFoundation\Response;
 
 class phpbb_notification_controller_email_unsubscribe_test extends phpbb_database_test_case
@@ -82,8 +83,9 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 			public function get_item_type_class($notification_type_name, $data = [])
 			{
 				$classes = [
-					'notification.type.post'			=> post::class,
-					'notification.type.approve_post'	=> approve_post::class,
+					'notification.type.post'				=> post::class,
+					'notification.type.approve_post'		=> approve_post::class,
+					'notification.type.update_maintenance'	=> update_maintenance::class,
 				];
 
 				if (!isset($classes[$notification_type_name]))
@@ -366,6 +368,29 @@ class phpbb_notification_controller_email_unsubscribe_test extends phpbb_databas
 		$this->assertSame(1, $this->get_watch_status('phpbb_forums_watch', 'forum_id', 2));
 		$this->assertSame(1, $this->get_notify(3, 'notification.type.post'));
 		$this->assertSame(1, $this->get_massemail(3));
+	}
+
+	public static function type_without_unsubscribe_data(): array
+	{
+		return [
+			'one-click'	=> [['List-Unsubscribe' => 'One-Click']],
+			'type'		=> [['unsubscribe' => 'Unsubscribe', 'scope' => 'type']],
+			'all'		=> [['unsubscribe' => 'Unsubscribe', 'scope' => 'all']],
+		];
+	}
+
+	/**
+	 * @dataProvider type_without_unsubscribe_data
+	 */
+	public function test_signed_link_for_type_without_unsubscribe_changes_nothing(array $post): void
+	{
+		$response = $this->handle(2, 'notification.type.update_maintenance', '', 0, $post);
+
+		$this->assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+		$this->assertSame('EMAIL_UNSUBSCRIBE_LINK_INVALID', $response->getContent());
+		$this->assertSame(1, $this->get_notify(2, 'notification.type.post'));
+		$this->assertSame(1, $this->get_massemail(2));
+		$this->assertSame([], $this->log_entries);
 	}
 
 	public function test_unsubscribe_all_without_anything_enabled(): void

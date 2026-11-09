@@ -137,6 +137,13 @@ interface type_interface
 	public function get_unsubscribe_watch_item(): array|null;
 
 	/**
+	* Check if emails of this type may contain links to unsubscribe without logging in
+	*
+	* @return bool False if users have to log in to turn off these emails
+	*/
+	public function allows_email_unsubscribe(): bool;
+
+	/**
 	* Get the user's avatar (the user who caused the notification typically)
 	*
 	* @return array

@@ -342,6 +342,14 @@ abstract class base implements \phpbb\notification\type\type_interface
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function allows_email_unsubscribe(): bool
+	{
+		return true;
+	}
+
+	/**
 	* Get the CSS style class of the notification (fall back)
 	*
 	* @return string

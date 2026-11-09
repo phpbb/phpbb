@@ -147,6 +147,12 @@ class email_unsubscribe
 
 		$type_option = $this->manager->get_subscription_option($params['type']);
 
+		// No links are created for these types, a validly signed one must not work either
+		if ($type_option !== null && !$type_option['type']->allows_email_unsubscribe())
+		{
+			return $this->message('EMAIL_UNSUBSCRIBE_LINK_INVALID', Response::HTTP_NOT_FOUND);
+		}
+
 		$item_title = null;
 		if ($this->has_watch_item($params))
 		{

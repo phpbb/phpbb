@@ -250,9 +250,6 @@ class phpbb_email_parsing_test extends phpbb_test_case
 			['topic_approved'],
 			['topic_disapproved'],
 			['topic_in_queue'],
-			['update_critical'],
-			['update_maintenance'],
-			['update_security'],
 		];
 	}
 
@@ -269,5 +266,33 @@ class phpbb_email_parsing_test extends phpbb_test_case
 
 		$this->assertStringContainsString("\n" . $url . "\n", $this->get_message());
 		$this->assertStringNotContainsString('<!--', $this->get_message());
+	}
+
+	public static function settings_link_template_data(): array
+	{
+		return [
+			['update_critical'],
+			['update_maintenance'],
+			['update_security'],
+		];
+	}
+
+	/**
+	 * @dataProvider settings_link_template_data
+	 */
+	public function test_templates_contain_settings_link_instead_of_unsubscribe_link(string $template): void
+	{
+		$settings_url = 'https://example.com/ucp.php?i=ucp_notifications&mode=notification_options';
+		$unsubscribe_url = 'https://example.com/unsubscribe?u=2&k=abc';
+
+		$this->email->template($template, 'en');
+		$this->email->assign_vars([
+			'U_NOTIFICATION_SETTINGS'	=> $settings_url,
+			'U_UNSUBSCRIBE'				=> $unsubscribe_url,
+		]);
+		$this->email->prepare_message();
+
+		$this->assertStringContainsString("\n" . $settings_url . "\n", $this->get_message());
+		$this->assertStringNotContainsString($unsubscribe_url, $this->get_message());
 	}
 }

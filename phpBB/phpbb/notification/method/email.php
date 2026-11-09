@@ -180,6 +180,13 @@ class email extends messenger_base
 	{
 		$vars = parent::get_message_vars($messenger_method, $notification, $user);
 
+		if (!$notification->allows_email_unsubscribe())
+		{
+			$vars['U_UNSUBSCRIBE'] = $vars['U_NOTIFICATION_SETTINGS'];
+
+			return $vars;
+		}
+
 		$watch_item = $notification->get_unsubscribe_watch_item();
 		$unsubscribe_url = $this->get_unsubscribe_url($user, $notification->get_type(), $watch_item['mode'] ?? '', $watch_item['id'] ?? 0);
 

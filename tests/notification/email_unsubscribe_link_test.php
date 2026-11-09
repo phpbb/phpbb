@@ -174,7 +174,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 	/**
 	 * Run the protected message hook the way messenger_base does while sending
 	 */
-	protected function get_message_vars(string $secret, array $template_vars, array|null $watch_item, email_messenger $messenger): array
+	protected function get_message_vars(string $secret, array $template_vars, array|null $watch_item, email_messenger $messenger, bool $allows_unsubscribe = true): array
 	{
 		global $config, $request, $symfony_request, $user;
 
@@ -194,6 +194,7 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		$notification->method('get_type')->willReturn('notification.type.post');
 		$notification->method('get_email_template_variables')->willReturn($template_vars);
 		$notification->method('get_unsubscribe_watch_item')->willReturn($watch_item);
+		$notification->method('allows_email_unsubscribe')->willReturn($allows_unsubscribe);
 
 		$method = $this->get_method($secret);
 
@@ -239,6 +240,37 @@ class phpbb_notification_email_unsubscribe_link_test extends phpbb_test_case
 		$this->assertSame($vars['U_NOTIFICATION_SETTINGS'], $vars['U_UNSUBSCRIBE']);
 		$this->assertNotEmpty($vars['U_UNSUBSCRIBE']);
 		$this->assertSame($old_url, $vars['U_STOP_WATCHING_TOPIC']);
+	}
+
+	public function test_email_without_unsubscribe_link_if_type_does_not_allow_it(): void
+	{
+		$messenger = $this->createMock(email_messenger::class);
+		$messenger->expects($this->never())->method('set_list_unsubscribe');
+
+		$vars = $this->get_message_vars('secret', [], null, $messenger, false);
+
+		$this->assertSame($vars['U_NOTIFICATION_SETTINGS'], $vars['U_UNSUBSCRIBE']);
+		$this->assertStringNotContainsString('unsubscribe', $vars['U_UNSUBSCRIBE']);
+	}
+
+	public static function allows_email_unsubscribe_data(): array
+	{
+		return [
+			'post'					=> [\phpbb\notification\type\post::class, true],
+			'pm'					=> [\phpbb\notification\type\pm::class, true],
+			'admin_activate_user'	=> [\phpbb\notification\type\admin_activate_user::class, true],
+			'update_maintenance'	=> [\phpbb\notification\type\update_maintenance::class, false],
+		];
+	}
+
+	/**
+	 * @dataProvider allows_email_unsubscribe_data
+	 */
+	public function test_allows_email_unsubscribe(string $class, bool $expected): void
+	{
+		$type = (new \ReflectionClass($class))->newInstanceWithoutConstructor();
+
+		$this->assertSame($expected, $type->allows_email_unsubscribe());
 	}
 
 	public static function watch_item_data(): array
