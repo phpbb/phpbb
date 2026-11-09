@@ -116,7 +116,6 @@ class help
 
 		$this->assign_to_template($this->user->help);
 
-		make_jumpbox(append_sid("{$this->root_path}viewforum.{$this->php_ext}"));
 		return $this->helper->render($template_file, $page_title);
 	}
 
