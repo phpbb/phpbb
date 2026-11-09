@@ -3,6 +3,10 @@ name: Smoke tests
 on:
     workflow_dispatch:
 
+permissions:
+    contents: read
+    statuses: write
+
 jobs:
     # Reduced test set with one run each for MySQL, PostgreSQL and SQLite
     smoke-tests:
@@ -26,6 +30,10 @@ jobs:
                       postgres_image: ''
 
         name: Smoke - PHP ${{ matrix.php }} - ${{ matrix.mysql_image || matrix.postgres_image || matrix.db }}
+
+        env:
+            STATUS_CONTEXT: Smoke tests / PHP ${{ matrix.php }} - ${{ matrix.mysql_image || matrix.postgres_image || matrix.db }}
+            STATUS_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
         services:
             mysql:
@@ -67,6 +75,13 @@ jobs:
                     - 6379:6379
 
         steps:
+            # Manually triggered runs are not linked to pull requests, report a commit status instead
+            - name: Report pending status
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: |
+                  gh api "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" -f state=pending -f context="$STATUS_CONTEXT" -f target_url="$STATUS_URL" -f description="Running"
+
             - name: Update Ubuntu package lists
               run: |
                   sudo apt-get update -y  --allow-releaseinfo-change
@@ -112,6 +127,11 @@ jobs:
               run: |
                   .github/setup-database.sh $DB $MYISAM
 
+            - name: Setup SPHINX
+              if: ${{ matrix.db == 'mysql' }}
+              run: |
+                  .github/setup-sphinx.sh
+
             - name: Lint tests
               if: ${{ matrix.db == 'mysql' }}
               run: phpBB/vendor/bin/phpunit tests/lint_test.php
@@ -127,3 +147,16 @@ jobs:
                   DB: ${{ matrix.db }}
               run: |
                   phpBB/vendor/bin/phpunit --configuration .github/phpunit-$DB-github.xml --testsuite 'phpBB Test Suite' --verbose --stop-on-error
+
+            - name: Report final status
+              if: ${{ always() }}
+              env:
+                  GH_TOKEN: ${{ github.token }}
+                  JOB_STATUS: ${{ job.status }}
+              run: |
+                  case "$JOB_STATUS" in
+                      success) state=success ;;
+                      failure) state=failure ;;
+                      *) state=error ;;
+                  esac
+                  gh api "repos/$GITHUB_REPOSITORY/statuses/$GITHUB_SHA" -f state="$state" -f context="$STATUS_CONTEXT" -f target_url="$STATUS_URL" -f description="Smoke test $JOB_STATUS"
