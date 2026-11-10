@@ -237,6 +237,7 @@ class mcp_notes
 
 		$avatar = $avatar_helper->get_user_avatar($userrow);
 		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
+		$avatar_img = $avatar['html'];
 
 		/**
 		* Modify user data before it is assigned to the template on the MCP user-notes page
