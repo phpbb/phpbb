@@ -15,6 +15,7 @@ namespace phpbb\forum\controller;
 
 use phpbb\config\config;
 use phpbb\controller\helper;
+use phpbb\exception\http_exception;
 use phpbb\language\language;
 use phpbb\request\request;
 use phpbb\user;
@@ -60,21 +61,17 @@ class mark_all_read
 	 * Handle marking everything read
 	 *
 	 * @return Response
+	 *
+	 * @throws http_exception
 	 */
 	public function handle(): Response
 	{
 		$this->language->add_lang('viewforum');
 
-		// Handle marking everything read
-		$redirect = $this->controller_helper->route('phpbb_index_controller');
-		meta_refresh(3, $redirect);
-
-		$return_message = $this->language->lang('RETURN_INDEX', '<a href="' . $redirect . '">', '</a>');
-
 		$token = $this->request->variable('hash', '');
 		if (!check_link_hash($token, 'global'))
 		{
-			return $this->controller_helper->message($return_message);
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		markread('all', false, false, $this->request->variable('mark_time', 0));
@@ -91,6 +88,11 @@ class mark_all_read
 			];
 			return new JsonResponse($data);
 		}
+
+		$redirect = $this->controller_helper->route('phpbb_index_controller');
+		meta_refresh(3, $redirect);
+
+		$return_message = $this->language->lang('RETURN_INDEX', '<a href="' . $redirect . '">', '</a>');
 
 		return $this->controller_helper->message($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $return_message);
 	}

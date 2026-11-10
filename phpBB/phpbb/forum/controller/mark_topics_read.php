@@ -121,17 +121,10 @@ class mark_topics_read
 			throw new http_exception(400, 'NO_TOPICS');
 		}
 
-		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
-
-		// Handle marking posts
-		meta_refresh(3, $redirect);
-
-		$return_message = $this->language->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
-
 		$token = $this->request->variable('hash', '');
 		if (!check_link_hash($token, 'global'))
 		{
-			return $this->controller_helper->message($return_message);
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		markread('topics', $id, false, $this->request->variable('mark_time', 0));
@@ -148,6 +141,11 @@ class mark_topics_read
 			];
 			return new JsonResponse($data);
 		}
+
+		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
+		meta_refresh(3, $redirect);
+
+		$return_message = $this->language->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
 
 		return $this->controller_helper->message($this->language->lang('TOPICS_MARKED') . '<br /><br />' . $return_message);
 	}

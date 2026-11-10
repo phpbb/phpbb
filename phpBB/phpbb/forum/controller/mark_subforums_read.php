@@ -115,15 +115,10 @@ class mark_subforums_read
 			login_forum_box($root_data);
 		}
 
-		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
-		meta_refresh(3, $redirect);
-
-		$return_message = $this->language->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
-
 		$token = $this->request->variable('hash', '');
 		if (!check_link_hash($token, 'global'))
 		{
-			return $this->controller_helper->message($return_message);
+			throw new http_exception(403, 'NOT_AUTHORISED');
 		}
 
 		$rows = $this->forum_helper->get_forums_rows($root_data);
@@ -156,6 +151,11 @@ class mark_subforums_read
 			];
 			return new JsonResponse($data);
 		}
+
+		$redirect = append_sid("{$this->phpbb_root_path}viewforum.{$this->php_ext}", 'f=' . $id);
+		meta_refresh(3, $redirect);
+
+		$return_message = $this->language->lang('RETURN_FORUM', '<a href="' . $redirect . '">', '</a>');
 
 		return $this->controller_helper->message($this->language->lang('FORUMS_MARKED') . '<br /><br />' . $return_message);
 	}

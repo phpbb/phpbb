@@ -226,12 +226,19 @@ class phpbb_forum_controller_mark_subforums_read_test extends phpbb_test_case
 			$this->phpbb_root_path,
 			$this->php_ext
 		);
-		$response = $controller->handle(10);
+
+		try
+		{
+			$controller->handle(10);
+			$this->fail('Expected http_exception was not thrown');
+		}
+		catch (http_exception $e)
+		{
+			$this->assertSame(403, $e->getStatusCode());
+			$this->assertSame('NOT_AUTHORISED', $e->getMessage());
+		}
 
 		$this->assertFalse($this->markread_called);
-		$this->assertInstanceOf(Response::class, $response);
-		$this->assertSame(200, $response->getStatusCode());
-		$this->assertStringNotContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 
 	public function test_handle_valid_hash_ajax_with_subforums(): void

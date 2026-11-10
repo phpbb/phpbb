@@ -119,12 +119,19 @@ class phpbb_forum_controller_mark_all_read_test extends phpbb_test_case
 		$this->request->method('is_ajax')->willReturn(false);
 
 		$controller = new mark_all_read($this->config, $this->controller_helper, $this->language, $this->request, $this->user);
-		$response = $controller->handle();
+
+		try
+		{
+			$controller->handle();
+			$this->fail('Expected http_exception was not thrown');
+		}
+		catch (http_exception $e)
+		{
+			$this->assertSame(403, $e->getStatusCode());
+			$this->assertSame('NOT_AUTHORISED', $e->getMessage());
+		}
 
 		$this->assertFalse($this->markread_called);
-		$this->assertInstanceOf(Response::class, $response);
-		$this->assertSame(200, $response->getStatusCode());
-		$this->assertStringNotContainsString($this->language->lang('FORUMS_MARKED'), $response->getContent());
 	}
 
 	public function test_handle_valid_hash_ajax_registered(): void
