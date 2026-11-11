@@ -2927,6 +2927,8 @@ function phpbb_handle_post_delete($forum_id, $topic_id, $post_id, &$post_data, $
 
 			confirm_box(false, [$l_confirm, 1], build_hidden_fields($s_hidden_fields), 'confirm_delete_body.html');
 		}
+
+		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "p=$post_id") . "#p$post_id");
 	}
 
 	// If we are here the user is not able to delete - present the correct error message

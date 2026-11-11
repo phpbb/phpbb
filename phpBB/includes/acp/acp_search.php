@@ -243,6 +243,8 @@ class acp_search
 						'updated'	=> $updated,
 						'config'	=> ['search_type' => $cfg_array['search_type']],
 					]));
+
+					redirect($this->u_action);
 				}
 			}
 
