@@ -585,6 +585,13 @@ class container_builder
 				$dbal_driver_class = \phpbb\config_php_file::convert_30_dbms_to_31($this->config_php_file->get('dbms'));
 				/** @var \phpbb\db\driver\driver_interface $dbal_connection */
 				$this->dbal_connection = new $dbal_driver_class();
+				if ($this->dbal_connection instanceof \phpbb\db\driver\mysqli)
+				{
+					$this->dbal_connection->set_ssl_options(
+						$this->config_php_file->get('dbsslmode'),
+						$this->config_php_file->get('dbsslca')
+					);
+				}
 				$this->dbal_connection->sql_connect(
 					$this->config_php_file->get('dbhost'),
 					$this->config_php_file->get('dbuser'),

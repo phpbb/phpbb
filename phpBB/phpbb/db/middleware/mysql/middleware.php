@@ -22,8 +22,20 @@ use phpbb\db\middleware\mysql\driver as mysql_driver;
  */
 class middleware implements Driver\Middleware
 {
+	/** @var bool Whether a connection that fails for want of TLS is retried unencrypted */
+	private bool $ssl_fallback;
+
+	/**
+	 * @param bool $ssl_fallback Whether a connection that fails for want of TLS is retried unencrypted, for the
+	 *                           preferred ssl mode.
+	 */
+	public function __construct(bool $ssl_fallback = false)
+	{
+		$this->ssl_fallback = $ssl_fallback;
+	}
+
 	public function wrap(Driver $driver): Driver
 	{
-		return new mysql_driver($driver);
+		return new mysql_driver($driver, $this->ssl_fallback);
 	}
 }
