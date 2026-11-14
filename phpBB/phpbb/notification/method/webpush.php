@@ -22,6 +22,7 @@ use phpbb\log\log_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
 use phpbb\user_loader;
+use phpbb\webpush\subscription\validator as subscription_validator;
 
 /**
 * Web Push notification method class
@@ -209,6 +210,29 @@ class webpush extends base implements extended_method_interface
 
 		// Get subscriptions for users
 		$user_subscription_map = $this->get_user_subscription_map($notify_users);
+		$invalid_subscriptions = [];
+
+		// Validate each stored subscription once so malformed data cannot interrupt the delivery batch.
+		foreach ($user_subscription_map as $user_id => $subscriptions)
+		{
+			$valid_subscriptions = [];
+			$user = $this->user_loader->get_user($user_id);
+			foreach ($subscriptions as $subscription)
+			{
+				if (!is_string($subscription['endpoint'] ?? null)
+					|| !is_string($subscription['p256dh'] ?? null)
+					|| !is_string($subscription['auth'] ?? null)
+					|| !$this->is_valid_endpoint_url($subscription['endpoint'])
+					|| !subscription_validator::is_valid($subscription['p256dh'], $subscription['auth']))
+				{
+					$invalid_subscriptions[$subscription['subscription_id']] = $user;
+					continue;
+				}
+
+				$valid_subscriptions[] = $subscription;
+			}
+			$user_subscription_map[$user_id] = $valid_subscriptions;
+		}
 
 		$auth = [
 			'VAPID' => [
@@ -218,10 +242,19 @@ class webpush extends base implements extended_method_interface
 			],
 		];
 
-		$web_push = new \Minishlink\WebPush\WebPush($auth);
+		try
+		{
+			$web_push = new \Minishlink\WebPush\WebPush($auth);
+		}
+		catch (\Throwable $exception)
+		{
+			$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
+			$this->empty_queue();
+			$this->remove_invalid_subscriptions($invalid_subscriptions);
+			return;
+		}
 
 		$number_of_notifications = 0;
-		$remove_subscriptions = [];
 
 		// Time to go through the queue and send notifications
 		/** @var type_interface $notification */
@@ -264,17 +297,11 @@ class webpush extends base implements extended_method_interface
 				}
 				catch (\ErrorException $exception)
 				{
-					$remove_subscriptions[] = $subscription['subscription_id'];
-					$this->log->add('user', $user['user_id'], $user['user_ip'] ?? '', 'LOG_WEBPUSH_SUBSCRIPTION_REMOVED', false, [
-						'reportee_id' => $user['user_id'],
-						$user['username'],
-					]);
+					$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
+					break;
 				}
 			}
 		}
-
-		// Remove any subscriptions that couldn't be queued, i.e. that have invalid data
-		$this->remove_subscriptions($remove_subscriptions);
 
 		// List to fill with expired subscriptions based on return
 		$expired_endpoints = [];
@@ -286,10 +313,10 @@ class webpush extends base implements extended_method_interface
 				if (!$report->isSuccess())
 				{
 					// Fill array of endpoints to remove if subscription has expired or is permanently gone.
-					// Library checks for 404/410; we also check for 401/403 auth failures and endpoints
+					// Library checks for 404/410; we also check endpoints
 					// using the .invalid TLD (e.g. permanently-removed.invalid), which per RFC 6761 are
 					// guaranteed to never resolve and are used as a sentinel for dead subscriptions.
-					if ($report->isSubscriptionExpired() || $this->is_subscription_unauthorized($report) || $this->is_endpoint_permanently_removed($report->getEndpoint()))
+					if ($this->should_remove_subscription($report))
 					{
 						$expired_endpoints[] = $report->getEndpoint();
 					}
@@ -301,15 +328,17 @@ class webpush extends base implements extended_method_interface
 				}
 			}
 		}
-		catch (\ErrorException $exception)
+		catch (\Throwable $exception)
 		{
 			$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
 		}
 
-		$this->clean_expired_subscriptions($user_subscription_map, $expired_endpoints);
-
 		// We're done, empty the queue
 		$this->empty_queue();
+
+		// Perform subscription cleanup only after valid notifications have been delivered.
+		$this->remove_invalid_subscriptions($invalid_subscriptions);
+		$this->clean_expired_subscriptions($user_subscription_map, $expired_endpoints);
 	}
 
 	/**
@@ -394,7 +423,8 @@ class webpush extends base implements extended_method_interface
 		}
 
 		return [
-			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> ($this->config['load_notifications'] && $this->config['allow_board_notifications'] && $this->config['webpush_dropdown_subscribe']) || stripos($this->user->page['page'], 'notification_options'),
+			'NOTIFICATIONS_WEBPUSH_ENABLE'	=> true,
+			'S_WEBPUSH_DROPDOWN_SUBSCRIBE'	=> $this->config['load_notifications'] && $this->config['allow_board_notifications'] && $this->config['webpush_dropdown_subscribe'],
 			'U_WEBPUSH_SUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_subscribe_controller'),
 			'U_WEBPUSH_UNSUBSCRIBE'			=> $controller_helper->route('phpbb_ucp_push_unsubscribe_controller'),
 			'VAPID_PUBLIC_KEY'				=> $this->config['webpush_vapid_public'],
@@ -430,6 +460,18 @@ class webpush extends base implements extended_method_interface
 	}
 
 	/**
+	 * Check whether a stored subscription endpoint is valid for delivery
+	 * Wrapper used here exists only as test seam
+	 *
+	 * @param string $endpoint Push subscription endpoint URL
+	 * @return bool
+	 */
+	protected function is_valid_endpoint_url(string $endpoint): bool
+	{
+		return subscription_validator::is_valid_endpoint_url($endpoint);
+	}
+
+	/**
 	 * Remove subscriptions
 	 *
 	 * @param array $subscription_ids Subscription ids to remove
@@ -442,6 +484,25 @@ class webpush extends base implements extended_method_interface
 			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
 					WHERE ' . $this->db->sql_in_set('subscription_id', $subscription_ids);
 			$this->db->sql_query($sql);
+		}
+	}
+
+	/**
+	 * Remove invalid subscriptions and record their removal
+	 *
+	 * @param array $invalid_subscriptions User data keyed by subscription id
+	 * @return void
+	 */
+	protected function remove_invalid_subscriptions(array $invalid_subscriptions): void
+	{
+		$this->remove_subscriptions(array_keys($invalid_subscriptions));
+
+		foreach ($invalid_subscriptions as $user)
+		{
+			$this->log->add('user', ANONYMOUS, '', 'LOG_WEBPUSH_SUBSCRIPTION_REMOVED', false, [
+				'reportee_id' => $user['user_id'],
+				$user['username'],
+			]);
 		}
 	}
 
@@ -501,20 +562,19 @@ class webpush extends base implements extended_method_interface
 	}
 
 	/**
-	 * Check if subscription push failed with a permanent authorization error
+	 * Check if a failed subscription should be removed
 	 *
-	 * 401/403 indicate the push service no longer accepts this subscription,
-	 * typically due to revoked credentials, rotated VAPID keys, or the
-	 * subscription no longer being valid for the current credentials.
+	 * Authentication failures are not proof that a subscription expired. In
+	 * particular, a VAPID key rotation returns 401/403 until the browser can
+	 * recreate its subscription, so those rows must remain as ownership records.
 	 *
 	 * @param \Minishlink\WebPush\MessageSentReport $report
 	 *
-	 * @return bool True if subscription returned 401 Unauthorized or 403 Forbidden
+	 * @return bool True if the subscription is expired or permanently gone
 	 */
-	protected function is_subscription_unauthorized(\Minishlink\WebPush\MessageSentReport $report): bool
+	protected function should_remove_subscription(\Minishlink\WebPush\MessageSentReport $report): bool
 	{
-		$response = $report->getResponse();
-		return $response && in_array($response->getStatusCode(), [401, 403], true);
+		return $report->isSubscriptionExpired() || $this->is_endpoint_permanently_removed($report->getEndpoint());
 	}
 
 	/**

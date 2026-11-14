@@ -23,6 +23,7 @@ use Minishlink\WebPush\VAPID;
 use phpbb\config\config;
 use phpbb\language\language;
 use phpbb\user;
+use phpbb\webpush\subscription\validator as subscription_validator;
 
 if (!defined('IN_PHPBB'))
 {
@@ -553,6 +554,20 @@ class acp_board
 		// We validate the complete config if wished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
+		if ($submit && $mode === 'webpush' && empty($error) && !empty($cfg_array['webpush_enable']))
+		{
+			$private_key = $cfg_array['webpush_vapid_private'] ?? '';
+			if ($private_key === '')
+			{
+				$private_key = $config['webpush_vapid_private'];
+			}
+
+			if (!subscription_validator::is_valid_vapid_keys($cfg_array['webpush_vapid_public'] ?? '', $private_key))
+			{
+				$error[] = $this->language->lang('WEBPUSH_VAPID_KEYS_INVALID');
+			}
+		}
+
 		if ($submit && !check_form_key($form_key))
 		{
 			$error[] = $user->lang['FORM_INVALID'];
@@ -582,6 +597,14 @@ class acp_board
 				{
 					$this->guest_style_set($cfg_array[$config_name]);
 				}
+				continue;
+			}
+
+			// Stored VAPID private keys are never sent to the browser. A blank submitted
+			// value retains the existing credential instead of clearing it.
+			if ($submit && $mode === 'webpush' && $config_name === 'webpush_vapid_private'
+				&& $cfg_array[$config_name] === '' && $config['webpush_vapid_private'] !== '')
+			{
 				continue;
 			}
 
@@ -781,6 +804,11 @@ class acp_board
 			trigger_error($message . adm_back_link($this->u_action), $message_type);
 		}
 
+		if ($mode === 'webpush' && !$request->is_secure() && $request->server('SERVER_NAME') !== 'localhost')
+		{
+			$error[] = $this->language->lang('WEBPUSH_INSECURE_SERVER_ERROR');
+		}
+
 		$this->tpl_name = 'acp_board';
 		$this->page_title = $display_vars['title'];
 
@@ -822,6 +850,12 @@ class acp_board
 			else if ($vars['explain'])
 			{
 				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+			}
+
+			if ($mode === 'webpush' && $config_key === 'webpush_vapid_private')
+			{
+				// Never expose the stored private credential, including as a mask sentinel.
+				$this->new_config[$config_key] = '';
 			}
 
 			$content = phpbb_build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);

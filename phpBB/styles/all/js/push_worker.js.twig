@@ -88,7 +88,7 @@ self.addEventListener('notificationclick', event => {
 	}
 
 	try {
-		const url = new URL(event.notification.data.url, '{{ U_BOARD_URL|e("js") }}/');
+		const url = new URL(event.notification.data.url, self.location.href);
 		if (url.protocol === 'http:' || url.protocol === 'https:') {
 			event.waitUntil(self.clients.openWindow(url.href));
 		}

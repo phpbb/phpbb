@@ -3798,8 +3798,8 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 			$template->assign_block_vars('notifications', $notification->prepare_for_display());
 		}
 
-		// Assign web push template vars globally (if not done already by ucp_notifications) for the dropdown subscribe button
-		if ($config['webpush_enable'] && $config['webpush_dropdown_subscribe']
+		// Assign Web Push template vars globally so existing subscriptions can recover on any eligible visit.
+		if ($config['webpush_enable']
 			&& $template->retrieve_var('NOTIFICATIONS_WEBPUSH_ENABLE') === null)
 		{
 			$methods = $phpbb_notifications->get_subscription_methods();

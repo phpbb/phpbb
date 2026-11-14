@@ -20,6 +20,10 @@ class phpbb_json_sanitizer_test extends phpbb_test_case
 		return [
 			[false, []],
 			['', []],
+			['true', []],
+			['42', []],
+			['"scalar"', []],
+			['null', []],
 			['{ "name": "phpbb/phpbb-style-prosilver"}', ['name' => 'phpbb/phpbb-style-prosilver']],
 			['{ "name":[[ "phpbb/phpbb-style-prosilver"}', []],
 		];

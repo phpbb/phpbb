@@ -4,6 +4,7 @@
 		subscribeUrl: '{{ U_WEBPUSH_SUBSCRIBE|e('js') }}',
 		unsubscribeUrl: '{{ U_WEBPUSH_UNSUBSCRIBE|e('js') }}',
 		ajaxErrorTitle: '{{ lang_js('AJAX_ERROR_TITLE') }}',
+		unsubscribeError: '{{ lang_js('NOTIFY_WEB_PUSH_UNSUBSCRIBE_ERROR') }}',
 		vapidPublicKey: '{{ VAPID_PUBLIC_KEY|e('js') }}',
 		formTokens: {
 			creationTime: {{ WEBPUSH_FORM_TOKENS.creation_time|int }},
