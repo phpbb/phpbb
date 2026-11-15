@@ -495,12 +495,13 @@ class acp_board
 					'title'		=> 'ACP_WEBPUSH_SETTINGS',
 					'vars' 		=> [
 						'legend1'					=> 'GENERAL_SETTINGS',
-						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'custom', 'method' => 'webpush_enable', 'explain' => true],
-						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:25:255', 'explain' => true],
-						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'password:25:255', 'explain' => true],
-						'webpush_method_default_enable'	=> ['lang' => 'WEBPUSH_METHOD_DEFAULT_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
+						'webpush_enable'			=> ['lang' => 'WEBPUSH_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
 						'webpush_dropdown_subscribe'	=> ['lang' => 'WEBPUSH_DROPDOWN_SUBSCRIBE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
-
+						'webpush_method_default_enable'	=> ['lang' => 'WEBPUSH_METHOD_DEFAULT_ENABLE', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true],
+						'legend2'					=> 'WEBPUSH_VAPID_CREDENTIALS',
+						'webpush_vapid_credentials'	=> ['lang' => 'WEBPUSH_VAPID_CREDENTIALS', 'type' => 'custom', 'method' => 'webpush_vapid_credentials', 'explain' => true],
+						'webpush_vapid_public'		=> ['lang' => 'WEBPUSH_VAPID_PUBLIC', 'validate' => 'string', 'type' => 'text:50:255', 'explain' => true],
+						'webpush_vapid_private'		=> ['lang' => 'WEBPUSH_VAPID_PRIVATE', 'validate' => 'string', 'type' => 'custom', 'method' => 'webpush_vapid_private', 'params' => ['{KEY}'], 'explain' => true],
 						'legend3'				=> 'ACP_SUBMIT_CHANGES',
 					],
 				];
@@ -1524,41 +1525,21 @@ class acp_board
 	}
 
 	/**
-	 * Generate form data for web push enable
+	 * Generate form data for VAPID credentials
 	 *
-	 * @param string $value Webpush enable value
-	 * @param string $key Webpush enable config key
+	 * @param string $value VAPID credentials value
+	 * @param string $key VAPID credentials config key
 	 *
 	 * @return array[] Form data
 	 */
-	public function webpush_enable($value, $key): array
+	public function webpush_vapid_credentials($value, $key): array
 	{
 		return [
 			[
-				'tag'		=> 'radio',
-				'buttons'	=> [
-					[
-						'name'		=> "config[$key]",
-						'label'		=> $this->language->lang('YES'),
-						'type'		=> 'radio',
-						'class'		=> 'radio',
-						'value'		=> 1,
-						'checked'	=> $value,
-					],
-					[
-						'name'		=> "config[$key]",
-						'label'		=> $this->language->lang('NO'),
-						'type'		=> 'radio',
-						'class'		=> 'radio',
-						'value'		=> 0,
-						'checked'	=> !$value,
-					],
-				],
-			],
-			[
 				'tag'		=> 'input',
+				'id'		=> $key,
 				'class'		=> 'button2',
-				'name'		=> "config[$key]",
+				'name'		=> 'generate_vapid_keys',
 				'type'		=> 'button',
 				'value'		=> $this->language->lang('WEBPUSH_GENERATE_VAPID_KEYS'),
 				'data'		=> [
@@ -1566,5 +1547,20 @@ class acp_board
 				]
 			],
 		];
+	}
+
+	/**
+	 * Generate the private VAPID key field
+	 *
+	 * @param string $key VAPID private key config name
+	 *
+	 * @return string Form field HTML
+	 */
+	public function webpush_vapid_private(string $key): string
+	{
+		$placeholder = $this->language->lang($this->config['webpush_vapid_private'] ? 'WEBPUSH_VAPID_PRIVATE_KEEP' : 'WEBPUSH_VAPID_PRIVATE_ENTER');
+		$key = htmlspecialchars($key, ENT_QUOTES, 'UTF-8');
+
+		return '<input id="' . $key . '" type="password" name="config[' . $key . ']" size="50" maxlength="255" autocomplete="off" placeholder="' . htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') . '" value="">';
 	}
 }

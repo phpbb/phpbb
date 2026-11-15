@@ -28,7 +28,11 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		$this->assertCount(0, $crawler->filter('.errorbox'));
 		$this->assertContainsLang('ACP_WEBPUSH_SETTINGS', $crawler->filter('div.main > h1')->text());
 		$this->assertContainsLang('ACP_WEBPUSH_SETTINGS_EXPLAIN', $crawler->filter('div.main > p')->text());
-		$this->assertContainsLang('WEBPUSH_GENERATE_VAPID_KEYS', $crawler->filter('input[type="button"]')->attr('value'));
+
+		$vapid_credentials = $crawler->filterXPath('//dl[.//input[@data-ajax="generate_vapid_keys"]]');
+		$this->assertCount(1, $vapid_credentials);
+		$this->assertCount(1, $vapid_credentials->filter('input[type="button"]'));
+		$this->assertCount(0, $vapid_credentials->filter('input[name="config[webpush_enable]"]'));
 
 		$form_data = [
 			'config[webpush_enable]'	=> 1,
@@ -45,7 +49,9 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 
 		$this->assertEquals($form_data['config[webpush_enable]'], $crawler->filter('input[name="config[webpush_enable]"][checked]')->attr('value'));
 		$this->assertEquals($form_data['config[webpush_vapid_public]'], $crawler->filter('input[name="config[webpush_vapid_public]"]')->attr('value'));
-		$this->assertSame('', $crawler->filter('input[name="config[webpush_vapid_private]"]')->attr('value'));
+		$private_key = $crawler->filter('input[name="config[webpush_vapid_private]"]');
+		$this->assertSame('', $private_key->attr('value'));
+		$this->assertNotSame('', $private_key->attr('placeholder'));
 		$this->assertEquals($form_data['config[webpush_method_default_enable]'], $crawler->filter('input[name="config[webpush_method_default_enable]"][checked]')->attr('value'));
 		$this->assertEquals($form_data['config[webpush_dropdown_subscribe]'], $crawler->filter('input[name="config[webpush_dropdown_subscribe]"][checked]')->attr('value'));
 
