@@ -13,11 +13,13 @@
 
 namespace phpbb\notification\method;
 
+use Minishlink\WebPush\MessageSentReport;
 use Minishlink\WebPush\Subscription;
 use phpbb\config\config;
 use phpbb\controller\helper;
 use phpbb\db\driver\driver_interface;
 use phpbb\form\form_helper;
+use phpbb\json\sanitizer;
 use phpbb\log\log_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\user;
@@ -305,6 +307,7 @@ class webpush extends base implements extended_method_interface
 
 		// List to fill with expired subscriptions based on return
 		$expired_endpoints = [];
+		$delivery_failures = [];
 
 		try
 		{
@@ -322,8 +325,7 @@ class webpush extends base implements extended_method_interface
 					}
 					else
 					{
-						$report_data = \phpbb\json\sanitizer::sanitize($report->jsonSerialize());
-						$this->log->add('admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$report_data['reason']]);
+						$this->add_delivery_failure($delivery_failures, $report);
 					}
 				}
 			}
@@ -332,6 +334,8 @@ class webpush extends base implements extended_method_interface
 		{
 			$this->log->add('critical', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$exception->getMessage()]);
 		}
+
+		$this->log_delivery_failures($delivery_failures);
 
 		// We're done, empty the queue
 		$this->empty_queue();
@@ -568,11 +572,11 @@ class webpush extends base implements extended_method_interface
 	 * particular, a VAPID key rotation returns 401/403 until the browser can
 	 * recreate its subscription, so those rows must remain as ownership records.
 	 *
-	 * @param \Minishlink\WebPush\MessageSentReport $report
+	 * @param MessageSentReport $report
 	 *
 	 * @return bool True if the subscription is expired or permanently gone
 	 */
-	protected function should_remove_subscription(\Minishlink\WebPush\MessageSentReport $report): bool
+	protected function should_remove_subscription(MessageSentReport $report): bool
 	{
 		return $report->isSubscriptionExpired() || $this->is_endpoint_permanently_removed($report->getEndpoint());
 	}
@@ -593,5 +597,46 @@ class webpush extends base implements extended_method_interface
 	{
 		$host = parse_url($endpoint, PHP_URL_HOST);
 		return is_string($host) && str_ends_with($host, '.invalid');
+	}
+
+	/**
+	 * Group a delivery failure by response category
+	 *
+	 * @param array $failures Grouped delivery failures
+	 * @param MessageSentReport $report Failed delivery report
+	 * @return void
+	 */
+	protected function add_delivery_failure(array &$failures, MessageSentReport $report): void
+	{
+		$response = $report->getResponse();
+		$category = $response ? 'http:' . $response->getStatusCode() : 'network';
+
+		if (!isset($failures[$category]))
+		{
+			$report_data = sanitizer::sanitize(['reason' => $report->getReason()]);
+			$failures[$category] = [
+				'count' => 0,
+				'reason' => (string) ($report_data['reason'] ?? ''),
+			];
+		}
+
+		$failures[$category]['count']++;
+	}
+
+	/**
+	 * Log delivery failures once per response category
+	 *
+	 * @param array $failures Grouped delivery failures
+	 * @return void
+	 */
+	protected function log_delivery_failures(array $failures): void
+	{
+		foreach ($failures as $failure)
+		{
+			$reason = $failure['count'] > 1
+				? $failure['count'] . ' × ' . $failure['reason']
+				: $failure['reason'];
+			$this->log->add('admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, [$reason]);
+		}
 	}
 }

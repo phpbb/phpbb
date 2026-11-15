@@ -829,6 +829,53 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 		], $subscriptions[0]);
 	}
 
+	public function test_subscribe_keeps_only_newest_subscriptions_for_current_user(): void
+	{
+		$this->configure_valid_subscription_request();
+		$this->dispatcher->method('trigger_event')->willReturnArgument(1);
+		$subscriptions = [];
+		for ($i = 0; $i < 1021; $i++)
+		{
+			$subscriptions[] = [
+				'user_id' => 2,
+				'endpoint' => 'https://fcm.googleapis.com/fcm/send/old_' . $i,
+				'expiration_time' => 0,
+				'p256dh' => self::SUBSCRIPTION_PUBLIC_KEY,
+				'auth' => self::SUBSCRIPTION_AUTH_TOKEN,
+			];
+		}
+		for ($i = 0; $i < 3; $i++)
+		{
+			$subscriptions[] = [
+				'user_id' => 3,
+				'endpoint' => 'https://fcm.googleapis.com/fcm/send/other_' . $i,
+				'expiration_time' => 0,
+				'p256dh' => self::SUBSCRIPTION_PUBLIC_KEY,
+				'auth' => self::SUBSCRIPTION_AUTH_TOKEN,
+			];
+		}
+		$this->db->sql_multi_insert('phpbb_push_subscriptions', $subscriptions);
+
+		$endpoint = 'https://fcm.googleapis.com/fcm/send/newest';
+		$response = $this->controller->subscribe($this->create_symfony_request([
+			'endpoint' => $endpoint,
+			'expiration_time' => 0,
+			'keys' => ['p256dh' => self::SUBSCRIPTION_PUBLIC_KEY, 'auth' => self::SUBSCRIPTION_AUTH_TOKEN],
+		]));
+
+		$this->assertInstanceOf(JsonResponse::class, $response);
+		$expected_endpoints = [];
+		for ($i = 1002; $i < 1021; $i++)
+		{
+			$expected_endpoints[] = 'https://fcm.googleapis.com/fcm/send/old_' . $i;
+		}
+		$expected_endpoints[] = $endpoint;
+		$user_subscriptions = $this->get_all_subscriptions(2);
+		$this->assertCount(webpush::MAX_SUBSCRIPTIONS_PER_USER, $user_subscriptions);
+		$this->assertSame($expected_endpoints, array_column($user_subscriptions, 'endpoint'));
+		$this->assertCount(3, $this->get_all_subscriptions(3));
+	}
+
 	public function test_subscribe_invalid_payload_preserves_existing_subscription(): void
 	{
 		$this->dispatcher->method('trigger_event')

@@ -40,6 +40,12 @@ class webpush
 	/** @var string UCP form token name */
 	public const FORM_TOKEN_UCP = 'ucp_webpush';
 
+	/** @var int Maximum number of stored subscriptions per user */
+	public const MAX_SUBSCRIPTIONS_PER_USER = 20;
+
+	/** @var int Maximum number of surplus subscriptions removed per query */
+	private const SUBSCRIPTION_PRUNE_BATCH_SIZE = 100;
+
 	/** @var config */
 	protected $config;
 
@@ -396,10 +402,41 @@ class webpush
 			$this->db->sql_query($sql);
 		}
 
+		$this->prune_user_subscriptions($this->user->id());
+
 		return new JsonResponse([
 			'success'		=> true,
 			'form_tokens'	=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
 		]);
+	}
+
+	/**
+	 * Keep only the newest subscriptions for a user
+	 *
+	 * @param int $user_id User id
+	 * @return void
+	 */
+	protected function prune_user_subscriptions(int $user_id): void
+	{
+		do
+		{
+			$sql = 'SELECT subscription_id
+				FROM ' . $this->push_subscriptions_table . '
+				WHERE user_id = ' . $user_id . '
+				ORDER BY subscription_id DESC';
+			$result = $this->db->sql_query_limit($sql, self::SUBSCRIPTION_PRUNE_BATCH_SIZE, self::MAX_SUBSCRIPTIONS_PER_USER);
+			$surplus = array_map('intval', array_column($this->db->sql_fetchrowset($result), 'subscription_id'));
+			$this->db->sql_freeresult($result);
+
+			if (!empty($surplus))
+			{
+				$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+					WHERE user_id = ' . $user_id . '
+						AND ' . $this->db->sql_in_set('subscription_id', $surplus);
+				$this->db->sql_query($sql);
+			}
+		}
+		while (count($surplus) === self::SUBSCRIPTION_PRUNE_BATCH_SIZE);
 	}
 
 	/**

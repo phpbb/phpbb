@@ -72,6 +72,53 @@ namespace
 			self::assertSame([], $method->removed_subscriptions);
 		}
 
+		public function test_delivery_failures_are_logged_once_per_category(): void
+		{
+			$entries = [];
+			$log = $this->createMock(\phpbb\log\log_interface::class);
+			$log->expects(self::exactly(3))->method('add')->willReturnCallback(
+				static function (...$arguments) use (&$entries)
+				{
+					$entries[] = $arguments;
+					return true;
+				}
+			);
+			$method = $this->create_method($log, $this->createMock(\phpbb\user_loader::class));
+			$method->log_delivery_failures_for_test([
+				$this->create_failed_report(401, 'Unauthorized'),
+				$this->create_failed_report(401, 'Unauthorized again'),
+				$this->create_failed_report(401, 'Unauthorized once more'),
+				$this->create_failed_report(403, 'Forbidden'),
+				$this->create_failed_report(403, 'Forbidden again'),
+				$this->create_failed_report(null, 'DNS failure one'),
+				$this->create_failed_report(null, 'DNS failure two'),
+			]);
+			self::assertSame([
+				['admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, ['3 × Unauthorized']],
+				['admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, ['2 × Forbidden']],
+				['admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, ['2 × DNS failure one']],
+			], $entries);
+		}
+
+		public function test_single_delivery_failure_keeps_sanitized_reason(): void
+		{
+			$log = $this->createMock(\phpbb\log\log_interface::class);
+			$log->expects(self::once())->method('add')->with(
+				'admin', ANONYMOUS, '', 'LOG_WEBPUSH_MESSAGE_FAIL', false, ['Too Many Requests &lt;retry&gt;']
+			);
+			$this->create_method($log, $this->createMock(\phpbb\user_loader::class))->log_delivery_failures_for_test([
+				$this->create_failed_report(429, 'Too Many Requests <retry>'),
+			]);
+		}
+
+		private function create_failed_report(?int $status_code, string $reason): \Minishlink\WebPush\MessageSentReport
+		{
+			$request = new \GuzzleHttp\Psr7\Request('POST', 'https://push.example.test/endpoint');
+			$response = $status_code === null ? null : new \GuzzleHttp\Psr7\Response($status_code);
+
+			return new \Minishlink\WebPush\MessageSentReport($request, $response, false, $reason);
+		}
+
 		private function create_method($log, $user_loader): phpbb_testable_webpush_branches
 		{
 			global $config, $phpbb_root_path, $phpEx, $user;
@@ -126,6 +173,16 @@ namespace
 		public function send_queued_notifications(): void
 		{
 			$this->notify_using_webpush();
+		}
+
+		public function log_delivery_failures_for_test(array $reports): void
+		{
+			$failures = [];
+			foreach ($reports as $report)
+			{
+				$this->add_delivery_failure($failures, $report);
+			}
+			$this->log_delivery_failures($failures);
 		}
 
 		public function set_push_token($type_id, $item_id, $user_id, $token): void
