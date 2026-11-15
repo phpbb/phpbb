@@ -579,6 +579,18 @@ class acp_board
 			$submit = false;
 		}
 
+		if ($submit && $mode === 'webpush')
+		{
+			// Store VAPID keys in the unpadded Base64URL form reported by browsers.
+			foreach (['webpush_vapid_public', 'webpush_vapid_private'] as $key_name)
+			{
+				if (isset($cfg_array[$key_name]))
+				{
+					$cfg_array[$key_name] = rtrim($cfg_array[$key_name], '=');
+				}
+			}
+		}
+
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $data)
 		{

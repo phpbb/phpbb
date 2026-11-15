@@ -41,7 +41,10 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 			'config[webpush_method_default_enable]'	=> 1,
 			'config[webpush_dropdown_subscribe]'	=> 1,
 		];
-		$form = $crawler->selectButton('submit')->form($form_data);
+		$padded_form_data = $form_data;
+		$padded_form_data['config[webpush_vapid_public]'] .= '=';
+		$padded_form_data['config[webpush_vapid_private]'] .= '=';
+		$form = $crawler->selectButton('submit')->form($padded_form_data);
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 
@@ -55,6 +58,31 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		$this->assertEquals($form_data['config[webpush_method_default_enable]'], $crawler->filter('input[name="config[webpush_method_default_enable]"][checked]')->attr('value'));
 		$this->assertEquals($form_data['config[webpush_dropdown_subscribe]'], $crawler->filter('input[name="config[webpush_dropdown_subscribe]"][checked]')->attr('value'));
 
+		$db = $this->get_db();
+		$result = $db->sql_query("SELECT config_name, config_value FROM " . CONFIG_TABLE . "
+			WHERE config_name IN ('webpush_vapid_public', 'webpush_vapid_private')");
+		foreach ($db->sql_fetchrowset($result) as $row)
+		{
+			$this->assertSame($form_data['config[' . $row['config_name'] . ']'], $row['config_value']);
+		}
+		$db->sql_freeresult($result);
+
+		// A blank private key must still validate against the stored credential.
+		$blank_private_form_data = $form_data;
+		$blank_private_form_data['config[webpush_vapid_private]'] = '';
+		$crawler = self::submit($crawler->selectButton('submit')->form($blank_private_form_data));
+		$this->assertCount(1, $crawler->filter('.successbox'));
+		$result = $db->sql_query("SELECT config_value FROM " . CONFIG_TABLE . " WHERE config_name = 'webpush_vapid_private'");
+		$this->assertSame($form_data['config[webpush_vapid_private]'], $db->sql_fetchfield('config_value'));
+		$db->sql_freeresult($result);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
+		$excessively_padded_form_data = $padded_form_data;
+		$excessively_padded_form_data['config[webpush_vapid_public]'] .= '=';
+		$crawler = self::submit($crawler->selectButton('submit')->form($excessively_padded_form_data));
+		$this->assertContainsLang('WEBPUSH_VAPID_KEYS_INVALID', $crawler->filter('.errorbox')->text());
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
 		$invalid_form_data = $form_data;
 		$invalid_form_data['config[webpush_vapid_public]'] = 'invalid';
 		$invalid_form_data['config[webpush_vapid_private]'] = '';
