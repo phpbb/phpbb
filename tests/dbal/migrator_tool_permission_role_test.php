@@ -71,7 +71,7 @@ class phpbb_dbal_migrator_tool_permission_role_test extends phpbb_database_test_
 	protected function setUp(): void
 	{
 		// Global $db and $cache are needed in acp/auth.php constructor
-		global $phpbb_root_path, $phpEx, $db, $cache;
+		global $phpbb_root_path, $phpEx, $db, $cache, $phpbb_dispatcher;
 
 		parent::setup();
 

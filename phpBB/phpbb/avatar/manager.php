@@ -202,9 +202,15 @@ class manager
 			return self::$default_row;
 		}
 
+		$required_keys = ['user_id', 'group_id', 'username'];
 		$output = [];
 		foreach ($row as $key => $value)
 		{
+			if (!str_starts_with($key, $prefix ? "{$prefix}_avatar": 'avatar') && !in_array($key, $required_keys))
+			{
+				continue;
+			}
+
 			$key = preg_replace("#^(?:{$prefix}_)#", '', (string) $key);
 			$output[$key] = $value;
 		}
@@ -276,7 +282,7 @@ class manager
 	/**
 	* Replace "error" strings with their real, localized form
 	*
-	* @param \phpbb\user phpBB User object
+	* @param \phpbb\user $user phpBB User object
 	* @param array	$error Array containing error strings
 	*        Key values can either be a string with a language key or an array
 	*        that will be passed to vsprintf() with the language key in the

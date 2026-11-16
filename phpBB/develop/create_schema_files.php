@@ -18,6 +18,8 @@
 * If you overwrite the original schema files please make sure you save the file with UNIX linefeeds.
 */
 
+use Symfony\Component\Yaml\Yaml;
+
 $schema_path = __DIR__ . '/../install/schemas/';
 $supported_dbms = array(
 	'mssql',
@@ -87,7 +89,7 @@ $factory = new \phpbb\db\tools\factory();
 $db_tools = $factory->get($db_doctrine, true);
 $db_tools->set_table_prefix($table_prefix);
 
-$tables_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
+$tables_data = Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml', Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 $tables = [];
 
 foreach ($tables_data['parameters'] as $parameter => $table)

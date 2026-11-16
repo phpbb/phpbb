@@ -55,6 +55,7 @@ services:
             - '@event_dispatcher'
             - '@language'
             - '@request'
+            - '@routing.helper'
             - '@auth.provider.oauth.service_collection'
             - '@user'
             - '%tables.auth_provider_oauth_token_storage%'

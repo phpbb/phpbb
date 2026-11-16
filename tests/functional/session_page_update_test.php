@@ -17,7 +17,7 @@
 
 class phpbb_functional_session_page_update_test extends phpbb_functional_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 

@@ -44,7 +44,7 @@ class recreate extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('thumbnail:recreate')
@@ -62,7 +62,7 @@ class recreate extends \phpbb\console\command\command
 	*
 	* @return int 0 if all is ok, 1 if a thumbnail couldn't be deleted.
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$command = $this->getApplication()->find('thumbnail:delete');
 

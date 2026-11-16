@@ -1,8 +1,8 @@
 /* global phpbb */
 
-'use strict';
-
 function PhpbbWebpush() {
+	'use strict';
+
 	/** @type {string} URL to service worker */
 	let serviceWorkerUrl = '';
 
@@ -18,10 +18,10 @@ function PhpbbWebpush() {
 		formToken: '',
 	};
 
-	/** @type {{endpoint: string, expiration: string}[]} Subscriptions */
+	/** @type {{endpoint: string, expirationTime: number}[]} Subscriptions */
 	let subscriptions;
 
-	/** @type {string} Title of error message */
+	/** @type {string} Title of an error message */
 	let ajaxErrorTitle = '';
 
 	/** @type {string} VAPID public key */
@@ -35,7 +35,8 @@ function PhpbbWebpush() {
 
 	/**
 	 * Init function for phpBB Web Push
-	 * @type {array} options
+	 *
+	 * @param {Object} options Init options
 	 */
 	this.init = function(options) {
 		serviceWorkerUrl = options.serviceWorkerUrl;
@@ -57,11 +58,11 @@ function PhpbbWebpush() {
 
 		if ('serviceWorker' in navigator && 'PushManager' in window) {
 			navigator.serviceWorker.register(serviceWorkerUrl)
-				.then(() => {
+				.then(async() => {
 					subscribeButton.addEventListener('click', subscribeButtonHandler);
 					unsubscribeButton.addEventListener('click', unsubscribeButtonHandler);
 
-					updateButtonState();
+					await updateButtonState();
 				})
 				.catch(error => {
 					console.info(error);
@@ -76,7 +77,7 @@ function PhpbbWebpush() {
 	/**
 	 * Disable subscribing buttons, update subscribe button text and hide dropdown toggle
 	 *
-	 * @return void
+	 * @returns {void}
 	 */
 	function setDisabledState() {
 		subscribeButton.disabled = true;
@@ -94,25 +95,36 @@ function PhpbbWebpush() {
 	}
 
 	/**
-	 * Update button state depending on notifications state
+	 * Update button state depending on notification state
 	 *
-	 * @return void
+	 * @returns {Promise<void>}
 	 */
-	function updateButtonState() {
-		if (Notification.permission === 'granted') {
-			navigator.serviceWorker.getRegistration(serviceWorkerUrl)
-				.then(registration => {
-					if (typeof registration === 'undefined') {
-						return;
-					}
+	async function updateButtonState() {
+		setSubscriptionState(false);
 
-					registration.pushManager.getSubscription()
-						.then(subscribed => {
-							if (isValidSubscription(subscribed)) {
-								setSubscriptionState(true);
-							}
-						});
-				});
+		if (Notification.permission !== 'granted') {
+			return;
+		}
+
+		try {
+			const registration = await navigator.serviceWorker.getRegistration(serviceWorkerUrl);
+			if (typeof registration === 'undefined') {
+				return;
+			}
+
+			const subscription = await registration.pushManager.getSubscription();
+			if (!subscription) {
+				return;
+			}
+
+			if (shouldRefreshSubscription(subscription)) {
+				await refreshSubscription(registration, subscription);
+				return;
+			}
+
+			setSubscriptionState(true);
+		} catch (error) {
+			console.error('Failed to update Web Push subscription state:', error);
 		}
 	}
 
@@ -142,6 +154,72 @@ function PhpbbWebpush() {
 	};
 
 	/**
+	 * Check whether the current browser subscription uses the configured VAPID key
+	 *
+	 * @param {PushSubscription} subscription
+	 * @returns {boolean}
+	 */
+	const hasCurrentVapidKey = subscription => {
+		if (!subscription || !subscription.options || !subscription.options.applicationServerKey) {
+			return true;
+		}
+
+		return uint8ArrayToUrlB64(new Uint8Array(subscription.options.applicationServerKey)) === vapidPublicKey;
+	};
+
+	/**
+	 * Check whether a subscription should be recreated in the browser and backend
+	 *
+	 * @param {PushSubscription} subscription
+	 * @returns {boolean}
+	 */
+	const shouldRefreshSubscription = subscription => !isValidSubscription(subscription) || !hasCurrentVapidKey(subscription);
+
+	/**
+	 * Remove a cached subscription entry
+	 *
+	 * @param {string} endpoint
+	 */
+	function removeStoredSubscription(endpoint) {
+		if (!endpoint) {
+			return;
+		}
+
+		subscriptions = subscriptions.filter(subscription => subscription.endpoint !== endpoint);
+	}
+
+	/**
+	 * Update cached subscriptions with the newest server state
+	 *
+	 * @param {PushSubscription} subscription
+	 * @param {string} previousEndpoint
+	 */
+	function storeSubscription(subscription, previousEndpoint = '') {
+		removeStoredSubscription(previousEndpoint);
+		removeStoredSubscription(subscription.endpoint);
+		subscriptions.push({
+			endpoint: subscription.endpoint,
+			expirationTime: subscription.expirationTime || 0,
+		});
+	}
+
+	/**
+	 * Convert a PushSubscription to the payload expected by the backend
+	 *
+	 * @param {PushSubscription} subscription
+	 * @param {string} previousEndpoint
+	 * @returns {Object}
+	 */
+	function getSubscriptionPayload(subscription, previousEndpoint = '') {
+		const payload = subscription.toJSON();
+		if (previousEndpoint) {
+			payload.previous_endpoint = previousEndpoint;
+		}
+
+		return payload;
+	}
+
+	/**
 	 * Set subscription state for buttons
 	 *
 	 * @param {boolean} subscribed True if subscribed, false if not
@@ -157,32 +235,49 @@ function PhpbbWebpush() {
 	}
 
 	/**
-	 * Handler for pushing subscribe button
+	 * Persist a browser subscription to the backend
 	 *
-	 * @param {Object} event Subscribe button push event
-	 * @returns {Promise<void>}
+	 * @param {PushSubscription} subscription
+	 * @param {string} previousEndpoint
+	 * @returns {Promise<Object>}
 	 */
-	async function subscribeButtonHandler(event) {
-		event.preventDefault();
+	async function persistSubscription(subscription, previousEndpoint = '') {
+		const loadingIndicator = phpbb.loadingIndicator();
 
-		subscribeButton.addEventListener('click', subscribeButtonHandler);
+		try {
+			const response = await fetch(subscribeUrl, {
+				method: 'POST',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				},
+				body: getFormData(getSubscriptionPayload(subscription, previousEndpoint)),
+			});
+			const data = await response.json();
 
-		// Prevent the user from clicking the subscribe button multiple times.
-		const result = await Notification.requestPermission();
-		if (result === 'denied') {
-			phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-l-msg'));
-			return;
-		}
-
-		const registration = await navigator.serviceWorker.getRegistration(serviceWorkerUrl);
-
-		// We might already have a subscription that is unknown to this instance of phpBB.
-		// Unsubscribe before trying to subscribe again.
-		if (typeof registration !== 'undefined') {
-			const subscribed = await registration.pushManager.getSubscription();
-			if (subscribed) {
-				await subscribed.unsubscribe();
+			if (!data.success) {
+				throw new Error(data.message || subscribeButton.getAttribute('data-disabled-msg'));
 			}
+
+			handleSubscribe(data, subscription, previousEndpoint);
+			return data;
+		} finally {
+			loadingIndicator.fadeOut(phpbb.alertTime);
+		}
+	}
+
+	/**
+	 * Create a fresh browser subscription and store it in the backend
+	 *
+	 * @param {ServiceWorkerRegistration} registration
+	 * @param {PushSubscription|null} previousSubscription
+	 * @returns {Promise<PushSubscription>}
+	 */
+	async function refreshSubscription(registration, previousSubscription = null) {
+		const previousEndpoint = previousSubscription ? previousSubscription.endpoint : '';
+
+		if (previousSubscription) {
+			await previousSubscription.unsubscribe();
+			removeStoredSubscription(previousEndpoint);
 		}
 
 		const newSubscription = await registration.pushManager.subscribe({
@@ -190,29 +285,60 @@ function PhpbbWebpush() {
 			applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
 		});
 
-		const loadingIndicator = phpbb.loadingIndicator();
-		fetch(subscribeUrl, {
-			method: 'POST',
-			headers: {
-				'X-Requested-With': 'XMLHttpRequest',
-			},
-			body: getFormData(newSubscription),
-		})
-			.then(response => {
-				loadingIndicator.fadeOut(phpbb.alertTime);
-				return response.json();
-			})
-			.then(handleSubscribe)
-			.catch(error => {
-				loadingIndicator.fadeOut(phpbb.alertTime);
-				phpbb.alert(ajaxErrorTitle, error);
-			});
+		try {
+			await persistSubscription(newSubscription, previousEndpoint);
+			return newSubscription;
+		} catch (error) {
+			newSubscription.unsubscribe().catch(console.error);
+			throw error;
+		}
+	}
+
+	/**
+	 * Handler for pushing subscribe button
+	 *
+	 * @param {Event} event Subscribe button push event
+	 * @returns {Promise<void>}
+	 */
+	async function subscribeButtonHandler(event) {
+		event.preventDefault();
+
+		subscribeButton.removeEventListener('click', subscribeButtonHandler);
+
+		try {
+			// Prevent the user from clicking the subscribe button multiple times.
+			const result = await Notification.requestPermission();
+			if (result === 'denied') {
+				phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-l-msg'));
+				return;
+			}
+
+			const registration = await navigator.serviceWorker.getRegistration(serviceWorkerUrl);
+
+			// We might already have a subscription that is unknown to this instance of phpBB.
+			// Unsubscribe before trying to subscribe again.
+			if (typeof registration === 'undefined') {
+				throw new Error(subscribeButton.getAttribute('data-disabled-msg'));
+			}
+
+			try {
+				const subscribed = await registration.pushManager.getSubscription();
+				await refreshSubscription(registration, subscribed);
+			} catch (error) {
+				phpbb.alert(ajaxErrorTitle, error.message || subscribeButton.getAttribute('data-disabled-msg'));
+			}
+		} catch (error) {
+			console.error('Push subscription error:', error);
+			phpbb.alert(subscribeButton.getAttribute('data-l-err'), error.message || subscribeButton.getAttribute('data-disabled-msg'));
+		} finally {
+			subscribeButton.addEventListener('click', subscribeButtonHandler);
+		}
 	}
 
 	/**
 	 * Handler for pushing unsubscribe button
 	 *
-	 * @param {Object} event Unsubscribe button push event
+	 * @param {Event} event Unsubscribe button push event
 	 * @returns {Promise<void>}
 	 */
 	async function unsubscribeButtonHandler(event) {
@@ -224,6 +350,11 @@ function PhpbbWebpush() {
 		}
 
 		const subscription = await registration.pushManager.getSubscription();
+		if (!subscription) {
+			setSubscriptionState(false);
+			return;
+		}
+
 		const loadingIndicator = phpbb.loadingIndicator();
 		fetch(unsubscribeUrl, {
 			method: 'POST',
@@ -232,28 +363,42 @@ function PhpbbWebpush() {
 			},
 			body: getFormData({ endpoint: subscription.endpoint }),
 		})
-			.then(() => {
-				loadingIndicator.fadeOut(phpbb.alertTime);
-				return subscription.unsubscribe();
-			})
-			.then(unsubscribed => {
+			.then(async(response) => {
+				let data = null;
+				try {
+					data = await response.json();
+				} catch {
+					// Ignore JSON parsing failures and fall back below.
+				}
+				if (!response.ok || !data || !data.success) {
+					throw new Error(data && data.message ? data.message : 'Unsubscribe failed.');
+				}
+
+				const unsubscribed = await subscription.unsubscribe();
+
 				if (unsubscribed) {
+					removeStoredSubscription(subscription.endpoint);
 					setSubscriptionState(false);
 				}
 			})
 			.catch(error => {
+				phpbb.alert(ajaxErrorTitle, error.message || error);
+			})
+			.finally(() => {
 				loadingIndicator.fadeOut(phpbb.alertTime);
-				phpbb.alert(ajaxErrorTitle, error);
 			});
 	}
 
 	/**
 	 * Handle subscribe response
 	 *
-	 * @param {Object} response Response from subscription endpoint
+	 * @param {{success: boolean, form_tokens?: Object}} response Response from subscription endpoint
+	 * @param {PushSubscription} subscription Browser subscription
+	 * @param {string} previousEndpoint Previous endpoint for refreshed subscriptions
 	 */
-	function handleSubscribe(response) {
+	function handleSubscribe(response, subscription, previousEndpoint = '') {
 		if (response.success) {
+			storeSubscription(subscription, previousEndpoint);
 			setSubscriptionState(true);
 			if ('form_tokens' in response) {
 				updateFormTokens(response.form_tokens);
@@ -279,7 +424,7 @@ function PhpbbWebpush() {
 	/**
 	 * Update form tokens with supplied ones
 	 *
-	 * @param {Object} formTokens
+	 * @param {{creation_time: number, form_token: string}} formTokens
 	 */
 	function updateFormTokens(formTokens) {
 		phpbb.webpush.formTokens.creationTime = formTokens.creation_time;
@@ -289,7 +434,7 @@ function PhpbbWebpush() {
 	/**
 	 * Convert a base64 string to Uint8Array
 	 *
-	 * @param base64String
+	 * @param {string} base64String
 	 * @returns {Uint8Array}
 	 */
 	function urlB64ToUint8Array(base64String) {
@@ -303,9 +448,29 @@ function PhpbbWebpush() {
 
 		return outputArray;
 	}
+
+	/**
+	 * Convert a Uint8Array to a URL-safe base64 string
+	 *
+	 * @param {Uint8Array} value
+	 * @returns {string}
+	 */
+	function uint8ArrayToUrlB64(value) {
+		let stringValue = '';
+		for (let i = 0; i < value.length; i++) {
+			stringValue += String.fromCharCode(value[i]);
+		}
+
+		return window.btoa(stringValue)
+			.replace(/\+/g, '-')
+			.replace(/\//g, '_')
+			.replace(/=+$/u, '');
+	}
 }
 
 function domReady(callBack) {
+	'use strict';
+
 	if (document.readyState === 'loading') {
 		document.addEventListener('DOMContentLoaded', callBack);
 	} else {
@@ -316,6 +481,8 @@ function domReady(callBack) {
 phpbb.webpush = new PhpbbWebpush();
 
 domReady(() => {
+	'use strict';
+
 	/* global phpbbWebpushOptions */
 	phpbb.webpush.init(phpbbWebpushOptions);
 });

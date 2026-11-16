@@ -20,8 +20,10 @@
 	 */
 	function Mentions() {
 		const $mentionDataContainer = $('[data-mention-url]:first');
+		const $mentionsForm = $mentionDataContainer.closest('form');
 		const mentionURL = $mentionDataContainer.data('mentionUrl');
 		const mentionNamesLimit = $mentionDataContainer.data('mentionNamesLimit');
+		const mentionForumId = $mentionDataContainer.data('forumId');
 		const mentionTopicId = $mentionDataContainer.data('topicId');
 		const mentionUserId = $mentionDataContainer.data('userId');
 		let queryInProgress = null;
@@ -51,11 +53,7 @@
 		 * @return {string} Avatar HTML
 		 */
 		function getAvatar(data, type) {
-			if (data.html === '' && data.src === '') {
-				return defaultAvatar(type);
-			}
-
-			if (data.html === '') {
+			if (data.src) {
 				const $avatarImg = $($('[data-id="mention-media-avatar-img"]').html());
 				$avatarImg.attr({
 					src: data.src,
@@ -66,9 +64,7 @@
 				return $avatarImg.get(0).outerHTML;
 			}
 
-			const $avatarImg = $(data.html);
-			$avatarImg.addClass('mention-media-avatar');
-			return $avatarImg.get(0).outerHTML;
+			return defaultAvatar(type);
 		}
 
 		/**
@@ -205,6 +201,36 @@
 		}
 
 		/**
+		 * Get form tokens for request
+		 * @private
+		 * @return {object} Form tokens object
+		 */
+		function getFormTokens() {
+			return {
+				creation_time: $mentionsForm.find('input[name="creation_time"]').val(),
+				form_token: $mentionsForm.find('input[name="form_token"]').val(),
+			};
+		}
+
+		/**
+		 * Update form tokens in form
+		 * @private
+		 * @param {object} request_data Request data object
+		 * @return {void}
+		 */
+		function updateFormTokens(request_data) {
+			if (request_data.hasOwnProperty('form_tokens')) {
+				const form_tokens = request_data.form_tokens;
+				if (form_tokens.hasOwnProperty('form_token')) {
+					$mentionsForm.find('input[name="form_token"]').val(form_tokens.form_token);
+				}
+				if (form_tokens.hasOwnProperty('creation_time')) {
+					$mentionsForm.find('input[name="creation_time"]').val(form_tokens.creation_time);
+				}
+			}
+		}
+
+		/**
 		 * remoteFilter callback filter function
 		 * @param {string} query Query string
 		 * @param {function} callback Callback function for filtered items
@@ -241,14 +267,49 @@
 			queryInProgress = query;
 
 			// eslint-disable-next-line camelcase
-			const parameters = { keyword: query, topic_id: mentionTopicId, _referer: location.href };
-			$.getJSON(mentionURL, parameters, data => {
-				cachedNames[query] = data.names;
-				cachedAll[query] = data.all;
-				callback(data.names);
-			}).always(() => {
-				queryInProgress = null;
-			});
+			const parameters = {
+				keyword: query,
+				topic_id: mentionTopicId,
+				forum_id: mentionForumId,
+				_referer: location.href,
+				...getFormTokens(),
+			};
+
+			$.post(mentionURL, parameters)
+				.done(data => {
+					updateFormTokens(data);
+
+					// Cache results
+					cachedNames[query] = data.names;
+					cachedAll[query] = data.all;
+
+					// Return names to callback
+					callback(data.names);
+				})
+				.fail((jqXHR, textStatus, errorThrown) => {
+					// Handle different error scenarios
+					if (jqXHR.status === 500) {
+						// Server error
+						console.error('Mentions: Server error (500) while fetching names');
+					} else if (jqXHR.status === 403) {
+						// Forbidden - possibly token expired
+						console.error('Mentions: Access forbidden (403) - form token may have expired');
+					} else if (jqXHR.status === 302 || jqXHR.status === 301) {
+						// Redirect - user might have been logged out
+						console.error('Mentions: Redirect detected - user may need to re-login');
+					} else if (jqXHR.status === 0) {
+						// Network error or request aborted
+						console.error('Mentions: Network error or request aborted');
+					} else {
+						console.error('Mentions: Error ' + jqXHR.status + ' - ' + errorThrown);
+					}
+
+					// Return empty array to callback on error
+					callback([]);
+				})
+				.always(() => {
+					queryInProgress = null;
+				});
 		}
 
 		/**
@@ -272,7 +333,7 @@
 			$avatarSpan.html(avatar);
 
 			const $nameSpan = $($('[data-id="mention-name-span"]').html());
-			$nameSpan.html(itemData.name + rank);
+			$nameSpan.text(itemData.name).append(rank);
 
 			return $avatarSpan.get(0).outerHTML + $nameSpan.get(0).outerHTML;
 		}
@@ -290,6 +351,9 @@
 				selectClass: 'is-active',
 				itemClass: 'mention-item',
 				menuItemTemplate,
+				noMatchTemplate() {
+					return (typeof mention_no_match_found === 'undefined') ? 'No match found' : mention_no_match_found;
+				},
 				selectTemplate(item) {
 					return '[mention ' + (item.type === 'g' ? 'group_id=' : 'user_id=') + item.id + ']' + item.name + '[/mention]';
 				},

@@ -147,7 +147,7 @@ class add_default_data extends database_task
 			break;
 		}
 
-		return $query;
+		return $query ?: '';
 	}
 
 	/**

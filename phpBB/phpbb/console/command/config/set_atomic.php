@@ -24,7 +24,7 @@ class set_atomic extends command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:set-atomic')
@@ -65,7 +65,7 @@ class set_atomic extends command
 	* @return int 0 if the value was changed, 1 otherwise.
 	* @see \phpbb\config\config::set_atomic()
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

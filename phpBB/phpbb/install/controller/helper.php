@@ -205,6 +205,23 @@ class helper
 	}
 
 	/**
+	 * Handle installer restart
+	 */
+	public function handle_installer_restart(): void
+	{
+		$restart = $this->phpbb_request->variable('install_restart', false);
+		if ($restart)
+		{
+			// Clean up config file to restart installer
+			$this->installer_config->clean_up_config_file();
+		}
+		else if ($this->installer_config->exists())
+		{
+			$this->template->assign_var('SHOW_RESTART_BUTTON', true);
+		}
+	}
+
+	/**
 	 * Process navigation data to reflect active/completed stages
 	 *
 	 * @param \phpbb\install\helper\iohandler\iohandler_interface|null	$iohandler
@@ -322,7 +339,7 @@ class helper
 					{
 						$this->template->assign_block_vars('l_block1', array(
 							'L_TITLE' => $this->language->lang($sub_entry['label']),
-							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->get('_route')),
+							'S_SELECTED' => (isset($sub_entry['route']) && $sub_entry['route'] === $this->request->attributes->get('_route')),
 							'U_TITLE' => $this->route($sub_entry['route']),
 						));
 					}
@@ -366,7 +383,7 @@ class helper
 	 */
 	protected function get_active_main_menu($nav_array)
 	{
-		$active_route = $this->request->get('_route');
+		$active_route = $this->request->attributes->get('_route');
 
 		foreach ($nav_array as $nav_name => $nav_options)
 		{

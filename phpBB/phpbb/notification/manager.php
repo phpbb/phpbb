@@ -233,7 +233,7 @@ class manager
 
 		if ($method instanceof \phpbb\notification\method\method_interface && $method->is_available())
 		{
-			$method->mark_notifications_by_id($notification_id, $time, $mark_read);
+			$method->mark_notifications_by_id($notification_id, $this->user->id(), $time, $mark_read);
 		}
 	}
 

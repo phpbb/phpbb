@@ -81,45 +81,45 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	public function test_dump_board_state()
 	{
-		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['disapprove_user']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 
 		$this->login();
 
-		$crawler = self::request('GET', 'app.php/feed/forums', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/forums', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['forums_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/overall', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['overall_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics_new', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics_new', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_new_value'] = $crawler->filterXPath('//entry')->count();
 
-		$crawler = self::request('GET', 'app.php/feed/topics_active', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/topics_active', array(), false);
 		self::assert_response_xml();
 		self::$init_values['admin']['topics_active_value'] = $crawler->filterXPath('//entry')->count();
 	}
@@ -169,7 +169,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		));
 		self::submit($form);
 
-		// 'Feeds #exclude' will not be displayed on app.php/feed/forums
+		// 'Feeds #exclude' will not be displayed on index.php/feed/forums
 		$crawler = self::request('GET', "adm/index.php?i=acp_forums&mode=manage&sid={$this->sid}");
 		$form = $crawler->selectButton('addforum')->form(array(
 			'forum_name'	=> 'Feeds #exclude',
@@ -267,7 +267,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 		self::assertContainsLang('CONFIG_UPDATED', $crawler->filter('.successbox')->text());
 
 		// Assert that feeds aren't available
-		$crawler = self::request('GET', 'app.php/feed/overall', array(), false);
+		$crawler = self::request('GET', 'index.php/feed/overall', array(), false);
 		self::assert_response_status_code(404);
 		$this->assertContainsLang('NO_FEED_ENABLED', $crawler->text());
 
@@ -1375,19 +1375,19 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 
 	protected function assert_feed($params, $data)
 	{
-		$crawler = self::request('GET', 'app.php/feed' . $params, array(), false);
+		$crawler = self::request('GET', 'index.php/feed' . $params, array(), false);
 
 		if (empty($data['invalid']))
 		{
 			self::assert_response_xml();
-			self::assertEquals($data['nb_entries'], $crawler->filter('entry')->count(), "Tested feed : 'app.php/feed{$params}'");
+			self::assertEquals($data['nb_entries'], $crawler->filter('entry')->count(), "Tested feed : 'index.php/feed{$params}'");
 
 			if (!empty($data['xpath']))
 			{
 
 				foreach($data['xpath'] as $xpath => $count_expected)
 				{
-					self::assertCount($count_expected, $crawler->filterXPath($xpath), "Tested feed : 'app.php/feed{$params}', Search for {$xpath}");
+					self::assertCount($count_expected, $crawler->filterXPath($xpath), "Tested feed : 'index.php/feed{$params}', Search for {$xpath}");
 				}
 			}
 
@@ -1396,7 +1396,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				foreach($data['contents'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
-					self::assertStringContainsString($string, $content, "Tested feed : 'app.php/feed{$params}'");
+					self::assertStringContainsString($string, $content, "Tested feed : 'index.php/feed{$params}'");
 				}
 			}
 
@@ -1405,7 +1405,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				foreach($data['contents_lang'] as $entry_id => $string)
 				{
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
-					self::assertContainsLang($string, $content, "Tested feed : 'app.php/feed{$params}'");
+					self::assertContainsLang($string, $content, "Tested feed : 'index.php/feed{$params}'");
 				}
 			}
 
@@ -1416,18 +1416,18 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 					$content = $crawler->filterXPath("//entry[{$entry_id}]/content")->text();
 					foreach ($attachments as $i => $attachment)
 					{
-						$url = self::$root_url . "app.php/download/attachment/{$attachment['id']}";
+						$url = self::$root_url . "index.php/download/attachment/{$attachment['id']}";
 						$string = "Attachment #{$i}";
 
 						if ($attachment['displayed'])
 						{
-							self::assertStringContainsString($url, $content, "Tested feed : 'app.php/feed{$params}'");
-							self::assertStringNotContainsString($string, $content, "Tested feed : 'app.php/feed{$params}'");
+							self::assertStringContainsString($url, $content, "Tested feed : 'index.php/feed{$params}'");
+							self::assertStringNotContainsString($string, $content, "Tested feed : 'index.php/feed{$params}'");
 						}
 						else
 						{
-							self::assertStringContainsString($string, $content, "Tested feed : 'app.php/feed{$params}'");
-							self::assertStringNotContainsString($url, $content, "Tested feed : 'app.php/feed{$params}'");
+							self::assertStringContainsString($string, $content, "Tested feed : 'index.php/feed{$params}'");
+							self::assertStringNotContainsString($url, $content, "Tested feed : 'index.php/feed{$params}'");
 						}
 					}
 				}
@@ -1442,7 +1442,7 @@ class phpbb_functional_feed_test extends phpbb_functional_test_case
 				$content = $crawler->filter('html')->text();
 				foreach($data['contents_lang'] as $string)
 				{
-					self::assertContainsLang($string, $content, "Tested feed : 'app.php/feed{$params}'");
+					self::assertContainsLang($string, $content, "Tested feed : 'index.php/feed{$params}'");
 				}
 			}
 		}

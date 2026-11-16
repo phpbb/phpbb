@@ -4,6 +4,9 @@
 *
 * You should make a backup from your users table and the avatar directory in case something goes wrong
 */
+
+use phpbb\storage\provider\local;
+
 die("Please read the first lines of this script for instructions on how to enable it");
 
 set_time_limit(0);
@@ -30,7 +33,7 @@ if (!isset($config['avatar_salt']))
 	die('database not up to date');
 }
 
-if (!isset($config['storage\\avatar\\config\\path']) || $config['storage\\avatar\\config\\path'] !== 'phpbb\\storage\\provider\\local')
+if (!isset($config['storage\\avatar\\provider']) || $config['storage\\avatar\\provider'] !== local::class)
 {
 	die('use local provider');
 }

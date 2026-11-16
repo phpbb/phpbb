@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class acp_permission_roles
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	protected $auth_admin;
 
 	function main($id, $mode)
@@ -213,6 +215,16 @@ class acp_permission_roles
 						$db->sql_query($sql);
 
 						$role_id = $db->sql_nextid();
+					}
+
+					// Filter based on permissions type
+					$auth_settings = array_filter($auth_settings, function ($key) use ($permission_type) {
+						return strpos($key, $permission_type) === 0;
+					}, ARRAY_FILTER_USE_KEY);
+
+					if (empty($auth_settings))
+					{
+						trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
 					}
 
 					// Now add the auth settings

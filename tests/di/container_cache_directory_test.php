@@ -13,6 +13,8 @@
 
 namespace
 {
+	require_once __DIR__ . '/fixtures/manager_mock.php';
+
 	class container_cache_directory_test extends \phpbb_test_case //phpbb_di_container_test
 	{
 		protected $config_php;
@@ -24,7 +26,7 @@ namespace
 		protected $phpbb_root_path;
 		protected $filename;
 
-		public function setUp(): void
+		protected function setUp(): void
 		{
 			$this->phpbb_root_path = __DIR__ . '/';
 			$this->config_php = new \phpbb\config_php_file($this->phpbb_root_path . 'fixtures/', 'php');
@@ -36,6 +38,13 @@ namespace
 			}
 
 			parent::setUp();
+		}
+
+		public function tearDown(): void
+		{
+			unset($_SERVER['PHPBB____core__cache_dir']);
+
+			parent::tearDown();
 		}
 
 		public function test_cache_directory_can_be_overridden()
@@ -50,7 +59,7 @@ namespace
 			$this->builder->with_config($this->config_php);
 			$container = $this->builder->get_container();
 
-			$this->assertEquals($container->getParameter('core.cache_dir'), $new_cache_directory);
+			$this->assertSame($new_cache_directory, $container->getParameter('core.cache_dir'));
 		}
 
 		/**
@@ -61,6 +70,7 @@ namespace
 		public function test_container_and_autoload_cache()
 		{
 			$default_cache_directory = $this->phpbb_root_path . 'fixtures/cache/test/';
+			unset($_SERVER['PHPBB____core__cache_dir']);
 
 			// Make sure our test directory will be empty.
 			if (is_dir($default_cache_directory))

@@ -27,6 +27,24 @@ class UnusedUseSniff implements Sniff
 		T_WHITESPACE,
 	];
 
+	private function getNameTokens()
+	{
+		$tokens = [T_NS_SEPARATOR, T_STRING];
+		if (defined('T_NAME_QUALIFIED'))
+		{
+			$tokens[] = T_NAME_QUALIFIED;
+		}
+		if (defined('T_NAME_FULLY_QUALIFIED'))
+		{
+			$tokens[] = T_NAME_FULLY_QUALIFIED;
+		}
+		if (defined('T_NAME_RELATIVE'))
+		{
+			$tokens[] = T_NAME_RELATIVE;
+		}
+		return $tokens;
+	}
+
 	/**
 	* {@inheritdoc}
 	*/
@@ -51,7 +69,7 @@ class UnusedUseSniff implements Sniff
 			$phpcsFile->addError($error, $stack_pointer, 'FullName');
 		}
 
-		/* 
+		/*
 		 * Check for possible union types (like string|MyType|null)
 		 * and question mark nullable type syntax (like ?MyType)
 		 */
@@ -82,21 +100,45 @@ class UnusedUseSniff implements Sniff
 
 		$tokens = $phpcsFile->getTokens();
 
-		$class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($stackPtr + 1));
+		$class_name_start = $phpcsFile->findNext($this->getNameTokens(), ($stackPtr + 1));
 
-		$class_name_end = $phpcsFile->findNext(self::FIND, ($stackPtr + 1), null, true);
+		// Handle PHPCS v4 T_NAME_QUALIFIED tokens
+		if (isset($tokens[$class_name_start]) &&
+			(defined('T_NAME_QUALIFIED') && $tokens[$class_name_start]['code'] === T_NAME_QUALIFIED ||
+			 defined('T_NAME_FULLY_QUALIFIED') && $tokens[$class_name_start]['code'] === T_NAME_FULLY_QUALIFIED ||
+			 defined('T_NAME_RELATIVE') && $tokens[$class_name_start]['code'] === T_NAME_RELATIVE))
+		{
+			$name_full = $tokens[$class_name_start]['content'];
+			$class_name_end = $class_name_start + 1;
+			$parts = explode('\\', $name_full);
+			$name_short = end($parts);
+		}
+		else
+		{
+			$class_name_end = $phpcsFile->findNext(self::FIND, ($stackPtr + 1), null, true);
+			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start));
+			$name_short = $tokens[$class_name_end - 1]['content'];
+		}
 
 		$aliasing_as_position = $phpcsFile->findNext(T_AS, $class_name_end, null, false, null, true);
 		if ($aliasing_as_position !== false)
 		{
 			$alias_position = $phpcsFile->findNext(T_STRING, $aliasing_as_position, null, false, null, true);
 			$name_short = $tokens[$alias_position]['content'];
-			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
-		}
-		else
-		{
-			$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start));
-			$name_short = $tokens[$class_name_end - 1]['content'];
+
+			// Only recalculate name_full if it wasn't a single token (T_NAME_QUALIFIED)
+			// to avoid calculating it as 0 length string. Prevents incorrectly calculating the
+			// "full name" of the aliased class (resolving it to an empty string in some cases).
+			if (!isset($tokens[$class_name_start]) ||
+				(
+					(!defined('T_NAME_QUALIFIED') || $tokens[$class_name_start]['code'] !== T_NAME_QUALIFIED) &&
+					(!defined('T_NAME_FULLY_QUALIFIED') || $tokens[$class_name_start]['code'] !== T_NAME_FULLY_QUALIFIED) &&
+					(!defined('T_NAME_RELATIVE') || $tokens[$class_name_start]['code'] !== T_NAME_RELATIVE)
+				)
+			)
+			{
+				$name_full = $phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start - 1));
+			}
 		}
 
 		if ($tokens[$class_name_start]['content'] === 'function'
@@ -138,9 +180,10 @@ class UnusedUseSniff implements Sniff
 			{
 				$old_simple_statement = $simple_statement;
 
-				$simple_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($simple_statement + 1));
+				$simple_class_name_start = $phpcsFile->findNext($this->getNameTokens(), ($simple_statement + 1));
 
-				if ($simple_class_name_start === false) {
+				if ($simple_class_name_start === false)
+				{
 					continue;
 				}
 
@@ -148,7 +191,10 @@ class UnusedUseSniff implements Sniff
 
 				$simple_class_name = trim($phpcsFile->getTokensAsString($simple_class_name_start, ($simple_class_name_end - $simple_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) || $ok;
+				if (!empty($simple_class_name))
+				{
+					$ok = $this->check($phpcsFile, $simple_class_name, $class_name_full, $class_name_short, $simple_statement) || $ok;
+				}
 			}
 		}
 
@@ -163,7 +209,10 @@ class UnusedUseSniff implements Sniff
 
 			$paamayim_nekudotayim_class_name = trim($phpcsFile->getTokensAsString($paamayim_nekudotayim_class_name_start + 1, ($paamayim_nekudotayim_class_name_end - $paamayim_nekudotayim_class_name_start)));
 
-			$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) || $ok;
+			if (!empty($paamayim_nekudotayim_class_name))
+			{
+				$ok = $this->check($phpcsFile, $paamayim_nekudotayim_class_name, $class_name_full, $class_name_short, $paamayim_nekudotayim) || $ok;
+			}
 		}
 
 		// Checks in implements
@@ -177,12 +226,15 @@ class UnusedUseSniff implements Sniff
 			{
 				$old_implemented_class = $implemented_class;
 
-				$implements_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), ($implemented_class - 1));
+				$implements_class_name_start = $phpcsFile->findNext($this->getNameTokens(), ($implemented_class - 1));
 				$implements_class_name_end = $phpcsFile->findNext(self::FIND, ($implemented_class - 1), null, true);
 
 				$implements_class_name = trim($phpcsFile->getTokensAsString($implements_class_name_start, ($implements_class_name_end - $implements_class_name_start)));
 
-				$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) || $ok;
+				if (!empty($implements_class_name))
+				{
+					$ok = $this->check($phpcsFile, $implements_class_name, $class_name_full, $class_name_short, $implements) || $ok;
+				}
 			}
 		}
 
@@ -203,11 +255,38 @@ class UnusedUseSniff implements Sniff
 			$params = $phpcsFile->getMethodParameters($function_declaration);
 			foreach ($params as $param)
 			{
-				$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
+				if (!empty($param['type_hint']))
+				{
+					$ok = $this->check($phpcsFile, $param['type_hint'], $class_name_full, $class_name_short, $function_declaration) || $ok;
+				}
 			}
 
 			$method_properties = $phpcsFile->getMethodProperties($function_declaration);
-			$ok = $this->check($phpcsFile, $method_properties['return_type'], $class_name_full, $class_name_short, $function_declaration) || $ok;
+			if (!empty($method_properties['return_type']))
+			{
+				$ok = $this->check($phpcsFile, $method_properties['return_type'], $class_name_full, $class_name_short, $function_declaration) || $ok;
+			}
+		}
+
+		// Checks in property type declarations
+		$old_property = $stackPtr;
+		while (($property = $phpcsFile->findNext(T_VARIABLE, ($old_property + 1))) !== false)
+		{
+			$old_property = $property;
+
+			try
+			{
+				$property_props = $phpcsFile->getMemberProperties($property);
+				if (!empty($property_props['type']))
+				{
+					$ok = $this->check($phpcsFile, $property_props['type'], $class_name_full, $class_name_short, $property) || $ok;
+				}
+			}
+			catch (\Exception $e)
+			{
+				// Not a class member property, skip it
+				continue;
+			}
 		}
 
 		// Checks in catch blocks
@@ -216,12 +295,35 @@ class UnusedUseSniff implements Sniff
 		{
 			$old_catch = $catch;
 
-			$caught_class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $catch + 1);
-			$caught_class_name_end = $phpcsFile->findNext(self::FIND, $caught_class_name_start + 1, null, true);
+			// Find the opening parenthesis of the catch clause to use as a boundary.
+			$open_paren = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $catch + 1);
+			if ($open_paren === false || !isset($tokens[$open_paren]['parenthesis_closer']))
+			{
+				continue;
+			}
+			$close_paren = $tokens[$open_paren]['parenthesis_closer'];
 
-			$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
+			// Iterate over all exception class names within the catch parentheses.
+			// Multiple classes may be separated by | for multi-catch (e.g. catch (A|B $e)).
+			$search_pos = $open_paren;
+			while (($caught_class_name_start = $phpcsFile->findNext($this->getNameTokens(), $search_pos + 1, $close_paren)) !== false)
+			{
+				$caught_class_name_end = $phpcsFile->findNext(self::FIND, $caught_class_name_start + 1, $close_paren, true);
+				if ($caught_class_name_end === false)
+				{
+					$caught_class_name_end = $close_paren;
+				}
 
-			$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) || $ok;
+				$caught_class_name = trim($phpcsFile->getTokensAsString($caught_class_name_start, ($caught_class_name_end - $caught_class_name_start)));
+
+				if (!empty($caught_class_name))
+				{
+					$ok = $this->check($phpcsFile, $caught_class_name, $class_name_full, $class_name_short, $catch) || $ok;
+				}
+
+				// Advance past the extracted name so the next iteration finds the next class.
+				$search_pos = $caught_class_name_end;
+			}
 		}
 
 		$old_use = $stackPtr;
@@ -241,11 +343,14 @@ class UnusedUseSniff implements Sniff
 				continue;
 			}
 
-			$class_name_start = $phpcsFile->findNext(array(T_NS_SEPARATOR, T_STRING), $use + 1, null, false, null, true);
+			$class_name_start = $phpcsFile->findNext($this->getNameTokens(), $use + 1, null, false, null, true);
 			$class_name_end = $phpcsFile->findNext(self::FIND, $class_name_start + 1, null, true, null, true);
 			$found_name = trim($phpcsFile->getTokensAsString($class_name_start, ($class_name_end - $class_name_start)));
 
-			$ok = $this->check($phpcsFile, $found_name, $class_name_full, $class_name_short, $use) || $ok;
+			if (!empty($found_name))
+			{
+				$ok = $this->check($phpcsFile, $found_name, $class_name_full, $class_name_short, $use) || $ok;
+			}
 		}
 
 		return $ok;
@@ -266,7 +371,7 @@ class UnusedUseSniff implements Sniff
 			);
 
 			$position = $phpcsFile->findNext(T_OPEN_PARENTHESIS, $position + 1);
-			if ($found_start === null)
+			if ($found_start === null || $found_start === false)
 			{
 				continue;
 			}

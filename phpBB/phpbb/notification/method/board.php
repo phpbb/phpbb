@@ -344,14 +344,15 @@ class board extends \phpbb\notification\method\base
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true)
+	public function mark_notifications_by_id($notification_id, $user_id, $time = false, $mark_read = true)
 	{
 		$time = ($time !== false) ? $time : time();
 
 		$sql = 'UPDATE ' . $this->notifications_table . '
 			SET notification_read = ' . ($mark_read ? 1 : 0) . '
 			WHERE notification_time <= ' . (int) $time . '
-				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id);
+				AND ' . ((is_array($notification_id)) ? $this->db->sql_in_set('notification_id', $notification_id) : 'notification_id = ' . (int) $notification_id) .
+				' AND user_id = ' . (int) $user_id;
 		$this->db->sql_query($sql);
 	}
 

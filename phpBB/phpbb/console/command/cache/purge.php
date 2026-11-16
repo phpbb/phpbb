@@ -63,7 +63,7 @@ class purge extends \phpbb\console\command\command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('cache:purge')
@@ -81,7 +81,7 @@ class purge extends \phpbb\console\command\command
 	*
 	* @return int
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$this->config->increment('assets_version', 1);
 		$this->cache->purge();

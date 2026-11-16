@@ -2,10 +2,9 @@
 
 <project name="phpBB" description="The phpBB forum software" default="all" basedir="../">
 	<!-- a few settings for the build -->
-	<property name="newversion" value="4.0.0-a2-dev" />
-	<property name="prevversion" value="3.3.15" />
-	<property name="olderversions" value="3.1.12, 3.2.11, 3.3.14, 4.0.0-a1" />
-	<!-- no configuration should be needed beyond this point -->
+	<property name="newversion" value="4.0.0-a3-dev" />
+	<property name="prevversion" value="4.0.0-a2" />
+	<property name="olderversions" value="3.1.12, 3.2.11, 3.3.16, 3.3.17, 3.3.18, 3.3.19" />
 
 	<property name="oldversions" value="${olderversions}, ${prevversion}" />
 	<property name="versions" value="${oldversions}, ${newversion}" />
@@ -23,6 +22,7 @@
 		<mkdir dir="build/dependencies" />
 		<mkdir dir="build/new_version" />
 		<mkdir dir="build/new_version/files" />
+		<mkdir dir="build/new_version/language" />
 		<mkdir dir="build/new_version/patches" />
 		<mkdir dir="build/new_version/release_files" />
 		<mkdir dir="build/new_version/update" />
@@ -106,13 +106,22 @@
 				--ignore=${sniffIgnoreList}
 				phpBB"
 			dir="." returnProperty="retval-php-legacy" passthru="true" />
-		<exec command="phpBB/vendor/bin/phpcs
-				-s -p
-				--extensions=php
-				--standard=build/code_sniffer/ruleset-php-extensions.xml
-				--ignore=${project.basedir}/phpBB/ext/*/tests/*,${project.basedir}/phpBB/ext/*/vendor/*
-				phpBB/ext"
-			dir="." returnProperty="retval-php-ext" passthru="true" />
+		<exec command="find phpBB/ext -name '*.php' -type f | head -1" dir="." outputProperty="ext-php-files" />
+		<if>
+			<not><equals arg1="${ext-php-files}" arg2="" /></not>
+			<then>
+				<exec command="phpBB/vendor/bin/phpcs
+						-s -p
+						--extensions=php
+						--standard=build/code_sniffer/ruleset-php-extensions.xml
+						--ignore=${project.basedir}/phpBB/ext/*/tests/*,${project.basedir}/phpBB/ext/*/vendor/*
+						phpBB/ext"
+					dir="." returnProperty="retval-php-ext" passthru="true" />
+			</then>
+			<else>
+				<property name="retval-php-ext" value="0" />
+			</else>
+		</if>
 		<if>
 			<or>
 				<not><equals arg1="${retval-php-strict}" arg2="0" /></not>
@@ -183,6 +192,22 @@
 		<touch file="build/new_version/phpBB/config.php" />
 		<copy file="build/new_version/phpBB/vendor-ext/.htaccess" tofile="build/new_version/phpBB/vendor/.htaccess" />
 
+		<phingcall target="prepare-lang-pack" />
+	</target>
+
+	<target name="prepare-lang-pack">
+		<propertyregex property="langpack_version" subject="${newversion}" pattern="\.+?" replace="_" />
+		<mkdir dir="build/new_version/language/british_english_${langpack_version}" />
+
+		<!-- copy the language files into the language pack directory -->
+		<copy todir="build/new_version/language/british_english_${langpack_version}">
+			<fileset dir="build/new_version/phpBB3">
+				<include name="ext/phpbb/viglink/language/en/**" />
+				<include name="language/en/**" />
+				<include name="styles/prosilver/theme/en/**" />
+			</fileset>
+		</copy>
+		<copy file="phpBB/docs/LICENSE.txt" tofile="build/new_version/language/british_english_${langpack_version}/language/en/LICENSE" overwrite="true"/>
 	</target>
 
 	<target name="package" depends="clean,prepare,prepare-new-version,old-version-diffs">

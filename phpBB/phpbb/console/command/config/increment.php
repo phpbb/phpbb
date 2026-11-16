@@ -24,7 +24,7 @@ class increment extends command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:increment')
@@ -59,7 +59,7 @@ class increment extends command
 	* @return int
 	* @see \phpbb\config\config::increment()
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

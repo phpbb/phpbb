@@ -61,7 +61,7 @@ class controller
 	{
 		$url_root = generate_board_url();
 
-		$rewrite_prefix = (!empty($this->config['enable_mod_rewrite'])) ? '' : 'app.php/';
+		$rewrite_prefix = (!empty($this->config['enable_mod_rewrite'])) ? '' : 'index.php/';
 
 		$redirects = array(
 			array(

@@ -12,6 +12,7 @@
 */
 
 use PHPUnit\DbUnit\TestCase;
+use Symfony\Component\Yaml\Yaml;
 
 abstract class phpbb_database_test_case extends TestCase
 {
@@ -392,7 +393,7 @@ abstract class phpbb_database_test_case extends TestCase
 
 		if (empty($core_tables))
 		{
-			$tables_yml_data = \Symfony\Component\Yaml\Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml');
+			$tables_yml_data = Yaml::parseFile($phpbb_root_path . '/config/default/container/tables.yml', Yaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 
 			foreach ($tables_yml_data['parameters'] as $parameter => $table)
 			{

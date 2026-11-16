@@ -129,16 +129,28 @@ class phpbb_functional_prune_shadow_topic_test extends phpbb_functional_test_cas
 
 		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}");
 		$this->assertNotEmpty($crawler->filter('img')->last()->attr('src'));
-		self::request('GET', "app.php/cron/cron.task.core.prune_shadow_topics?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}", array(), false);
+		self::request('GET', "index.php/cron/cron.task.core.prune_shadow_topics?f={$this->data['forums']['Prune Shadow']}&sid={$this->sid}", array(), false);
 
 		// Try to ensure that the cron can actually run before we start to wait for it
-		usleep(100000);
-		$cron_lock = new \phpbb\lock\db('cron_lock', new \phpbb\config\db($this->db, new \phpbb\cache\driver\dummy(), 'phpbb_config'), $this->db);
-		while (!$cron_lock->acquire())
+		sleep(1);
+		$lock_acquired = false;
+		$lock_timeout = microtime(true) + 30;
+		do
 		{
-			// do nothing
+			// Reload the config so a lock released by the cron process is visible.
+			$cron_lock = new \phpbb\lock\db('cron_lock', new \phpbb\config\db($this->db, new \phpbb\cache\driver\dummy(), 'phpbb_config'), $this->db);
+			if ($cron_lock->acquire())
+			{
+				$cron_lock->release();
+				$lock_acquired = true;
+				break;
+			}
+
+			usleep(100000);
 		}
- 		$cron_lock->release();
+		while (microtime(true) < $lock_timeout);
+
+		$this->assertTrue($lock_acquired, 'Cron lock was not released within 30 seconds');
 
 		$this->assert_forum_details($this->data['forums']['Prune Shadow'], array(
 			'forum_posts_approved'		=> 0,

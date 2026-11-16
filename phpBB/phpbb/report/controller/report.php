@@ -42,6 +42,11 @@ class report
 	protected $helper;
 
 	/**
+	 * @var \phpbb\language\language $language
+	 */
+	protected $language;
+
+	/**
 	 * @var \phpbb\request\request_interface
 	 */
 	protected $request;
@@ -74,13 +79,14 @@ class report
 	 */
 	protected $report_reason_provider;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $phpbb_root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\user $user, \phpbb\template\template $template, \phpbb\controller\helper $helper, \phpbb\language\language $language, \phpbb\request\request_interface $request, \phpbb\captcha\factory $captcha_factory, \phpbb\report\handler_factory $report_factory, \phpbb\report\report_reason_list_provider $ui_provider, $phpbb_root_path, $php_ext)
 	{
 		$this->config			= $config;
 		$this->user				= $user;
 		$this->template			= $template;
 		$this->helper			= $helper;
 		$this->request			= $request;
+		$this->language			= $language;
 		$this->phpbb_root_path	= $phpbb_root_path;
 		$this->php_ext			= $php_ext;
 		$this->captcha_factory	= $captcha_factory;
@@ -142,12 +148,19 @@ class report
 			return new RedirectResponse($redirect_url, 302);
 		}
 
+		add_form_key('report');
+
 		// Check CAPTCHA, if the form was submitted
 		if (!empty($submit) && isset($captcha))
 		{
 			$captcha_template_array = $this->check_captcha($captcha);
 			$error = $captcha_template_array['error'];
 			$s_hidden_fields = $captcha_template_array['hidden_fields'];
+		}
+
+		if (!empty($submit) && !check_form_key('report'))
+		{
+			$error[] = $this->language->lang('FORM_INVALID');
 		}
 
 		// Handle request

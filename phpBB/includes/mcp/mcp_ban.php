@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class mcp_ban
 {
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	function main($id, $mode)
 	{

@@ -80,6 +80,9 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$user
 		);
 
+		$routing_helper = $this->getMockBuilder(\phpbb\routing\helper::class)
+			->disableOriginalConstructor()
+			->getMock();
 		$oauth_provider = new \phpbb\auth\provider\oauth\oauth(
 			$config,
 			$db,
@@ -87,6 +90,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$phpbb_dispatcher,
 			$lang,
 			$request,
+			$routing_helper,
 			$oauth_provider_collection,
 			$user,
 			'phpbb_oauth_tokens',
@@ -108,6 +112,8 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');
 
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
+		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
+		$phpbb_container->setParameter('tables.push_subscriptions', 'phpbb_push_subscriptions');
 	}
 
 	public function test_user_delete()

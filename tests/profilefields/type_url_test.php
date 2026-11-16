@@ -29,7 +29,9 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 	{
 		global $config, $request, $user, $cache;
 
-		$config = new \phpbb\config\config([]);
+		$config = new \phpbb\config\config([
+			'server_name'	=> 'localhost',
+		]);
 		$cache = new phpbb_mock_cache;
 		$user = $this->createMock('\phpbb\user');
 		$user->expects($this->any())
@@ -190,13 +192,13 @@ class phpbb_profilefield_type_url_test extends phpbb_test_case
 			array(
 				'http://foobar.com',
 				array('field_show_novalue' => true),
-				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'<!-- m --><a class="postlink" href="http://foobar.com">http://foobar.com</a><!-- m -->',
 				'Field should output the given value',
 			),
 			array(
 				'http://foobar.com',
 				array('field_show_novalue' => false),
-				'<!-- l --><a class="postlink-local" href="http://foobar.com">foobar.com</a><!-- l -->',
+				'<!-- m --><a class="postlink" href="http://foobar.com">http://foobar.com</a><!-- m -->',
 				'Field should output the given value',
 			),
 			array(

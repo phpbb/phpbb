@@ -52,7 +52,7 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 		$this->routing_helper->expects($this->any())
 			->method('route')
 			->with('phpbb_cron_run', ['cron_type' => 'test_task', 'f' => '5'])
-			->willReturn('app.php/cron/foo?f=5');
+			->willReturn('index.php/cron/foo?f=5');
 
 		$this->wrapper = new \phpbb\cron\task\wrapper(
 			$this->task,
@@ -60,7 +60,7 @@ class phpbb_cron_wrapper_test extends phpbb_template_template_test_case
 			$this->template
 		);
 
-		$this->assertEquals('<img class="sr-only" aria-hidden="true" src="app.php&#x2F;cron&#x2F;foo&#x3F;f&#x3D;5" width="1" height="1" alt="">', str_replace(["\n", "\t"], '', $this->wrapper->get_html_tag()));
+		$this->assertEquals('<img class="sr-only" aria-hidden="true" src="index.php&#x2F;cron&#x2F;foo&#x3F;f&#x3D;5" width="1" height="1" alt="">', str_replace(["\n", "\t"], '', $this->wrapper->get_html_tag()));
 	}
 
 	public function test_is_parametrized_false()

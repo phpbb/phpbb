@@ -25,6 +25,8 @@ if (!defined('IN_PHPBB'))
 class acp_contact
 {
 	public $u_action;
+	public $tpl_name;
+	public $page_title;
 
 	public function main($id, $mode)
 	{

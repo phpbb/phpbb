@@ -39,7 +39,7 @@ self.addEventListener('push', event => {
 	}
 
 	event.waitUntil((async() => {
-		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION }}';
+		const getNotificationUrl = '{{ U_WEBPUSH_GET_NOTIFICATION|e("js") }}';
 		const assetsVersion = parseInt('{{ ASSETS_VERSION }}', 10);
 
 		// Force update if versions differ
@@ -83,7 +83,16 @@ self.addEventListener('push', event => {
  */
 self.addEventListener('notificationclick', event => {
 	event.notification.close();
-	if (typeof event.notification.data !== 'undefined') {
-		event.waitUntil(self.clients.openWindow(event.notification.data.url));
+	if (!event.notification.data || typeof event.notification.data.url !== 'string' || !event.notification.data.url) {
+		return;
+	}
+
+	try {
+		const url = new URL(event.notification.data.url, '{{ U_BOARD_URL|e("js") }}/');
+		if (url.protocol === 'http:' || url.protocol === 'https:') {
+			event.waitUntil(self.clients.openWindow(url.href));
+		}
+	} catch {
+		// Ignore malformed notification URLs
 	}
 });

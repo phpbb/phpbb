@@ -27,6 +27,8 @@ class mcp_notes
 {
 	var $p_master;
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	function __construct($p_master)
 	{
@@ -75,7 +77,7 @@ class mcp_notes
 	function mcp_notes_user_view($action)
 	{
 		global $config, $phpbb_log, $request, $phpbb_root_path, $phpEx;
-		global $template, $db, $user, $auth, $phpbb_container;
+		global $template, $db, $user, $auth, $phpbb_container, $phpbb_dispatcher;
 
 		$user_id = $request->variable('u', 0);
 		$username = $request->variable('username', '', true);
@@ -234,7 +236,19 @@ class mcp_notes
 		$avatar_helper = $phpbb_container->get('avatar.helper');
 
 		$avatar = $avatar_helper->get_user_avatar($userrow);
-		$template->assign_vars($avatar_helper->get_template_vars($avatar));
+		$template->assign_vars($avatar_helper->get_template_vars($avatar, 'USER_'));
+
+		/**
+		* Modify user data before it is assigned to the template on the MCP user-notes page
+		*
+		* @event core.mcp_notes_user_modify_template_vars
+		* @var	array	userrow		The entire user row
+		* @var	array	rank_data	Array with rank title/img for this user
+		* @var	string	avatar_img	Rendered avatar HTML for this user
+		* @since 3.3.20-RC1
+		*/
+		$vars = array('userrow', 'rank_data', 'avatar_img');
+		extract($phpbb_dispatcher->trigger_event('core.mcp_notes_user_modify_template_vars', compact($vars)));
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
@@ -255,6 +269,7 @@ class mcp_notes
 			'USERNAME_FULL'		=> get_username_string('full', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 			'USERNAME_COLOUR'	=> get_username_string('colour', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 			'USERNAME'			=> get_username_string('username', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
+			'USER_ID'			=> $userrow['user_id'],
 			'U_PROFILE'			=> get_username_string('profile', $userrow['user_id'], $userrow['username'], $userrow['user_colour']),
 
 			'RANK_IMG'			=> $rank_data['img'],

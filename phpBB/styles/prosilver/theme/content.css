@@ -87,9 +87,14 @@ ul.topiclist li.row dd {
 
 ul.topiclist dfn {
 	/* Labels for post/view counts */
+	border: 0;
 	position: absolute;
-	left: -999px;
-	width: 990px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
 }
 
 .forum-image {
@@ -805,7 +810,7 @@ fieldset.polls dd div {
 }
 
 /* Post-profile avatars */
-.postprofile .has-avatar .avatar-container {
+.postprofile .avatar-container {
 	overflow: hidden;
 	margin-bottom: 3px;
 }
@@ -820,6 +825,37 @@ fieldset.polls dd div {
 	display: block;
 	max-width: 100%;
 	height: auto !important;
+}
+
+.avatar-placeholder {
+	font-size: 36px;
+	font-weight: bold;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80px;
+	height: 80px;
+}
+
+.avatar-initials {
+	line-height: 1;
+}
+
+.avatar-initials .o-icon {
+	font-size: 36px;
+	vertical-align: baseline !important;
+	width: auto;
+	height: auto;
+}
+
+.notification-block .avatar-placeholder,
+.notification-list .topiclist .notification-item .avatar,
+.notification-list .topiclist .notification-item .avatar-placeholder {
+	font-size: 22px;
+	float: left;
+	width: 50px;
+	height: 50px;
 }
 
 .postprofile .profile-posts a {

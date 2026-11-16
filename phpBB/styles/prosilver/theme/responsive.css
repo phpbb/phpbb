@@ -574,6 +574,12 @@
 		max-height: 32px;
 	}
 
+	.postprofile .avatar-placeholder {
+		font-size: 1rem;
+		width: 32px;
+		height: 32px;
+	}
+
 	.has-profile .postbody h3 {
 		margin-right: 0 !important;
 		margin-left: 0 !important;

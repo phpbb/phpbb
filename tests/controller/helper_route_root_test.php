@@ -22,11 +22,11 @@ class phpbb_controller_helper_route_root_test extends phpbb_controller_common_he
 
 	protected function get_uri()
 	{
-		return '/app.php';
+		return '/index.php';
 	}
 
 	protected function get_script_name()
 	{
-		return 'app.php';
+		return 'index.php';
 	}
 }

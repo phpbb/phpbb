@@ -27,6 +27,8 @@ class mcp_queue
 {
 	var $p_master;
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	public function __construct($p_master)
 	{
@@ -215,7 +217,7 @@ class mcp_queue
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
-						ORDER BY filetime DESC, post_msg_id ASC';
+						ORDER BY attach_id DESC, post_msg_id ASC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -314,7 +316,7 @@ class mcp_queue
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? phpbb_get_host_for_ip($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 					'S_FIRST_POST'			=> ($post_info['topic_first_post_id'] == $post_id),
 
@@ -481,12 +483,22 @@ class mcp_queue
 
 					if (count($post_ids))
 					{
-						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour
-							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
-							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
-								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id
-							ORDER BY ' . $sort_order_sql;
+						$sql = $db->sql_build_query('SELECT', array(
+							'SELECT'	=> 't.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, p.post_attachment, u.username, u.username_clean, u.user_colour',
+							'FROM'		=> array(
+								POSTS_TABLE		=> 'p',
+								TOPICS_TABLE	=> 't',
+							),
+							'LEFT_JOIN'	=> array(
+								array(
+									'FROM'	=> array(USERS_TABLE => 'u'),
+									'ON'	=> 'u.user_id = p.poster_id',
+								),
+							),
+							'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+								AND t.topic_id = p.topic_id',
+							'ORDER_BY'	=> $sort_order_sql,
+						));
 
 						/**
 						* Alter sql query to get information on all posts in queue
@@ -592,6 +604,12 @@ class mcp_queue
 
 				foreach ($rowset as $row)
 				{
+					// Poster no longer exists in the users table, display post as guest post
+					if (!$is_topics && empty($row['username']))
+					{
+						$row['poster_id'] = ANONYMOUS;
+					}
+
 					if (empty($row['post_username']))
 					{
 						$row['post_username'] = $row['username'] ?: $user->lang['GUEST'];
@@ -1324,6 +1342,7 @@ class mcp_queue
 
 			foreach ($post_info as $post_id => $post_data)
 			{
+				$topic_id = (int) $post_data['topic_id'];
 				$disapprove_all_posts_in_topic = $topic_information[$topic_id]['topic_posts_approved'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_softdeleted'] == 0 &&
 					$topic_information[$topic_id]['topic_posts_unapproved'] == $topic_posts_unapproved[$topic_id];

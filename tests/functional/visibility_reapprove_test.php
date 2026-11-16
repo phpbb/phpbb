@@ -82,8 +82,10 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Reapprove Test #1'], $post['topic_id'], 'Re: Reapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}");
 		$this->assertStringNotContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->login('reapprove_testuser');
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -97,9 +99,11 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 
 		// Test creating topic #2
 		$post = $this->create_topic($this->data['forums']['Reapprove Test #1'], 'Reapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
-		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Reapprove Test #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Reapprove Test #1']}");
 
 		$this->assertStringNotContainsString('Reapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->login('reapprove_testuser');
 
 		$this->assert_forum_details($this->data['forums']['Reapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -272,7 +276,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		);
 		$this->submit_post($posting_url, 'EDIT_POST', $form_data, 'POST_EDITED_MOD');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}");
 		$this->assertStringNotContainsString('Re: Reapprove Test Topic #1-#2', $crawler->filter('#page-body')->text());
 		$this->assertStringNotContainsString('Post edited by testing framework', $crawler->filter('#page-body')->text());
 
@@ -286,6 +291,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 			'forum_last_post_id'		=> $this->data['posts']['Reapprove Test Topic #2'],
 		), 'after editing post');
 
+		$this->login('reapprove_testuser');
+
 		// Test editing a topic
 		$posting_url = "posting.php?mode=edit&p={$this->data['posts']['Reapprove Test Topic #2']}&sid={$this->sid}";
 		$form_data = array(
@@ -295,7 +302,8 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 		);
 		$this->submit_post($posting_url, 'EDIT_POST', $form_data, 'POST_EDITED_MOD');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}&sid={$this->sid}", array(), false);
+		$this->logout();
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #2']}", array(), false);
 		self::assert_response_html(404);
 		$this->assertStringNotContainsString('Reapprove Test Topic #2', $crawler->filter('#page-body')->text());
 		$this->assertStringNotContainsString('Post edited by testing framework', $crawler->filter('#page-body')->text());
@@ -310,7 +318,6 @@ class phpbb_functional_visibility_reapprove_test extends phpbb_functional_test_c
 			'forum_last_post_id'		=> $this->data['posts']['Reapprove Test Topic #1'],
 		), 'after editing topic');
 
-		$this->logout();
 		$this->login();
 
 		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Reapprove Test Topic #1']}&sid={$this->sid}");

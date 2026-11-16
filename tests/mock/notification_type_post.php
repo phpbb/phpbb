@@ -21,9 +21,10 @@ if (!defined('IN_PHPBB'))
 
 class phpbb_mock_notification_type_post extends \phpbb\notification\type\post
 {
-	public function __construct($user_loader, $db, $cache, $language, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
+	public function __construct($user_loader, $controller_helper, $db, $cache, $language, $user, $auth, $config, $phpbb_root_path, $php_ext, $notification_types_table, $user_notifications_table)
 	{
 		$this->user_loader = $user_loader;
+		$this->controller_helper = $controller_helper;
 		$this->db = $db;
 		$this->cache = $cache;
 		$this->language = $language;

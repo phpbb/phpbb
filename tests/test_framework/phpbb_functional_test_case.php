@@ -12,7 +12,6 @@
 */
 use Symfony\Component\BrowserKit\CookieJar;
 use Symfony\Component\BrowserKit\HttpBrowser;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpClient\NativeHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
@@ -101,8 +100,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 		// Special flag for testing without possibility to run into lock scenario.
 		// Unset entry and add it back if lock behavior for posting should be tested.
 		// Unset ci_tests_no_lock_posting from config
+		$sql = 'DELETE FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'ci_tests_no_lock_posting'";
+		self::$db_connection->sql_query($sql);
+
 		$sql = 'INSERT INTO ' . CONFIG_TABLE . " (config_name, config_value) VALUES ('ci_tests_no_lock_posting', '1')";
 		self::$db_connection->sql_query($sql);
+
+		self::init_http_client();
+		self::$lang_ary = [];
+		self::add_lang('common');
 	}
 
 	/**
@@ -128,19 +135,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		$this->bootstrap();
 
-		self::$cookieJar = new CookieJar;
-		// Optimize HTTP client for Windows platform
-		if (strtolower(substr(PHP_OS, 0, 3)) === 'win') {
-			self::$http_client = new NativeHttpClient([
-				'timeout' => 30,
-				'max_duration' => 60,
-			]);
-		} else {
-			self::$http_client = HttpClient::create([
-				'timeout' => 60,
-			]);
-		}
-		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
+		self::init_http_client();
 
 		// Clear the language array so that things
 		// that were added in other tests are gone
@@ -171,6 +166,37 @@ class phpbb_functional_test_case extends phpbb_test_case
 			self::$db_connection->sql_close();
 			self::$db_connection = null;
 		}
+	}
+
+	protected static function init_http_client()
+	{
+		self::$cookieJar = new CookieJar;
+		self::$session_id = null;
+
+		// Configure SSL verification for local development with self-signed certificates
+		$http_options = [];
+		if (isset(self::$config['path_to_ssl_cert']))
+		{
+			if (self::$config['path_to_ssl_cert'] === false)
+			{
+				// Disable SSL verification
+				$http_options['verify_peer'] = false;
+				$http_options['verify_host'] = false;
+			}
+			else
+			{
+				// Use custom CA certificate
+				$http_options['verify_peer'] = true;
+				$http_options['verify_host'] = true;
+				$http_options['cafile'] = self::$config['path_to_ssl_cert'];
+			}
+		}
+
+		self::$http_client = new NativeHttpClient(array_merge([
+			'timeout' => 60,
+			'max_duration' => 60,
+		], $http_options));
+		self::$client = new HttpBrowser(self::$http_client, null, self::$cookieJar);
 	}
 
 	/**
@@ -559,7 +585,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$iohandler->set_input('smtp_pass', 'nxpass');
 		$iohandler->set_input('submit_email', 'submit');
 
-		$iohandler->set_input('cookie_secure', '0');
+		$iohandler->set_input('cookie_secure', (strpos(self::$root_url, 'https://') === 0) ? '1' : '0');
 		$iohandler->set_input('server_protocol', '0');
 		$iohandler->set_input('force_server_vars', $parseURL['scheme'] . '://');
 		$iohandler->set_input('server_name', $parseURL['host']);
@@ -961,10 +987,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->data['user_id'] = 2; // admin
 		$user->ip = '';
 
@@ -1002,10 +1025,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$db = $this->get_db();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 
-		$user = $this->createMock('\phpbb\user', array(), array(
-			new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx)),
-			'\phpbb\datetime'
-		));
+		$user = $this->createMock('\phpbb\user');
 		$user->data['user_id'] = 2; // admin
 		$user->ip = '';
 
@@ -1688,7 +1708,7 @@ class phpbb_functional_test_case extends phpbb_test_case
 		$is_logged_in = strpos($crawler->filter('div[class="navbar"]')->text(), 'Login') === false;
 		if ($is_logged_in)
 		{
-			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span')->text();
+			$username_logged_in = $crawler->filter('li[id="username_logged_in"] > div > a > span:not(.avatar):not(.avatar-placeholder)')->text();
 		}
 		return $username_logged_in;
 	}

@@ -82,8 +82,10 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Disapprove Test #1'], $post['topic_id'], 'Re: Disapprove Test Topic #1-#2', 'This is a test post posted by the testing framework.', array(), 'POST_STORED_MOD');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Disapprove Test Topic #1']}");
 		$this->assertStringNotContainsString('Re: Disapprove Test Topic #1-#2', $crawler->filter('html')->text());
+		$this->login('disapprove_testuser');
 
 		$this->assert_forum_details($this->data['forums']['Disapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,
@@ -97,9 +99,11 @@ class phpbb_functional_visibility_disapprove_test extends phpbb_functional_test_
 
 		// Test creating topic #2
 		$post = $this->create_topic($this->data['forums']['Disapprove Test #1'], 'Disapprove Test Topic #2', 'This is a test topic posted by the testing framework.', array(), 'POST_STORED_MOD');
-		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Disapprove Test #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Disapprove Test #1']}");
 
 		$this->assertStringNotContainsString('Disapprove Test Topic #2', $crawler->filter('html')->text());
+		$this->login('disapprove_testuser');
 
 		$this->assert_forum_details($this->data['forums']['Disapprove Test #1'], array(
 			'forum_posts_approved'		=> 1,

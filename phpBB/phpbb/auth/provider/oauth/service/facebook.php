@@ -13,6 +13,10 @@
 
 namespace phpbb\auth\provider\oauth\service;
 
+use OAuth\Common\Http\Exception\TokenResponseException;
+use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
+use OAuth\OAuth2\Service\Exception\InvalidAuthorizationStateException;
+
 /**
  * Facebook OAuth service
  */
@@ -59,10 +63,13 @@ class facebook extends base
 
 		try
 		{
-			// This was a callback request, get the token
-			$this->service_provider->requestAccessToken($this->request->variable('code', ''));
+			// This was a callback request, get the token and state
+			$this->service_provider->requestAccessToken(
+				$this->request->variable('code', ''),
+				$this->request->variable('state', '')
+			);
 		}
-		catch (\OAuth\Common\Http\Exception\TokenResponseException $e)
+		catch (AuthorizationStateNotFoundException|InvalidAuthorizationStateException|TokenResponseException $e)
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}

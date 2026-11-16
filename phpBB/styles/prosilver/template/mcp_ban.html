@@ -85,12 +85,12 @@
 	<h3>{L_UNBAN_TITLE}</h3>
 	<p>{L_UNBAN_EXPLAIN}</p>
 
-	<!-- IF S_BANNED_OPTIONS -->
+	<!-- IF BANNED_SELECT -->
 		<fieldset>
 		<!-- EVENT mcp_ban_unban_before -->
 		<dl>
 			<dt><label for="unban">{L_BAN_CELL}{L_COLON}</label></dt>
-			<dd><select name="unban[]" id="unban" multiple="multiple" size="5" onchange="if (this.selectedIndex != -1) {display_details(this.options[this.selectedIndex].value);}">{BANNED_OPTIONS}</select></dd>
+			<dd>{{ FormsSelect(BANNED_SELECT|merge({'size': 5, 'data': [], 'onchange': 'if (this.selectedIndex != -1) {display_details(this.options[this.selectedIndex].value);}'})) }}</dd>
 		</dl>
 		<dl>
 			<dt>{L_BAN_LENGTH}{L_COLON}</dt>

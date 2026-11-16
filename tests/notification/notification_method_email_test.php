@@ -42,7 +42,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 
 		include_once(__DIR__ . '/ext/test/notification/type/test.' . $phpEx);
 
-		global $db, $config, $user, $auth, $cache, $phpbb_container;
+		global $db, $config, $user, $auth, $cache, $phpbb_container, $phpbb_dispatcher;
 
 		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
 							  ->disableOriginalConstructor()
@@ -62,6 +62,7 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$this->user_loader = new \phpbb\user_loader($avatar_helper, $this->db, $phpbb_root_path, $phpEx, 'phpbb_users');
 		$auth = $this->auth = new phpbb_mock_notifications_auth();
 		$this->phpbb_dispatcher = new phpbb_mock_event_dispatcher();
+		$phpbb_dispatcher = $this->phpbb_dispatcher;
 		$cache_driver = new \phpbb\cache\driver\dummy();
 		$cache = $this->cache = new \phpbb\cache\service(
 			$cache_driver,
@@ -75,10 +76,12 @@ class notification_method_email_test extends phpbb_tests_notification_base
 		$phpbb_container = $this->container = new ContainerBuilder();
 		$loader     = new YamlFileLoader($phpbb_container, new FileLocator(__DIR__ . '/fixtures'));
 		$loader->load('services_notification.yml');
+		$phpbb_container->set('avatar.helper', $avatar_helper);
 		$phpbb_container->set('user_loader', $this->user_loader);
 		$phpbb_container->set('user', $user);
 		$phpbb_container->set('language', $lang);
 		$phpbb_container->set('config', $this->config);
+		$phpbb_container->set('controller.helper', $this->createMock('\phpbb\controller\helper'));
 		$phpbb_container->set('dbal.conn', $this->db);
 		$phpbb_container->set('auth', $auth);
 		$phpbb_container->set('cache.driver', $cache_driver);

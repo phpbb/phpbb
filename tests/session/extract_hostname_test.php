@@ -20,25 +20,27 @@ class phpbb_session_extract_hostname_test extends phpbb_session_test_case
 		return $this->createXMLDataSet(__DIR__ . '/fixtures/sessions_empty.xml');
 	}
 
-	static public function extract_current_hostname_data()
+	static public function extract_current_hostname_data(): array
 	{
-		return array (
+		return [
 			// [Input] $host, $server_name_config, $cookie_domain_config, [Expected] $output
 			// If host is ip use that
 			//    ipv4
-			array('127.0.0.1', 'skipped.org', 'skipped.org', '127.0.0.1'),
+			'ipv4' => ['127.0.0.1', 'skipped.org', 'skipped.org', 'skipped.org'],
 			//    ipv6
-			array('::1', 'skipped.org', 'skipped.org', ':'),
-			array('2002::3235:51f9', 'skipped.org', 'skipped.org', '2002::3235'),
+			'ipv6' => ['::1', 'skipped.org', 'skipped.org', 'skipped.org'],
+			'ipv6_2' => ['2002::3235:51f9', 'skipped.org', 'skipped.org', 'skipped.org'],
 			// If no host but server name matches cookie_domain use that
-			array('', 'example.org', 'example.org', 'example.org'),
+			'no_host_both_configs' => ['', 'example.org', 'example.org', 'example.org'],
 			// If there is a host uri use that
-			array('example.org', false, false, 'example.org'),
+			'host_no_configs' => ['example.org', false, false, 'example.org'],
 			// 'best approach' guessing
-			array('', 'example.org', false, 'example.org'),
-			array('', false, '127.0.0.1', '127.0.0.1'),
-			array('', false, false, php_uname('n')),
-		);
+			'no_host_only_server_name' => ['', 'example.org', false, 'example.org'],
+			'no_host_only_cookie_domain' => ['', false, '127.0.0.1', '127.0.0.1'],
+			'no_host_no_config' => ['', false, false, php_uname('n')],
+			'host_is_server_config' => ['example.org', 'example.org', '.example.org', 'example.org'],
+			'host_is_cookie_domain' => ['example.org', 'foobar.org', 'example.org', 'foobar.org'],
+		];
 	}
 
 	/** @dataProvider extract_current_hostname_data */

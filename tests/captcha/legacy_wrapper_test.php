@@ -19,7 +19,7 @@ class phpbb_captcha_legacy_wrapper_test extends phpbb_test_case
 	private $legacy_captcha;
 	private $legacy_wrapper;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		$this->legacy_captcha = $this->createMock(stdClass::class);
 		$this->legacy_wrapper = new legacy_wrapper($this->legacy_captcha);

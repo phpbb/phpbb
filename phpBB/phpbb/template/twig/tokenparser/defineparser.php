@@ -28,19 +28,20 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 	{
 		$lineno = $token->getLine();
 		$stream = $this->parser->getStream();
-		$name = $this->parser->getExpressionParser()->parseExpression();
+
+		$nameToken = $stream->expect(\Twig\Token::NAME_TYPE);
+		$name = new \Twig\Node\Expression\Variable\ContextVariable($nameToken->getValue(), $nameToken->getLine());
 
 		$capture = false;
-		if ($stream->test(\Twig\Token::OPERATOR_TYPE, '='))
+		if ($stream->nextIf(\Twig\Token::OPERATOR_TYPE, '='))
 		{
-			$stream->next();
-			$value = $this->parser->getExpressionParser()->parseExpression();
+			$value = $this->parser->parseExpression();
 
-			if ($value instanceof \Twig\Node\Expression\NameExpression)
+			if ($value instanceof \Twig\Node\Expression\Variable\ContextVariable)
 			{
 				// This would happen if someone improperly formed their DEFINE syntax
 				// e.g. <!-- DEFINE $VAR = foo -->
-				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $this->parser->getStream()->getSourceContext());
+				throw new \Twig\Error\SyntaxError('Invalid DEFINE', $token->getLine(), $stream->getSourceContext());
 			}
 
 			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
@@ -55,7 +56,7 @@ class defineparser extends \Twig\TokenParser\AbstractTokenParser
 			$stream->expect(\Twig\Token::BLOCK_END_TYPE);
 		}
 
-		return new \phpbb\template\twig\node\definenode($capture, $name, $value, $lineno, $this->getTag());
+		return new \phpbb\template\twig\node\definenode($capture, $name, $value, $lineno);
 	}
 
 	public function decideBlockEnd(\Twig\Token $token)

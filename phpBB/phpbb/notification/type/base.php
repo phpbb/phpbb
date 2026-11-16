@@ -13,6 +13,13 @@
 
 namespace phpbb\notification\type;
 
+use phpbb\auth\auth;
+use phpbb\avatar\helper as avatar_helper;
+use phpbb\controller\helper;
+use phpbb\db\driver\driver_interface;
+use phpbb\language\language;
+use phpbb\user;
+
 /**
 * Base notifications class
 */
@@ -21,16 +28,22 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/** @var \phpbb\notification\manager */
 	protected $notification_manager;
 
-	/** @var \phpbb\db\driver\driver_interface */
+	/** @var avatar_helper */
+	protected $avatar_helper;
+
+	/** @var helper|null */
+	protected $controller_helper;
+
+	/** @var driver_interface */
 	protected $db;
 
-	/** @var \phpbb\language\language */
+	/** @var language */
 	protected $language;
 
-	/** @var \phpbb\user */
+	/** @var user */
 	protected $user;
 
-	/** @var \phpbb\auth\auth */
+	/** @var auth */
 	protected $auth;
 
 	/** @var string */
@@ -76,16 +89,21 @@ abstract class base implements \phpbb\notification\type\type_interface
 	/**
 	 * Notification Type Base Constructor
 	 *
-	 * @param \phpbb\db\driver\driver_interface $db
-	 * @param \phpbb\language\language          $language
-	 * @param \phpbb\user                       $user
-	 * @param \phpbb\auth\auth                  $auth
-	 * @param string                            $phpbb_root_path
-	 * @param string                            $php_ext
-	 * @param string                            $user_notifications_table
+	 * @param avatar_helper		$avatar_helper
+	 * @param helper			$controller_helper
+	 * @param driver_interface	$db
+	 * @param language			$language
+	 * @param user				$user
+	 * @param auth				$auth
+	 * @param string			$phpbb_root_path
+	 * @param string			$php_ext
+	 * @param string			$user_notifications_table
 	 */
-	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\language\language $language, \phpbb\user $user, \phpbb\auth\auth $auth, $phpbb_root_path, $php_ext, $user_notifications_table)
+	public function __construct(avatar_helper $avatar_helper, helper $controller_helper, driver_interface $db, language $language,
+								user $user, auth $auth, string $phpbb_root_path, string $php_ext, string $user_notifications_table)
 	{
+		$this->avatar_helper = $avatar_helper;
+		$this->controller_helper = $controller_helper;
 		$this->db = $db;
 		$this->language = $language;
 		$this->user = $user;
@@ -131,7 +149,6 @@ abstract class base implements \phpbb\notification\type\type_interface
 	{
 		return $this->data[$name] ?? null;
 	}
-
 
 	/**
 	* Magic method to set data on this notification
@@ -286,18 +303,18 @@ abstract class base implements \phpbb\notification\type\type_interface
 
 		if ($this->get_url())
 		{
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash);
+			$u_mark_read = $this->controller_helper->route('phpbb_notifications_mark_read', ['id' => $this->notification_id, 'hash' => $mark_hash]);
 		}
 		else
 		{
 			$redirect = (($this->user->page['page_dir']) ? $this->user->page['page_dir'] . '/' : '') . $this->user->page['page_name'] . (($this->user->page['query_string']) ? '?' . $this->user->page['query_string'] : '');
-
-			$u_mark_read = append_sid($this->phpbb_root_path . 'index.' . $this->php_ext, 'mark_notification=' . $this->notification_id . '&amp;hash=' . $mark_hash . '&amp;redirect=' . urlencode($redirect));
+			$u_mark_read = $this->controller_helper->route('phpbb_notifications_mark_read', ['id' => $this->notification_id, 'hash' => $mark_hash, 'redirect' => $redirect]);
 		}
 
 		$avatar = $this->get_avatar();
+		$avatar_data = count($avatar) ? $this->avatar_helper->get_template_vars($avatar) : [];
 
-		return [
+		return array_merge($avatar_data, [
 			'NOTIFICATION_ID'	=> $this->notification_id,
 			'STYLING'			=> $this->get_style_class(),
 			'FORMATTED_TITLE'	=> $this->get_title(),
@@ -308,18 +325,8 @@ abstract class base implements \phpbb\notification\type\type_interface
 			'TIME'	   			=> $this->user->format_date($this->notification_time),
 			'UNREAD'			=> !$this->notification_read,
 
-			'AVATAR_SOURCE'		=> $avatar ? $avatar['src'] : '',
-			'AVATAR_TITLE'		=> $avatar ? $avatar['title'] : '',
-			'AVATAR_TYPE'		=> $avatar ? $avatar['type'] : '',
-
-			'AVATAR_WIDTH'		=> $avatar ? $avatar['width'] : 0,
-			'AVATAR_HEIGHT'		=> $avatar ? $avatar['height'] : 0,
-
-			'AVATAR_HTML'		=> $avatar ? $avatar['html'] : '',
-			'AVATAR_LAZY'		=> $avatar ? $avatar['lazy'] : true,
-
 			'U_MARK_READ'		=> (!$this->notification_read) ? $u_mark_read : '',
-		];
+		]);
 	}
 
 	/**

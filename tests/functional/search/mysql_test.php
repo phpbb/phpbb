@@ -38,9 +38,12 @@ class phpbb_functional_search_mysql_test extends phpbb_functional_search_base
 		// Try optimizing posts table after creating search index.
 		// Some versions of MariaDB might not return any results in the search
 		// until the table has been optimized or the index deleted and re-created.
-		$this->db->sql_return_on_error(true);
-		$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE;
-		$this->db->sql_query($sql);
-		$this->db->sql_return_on_error(false);
+		if (stripos($this->db->sql_server_info(true), 'mariadb') !== false)
+		{
+			$this->db->sql_return_on_error(true);
+			$sql = 'OPTIMIZE TABLE ' . POSTS_TABLE;
+			$this->db->sql_query($sql);
+			$this->db->sql_return_on_error(false);
+		}
 	}
 }

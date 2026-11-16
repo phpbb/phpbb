@@ -70,7 +70,7 @@ class application extends \Symfony\Component\Console\Application
 			{
 				continue;
 			}
-			$this->add($command_collection[$service_command]);
+			$this->addCommand($command_collection[$service_command]);
 
 		}
 	}

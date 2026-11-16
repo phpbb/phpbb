@@ -26,11 +26,16 @@ if (!defined('IN_PHPBB'))
 class ucp_register
 {
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $template, $phpbb_root_path, $phpEx;
 		global $request, $phpbb_container, $phpbb_dispatcher;
+
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE ||
@@ -558,7 +563,7 @@ class ucp_register
 				);
 				extract($phpbb_dispatcher->trigger_event('core.ucp_register_register_after', compact($vars)));
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $controller_helper->route('phpbb_index_controller') . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -717,15 +722,14 @@ class ucp_register
 		global $request;
 
 		$var_names = $request->variable_names(\phpbb\request\request_interface::POST);
-		$login_link_data = array();
-		$string_start_length = strlen('login_link_');
+		$login_link_data = [];
 
 		foreach ($var_names as $var_name)
 		{
-			if (strpos($var_name, 'login_link_') === 0)
+			if (preg_match('/^login_link_(?<key>[a-zA-Z0-9_]+)$/', $var_name, $matches))
 			{
-				$key_name = substr($var_name, $string_start_length);
-				$login_link_data[$key_name] = $request->variable($var_name, '', false, \phpbb\request\request_interface::POST);
+				$key_name = $matches['key'];
+				$login_link_data[$key_name] = $request->variable($var_name, '', true, \phpbb\request\request_interface::POST);
 			}
 		}
 
@@ -741,13 +745,16 @@ class ucp_register
 	*/
 	protected function get_login_link_data_for_hidden_fields($data)
 	{
-		$new_data = array();
+		$hidden_fields = array();
 
 		foreach ($data as $key => $value)
 		{
-			$new_data['login_link_' . $key] = $value;
+			if (preg_match('/^[a-zA-Z0-9_]+$/', $key))
+			{
+				$hidden_fields['login_link_' . $key] = $value;
+			}
 		}
 
-		return $new_data;
+		return $hidden_fields;
 	}
 }

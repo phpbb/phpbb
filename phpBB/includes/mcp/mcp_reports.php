@@ -27,6 +27,8 @@ class mcp_reports
 {
 	var $p_master;
 	var $u_action;
+	var $page_title;
+	var $tpl_name;
 
 	function __construct($p_master)
 	{
@@ -211,7 +213,7 @@ class mcp_reports
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
 							AND filetime <= ' . (int) $report['report_time'] . '
-						ORDER BY filetime DESC';
+						ORDER BY attach_id DESC';
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))
@@ -296,7 +298,7 @@ class mcp_reports
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? phpbb_get_host_for_ip($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 					'SIGNATURE'				=> $post_info['user_sig'],
 
@@ -599,15 +601,16 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 	$module = ($pm) ? 'pm_reports' : 'reports';
 	$pm_prefix = ($pm) ? 'PM_' : '';
 
-	$sql = "SELECT r.$id_column
+	$sql = "SELECT r.$id_column, r.report_id
 		FROM " . REPORTS_TABLE . ' r
 		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . $pm_where;
 	$result = $db->sql_query($sql);
 
-	$post_id_list = array();
+	$post_id_list = $post_report_map = [];
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$post_id_list[] = $row[$id_column];
+		$post_report_map[$row[$id_column]] = $row['report_id'];
 	}
 	$db->sql_freeresult($result);
 	$post_id_list = array_unique($post_id_list);
@@ -626,6 +629,14 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 		{
 			send_status_line(403, 'Forbidden');
 			trigger_error('NOT_AUTHORISED');
+		}
+		else
+		{
+			$report_id_list = [];
+			foreach ($post_id_list as $post_id)
+			{
+				$report_id_list[] = $post_report_map[$post_id];
+			}
 		}
 	}
 

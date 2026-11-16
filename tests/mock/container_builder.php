@@ -35,7 +35,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*
 	* @api
 	*/
-	public function set($id, $service, $shared = false)
+	public function set(string $id, mixed $service): void
 	{
 		$this->services[$id] = $service;
 	}
@@ -99,7 +99,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*
 	* @api
 	*/
-	public function getParameter(string $name): mixed
+	public function getParameter(string $name): array|bool|string|int|float|\UnitEnum|null
 	{
 		if ($this->hasParameter($name))
 		{
@@ -131,7 +131,7 @@ class phpbb_mock_container_builder implements ContainerInterface
 	*
 	* @api
 	*/
-	public function setParameter($name, $value)
+	public function setParameter($name, array|bool|string|int|float|\UnitEnum|null $value): void
 	{
 		$this->parameters[$name] = $value;
 	}

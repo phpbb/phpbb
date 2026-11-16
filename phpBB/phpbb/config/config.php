@@ -78,7 +78,7 @@ class config implements \ArrayAccess, \IteratorAggregate, \Countable
 	* @param int|string $value The temporary value.
 	*/
 	#[\ReturnTypeWillChange]
-	public function offsetSet($offset, $value)
+	public function offsetSet($offset, $value): void
 	{
 		$this->config[$offset] = $value;
 	}

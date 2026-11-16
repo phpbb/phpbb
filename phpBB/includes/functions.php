@@ -1807,6 +1807,33 @@ function redirect($url, $return = false, $disable_cd_check = false)
 }
 
 /**
+ * Redirect to controller
+ *
+ * @param string $controller_name Controller name
+ * @param array $params Parameters for route generation
+ * @return void
+ */
+function phpbb_redirect_to_controller(string $controller_name, array $params)
+{
+	global $phpbb_container;
+
+	/** @var \phpbb\controller\helper $controller_helper */
+	$controller_helper = $phpbb_container->get('controller.helper');
+	/** @var \Symfony\Component\HttpKernel\HttpKernel $http_kernel */
+	$http_kernel = $phpbb_container->get('http_kernel');
+	/** @var \phpbb\symfony_request $symfony_request */
+	$symfony_request = $phpbb_container->get('symfony_request');
+
+	$response = new \Symfony\Component\HttpFoundation\RedirectResponse(
+		$controller_helper->route($controller_name, $params, false),
+		\Symfony\Component\HttpFoundation\Response::HTTP_MOVED_PERMANENTLY
+	);
+	$response->send();
+	$http_kernel->terminate($symfony_request, $response);
+	exit();
+}
+
+/**
  * Returns the install redirect path for phpBB.
  *
  * @param string $phpbb_root_path The root path of the phpBB installation.
@@ -1825,7 +1852,7 @@ function phpbb_get_install_redirect(string $phpbb_root_path, string $phpEx): str
 	$script_name = substr($script_name, -1) === '/' ? $script_name . '.' : $script_name;
 
 	// $phpbb_root_path accounts for redirects from e.g. /adm
-	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/app.' . $phpEx;
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/index.' . $phpEx;
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
 	return preg_replace('#[\\\\/]{2,}#', '/', $script_path);
@@ -3849,9 +3876,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
+		'U_VIEWONLINE'			=> $auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel') ? $controller_helper->route('phpbb_members_online') : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
-		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
+		'U_INDEX'				=> $controller_helper->route('phpbb_index_controller'),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
 		'U_SITE_HOME'			=> $config['site_home_url'],
 		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
@@ -4229,4 +4256,15 @@ function phpbb_get_board_contact_link(\phpbb\config\config $config, $phpbb_root_
 	{
 		return 'mailto:' . htmlspecialchars($config['board_contact'], ENT_COMPAT);
 	}
+}
+
+/**
+ * Get host name for ip
+ *
+ * @param string $ip IP string
+ * @return string Hostname for IP in cleaned format
+ */
+function phpbb_get_host_for_ip(string $ip): string
+{
+	return utf8_htmlspecialchars(@gethostbyaddr($ip));
 }

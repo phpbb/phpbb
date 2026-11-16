@@ -10,6 +10,8 @@
 	var bbtags = new Array('[b]','[/b]','[i]','[/i]','[u]','[/u]','[quote]','[/quote]','[code]','[/code]','[list]','[/list]','[list=]','[/list]','[img]','[/img]','[url]','[/url]','[size=]','[/size]'<!-- BEGIN custom_tags -->, {custom_tags.BBCODE_NAME}<!-- END custom_tags -->);
 	var imageTag = false;
 
+	var mention_no_match_found = '<li>{{ lang('MENTION_NO_MATCH_FOUND')|e('js') }}</li>';
+
 	function change_palette()
 	{
 		phpbb.toggleDisplay('colour_palette');
@@ -41,7 +43,7 @@
 </div>
 
 <!-- EVENT posting_editor_buttons_before -->
-<div id="format-buttons" class="format-buttons"<!-- IF S_ALLOW_MENTIONS --> data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-topic-id="{S_TOPIC_ID}" data-user-id="{S_USER_ID}"<!-- ENDIF -->>
+<div id="format-buttons" class="format-buttons"<!-- IF S_ALLOW_MENTIONS --> data-mention-url="{U_MENTION_URL}" data-mention-names-limit="{S_MENTION_NAMES_LIMIT}" data-forum-id="{S_FORUM_ID}" data-topic-id="{S_TOPIC_ID}" data-user-id="{S_USER_ID}"<!-- ENDIF -->>
 	<button type="button" class="button button-icon-only bbcode-b" accesskey="b" name="addbbcode0" value=" B " onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}">
 		{{ Icon('font', 'bold', '', true, 'fas c-button-icon') }}
 	</button>

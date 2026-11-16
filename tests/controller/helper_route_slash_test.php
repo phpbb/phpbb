@@ -22,7 +22,7 @@ class phpbb_controller_helper_route_slash_test extends phpbb_controller_common_h
 
 	protected function get_uri()
 	{
-		return '/phpBB/app.php';
+		return '/phpBB/index.php';
 	}
 
 	protected function get_base_uri()
@@ -32,7 +32,7 @@ class phpbb_controller_helper_route_slash_test extends phpbb_controller_common_h
 
 	protected function get_script_name()
 	{
-		return 'app.php';
+		return 'index.php';
 	}
 
 	protected static function path_to_app()

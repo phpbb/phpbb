@@ -20,13 +20,13 @@ RewriteEngine on
 
 #
 # The following 3 lines will rewrite URLs passed through the front controller
-# to not require app.php in the actual URL. In other words, a controller is
-# by default accessed at /app.php/my/controller, but can also be accessed at
+# to not require index.php in the actual URL. In other words, a controller is
+# by default accessed at /index.php/my/controller, but can also be accessed at
 # /my/controller
 #
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ app.php [QSA,L]
+RewriteRule ^(.*)$ index.php [QSA,L]
 
 #
 # If symbolic links are not already being followed,
@@ -60,12 +60,26 @@ RewriteRule ^(.*)$ app.php [QSA,L]
 			Order Allow,Deny
 			Deny from All
 		</Files>
+		<Files "composer.json">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+		<Files "composer.lock">
+			Order Allow,Deny
+			Deny from All
+		</Files>
 	</IfVersion>
 	<IfVersion >= 2.4>
 		<Files "config.php">
 			Require all denied
 		</Files>
 		<Files "common.php">
+			Require all denied
+		</Files>
+		<Files "composer.json">
+			Require all denied
+		</Files>
+		<Files "composer.lock">
 			Require all denied
 		</Files>
 	</IfVersion>
@@ -80,12 +94,26 @@ RewriteRule ^(.*)$ app.php [QSA,L]
 			Order Allow,Deny
 			Deny from All
 		</Files>
+		<Files "composer.json">
+			Order Allow,Deny
+			Deny from All
+		</Files>
+		<Files "composer.lock">
+			Order Allow,Deny
+			Deny from All
+		</Files>
 	</IfModule>
 	<IfModule mod_authz_core.c>
 		<Files "config.php">
 			Require all denied
 		</Files>
 		<Files "common.php">
+			Require all denied
+		</Files>
+		<Files "composer.json">
+			Require all denied
+		</Files>
+		<Files "composer.lock">
 			Require all denied
 		</Files>
 	</IfModule>

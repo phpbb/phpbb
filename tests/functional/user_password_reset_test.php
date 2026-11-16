@@ -22,6 +22,8 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 	protected const TEST_EMAIL = 'reset-password-test-user@test.com';
 
+	protected const TEST_NEW_PASSWORD = 'ResetPasswordTest1';
+
 	public function test_password_reset()
 	{
 		$this->add_lang('ucp');
@@ -29,13 +31,13 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 
 		// test without email
 		$crawler = self::request('GET', "ucp.php?mode=sendpassword&sid={$this->sid}");
-		$this->assertStringContainsString('app.php/user/forgot_password', $crawler->getUri());
+		$this->assertStringContainsString('index.php/user/forgot_password', $crawler->getUri());
 		$form = $crawler->selectButton('submit')->form();
 		$crawler = self::submit($form);
 		$this->assertContainsLang('NO_EMAIL_USER', $crawler->text());
 
 		// test with non-existent email
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'	=> 'non-existent@email.com',
 		));
@@ -43,7 +45,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->assertContainsLang('PASSWORD_RESET_LINK_SENT', $crawler->text());
 
 		// test with correct email
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -58,7 +60,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$reset_token_expiration = $this->user_data['reset_token_expiration'];
 
 		// Check that reset token is only created once per day
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -75,7 +77,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->create_user('reset-password-test-user1', self::TEST_EMAIL);
 
 		// Test that username is now also required
-		$crawler = self::request('GET', "app.php/user/forgot_password?sid={$this->sid}");
+		$crawler = self::request('GET', "index.php/user/forgot_password?sid={$this->sid}");
 		$form = $crawler->selectButton('submit')->form(array(
 			'email'		=> self::TEST_EMAIL,
 		));
@@ -125,7 +127,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$user_id = !$user_id ? $this->user_data['user_id'] : $user_id;
 		$token = !$token ? $this->user_data['reset_token'] : $token;
 
-		$crawler = self::request('GET', "app.php/user/reset_password?u=$user_id&token=$token");
+		$crawler = self::request('GET', "index.php/user/reset_password?u=$user_id&token=" . urlencode($token));
 
 		if ($expected)
 		{
@@ -135,8 +137,8 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		{
 			$form = $crawler->filter('input[type=submit]')->form();
 			$values = array_merge($form->getValues(), [
-				'new_password'			=> self::TEST_USER,
-				'new_password_confirm'	=> self::TEST_USER,
+				'new_password'			=> self::TEST_NEW_PASSWORD,
+				'new_password_confirm'	=> self::TEST_NEW_PASSWORD,
 			]);
 			$crawler = self::submit($form, $values);
 			$this->assertContainsLang('PASSWORD_RESET', $crawler->text());
@@ -150,7 +152,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 		$this->assertStringContainsString($this->lang('LOGIN_EXPLAIN_UCP'), $crawler->filter('html')->text());
 
 		$form = $crawler->selectButton($this->lang('LOGIN'))->form();
-		$crawler = self::submit($form, array('username' => self::TEST_USER, 'password' => self::TEST_USER));
+		$crawler = self::submit($form, array('username' => self::TEST_USER, 'password' => self::TEST_NEW_PASSWORD));
 		$this->assertStringNotContainsString($this->lang('LOGIN'), $crawler->filter('.navbar')->text());
 
 		$this->logout();
@@ -217,7 +219,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'		=> self::TEST_USER,
 			'email'			=> self::TEST_EMAIL,
 		]);
-		$this->assertContainsLang('ACCOUNT_DEACTIVATED', $crawler->filter('html')->text());
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
 	}
 
 	/**
@@ -225,7 +227,7 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 	 */
 	public function test_resendActivation()
 	{
-		// User is deactivated and should have actkey, actkey should not exist
+		// User is deactivated and should have actkey
 		$this->get_user_data(self::TEST_USER);
 		$this->assertNotEmpty($this->user_data['user_actkey']);
 
@@ -244,12 +246,58 @@ class phpbb_functional_user_password_reset_test extends phpbb_functional_test_ca
 			'username'		=> self::TEST_USER,
 			'email'			=> self::TEST_EMAIL,
 		]);
-		$this->assertContainsLang('ACTIVATION_ALREADY_SENT', $crawler->filter('html')->text());
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
+	}
+
+	/**
+	 * @depends test_resendActivation
+	 */
+	public function test_resendUpdateExpiry()
+	{
+		// Change expiration of actkey to two days ago
+		$this->get_user_data(self::TEST_USER);
+		$previous_expiration = (int) strtotime('-2 days');
+		$db = $this->get_db();
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_actkey_expiration = ' . $previous_expiration . '
+			WHERE user_id = ' . (int) $this->user_data['user_id'];
+		$db->sql_query($sql);
+
+		$previous_expiration = $this->user_data['user_actkey_expiration'];
+		$this->assertNotEmpty($previous_expiration);
+		$this->assertNotEmpty($this->user_data['user_actkey']);
+
+		$this->add_lang('ucp');
+
+		$crawler = self::request('GET', 'ucp.php?mode=resend_act');
+		$this->assertContainsLang('UCP_RESEND', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=submit]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, [
+			'username'		=> self::TEST_USER,
+			'email'			=> self::TEST_EMAIL,
+		]);
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
+
+		// Act key and expiration should be updated
+		$this->get_user_data(self::TEST_USER);
+		$this->assertNotEmpty($this->user_data['user_actkey']);
+		$this->assertGreaterThan($this->user_data['user_actkey_expiration'], $previous_expiration + 600);
+
+		// Requesting again should not work as actkey is still valid
+		$crawler = self::request('GET', 'ucp.php?mode=resend_act');
+		$this->assertContainsLang('UCP_RESEND', $crawler->filter('html')->text());
+		$form = $crawler->filter('input[name=submit]')->selectButton('Submit')->form();
+		$crawler = self::submit($form, [
+			'username'		=> self::TEST_USER,
+			'email'			=> self::TEST_EMAIL,
+		]);
+		$this->assertContainsLang('ACTIVATION_EMAIL_SENT', $crawler->filter('html')->text());
 	}
 
 	protected function get_user_data($username)
 	{
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_actkey, user_inactive_reason, reset_token, reset_token_expiration
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_actkey, user_inactive_reason, reset_token, reset_token_expiration, user_actkey_expiration
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $this->db->sql_escape($username) . "'";
 		$result = $this->db->sql_query($sql);

@@ -40,7 +40,7 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 	protected $filesystem;
 	protected $symfony_request;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $request, $symfony_request, $user, $phpbb_root_path, $phpEx;
 

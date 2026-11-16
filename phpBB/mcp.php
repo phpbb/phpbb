@@ -43,7 +43,9 @@ if (!$user->data['is_registered'])
 {
 	if ($user->data['is_bot'])
 	{
-		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		/** @var \phpbb\controller\helper $controller_helper */
+		$controller_helper = $phpbb_container->get('controller.helper');
+		redirect($controller_helper->route('phpbb_index_controller'));
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);

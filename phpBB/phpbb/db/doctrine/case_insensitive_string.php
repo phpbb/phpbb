@@ -44,7 +44,7 @@ class case_insensitive_string extends Type
 			return $platform->getAsciiStringTypeDeclarationSQL($column);
 		}
 
-		return $platform->getVarcharTypeDeclarationSQL($column);
+		return $platform->getStringTypeDeclarationSQL($column);
 	}
 
 	/**

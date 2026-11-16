@@ -33,7 +33,7 @@ trait translate_composer_trait
 	/**
 	 * {@inheritdoc}
 	 */
-	public function write($messages, $newline = true, $verbosity = self::NORMAL)
+	public function write($messages, $newline = true, $verbosity = self::NORMAL): void
 	{
 		$messages = (array) $messages;
 		$translated_messages = [];
@@ -96,7 +96,7 @@ trait translate_composer_trait
 	/**
 	 * {@inheritdoc}
 	 */
-	public function writeError($messages, $newline = true, $verbosity = self::NORMAL)
+	public function writeError($messages, $newline = true, $verbosity = self::NORMAL): void
 	{
 		$messages = (array) $messages;
 		$translated_messages = [];
@@ -219,7 +219,7 @@ trait translate_composer_trait
 		parent::writeError($translated_messages, $newline);
 	}
 
-	public function get_composer_error()
+	public function get_composer_error(): string
 	{
 		$error = '';
 		foreach ($this->composer_error as $error_line)
@@ -233,7 +233,7 @@ trait translate_composer_trait
 		return $error;
 	}
 
-	protected function strip_format($message)
+	protected function strip_format($message): array|string
 	{
 		return str_replace([
 			'<info>', '</info>',

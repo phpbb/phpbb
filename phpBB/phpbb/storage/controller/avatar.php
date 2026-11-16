@@ -18,10 +18,10 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\mimetype\extension_guesser;
 use phpbb\storage\storage;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Request as symfony_request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Controller for /download/avatar/{file} routes
@@ -98,11 +98,11 @@ class avatar extends controller
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function prepare(StreamedResponse $response, string $file): void
+	protected function prepare(Response $response, string $file): void
 	{
 		$response->setPublic();
 
-		$disposition = $response->headers->makeDisposition(
+		$disposition = HeaderUtils::makeDisposition(
 			ResponseHeaderBag::DISPOSITION_INLINE,
 			rawurlencode($file)
 		);

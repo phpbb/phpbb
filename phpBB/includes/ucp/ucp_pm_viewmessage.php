@@ -124,7 +124,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
 					AND in_message = 1
-				ORDER BY filetime DESC, post_msg_id ASC";
+				ORDER BY attach_id DESC, post_msg_id ASC";
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -214,6 +214,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
+		'MESSAGE_AUTHOR_ID'			=> $author_id,
 		'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 
 		'RANK_TITLE'		=> $user_info['rank_title'],

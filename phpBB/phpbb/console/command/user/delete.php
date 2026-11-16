@@ -79,7 +79,7 @@ class delete extends command
 	 *
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('user:delete')
@@ -109,7 +109,7 @@ class delete extends command
 	 *
 	 * @return int 0 if all is well, 1 if any errors occurred
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$name = $input->getArgument('username');
 		$mode = ($input->getOption('delete-posts')) ? 'remove' : 'retain';
@@ -149,7 +149,7 @@ class delete extends command
 	 * @param InputInterface  $input  An InputInterface instance
 	 * @param OutputInterface $output An OutputInterface instance
 	 */
-	protected function interact(InputInterface $input, OutputInterface $output)
+	protected function interact(InputInterface $input, OutputInterface $output): void
 	{
 		$helper = $this->getHelper('question');
 		if (!$helper instanceof QuestionHelper)

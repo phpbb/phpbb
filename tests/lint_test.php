@@ -74,13 +74,17 @@ class lint_test extends phpbb_test_case
 				continue;
 			}
 			$path = $root . '/' . $filename;
+			// skip hidden directories such as .git, .github, .idea, .phpunit.cache
+			if (is_dir($path) && $filename[0] === '.')
+			{
+				continue;
+			}
 			// skip symlinks to avoid infinite loops
 			if (is_link($path))
 			{
 				continue;
 			}
 			if (is_dir($path) && !in_array($path, array(
-					__DIR__ . '/../.git',
 					__DIR__ . '/../build/new_version',
 					__DIR__ . '/../build/old_versions',
 					__DIR__ . '/../phpBB/cache',
@@ -99,6 +103,7 @@ class lint_test extends phpbb_test_case
 				$files[] = array($path);
 			}
 		}
+		closedir($dh);
 		return $files;
 	}
 }

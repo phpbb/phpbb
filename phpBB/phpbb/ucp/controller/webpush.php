@@ -16,6 +16,7 @@ namespace phpbb\ucp\controller;
 use phpbb\config\config;
 use phpbb\controller\helper as controller_helper;
 use phpbb\db\driver\driver_interface;
+use phpbb\event\dispatcher_interface;
 use phpbb\exception\http_exception;
 use phpbb\form\form_helper;
 use phpbb\json\sanitizer as json_sanitizer;
@@ -46,6 +47,9 @@ class webpush
 
 	/** @var driver_interface */
 	protected $db;
+
+	/** @var dispatcher_interface */
+	protected $dispatcher;
 
 	/** @var form_helper */
 	protected $form_helper;
@@ -83,6 +87,7 @@ class webpush
 	 * @param config $config
 	 * @param controller_helper $controller_helper
 	 * @param driver_interface $db
+	 * @param dispatcher_interface $dispatcher
 	 * @param form_helper $form_helper
 	 * @param language $language
 	 * @param manager $notification_manager
@@ -94,12 +99,13 @@ class webpush
 	 * @param string $notification_webpush_table
 	 * @param string $push_subscriptions_table
 	 */
-	public function __construct(config $config, controller_helper $controller_helper, driver_interface $db, form_helper $form_helper, language $language, manager $notification_manager,
+	public function __construct(config $config, controller_helper $controller_helper, driver_interface $db, dispatcher_interface $dispatcher, form_helper $form_helper, language $language, manager $notification_manager,
 								path_helper $path_helper, request_interface $request, user_loader $user_loader, user $user, Environment $template, string $notification_webpush_table, string $push_subscriptions_table)
 	{
 		$this->config = $config;
 		$this->controller_helper = $controller_helper;
 		$this->db = $db;
+		$this->dispatcher = $dispatcher;
 		$this->form_helper = $form_helper;
 		$this->language = $language;
 		$this->notification_manager = $notification_manager;
@@ -124,16 +130,7 @@ class webpush
 			throw new http_exception(Response::HTTP_FORBIDDEN, 'NO_AUTH_OPERATION');
 		}
 
-		if ($this->user->id() !== ANONYMOUS)
-		{
-			$notification_data = $this->get_user_notifications();
-		}
-		else
-		{
-			$notification_data = $this->get_anonymous_notifications();
-		}
-
-		return new JsonResponse($notification_data, 200, [], true);
+		return new JsonResponse($this->get_user_notifications(), 200, [], true);
 	}
 
 	/**
@@ -143,6 +140,11 @@ class webpush
 	 */
 	private function get_user_notifications(): string
 	{
+		if ($this->user->id() === ANONYMOUS)
+		{
+			return $this->get_anonymous_notifications();
+		}
+
 		// Subscribe should only be available for logged-in "normal" users
 		if ($this->user->data['user_type'] == USER_IGNORE)
 		{
@@ -166,7 +168,7 @@ class webpush
 			throw new http_exception(Response::HTTP_BAD_REQUEST, 'AJAX_ERROR_TEXT');
 		}
 
-		return $this->get_notification_data($notification_data);
+		return $this->get_notification_data($notification_data) ?: '';
 	}
 
 	/**
@@ -213,13 +215,13 @@ class webpush
 			$user_lang = $row['user_lang'];
 
 			$expected_push_token = hash('sha256', $user_form_token . $push_token);
-			if ($expected_push_token === $token)
+			if (hash_equals($expected_push_token, $token))
 			{
 				if ($user_lang !== $this->language->get_used_language())
 				{
 					$this->language->set_user_language($user_lang, true);
 				}
-				return $this->get_notification_data($notification_data);
+				return $this->get_notification_data($notification_data) ?: '';
 			}
 		}
 
@@ -231,9 +233,9 @@ class webpush
 	 *
 	 * @param string $notification_data Encoded data stored in database
 	 *
-	 * @return string Data for notification output with javascript
+	 * @return false|string Data for notification output with javascript
 	 */
-	private function get_notification_data(string $notification_data): string
+	private function get_notification_data(string $notification_data): false|string
 	{
 		$row_data = json_decode($notification_data, true);
 
@@ -270,6 +272,7 @@ class webpush
 	{
 		$content = $this->template->render('push_worker.js.twig', [
 			'U_WEBPUSH_GET_NOTIFICATION'	=> $this->controller_helper->route('phpbb_ucp_push_get_notification_controller'),
+			'U_BOARD_URL'					=> generate_board_url(),
 			'ASSETS_VERSION'				=> $this->config['assets_version'],
 		]);
 
@@ -316,21 +319,155 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->get('data', ''));
+		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
+		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
+		$previous_endpoint = is_string($data['previous_endpoint'] ?? null) ? $data['previous_endpoint'] : '';
 
-		$sql = 'INSERT INTO ' . $this->push_subscriptions_table . ' ' . $this->db->sql_build_array('INSERT', [
-			'user_id'			=> $this->user->id(),
-			'endpoint'			=> $data['endpoint'],
-			'expiration_time'	=> $data['expiration_time'] ?? 0,
-			'p256dh'			=> $data['keys']['p256dh'],
-			'auth'				=> $data['keys']['auth'],
-		]);
+		if (!$this->verify_endpoint($endpoint))
+		{
+			throw new http_exception(Response::HTTP_BAD_REQUEST, 'NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
+		}
+
+		$subscription_data = $this->get_subscription_write_data($data);
+		$subscription_data['user_id'] = $this->user->id();
+		$subscription_data['endpoint'] = $endpoint;
+
+		$sql = 'UPDATE ' . $this->push_subscriptions_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', [
+				'expiration_time'	=> $subscription_data['expiration_time'],
+				'p256dh'			=> $subscription_data['p256dh'],
+				'auth'				=> $subscription_data['auth'],
+			]) . "
+			WHERE user_id = " . (int) $this->user->id() . "
+				AND endpoint = '" . $this->db->sql_escape($endpoint) . "'";
 		$this->db->sql_query($sql);
+
+		if (!$this->db->sql_affectedrows())
+		{
+			$sql = 'INSERT INTO ' . $this->push_subscriptions_table . ' ' . $this->db->sql_build_array('INSERT', $subscription_data);
+			$this->db->sql_query($sql);
+		}
+
+		if ($previous_endpoint && $previous_endpoint !== $endpoint)
+		{
+			$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+				WHERE user_id = ' . (int) $this->user->id() . "
+					AND endpoint = '" . $this->db->sql_escape($previous_endpoint) . "'";
+			$this->db->sql_query($sql);
+		}
 
 		return new JsonResponse([
 			'success'		=> true,
 			'form_tokens'	=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
 		]);
+	}
+
+	/**
+	 * Verify that the endpoint is valid and belongs to a known push service
+	 *
+	 * @param string $endpoint Endpoint URL to verify
+	 * @return bool True if endpoint is valid URL and belongs to a known push service, false otherwise
+	 */
+	protected function verify_endpoint(string $endpoint): bool
+	{
+		$parts = parse_url($endpoint);
+
+		// Basic URL structural check
+		if (!$parts || !isset($parts['scheme'], $parts['host']))
+		{
+			return false;
+		}
+
+		// MUST be HTTPS: https://datatracker.ietf.org/doc/html/rfc8030#section-8
+		if (strtolower($parts['scheme']) !== 'https')
+		{
+			return false;
+		}
+
+		// Only allow endpoints for known push services (e.g. Mozilla, Google)
+		// See https://github.com/pushpad/known-push-services for list of known services
+		$allowed_services = [
+			'android.googleapis.com',
+			'fcm.googleapis.com',
+			'updates.push.services.mozilla.com',
+			'updates-autopush.stage.mozaws.net',
+			'updates-autopush.dev.mozaws.net',
+			'.notify.windows.com',
+			'.push.apple.com',
+		];
+
+		/**
+		 * Event to modify allowed services for web push notifications
+		 *
+		 * @event core.ucp_webpush_controller_verify_endpoint
+		 * @var array allowed_services Allowed service URLs
+		 * @since 4.0.0-a2
+		 */
+		$vars = [
+			'allowed_services',
+		];
+		extract($this->dispatcher->trigger_event('core.ucp_webpush_controller_verify_endpoint', compact($vars)));
+
+		foreach ($allowed_services as $allowed_host)
+		{
+			// Use str_ends_with to support subdomains like 'web.push.apple.com'
+			if (str_ends_with(strtolower($parts['host']), $allowed_host))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Validate and normalize subscription data for database writes
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	protected function get_subscription_write_data(array $data): array
+	{
+		$keys = $data['keys'] ?? [];
+		if (!is_array($keys))
+		{
+			$keys = [];
+		}
+		$p256dh = is_string($keys['p256dh'] ?? null) ? $keys['p256dh'] : '';
+		$auth = is_string($keys['auth'] ?? null) ? $keys['auth'] : '';
+
+		if ($p256dh === '' || $auth === '')
+		{
+			throw new http_exception(Response::HTTP_BAD_REQUEST, 'AJAX_ERROR_TEXT');
+		}
+
+		return [
+			'expiration_time'	=> $this->normalize_subscription_expiration_time($data),
+			'p256dh'			=> $p256dh,
+			'auth'				=> $auth,
+		];
+	}
+
+	/**
+	 * Normalize PushSubscription expiration timestamps to seconds for storage
+	 *
+	 * @param array $data
+	 * @return int
+	 */
+	protected function normalize_subscription_expiration_time(array $data): int
+	{
+		if (isset($data['expiration_time']))
+		{
+			return max(0, (int) $data['expiration_time']);
+		}
+
+		$expiration_time = $data['expirationTime'] ?? 0;
+		if (empty($expiration_time))
+		{
+			return 0;
+		}
+
+		return max(0, (int) floor(((int) $expiration_time) / 1000));
 	}
 
 	/**
@@ -343,9 +480,8 @@ class webpush
 	{
 		$this->check_subscribe_requests();
 
-		$data = json_sanitizer::decode($symfony_request->get('data', ''));
-
-		$endpoint = $data['endpoint'];
+		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
+		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
 
 		$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
 			WHERE user_id = ' . (int) $this->user->id() . "

@@ -114,10 +114,11 @@ interface method_interface
 	* Mark notifications read or unread
 	*
 	* @param array|int $notification_id Notification id or array of notification ids.
+	* @param int $user_id User id of notification, false to mark head for all user ids.
 	* @param bool|int $time Time at which to mark all notifications prior to as read. False to mark all as read. (Default: False)
 	* @param bool $mark_read Define if the notification as to be set to True or False. (Default: True)
 	*/
-	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true);
+	public function mark_notifications_by_id($notification_id, $user_id, $time = false, $mark_read = true);
 
 	/**
 	* Delete a notification

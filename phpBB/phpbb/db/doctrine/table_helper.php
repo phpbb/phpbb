@@ -70,6 +70,11 @@ class table_helper
 			$doctrine_options['notnull'] = false;
 		}
 
+		if ($dbms_layer === 'mysql' && self::is_text_column($column_data[0]))
+		{
+			unset($doctrine_options['default']);
+		}
+
 		if (isset($column_data[2]))
 		{
 			if ($column_data[2] === 'auto_increment')
@@ -83,6 +88,11 @@ class table_helper
 		}
 
 		return $doctrine_options;
+	}
+
+	private static function is_text_column(string $column_type): bool
+	{
+		return in_array($column_type, ['TEXT', 'TEXT_UNI', 'MTEXT', 'MTEXT_UNI'], true);
 	}
 
 	/**

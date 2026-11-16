@@ -24,7 +24,7 @@ class container_configuration implements ConfigurationInterface
 	 *
 	 * @return TreeBuilder The tree builder
 	 */
-	public function getConfigTreeBuilder()
+	public function getConfigTreeBuilder(): TreeBuilder
 	{
 		$treeBuilder = new TreeBuilder('core');
 		$rootNode = $treeBuilder->getRootNode();
@@ -59,6 +59,7 @@ class container_configuration implements ConfigurationInterface
 					->children()
 						->booleanNode('composer_debug')->defaultValue(false)->end()
 						->booleanNode('composer_verbose')->defaultValue(false)->end()
+						->booleanNode('enable_catalog')->defaultValue(false)->end()
 					->end()
 				->end()
 				->arrayNode('session')

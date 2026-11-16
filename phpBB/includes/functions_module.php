@@ -22,6 +22,7 @@ if (!defined('IN_PHPBB'))
 /**
 * Class handling all types of 'plugins' (a future term)
 */
+#[\AllowDynamicProperties]
 class p_master
 {
 	var $p_id;
@@ -29,6 +30,10 @@ class p_master
 	var $p_name;
 	var $p_mode;
 	var $p_parent;
+
+	var $module_cache;
+	var $p_left;
+	var $p_right;
 
 	var $include_path = false;
 	var $active_module = false;
@@ -387,7 +392,7 @@ class p_master
 	*/
 	static function module_auth($module_auth, $forum_id)
 	{
-		global $auth, $config;
+		global $auth, $config, $phpbb_container;
 		global $request, $phpbb_extension_manager, $phpbb_dispatcher;
 
 		$module_auth = trim($module_auth);
@@ -411,6 +416,7 @@ class p_master
 			'\$id'							=> '(int) $forum_id',
 			'aclf_([a-z0-9_]+)'				=> '(int) $auth->acl_getf_global(\'\\1\')',
 			'cfg_([a-z0-9_]+)'				=> '(int) $config[\'\\1\']',
+			'diparam_([a-z0-9_\.]+)'		=> '(int) ($phpbb_container->hasParameter(\'\\1\') && $phpbb_container->getParameter(\'\\1\'))',
 			'request_([a-zA-Z0-9_]+)'		=> '$request->variable(\'\\1\', false)',
 			'ext_([a-zA-Z0-9_/]+)'			=> 'array_key_exists(\'\\1\', $phpbb_extension_manager->all_enabled())',
 			'authmethod_([a-z0-9_\\\\]+)'		=> '($config[\'auth_method\'] === \'\\1\')',
@@ -468,9 +474,9 @@ class p_master
 		);
 
 		$is_auth = false;
-		// @codingStandardsIgnoreStart
+		// phpcs:disable Squiz.PHP.Eval
 		eval('$is_auth = (int) (' .	$module_auth . ');');
-		// @codingStandardsIgnoreEnd
+		// phpcs:enable Squiz.PHP.Eval
 
 		return $is_auth;
 	}
@@ -681,7 +687,10 @@ class p_master
 		}
 
 		// Assign the module path for re-usage
-		$this->module->module_path = $module_path . '/';
+		if (property_exists($this->module, 'module_path'))
+		{
+			$this->module->module_path = $module_path . '/';
+		}
 
 		// Execute the main method for the new instance, we send the module id and mode as parameters
 		// Users are able to call the main method after this function to be able to assign additional parameters manually

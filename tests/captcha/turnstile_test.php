@@ -382,6 +382,7 @@ class phpbb_captcha_turnstile_test extends \phpbb_database_test_case
 		]);
 
 		$this->template->expects($this->once())->method('assign_vars')->with([
+			'S_CONFIRM_CODE' => true,
 			'S_TURNSTILE_AVAILABLE' => $this->turnstile->is_available(),
 			'TURNSTILE_SITEKEY' => 'sitekey_value',
 			'TURNSTILE_THEME' => 'light',

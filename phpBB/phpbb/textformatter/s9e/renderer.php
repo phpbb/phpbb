@@ -13,6 +13,10 @@
 
 namespace phpbb\textformatter\s9e;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\user;
+
 /**
 * s9e\TextFormatter\Renderer adapter
 */
@@ -146,11 +150,11 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	/**
 	* Automatically set the smilies path based on config
 	*
-	* @param  \phpbb\config\config $config
+	* @param  config $config
 	* @param  \phpbb\path_helper   $path_helper
 	* @return void
 	*/
-	public function configure_smilies_path(\phpbb\config\config $config, \phpbb\path_helper $path_helper)
+	public function configure_smilies_path(config $config, \phpbb\path_helper $path_helper)
 	{
 		/**
 		* @see smiley_text()
@@ -165,12 +169,12 @@ class renderer implements \phpbb\textformatter\renderer_interface
 	*
 	* Should set the locale as well as the viewcensor/viewimg/viewsmilies options.
 	*
-	* @param  \phpbb\user          $user
-	* @param  \phpbb\config\config $config
-	* @param  \phpbb\auth\auth     $auth
+	* @param auth $auth
+	* @param config $config
+	* @param user $user
 	* @return void
 	*/
-	public function configure_user(\phpbb\user $user, \phpbb\config\config $config, \phpbb\auth\auth $auth)
+	public function configure_user(auth $auth, config $config, user $user): void
 	{
 		$censor = $user->optionget('viewcensors') || !$config['allow_nocensors'] || !$auth->acl_get('u_chgcensors');
 

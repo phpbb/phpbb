@@ -50,15 +50,15 @@ abstract class base_group implements source_interface
 	/**
 	 * base_group constructor.
 	 *
-	 * @param driver_interface $db
+	 * @param auth $auth
 	 * @param config $config
+	 * @param driver_interface $db
 	 * @param helper $helper
 	 * @param \phpbb\user $user
-	 * @param auth $auth
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct(driver_interface $db, config $config, helper $helper, \phpbb\user $user, auth $auth, string $phpbb_root_path, string $phpEx)
+	public function __construct(auth $auth, config $config, driver_interface $db, helper $helper, \phpbb\user $user, string $phpbb_root_path, string $phpEx)
 	{
 		$this->db = $db;
 		$this->config = $config;
@@ -128,6 +128,16 @@ abstract class base_group implements source_interface
 	abstract protected function query(string $keyword, int $topic_id): string;
 
 	/**
+	 * Check whether the current user has permission to use this source
+	 *
+	 * @return bool True if user can use the source, false otherwise
+	 */
+	public function can_use_source(): bool
+	{
+		return $this->auth->acl_get('u_viewprofile');
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get_priority(array $row): int
@@ -141,6 +151,11 @@ abstract class base_group implements source_interface
 	 */
 	public function get(array &$names, string $keyword, int $topic_id): bool
 	{
+		if (!$this->can_use_source())
+		{
+			return true;
+		}
+
 		// Grab all group IDs and cache them if needed
 		$result = $this->db->sql_query($this->query($keyword, $topic_id), $this->cache_ttl);
 

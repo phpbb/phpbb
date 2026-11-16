@@ -22,6 +22,8 @@ if (!defined('IN_PHPBB'))
 class acp_update
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 
 	function main($id, $mode)
 	{
@@ -77,7 +79,7 @@ class acp_update
 			$template->assign_block_vars('updates_available', $updates_available);
 		}
 
-		$update_link = $phpbb_root_path . 'install/app.' . $phpEx;
+		$update_link = $phpbb_root_path . 'install/index.' . $phpEx;
 
 		$template_ary = [
 			'S_UP_TO_DATE'				=> empty($updates_available),
@@ -96,7 +98,7 @@ class acp_update
 		// Incomplete update?
 		if (phpbb_version_compare($config['version'], PHPBB_VERSION, '<'))
 		{
-			$database_update_link = $phpbb_root_path . 'install/app.php/update';
+			$database_update_link = $phpbb_root_path . 'install/index.php/update';
 
 			$template->assign_vars(array(
 				'S_UPDATE_INCOMPLETE'		=> true,

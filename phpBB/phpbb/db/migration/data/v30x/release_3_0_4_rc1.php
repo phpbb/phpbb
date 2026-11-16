@@ -35,23 +35,23 @@ class release_3_0_4_rc1 extends \phpbb\db\migration\migration
 			),
 			'change_columns' => array(
 				$this->table_prefix . 'styles' => array(
-					'style_id' => array('UINT', NULL, 'auto_increment'),
+					'style_id' => array('UINT', null, 'auto_increment'),
 					'template_id' => array('UINT', 0),
 					'theme_id' => array('UINT', 0),
 					'imageset_id' => array('UINT', 0),
 				),
 				$this->table_prefix . 'styles_imageset' => array(
-					'imageset_id' => array('UINT', NULL, 'auto_increment'),
+					'imageset_id' => array('UINT', null, 'auto_increment'),
 				),
 				$this->table_prefix . 'styles_imageset_data' => array(
-					'image_id' => array('UINT', NULL, 'auto_increment'),
+					'image_id' => array('UINT', null, 'auto_increment'),
 					'imageset_id' => array('UINT', 0),
 				),
 				$this->table_prefix . 'styles_theme' => array(
-					'theme_id' => array('UINT', NULL, 'auto_increment'),
+					'theme_id' => array('UINT', null, 'auto_increment'),
 				),
 				$this->table_prefix . 'styles_template' => array(
-					'template_id' => array('UINT', NULL, 'auto_increment'),
+					'template_id' => array('UINT', null, 'auto_increment'),
 				),
 				$this->table_prefix . 'styles_template_data' => array(
 					'template_id' => array('UINT', 0),

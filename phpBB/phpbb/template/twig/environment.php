@@ -211,6 +211,41 @@ class environment extends \Twig\Environment
 	}
 
 	/**
+	 * {@inheritdoc}
+	 */
+	public function load($name): \Twig\TemplateWrapper
+	{
+		if ($name instanceof \Twig\TemplateWrapper || $name instanceof \Twig\Template)
+		{
+			return parent::load($name);
+		}
+
+		if (strpos($name, '@') === false)
+		{
+			foreach ($this->getNamespaceLookUpOrder() as $namespace)
+			{
+				try
+				{
+					if ($namespace === '__main__')
+					{
+						return parent::load($name);
+					}
+
+					return parent::load('@' . $namespace . '/' . $name);
+				}
+				catch (\Twig\Error\LoaderError $e)
+				{
+				}
+			}
+
+			// We were unable to load any templates
+			throw $e;
+		}
+
+		return parent::load($name);
+	}
+
+	/**
 	 * Get template with assets
 	 */
 	private function display_with_assets($name, array $context = [])
@@ -270,44 +305,6 @@ class environment extends \Twig\Environment
 		$output = str_replace('__SCRIPTS_' . $placeholder_salt . '__', $this->assets_bag->get_scripts_content(), $output);
 
 		return $output;
-	}
-
-	/**
-	* Loads a template by name.
-	*
-	* @param string  $cls   The template class associated with the given template name
-	* @param string  $name  The template name
-	* @param integer|null $index The index if it is an embedded template
-	* @return \Twig\Template A template instance representing the given template name
-	* @throws \Twig\Error\LoaderError
-	*/
-	public function loadTemplate(string $cls, string $name, int|null $index = null) : \Twig\Template
-	{
-		if (strpos($name, '@') === false)
-		{
-			foreach ($this->getNamespaceLookUpOrder() as $namespace)
-			{
-				try
-				{
-					if ($namespace === '__main__')
-					{
-						return parent::loadTemplate($cls, $name, $index);
-					}
-
-					return parent::loadTemplate($this->getTemplateClass('@' . $namespace . '/' . $name), '@' . $namespace . '/' . $name, $index);
-				}
-				catch (\Twig\Error\LoaderError $e)
-				{
-				}
-			}
-
-			// We were unable to load any templates
-			throw $e;
-		}
-		else
-		{
-			return parent::loadTemplate($cls, $name, $index);
-		}
 	}
 
 	/**

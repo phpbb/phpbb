@@ -223,7 +223,8 @@ function make_uid($timestamp)
 
 	if (empty($last_timestamp) || $timestamp != $last_timestamp)
 	{
-		$last_uid = substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
+		$unique_id = preg_replace('/[^0-9a-f]/', '', unique_id());
+		$last_uid = substr(base_convert($unique_id, 16, 36), 0, BBCODE_UID_LEN);
 	}
 	$last_timestamp = $timestamp;
 	return $last_uid;
@@ -1124,9 +1125,9 @@ function restore_config($schema)
 		{
 			$var = (empty($m[2]) || empty($convert_config[$m[2]])) ? "''" : "'" . addslashes($convert_config[$m[2]]) . "'";
 			$exec = '$config_value = ' . $m[1] . '(' . $var . ');';
-			// @codingStandardsIgnoreStart
+			// phpcs:disable Squiz.PHP.Eval
 			eval($exec);
-			// @codingStandardsIgnoreEnd
+			// phpcs:enable Squiz.PHP.Eval
 		}
 		else
 		{

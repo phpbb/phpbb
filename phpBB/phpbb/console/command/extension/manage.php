@@ -50,7 +50,7 @@ class manage extends \phpbb\console\command\command
 	*
 	* @return void
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('extension:manage')
@@ -69,7 +69,7 @@ class manage extends \phpbb\console\command\command
 	* @param OutputInterface $output
 	* @return int
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

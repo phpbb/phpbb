@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <dataset>
+	<table name="phpbb_push_subscriptions">
+		<column>subscription_id</column>
+		<column>user_id</column>
+		<column>endpoint</column>
+		<column>expiration_time</column>
+		<column>p256dh</column>
+		<column>auth</column>
+	</table>
 	<table name="phpbb_notification_push">
 		<column>item_id</column>
 		<column>push_data</column>

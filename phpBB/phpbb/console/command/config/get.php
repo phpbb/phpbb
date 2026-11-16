@@ -24,7 +24,7 @@ class get extends command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:get')
@@ -54,7 +54,7 @@ class get extends command
 	* @return int
 	* @see \phpbb\config\config::offsetGet()
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

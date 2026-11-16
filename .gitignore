@@ -48,7 +48,9 @@
 /tests/tmp/*
 /tests/vendor
 /vagrant/phpbb-install-config.yml
-.vagrant
+/vagrant/.vagrant
+/vagrant/composer.lock
+/vagrant/vendor
 node_modules
 /build/package_signature
 

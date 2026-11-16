@@ -26,6 +26,8 @@ if (!defined('IN_PHPBB'))
 class acp_extensions
 {
 	public $u_action;
+	public $tpl_name;
+	public $page_title;
 
 	private $db;
 
@@ -54,7 +56,7 @@ class acp_extensions
 	function main($id, $mode)
 	{
 		// Start the page
-		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path;
+		global $config, $user, $template, $request, $phpbb_extension_manager, $db, $phpbb_log, $phpbb_dispatcher, $phpbb_container, $phpbb_admin_path,  $phpbb_root_path;
 
 		$this->db       = $db;
 		$this->config = $config;
@@ -67,17 +69,17 @@ class acp_extensions
 		$this->phpbb_container = $phpbb_container;
 		$this->php_ini = $this->phpbb_container->get('php_ini');
 		$this->phpbb_root_path = $phpbb_root_path;
+		$is_catalog_available = $phpbb_container->hasParameter('extensions.enable_catalog') && $phpbb_container->getParameter('extensions.enable_catalog') === true;
 
 		$this->user->add_lang(['install', 'acp/extensions', 'acp/modules', 'migrator']);
 
-		switch ($mode)
+		if ($mode === 'catalog' && $is_catalog_available)
 		{
-			case 'catalog':
-				$this->catalog_mode($id, $mode);
-			break;
-			default:
-				$this->main_mode($id, $mode);
-			break;
+			$this->catalog_mode($id, $mode);
+		}
+		else
+		{
+			$this->main_mode($id, $mode);
 		}
 	}
 
@@ -268,7 +270,7 @@ class acp_extensions
 							'name' 		=> 'adm',
 							'ext_path' 	=> 'adm/style/',
 						),
-					), array($this->phpbb_root_path . 'adm/style'));
+					), $phpbb_admin_path . 'style');
 
 					$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_EXT_ENABLE', time(), array($ext_name));
 				}

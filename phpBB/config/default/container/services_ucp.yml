@@ -4,8 +4,24 @@ services:
         arguments:
             - '@config'
             - '@dispatcher'
+            - '@controller.helper'
             - '@language'
             - '@request'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
+    phpbb.ucp.controller.oauth:
+        class: phpbb\ucp\controller\oauth
+        arguments:
+            - '@auth.provider_collection'
+            - '@captcha.factory'
+            - '@config'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
             - '@user'
             - '%core.root_path%'
             - '%core.php_ext%'
@@ -34,6 +50,7 @@ services:
             - '@config'
             - '@controller.helper'
             - '@dbal.conn'
+            - '@event_dispatcher'
             - '@form_helper'
             - '@language'
             - '@notification_manager'

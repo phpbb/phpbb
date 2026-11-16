@@ -183,6 +183,22 @@ If you only want the functional tests, run:
 This will change your board's config.php file, but it makes a backup at
 config_dev.php, so you can restore it after the test run is complete.
 
+Running on SSL
+--------------
+
+If your local server uses an SSL certificate with HTTPS, you may need to specify the
+path to your security certificate for functional tests to run successfully. Set
+`$path_to_ssl_cert` to the location of your certificate file (.pem or .crt).
+If you can’t locate your certificate, or it still isn’t working, you can disable 
+SSL verification by setting this value to `false` (though this is less secure).
+Note: You must ensure `$phpbb_functional_url` is using `https://`.
+
+	$path_to_ssl_cert = '/path/to/your/certificate.pem';
+
+Or via environment variables as follows:
+
+    $ PHPBB_TEST_SSL_CERT_PATH=/path/to/your/certificate.pem phpunit
+
 UI tests
 ========
 

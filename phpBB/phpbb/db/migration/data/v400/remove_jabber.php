@@ -86,34 +86,6 @@ class remove_jabber extends migration
 		];
 	}
 
-	public function revert_data(): array
-	{
-		return [
-			['config.add', ['jab_enable', 0]],
-			['config.add', ['jab_host', '']],
-			['config.add', ['jab_package_size', 20]],
-			['config.add', ['jab_password', '']],
-			['config.add', ['jab_port', 5222]],
-			['config.add', ['jab_use_ssl', 0]],
-			['config.add', ['jab_username', '']],
-			['config.add', ['jab_verify_peer', 1]],
-			['config.add', ['jab_verify_peer_name', 1]],
-			['config.add', ['jab_allow_self_signed', 0]],
-			['module.add', [
-				'acp',
-				'ACP_CLIENT_COMMUNICATION',
-				[
-					'module_basename'	=> 'acp_jabber',
-					'module_langname'	=> 'ACP_JABBER_SETTINGS',
-					'module_mode'		=> 'settings',
-					'module_auth'		=> 'acl_a_jabber',
-				],
-			]],
-			['permission.add', ['a_jabber', true]],
-			['permission.add', ['u_sendim', true]],
-		];
-	}
-
 	public function move_jabber_to_email_notifications()
 	{
 		$sql = 'DELETE FROM ' . $this->tables['user_notifications'] . "

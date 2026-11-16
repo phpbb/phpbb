@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PHP_VERSION="8.1"
+PHP_VERSION="8.2"
 PHPBB_PATH="/home/vagrant/phpbb"
 PHPBB_CONFIG="${PHPBB_PATH}/phpBB/config.php"
 PHPBB_INSTALL="${PHPBB_PATH}/vagrant/phpbb-install-config.yml"
@@ -28,7 +28,7 @@ sed -i '/^.*PHPBB_ENVIRONMENT.*$/s/production/development/' ${PHPBB_CONFIG}
 # Update the PHP memory limits (enough to allow phpunit tests to run)
 sed -i "s/memory_limit = .*/memory_limit = 1024M/" /etc/php/${PHP_VERSION}/fpm/php.ini
 
-# Fix for urls with app.php
+# Fix for urls with index.php
 sed -i "s/cgi.fix_pathinfo=.*/cgi.fix_pathinfo=1/" /etc/php/${PHP_VERSION}/fpm/php.ini
 
 # Restart php-fpm to apply php.ini changes

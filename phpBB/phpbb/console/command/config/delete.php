@@ -23,7 +23,7 @@ class delete extends command
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('config:delete')
@@ -47,7 +47,7 @@ class delete extends command
 	 * @return int
 	 * @see \phpbb\config\config::delete()
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

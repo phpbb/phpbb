@@ -82,8 +82,10 @@ class phpbb_functional_visibility_unapproved_posts_test extends phpbb_functional
 		// Test creating a reply
 		$post2 = $this->create_post($this->data['forums']['Unapproved Posts Test #1'], $post['topic_id'], 'Re: Unapproved Posts Test Topic #1-#2', 'This is a test post posted by the testing framework.', [], 'POST_STORED_MOD');
 
-		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewtopic.php?t={$this->data['topics']['Unapproved Posts Test Topic #1']}");
 		$this->assertStringNotContainsString('Re: Unapproved Posts Test Topic #1-#2', $crawler->filter('#page-body')->text());
+		$this->login('unapproved_posts_test_user#1');
 
 		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
@@ -97,9 +99,11 @@ class phpbb_functional_visibility_unapproved_posts_test extends phpbb_functional
 
 		// Test creating topic #2
 		$post = $this->create_topic($this->data['forums']['Unapproved Posts Test #1'], 'Unapproved Posts Test Topic #2', 'This is a test topic posted by the testing framework.', [], 'POST_STORED_MOD');
-		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}&sid={$this->sid}");
+		$this->logout();
+		$crawler = self::request('GET', "viewforum.php?f={$this->data['forums']['Unapproved Posts Test #1']}");
 
 		$this->assertStringNotContainsString('Unapproved Posts Test Topic #2', $crawler->filter('html')->text());
+		$this->login('unapproved_posts_test_user#1');
 
 		$this->assert_forum_details($this->data['forums']['Unapproved Posts Test #1'], [
 			'forum_posts_approved'		=> 1,
@@ -116,6 +120,8 @@ class phpbb_functional_visibility_unapproved_posts_test extends phpbb_functional
 
 	public function test_view_unapproved_post_disabled()
 	{
+		$this->config_display_unapproved_posts_state(false);
+
 		// user who created post
 		$this->login('unapproved_posts_test_user#1');
 		$this->load_ids([
@@ -328,7 +334,7 @@ class phpbb_functional_visibility_unapproved_posts_test extends phpbb_functional
 		$values = $form->getValues();
 
 		// Enable display of unapproved posts to posters
-		$values['config[display_unapproved_posts]'] = $state;
+		$values['config[display_unapproved_posts]'] = $state ? '1' : '0';
 
 		$form->setValues($values);
 

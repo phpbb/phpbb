@@ -46,7 +46,7 @@ class icon extends AbstractExtension
 	 *
 	 * @return \Twig\TwigFunction[]			Array of twig functions
 	 */
-	public function getFunctions()
+	public function getFunctions(): array
 	{
 		return [
 			new \Twig\TwigFunction('Icon', [$this, 'icon'], ['needs_environment' => true]),
@@ -269,7 +269,7 @@ class icon extends AbstractExtension
 		$string = $doc->saveHTML();
 		$string = preg_replace('/\s+/', ' ', $string);
 
-		return $string;
+		return $string ?: '';
 	}
 
 	/**

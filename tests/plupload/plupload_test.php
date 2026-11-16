@@ -28,7 +28,14 @@ class phpbb_plupload_test extends phpbb_test_case
 				150,
 				85,
 				1,
-				'resize: {width: 130, height: 150, quality: 85, preserve_headers: false},'
+				'phpbb_resize: {width: 130, height: 150, quality: 85, preserve_headers: false},'
+			),
+			array(
+				1024,
+				768,
+				90,
+				0,
+				'phpbb_resize: {width: 1024, height: 768, quality: 90, preserve_headers: true},'
 			),
 		);
 	}

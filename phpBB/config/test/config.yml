@@ -5,5 +5,8 @@ core:
     require_dev_dependencies: true
     allow_install_dir: true
 
+    extensions:
+        enable_catalog: true
+
     session:
         force_sid: false

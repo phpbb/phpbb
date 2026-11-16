@@ -11,13 +11,14 @@
 
 	<div>
 		<div class="column1">
-			<!-- IF AVATAR_HTML --><div>{AVATAR_HTML}</div><!-- ENDIF -->
+			{% include 'avatar.html' with {'avatar_data': USER_AVATAR} only %}
 		</div>
 
 		<div class="column2">
 			<dl class="details">
 				<!-- IF RANK_TITLE --><dt>{L_RANK}{L_COLON}</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
 				{% if RANK_IMG %}<dt>{% if RANK_TITLE %}&nbsp;{% else %}{{ lang('RANK') ~ lang('COLON') }}{% endif %}</dt><dd class="rank-img">{{ RANK_IMG }}</dd>{% endif %}
+				{% EVENT mcp_notes_user_rank_after %}
 				<dt>{L_JOINED}{L_COLON}</dt><dd>{JOINED}</dd>
 				<dt>{L_TOTAL_POSTS}{L_COLON}</dt><dd>{POSTS}</dd>
 				<dt>{L_WARNINGS}{L_COLON} </dt><dd>{WARNINGS}</dd>

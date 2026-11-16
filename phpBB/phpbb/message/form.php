@@ -22,6 +22,8 @@ abstract class form
 	protected $auth;
 	/** @var \phpbb\config\config */
 	protected $config;
+	/** @var \phpbb\controller\helper */
+	protected $controller_helper;
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 	/** @var \phpbb\message\message */
@@ -47,17 +49,19 @@ abstract class form
 	* @param \phpbb\auth\auth $auth
 	* @param \phpbb\config\config $config
 	* @param \phpbb\db\driver\driver_interface $db
+	* @param \phpbb\controller\helper $controller_helper
 	* @param \phpbb\user $user
 	* @param string $phpbb_root_path
 	* @param string $phpEx
 	*/
-	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\user $user, $phpbb_root_path, $phpEx)
+	public function __construct(\phpbb\auth\auth $auth, \phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\controller\helper $controller_helper, \phpbb\user $user, $phpbb_root_path, $phpEx)
 	{
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->phpEx = $phpEx;
 		$this->user = $user;
 		$this->auth = $auth;
 		$this->config = $config;
+		$this->controller_helper = $controller_helper;
 		$this->db = $db;
 
 		$this->message = new message($config['server_name']);
@@ -111,7 +115,7 @@ abstract class form
 	*/
 	public function get_return_message()
 	{
-		return sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . append_sid($this->phpbb_root_path . 'index.' . $this->phpEx) . '">', '</a>');
+		return sprintf($this->user->lang['RETURN_INDEX'], '<a href="' . $this->controller_helper->route('phpbb_index_controller') . '">', '</a>');
 	}
 
 	/**
@@ -153,7 +157,7 @@ abstract class form
 
 			$this->message->send($messenger, phpbb_get_board_contact($this->config, $this->phpEx));
 
-			meta_refresh(3, append_sid($this->phpbb_root_path . 'index.' . $this->phpEx));
+			meta_refresh(3, $this->controller_helper->route('phpbb_index_controller'));
 			trigger_error($this->user->lang['EMAIL_SENT'] . '<br /><br />' . $this->get_return_message());
 		}
 	}

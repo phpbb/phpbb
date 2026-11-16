@@ -64,10 +64,7 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 			->method('lang')
 			->will($this->returnArgument(0));
 
-		$user = $this->user = $this->createMock('\phpbb\user', array(), array(
-			$this->language,
-			'\phpbb\datetime'
-		));
+		$user = $this->user = $this->createMock('\phpbb\user');
 		$user->data['user_email'] = '';
 
 		$avatar_helper = $this->getMockBuilder('\phpbb\avatar\helper')
@@ -106,6 +103,8 @@ abstract class phpbb_console_user_base extends phpbb_database_test_case
 		$phpbb_container->setParameter('tables.auth_provider_oauth_account_assoc', 'phpbb_oauth_accounts');
 
 		$phpbb_container->setParameter('tables.user_notifications', 'phpbb_user_notifications');
+		$phpbb_container->setParameter('tables.notification_push', 'phpbb_notification_push');
+		$phpbb_container->setParameter('tables.push_subscriptions', 'phpbb_push_subscriptions');
 
 		$assets_bag = new \phpbb\template\assets_bag();
 		$phpbb_container->set('assets.bag', $assets_bag);

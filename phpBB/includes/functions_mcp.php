@@ -209,7 +209,7 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 {
 	global $db, $auth, $config, $user, $phpbb_dispatcher, $phpbb_container;
 
-	$rowset = array();
+	$rowset = $orphaned_post_ids = array();
 
 	if (!count($post_ids))
 	{
@@ -220,12 +220,15 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 		'SELECT'	=> 'p.*, u.*, t.*, f.*',
 
 		'FROM'		=> array(
-			USERS_TABLE		=> 'u',
 			POSTS_TABLE		=> 'p',
 			TOPICS_TABLE	=> 't',
 		),
 
 		'LEFT_JOIN'	=> array(
+			array(
+				'FROM'	=> array(USERS_TABLE => 'u'),
+				'ON'	=> 'u.user_id = p.poster_id'
+			),
 			array(
 				'FROM'	=> array(FORUMS_TABLE => 'f'),
 				'ON'	=> 'f.forum_id = t.forum_id'
@@ -233,7 +236,6 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 		),
 
 		'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
-			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id',
 	);
 
@@ -272,8 +274,34 @@ function phpbb_get_post_data($post_ids, $acl_list = false, $read_tracking = fals
 		}
 
 		$rowset[$row['post_id']] = $row;
+
+		if (empty($row['user_id']))
+		{
+			$orphaned_post_ids[] = (int) $row['post_id'];
+		}
 	}
 	$db->sql_freeresult($result);
+
+	// Poster no longer exists in the users table, treat these posts as guest posts
+	if (count($orphaned_post_ids))
+	{
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . ANONYMOUS;
+		$result = $db->sql_query($sql);
+		$anonymous_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		foreach ($orphaned_post_ids as $post_id)
+		{
+			if ($anonymous_data)
+			{
+				$rowset[$post_id] = array_merge($rowset[$post_id], $anonymous_data);
+			}
+
+			$rowset[$post_id]['user_id'] = $rowset[$post_id]['poster_id'] = ANONYMOUS;
+		}
+	}
 
 	/**
 	* This event allows you to modify post data displayed in the MCP

@@ -203,7 +203,14 @@ class acp_storage
 					}
 
 					// Copy file from old adapter to the new one
-					$this->storage_helper->copy_file_to_new_adapter($storage_name, $row['file_path']);
+					try
+					{
+						$this->storage_helper->copy_file_to_new_adapter($storage_name, $row['file_path']);
+					}
+					catch (\Exception $e)
+					{
+						$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_COPY_ERROR', false, [$row['file_path'], $e->getMessage()]);
+					}
 
 					$this->state_helper->set_file_index($row['file_id']); // update last file index copied
 				}
@@ -243,8 +250,15 @@ class acp_storage
 						}
 
 						// remove file from old (current) adapter
-						$current_adapter = $this->storage_helper->get_current_adapter($storage_name);
-						$current_adapter->delete($row['file_path']);
+						try
+						{
+							$current_adapter = $this->storage_helper->get_current_adapter($storage_name);
+							$current_adapter->delete($row['file_path']);
+						}
+						catch (\Exception $e)
+						{
+							$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_STORAGE_DELETE_ERROR', false, [$row['file_path'], $e->getMessage()]);
+						}
 
 						$this->state_helper->set_file_index($row['file_id']);
 					}

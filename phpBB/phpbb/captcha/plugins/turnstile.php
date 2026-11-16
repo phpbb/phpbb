@@ -202,6 +202,7 @@ class turnstile extends base
 		}
 
 		$this->template->assign_vars([
+			'S_CONFIRM_CODE'			=> true,
 			'S_TURNSTILE_AVAILABLE'		=> $this->is_available(),
 			'TURNSTILE_SITEKEY'			=> $this->config->offsetGet('captcha_turnstile_sitekey'),
 			'TURNSTILE_THEME'			=> $this->config->offsetGet('captcha_turnstile_theme'),

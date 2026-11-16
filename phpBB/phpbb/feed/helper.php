@@ -126,7 +126,7 @@ class helper
 
 		$this->renderer->set_smilies_path($this->get_board_url() . '/' . $this->config['smilies_path']);
 
-		$this->renderer->configure_user($this->user, $this->config, $this->auth);
+		$this->renderer->configure_user($this->auth, $this->config, $this->user);
 
 		$content = generate_text_for_display($content, $uid, $bitfield, $options);
 
@@ -167,7 +167,7 @@ class helper
 			$content .= implode('<br />', $post_attachments);
 
 			// Convert attachments' relative path to absolute path
-			$pattern = '#(/app.php)?/download/attachment/#';
+			$pattern = '#(/index.php)?/download/attachment/#';
 			$replacement = $this->get_board_url() . '\1/download/attachment/';
 			$content = preg_replace($pattern, $replacement, $content);
 		}
@@ -191,6 +191,6 @@ class helper
 		// Other control characters
 		$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
 
-		return $content;
+		return $content ?: '';
 	}
 }

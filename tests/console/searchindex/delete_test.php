@@ -24,7 +24,7 @@ class phpbb_console_searchindex_delete_test extends phpbb_console_searchindex_ba
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new delete(
+		$application->addCommand(new delete(
 			$this->language,
 			$this->log,
 			$this->post_helper,

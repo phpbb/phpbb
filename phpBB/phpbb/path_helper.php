@@ -103,18 +103,18 @@ class path_helper
 		$web_root_path = $this->get_web_root_path();
 
 		// Removes the web root path if it is already present
-		if (strpos($path, $web_root_path) === 0)
+		if (str_starts_with($path, $web_root_path))
 		{
 			$path = $this->phpbb_root_path . substr($path, strlen($web_root_path));
 		}
 
-		if (strpos($path, $this->phpbb_root_path) === 0)
+		if (str_starts_with($path, $this->phpbb_root_path))
 		{
 			$path = substr($path, strlen($this->phpbb_root_path));
 
-			if (substr($web_root_path, -8) === 'app.php/' && substr($path, 0, 7) === 'app.php')
+			if (str_ends_with($web_root_path, 'index.php/') && str_starts_with($path, 'index.php'))
 			{
-				$path = substr($path, 8);
+				$path = substr($path, strlen('index.php/'));
 			}
 
 			$path = filesystem_helper::clean_path($web_root_path . $path);
@@ -171,18 +171,18 @@ class path_helper
 		// Path info (e.g. /foo/bar)
 		$path_info = filesystem_helper::clean_path($this->symfony_request->getPathInfo());
 
-		// Full request URI (e.g. phpBB/app.php/foo/bar)
+		// Full request URI (e.g. phpBB/index.php/foo/bar)
 		$request_uri = $this->symfony_request->getRequestUri();
 
-		// Script name URI (e.g. phpBB/app.php)
+		// Script name URI (e.g. phpBB/index.php)
 		$script_name = $this->symfony_request->getScriptName();
 
 		/*
-		* If the path info is empty but we're using app.php, then we
-		*	might be using an empty route like app.php/ which is
+		* If the path info is empty but we're using index.php, then we
+		*	might be using an empty route like index.php/ which is
 		*	supported by symfony's routing
 		*/
-		if ($path_info === '/' && preg_match('/app\.' . $this->php_ext . '\/$/', $request_uri))
+		if ($path_info === '/' && preg_match('/index\.' . $this->php_ext . '\/$/', $request_uri))
 		{
 			return $this->web_root_path = filesystem_helper::clean_path('./../' . $this->phpbb_root_path);
 		}
@@ -194,7 +194,7 @@ class path_helper
 
 		/*
 		* If the path info is empty (single /), then we're not using
-		*	a route like app.php/foo/bar
+		*	a route like index.php/foo/bar
 		*/
 		if ($path_info === '/')
 		{
@@ -211,10 +211,10 @@ class path_helper
 		* intended locations:
 		*	Referer				desired URL			desired relative root path
 		*	memberlist.php		faq.php				./
-		*	memberlist.php		app.php/foo/bar		./
-		*	app.php/foo			memberlist.php		../
-		*	app.php/foo			app.php/fox			../
-		*	app.php/foo/bar		memberlist.php		../../
+		*	memberlist.php		index.php/foo/bar		./
+		*	index.php/foo		memberlist.php		../
+		*	index.php/foo		index.php/fox			../
+		*	index.php/foo/bar	memberlist.php		../../
 		*	../page.php			memberlist.php		./phpBB/
 		*	../sub/page.php		memberlist.php		./../phpBB/
 		*
@@ -236,11 +236,11 @@ class path_helper
 		$corrections = substr_count($path_info, '/');
 
 		/*
-		* If the script name (e.g. phpBB/app.php) does not exists in the
-		* requestUri (e.g. phpBB/app.php/foo/template), then we are rewriting
+		* If the script name (e.g. phpBB/index.php) does not exists in the
+		* requestUri (e.g. phpBB/index.php/foo/template), then we are rewriting
 		* the URL. So we must reduce the slash count by 1.
 		*/
-		if (strpos($request_uri, $script_name) !== 0)
+		if (!str_starts_with($request_uri, $script_name))
 		{
 			$corrections--;
 		}
@@ -266,7 +266,7 @@ class path_helper
 		// So we just need to count the / (slashes) in the left over part of
 		// the referer and prepend ../ the the current root_path, to get the
 		// web root path of the referer.
-		if (strpos($absolute_referer_url, $absolute_board_url) === 0)
+		if (str_starts_with($absolute_referer_url, $absolute_board_url))
 		{
 			$relative_referer_path = substr($absolute_referer_url, strlen($absolute_board_url));
 			$has_params = strpos($relative_referer_path, '?');
@@ -295,7 +295,7 @@ class path_helper
 		// If we do not find a slash at the end of the referer, we come
 		// from a file. So the first dirname() does not need a traversal
 		// path correction.
-		if (substr($referer_dir, -1) !== '/')
+		if (!str_ends_with($referer_dir, '/'))
 		{
 			$referer_dir = dirname($referer_dir);
 		}
@@ -377,7 +377,7 @@ class path_helper
 		$separator = ($is_amp) ? '&amp;' : '&';
 		$params = array();
 
-		if (strpos($url, '?') !== false)
+		if (str_contains($url, '?'))
 		{
 			$base = substr($url, 0, strpos($url, '?'));
 			$args = substr($url, strlen($base) + 1);
@@ -391,7 +391,7 @@ class path_helper
 				}
 
 				// some parameters don't have value
-				if (strpos($argument, '=') !== false)
+				if (str_contains($argument, '='))
 				{
 					list($key, $value) = explode('=', $argument, 2);
 				}
@@ -493,12 +493,12 @@ class path_helper
 		// URL
 		if ($url_parts === false || empty($url_parts['scheme']) || empty($url_parts['host']))
 		{
-			// Remove 'app.php/' from the page, when rewrite is enabled.
-			// Treat app.php as a reserved file name and remove on mod rewrite
+			// Remove 'index.php/' from the page, when rewrite is enabled.
+			// Treat index.php as a reserved file name and remove on mod rewrite
 			// even if it might not be in the phpBB root.
-			if ($mod_rewrite && ($app_position = strpos($page, 'app.' . $this->php_ext . '/')) !== false)
+			if ($mod_rewrite && ($app_position = strpos($page, 'index.' . $this->php_ext . '/')) !== false)
 			{
-				$page = substr($page, 0, $app_position) . substr($page, $app_position + strlen('app.' . $this->php_ext . '/'));
+				$page = substr($page, 0, $app_position) . substr($page, $app_position + strlen('index.' . $this->php_ext . '/'));
 			}
 
 			// Remove preceding slashes from page name and prepend root path
@@ -515,9 +515,9 @@ class path_helper
 	 */
 	public function is_router_used()
 	{
-		// Script name URI (e.g. phpBB/app.php)
+		// Script name URI (e.g. phpBB/index.php)
 		$script_name = $this->symfony_request->getScriptName();
 
-		return basename($script_name) === 'app.' . $this->php_ext;
+		return basename($script_name) === 'index.' . $this->php_ext;
 	}
 }

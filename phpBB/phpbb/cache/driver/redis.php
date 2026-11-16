@@ -129,10 +129,17 @@ class redis extends \phpbb\cache\driver\memory
 	 * https://redis.io/docs/latest/commands/set/
 	 * and https://redis.io/docs/latest/commands/expire/#appendix-redis-expires
 	 *
+	 * A ttl of 0 means the data never expires, as with the other drivers.
+	 *
 	 * {@inheritDoc}
 	 */
 	protected function _write(string $var, $data, int $ttl = 2592000): bool
 	{
+		if ($ttl <= 0)
+		{
+			return $this->redis->set($var, $data);
+		}
+
 		return $this->redis->set($var, $data, ['EXAT' => time() + $ttl]);
 	}
 

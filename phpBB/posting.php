@@ -41,6 +41,9 @@ $refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || $save |
 $submit = $request->is_set_post('post') && !$refresh && !$preview;
 $mode		= $request->variable('mode', '');
 
+/** @var \phpbb\controller\helper $controller_helper */
+$controller_helper = $phpbb_container->get('controller.helper');
+
 // Only assign required URL parameters
 $forum_id = 0;
 $topic_id = 0;
@@ -178,7 +181,7 @@ extract($phpbb_dispatcher->trigger_event('core.modify_posting_parameters', compa
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel)
 {
-	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : append_sid("{$phpbb_root_path}index.$phpEx")));
+	$redirect = ($post_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) : (($forum_id) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) : $controller_helper->route('phpbb_index_controller')));
 	redirect($redirect);
 }
 
@@ -306,7 +309,7 @@ if ($post_data['forum_password'])
 // Check permissions
 if ($user->data['is_bot'])
 {
-	redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+	redirect($controller_helper->route('phpbb_index_controller'));
 }
 
 // Is the user able to read within this forum?
@@ -570,6 +573,13 @@ if (isset($post_data['poster_id']) && $post_data['poster_id'] == ANONYMOUS)
 else
 {
 	$post_data['quote_username'] = isset($post_data['username']) ? $post_data['username'] : '';
+}
+
+if ($mode == 'quote')
+{
+	$post_data['quote_poster_id'] = $post_data['poster_id'];
+	$post_data['quote_post_time'] = $post_data['post_time'];
+	unset($post_data['poster_id'], $post_data['post_time']);
 }
 
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
@@ -1751,12 +1761,12 @@ if ($generate_quote)
 	// Remove attachment bbcode tags from the quoted message to avoid mixing with the new post attachments if any
 	$message_parser->message = preg_replace('#\[attachment=([0-9]+)\](.*?)\[\/attachment\]#uis', '\\2', $message_parser->message);
 
-	$quote_attributes = array(
-						'author'  => $post_data['quote_username'],
-						'post_id' => $post_data['post_id'],
-						'time'    => $post_data['post_time'],
-						'user_id' => $post_data['poster_id'],
-	);
+	$quote_attributes = [
+		'author'	=> $post_data['quote_username'],
+		'post_id'	=> $post_data['post_id'],
+		'time'		=> $post_data['quote_post_time'],
+		'user_id'	=> $post_data['quote_poster_id'],
+	];
 
 	/**
 	* This event allows you to modify the quote attributes of the post being quoted
@@ -1916,8 +1926,6 @@ if (isset($captcha) && $captcha->is_solved() !== false)
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 add_form_key('posting');
 
-/** @var \phpbb\controller\helper $controller_helper */
-$controller_helper = $phpbb_container->get('controller.helper');
 
 // Build array of variables for main posting page
 $page_data = array(

@@ -49,7 +49,7 @@ $lang = array_merge($lang, array(
 
 	// Support page
 	'SUPPORT_TITLE'		=> 'Support',
-	'SUPPORT_BODY'		=> 'Full support will be provided for the current stable release of phpBB, free of charge. This includes:</p><ul><li>installation</li><li>configuration</li><li>technical questions</li><li>problems relating to potential bugs in the software</li><li>updating from Release Candidate (RC) versions to the latest stable version</li><li>converting from phpBB 2.0.x to phpBB</li><li>converting from other discussion board software to phpBB (please see the <a href="https://www.phpbb.com/community/viewforum.php?f=486">Convertors Forum</a>)</li></ul><p>We encourage users still running pre-release versions of phpBB to replace their installation with a fresh copy of the latest version.</p><h2>Extensions / Styles</h2><p>For issues relating to Extensions, please post in the appropriate <a href="https://www.phpbb.com/community/viewforum.php?f=451">Extensions Forum</a>.<br />For issues relating to styles, templates and themes, please post in the appropriate <a href="https://www.phpbb.com/community/viewforum.php?f=471">Styles Forum</a>.<br /><br />If your question relates to a specific package, please post directly in the topic dedicated to the package.</p><h2>Obtaining Support</h2><p><a href="https://www.phpbb.com/support/">Support Section</a><br /><a href="https://www.phpbb.com/support/docs/en/3.3/ug/quickstart/">Quick Start Guide</a><br /><br />To ensure you stay up to date with the latest news and releases, follow us on <a href="https://www.twitter.com/phpbb/">Twitter</a> and <a href="https://www.facebook.com/phpbb/">Facebook</a><br /><br />',
+	'SUPPORT_BODY'		=> 'Full support will be provided for the current stable release of phpBB, free of charge. This includes:</p><ul><li>installation</li><li>configuration</li><li>technical questions</li><li>problems relating to potential bugs in the software</li><li>updating from Release Candidate (RC) versions to the latest stable version</li><li>converting from phpBB 2.0.x to phpBB</li><li>converting from other discussion board software to phpBB (please see the <a href="https://www.phpbb.com/community/viewforum.php?f=486">Convertors Forum</a>)</li></ul><p>We encourage users still running pre-release versions of phpBB to replace their installation with a fresh copy of the latest version.</p><h2>Extensions / Styles</h2><p>For issues relating to Extensions, please post in the appropriate <a href="https://www.phpbb.com/community/viewforum.php?f=451">Extensions Forum</a>.<br />For issues relating to styles, templates and themes, please post in the appropriate <a href="https://www.phpbb.com/community/viewforum.php?f=471">Styles Forum</a>.<br /><br />If your question relates to a specific package, please post directly in the topic dedicated to the package.</p><h2>Obtaining Support</h2><p><a href="https://www.phpbb.com/support/">Support Section</a><br /><a href="https://www.phpbb.com/support/docs/en/3.3/ug/quickstart/">Quick Start Guide</a><br /><br />To ensure you stay up to date with the latest news and releases, follow us on <a href="https://www.x.com/phpbb/">X</a> and <a href="https://www.facebook.com/phpbb/">Facebook</a><br /><br />',
 
 	// License
 	'LICENSE_TITLE'		=> 'General Public License',
@@ -70,12 +70,12 @@ $lang = array_merge($lang, array(
 
 	<p>phpBB supports the following databases:</p>
 	<ul>
-		<li>MySQL 5.6 or above</li>
-		<li>MariaDB 10.2.7 or above</li>
-		<li>PostgreSQL 9.4 or above</li>
-		<li>SQLite 3.8.3 or above</li>
-		<li>MS SQL Server 2012 or above (via ODBC or the native adapter)</li>
-		<li>Oracle</li>
+		<li>MySQL 8.0 or above</li>
+		<li>MariaDB 10.5.2 or above</li>
+		<li>PostgreSQL 10.0 or above</li>
+		<li>SQLite 3.16 or above</li>
+		<li>MS SQL Server 2017 or above (via ODBC or the native adapter)</li>
+		<li>Oracle 18c or above</li>
 	</ul>
 
 	<p>Only those databases supported on your server will be displayed.',
@@ -84,6 +84,7 @@ $lang = array_merge($lang, array(
 
 	'INSTALL_PHPBB_INSTALLED'		=> 'phpBB is already installed.',
 	'INSTALL_PHPBB_NOT_INSTALLED'	=> 'phpBB is not installed yet.',
+	'INSTALL_RESTART'				=> 'Restart installation',
 ));
 
 // Requirements translation
@@ -105,7 +106,7 @@ $lang = array_merge($lang, array(
 
 	// Server requirements
 	'PHP_VERSION_REQD'					=> 'PHP version',
-	'PHP_VERSION_REQD_EXPLAIN'			=> 'phpBB requires PHP version 7.2.0 or higher.',
+	'PHP_VERSION_REQD_EXPLAIN'			=> 'phpBB requires PHP version 8.2.0 or higher.',
 	'PHP_GETIMAGESIZE_SUPPORT'			=> 'PHP getimagesize() function is required',
 	'PHP_GETIMAGESIZE_SUPPORT_EXPLAIN'	=> 'In order for phpBB to function correctly, the getimagesize function needs to be available.',
 	'PCRE_UTF_SUPPORT'					=> 'PCRE UTF-8 support',
@@ -202,12 +203,12 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_WRITABLE'		=> 'Both the database and the directory containing it must be writable.',
 	'INST_ERR_DB_NO_ERROR'			=> 'No error message given.',
 	'INST_ERR_PREFIX'				=> 'Tables with the specified prefix already exist, please choose an alternative.',
-	'INST_ERR_DB_NO_MARIADB'		=> 'The version of MariaDB installed on this machine is too old, it must be upgraded to at least 10.2.7.',
-	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 5.6.',
-	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2012 (11.0.2100.60)',
-	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.8.3.',
-	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed is too old, it must be upgraded to at least 12.1.0.2.',
-	'INST_ERR_DB_NO_POSTGRES'		=> 'The version of the PostgreSQL you have installed is too old, it must be upgraded to at least 9.4.',
+	'INST_ERR_DB_NO_MARIADB'		=> 'The version of MariaDB installed on this machine is too old, it must be upgraded to at least 10.5.2.',
+	'INST_ERR_DB_NO_MYSQLI'			=> 'The version of MySQL installed on this machine is too old, it must be upgraded to at least 8.0.',
+	'INST_ERR_DB_NO_MSSQL'			=> 'The version of Microsoft SQL Server installed on this machine is too old, it must be upgraded to at least SQL Server 2017 (12.0.1000.159)',
+	'INST_ERR_DB_NO_SQLITE3'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 3.16.',
+	'INST_ERR_DB_NO_ORACLE'			=> 'The version of Oracle installed is too old, it must be upgraded to at least 18c.',
+	'INST_ERR_DB_NO_POSTGRES'		=> 'The version of the PostgreSQL you have installed is too old, it must be upgraded to at least 10.0.',
 	'INST_ERR_DB_NO_POSTGRES_UTF8'	=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
 	'INST_SCHEMA_FILE_NOT_WRITABLE'	=> 'The schema file is not writable',
 
@@ -239,6 +240,9 @@ $lang = array_merge($lang, array(
 	'SERVER_CONFIG'				=> 'Server configuration',
 	'SCRIPT_PATH'				=> 'Script path',
 	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB</samp>.',
+
+	// Errors
+	'INST_ERR_MISSING_SERVER_NAME'	=> 'You must specify a domain name.',
 ));
 
 // Default database schema entries...
@@ -309,6 +313,7 @@ $lang = array_merge($lang, array(
 	'TASK_CREATE_TABLES'				=> 'Creating tables',
 
 	// Install data
+	'TASK_ADD_AI_CRAWLERS'		=> 'Registering AI crawlers',
 	'TASK_ADD_BOTS'				=> 'Registering bots',
 	'TASK_ADD_LANGUAGES'		=> 'Installing available languages',
 	'TASK_SET_LANGUAGES'		=> 'Adding language profile fields',
@@ -505,6 +510,7 @@ $lang = array_merge($lang, array(
 	// Common converter messages
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist.',
 	'DEV_NO_TEST_FILE'			=> 'No value has been specified for the test_file variable in the convertor. If you are a user of this convertor, you should not be seeing this error, please report this message to the convertor author. If you are a convertor author, you must specify the name of a file which exists in the source board to allow the path to it to be verified.',
+	'COULD_NOT_COPY'			=> 'Could not copy file <strong>%1$s</strong> to <strong>%2$s</strong><br><br>Please check that the target directory exists and is writable by the webserver.',
 	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» %s was specified as the source path.',
 	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB config variable for “%s” is empty.',
 

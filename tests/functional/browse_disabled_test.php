@@ -16,7 +16,7 @@
 */
 class phpbb_functional_browse_disabled_test extends phpbb_functional_test_case
 {
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -34,7 +34,7 @@ class phpbb_functional_browse_disabled_test extends phpbb_functional_test_case
 		$this->logout();
 	}
 
-	public function tearDown(): void
+	protected function tearDown(): void
 	{
 		$this->login();
 		$this->admin_login();

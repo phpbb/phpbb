@@ -2,11 +2,11 @@ require 'json'
 require 'yaml'
 
 VAGRANTFILE_API_VERSION ||= "2"
-confDir = $confDir ||= File.expand_path("phpBB/vendor/laravel/homestead", File.dirname(__FILE__))
+confDir = $confDir ||= File.expand_path("vendor/svpernova09/homestead", File.dirname(__FILE__))
 
-homesteadYamlPath = "vagrant/bootstrap.yaml"
-afterScriptPath = "vagrant/after.sh"
-aliasesPath = "vagrant/aliases"
+homesteadYamlPath = "bootstrap.yaml"
+afterScriptPath = "after.sh"
+aliasesPath = "aliases"
 
 require File.expand_path(confDir + '/scripts/homestead.rb')
 

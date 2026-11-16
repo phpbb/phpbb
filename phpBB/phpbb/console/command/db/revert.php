@@ -24,7 +24,7 @@ class revert extends \phpbb\console\command\db\migrate
 	/**
 	 * {@inheritdoc}
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('db:revert')
@@ -47,7 +47,7 @@ class revert extends \phpbb\console\command\db\migrate
 	 *
 	 * @return int
 	 */
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

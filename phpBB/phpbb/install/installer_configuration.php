@@ -24,7 +24,7 @@ class installer_configuration implements ConfigurationInterface
 	 *
 	 * @return TreeBuilder The tree builder
 	 */
-	public function getConfigTreeBuilder()
+	public function getConfigTreeBuilder(): TreeBuilder
 	{
 		$treeBuilder = new TreeBuilder('installer');
 		$rootNode = $treeBuilder->getRootNode();
@@ -59,7 +59,6 @@ class installer_configuration implements ConfigurationInterface
 						->scalarNode('dbms')
 							->defaultValue('sqlite3')
 							->cannotBeEmpty()
-							->isRequired()
 							->end()
 						->scalarNode('dbhost')
 							->defaultValue(null)
@@ -79,7 +78,6 @@ class installer_configuration implements ConfigurationInterface
 						->scalarNode('table_prefix')
 							->defaultValue('phpbb_')
 							->cannotBeEmpty()
-							->isRequired()
 							->end()
 					->end()
 				->end()

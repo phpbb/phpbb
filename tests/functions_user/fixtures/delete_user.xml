@@ -567,4 +567,55 @@
 			<value>2</value>
 		</row>
 	</table>
+	<table name="phpbb_notification_push">
+		<column>notification_type_id</column>
+		<column>item_id</column>
+		<column>item_parent_id</column>
+		<column>user_id</column>
+		<column>push_data</column>
+		<column>notification_time</column>
+		<column>push_token</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>0</value>
+			<value>2</value>
+			<value>{}</value>
+			<value>1</value>
+			<value>token2</value>
+		</row>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>0</value>
+			<value>3</value>
+			<value>{}</value>
+			<value>1</value>
+			<value>token3</value>
+		</row>
+	</table>
+	<table name="phpbb_push_subscriptions">
+		<column>subscription_id</column>
+		<column>user_id</column>
+		<column>endpoint</column>
+		<column>expiration_time</column>
+		<column>p256dh</column>
+		<column>auth</column>
+		<row>
+			<value>1</value>
+			<value>2</value>
+			<value>https://example.com/2</value>
+			<value>0</value>
+			<value>key2</value>
+			<value>auth2</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>3</value>
+			<value>https://example.com/3</value>
+			<value>0</value>
+			<value>key3</value>
+			<value>auth3</value>
+		</row>
+	</table>
 </dataset>

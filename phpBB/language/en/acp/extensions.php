@@ -50,7 +50,7 @@ $lang = array_merge($lang, array(
 	'DISABLING_EXTENSIONS'	=> 'Disabling extensions',
 
 	'EXTENSIONS_CATALOG'			=> 'Extensions Catalog',
-	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all of the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.',
+	'EXTENSIONS_CATALOG_EXPLAIN'	=> 'Here you can browse all the extensions available for your phpBB board. Extensions can easily be installed or removed with just a click. Adjust the settings to allow instant enabling and purging of extensions.<br><br><strong>Warning:</strong> Please be aware that the Extensions Catalog is currently in an Alpha development phase. Enabling this in a production environment carries a significant risk and is strongly discouraged.',
 
 	'EXTENSION'					=> 'Extension',
 	'EXTENSIONS'				=> 'Extensions',

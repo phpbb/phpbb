@@ -180,6 +180,11 @@ class phpbb_test_case_helpers
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
 			}
 
+			if (isset($path_to_ssl_cert))
+			{
+				$config['path_to_ssl_cert'] = $path_to_ssl_cert;
+			}
+
 			if (isset($phpbb_redis_host))
 			{
 				$config['redis_host'] = $phpbb_redis_host;
@@ -243,6 +248,11 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_MEMCACHED_PORT']))
 		{
 			$config['memcached_port'] = $_SERVER['PHPBB_TEST_MEMCACHED_PORT'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_SSL_CERT_PATH']))
+		{
+			$config['path_to_ssl_cert'] = $_SERVER['PHPBB_TEST_SSL_CERT_PATH'];
 		}
 
 		return $config;
@@ -645,7 +655,7 @@ class phpbb_test_case_helpers
 		$renderer->configure_quote_helper($quote_helper);
 		$renderer->configure_mention_helper($mention_helper);
 		$renderer->configure_smilies_path($config, $path_helper);
-		$renderer->configure_user($user, $config, $auth);
+		$renderer->configure_user($auth, $config, $user, 0);
 
 		$container->set('text_formatter.renderer', $renderer);
 		$container->set('text_formatter.s9e.renderer', $renderer);

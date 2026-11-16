@@ -16,6 +16,7 @@
 */
 
 use phpbb\controller\helper;
+use phpbb\language\language;
 use phpbb\messenger\method\messenger_interface;
 
 if (!defined('IN_PHPBB'))
@@ -26,6 +27,8 @@ if (!defined('IN_PHPBB'))
 class acp_users
 {
 	var $u_action;
+	var $tpl_name;
+	var $page_title;
 	var $p_master;
 
 	function __construct($p_master)
@@ -42,6 +45,9 @@ class acp_users
 
 		/** @var helper $controller_helper */
 		$controller_helper = $phpbb_container->get('controller.helper');
+
+		/** @var language $language Language object */
+		$language = $phpbb_container->get('language');
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -73,11 +79,10 @@ class acp_users
 			$this->tpl_name = 'simple_body';
 
 			$user_ip = phpbb_ip_normalise($request->variable('user_ip', ''));
-			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
+				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], phpbb_get_host_for_ip($user_ip)),
 				'MESSAGE_TEXT'		=> nl2br($ipwhois))
 			);
 
@@ -1143,7 +1148,7 @@ class acp_users
 					'POSTS_IN_QUEUE'	=> $user_row['posts_in_queue'],
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
-					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
+					'REGISTERED_IP'		=> ($ip == 'hostname') ? phpbb_get_host_for_ip($user_row['user_ip']) : $user_row['user_ip'],
 					'USER_LASTACTIVE'	=> ($last_active) ? $user->format_date($last_active) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
@@ -1889,9 +1894,27 @@ class acp_users
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', $result) . '
 										WHERE user_id = ' . (int) $user_id;
-
 									$db->sql_query($sql);
-									trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+
+									if ($request->is_ajax())
+									{
+										$json_response = new \phpbb\json_response;
+										$json_response->send([
+											'success' => true,
+
+											'MESSAGE_TITLE'	=> $language->lang('INFORMATION'),
+											'MESSAGE_TEXT'	=> $language->lang('USER_AVATAR_UPDATED'),
+											'REFRESH_DATA'	=> [
+												'time'	=> 3,
+												'url'		=> $this->u_action . '&amp;u=' . $user_id,
+												'text'		=> $language->lang('BACK_TO_PREV'),
+											]
+										]);
+									}
+									else
+									{
+										trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+									}
 								}
 							}
 						}

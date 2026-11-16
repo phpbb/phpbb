@@ -10,6 +10,7 @@
 
 <fieldset>
 	<legend>{{ lang('GENERAL_SEARCH_SETTINGS') }}</legend>
+{% EVENT acp_search_general_settings_prepend %}
 <dl>
 	<dt><label for="load_search">{{ lang('YES_SEARCH') ~ lang('COLON') }}</label><br /><span>{{ lang('YES_SEARCH_EXPLAIN') }}</span></dt>
 	<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"{% if S_YES_SEARCH %} checked="checked"{% endif %} /> {{ lang('YES') }}</label>
@@ -46,6 +47,7 @@
 	<dt><label for="search_store_results">{{ lang('SEARCH_STORE_RESULTS') ~ lang('COLON') }}</label><br /><span>{{ lang('SEARCH_STORE_RESULTS_EXPLAIN') }}</span></dt>
 	<dd><input id="search_store_results" type="number" min="0" max="999999" name="config[search_store_results]" value="{{ SEARCH_STORE_RESULTS }}" /> {{ lang('SECONDS') }}</dd>
 </dl>
+{% EVENT acp_search_general_settings_append %}
 </fieldset>
 
 <fieldset>
@@ -64,6 +66,8 @@
 	</fieldset>
 
 {% endfor %}
+
+{% EVENT acp_search_custom_settings %}
 
 <fieldset>
 	<legend>{{ lang('ACP_SUBMIT_CHANGES') }}</legend>

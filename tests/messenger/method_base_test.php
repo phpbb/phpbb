@@ -40,7 +40,7 @@ class phpbb_messenger_method_base_test extends \phpbb_test_case
 	protected $filesystem;
 	protected $symfony_request;
 
-	public function setUp(): void
+	protected function setUp(): void
 	{
 		global $config, $request, $symfony_request, $user, $phpbb_root_path, $phpEx;
 
@@ -53,6 +53,8 @@ class phpbb_messenger_method_base_test extends \phpbb_test_case
 		$this->dispatcher = $this->getMockBuilder('\phpbb\event\dispatcher')
 			->disableOriginalConstructor()
 			->getMock();
+		$this->dispatcher->method('trigger_event')
+			->willReturnArgument(1);
 		$this->filesystem = new \phpbb\filesystem\filesystem();
 		$this->language = new language(new language_file_loader($phpbb_root_path, $phpEx));
 		$this->queue = $this->createMock(queue::class);

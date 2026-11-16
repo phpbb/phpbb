@@ -110,7 +110,7 @@ class loader extends \Twig\Loader\FilesystemLoader
 	 * Override for \Twig\Loader\FilesystemLoader::findTemplate
 	 * to add support for loading from safe directories.
 	 */
-	protected function findTemplate($name, $throw = true)
+	protected function findTemplate($name, $throw = true): string|null
 	{
 		$name = (string) $name;
 

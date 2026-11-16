@@ -230,7 +230,7 @@ class phpbb_console_command_config_test extends phpbb_test_case
 	{
 		$command_complete_name = '\phpbb\console\command\config' . '\\' . $class_name;
 		$application = new Application();
-		$application->add(new $command_complete_name($this->user, $this->config));
+		$application->addCommand(new $command_complete_name($this->user, $this->config));
 		$command = $application->find('config:' . $command_name);
 		return new CommandTester($command);
 	}

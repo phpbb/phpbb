@@ -24,7 +24,7 @@ class phpbb_console_searchindex_list_all_test extends phpbb_console_searchindex_
 	public function get_command_tester()
 	{
 		$application = new Application();
-		$application->add(new list_all(
+		$application->addCommand(new list_all(
 			$this->config,
 			$this->language,
 			$this->search_backend_collection,

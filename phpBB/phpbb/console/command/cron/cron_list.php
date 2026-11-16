@@ -37,7 +37,7 @@ class cron_list extends \phpbb\console\command\command
 	/**
 	* {@inheritdoc}
 	*/
-	protected function configure()
+	protected function configure(): void
 	{
 		$this
 			->setName('cron:list')
@@ -55,7 +55,7 @@ class cron_list extends \phpbb\console\command\command
 	*
 	* @return int
 	*/
-	protected function execute(InputInterface $input, OutputInterface $output)
+	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$io = new SymfonyStyle($input, $output);
 

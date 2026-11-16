@@ -61,20 +61,23 @@ class version_helper
 	/** @var \phpbb\file_downloader */
 	protected $file_downloader;
 
+	/** @var array[] Version file schema */
 	protected $version_schema = array(
 		'stable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
-			'security'		=> 'bool',
+			'security'		=> 'version',
+			'critical'		=> 'version',
 		),
 		'unstable' => array(
 			'current'		=> 'version',
 			'download'		=> 'url',
 			'announcement'	=> 'url',
 			'eol'			=> 'url',
-			'security'		=> 'bool',
+			'security'		=> 'version',
+			'critical'		=> 'version',
 		),
 	);
 
@@ -171,10 +174,10 @@ class version_helper
 	 * @param string $version
 	 * @return bool Bool true or false
 	 */
-	public function is_stable($version)
+	public function is_stable(string $version): bool
 	{
 		$matches = false;
-		preg_match('/^[\d\.]+/', $version, $matches);
+		preg_match('/^[\d.]+/', $version, $matches);
 
 		if (empty($matches[0]))
 		{
@@ -185,6 +188,20 @@ class version_helper
 	}
 
 	/**
+	 * Get branch for version, e.g. 3.2 for version 3.2.5
+	 *
+	 * @param string $version Version to get branch from
+	 * @return string Branch for version or empty string if version is not of expected format
+	 */
+	protected function get_branch(string $version): string
+	{
+		$matches = [];
+		preg_match('/^(\d+\.\d+).*$/', $version, $matches);
+
+		return $matches[1] ?? '';
+	}
+
+	/**
 	* Gets the latest version for the current branch the user is on
 	*
 	* @param bool $force_update Ignores cached data. Defaults to false.
@@ -192,27 +209,37 @@ class version_helper
 	* @return string
 	* @throws version_check_exception
 	*/
-	public function get_latest_on_current_branch($force_update = false, $force_cache = false)
+	public function get_latest_on_current_branch(bool $force_update = false, bool $force_cache = false): string
 	{
 		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
-		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than the current version
-		$versions = array_filter($versions, function($data) use ($self, $current_version) {
-			return $self->compare($data['current'], $current_version, '>=');
+		// Get the branch information for the current version
+		$current_branch = $this->get_branch($current_version);
+		if (isset($versions[$current_branch]) && empty($versions[$current_branch]['eol']))
+		{
+			return $versions[$current_branch]['current'];
+		}
+
+		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
+		uksort($versions, function($version1, $version2) {
+			return $this->compare($version1, $version2);
 		});
 
-		// Get the lowest version from the previous list.
-		return array_reduce($versions, function($value, $data) use ($self) {
-			if ($value === null || $self->compare($data['current'], $value, '<'))
+		// Find next available version from versions info.
+		// Will suggest newer branches when EoL has been reached for the current branch, and/or version from newer branch
+		// is needed for having all known security issues fixed ('security' > latest on branch).
+		foreach ($versions as $branch => $data)
+		{
+			if ($this->compare($branch, $current_branch, '>=') && empty($data['eol'])
+				&& (empty($data['security']) || $this->compare($data['security'], $data['current'], '<=')))
 			{
 				return $data['current'];
 			}
+		}
 
-			return $value;
-		});
+		return '';
 	}
 
 	/**
@@ -226,36 +253,43 @@ class version_helper
 	 * @return array Version info or empty array if there are no updates
 	 * @throws \RuntimeException
 	 */
-	public function get_update_on_branch($force_update = false, $force_cache = false)
+	public function get_update_on_branch(bool $force_update = false, bool $force_cache = false): array
 	{
 		$versions = $this->get_versions_matching_stability($force_update, $force_cache);
 
-		$self = $this;
 		$current_version = $this->current_version;
 
-		// Filter out any versions less than the current version
-		$versions = array_filter($versions, function($data) use ($self, $current_version) {
-			return $self->compare($data['current'], $current_version, '>=');
+		// Use current branch information if it exists
+		$current_branch = $this->get_branch($current_version);
+		$current_branch_data = $versions[$current_branch] ?? null;
+		if ($current_branch_data && empty($current_branch_data['eol'])
+			&& (empty($current_branch_data['security']) || $this->compare($current_branch_data['security'], $current_version, '<=')))
+		{
+			return ($this->compare($current_branch_data['current'], $current_version, '>')) ? $current_branch_data : [];
+		}
+
+		// Sort versions in version ascending order so we can loop from the lowest version to the highest version.
+		uksort($versions, function($version1, $version2) {
+			return $this->compare($version1, $version2);
 		});
 
-		// Get the lowest version from the previous list.
-		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
-			if ($value === null && $self->compare($data['current'], $current_version, '>='))
+		foreach ($versions as $branch => $data)
+		{
+			if ($this->compare($branch, $current_branch, '>=') && empty($data['eol'])
+				&& (empty($data['security']) || $this->compare($data['security'], $data['current'], '<=')))
 			{
-				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				if ($this->compare($data['current'], $current_version, '>'))
 				{
-					return ($self->compare($data['current'], $current_version, '>')) ? $data : array();
+					return $data;
 				}
 				else
 				{
-					return null;
+					break;
 				}
 			}
+		}
 
-			return $value;
-		});
-
-		return $update_info === null ? array() : $update_info;
+		return [];
 	}
 
 	/**
@@ -276,9 +310,7 @@ class version_helper
 		$self = $this;
 		$current_version = $this->current_version;
 
-		// Get current phpBB branch from version, e.g.: 3.2
-		preg_match('/^(\d+\.\d+).*$/', $this->config['version'], $matches);
-		$current_branch = $matches[1];
+		$current_branch = $this->get_branch($this->config['version']);
 
 		// Filter out any versions less than the current version
 		$versions = array_filter($versions, function($data) use ($self, $current_version) {
@@ -305,7 +337,7 @@ class version_helper
 		$update_info = array_reduce($versions, function($value, $data) use ($self, $current_version) {
 			if ($value === null && $self->compare($data['current'], $current_version, '>='))
 			{
-				if (!$data['eol'] && (!$data['security'] || $self->compare($data['security'], $data['current'], '<=')))
+				if (empty($data['eol']) && (empty($data['security']) || $self->compare($data['security'], $data['current'], '<=')))
 				{
 					return $self->compare($data['current'], $current_version, '>') ? $data : array();
 				}
@@ -451,7 +483,7 @@ class version_helper
 					$version_data = array();
 					foreach ($this->version_schema[$stability_type] as $key => $value)
 					{
-						if (isset($old_version_data[$key]))
+						if (array_key_exists($key, $old_version_data))
 						{
 							$version_data[$key] = $old_version_data[$key];
 						}
@@ -493,8 +525,11 @@ class version_helper
 							throw new version_check_exception('VERSIONCHECK_INVALID_ENTRY');
 					}
 				}
+				unset($value);
 			}
+			unset($version_data);
 		}
+		unset($versions_data);
 
 		return $versions_info;
 	}

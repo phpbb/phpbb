@@ -26,6 +26,8 @@ services:
     notification.type.base:
         abstract: true
         arguments:
+            - '@avatar.helper'
+            - '@controller.helper'
             - '@dbal.conn'
             - '@language'
             - '@user'
@@ -185,6 +187,13 @@ services:
         tags:
             - { name: notification.type }
 
+    notification.type.update_maintenance:
+        class: phpbb\notification\type\update_maintenance
+        shared: false
+        parent: notification.type.base
+        tags:
+            - { name: notification.type }
+
     notification.type.forum:
         class: phpbb\notification\type\forum
         shared: false
@@ -248,3 +257,14 @@ services:
             - '%tables.push_subscriptions%'
         tags:
             - { name: notification.method }
+
+# ----- Notification's controllers -----
+    notification.controller.mark_read:
+        class: phpbb\notification\controller\mark_read
+        arguments:
+            - '@event_dispatcher'
+            - '@language'
+            - '@notification_manager'
+            - '@request'
+            - '@user'
+            - '%core.root_path%'

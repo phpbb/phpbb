@@ -13,6 +13,7 @@
 
 namespace phpbb\mention\source;
 
+use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\user_loader;
@@ -28,6 +29,9 @@ abstract class base_user implements source_interface
 	/** @var user_loader */
 	protected $user_loader;
 
+	/** @var auth */
+	protected $auth;
+
 	/** @var string */
 	protected $phpbb_root_path;
 
@@ -40,16 +44,18 @@ abstract class base_user implements source_interface
 	/**
 	 * base_user constructor.
 	 *
-	 * @param driver_interface $db
+	 * @param auth $auth
 	 * @param config $config
+	 * @param driver_interface $db
 	 * @param user_loader $user_loader
 	 * @param string $phpbb_root_path
 	 * @param string $phpEx
 	 */
-	public function __construct(driver_interface $db, config $config, user_loader $user_loader, string $phpbb_root_path, string $phpEx)
+	public function __construct(auth $auth, config $config, driver_interface $db, user_loader $user_loader, string $phpbb_root_path, string $phpEx)
 	{
-		$this->db = $db;
+		$this->auth = $auth;
 		$this->config = $config;
+		$this->db = $db;
 		$this->user_loader = $user_loader;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $phpEx;
@@ -70,6 +76,16 @@ abstract class base_user implements source_interface
 	abstract protected function query(string $keyword, int $topic_id): string;
 
 	/**
+	 * Check whether the current user has permission to use this source
+	 *
+	 * @return bool True if user can use the source, false otherwise
+	 */
+	public function can_use_source(): bool
+	{
+		return true;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get_priority(array $row): int
@@ -83,6 +99,11 @@ abstract class base_user implements source_interface
 	 */
 	public function get(array &$names, string $keyword, int $topic_id): bool
 	{
+		if (!$this->can_use_source())
+		{
+			return true;
+		}
+
 		$fetched_all = false;
 		$keyword = utf8_clean_string($keyword);
 

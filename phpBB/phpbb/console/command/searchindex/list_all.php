@@ -56,7 +56,7 @@ class list_all extends command
 	 *
 	 * @return void
 	 */
-	protected function configure()
+	protected function configure(): void
 	{
 		$this->setName('searchindex:list')
 			->setDescription($this->language->lang('CLI_DESCRIPTION_SEARCHINDEX_LIST'));

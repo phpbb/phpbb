@@ -11,7 +11,9 @@
 *
 */
 
+use OAuth\Common\Consumer\Credentials;
 use OAuth\OAuth2\Token\StdOAuth2Token;
+use phpbb\auth\provider\oauth\token_storage;
 
 require_once __DIR__ . '/phpbb_not_a_token.php';
 
@@ -48,7 +50,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		// Set the user id to anonymous
 		$this->user->data['user_id'] = ANONYMOUS;
 
-		$this->token_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
+		$this->token_storage = new token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
 	}
 
 	public function getDataSet()
@@ -105,7 +107,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
+		$temp_storage = new token_storage($this->db, $this->user, $this->token_storage_table, $this->state_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
@@ -139,7 +141,7 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$expected_token = new StdOAuth2Token('access', 'refresh', StdOAuth2Token::EOL_NEVER_EXPIRES);
 
 		// Store a token in the database
-		$temp_storage = new \phpbb\auth\provider\oauth\token_storage($this->db, $this->user,  $this->token_storage_table, $this->state_table);
+		$temp_storage = new token_storage($this->db, $this->user,  $this->token_storage_table, $this->state_table);
 		$temp_storage->storeAccessToken($this->service_name, $expected_token);
 		unset($temp_storage);
 
@@ -237,5 +239,90 @@ class phpbb_auth_provider_oauth_token_storage_test extends phpbb_database_test_c
 		$this->db->sql_freeresult($result);
 
 		return $row;
+	}
+
+	public function test_store_and_retrieve_cached_state()
+	{
+		$expected_state = 'abc123_securestate';
+
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state);
+		$this->assertTrue($this->token_storage->hasAuthorizationState($this->service_name));
+		$retrieved_state = $this->token_storage->retrieveAuthorizationState($this->service_name);
+
+		$this->assertIsString($retrieved_state);
+		$this->assertSame($expected_state, $retrieved_state);
+	}
+
+	public function test_store_and_retrieve_db_state()
+	{
+		$expected_state = 'abc123_securestate';
+
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state);
+
+		$fresh_storage = new token_storage(
+			$this->db,
+			$this->user,
+			$this->token_storage_table,
+			$this->state_table
+		);
+
+		$retrieved_state = $fresh_storage->retrieveAuthorizationState($this->service_name);
+
+		$this->assertIsString($retrieved_state);
+		$this->assertSame($expected_state, $retrieved_state);
+	}
+
+	public function test_clear_db_state()
+	{
+		$expected_state = 'abc123_securestate';
+
+		$this->token_storage->storeAuthorizationState($this->service_name, $expected_state);
+
+		$fresh_storage = new token_storage(
+			$this->db,
+			$this->user,
+			$this->token_storage_table,
+			$this->state_table
+		);
+
+		$retrieved_state = $fresh_storage->retrieveAuthorizationState($this->service_name);
+
+		$this->assertIsString($retrieved_state);
+		$this->assertSame($expected_state, $retrieved_state);
+
+		$this->token_storage->clearAuthorizationState($this->service_name);
+		$this->assertFalse($this->token_storage->hasAuthorizationState($this->service_name));
+		$this->expectException(\OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException::class);
+		$this->token_storage->retrieveAuthorizationState($this->service_name);
+	}
+
+	public function test_retrieve_not_stored_state()
+	{
+		$this->expectException(\OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException::class);
+		$result = $this->token_storage->retrieveAuthorizationState($this->service_name);
+	}
+
+	public function test_validate_authorization_state_invalid()
+	{
+		$credentials = new Credentials(
+			'my_key',
+			'my_secret',
+			'http://example.com/callback'
+		);
+		$google_service = new \OAuth\OAuth2\Service\Google(
+			$credentials,
+			$this->createMock(\OAuth\Common\Http\Client\ClientInterface::class),
+			$this->token_storage
+		);
+		$google_reflection = new \ReflectionClass($google_service);
+		$storage = $google_reflection->getProperty('storage');
+		$storage->setValue($google_service, $this->token_storage);
+
+		$expected_state = 'abc123_securestate';
+		$this->token_storage->storeAuthorizationState(\OAuth\OAuth2\Service\Google::class, $expected_state);
+
+		$this->expectException(\OAuth\OAuth2\Service\Exception\InvalidAuthorizationStateException::class);
+
+		$google_service->requestAccessToken('does_not_matter', 'foobar');
 	}
 }
