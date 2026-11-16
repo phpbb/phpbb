@@ -64,7 +64,6 @@ $lang = array_merge($lang, array(
 	'ACCOUNT_DEACTIVATED'			=> 'Your account has been manually deactivated and is only able to be reactivated by an administrator.',
 	'ACP'							=> 'Administration Control Panel',
 	'ACP_SHORT'						=> 'ACP',
-	'ACTIVATION_ALREADY_SENT'		=> 'The activation email has already been sent to your email address. You can try again after 24 hours. If you continue to have problems activating your account, please contact a board administrator.',
 	'ACTIVE'						=> 'active',
 	'ACTIVE_ERROR'					=> 'The specified username is currently inactive. If you have problems activating your account, please contact a board administrator.',
 	'ADMINISTRATOR'					=> 'Administrator',
@@ -101,7 +100,7 @@ $lang = array_merge($lang, array(
 	'AUTH_PROVIDER_OAUTH_SERVICE_BITLY'						=> 'Bitly',
 	'AUTH_PROVIDER_OAUTH_SERVICE_FACEBOOK'					=> 'Facebook',
 	'AUTH_PROVIDER_OAUTH_SERVICE_GOOGLE'					=> 'Google',
-	'AUTH_PROVIDER_OAUTH_SERVICE_TWITTER'					=> 'Twitter',
+	'AUTH_PROVIDER_OAUTH_SERVICE_TWITTER'					=> 'X',
 	'AUTH_PROVIDER_OAUTH_TOKEN_ERROR_NOT_STORED'			=> 'OAuth token not stored.',
 	'AUTH_PROVIDER_OAUTH_TOKEN_ERROR_INCORRECTLY_STORED'	=> 'OAuth token incorrectly stored.',
 	'AVATAR_DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
@@ -338,6 +337,7 @@ $lang = array_merge($lang, array(
 		2	=> '%d guests',
 	),
 	'G_ADMINISTRATORS'			=> 'Administrators',
+	'G_AI_CRAWLERS'				=> 'AI Crawlers',
 	'G_BOTS'					=> 'Bots',
 	'G_GUESTS'					=> 'Guests',
 	'G_REGISTERED'				=> 'Registered users',
@@ -509,6 +509,9 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TOPIC_IN_QUEUE'		=> '<strong>Topic approval</strong> request by %1$s:',
 	'NOTIFICATION_TYPE_NOT_EXIST'		=> 'The notification type "%s" is missing from the file system.',
 	'NOTIFICATION_ADMIN_ACTIVATE_USER'	=> '<strong>Activation required</strong> for deactivated or newly registered user: “%1$s”',
+	'NOTIFICATION_UPDATE_CRITICAL'		=> '<strong>phpBB %2$s update available - Critical update required</strong>: Your board is running %1$s and a new version that includes critical security fixes should be installed immediately.',
+	'NOTIFICATION_UPDATE_MAINTENANCE'	=> '<strong>phpBB %2$s update available</strong>: Your board is running %1$s and a new version is available.',
+	'NOTIFICATION_UPDATE_SECURITY'		=> '<strong>phpBB %2$s update available - Security update</strong>: Your board is running %1$s and a new version that includes security fixes is available. We recommend updating your board to keep it secure and protected.',
 	// Used in conjunction with NOTIFICATION_BOOKMARK and NOTIFICATION_POST.
 	'NOTIFICATION_MANY_OTHERS'			=> 'others',
 	'NOTIFICATION_X_OTHERS'				=> array(
@@ -842,7 +845,7 @@ $lang = array_merge($lang, array(
 		2	=> 'Total members <strong>%d</strong>',
 	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
-	'TWITTER'			=> 'Twitter',
+	'TWITTER'			=> 'X',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image. Please verify that the URL you entered is correct.',
 	'UNABLE_TO_DELIVER_FILE'=> 'Unable to deliver file.',
@@ -990,6 +993,16 @@ $lang = array_merge($lang, array(
 		'Oct'		=> 'Oct',
 		'Nov'		=> 'Nov',
 		'Dec'		=> 'Dec',
+
+		// Ante meridiem and post meridiem for the "a" (lowercase) and "A" (uppercase) date format characters.
+		// These entries are required for all languages. Translate them if your language writes am/pm
+		// differently from English, otherwise keep the English values unchanged.
+		'MERIDIEM'	=> array(
+			'am'	=> 'am',
+			'pm'	=> 'pm',
+			'AM'	=> 'AM',
+			'PM'	=> 'PM',
+		),
 	),
 
 	// Timezones can be translated. We use this for the Etc/GMT timezones here,

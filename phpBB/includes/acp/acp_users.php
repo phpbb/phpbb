@@ -66,11 +66,10 @@ class acp_users
 			$this->tpl_name = 'simple_body';
 
 			$user_ip = phpbb_ip_normalise($request->variable('user_ip', ''));
-			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
-				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
+				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], phpbb_get_host_for_ip($user_ip)),
 				'MESSAGE_TEXT'		=> nl2br($ipwhois))
 			);
 
@@ -1154,7 +1153,7 @@ class acp_users
 					'POSTS_IN_QUEUE'	=> $user_row['posts_in_queue'],
 					'USER'				=> $user_row['username'],
 					'USER_REGISTERED'	=> $user->format_date($user_row['user_regdate']),
-					'REGISTERED_IP'		=> ($ip == 'hostname') ? gethostbyaddr($user_row['user_ip']) : $user_row['user_ip'],
+					'REGISTERED_IP'		=> ($ip == 'hostname') ? phpbb_get_host_for_ip($user_row['user_ip']) : $user_row['user_ip'],
 					'USER_LASTACTIVE'	=> ($last_active) ? $user->format_date($last_active) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],

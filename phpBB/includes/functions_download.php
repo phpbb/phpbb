@@ -201,6 +201,9 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
 
+	// Send restrictive CSP for file served to browser
+	header("Content-Security-Policy: default-src 'none'; style-src 'self' 'unsafe-inline'; img-src 'self'; script-src 'none'; object-src 'none'; frame-src 'none';");
+
 	if (phpbb_is_greater_ie_version($user->browser, 7))
 	{
 		header('X-Content-Type-Options: nosniff');
@@ -216,7 +219,18 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 	else
 	{
-		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(html_entity_decode($attachment['real_filename'], ENT_COMPAT)));
+		$sec_fetch_dest = $request->header('Sec-Fetch-Dest');
+
+		// Only set inline if category is set to image, mimetype says it's an image, and browser either sends no Sec-Fetch-Dest header or explicitly marks the request as an image
+		if ($category == ATTACHMENT_CATEGORY_IMAGE && phpbb_allow_serve_inline($attachment['mimetype'], $sec_fetch_dest))
+		{
+			$disposition = 'inline';
+		}
+		else
+		{
+			$disposition = 'attachment';
+		}
+		header('Content-Disposition: ' . $disposition . '; ' . header_filename(html_entity_decode($attachment['real_filename'], ENT_COMPAT)));
 		if (phpbb_is_greater_ie_version($user->browser, 7) && (strpos($attachment['mimetype'], 'image') !== 0))
 		{
 			header('X-Download-Options: noopen');
@@ -267,16 +281,13 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 				header('Content-Range: bytes ' . $range['byte_pos_start'] . '-' . $range['byte_pos_end'] . '/' . $range['bytes_total']);
 				header('Content-Length: ' . $range['bytes_requested']);
 
-				// First read chunks
-				while (!feof($fp) && ftell($fp) < $range['byte_pos_end'] - 8192)
+				// Read until we reach the end of the requested range
+				$bytes_to_read = $range['bytes_requested'];
+				while ($bytes_to_read > 0 && !feof($fp))
 				{
-					echo fread($fp, 8192);
-				}
-				// Then, read the remainder
-				$remainder = $range['bytes_requested'] % 8192;
-				if ($remainder > 0)
-				{
-					echo fread($fp, $remainder);
+					$chunk = ($bytes_to_read > 8192) ? 8192 : $bytes_to_read;
+					echo fread($fp, $chunk);
+					$bytes_to_read -= $chunk;
 				}
 			}
 			else
@@ -341,7 +352,7 @@ function download_allowed()
 	// Split URL into domain and script part
 	$url = @parse_url($url);
 
-	if ($url === false)
+	if ($url === false || !isset($url['host']))
 	{
 		return ($config['secure_allow_empty_referer']) ? true : false;
 	}
@@ -349,7 +360,7 @@ function download_allowed()
 	$hostname = $url['host'];
 	unset($url);
 
-	$allowed = ($config['secure_allow_deny']) ? false : true;
+	$allowed = !$config['secure_allow_deny'];
 	$iplist = array();
 
 	if (($ip_ary = @gethostbynamel($hostname)) !== false)
@@ -372,60 +383,57 @@ function download_allowed()
 		$server_name = $config['server_name'];
 	}
 
-	if (preg_match('#^.*?' . preg_quote($server_name, '#') . '.*?$#i', $hostname))
+	if (preg_match('#(?:^|\\.)' . preg_quote($server_name, '#') . '$#i', $hostname))
 	{
-		$allowed = true;
+		return true;
 	}
 
 	// Get IP's and Hostnames
-	if (!$allowed)
+	$sql = 'SELECT site_ip, site_hostname, ip_exclude
+		FROM ' . SITELIST_TABLE;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$sql = 'SELECT site_ip, site_hostname, ip_exclude
-			FROM ' . SITELIST_TABLE;
-		$result = $db->sql_query($sql);
+		$site_ip = trim($row['site_ip']);
+		$site_hostname = trim($row['site_hostname']);
 
-		while ($row = $db->sql_fetchrow($result))
+		if ($site_ip)
 		{
-			$site_ip = trim($row['site_ip']);
-			$site_hostname = trim($row['site_hostname']);
-
-			if ($site_ip)
+			foreach ($iplist as $ip)
 			{
-				foreach ($iplist as $ip)
-				{
-					if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_ip, '#')) . '$#i', $ip))
-					{
-						if ($row['ip_exclude'])
-						{
-							$allowed = ($config['secure_allow_deny']) ? false : true;
-							break 2;
-						}
-						else
-						{
-							$allowed = ($config['secure_allow_deny']) ? true : false;
-						}
-					}
-				}
-			}
-
-			if ($site_hostname)
-			{
-				if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_hostname, '#')) . '$#i', $hostname))
+				if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_ip, '#')) . '$#i', $ip))
 				{
 					if ($row['ip_exclude'])
 					{
-						$allowed = ($config['secure_allow_deny']) ? false : true;
-						break;
+						$allowed = !$config['secure_allow_deny'];
+						break 2;
 					}
 					else
 					{
-						$allowed = ($config['secure_allow_deny']) ? true : false;
+						$allowed = (bool) $config['secure_allow_deny'];
 					}
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+
+		if ($site_hostname)
+		{
+			if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_hostname, '#')) . '$#i', $hostname))
+			{
+				if ($row['ip_exclude'])
+				{
+					$allowed = !$config['secure_allow_deny'];
+					break;
+				}
+				else
+				{
+					$allowed = (bool) $config['secure_allow_deny'];
+				}
+			}
+		}
 	}
+	$db->sql_freeresult($result);
 
 	return $allowed;
 }
@@ -783,4 +791,23 @@ function phpbb_is_greater_ie_version($user_agent, $version)
 	{
 		return false;
 	}
+}
+
+/**
+ * Return whether image type should be allowed to be displayed inline based on the mimetype and potentially Sec-Fetch-Dest header
+ *
+ * @param string $mimetype Image mime type
+ * @param string $sec_fetch_dest Sec-Fetch-Dest header field content
+ * @return bool
+ */
+function phpbb_allow_serve_inline(string $mimetype, string $sec_fetch_dest): bool
+{
+	// Allow image types that are known to be supported by all major browsers, and that are known to be safe when rendered inline
+	$allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/bmp', 'image/tiff'];
+	if (in_array($mimetype, $allowed_types, true))
+	{
+		return true;
+	}
+
+	return strpos($mimetype, 'image') === 0 && (empty($sec_fetch_dest) || $sec_fetch_dest === 'image');
 }

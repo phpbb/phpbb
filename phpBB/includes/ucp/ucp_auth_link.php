@@ -36,6 +36,26 @@ class ucp_auth_link
 	{
 		global $request, $template, $phpbb_container, $user;
 
+		// Redirect to new oauth_ controller on link requests
+		if ($request->variable('link', false))
+		{
+			$url_params = [
+				'oauth_service'	=> $request->variable('oauth_service', ''),
+				'link'			=> 1,
+			];
+
+			if ($request->is_set('code'))
+			{
+				$url_params += [
+					'code'			=> $request->variable('code', ''),
+					'state'			=> $request->variable('state', ''),
+					'scope'			=> $request->variable('scope', ''),
+				];
+			}
+
+			phpbb_redirect_to_controller('phpbb_ucp_oauth_authenticate_controller', $url_params);
+		}
+
 		$error = array();
 
 		/* @var $provider_collection \phpbb\auth\provider_collection */
@@ -85,20 +105,6 @@ class ucp_auth_link
 				// Template data may have changed, get new data
 				$provider_data = $auth_provider->get_auth_link_data();
 			}
-		}
-
-		// In some cases, a request to an external server may be required. In
-		// these cases, the GET parameter 'link' should exist and should be true
-		if ($request->variable('link', false))
-		{
-			// In this case the link data should only be populated with the
-			// link_method as the provider dictates how data is returned to it.
-			$link_data = array('link_method' => 'auth_link');
-
-			$error[] = $auth_provider->link_account($link_data);
-
-			// Template data may have changed, get new data
-			$provider_data = $auth_provider->get_auth_link_data();
 		}
 
 		if (isset($provider_data['VARS']))

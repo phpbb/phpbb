@@ -10,6 +10,21 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
 
+    phpbb.ucp.controller.oauth:
+        class: phpbb\ucp\controller\oauth
+        arguments:
+            - '@auth.provider_collection'
+            - '@captcha.factory'
+            - '@config'
+            - '@dispatcher'
+            - '@controller.helper'
+            - '@language'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+
     phpbb.ucp.controller.reset_password:
         class: phpbb\ucp\controller\reset_password
         arguments:

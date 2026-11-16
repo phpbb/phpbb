@@ -98,8 +98,8 @@ switch ($mode)
 			redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
 		}
 
-		$module->load('ucp', 'login_link');
-		$module->display($user->lang['UCP_LOGIN_LINK']);
+		$get_params_array = $request->get_super_global(\phpbb\request\request_interface::GET);
+		phpbb_redirect_to_controller('phpbb_ucp_oauth_link_account_controller', $get_params_array);
 	break;
 
 	case 'logout':

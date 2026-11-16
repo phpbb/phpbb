@@ -1,0 +1,5 @@
+{
+    "require": {
+        "svpernova09/homestead": "dev-main"
+    }
+}

@@ -12,5 +12,11 @@
 			<value>{"token_class":"phpbb_not_a_token","accessToken":"error","refreshToken":0,"endOfLife":null,"extraParams":null}</value>
 		</row>
 	</table>
+	<table name="phpbb_oauth_states">
+		<column>user_id</column>
+		<column>session_id</column>
+		<column>provider</column>
+		<column>oauth_state</column>
+	</table>
 </dataset>
 

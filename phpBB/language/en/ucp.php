@@ -72,8 +72,8 @@ $lang = array_merge($lang, array(
 	'ACCOUNT_EMAIL_CHANGED_ADMIN'	=> 'Your account has been updated. However, this board requires account reactivation by the administrators on email changes. An email has been sent to them and you will be informed when your account has been reactivated.',
 	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this board requires account activation. An activation key has been sent to the email address you provided. Please check your email for further information and also be sure to check your junk mail box. It may take a while to get the email depending on your email provider.',
 	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this board requires account activation by the administrator group. An email has been sent to them and you will be informed when your account has been activated.',
-	'ACTIVATION_EMAIL_SENT'			=> 'The activation email has been sent to your email address.',
-	'ACTIVATION_EMAIL_SENT_ADMIN'	=> 'The activation email has been sent to the administrators email addresses.',
+	'ACTIVATION_EMAIL_SENT'			=> 'An activation email has been sent to the provided address if the username and email you provided are correct. Activation emails are limited to one per 24 hours. If you continue to have problems activating your account, please contact a board administrator.',
+	'ACTIVATION_EMAIL_SENT_ADMIN'	=> 'An activation email has been sent to the administrators email addresses if the username and email you provided are correct. Activation emails are limited to one per 24 hours. If you continue to have problems activating your account, please contact a board administrator.',
 	'ADD'							=> 'Add',
 	'ADD_BCC'						=> 'Add [BCC]',
 	'ADD_FOES'						=> 'Add new foes',
@@ -352,6 +352,7 @@ $lang = array_merge($lang, array(
 	'NOTIFICATION_TYPE_REPORT_PM_CLOSED'				=> 'Your report on a private message is closed by a moderator',
 	'NOTIFICATION_TYPE_TOPIC'							=> 'Someone creates a topic in a forum to which you are subscribed',
 	'NOTIFICATION_TYPE_ADMIN_ACTIVATE_USER'				=> 'User requiring activation',
+	'NOTIFICATION_TYPE_UPDATE_MAINTENANCE'				=> 'phpBB update notifications',
 
 	'NOTIFY_METHOD'					=> 'Notification method',
 	'NOTIFY_METHOD_BOTH'			=> 'Both',
@@ -660,6 +661,7 @@ $lang = array_merge($lang, array(
 	),
 
 	'GROUPS_EXPLAIN'	=> 'Usergroups enable board admins to better administer users. By default you will be placed in a specific group, this is your default group. This group defines how you may appear to other users, for example your username colouration, avatar, rank, etc. Depending on whether the administrator allows it you may be allowed to change your default group. You may also be placed in or allowed to join other groups. Some groups may give you additional permissions to view content or increase your capabilities in other areas.',
+	'GROUPS_MANAGE_EXPLAIN'	=> 'Group leaders may change the details of their usergroups, such as the name, description, colour, rank or avatar, and add, remove or approve members. Depending on your permissions, some of these options may not be available.',
 	'GROUP_LEADER'		=> 'Leaderships',
 	'GROUP_MEMBER'		=> 'Memberships',
 	'GROUP_PENDING'		=> 'Pending memberships',

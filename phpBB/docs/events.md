@@ -614,6 +614,27 @@ acp_ranks_list_header_before
 * Purpose: Add content after the last header-column (but before the action column)
 in the ranks list in the ACP
 
+acp_search_custom_settings
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add its own box (fieldset) for extension settings to the search settings in the ACP
+
+acp_search_general_settings_append
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add settings at the end of the general search settings section in the ACP
+
+acp_search_general_settings_prepend
+===
+* Locations:
+    + adm/style/acp_search.html
+* Since: 3.3.20-RC1
+* Purpose: Add settings before the general search settings section in the ACP
+
 acp_simple_footer_after
 ===
 * Location: adm/style/simple_footer.html
@@ -808,6 +829,13 @@ forumlist_body_category_header_row_prepend
     + styles/prosilver/template/forumlist_body.html
 * Since: 3.1.5-RC1
 * Purpose: Add content before the header row of the category on the forum list.
+
+forumlist_body_forum_desc_after
+===
+* Locations:
+    + styles/prosilver/template/forumlist_body.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the forum description on the forum list.
 
 forumlist_body_forum_image_after
 ===
@@ -1005,6 +1033,27 @@ index_body_stat_blocks_before
 * Since: 3.1.0-a1
 * Purpose: Add new statistic blocks above the Who Is Online and Board Statistics blocks
 
+login_body_buttons_before
+===
+* Locations:
+    + styles/prosilver/template/login_body.html
+* Since: 3.3.20-RC1
+* Purpose: Add data before the login form's submit button
+
+mcp_approve_ajax_reason_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_approve.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the disapproval reason in the AJAX approve/disapprove confirm box
+
+mcp_approve_reason_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_approve.html
+* Since: 3.3.20-RC1
+* Purpose: Add content after the disapproval reason on the approve/disapprove confirm page
+
 mcp_ban_fields_after
 ===
 * Locations:
@@ -1152,6 +1201,13 @@ mcp_move_destination_forum_before
 * Since: 3.2.8-RC1
 * Purpose: Add content before the destination select element in the move topic/post form
 
+mcp_notes_user_rank_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_notes_user.html
+* Since: 3.3.20-RC1
+* Purpose: Add data after the rank title/image in the MCP user-notes user summary
+
 mcp_post_additional_options
 ===
 * Locations:
@@ -1229,6 +1285,13 @@ mcp_topic_postrow_attachments_before
 * Since: 3.2.2-RC1
 * Purpose: Show additional content before attachments in mcp topic review
 
+mcp_topic_postrow_post_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_topic.html
+* Since: 3.3.18-RC1
+* Purpose: Show additional content after postrow ends in mcp topic review
+
 mcp_topic_postrow_post_before
 ===
 * Locations:
@@ -1292,6 +1355,13 @@ mcp_warn_post_add_warning_field_before
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning for a post - before add warning field.
 
+mcp_warn_post_rank_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_post.html
+* Since: 3.3.20-RC1
+* Purpose: Add data after the rank title/image in the MCP warn-post user summary
+
 mcp_warn_user_add_warning_field_after
 ===
 * Locations:
@@ -1305,6 +1375,13 @@ mcp_warn_user_add_warning_field_before
     + styles/prosilver/template/mcp_warn_user.html
 * Since: 3.1.0-RC4
 * Purpose: Add content during warning a user - before add warning field.
+
+mcp_warn_user_rank_after
+===
+* Locations:
+    + styles/prosilver/template/mcp_warn_user.html
+* Since: 3.3.20-RC1
+* Purpose: Add data after the rank title/image in the MCP warn-user user summary
 
 memberlist_body_group_desc_after
 ===
@@ -2473,6 +2550,20 @@ search_results_topic_title_after
 * Since: 3.1.11-RC1
 * Purpose: Add data after search results topic title
 
+search_results_topic_title_append
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.20-RC1
+* Purpose: Add data directly after search results topic title
+
+search_results_topic_title_prepend
+===
+* Locations:
+    + styles/prosilver/template/search_results.html
+* Since: 3.3.20-RC1
+* Purpose: Add data directly before search results topic title
+
 simple_footer_after
 ===
 * Locations:
@@ -2515,8 +2606,12 @@ topiclist_row_append
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
     + styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/ucp_main_bookmarks.html
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
+* Changed: 3.3.20-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_prepend
@@ -2525,8 +2620,12 @@ topiclist_row_prepend
     + styles/prosilver/template/search_results.html
     + styles/prosilver/template/viewforum_body.html
     + styles/prosilver/template/mcp_forum.html
+    + styles/prosilver/template/ucp_main_bookmarks.html
+    + styles/prosilver/template/ucp_main_front.html
+    + styles/prosilver/template/ucp_main_subscribed.html
 * Since: 3.1.0-a1
 * Changed: 3.1.6-RC1 Added event to mcp_forum.html
+* Changed: 3.3.20-RC1 Added event to UCP topic lists
 * Purpose: Add content into topic rows (inside the elements containing topic titles)
 
 topiclist_row_topic_by_author_after

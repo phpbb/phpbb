@@ -253,8 +253,13 @@ class plupload
 	}
 
 	/**
-	* Generates a string that is used to tell plupload to automatically resize
+	* Generates a string that is used to tell the uploader to automatically resize
 	* files before uploading them.
+	*
+	* The settings are not passed to plupload's own resize option, as its
+	* resizing rotates images that browsers already rotated based on their EXIF
+	* orientation. Resizing is done by phpBB's plupload.js instead, which only
+	* falls back to plupload's resizing for browsers that do not rotate images.
 	*
 	* @return string
 	*/
@@ -265,7 +270,7 @@ class plupload
 		{
 			$preserve_headers_value = $this->config['img_strip_metadata'] ? 'false' : 'true';
 			$resize = sprintf(
-				'resize: {width: %d, height: %d, quality: %d, preserve_headers: %s},',
+				'phpbb_resize: {width: %d, height: %d, quality: %d, preserve_headers: %s},',
 				(int) $this->config['img_max_width'],
 				(int) $this->config['img_max_height'],
 				(int) $this->config['img_quality'],

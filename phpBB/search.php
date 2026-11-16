@@ -1045,7 +1045,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					FROM ' . ATTACHMENTS_TABLE . '
 					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
 						AND in_message = 0
-					ORDER BY filetime DESC, post_msg_id ASC';
+					ORDER BY attach_id DESC, post_msg_id ASC';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))

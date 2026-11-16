@@ -218,11 +218,21 @@ class config
 	}
 
 	/**
+	 * Checks whether install config exists, i.e. whether an installation is in progress
+	 *
+	 * @return bool
+	 */
+	public function exists(): bool
+	{
+		return $this->filesystem->exists($this->install_config_file);
+	}
+
+	/**
 	 * Recovers install configuration from file
 	 */
 	public function load_config()
 	{
-		if (!$this->filesystem->exists($this->install_config_file))
+		if (!$this->exists())
 		{
 			return;
 		}

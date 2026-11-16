@@ -102,7 +102,7 @@ abstract class base implements \phpbb\notification\method\method_interface
 	/**
 	* {@inheritdoc}
 	*/
-	public function mark_notifications_by_id($notification_id, $time = false, $mark_read = true)
+	public function mark_notifications_by_id($notification_id, $user_id, $time = false, $mark_read = true)
 	{
 	}
 

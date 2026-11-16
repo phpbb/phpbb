@@ -290,7 +290,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $user, $db, $request, $phpbb_log, $phpbb_dispatcher;
+	global $user, $db, $request, $auth, $phpbb_log, $phpbb_dispatcher;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -320,6 +320,24 @@ function lock_unlock($action, $ids)
 		$ids = $orig_ids;
 
 		if (!phpbb_check_ids($ids, $table, $sql_id, array('f_user_lock')))
+		{
+			return;
+		}
+
+		// Ensure user is topic_poster in addition to having f_user_lock permission
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $ids) . '
+				AND topic_poster = ' . (int) $user->data['user_id'];
+		$result = $db->sql_query($sql);
+		$ids = [];
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$ids[] = (int) $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($ids))
 		{
 			return;
 		}
@@ -394,38 +412,83 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $user, $db, $request, $phpbb_log, $phpbb_dispatcher;
+	global $auth, $user, $db, $request, $phpbb_log, $phpbb_dispatcher;
 
 	switch ($action)
 	{
 		case 'make_announce':
 			$new_topic_type = POST_ANNOUNCE;
-			$check_acl = 'f_announce';
+			$check_acl = ['f_announce'];
 			$l_new_type = (count($topic_ids) == 1) ? 'MCP_MAKE_ANNOUNCEMENT' : 'MCP_MAKE_ANNOUNCEMENTS';
 		break;
 
 		case 'make_global':
 			$new_topic_type = POST_GLOBAL;
-			$check_acl = 'f_announce_global';
+			$check_acl = ['f_announce_global'];
 			$l_new_type = (count($topic_ids) == 1) ? 'MCP_MAKE_GLOBAL' : 'MCP_MAKE_GLOBALS';
 		break;
 
 		case 'make_sticky':
 			$new_topic_type = POST_STICKY;
-			$check_acl = 'f_sticky';
+			$check_acl = ['f_sticky'];
 			$l_new_type = (count($topic_ids) == 1) ? 'MCP_MAKE_STICKY' : 'MCP_MAKE_STICKIES';
 		break;
 
 		default:
 			$new_topic_type = POST_NORMAL;
-			$check_acl = false;
+			$check_acl = [];
 			$l_new_type = (count($topic_ids) == 1) ? 'MCP_MAKE_NORMAL' : 'MCP_MAKE_NORMALS';
 		break;
 	}
 
-	$forum_id = phpbb_check_ids($topic_ids, TOPICS_TABLE, 'topic_id', $check_acl, true);
+	// Changing the topic type for any non-normal topic requires the source permission as well,
+	// e.g. changing a sticky topic to an announcement requires f_sticky and f_announce.
+	$topic_data = phpbb_get_topic_data($topic_ids);
+	foreach ($topic_data as $topic_row)
+	{
+		switch ($topic_row['topic_type'])
+		{
+			case POST_ANNOUNCE:
+				$check_acl[] = 'f_announce';
+			break;
 
-	if ($forum_id === false)
+			case POST_GLOBAL:
+				$check_acl[] = 'f_announce_global';
+			break;
+
+			case POST_STICKY:
+				$check_acl[] = 'f_sticky';
+			break;
+		}
+	}
+
+	$check_acl = array_unique($check_acl);
+
+	// phpbb_check_ids() treats multiple ACLs as alternatives. Check each
+	// selected topic against every required permission before using it.
+	$forum_id = false;
+	foreach ($topic_data as $topic_id => $topic_row)
+	{
+		foreach ($check_acl as $acl)
+		{
+			$has_permission = $topic_row['forum_id']
+				? $auth->acl_get($acl, $topic_row['forum_id'])
+				: $auth->acl_getf_global($acl);
+
+			if (!$has_permission)
+			{
+				unset($topic_ids[array_search($topic_id, $topic_ids)]);
+				break;
+			}
+		}
+
+		if ($forum_id === false && in_array($topic_id, $topic_ids))
+		{
+			$forum_id = $topic_row['forum_id'];
+		}
+	}
+
+	if ($forum_id === false || !count($topic_ids))
 	{
 		return;
 	}

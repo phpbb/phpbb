@@ -13,12 +13,21 @@
 
 namespace phpbb\message;
 
+use phpbb\auth\auth;
+use phpbb\config\config;
+use phpbb\content_visibility;
+use phpbb\db\driver\driver_interface;
+use phpbb\user;
+
 /**
 * Class topic_form
 * Form used to send topics as notification emails
 */
 class topic_form extends form
 {
+	/** @var content_visibility */
+	protected $content_visibility;
+
 	/** @var int */
 	protected $topic_id;
 	/** @var array */
@@ -31,6 +40,23 @@ class topic_form extends form
 	protected $recipient_lang;
 
 	/**
+	 * Construct
+	 *
+	 * @param auth $auth
+	 * @param config $config
+	 * @param content_visibility $content_visibility
+	 * @param driver_interface $db
+	 * @param user $user
+	 * @param string $phpbb_root_path
+	 * @param string $phpEx
+	 */
+	public function __construct(auth $auth, config $config, content_visibility $content_visibility, driver_interface $db, user $user, $phpbb_root_path, $phpEx)
+	{
+		parent::__construct($auth, $config, $db, $user, $phpbb_root_path, $phpEx);
+		$this->content_visibility = $content_visibility;
+	}
+
+	/**
 	* Get the data of the topic
 	*
 	* @param int $topic_id
@@ -38,14 +64,14 @@ class topic_form extends form
 	*/
 	protected function get_topic_row($topic_id)
 	{
-		$sql = 'SELECT forum_id, topic_title
+		$sql = 'SELECT forum_id, topic_title, topic_poster, topic_visibility
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . (int) $topic_id;
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		return $row;
+		return $this->content_visibility->is_visible('topic', $row['forum_id'], $row) ? $row : [];
 	}
 
 	/**

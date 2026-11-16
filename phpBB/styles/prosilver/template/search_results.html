@@ -188,7 +188,7 @@
 			<dt class="author">{L_POST_BY_AUTHOR} <!-- EVENT search_results_post_author_username_prepend -->{searchresults.POST_AUTHOR_FULL}<!-- EVENT search_results_post_author_username_append --></dt>
 			<dd class="search-result-date">{searchresults.POST_DATE}</dd>
 			<dd>{L_FORUM}{L_COLON} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a></dd>
-			<dd>{L_TOPIC}{L_COLON} <a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a></dd>
+			<dd>{L_TOPIC}{L_COLON} <!-- EVENT search_results_topic_title_prepend --><a href="{searchresults.U_VIEW_TOPIC}">{searchresults.TOPIC_TITLE}</a><!-- EVENT search_results_topic_title_append --></dd>
 			<!-- EVENT search_results_topic_title_after -->
 			<dd>{L_REPLIES}{L_COLON} <strong>{searchresults.TOPIC_REPLIES}</strong></dd>
 			<dd>{L_VIEWS}{L_COLON} <strong>{searchresults.TOPIC_VIEWS}</strong></dd>

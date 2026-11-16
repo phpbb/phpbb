@@ -48,3 +48,6 @@ Branch  | Description | GitHub Actions |
 ## 📜 License
 
 [GNU General Public License v2](http://opensource.org/licenses/gpl-2.0.php)
+
+## 🔋 Powered by
+[![JetBrains logo.](https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg)](https://jb.gg/OpenSource)

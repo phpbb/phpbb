@@ -76,34 +76,17 @@ class phpbb_test_case_helpers
 
 	public function setExpectedTriggerError($errno, $message = '')
 	{
-		$exceptionName = '';
-		switch ($errno)
-		{
-			case E_NOTICE:
-			case E_STRICT:
-				// The static property was removed from PHPUnit since v.8.3.0
-				if (isset(PHPUnit\Framework\Error\Notice::$enabled))
-				{
-					PHPUnit\Framework\Error\Notice::$enabled = true;
-				}
-				$exceptionName = 'PHPUnit\Framework\Error\Notice';
-			break;
+		set_error_handler(
+			static function ($errno, $errstr)
+			{
+				restore_error_handler();
+				throw new Exception($errstr, $errno);
+			},
+			E_ALL ^ E_DEPRECATED
+		);
 
-			case E_WARNING:
-				// The static property was removed from PHPUnit since v.8.3.0
-				if (isset(PHPUnit\Framework\Error\Warning::$enabled))
-				{
-					PHPUnit\Framework\Error\Warning::$enabled = true;
-				}
-				$exceptionName = 'PHPUnit\Framework\Error\Warning';
-			break;
-
-			default:
-				$exceptionName = 'PHPUnit\Framework\Error\Error';
-			break;
-		}
 		$this->expectedTriggerError = true;
-		$this->test_case->expectException($exceptionName);
+		$this->test_case->expectException(Exception::class);
 		$this->test_case->expectExceptionCode($errno);
 		if ($message)
 		{
@@ -165,6 +148,11 @@ class phpbb_test_case_helpers
 			if (isset($phpbb_functional_url))
 			{
 				$config['phpbb_functional_url'] = $phpbb_functional_url;
+			}
+
+			if (isset($path_to_ssl_cert))
+			{
+				$config['path_to_ssl_cert'] = $path_to_ssl_cert;
 			}
 
 			if (isset($phpbb_redis_host))
@@ -230,6 +218,11 @@ class phpbb_test_case_helpers
 		if (isset($_SERVER['PHPBB_TEST_MEMCACHED_PORT']))
 		{
 			$config['memcached_port'] = $_SERVER['PHPBB_TEST_MEMCACHED_PORT'];
+		}
+
+		if (isset($_SERVER['PHPBB_TEST_SSL_CERT_PATH']))
+		{
+			$config['path_to_ssl_cert'] = $_SERVER['PHPBB_TEST_SSL_CERT_PATH'];
 		}
 
 		return $config;

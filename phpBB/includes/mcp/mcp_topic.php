@@ -34,7 +34,7 @@ function mcp_topic_view($id, $mode, $action)
 	$user->add_lang('viewtopic');
 
 	$topic_id = $request->variable('t', 0);
-	$topic_info = phpbb_get_topic_data(array($topic_id), false, true);
+	$topic_info = phpbb_get_topic_data(array($topic_id), 'f_read', true);
 
 	if (!count($topic_info))
 	{
@@ -219,7 +219,7 @@ function mcp_topic_view($id, $mode, $action)
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('post_msg_id', $post_id_list) . '
 					AND in_message = 0
-				ORDER BY filetime DESC, post_msg_id ASC';
+				ORDER BY attach_id DESC, post_msg_id ASC';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

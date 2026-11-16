@@ -32,7 +32,7 @@ class phpbb_functions_validate_user_email_test extends phpbb_database_test_case
 
 		parent::setUp();
 
-		$cache = new \phpbb\cache\driver\file();
+		$cache = new \phpbb\cache\driver\file($phpbb_root_path . 'cache/' . PHPBB_ENVIRONMENT . '/');
 		$cache->purge();
 		$this->db = $this->new_dbal();
 		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();

@@ -22,12 +22,14 @@ use OAuth\OAuth2\Service\AbstractService as OAuth2Service;
 use phpbb\auth\provider\base;
 use phpbb\auth\provider\db;
 use phpbb\auth\provider\oauth\service\exception;
+use phpbb\auth\provider\oauth\service\service_interface;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\di\service_collection;
 use phpbb\event\dispatcher;
 use phpbb\language\language;
 use phpbb\request\request_interface;
+use phpbb\routing\helper as routing_helper;
 use phpbb\user;
 
 /**
@@ -52,6 +54,9 @@ class oauth extends base
 
 	/** @var request_interface */
 	protected $request;
+
+	/** @var routing_helper */
+	protected $routing_helper;
 
 	/** @var service_collection */
 	protected $service_providers;
@@ -86,6 +91,7 @@ class oauth extends base
 	 * @param dispatcher			$dispatcher				Event dispatcher object
 	 * @param language			$language				Language object
 	 * @param request_interface	$request				Request object
+	 * @param routing_helper	$routing_helper			Routing helper object
 	 * @param service_collection		$service_providers		OAuth providers service collection
 	 * @param user						$user					User object
 	 * @param string							$oauth_token_table		OAuth table: token storage
@@ -102,6 +108,7 @@ class oauth extends base
 		dispatcher $dispatcher,
 		language $language,
 		request_interface $request,
+		routing_helper $routing_helper,
 		service_collection $service_providers,
 		user $user,
 		$oauth_token_table,
@@ -119,6 +126,7 @@ class oauth extends base
 		$this->language				= $language;
 		$this->service_providers	= $service_providers;
 		$this->request				= $request;
+		$this->routing_helper		= $routing_helper;
 		$this->user					= $user;
 
 		$this->oauth_token_table	= $oauth_token_table;
@@ -160,10 +168,11 @@ class oauth extends base
 		}
 
 		// Request the name of the OAuth service
-		$provider = $this->request->variable('oauth_service', '', false);
+		$provider = $this->request->variable('oauth_service', '');
 		$service_name = $this->get_service_name($provider);
+		$service_provider = $this->get_service_provider($service_name);
 
-		if ($provider === '' || !$this->service_providers->offsetExists($service_name))
+		if ($provider === '' || !$service_provider)
 		{
 			return [
 				'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -174,7 +183,7 @@ class oauth extends base
 
 		// Get the service credentials for the given service
 		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
-		$query = 'mode=login&login=external&oauth_service=' . $provider;
+		$query = ['oauth_service' => $provider];
 
 		try
 		{
@@ -192,11 +201,11 @@ class oauth extends base
 
 		if ($this->is_set_code($service))
 		{
-			$this->service_providers[$service_name]->set_external_service_provider($service);
+			$service_provider->set_external_service_provider($service);
 
 			try
 			{
-				$unique_id = $this->service_providers[$service_name]->perform_auth_login();
+				$unique_id = $service_provider->perform_auth_login();
 			}
 			catch (exception $e)
 			{
@@ -218,7 +227,7 @@ class oauth extends base
 				'oauth_provider_id'	=> (string) $unique_id
 			];
 
-			$sql = 'SELECT user_id 
+			$sql = 'SELECT user_id
 				FROM ' . $this->oauth_account_table . '
 				WHERE ' . $this->db->sql_build_array('SELECT', $data);
 			$result = $this->db->sql_query($sql);
@@ -348,12 +357,11 @@ class oauth extends base
 
 			if ($credentials['key'] && $credentials['secret'])
 			{
-				$provider = $this->get_provider($service_name);
-				$redirect_url = generate_board_url() . '/ucp.' . $this->php_ext . '?mode=login&login=external&oauth_service=' . $provider;
+				$oauth_service = $this->get_provider($service_name);
 
 				$login_data['BLOCK_VARS'][$service_name] = [
-					'REDIRECT_URL'	=> redirect($redirect_url, true),
-					'SERVICE_NAME'	=> $this->get_provider_title($provider),
+					'LOGIN_URL'		=> $this->routing_helper->route('phpbb_ucp_oauth_login_controller', ['oauth_service' => $oauth_service]),
+					'SERVICE_NAME'	=> $this->get_provider_title($oauth_service),
 				];
 			}
 		}
@@ -574,7 +582,7 @@ class oauth extends base
 		}
 
 		// Prepare for an authentication request
-		$query = 'mode=login_link&login_link_oauth_service=' . $link_data['oauth_service'];
+		$query = ['oauth_service' => $link_data['oauth_service']];
 
 		try
 		{
@@ -585,12 +593,14 @@ class oauth extends base
 			return $e->getMessage();
 		}
 
-		$this->service_providers[$service_name]->set_external_service_provider($service);
+		/** @var service_interface $service_provider */
+		$service_provider = $this->service_providers[$service_name];
+		$service_provider->set_external_service_provider($service);
 
 		try
 		{
 			// The user has already authenticated successfully, request to authenticate again
-			$unique_id = $this->service_providers[$service_name]->perform_token_auth();
+			$unique_id = $service_provider->perform_token_auth();
 		}
 		catch (exception $e)
 		{
@@ -624,7 +634,9 @@ class oauth extends base
 	protected function link_account_auth_link(array $link_data, $service_name)
 	{
 		$storage = new token_storage($this->db, $this->user, $this->oauth_token_table, $this->oauth_state_table);
-		$query = 'i=ucp_auth_link&mode=auth_link&link=1&oauth_service=' . $link_data['oauth_service'];
+		$query = [
+			'oauth_service' => $link_data['oauth_service'],
+		];
 
 		try
 		{
@@ -709,7 +721,7 @@ class oauth extends base
 	 *
 	 * @param string			$provider		The name of the provider
 	 * @param token_storage		$storage		Token storage object
-	 * @param string			$query			The query string used for the redirect uri
+	 * @param array				$query			The query parameters used for the redirect uri
 	 * @return ServiceInterface
 	 * @throws exception						When OAuth service was not created
 	 */
@@ -717,13 +729,13 @@ class oauth extends base
 	{
 		$service_name = $this->get_service_name($provider);
 
-		/** @see \phpbb\auth\provider\oauth\service\service_interface::get_service_credentials */
+		/** @see service_interface::get_service_credentials */
 		$service_credentials = $this->service_providers[$service_name]->get_service_credentials();
 
-		/** @see \phpbb\auth\provider\oauth\service\service_interface::get_auth_scope */
+		/** @see service_interface::get_auth_scope */
 		$scopes = $this->service_providers[$service_name]->get_auth_scope();
 
-		$callback = generate_board_url() . "/ucp.{$this->php_ext}?{$query}";
+		$callback = generate_board_url(true) . $this->routing_helper->route('phpbb_ucp_oauth_authenticate_controller', $query);
 
 		// Setup the credentials for the requests
 		$credentials = new Credentials(
@@ -778,6 +790,28 @@ class oauth extends base
 		}
 
 		return $provider;
+	}
+
+	/**
+	 * Get service provider for provider name
+	 *
+	 * @param string $provider
+	 * @return service_interface|null Service provider instance or null if not properly configured
+	 */
+	protected function get_service_provider(string $provider): ?service_interface
+	{
+		if ($this->service_providers->offsetExists($provider))
+		{
+			/** @var service_interface $service_provider */
+			$service_provider = $this->service_providers->offsetGet($provider);
+			$service_credentials = $service_provider->get_service_credentials();
+			if ($service_credentials['key'] && $service_credentials['secret'])
+			{
+				return $service_provider;
+			}
+		}
+
+		return null;
 	}
 
 	/**

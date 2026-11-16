@@ -252,9 +252,13 @@ else
 	$download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 	$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
-	if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+	if ($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB)
 	{
-		$display_cat = ATTACHMENT_CATEGORY_NONE;
+		// Do not display if either display inline is disabled or user is not allowed to view images
+		if (!$config['img_display_inlined'] || !$user->optionget('viewimg'))
+		{
+			$display_cat = ATTACHMENT_CATEGORY_NONE;
+		}
 	}
 
 	/**

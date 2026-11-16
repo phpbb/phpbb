@@ -124,6 +124,7 @@ class install
 		// Set the appropriate input-output handler
 		$this->installer->set_iohandler($this->iohandler_factory->get());
 		$this->controller_helper->handle_language_select();
+		$this->controller_helper->handle_installer_restart();
 
 		if ($this->request->is_ajax())
 		{

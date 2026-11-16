@@ -22,6 +22,7 @@ class session
 	var $page = array();
 	var $data = array();
 	var $browser = '';
+	var $referer = '';
 	var $forwarded_for = '';
 	var $host = '';
 	var $session_id = '';
@@ -171,45 +172,26 @@ class session
 		// Should be a string and lowered
 		$host = (string) strtolower($host);
 
-		// If host is equal the cookie domain or the server name (if config is set), then we assume it is valid
-		if ((isset($config['cookie_domain']) && $host === $config['cookie_domain']) || (isset($config['server_name']) && $host === $config['server_name']))
+		if (!empty($config['server_name']))
 		{
-			return $host;
+			return $config['server_name'];
 		}
 
-		// Is the host actually a IP? If so, we use the IP... (IPv4)
-		if (long2ip(ip2long($host)) === $host)
+		if (!empty($config['cookie_domain']))
 		{
-			return $host;
+			return (strpos($config['cookie_domain'], '.') === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
 		}
 
-		// Now return the hostname (this also removes any port definition). The http:// is prepended to construct a valid URL, hosts never have a scheme assigned
-		$host = @parse_url('http://' . $host);
+		// Try using provided host if neither cookie_domain nor server_name are set in config
+		$host = @parse_url('https://' . $host);
 		$host = (!empty($host['host'])) ? $host['host'] : '';
-
-		// Remove any portions not removed by parse_url (#)
-		$host = str_replace('#', '', $host);
-
-		// If, by any means, the host is now empty, we will use a "best approach" way to guess one
-		if (empty($host))
+		if (!empty($host))
 		{
-			if (!empty($config['server_name']))
-			{
-				$host = $config['server_name'];
-			}
-			else if (!empty($config['cookie_domain']))
-			{
-				$host = (strpos($config['cookie_domain'], '.') === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
-			}
-			else
-			{
-				// Set to OS hostname or localhost
-				$host = (function_exists('php_uname')) ? php_uname('n') : 'localhost';
-			}
+			return $host;
 		}
 
-		// It may be still no valid host, but for sure only a hostname (we may further expand on the cookie domain... if set)
-		return $host;
+		// Fallback to OS hostname or localhost
+		return (function_exists('php_uname')) ? php_uname('n') : 'localhost';
 	}
 
 	/**
@@ -1061,6 +1043,34 @@ class session
 		$phpbb_dispatcher->dispatch('core.session_gc_after');
 
 		return;
+	}
+
+	/**
+	* Anonymous session garbage collection
+	*
+	* Removes expired anonymous (guest) sessions using the shorter session_guest_length
+	* TTL. This is intentionally independent of session_gc() so it can be scheduled
+	* on a much tighter interval without touching registered-user session data.
+	*/
+	public function session_guest_gc(): void
+	{
+		global $db, $config;
+
+		if (!$this->time_now)
+		{
+			$this->time_now = time();
+		}
+
+		$guest_session_length = isset($config['session_guest_length'])
+			? min((int) $config['session_guest_length'], (int) $config['session_length'])
+			: (int) $config['session_length'];
+
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . ANONYMOUS . '
+				AND session_time < ' . (int) ($this->time_now - $guest_session_length);
+		$db->sql_query($sql);
+
+		$config->set('session_guest_last_gc', $this->time_now, false);
 	}
 
 	/**

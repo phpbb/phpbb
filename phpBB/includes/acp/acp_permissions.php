@@ -547,7 +547,7 @@ class acp_permissions
 			);
 
 			$hold_ary = $auth_admin->get_mask('set', (count($user_id)) ? $user_id : false, (count($group_id)) ? $group_id : false, (count($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, ACL_NO);
-			$auth_admin->display_mask('set', $permission_type, $hold_ary, ((count($user_id)) ? 'user' : 'group'), (($permission_scope == 'local') ? true : false));
+			$auth_admin->display_mask('set', $permission_type, $hold_ary, (count($group_id) ? 'group' : 'user'), (($permission_scope == 'local') ? true : false));
 		}
 		else
 		{
@@ -556,7 +556,7 @@ class acp_permissions
 			);
 
 			$hold_ary = $auth_admin->get_mask('view', (count($user_id)) ? $user_id : false, (count($group_id)) ? $group_id : false, (count($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, ACL_NEVER);
-			$auth_admin->display_mask('view', $permission_type, $hold_ary, ((count($user_id)) ? 'user' : 'group'), (($permission_scope == 'local') ? true : false));
+			$auth_admin->display_mask('view', $permission_type, $hold_ary, (count($group_id) ? 'group' : 'user'), (($permission_scope == 'local') ? true : false));
 		}
 	}
 
@@ -674,9 +674,13 @@ class acp_permissions
 	}
 
 	/**
-	* Apply permissions
+	 * Apply permissions
+	 * @param string $mode Module mode (see info file)
+	 * @param string $permission_type Permission type to set (allowed types: a_, f_, m_, u_)
+	 * @param auth_admin $auth_admin Auth admin object to call permission-setting methods
+	 * @param array $user_id User ID array
 	*/
-	function set_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
+	function set_permissions($mode, $permission_type, $auth_admin, $user_id)
 	{
 		global $db, $cache, $user, $auth;
 		global $request;
@@ -694,8 +698,8 @@ class acp_permissions
 		}
 
 		// We loop through the auth settings defined in our submit
-		$ug_id = key($psubmit);
-		$forum_id = key($psubmit[$ug_id]);
+		$ug_id = (int) key($psubmit);
+		$forum_id = (int) key($psubmit[$ug_id]);
 
 		$settings = $request->variable('setting', array(0 => array(0 => array('' => 0))), false, \phpbb\request\request_interface::POST);
 		if (empty($settings) || empty($settings[$ug_id]) || empty($settings[$ug_id][$forum_id]))
@@ -704,6 +708,16 @@ class acp_permissions
 		}
 
 		$auth_settings = $settings[$ug_id][$forum_id];
+
+		// Filter based on permissions type
+		$auth_settings = array_filter($auth_settings, function ($key) use ($permission_type) {
+			return strpos($key, $permission_type) === 0;
+		}, ARRAY_FILTER_USE_KEY);
+
+		if (empty($auth_settings))
+		{
+			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
+		}
 
 		// Do we have a role we want to set?
 		$roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
@@ -719,6 +733,8 @@ class acp_permissions
 		{
 			foreach ($inherit as $_ug_id => $forum_id_ary)
 			{
+				$_ug_id = (int) $_ug_id;
+
 				// Inherit users/groups?
 				if (!in_array($_ug_id, $ug_id))
 				{
@@ -731,6 +747,41 @@ class acp_permissions
 		}
 
 		$forum_id = array_unique($forum_id);
+
+		// Verify all collected ug_ids against the correct entity table and drop any
+		// that do not exist under the resolved ug_type.
+		if ($ug_type == 'user')
+		{
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', $ug_id);
+			$result = $db->sql_query($sql);
+
+			$ug_id = [];
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$ug_id[] = (int) $row['user_id'];
+			}
+		}
+		else
+		{
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . '
+				WHERE ' . $db->sql_in_set('group_id', $ug_id);
+			$result = $db->sql_query($sql);
+
+			$ug_id = [];
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$ug_id[] = (int) $row['group_id'];
+			}
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($ug_id))
+		{
+			trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// If the auth settings differ from the assigned role, then do not set a role...
 		if ($assigned_role)
@@ -750,10 +801,12 @@ class acp_permissions
 			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
-		// Remove users who are now moderators or admins from everyones foes list
-		if ($permission_type == 'm_' || $permission_type == 'a_')
+		// Remove groups or users who are now moderators or admins from everyone's foes list.
+		if (($permission_type == 'm_' || $permission_type == 'a_') && $ug_id)
 		{
-			phpbb_update_foes($db, $auth, $group_id, $user_id);
+			$foe_user_ids = ($ug_type == 'user') ? $ug_id : false;
+			$foe_group_ids = ($ug_type == 'group') ? $ug_id : false;
+			phpbb_update_foes($db, $auth, $foe_group_ids, $foe_user_ids);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -763,9 +816,13 @@ class acp_permissions
 	}
 
 	/**
-	* Apply all permissions
+	 * Apply all permissions
+	 * @param string $mode Module mode (see info file)
+	 * @param string $permission_type Permission type to set (allowed types: a_, f_, m_, u_)
+	 * @param auth_admin $auth_admin Auth admin object to call permission-setting methods
+	 * @param array $user_id User ID array
 	*/
-	function set_all_permissions($mode, $permission_type, $auth_admin, &$user_id, &$group_id)
+	function set_all_permissions($mode, $permission_type, $auth_admin, $user_id)
 	{
 		global $db, $cache, $user, $auth;
 		global $request;
@@ -784,16 +841,68 @@ class acp_permissions
 		$auth_roles = $request->variable('role', array(0 => array(0 => 0)), false, \phpbb\request\request_interface::POST);
 		$ug_ids = $forum_ids = array();
 
+		// Verify all ug_ids submitted via the form against the correct entity table.
+		// Any ID that does not exist as the correct type is silently dropped, so only
+		// real users/groups matching the resolved ug_type are written to the ACL tables.
+		$posted_ug_ids = array_unique(array_map('intval', array_keys($auth_settings)));
+		$valid_ug_ids = [];
+
+		if ($posted_ug_ids)
+		{
+			if ($ug_type == 'user')
+			{
+				$sql = 'SELECT user_id
+					FROM ' . USERS_TABLE . '
+					WHERE ' . $db->sql_in_set('user_id', $posted_ug_ids);
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$valid_ug_ids[] = (int) $row['user_id'];
+				}
+			}
+			else
+			{
+				$sql = 'SELECT group_id
+					FROM ' . GROUPS_TABLE . '
+					WHERE ' . $db->sql_in_set('group_id', $posted_ug_ids);
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$valid_ug_ids[] = (int) $row['group_id'];
+				}
+			}
+			$db->sql_freeresult($result);
+		}
+
 		// We need to go through the auth settings
 		foreach ($auth_settings as $ug_id => $forum_auth_row)
 		{
 			$ug_id = (int) $ug_id;
+
+			// Skip any ug_id not confirmed to exist in the database for the expected type
+			if (!in_array($ug_id, $valid_ug_ids))
+			{
+				continue;
+			}
+
 			$ug_ids[] = $ug_id;
 
 			foreach ($forum_auth_row as $forum_id => $auth_options)
 			{
 				$forum_id = (int) $forum_id;
 				$forum_ids[] = $forum_id;
+
+				// Filter based on permissions type
+				$auth_options = array_filter($auth_options, function ($key) use ($permission_type) {
+					return strpos($key, $permission_type) === 0;
+				}, ARRAY_FILTER_USE_KEY);
+
+				if (empty($auth_options))
+				{
+					continue;
+				}
 
 				// Check role...
 				$assigned_role = (isset($auth_roles[$ug_id][$forum_id])) ? (int) $auth_roles[$ug_id][$forum_id] : 0;
@@ -820,10 +929,12 @@ class acp_permissions
 			phpbb_cache_moderators($db, $cache, $auth);
 		}
 
-		// Remove users who are now moderators or admins from everyones foes list
-		if ($permission_type == 'm_' || $permission_type == 'a_')
+		// Remove groups or users who are now moderators or admins from everyone's foes list.
+		if (($permission_type == 'm_' || $permission_type == 'a_') && $ug_ids)
 		{
-			phpbb_update_foes($db, $auth, $group_id, $user_id);
+			$foe_user_ids = ($ug_type == 'user') ? $ug_ids : false;
+			$foe_group_ids = ($ug_type == 'group') ? $ug_ids : false;
+			phpbb_update_foes($db, $auth, $foe_group_ids, $foe_user_ids);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);

@@ -13,6 +13,9 @@
 
 namespace phpbb\auth\provider\oauth\service;
 
+use OAuth\Common\Http\Exception\TokenResponseException;
+use OAuth\OAuth2\Service\Exception\InvalidAuthorizationStateException;
+
 /**
  * Google OAuth service
  */
@@ -70,10 +73,13 @@ class google extends base
 
 		try
 		{
-			// This was a callback request, get the token
-			$this->service_provider->requestAccessToken($this->request->variable('code', ''));
+			// Get token and state
+			$this->service_provider->requestAccessToken(
+				$this->request->variable('code', ''),
+				$this->request->variable('state', '')
+			);
 		}
-		catch (\OAuth\Common\Http\Exception\TokenResponseException $e)
+		catch (InvalidAuthorizationStateException|TokenResponseException $e)
 		{
 			throw new exception('AUTH_PROVIDER_OAUTH_ERROR_REQUEST');
 		}

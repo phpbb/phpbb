@@ -1,4 +1,16 @@
 services:
+    installer.install_data.add_ai_crawlers:
+        class: phpbb\install\module\install_data\task\add_ai_crawlers
+        arguments:
+            - '@installer.helper.config'
+            - '@installer.helper.iohandler'
+            - '@installer.helper.container_factory'
+            - '@language'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: install_data_install, order: 30 }
+
     installer.install_data.add_bots:
         class: phpbb\install\module\install_data\task\add_bots
         arguments:
@@ -27,7 +39,7 @@ services:
             - '@installer.helper.iohandler'
             - '@installer.helper.container_factory'
         tags:
-            - { name: install_data_install, order: 30 }
+            - { name: install_data_install, order: 40 }
 
     installer.install_data.create_search_index:
         class: phpbb\install\module\install_data\task\create_search_index
@@ -37,7 +49,7 @@ services:
             - '%core.root_path%'
             - '%core.php_ext%'
         tags:
-            - { name: install_data_install, order: 40 }
+            - { name: install_data_install, order: 50 }
 
     installer.module.data_install_collection:
         class: phpbb\di\ordered_service_collection

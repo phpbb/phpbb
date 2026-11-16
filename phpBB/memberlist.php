@@ -774,6 +774,28 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
+		// Check if the user account of the shown profile is banned
+		$user_banned = false;
+		if ($auth->acl_get('m_ban') && $user_id != $user->data['user_id'])
+		{
+			$sql = 'SELECT ban_exclude
+				FROM ' . BANLIST_TABLE . '
+				WHERE ban_userid = ' . (int) $user_id . '
+					AND (ban_end = 0 OR ban_end >= ' . time() . ')';
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!empty($row['ban_exclude']))
+				{
+					$user_banned = false;
+					break;
+				}
+
+				$user_banned = true;
+			}
+			$db->sql_freeresult($result);
+		}
+
 		// Define the main array of vars to assign to memberlist_view.html
 		$template_ary = array(
 			'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
@@ -789,6 +811,7 @@ switch ($mode)
 			'EMAIL_IMG'					=> $user->img('icon_contact_email', $user->lang['EMAIL']),
 			'JABBER_IMG'				=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'				=> $user->img('icon_user_search', $user->lang['SEARCH']),
+			'S_USER_BANNED'				=> $user_banned,
 
 			'S_PROFILE_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group'),
 			'S_GROUP_OPTIONS'			=> $group_options,
@@ -912,17 +935,17 @@ switch ($mode)
 		$user_id	= $request->variable('u', 0);
 		$topic_id	= $request->variable('t', 0);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$form_name = 'admin';
+		}
+		else if ($user_id)
 		{
 			$form_name = 'user';
 		}
 		else if ($topic_id)
 		{
 			$form_name = 'topic';
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$form_name = 'admin';
 		}
 		else
 		{
@@ -949,7 +972,12 @@ switch ($mode)
 		$template_html = $form->get_template_file();
 		$form->render($template);
 
-		if ($user_id)
+		if ($mode === 'contactadmin')
+		{
+			$navlink_name = $user->lang('CONTACT_ADMIN');
+			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
+		}
+		else if ($user_id)
 		{
 			$navlink_name = $user->lang('SEND_EMAIL');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&u=$user_id");
@@ -958,9 +986,9 @@ switch ($mode)
 		{
 			// Generate the navlinks based on the selected topic
 			$navlinks_sql_array = [
-				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name, 
-					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options, 
-					f.forum_options, t.topic_title',
+				'SELECT'    => 'f.parent_id, f.forum_parents, f.left_id, f.right_id, f.forum_type, f.forum_name,
+					f.forum_id, f.forum_desc, f.forum_desc_uid, f.forum_desc_bitfield, f.forum_desc_options,
+					f.forum_options, t.topic_title, t.topic_visibility, t.topic_poster',
 				'FROM'      => [
 					FORUMS_TABLE  => 'f',
 					TOPICS_TABLE  => 't',
@@ -973,6 +1001,13 @@ switch ($mode)
 			$topic_data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+			if (!$phpbb_content_visibility->is_visible('topic', $topic_data['forum_id'], $topic_data))
+			{
+				trigger_error('NO_TOPIC');
+			}
+
 			generate_forum_nav($topic_data);
 			$template->assign_block_vars('navlinks', array(
 				'BREADCRUMB_NAME'	=> $topic_data['topic_title'],
@@ -981,11 +1016,6 @@ switch ($mode)
 
 			$navlink_name = $user->lang('EMAIL_TOPIC');
 			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&t=$topic_id");
-		}
-		else if ($mode === 'contactadmin')
-		{
-			$navlink_name = $user->lang('CONTACT_ADMIN');
-			$navlink_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contactadmin");
 		}
 
 		$template->assign_block_vars('navlinks', array(

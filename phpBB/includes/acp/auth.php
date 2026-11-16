@@ -463,10 +463,7 @@ class auth_admin extends \phpbb\auth\auth
 				foreach ($content_array as $ug_id => $ug_array)
 				{
 					// Build role dropdown options
-					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
-
 					$role_options = array();
-
 					$s_role_options = '';
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 
@@ -560,10 +557,7 @@ class auth_admin extends \phpbb\auth\auth
 				foreach ($content_array as $forum_id => $forum_array)
 				{
 					// Build role dropdown options
-					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
-
 					$role_options = array();
-
 					$current_role_id = (isset($cur_roles[$ug_id][$forum_id])) ? $cur_roles[$ug_id][$forum_id] : 0;
 					$s_role_options = '';
 

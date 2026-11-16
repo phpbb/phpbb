@@ -107,8 +107,8 @@ class profilefields_update extends \phpbb\db\migration\migration
 			{
 				$this->db->sql_query(
 					"UPDATE $profile_fields_data
-					SET $yt_profile_field = '$updated_youtube_url_part'
-					WHERE user_id = {$row['user_id']}"
+					SET $yt_profile_field = '{$this->db->sql_escape($updated_youtube_url_part)}'
+					WHERE user_id = " . (int) $row['user_id']
 				);
 			}
 

@@ -2,6 +2,18 @@ phpbb_ucp_delete_cookies_controller:
     path: /delete_cookies
     defaults: { _controller: phpbb.ucp.controller.delete_cookies:handle }
 
+phpbb_ucp_oauth_authenticate_controller:
+    path: /oauth/authenticate/{oauth_service}
+    defaults: { _controller: phpbb.ucp.controller.oauth:authenticate }
+
+phpbb_ucp_oauth_link_account_controller:
+    path: /oauth/link_account
+    defaults: { _controller: phpbb.ucp.controller.oauth:link_account }
+
+phpbb_ucp_oauth_login_controller:
+    path: /oauth/login/{oauth_service}
+    defaults: { _controller: phpbb.ucp.controller.oauth:login }
+
 phpbb_ucp_reset_password_controller:
     path: /reset_password
     defaults: { _controller: phpbb.ucp.controller.reset_password:reset }

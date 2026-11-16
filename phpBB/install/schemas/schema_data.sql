@@ -243,6 +243,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_post_chars', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_group_default', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_post_limit', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('oauth_states_last_gc', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('plupload_salt', 'phpbb_plupload');
@@ -284,6 +285,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('server_protocol', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_gc', '3600');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_length', '3600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_guest_length', '900');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('session_guest_gc', '900');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_desc', '{L_CONFIG_SITE_DESC}');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_text', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('site_home_url', '');
@@ -316,7 +319,9 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('update_hashes_lock
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_icons_path', 'images/upload_icons');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('upload_path', 'files');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('use_system_cron', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.16-dev');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version', '3.3.19');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version_check_interval', '60');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('version_check_last_cron', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_expire_days', '90');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('warnings_gc', '14400');
 
@@ -341,6 +346,7 @@ INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('repars
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_indexing_state', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('search_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_last_gc', '0', 1);
+INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('session_guest_last_gc', '0', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('smtp_password', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('smtp_username', '', 1);
 INSERT INTO phpbb_config (config_name, config_value, is_dynamic) VALUES ('upload_dir_size', '0', 1);
@@ -540,6 +546,7 @@ INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_co
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('ADMINISTRATORS', 3, 1, 'AA0000', 1, '', '', '', 0);
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('BOTS', 3, 0, '9E8DA7', 0, '', '', '', 5);
 INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('NEWLY_REGISTERED', 3, 0, '', 0, '', '', '', 5);
+INSERT INTO phpbb_groups (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('AI_CRAWLERS', 3, 0, '7D9EAE', 0, '', '', '', 5);
 
 # -- Teampage
 INSERT INTO phpbb_teampage (group_id, teampage_name, teampage_position, teampage_parent) VALUES (5, '', 1, 0);
@@ -835,7 +842,7 @@ INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_len
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_icq', 'profilefields.type.string', 'phpbb_icq', '20', '3', '15', '', '', '[0-9]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 6, 1, 'SEND_ICQ_MESSAGE', 'https://www.icq.com/people/%s/');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_yahoo', 'profilefields.type.string', 'phpbb_yahoo', '40', '5', '255', '', '', '.*', 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 8, 1, 'SEND_YIM_MESSAGE', 'ymsgr:sendim?%s');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_facebook', 'profilefields.type.string', 'phpbb_facebook', '20', '5', '50', '', '', '[\w.]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 9, 1, 'VIEW_FACEBOOK_PROFILE', 'https://facebook.com/%s/');
-INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_twitter', 'profilefields.type.string', 'phpbb_twitter', '20', '1', '15', '', '', '[\w_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 10, 1, 'VIEW_TWITTER_PROFILE', 'https://twitter.com/%s');
+INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_twitter', 'profilefields.type.string', 'phpbb_twitter', '20', '1', '15', '', '', '[\w_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 10, 1, 'VIEW_TWITTER_PROFILE', 'https://x.com/%s');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_skype', 'profilefields.type.string', 'phpbb_skype', '20', '6', '32', '', '', '[a-zA-Z][\w\.,\-_]+', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 11, 1, 'VIEW_SKYPE_PROFILE', 'skype:%s?userinfo');
 INSERT INTO phpbb_profile_fields (field_name, field_type, field_ident, field_length, field_minlen, field_maxlen, field_novalue, field_default_value, field_validation, field_required, field_show_novalue, field_show_on_reg, field_show_on_pm, field_show_on_vt, field_show_on_ml, field_show_profile, field_hide, field_no_view, field_active, field_order, field_is_contact, field_contact_desc, field_contact_url) VALUES ('phpbb_youtube', 'profilefields.type.string', 'phpbb_youtube', '20', '3', '60', '', '', '(@[a-zA-Z0-9_.-]{3,30}|c/[a-zA-Z][\w\.,\-_]+|(channel|user)/[a-zA-Z][\w\.,\-_]+)', 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 12, 1, 'VIEW_YOUTUBE_PROFILE', 'https://youtube.com/%s');
 
@@ -846,5 +853,6 @@ INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUE
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.topic', 0, 2, 'notification.method.email');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.forum', 0, 2, 'notification.method.board');
 INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.forum', 0, 2, 'notification.method.email');
+INSERT INTO phpbb_user_notifications (item_type, item_id, user_id, method) VALUES('notification.type.update_maintenance', 0, 2, 'notification.method.email');
 
 # POSTGRES COMMIT #

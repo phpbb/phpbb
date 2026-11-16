@@ -156,7 +156,7 @@ function mcp_post_details($id, $mode, $action)
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE post_msg_id = ' . $post_id . '
 				AND in_message = 0
-			ORDER BY filetime DESC, post_msg_id ASC';
+			ORDER BY attach_id DESC, post_msg_id ASC';
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -265,7 +265,7 @@ function mcp_post_details($id, $mode, $action)
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> $user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
-		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && $request->variable('lookup', '')) ? phpbb_get_host_for_ip($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
 		'SIGNATURE'				=> $post_info['user_sig'],
 
@@ -470,7 +470,7 @@ function mcp_post_details($id, $mode, $action)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$page_ips++;
-			$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? @gethostbyaddr($row['poster_ip']) : '';
+			$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? phpbb_get_host_for_ip($row['poster_ip']) : '';
 
 			$template->assign_block_vars('iprow', array(
 				'IP'			=> $row['poster_ip'],

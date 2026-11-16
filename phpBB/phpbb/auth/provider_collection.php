@@ -39,7 +39,7 @@ class provider_collection extends \phpbb\di\service_collection
 	* Get an auth provider.
 	*
 	* @param string $provider_name The name of the auth provider
-	* @return object	Default auth provider selected in config if it
+	* @return provider\provider_interface	Default auth provider selected in config if it
 	*			does exist. Otherwise the standard db auth
 	*			provider.
 	* @throws \RuntimeException If neither the auth provider that

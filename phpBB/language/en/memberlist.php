@@ -135,6 +135,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
 	'USER_ADMIN'			=> 'Administer user',
 	'USER_BAN'				=> 'Banning',
+	'USER_BANNED'			=> 'Banned',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
 		0		=> 'No reminder sent at this time',
@@ -148,6 +149,6 @@ $lang = array_merge($lang, array(
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VIEW_FACEBOOK_PROFILE'	=> 'View Facebook Profile',
 	'VIEW_SKYPE_PROFILE'	=> 'View Skype Profile',
-	'VIEW_TWITTER_PROFILE'	=> 'View Twitter Profile',
+	'VIEW_TWITTER_PROFILE'	=> 'View X Profile',
 	'VIEW_YOUTUBE_PROFILE'	=> 'View YouTube Profile',
 ));

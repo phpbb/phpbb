@@ -13,7 +13,7 @@
 	</fieldset>
 	<!-- ENDIF -->
 
-	<p>{L_GROUPS_EXPLAIN}</p>
+	<p>{L_GROUPS_MANAGE_EXPLAIN}</p>
 
 	<!-- IF S_EDIT -->
 		<h3>{L_GROUP_DETAILS}</h3>
@@ -237,6 +237,10 @@
 		</ul>
 	<!-- ELSE -->
 		<p><strong>{L_NO_LEADERS}</strong></p>
+	<!-- ENDIF -->
+
+	<!-- IF S_LEADER_GROUPS_RESTRICTED -->
+		<p>{L_GROUP_LEADER_RESTRICTED}</p>
 	<!-- ENDIF -->
 
 	</div>

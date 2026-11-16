@@ -415,8 +415,8 @@ foreach ($session_data_rowset as $row)
 		'USERNAME_FULL'		=> $username_full,
 		'LASTUPDATE'		=> $user->format_date($row['session_time']),
 		'FORUM_LOCATION'	=> $location,
-		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
-		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
+		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? phpbb_get_host_for_ip($row['session_ip']) : $row['session_ip']) : '',
+		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? utf8_htmlspecialchars($row['session_browser']) : '',
 
 		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
 		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),

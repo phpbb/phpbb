@@ -203,7 +203,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 
 			if ($action == 'quotepost')
 			{
-				$sql = 'SELECT p.post_id as msg_id, p.forum_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
+				$sql = 'SELECT p.post_id as msg_id, p.forum_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.post_visibility as post_visibility, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 					WHERE p.post_id = $msg_id
 						AND t.topic_id = p.topic_id
@@ -367,6 +367,14 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			{
 				send_status_line(403, 'Forbidden');
 				trigger_error('NOT_AUTHORISED');
+			}
+
+			/* @var $phpbb_content_visibility \phpbb\content_visibility */
+			$phpbb_content_visibility = $phpbb_container->get('content.visibility');
+
+			if (!$phpbb_content_visibility->is_visible('post', $post['forum_id'], $post))
+			{
+				trigger_error('NO_MESSAGE');
 			}
 
 			/**
@@ -641,7 +649,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
 				AND is_orphan = 0
-			ORDER BY filetime DESC";
+			ORDER BY attach_id DESC";
 		$result = $db->sql_query($sql);
 		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
 		$db->sql_freeresult($result);
@@ -921,8 +929,11 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 		* @var	bool	submit				Whether or not the form has been sumitted
 		* @var	bool	preview				Whether or not the signature is being previewed
 		* @var	array	error				Any error strings
+		* @var	array	address_list		Array of recipients, keyed 'u' (user ids)
+		*									and 'g' (group ids), each mapping id => 'to'|'bcc'
 		* @since 3.2.10-RC1
 		* @since 3.3.1-RC1
+		* @changed 3.3.20-RC1 Added address_list var
 		*/
 		$vars = [
 			'enable_bbcode',
@@ -934,6 +945,7 @@ function compose_pm($id, $mode, $action, $user_folders = array())
 			'submit',
 			'preview',
 			'error',
+			'address_list',
 		];
 		extract($phpbb_dispatcher->trigger_event('core.ucp_pm_compose_modify_parse_after', compact($vars)));
 

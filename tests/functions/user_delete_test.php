@@ -83,6 +83,9 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$phpEx
 		);
 
+		$routing_helper = $this->getMockBuilder(\phpbb\routing\helper::class)
+			->disableOriginalConstructor()
+			->getMock();
 		$oauth_provider = new \phpbb\auth\provider\oauth\oauth(
 			$config,
 			$db,
@@ -90,6 +93,7 @@ class phpbb_functions_user_delete_test extends phpbb_database_test_case
 			$phpbb_dispatcher,
 			$lang,
 			$request,
+			$routing_helper,
 			$oauth_provider_collection,
 			$user,
 			'phpbb_oauth_tokens',

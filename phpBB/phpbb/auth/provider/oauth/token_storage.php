@@ -17,7 +17,6 @@ use OAuth\OAuth1\Token\StdOAuth1Token;
 use OAuth\Common\Token\TokenInterface;
 use OAuth\Common\Storage\TokenStorageInterface;
 use OAuth\Common\Storage\Exception\TokenNotFoundException;
-use OAuth\Common\Storage\Exception\AuthorizationStateNotFoundException;
 
 /**
  * OAuth storage wrapper for phpBB's cache
@@ -208,6 +207,7 @@ class token_storage implements TokenStorageInterface
 			'provider'		=> $service,
 			'oauth_state'	=> $state,
 			'session_id'	=> $this->user->data['session_id'],
+			'state_time'	=> time(),
 		];
 
 		$sql = 'INSERT INTO ' . $this->oauth_state_table . ' ' . $this->db->sql_build_array('INSERT', $data);
@@ -254,16 +254,12 @@ class token_storage implements TokenStorageInterface
 		}
 
 		$data = [
-			'user_id'	=> (int) $this->user->data['user_id'],
-			'provider'	=> $service,
+			'user_id'		=> (int) $this->user->data['user_id'],
+			'provider'		=> $service,
+			'session_id'	=> $this->user->data['session_id'],
 		];
 
-		if ((int) $this->user->data['user_id'] === ANONYMOUS)
-		{
-			$data['session_id']	= $this->user->data['session_id'];
-		}
-
-		return $this->get_state_row($data);
+		return $this->_retrieve_state($data);
 	}
 
 	/**
@@ -422,8 +418,7 @@ class token_storage implements TokenStorageInterface
 	 * A helper function that performs the query for retrieving state functions by session.
 	 *
 	 * @param string	$service	The OAuth service provider name
-	 * @return string				The OAuth state
-	 * @throws AuthorizationStateNotFoundException
+	 * @return string|null			The OAuth state, or null if not stored
 	 */
 	public function retrieve_state_by_session($service)
 	{
@@ -477,17 +472,16 @@ class token_storage implements TokenStorageInterface
 	/**
 	 * A helper function that performs the query for retrieve state functions.
 	 *
-	 * @param array		$data		The SQL WHERE data
-	 * @return string				The OAuth state
-	 * @throws AuthorizationStateNotFoundException
+	 * @param array $data		The SQL WHERE data
+	 * @return string				The OAuth state, or null if not stored
 	 */
-	protected function _retrieve_state($data)
+	protected function _retrieve_state(array $data): ?string
 	{
 		$row = $this->get_state_row($data);
 
 		if (!$row)
 		{
-			throw new AuthorizationStateNotFoundException();
+			return null;
 		}
 
 		$this->cachedState = $row['oauth_state'];
@@ -517,16 +511,17 @@ class token_storage implements TokenStorageInterface
 	/**
 	 * A helper function that performs the query for retrieving a state.
 	 *
-	 * @param array		$data		The SQL WHERE data
+	 * @param array $data		The SQL WHERE data
 	 * @return array|false			array with the OAuth state row,
 	 *                       		false if the state does not exist
 	 */
-	protected function get_state_row($data)
+	protected function get_state_row(array $data)
 	{
-		$sql = 'SELECT oauth_state
+		$sql = 'SELECT oauth_state, state_time
 			FROM ' . $this->oauth_state_table . '
-			WHERE ' . $this->db->sql_build_array('SELECT', $data);
-		$result = $this->db->sql_query($sql);
+			WHERE ' . $this->db->sql_build_array('SELECT', $data) . '
+			ORDER BY state_time DESC';
+		$result = $this->db->sql_query_limit($sql, 1);
 		$row = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
