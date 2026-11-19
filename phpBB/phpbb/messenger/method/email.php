@@ -365,7 +365,7 @@ class email extends base
 			$this->set_dsn();
 		}
 
-		$this->transport = Transport::fromDsn($this->dsn);
+		$this->transport = Transport::fromDsn($this->dsn, $this->dispatcher);
 
 		if ($this->config['smtp_delivery'] && method_exists($this->transport, 'getStream'))
 		{
