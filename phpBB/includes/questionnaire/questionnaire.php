@@ -375,7 +375,6 @@ class phpbb_questionnaire_phpbb_data_provider
 			'load_cpf_viewtopic' => true,
 			'load_db_lastread' => true,
 			'load_db_track' => true,
-			'load_jumpbox' => true,
 			'load_moderators' => true,
 			'load_online' => true,
 			'load_online_guests' => true,
