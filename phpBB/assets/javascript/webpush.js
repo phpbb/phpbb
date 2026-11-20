@@ -24,14 +24,17 @@ function PhpbbWebpush() {
 	/** @type {string} Title of an error message */
 	let ajaxErrorTitle = '';
 
+	/** @type {string} Fallback unsubscribe error message */
+	let unsubscribeError = '';
+
 	/** @type {string} VAPID public key */
 	let vapidPublicKey = '';
 
-	/** @type {HTMLElement} Subscribe button */
-	let subscribeButton;
+	/** @type {NodeListOf<HTMLElement>} Subscribe buttons */
+	let subscribeButtons;
 
-	/** @type {HTMLElement} Unsubscribe button */
-	let unsubscribeButton;
+	/** @type {NodeListOf<HTMLElement>} Unsubscribe buttons */
+	let unsubscribeButtons;
 
 	/**
 	 * Init function for phpBB Web Push
@@ -45,10 +48,11 @@ function PhpbbWebpush() {
 		this.formTokens = options.formTokens;
 		subscriptions = options.subscriptions;
 		ajaxErrorTitle = options.ajaxErrorTitle;
+		unsubscribeError = options.unsubscribeError;
 		vapidPublicKey = options.vapidPublicKey;
 
-		subscribeButton = document.querySelector('#subscribe_webpush');
-		unsubscribeButton = document.querySelector('#unsubscribe_webpush');
+		subscribeButtons = document.querySelectorAll('[data-webpush-action="subscribe"]');
+		unsubscribeButtons = document.querySelectorAll('[data-webpush-action="unsubscribe"]');
 
 		// Service workers are only supported in secure context
 		if (window.isSecureContext !== true) {
@@ -59,8 +63,8 @@ function PhpbbWebpush() {
 		if ('serviceWorker' in navigator && 'PushManager' in window) {
 			navigator.serviceWorker.register(serviceWorkerUrl)
 				.then(async() => {
-					subscribeButton.addEventListener('click', subscribeButtonHandler);
-					unsubscribeButton.addEventListener('click', unsubscribeButtonHandler);
+					subscribeButtons.forEach(button => button.addEventListener('click', subscribeButtonHandler));
+					unsubscribeButtons.forEach(button => button.addEventListener('click', unsubscribeButtonHandler));
 
 					await updateButtonState();
 				})
@@ -75,27 +79,29 @@ function PhpbbWebpush() {
 	};
 
 	/**
-	 * Disable subscribing buttons, update subscribe button text and hide dropdown toggle
+	 * If subscribing is disabled, hide the dropdown toggle and update the subscription button text
 	 *
 	 * @returns {void}
 	 */
 	function setDisabledState() {
-		subscribeButton.disabled = true;
-
 		const notificationList = document.getElementById('notification-menu');
-		const subscribeToggle = notificationList.querySelector('.webpush-subscribe');
+		const subscribeToggle = notificationList ? notificationList.querySelector('.webpush-subscribe') : null;
 
 		if (subscribeToggle) {
 			subscribeToggle.style.display = 'none';
 		}
 
-		if (subscribeButton.type === 'submit' || subscribeButton.classList.contains('button')) {
-			subscribeButton.value = subscribeButton.getAttribute('data-disabled-msg');
-		}
+		subscribeButtons.forEach(button => {
+			button.disabled = true;
+
+			if (button.type === 'submit' || button.classList.contains('button')) {
+				button.value = button.getAttribute('data-disabled-msg');
+			}
+		});
 	}
 
 	/**
-	 * Update button state depending on notification state
+	 * Update button state depending on the notification state
 	 *
 	 * @returns {Promise<void>}
 	 */
@@ -117,6 +123,11 @@ function PhpbbWebpush() {
 				return;
 			}
 
+			// A subscription this account does not own was made by another member on this browser.
+			if (!subscriptions.some(stored => stored.endpoint === subscription.endpoint)) {
+				return;
+			}
+
 			if (shouldRefreshSubscription(subscription)) {
 				await refreshSubscription(registration, subscription);
 				return;
@@ -129,7 +140,7 @@ function PhpbbWebpush() {
 	}
 
 	/**
-	 * Check whether subscription is valid
+	 * Check whether a subscription is valid
 	 *
 	 * @param {PushSubscription} subscription
 	 * @returns {boolean}
@@ -225,13 +236,8 @@ function PhpbbWebpush() {
 	 * @param {boolean} subscribed True if subscribed, false if not
 	 */
 	function setSubscriptionState(subscribed) {
-		if (subscribed) {
-			subscribeButton.classList.add('hidden');
-			unsubscribeButton.classList.remove('hidden');
-		} else {
-			subscribeButton.classList.remove('hidden');
-			unsubscribeButton.classList.add('hidden');
-		}
+		subscribeButtons.forEach(button => button.classList.toggle('hidden', subscribed));
+		unsubscribeButtons.forEach(button => button.classList.toggle('hidden', !subscribed));
 	}
 
 	/**
@@ -255,7 +261,7 @@ function PhpbbWebpush() {
 			const data = await response.json();
 
 			if (!data.success) {
-				throw new Error(data.message || subscribeButton.getAttribute('data-disabled-msg'));
+				throw new Error(data.message);
 			}
 
 			handleSubscribe(data, subscription, previousEndpoint);
@@ -303,13 +309,17 @@ function PhpbbWebpush() {
 	async function subscribeButtonHandler(event) {
 		event.preventDefault();
 
-		subscribeButton.removeEventListener('click', subscribeButtonHandler);
+		const button = event.currentTarget;
+		subscribeButtons.forEach(control => {
+			control.disabled = true;
+			control.removeEventListener('click', subscribeButtonHandler);
+		});
 
 		try {
 			// Prevent the user from clicking the subscribe button multiple times.
 			const result = await Notification.requestPermission();
 			if (result === 'denied') {
-				phpbb.alert(subscribeButton.getAttribute('data-l-err'), subscribeButton.getAttribute('data-l-msg'));
+				phpbb.alert(button.getAttribute('data-l-err'), button.getAttribute('data-l-msg'));
 				return;
 			}
 
@@ -318,20 +328,23 @@ function PhpbbWebpush() {
 			// We might already have a subscription that is unknown to this instance of phpBB.
 			// Unsubscribe before trying to subscribe again.
 			if (typeof registration === 'undefined') {
-				throw new Error(subscribeButton.getAttribute('data-disabled-msg'));
+				throw new Error(button.getAttribute('data-disabled-msg'));
 			}
 
 			try {
 				const subscribed = await registration.pushManager.getSubscription();
 				await refreshSubscription(registration, subscribed);
 			} catch (error) {
-				phpbb.alert(ajaxErrorTitle, error.message || subscribeButton.getAttribute('data-disabled-msg'));
+				phpbb.alert(ajaxErrorTitle, error.message || button.getAttribute('data-disabled-msg'));
 			}
 		} catch (error) {
 			console.error('Push subscription error:', error);
-			phpbb.alert(subscribeButton.getAttribute('data-l-err'), error.message || subscribeButton.getAttribute('data-disabled-msg'));
+			phpbb.alert(button.getAttribute('data-l-err'), error.message || button.getAttribute('data-disabled-msg'));
 		} finally {
-			subscribeButton.addEventListener('click', subscribeButtonHandler);
+			subscribeButtons.forEach(control => {
+				control.disabled = false;
+				control.addEventListener('click', subscribeButtonHandler);
+			});
 		}
 	}
 
@@ -371,7 +384,7 @@ function PhpbbWebpush() {
 					// Ignore JSON parsing failures and fall back below.
 				}
 				if (!response.ok || !data || !data.success) {
-					throw new Error(data && data.message ? data.message : 'Unsubscribe failed.');
+					throw new Error(data && data.message ? data.message : unsubscribeError);
 				}
 
 				const unsubscribed = await subscription.unsubscribe();
