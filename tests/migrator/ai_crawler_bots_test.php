@@ -31,6 +31,7 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		global $db, $config, $phpbb_dispatcher, $phpbb_container, $phpbb_root_path, $phpEx;
 
 		$db = $this->db = $this->new_dbal();
+		$db_doctrine = $this->new_doctrine_dbal();
 		$config = new \phpbb\config\config([
 			'board_timezone'		=> 'UTC',
 			'default_dateformat'	=> 'D M d, Y g:i a',
@@ -52,10 +53,11 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		$this->migration = new \phpbb\db\migration\data\v33x\ai_crawler_bots(
 			$config,
 			$this->db,
-			$factory->get($this->db),
+			$factory->get($db_doctrine),
 			$phpbb_root_path,
 			$phpEx,
-			'phpbb_'
+			'phpbb_',
+			self::get_core_tables()
 		);
 	}
 

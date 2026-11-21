@@ -31,15 +31,17 @@ class phpbb_migrator_remove_duplicate_ai_crawler_bots_test extends phpbb_databas
 		global $phpbb_root_path, $phpEx;
 
 		$this->db = $this->new_dbal();
+		$db_doctrine = $this->new_doctrine_dbal();
 		$factory = new \phpbb\db\tools\factory();
 
 		$this->migration = new \phpbb\db\migration\data\v33x\remove_duplicate_ai_crawler_bots(
 			new \phpbb\config\config([]),
 			$this->db,
-			$factory->get($this->db),
+			$factory->get($db_doctrine),
 			$phpbb_root_path,
 			$phpEx,
-			'phpbb_'
+			'phpbb_',
+			self::get_core_tables()
 		);
 	}
 
