@@ -106,12 +106,14 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	public function get_email_template_variables()
 	{
 		$board_url = generate_board_url();
+		$report_id = (int) $this->get_data('report_id');
+		$report_parameter = ($report_id > 0) ? '&r=' . $report_id : '';
 
 		return array(
 			'POST_SUBJECT'				=> html_entity_decode(censor_text($this->get_data('post_subject')), ENT_COMPAT),
 			'TOPIC_TITLE'				=> html_entity_decode(censor_text($this->get_data('topic_title')), ENT_COMPAT),
 
-			'U_VIEW_REPORT'				=> "{$board_url}/mcp.{$this->php_ext}?p={$this->item_id}&i=reports&mode=report_details#reports",
+			'U_VIEW_REPORT'				=> "{$board_url}/mcp.{$this->php_ext}?p={$this->item_id}&i=reports&mode=report_details{$report_parameter}#reports",
 			'U_VIEW_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?p={$this->item_id}#p{$this->item_id}",
 			'U_NEWEST_POST'				=> "{$board_url}/viewtopic.{$this->php_ext}?t={$this->item_parent_id}&view=unread#unread",
 			'U_TOPIC'					=> "{$board_url}/viewtopic.{$this->php_ext}?t={$this->item_parent_id}",
@@ -127,7 +129,19 @@ class report_post extends \phpbb\notification\type\post_in_queue
 	*/
 	public function get_url()
 	{
-		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "p={$this->item_id}&amp;i=reports&amp;mode=report_details#reports");
+		$report_id = (int) $this->get_data('report_id');
+		$report_parameter = ($report_id > 0) ? '&amp;r=' . $report_id : '';
+
+		return append_sid($this->phpbb_root_path . 'mcp.' . $this->php_ext, "p={$this->item_id}&amp;i=reports&amp;mode=report_details{$report_parameter}#reports");
+	}
+
+	/**
+	* {@inheritdoc}
+	*/
+	public function get_redirect_url()
+	{
+		// HTTP Location headers require plain query-string separators.
+		return ((int) $this->get_data('report_id') > 0) ? str_replace('&amp;', '&', $this->get_url()) : parent::get_redirect_url();
 	}
 
 	/**
@@ -216,6 +230,7 @@ class report_post extends \phpbb\notification\type\post_in_queue
 		$this->set_data('reason_title', strtoupper($type_data['reason_title']));
 		$this->set_data('reason_description', $type_data['reason_description']);
 		$this->set_data('report_text', $type_data['report_text']);
+		$this->set_data('report_id', isset($type_data['report_id']) ? (int) $type_data['report_id'] : 0);
 
 		parent::create_insert_array($type_data, $pre_create_data);
 	}
