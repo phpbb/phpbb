@@ -20,7 +20,7 @@ class remove_duplicate_ai_crawler_bots extends migration
 	public static function depends_on(): array
 	{
 		return [
-			'\phpbb\db\migration\data\v33x\v3319',
+			'\phpbb\db\migration\data\v33x\ai_crawler_bots',
 		];
 	}
 
