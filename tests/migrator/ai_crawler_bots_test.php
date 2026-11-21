@@ -85,28 +85,36 @@ class phpbb_migrator_ai_crawler_bots_test extends phpbb_database_test_case
 		$this->assertSame('Pinned Bot', $bots[4]['bot_name']);
 		$this->assertSame('PerplexityBot/', $bots[4]['bot_agent']);
 		$this->assertSame('10.0.0.1', $bots[4]['bot_ip']);
+		$this->assertSame('Claude Crawler', $bots[5]['bot_name']);
+		$this->assertSame('Claude*Bot/', $bots[5]['bot_agent']);
+		$this->assertSame('Any Bot', $bots[6]['bot_name']);
+		$this->assertSame('bot', $bots[6]['bot_agent']);
 
-		// No second bot for an agent string the administrator's bots already
-		// match: case insensitively, with a wildcard, or as a partial string
+		// No second bot for an agent string the administrator's bots would
+		// already identify first: case insensitively or with a wildcard
 		$this->assertNotContains('GPTBot [Bot]', $bot_names);
 		$this->assertNotContains('ClaudeBot [Bot]', $bot_names);
-		$this->assertNotContains('Claude-User [Bot]', $bot_names);
-		$this->assertNotContains('Claude-SearchBot [Bot]', $bot_names);
-		$this->assertNotContains('Claude-Web [Bot]', $bot_names);
-		$this->assertNotContains('Meta-ExternalAgent [Bot]', $bot_names);
-		$this->assertNotContains('Meta-ExternalAds [Bot]', $bot_names);
-		$this->assertNotContains('Meta-ExternalFetcher [Bot]', $bot_names);
+
+		// The session tries longer agent strings first, so shorter agents of
+		// the administrator's bots do not stand in for the AI crawlers they
+		// match: neither a wildcard, a partial string nor a catch-all
+		$this->assertContains('Claude-User [Bot]', $bot_names);
+		$this->assertContains('Claude-SearchBot [Bot]', $bot_names);
+		$this->assertContains('Claude-Web [Bot]', $bot_names);
+		$this->assertContains('Meta-ExternalAgent [Bot]', $bot_names);
+		$this->assertContains('Meta-ExternalAds [Bot]', $bot_names);
+		$this->assertContains('Meta-ExternalFetcher [Bot]', $bot_names);
+		$this->assertContains('OAI-SearchBot [Bot]', $bot_names);
+		$this->assertContains('CCBot [Bot]', $bot_names);
 
 		// The other AI crawlers are still added: a bot matching by IP only
 		// does not block any of them, and a bot restricted to an IP address
 		// does not stand in for the crawler with the same agent string
-		$this->assertContains('OAI-SearchBot [Bot]', $bot_names);
 		$this->assertContains('Meta-WebIndexer [Bot]', $bot_names);
 		$this->assertContains('FacebookBot [Bot]', $bot_names);
 		$this->assertContains('PerplexityBot [Bot]', $bot_names);
-		$this->assertContains('CCBot [Bot]', $bot_names);
 		$this->assertSame(2, count(array_keys(array_map('strtolower', array_column($bots, 'bot_agent')), 'perplexitybot/', true)));
-		$this->assertCount(23, $bots);
+		$this->assertCount(31, $bots);
 
 		$sql = 'SELECT user_id, group_id
 			FROM phpbb_users

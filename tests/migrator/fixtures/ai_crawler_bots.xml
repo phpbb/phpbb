@@ -77,6 +77,24 @@
 			<value></value>
 			<value></value>
 		</row>
+		<row>
+			<value>15</value>
+			<value>Claude Crawler</value>
+			<value>claude crawler</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>16</value>
+			<value>Any Bot</value>
+			<value>any bot</value>
+			<value>2</value>
+			<value>6</value>
+			<value></value>
+			<value></value>
+		</row>
 	</table>
 	<table name="phpbb_bots">
 		<column>bot_id</column>
@@ -124,6 +142,22 @@
 			<value>14</value>
 			<value>PerplexityBot/</value>
 			<value>10.0.0.1</value>
+		</row>
+		<row>
+			<value>6</value>
+			<value>1</value>
+			<value>Claude Crawler</value>
+			<value>15</value>
+			<value>Claude*Bot/</value>
+			<value></value>
+		</row>
+		<row>
+			<value>7</value>
+			<value>1</value>
+			<value>Any Bot</value>
+			<value>16</value>
+			<value>bot</value>
+			<value></value>
 		</row>
 	</table>
 </dataset>

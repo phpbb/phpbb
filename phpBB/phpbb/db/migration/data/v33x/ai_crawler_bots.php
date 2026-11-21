@@ -173,9 +173,12 @@ class ai_crawler_bots extends migration
 	}
 
 	/**
-	 * Check whether one of the configured bot agents matches an agent string
-	 * the same way \phpbb\session matches bots against the user agent:
-	 * case insensitively, with * as a wildcard
+	 * Check whether one of the configured bot agents would identify a visitor
+	 * with this agent string the way \phpbb\session does: case insensitively,
+	 * with * as a wildcard. The session tries the longest agent strings first
+	 * and stops at the first match, so a configured agent shorter than $agent
+	 * would never be reached for such a visitor once $agent is added. It keeps
+	 * matching visitors that $agent does not cover
 	 *
 	 * @param string $agent Agent string of the bot about to be added
 	 * @param array $bot_agents Agent strings of the bots already configured
@@ -185,7 +188,12 @@ class ai_crawler_bots extends migration
 	{
 		foreach ($bot_agents as $bot_agent)
 		{
-			if ($bot_agent !== '' && preg_match('#' . str_replace('\*', '.*?', preg_quote($bot_agent, '#')) . '#i', $agent))
+			if ($bot_agent === '' || strlen($bot_agent) < strlen($agent))
+			{
+				continue;
+			}
+
+			if (preg_match('#' . str_replace('\*', '.*?', preg_quote($bot_agent, '#')) . '#i', $agent))
 			{
 				return true;
 			}
