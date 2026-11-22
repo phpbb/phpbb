@@ -1,5 +1,4 @@
 Subject: Reply in "{TOPIC_TITLE}"
-List-Unsubscribe: <{U_STOP_WATCHING_TOPIC}>
 
 Hello {USERNAME},
 

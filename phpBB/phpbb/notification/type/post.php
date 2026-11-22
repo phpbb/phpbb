@@ -276,6 +276,15 @@ class post extends \phpbb\notification\type\base
 	}
 
 	/**
+	* {@inheritDoc}
+	*/
+	public function get_unsubscribe_watch_item(): array|null
+	{
+		// Other types extending this one are not caused by watching the topic
+		return $this->get_type() === 'notification.type.post' ? ['mode' => 'topic', 'id' => (int) $this->item_parent_id] : null;
+	}
+
+	/**
 	* Get the url to this item
 	*
 	* @return string URL

@@ -6,4 +6,7 @@ The report you filed regarding the private message "{PM_SUBJECT}" at "{SITENAME}
 
 If you have further questions, please contact {CLOSER_NAME} by private message.
 
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
 {EMAIL_SIG}

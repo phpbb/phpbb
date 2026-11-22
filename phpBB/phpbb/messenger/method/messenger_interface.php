@@ -60,4 +60,13 @@ interface messenger_interface
 	 * @return void
 	 */
 	public function header(string $header_name, mixed $header_value): void;
+
+	/**
+	 * Set the URL recipients can use to unsubscribe from this message
+	 *
+	 * @param string	$url	Absolute URL that accepts one-click requests as defined by RFC 8058
+	 *
+	 * @return void
+	 */
+	public function set_list_unsubscribe(string $url): void;
 }

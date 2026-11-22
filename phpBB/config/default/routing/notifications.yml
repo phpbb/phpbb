@@ -4,3 +4,8 @@ phpbb_notifications_mark_read:
         _controller:  notification.controller.mark_read:handle
     requirements:
         id:         \d+
+
+phpbb_notifications_unsubscribe:
+    path:             /unsubscribe
+    defaults:
+        _controller:  notification.controller.email_unsubscribe:handle

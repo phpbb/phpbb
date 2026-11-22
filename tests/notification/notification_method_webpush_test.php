@@ -179,6 +179,7 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 
 		$messenger_method_collection = new \phpbb\di\service_collection($phpbb_container);
 		$phpbb_container->set('messenger.method_collection', $messenger_method_collection);
+		$phpbb_container->set('router', $this->createMock(\phpbb\routing\router::class));
 
 		$this->notification_method_webpush = new \phpbb\notification\method\webpush(
 			$phpbb_container->get('config'),

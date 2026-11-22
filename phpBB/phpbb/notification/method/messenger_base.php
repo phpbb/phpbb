@@ -13,6 +13,7 @@
 
 namespace phpbb\notification\method;
 
+use phpbb\messenger\method\messenger_interface;
 use phpbb\notification\type\type_interface;
 use phpbb\di\service_collection;
 use phpbb\user_loader;
@@ -62,6 +63,23 @@ abstract class messenger_base extends \phpbb\notification\method\base
 	public function is_available(type_interface|null $notification_type = null)
 	{
 		return $notification_type === null || $notification_type->get_email_template() !== false;
+	}
+
+	/**
+	 * Get the template variables of a message and prepare the messenger for this recipient
+	 *
+	 * @param messenger_interface $messenger_method	Messenger method sending the message
+	 * @param type_interface $notification			Notification the message is sent for
+	 * @param array $user							User row of the recipient
+	 *
+	 * @return array Template variables
+	 */
+	protected function get_message_vars(messenger_interface $messenger_method, type_interface $notification, array $user): array
+	{
+		return array_merge([
+			'USERNAME'					=> $user['username'],
+			'U_NOTIFICATION_SETTINGS'	=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
+		], $notification->get_email_template_variables());
 	}
 
 	/**
@@ -115,7 +133,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 			}
 
 			/**
-			 * @var \phpbb\messenger\method\messenger_interface $messenger_method
+			 * @var messenger_interface $messenger_method
 			 * @psalm-suppress UndefinedMethod
 			 */
 			foreach ($messenger_collection_iterator as $messenger_method)
@@ -124,10 +142,7 @@ abstract class messenger_base extends \phpbb\notification\method\base
 				{
 					$messenger_method->template($notification->get_email_template(), $user['user_lang'], '', $template_dir_prefix);
 					$messenger_method->set_addresses($user);
-					$messenger_method->assign_vars(array_merge([
-						'USERNAME'					=> $user['username'],
-						'U_NOTIFICATION_SETTINGS'	=> generate_board_url() . '/ucp.' . $this->php_ext . '?i=ucp_notifications&mode=notification_options',
-					], $notification->get_email_template_variables()));
+					$messenger_method->assign_vars($this->get_message_vars($messenger_method, $notification, $user));
 
 					$messenger_method->send();
 

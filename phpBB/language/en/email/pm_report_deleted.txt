@@ -4,4 +4,7 @@ Hello {USERNAME},
 
 The report you filed regarding the private message "{PM_SUBJECT}" at "{SITENAME}" was deleted by a moderator or administrator.
 
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
 {EMAIL_SIG}

@@ -493,4 +493,11 @@ abstract class base implements messenger_interface
 	public function header(string $header_name, mixed $header_value): void
 	{
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_list_unsubscribe(string $url): void
+	{
+	}
 }

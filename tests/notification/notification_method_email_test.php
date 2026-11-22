@@ -121,7 +121,8 @@ class notification_method_email_test extends phpbb_tests_notification_base
 				$phpbb_root_path,
 				$phpEx,
 				$phpbb_container->getParameter('tables.notification_emails'),
-				$phpbb_container->get('messenger.method_collection')
+				$phpbb_container->get('messenger.method_collection'),
+				$this->createMock(\phpbb\routing\router::class)
 			])
 			->onlyMethods(['notify_using_messenger'])
 			->getMock();

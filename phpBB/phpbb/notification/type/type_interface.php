@@ -130,11 +130,18 @@ interface type_interface
 	public function get_redirect_url();
 
 	/**
-	* URL to unsubscribe to this notification
+	* Get the item the user is watching if that caused this notification
 	*
-	* @param string|bool $method Method name to unsubscribe from (email|etc), False to unsubscribe from all notifications for this item
+	* @return array|null Array with the keys mode ('topic' or 'forum') and id, null if there is no such item
 	*/
-	public function get_unsubscribe_url($method);
+	public function get_unsubscribe_watch_item(): array|null;
+
+	/**
+	* Check if emails of this type may contain links to unsubscribe without logging in
+	*
+	* @return bool False if users have to log in to turn off these emails
+	*/
+	public function allows_email_unsubscribe(): bool;
 
 	/**
 	* Get the user's avatar (the user who caused the notification typically)

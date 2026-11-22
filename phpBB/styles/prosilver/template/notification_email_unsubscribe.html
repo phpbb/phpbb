@@ -1,0 +1,32 @@
+<!-- INCLUDE overall_header.html -->
+
+<div class="panel">
+	<div class="inner">
+
+	<div class="content">
+		<h2>{{ lang('EMAIL_UNSUBSCRIBE') }}</h2>
+
+		{% if S_EMAIL_UNSUBSCRIBE_DONE %}
+			<p>{{ lang('EMAIL_UNSUBSCRIBE_DONE') }}</p>
+			<p><a href="{{ U_NOTIFICATION_SETTINGS }}">{{ lang('EMAIL_UNSUBSCRIBE_SETTINGS') }}</a></p>
+		{% else %}
+			<form action="{{ U_EMAIL_UNSUBSCRIBE }}" method="post" id="email_unsubscribe">
+				<p>{{ lang('EMAIL_UNSUBSCRIBE_EXPLAIN') }}</p>
+				{% if EMAIL_UNSUBSCRIBE_ITEM %}
+					<p><label><input type="radio" name="scope" value="item" required="required" /> {{ EMAIL_UNSUBSCRIBE_ITEM }}</label></p>
+				{% endif %}
+				{% if EMAIL_UNSUBSCRIBE_TYPE %}
+					<p><label><input type="radio" name="scope" value="type" required="required" /> {{ EMAIL_UNSUBSCRIBE_TYPE }}</label></p>
+				{% endif %}
+				<p><label><input type="radio" name="scope" value="all" required="required" /> {{ lang('EMAIL_UNSUBSCRIBE_SCOPE_ALL') }}</label></p>
+				<fieldset class="submit-buttons">
+					<input type="submit" name="unsubscribe" id="unsubscribe" class="button1" value="{{ lang('EMAIL_UNSUBSCRIBE_SUBMIT') }}" />
+				</fieldset>
+			</form>
+		{% endif %}
+	</div>
+
+	</div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

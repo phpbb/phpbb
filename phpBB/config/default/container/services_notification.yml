@@ -239,6 +239,7 @@ services:
             - '%core.php_ext%'
             - '%tables.notification_emails%'
             - '@messenger.method_collection'
+            - '@router'
         tags:
             - { name: notification.method }
 
@@ -259,6 +260,24 @@ services:
             - { name: notification.method }
 
 # ----- Notification's controllers -----
+    notification.controller.email_unsubscribe:
+        class: phpbb\notification\controller\email_unsubscribe
+        arguments:
+            - '@dbal.conn'
+            - '@notification.method.email'
+            - '@controller.helper'
+            - '@language'
+            - '@log'
+            - '@notification_manager'
+            - '@request'
+            - '@template'
+            - '@user'
+            - '%tables.forums%'
+            - '%tables.forums_watch%'
+            - '%tables.topics%'
+            - '%tables.topics_watch%'
+            - '%tables.users%'
+
     notification.controller.mark_read:
         class: phpbb\notification\controller\mark_read
         arguments:

@@ -499,6 +499,9 @@ class email extends base
 
 		if ($break)
 		{
+			// Reset the object, the next message must not inherit this one's headers
+			$this->init();
+
 			return true;
 		}
 
@@ -542,6 +545,10 @@ class email extends base
 			catch (TransportExceptionInterface $e)
 			{
 				$this->error($e->getDebug());
+
+				// Reset the object, the next message must not inherit this one's headers
+				$this->init();
+
 				return false;
 			}
 
@@ -584,5 +591,14 @@ class email extends base
 	public function header(string $header_name, mixed $header_value): void
 	{
 		$this->headers->addHeader($header_name, $header_value);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function set_list_unsubscribe(string $url): void
+	{
+		$this->additional_headers['List-Unsubscribe'] = '<' . $url . '>';
+		$this->additional_headers['List-Unsubscribe-Post'] = 'List-Unsubscribe=One-Click';
 	}
 }

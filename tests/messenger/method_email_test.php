@@ -578,8 +578,13 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->method_email->subject('Test email');
 		$this->method_email->template('test', 'en');
 		$this->method_email->assign_block_vars('foo', ['bar' => 'baz']);
+		$this->method_email->set_list_unsubscribe('https://example.com/unsubscribe');
 
-		$this->method_email->send();
+		$this->assertTrue($this->method_email->send());
+
+		// A message handled by an extension must not leave its headers to the next one
+		$additional_headers = new \ReflectionProperty($this->method_email, 'additional_headers');
+		$this->assertSame([], $additional_headers->getValue($this->method_email));
 	}
 
 	public static function email_template_data(): array
@@ -714,10 +719,15 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->method_email->to('foo@bar.com');
 		$this->method_email->subject('Test email');
 		$this->method_email->template('test', 'en');
+		$this->method_email->set_list_unsubscribe('https://example.com/unsubscribe');
 
 		$this->assertFalse($this->method_email->send());
 
 		$this->assertEquals(['<strong>EMAIL</strong><br><em></em><br><br><br>'], $errors);
+
+		// A failed message must not leave its headers to the next one
+		$additional_headers = new \ReflectionProperty($this->method_email, 'additional_headers');
+		$this->assertSame([], $additional_headers->getValue($this->method_email));
 	}
 
 	public function test_send_queue()

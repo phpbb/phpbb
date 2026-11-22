@@ -472,6 +472,7 @@ class acp_board
 						'email_force_sender'	=> array('lang' => 'EMAIL_FORCE_SENDER',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'board_email_sig'		=> array('lang' => 'EMAIL_SIG',				'validate' => 'string',	'type' => 'textarea:5:30', 'explain' => true),
 						'board_hide_emails'		=> array('lang' => 'BOARD_HIDE_EMAILS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'email_unsubscribe_expire_days'	=> ['lang' => 'EMAIL_UNSUBSCRIBE_EXPIRE',	'validate' => 'int:0:9999',	'type' => 'number:0:9999', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']],
 						'send_test_email'		=> array('lang' => 'SEND_TEST_EMAIL',		'validate' => 'bool',	'type' => 'custom', 'method' => 'send_test_email', 'explain' => true),
 
 						'legend2'				=> 'SMTP_SETTINGS',

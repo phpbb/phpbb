@@ -10,4 +10,7 @@ If you want to view the topic, click the following link:
 If you want to view the forum, click the following link:
 {U_FORUM}
 
+If you no longer wish to receive these emails, click the following link:
+{U_UNSUBSCRIBE}
+
 {EMAIL_SIG}

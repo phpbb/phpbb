@@ -161,6 +161,7 @@ class add_config_settings extends database_task
 
 			'avatar_salt'	=> md5(mt_rand()),
 			'plupload_salt'	=> md5(mt_rand()),
+			'email_unsubscribe_secret'	=> bin2hex(random_bytes(32)),
 
 			'sitename'	=> $this->install_config->get('board_name'),
 			'site_desc'	=> $this->install_config->get('board_description'),
