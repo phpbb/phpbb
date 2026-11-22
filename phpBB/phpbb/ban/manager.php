@@ -220,23 +220,26 @@ class manager
 			];
 			$unbanned_users = $ban_mode->after_unban($unban_data);
 
-			// Add to moderator log, admin log and user notes
+			// Add to moderator log, admin log and user notes. Like ban(), log
+			// the unbanned items as one string: the usernames for user bans,
+			// the email addresses or IPs for the other types.
+			$unban_list_log = implode(', ', count($unbanned_users) ? $unbanned_users : $unbanned_items);
+
 			$log_operation = 'LOG_UNBAN_' . strtoupper($mode);
-			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$unbanned_users]);
+			$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [$unban_list_log]);
 			$this->log->add('mod', $this->user->data['user_id'], $this->user->ip, $log_operation, false, [
 				'forum_id' => 0,
 				'topic_id' => 0,
-				$unbanned_users
+				$unban_list_log
 			]);
-			if (count($unbanned_users))
+
+			// after_unban() returns user_id => username
+			foreach (array_keys($unbanned_users) as $user_id)
 			{
-				foreach ($unbanned_users as $user_id)
-				{
-					$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $log_operation, false, array(
-						'reportee_id' => $user_id,
-						$unbanned_users
-					));
-				}
+				$this->log->add('user', $this->user->data['user_id'], $this->user->ip, $log_operation, false, array(
+					'reportee_id' => $user_id,
+					$unban_list_log
+				));
 			}
 		}
 
