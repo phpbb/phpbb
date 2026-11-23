@@ -189,16 +189,21 @@ class acp_search
 
 			if (isset($var_type[1]))
 			{
+				settype($var_type[1], $var_type[0]);
 				$config_value = max($var_type[1], $config_value);
 			}
 
 			if (isset($var_type[2]))
 			{
+				settype($var_type[2], $var_type[0]);
 				$config_value = min($var_type[2], $config_value);
 			}
 
+			$current_value = $this->config[$config_name];
+			settype($current_value, $var_type[0]);
+
 			// only change config if anything was actually changed
-			if ($submit && ($this->config[$config_name] !== $config_value))
+			if ($submit && ($current_value !== $config_value))
 			{
 				$this->config->set($config_name, $config_value);
 				$updated = true;

@@ -140,4 +140,37 @@ class phpbb_plupload_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $plupload->get_chunk_size());
 	}
+
+	public static function data_is_multipart(): array
+	{
+		return [
+			['multipart/form-data; boundary=---123', true],
+			['Multipart/Form-Data; boundary=---123', true],
+			['MULTIPART/FORM-DATA', true],
+			['application/json', false],
+			['', false],
+		];
+	}
+
+	/**
+	 * @dataProvider data_is_multipart
+	 */
+	public function test_is_multipart(string $content_type, bool $expected): void
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$lang = new \phpbb\language\language(new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx));
+		$request = new phpbb_mock_request([], [], [], ['CONTENT_TYPE' => $content_type]);
+
+		$plupload = new \phpbb\plupload\plupload(
+			'',
+			new \phpbb\config\config([]),
+			$request,
+			new \phpbb\user($lang, '\phpbb\datetime'),
+			new \bantu\IniGetWrapper\IniGetWrapper,
+			new \phpbb\mimetype\guesser([new \phpbb\mimetype\extension_guesser])
+		);
+
+		$this->assertSame($expected, $plupload->is_multipart());
+	}
 }

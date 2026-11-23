@@ -408,10 +408,11 @@ class webpush
 		];
 		extract($this->dispatcher->trigger_event('core.ucp_webpush_controller_verify_endpoint', compact($vars)));
 
+		$host = strtolower($parts['host']);
 		foreach ($allowed_services as $allowed_host)
 		{
 			// Use str_ends_with to support subdomains like 'web.push.apple.com'
-			if (str_ends_with(strtolower($parts['host']), $allowed_host))
+			if (str_ends_with($host, strtolower($allowed_host)))
 			{
 				return true;
 			}

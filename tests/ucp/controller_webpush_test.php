@@ -572,6 +572,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 	{
 		return [
 			'fcm' => ['https://fcm.googleapis.com/fcm/send/test_endpoint'],
+			'fcm_uppercase' => ['HTTPS://FCM.GOOGLEAPIS.COM/fcm/send/test_endpoint'],
 			'apns' => ['https://api.push.apple.com/3/device/test_endpoint'],
 			'apns_sandbox' => ['https://api.sandbox.push.apple.com/3/device/test_endpoint'],
 		];
@@ -616,7 +617,7 @@ class test_ucp_controller_webpush_test extends phpbb_database_test_case
 				$this->anything()
 			)
 			->willReturnCallback(function($event_name, $args) {
-				$args['allowed_services'][] = 'test.endpoint.com';
+				$args['allowed_services'][] = 'Test.Endpoint.COM';
 				return $args;
 			});
 		$this->form_helper->method('check_form_tokens')->willReturn(true);

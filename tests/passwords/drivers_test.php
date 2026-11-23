@@ -164,6 +164,7 @@ class phpbb_passwords_drivers_test extends \phpbb_test_case
 			array(true, 'fööbar', '$H$966CepJh9RC3hFIm7aKywR6jEn0kpA0', utf8_decode('fööbar')),
 			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', self::utf8_to_cp1252(utf8_decode('fööbar'))),
 			array(true, 'fööbar', '$H$9rNjgwETtmc8befO8JL1xFMrrMw8MC.', self::utf8_to_cp1252('fööbar')),
+			array(false, '0123', '202cb962ac59075b964b07152d234b70', '123'),
 		);
 	}
 

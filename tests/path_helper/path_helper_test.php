@@ -571,7 +571,17 @@ class phpbb_path_helper_test extends phpbb_test_case
 				'https://www.phpbb.com',
 				'https://www.phpbb.com',
 				''
-			]
+			],
+			[
+				'HTTP://WWW.PHPBB.COM/community/route1/route2/',
+				'http://www.phpbb.com/community',
+				'../../',
+			],
+			[
+				'HTTP://WWW.PHPBB.COM/notcommunity/route1',
+				'http://www.phpbb.com/Community',
+				'../Community/',
+			],
 		];
 	}
 

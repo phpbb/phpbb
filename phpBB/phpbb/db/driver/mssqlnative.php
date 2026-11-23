@@ -45,7 +45,7 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->dbname = $database;
-		$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
+		$port_delimiter = (defined('PHP_OS') && stripos(PHP_OS, 'WIN') === 0) ? ',' : ':';
 		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		//connect to database

@@ -630,6 +630,9 @@ class attachment
 	 */
 	protected function allow_serve_inline(string $mimetype, string $sec_fetch_dest): bool
 	{
+		$mimetype = strtolower($mimetype);
+		$sec_fetch_dest = strtolower($sec_fetch_dest);
+
 		// Allow image types that are known to be supported by all major browsers, and that are known to be safe when rendered inline
 		$allowed_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/avif', 'image/bmp', 'image/tiff'];
 		if (in_array($mimetype, $allowed_types, true))

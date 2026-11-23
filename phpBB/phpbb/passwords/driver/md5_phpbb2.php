@@ -103,7 +103,7 @@ class md5_phpbb2 extends base
 			$this->request->disable_super_globals();
 		}
 
-		if ($password == $password_new_format)
+		if ($password === $password_new_format)
 		{
 			if (!function_exists('utf8_to_cp1252'))
 			{

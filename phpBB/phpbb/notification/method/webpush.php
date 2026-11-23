@@ -487,7 +487,7 @@ class webpush extends base implements extended_method_interface
 	 */
 	protected function set_endpoint_padding(\Minishlink\WebPush\WebPush $web_push, string $endpoint): void
 	{
-		if (str_contains($endpoint, 'mozilla.com') || str_contains($endpoint, 'mozaws.net'))
+		if (stripos($endpoint, 'mozilla.com') !== false || stripos($endpoint, 'mozaws.net') !== false)
 		{
 			try
 			{
@@ -532,6 +532,6 @@ class webpush extends base implements extended_method_interface
 	protected function is_endpoint_permanently_removed(string $endpoint): bool
 	{
 		$host = parse_url($endpoint, PHP_URL_HOST);
-		return is_string($host) && str_ends_with($host, '.invalid');
+		return is_string($host) && str_ends_with(strtolower($host), '.invalid');
 	}
 }

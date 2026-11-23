@@ -237,6 +237,25 @@ class phpbb_request_test extends phpbb_test_case
 				),
 				true,
 			),
+			array(
+				array(
+					'HTTPS' => 'OFF',
+				),
+				false,
+			),
+			array(
+				array(
+					'HTTPS' => 'ON',
+				),
+				true,
+			),
+			array(
+				array(
+					'HTTPS' => 'OFF',
+					'HTTP_X_FORWARDED_PROTO' => 'HTTPS',
+				),
+				true,
+			),
 		);
 	}
 

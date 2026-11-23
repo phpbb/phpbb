@@ -201,6 +201,12 @@ class guesser_test extends \phpbb_test_case
 		@unlink($this->jpg_file . '.jpg');
 	}
 
+	public function test_extension_guesser_case_insensitive()
+	{
+		$this->assertEquals('image/jpeg', $this->guesser_no_fileinfo->guess($this->jpg_file, $this->jpg_file . '.JPG'));
+		$this->assertEquals('image/jpeg', $this->guesser_no_fileinfo->guess($this->jpg_file, $this->jpg_file . '.JpG'));
+	}
+
 	public function test_sort_priority()
 	{
 		$guessers = array(
