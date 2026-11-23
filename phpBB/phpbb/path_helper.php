@@ -261,14 +261,30 @@ class path_helper
 	*/
 	public function get_web_root_path_from_ajax_referer($absolute_referer_url, $absolute_board_url)
 	{
+		$referer_origin_end = strpos($absolute_referer_url, '://');
+		$normalized_referer_url = $absolute_referer_url;
+		if ($referer_origin_end !== false)
+		{
+			$path_start = strcspn($absolute_referer_url, '/?', $referer_origin_end + 3) + $referer_origin_end + 3;
+			$normalized_referer_url = strtolower(substr($absolute_referer_url, 0, $path_start)) . substr($absolute_referer_url, $path_start);
+		}
+
+		$board_origin_end = strpos($absolute_board_url, '://');
+		$normalized_board_url = $absolute_board_url;
+		if ($board_origin_end !== false)
+		{
+			$path_start = strcspn($absolute_board_url, '/?', $board_origin_end + 3) + $board_origin_end + 3;
+			$normalized_board_url = strtolower(substr($absolute_board_url, 0, $path_start)) . substr($absolute_board_url, $path_start);
+		}
+
 		// If the board URL is in the beginning of the referer, this means
 		// we the referer is in the board URL or a subdirectory of it.
 		// So we just need to count the / (slashes) in the left over part of
 		// the referer and prepend ../ the the current root_path, to get the
 		// web root path of the referer.
-		if (str_starts_with($absolute_referer_url, $absolute_board_url))
+		if (str_starts_with($normalized_referer_url, $normalized_board_url))
 		{
-			$relative_referer_path = substr($absolute_referer_url, strlen($absolute_board_url));
+			$relative_referer_path = substr($normalized_referer_url, strlen($normalized_board_url));
 			$has_params = strpos($relative_referer_path, '?');
 			if ($has_params !== false)
 			{
@@ -285,7 +301,7 @@ class path_helper
 		// from the board URL, to get the boards root path.
 		// If the then append these two strings, we get our fixed web root path.
 		$fixed_root_path = '';
-		$referer_dir = $absolute_referer_url;
+		$referer_dir = $normalized_referer_url;
 		$has_params = strpos($referer_dir, '?');
 		if ($has_params !== false)
 		{
@@ -300,7 +316,7 @@ class path_helper
 			$referer_dir = dirname($referer_dir);
 		}
 
-		while (($dir_position = strpos($absolute_board_url, $referer_dir)) !== 0)
+		while (($dir_position = strpos($normalized_board_url, $referer_dir)) !== 0)
 		{
 			$fixed_root_path .= '../';
 			$referer_dir = dirname($referer_dir);

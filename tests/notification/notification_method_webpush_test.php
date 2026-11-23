@@ -980,6 +980,10 @@ class notification_method_webpush_test extends phpbb_tests_notification_base
 				webpush::MOZILLA_FALLBACK_PADDING
 			],
 			[
+				'HTTPS://FOO.MOZILLA.COM/push',
+				webpush::MOZILLA_FALLBACK_PADDING
+			],
+			[
 				'foo.mozaws.net',
 				webpush::MOZILLA_FALLBACK_PADDING
 			],

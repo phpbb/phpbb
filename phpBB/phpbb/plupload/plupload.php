@@ -192,7 +192,7 @@ class plupload
 	{
 		$content_type = $this->request->server('CONTENT_TYPE');
 
-		return strpos($content_type, 'multipart') === 0;
+		return stripos($content_type, 'multipart') === 0;
 	}
 
 	/**

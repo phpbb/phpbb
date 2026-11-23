@@ -60,7 +60,7 @@ switch ($search_id)
 {
 	// Egosearch is an author search
 	case 'egosearch':
-		$author_id = $user->data['user_id'];
+		$author_id = (int) $user->data['user_id'];
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
 			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
@@ -831,7 +831,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($user->data['is_registered'])
 			{
-				if ($config['load_db_track'] && $author_id !== $user->data['user_id'])
+				if ($config['load_db_track'] && $author_id !== (int) $user->data['user_id'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.user_id = ' . $user->data['user_id'] . '
 						AND t.topic_id = tp.topic_id)';
@@ -1110,7 +1110,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($show_results == 'topics')
 			{
-				if ($config['load_db_track'] && $author_id === $user->data['user_id'])
+				if ($config['load_db_track'] && $author_id === (int) $user->data['user_id'])
 				{
 					$row['topic_posted'] = 1;
 				}

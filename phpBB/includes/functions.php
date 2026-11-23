@@ -1654,7 +1654,7 @@ function generate_board_url($without_script_path = false)
 
 		$forwarded_proto = $request->server('HTTP_X_FORWARDED_PROTO');
 
-		if (!empty($forwarded_proto) && $forwarded_proto === 'https')
+		if (!empty($forwarded_proto) && strtolower((string) $forwarded_proto) === 'https')
 		{
 			$server_port = 443;
 		}
@@ -1720,7 +1720,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
 		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
-		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
+		if (!$disable_cd_check && strtolower($url_parts['host']) !== strtolower($user->host))
 		{
 			trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 		}
@@ -1760,7 +1760,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	// Clean URL and check if we go outside the forum directory
 	$url = $phpbb_path_helper->clean_url($url);
 
-	if (!$disable_cd_check && strpos($url, generate_board_url(true) . '/') !== 0)
+	if (!$disable_cd_check && stripos($url, generate_board_url(true) . '/') !== 0)
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
@@ -1775,7 +1775,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	$allowed_protocols = array('http', 'https', 'ftp', 'ftps');
 	$url_parts = parse_url($url);
 
-	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
+	if ($url_parts === false || empty($url_parts['scheme']) || !in_array(strtolower($url_parts['scheme']), $allowed_protocols, true))
 	{
 		trigger_error('INSECURE_REDIRECT', E_USER_WARNING);
 	}
@@ -2137,7 +2137,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$session_id = $request->variable('sess', '');
 		$confirm_key = $request->variable('confirm_key', '');
 
-		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || !$confirm_key || !$user->data['user_last_confirm_key'] || $confirm_key != $user->data['user_last_confirm_key'])
+		if ($user_id !== (int) $user->data['user_id'] || !hash_equals((string) $user->session_id, $session_id) || !$confirm_key || !$user->data['user_last_confirm_key'] || !hash_equals((string) $user->data['user_last_confirm_key'], $confirm_key))
 		{
 			return false;
 		}

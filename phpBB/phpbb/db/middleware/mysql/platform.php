@@ -41,7 +41,7 @@ class platform extends AbstractMySQLPlatform
 			{
 				foreach ($sql as $i => $query)
 				{
-					if (stripos($query, "add $column_name"))
+					if (stripos($query, "add $column_name") !== false)
 					{
 						if (!$table->getPrimaryKey())
 						{

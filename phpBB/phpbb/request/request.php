@@ -363,8 +363,8 @@ class request implements request_interface
 	public function is_secure()
 	{
 		$https = $this->server('HTTPS');
-		$https = $this->server('HTTP_X_FORWARDED_PROTO') === 'https' ? 'on' : $https;
-		return !empty($https) && $https !== 'off';
+		$https = strtolower((string) $this->server('HTTP_X_FORWARDED_PROTO')) === 'https' ? 'on' : $https;
+		return !empty($https) && strtolower((string) $https) !== 'off';
 	}
 
 	/**
