@@ -2006,7 +2006,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					}
 					else if ($row['post_visibility'] == ITEM_UNAPPROVED || $row['post_visibility'] == ITEM_REAPPROVE)
 					{
-						$topic_data[$topic_id]['posts_unapproved'] = $row['total_posts'];
+						$topic_data[$topic_id]['posts_unapproved'] += $row['total_posts'];
 					}
 					else if ($row['post_visibility'] == ITEM_DELETED)
 					{
