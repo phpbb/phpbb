@@ -53,6 +53,9 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false, $up
 
 	$sql_in = ($which_ary == 'user_id_ary') ? array_map('intval', ${$which_ary}) : array_map('utf8_clean_string', ${$which_ary});
 
+	// Get the number of user_ids/usernames we are starting with
+	$start_count = count(${$which_ary});
+
 	// By unsetting the array here, the values passed in at the point user_get_id_name() was called will be retained.
 	// Otherwise, if we don't unset (as the array was passed by reference) the original array will be updated below.
 	if ($update_references === false)
@@ -74,22 +77,23 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false, $up
 	}
 
 	$result = $db->sql_query($sql);
+	$user_rows = $db->sql_fetchrowset($result);
+	$db->sql_freeresult($result);
 
-	if (!($row = $db->sql_fetchrow($result)))
+	// None of the requests could be resolved
+	if (!$user_rows)
 	{
-		$db->sql_freeresult($result);
 		return 'NO_USERS';
 	}
 
-	do
+	foreach ($user_rows as $row)
 	{
 		$username_ary[$row['user_id']] = $row['username'];
-		$user_id_ary[] = $row['user_id'];
+		$user_id_ary[] = (int) $row['user_id'];
 	}
-	while ($row = $db->sql_fetchrow($result));
-	$db->sql_freeresult($result);
 
-	return false;
+	// If at least one user_id/username could not be resolved the error message will be returned, otherwise return the success
+	return $start_count != count($user_rows) ? 'RESULT_INCOMPLETE' : false;
 }
 
 /**
@@ -3577,65 +3581,6 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 	$db->sql_freeresult($result);
 
 	return $return;
-}
-
-/**
-* Get the groups out of the given ones that hold administrative permissions
-*
-* A group counts as administrative if it is assigned an admin role (a_) or
-* has at least one a_ permission set to yes. Users that can manage such a
-* group (e.g. group leaders in the UCP) must not be able to hand out these
-* permissions by adding members, so those groups are to be managed in the ACP.
-*
-* @param int[] $group_ids Group ids to check
-*
-* @return array Group ids that hold administrative permissions
-*/
-function phpbb_filter_admin_group_ids(array $group_ids): array
-{
-	global $db;
-
-	$group_ids = array_unique(array_map('intval', $group_ids));
-
-	if (empty($group_ids))
-	{
-		return [];
-	}
-
-	$admin_group_ids = [];
-
-	// Groups with an admin role assigned
-	$sql = 'SELECT DISTINCT ag.group_id
-		FROM ' . ACL_GROUPS_TABLE . ' ag, ' . ACL_ROLES_TABLE . " r
-		WHERE ag.auth_role_id = r.role_id
-			AND r.role_type = 'a_'
-			AND " . $db->sql_in_set('ag.group_id', $group_ids);
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$admin_group_ids[(int) $row['group_id']] = true;
-	}
-	$db->sql_freeresult($result);
-
-	// Groups with admin permissions set directly
-	$remaining = array_diff($group_ids, array_keys($admin_group_ids));
-	if (!empty($remaining))
-	{
-		$sql = 'SELECT DISTINCT ag.group_id
-			FROM ' . ACL_GROUPS_TABLE . ' ag, ' . ACL_OPTIONS_TABLE . ' o
-			WHERE ag.auth_option_id = o.auth_option_id
-				AND ag.auth_setting = ' . ACL_YES . '
-				AND o.auth_option ' . $db->sql_like_expression('a_' . $db->get_any_char()) . '
-				AND ' . $db->sql_in_set('ag.group_id', $remaining);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$admin_group_ids[(int) $row['group_id']] = true;
-		}
-		$db->sql_freeresult($result);
-	}
-
-	return array_keys($admin_group_ids);
 }
 
 /**
