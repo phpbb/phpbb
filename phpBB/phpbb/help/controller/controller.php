@@ -70,7 +70,6 @@ abstract class controller
 			'S_IN_FAQ'		=> true,
 		));
 
-		make_jumpbox(append_sid("{$this->root_path}viewforum.{$this->php_ext}"));
 		return $this->helper->render('faq_body.html', $title);
 	}
 }

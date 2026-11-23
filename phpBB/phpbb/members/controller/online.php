@@ -302,8 +302,6 @@ class online
 			'U_BREADCRUMB'		=> $this->helper->route('phpbb_members_online'),
 		]);
 
-		make_jumpbox(append_sid($this->phpbb_root_path . "viewforum." . $this->php_ex));
-
 		// Render
 		return $this->helper->render('viewonline_body.html', $this->language->lang('WHO_IS_ONLINE'));
 	}
