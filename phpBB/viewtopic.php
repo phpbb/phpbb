@@ -949,6 +949,8 @@ if (!empty($topic_data['poll_start']))
 
 	if ($update && $s_can_vote)
 	{
+		// Only allow voting for options that exist in this poll
+		$voted_id = array_values(array_intersect($voted_id, array_keys($vote_counts)));
 
 		if (!count($voted_id) || count($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id) || !check_form_key('posting'))
 		{
@@ -974,6 +976,43 @@ if (!empty($topic_data['poll_start']))
 
 			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
 			trigger_error($message);
+		}
+
+		$db->sql_transaction('begin');
+
+		// Update last poll vote time first to lock the topic row for this transaction
+		$sql = 'UPDATE ' . TOPICS_TABLE . '
+			SET poll_last_vote = ' . time() . '
+			WHERE topic_id = ' . (int) $topic_id;
+		$db->sql_query($sql);
+
+		if ($user->data['is_registered'])
+		{
+			// Re-read the user's votes while holding the lock, a concurrent request might have voted in the meantime
+			$sql = 'SELECT poll_option_id
+				FROM ' . POLL_VOTES_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id . '
+					AND vote_user_id = ' . (int) $user->data['user_id'];
+			$result = $db->sql_query($sql);
+
+			$cur_voted_id = [];
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$cur_voted_id[] = (int) $row['poll_option_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (in_array(VOTE_CONVERTED, $cur_voted_id) || (count($cur_voted_id) && !($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change'])))
+			{
+				$db->sql_transaction('rollback');
+
+				$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
+				meta_refresh(5, $redirect_url);
+
+				$message = in_array(VOTE_CONVERTED, $cur_voted_id) ? 'VOTE_CONVERTED' : 'VOTE_ALREADY_CAST';
+				$message = $user->lang[$message] . '<br><br>' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
+				trigger_error($message);
+			}
 		}
 
 		foreach ($voted_id as $option)
@@ -1028,16 +1067,12 @@ if (!empty($topic_data['poll_start']))
 			}
 		}
 
+		$db->sql_transaction('commit');
+
 		if ($user->data['user_id'] == ANONYMOUS && !$user->data['is_bot'])
 		{
 			$user->set_cookie('poll_' . $topic_id, implode(',', $voted_id), time() + 31536000);
 		}
-
-		$sql = 'UPDATE ' . TOPICS_TABLE . '
-			SET poll_last_vote = ' . time() . "
-			WHERE topic_id = $topic_id";
-		//, topic_last_post_time = ' . time() . " -- for bumping topics with new votes, ignore for now
-		$db->sql_query($sql);
 
 		$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($start == 0) ? '' : "&amp;start=$start"));
 		$message = $user->lang['VOTE_SUBMITTED'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
