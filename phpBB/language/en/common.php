@@ -523,6 +523,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY_WEB_PUSH_ENABLE'				=> 'Enable web push notifications',
 	'NOTIFY_WEB_PUSH_SUBSCRIBE'				=> 'Subscribe',
 	'NOTIFY_WEB_PUSH_SUBSCRIBED'			=> 'Subscribed',
+	'NOTIFY_WEB_PUSH_UNSUBSCRIBE_ERROR'		=> 'Unable to unsubscribe from Web Push notifications.',
 	'NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE'	=> 'The requested web push service is not supported.',
 
 	'NO_ACCESS_ATTACHMENT'		=> 'You are not allowed to access this file.',

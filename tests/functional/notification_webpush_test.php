@@ -25,9 +25,14 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
 
+		$this->assertCount(0, $crawler->filter('.errorbox'));
 		$this->assertContainsLang('ACP_WEBPUSH_SETTINGS', $crawler->filter('div.main > h1')->text());
 		$this->assertContainsLang('ACP_WEBPUSH_SETTINGS_EXPLAIN', $crawler->filter('div.main > p')->text());
-		$this->assertContainsLang('WEBPUSH_GENERATE_VAPID_KEYS', $crawler->filter('input[type="button"]')->attr('value'));
+
+		$vapid_credentials = $crawler->filterXPath('//dl[.//input[@data-ajax="generate_vapid_keys"]]');
+		$this->assertCount(1, $vapid_credentials);
+		$this->assertCount(1, $vapid_credentials->filter('input[type="button"]'));
+		$this->assertCount(0, $vapid_credentials->filter('input[name="config[webpush_enable]"]'));
 
 		$form_data = [
 			'config[webpush_enable]'	=> 1,
@@ -36,17 +41,57 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 			'config[webpush_method_default_enable]'	=> 1,
 			'config[webpush_dropdown_subscribe]'	=> 1,
 		];
-		$form = $crawler->selectButton('submit')->form($form_data);
+		$padded_form_data = $form_data;
+		$padded_form_data['config[webpush_vapid_public]'] .= '=';
+		$padded_form_data['config[webpush_vapid_private]'] .= '=';
+		$form = $crawler->selectButton('submit')->form($padded_form_data);
 		$crawler = self::submit($form);
 		$this->assertStringContainsString($this->lang('CONFIG_UPDATED'), $crawler->filter('.successbox')->text());
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
 
-		foreach ($form_data as $config_name => $config_value)
+		$this->assertEquals($form_data['config[webpush_enable]'], $crawler->filter('input[name="config[webpush_enable]"][checked]')->attr('value'));
+		$this->assertEquals($form_data['config[webpush_vapid_public]'], $crawler->filter('input[name="config[webpush_vapid_public]"]')->attr('value'));
+		$private_key = $crawler->filter('input[name="config[webpush_vapid_private]"]');
+		$this->assertSame('', $private_key->attr('value'));
+		$this->assertNotSame('', $private_key->attr('placeholder'));
+		$this->assertEquals($form_data['config[webpush_method_default_enable]'], $crawler->filter('input[name="config[webpush_method_default_enable]"][checked]')->attr('value'));
+		$this->assertEquals($form_data['config[webpush_dropdown_subscribe]'], $crawler->filter('input[name="config[webpush_dropdown_subscribe]"][checked]')->attr('value'));
+
+		$db = $this->get_db();
+		$result = $db->sql_query("SELECT config_name, config_value FROM " . CONFIG_TABLE . "
+			WHERE config_name IN ('webpush_vapid_public', 'webpush_vapid_private')");
+		foreach ($db->sql_fetchrowset($result) as $row)
 		{
-			$config_value = ($config_name === 'config[webpush_vapid_private]') ? '********' : $config_value;
-			$this->assertEquals($config_value, $crawler->filter('input[name="' . $config_name . '"]')->attr('value'));
+			$this->assertSame($form_data['config[' . $row['config_name'] . ']'], $row['config_value']);
 		}
+		$db->sql_freeresult($result);
+
+		// A blank private key must still validate against the stored credential.
+		$blank_private_form_data = $form_data;
+		$blank_private_form_data['config[webpush_vapid_private]'] = '';
+		$crawler = self::submit($crawler->selectButton('submit')->form($blank_private_form_data));
+		$this->assertCount(1, $crawler->filter('.successbox'));
+		$result = $db->sql_query("SELECT config_value FROM " . CONFIG_TABLE . " WHERE config_name = 'webpush_vapid_private'");
+		$this->assertSame($form_data['config[webpush_vapid_private]'], $db->sql_fetchfield('config_value'));
+		$db->sql_freeresult($result);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
+		$excessively_padded_form_data = $padded_form_data;
+		$excessively_padded_form_data['config[webpush_vapid_public]'] .= '=';
+		$crawler = self::submit($crawler->selectButton('submit')->form($excessively_padded_form_data));
+		$this->assertContainsLang('WEBPUSH_VAPID_KEYS_INVALID', $crawler->filter('.errorbox')->text());
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
+		$invalid_form_data = $form_data;
+		$invalid_form_data['config[webpush_vapid_public]'] = 'invalid';
+		$invalid_form_data['config[webpush_vapid_private]'] = '';
+		$form = $crawler->selectButton('submit')->form($invalid_form_data);
+		$crawler = self::submit($form);
+		$this->assertContainsLang('WEBPUSH_VAPID_KEYS_INVALID', $crawler->filter('.errorbox')->text());
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_board&mode=webpush&sid=' . $this->sid);
+		$this->assertEquals($form_data['config[webpush_vapid_public]'], $crawler->filter('input[name="config[webpush_vapid_public]"]')->attr('value'));
 	}
 
 	public function test_ucp_module()
@@ -100,18 +145,23 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		// Assert subscribe dropdown is present
 		$crawler = self::request('GET', 'index.php');
 		$this->assertCount(1, $crawler->filter('.webpush-subscribe'));
-		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBE', $crawler->filter('.webpush-subscribe #subscribe_webpush')->text());
-		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBED', $crawler->filter('.webpush-subscribe #unsubscribe_webpush')->text());
+		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBE', $crawler->filter('#subscribe_webpush_dropdown')->text());
+		$this->assertContainsLang('NOTIFY_WEB_PUSH_SUBSCRIBED', $crawler->filter('#unsubscribe_webpush_dropdown')->text());
 
-		// Assert subscribe button is not displayed in UCP when dropdown subscribe is present
+		// Assert dropdown and UCP controls coexist without duplicate IDs.
 		$crawler = self::request('GET', 'ucp.php?i=ucp_notifications&mode=notification_options');
-		$this->assertCount(0, $crawler->filter('.webpush-subscribe'));
+		$this->assertCount(1, $crawler->filter('.webpush-subscribe'));
+		$this->assertCount(1, $crawler->filter('#subscribe_webpush[data-webpush-action="subscribe"]'));
+		$this->assertCount(1, $crawler->filter('#unsubscribe_webpush[data-webpush-action="unsubscribe"]'));
+		$this->assertCount(1, $crawler->filter('#subscribe_webpush_dropdown[data-webpush-action="subscribe"]'));
+		$this->assertCount(1, $crawler->filter('#unsubscribe_webpush_dropdown[data-webpush-action="unsubscribe"]'));
 
 		$this->set_acp_option('webpush_dropdown_subscribe', 0);
 
 		// Assert subscribe dropdown is not present by default
 		$crawler = self::request('GET', 'index.php');
 		$this->assertCount(0, $crawler->filter('.webpush-subscribe'));
+		$this->assertCount(1, $crawler->filter('script[src*="webpush.js"]'));
 	}
 
 	public function test_worker_resolves_relative_notification_urls()
@@ -122,11 +172,12 @@ class phpbb_functional_notification_webpush_test extends phpbb_functional_test_c
 		$response = self::$client->getResponse();
 		$content = $response->getContent();
 
-		$this->assertStringStartsWith('text/javascript', $response->getHeader('Content-Type'));
-		$this->assertMatchesRegularExpression(
-			"#new URL\\(event\\.notification\\.data\\.url, '[^']+/'\\)#",
-			$content
-		);
+		$this->assertStringStartsWith('application/javascript', $response->getHeader('Content-Type'));
+		$this->assertStringContainsString('no-store', $response->getHeader('Cache-Control'));
+		$this->assertStringContainsString('no-cache', $response->getHeader('Cache-Control'));
+		$this->assertStringContainsString('must-revalidate', $response->getHeader('Cache-Control'));
+		$this->assertSame('noindex, nofollow', $response->getHeader('X-Robots-Tag'));
+		$this->assertStringContainsString('new URL(event.notification.data.url, self.location.href)', $content);
 		$this->assertStringContainsString('self.clients.openWindow(url.href)', $content);
 	}
 

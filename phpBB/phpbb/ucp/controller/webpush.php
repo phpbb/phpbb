@@ -27,6 +27,7 @@ use phpbb\request\request_interface;
 use phpbb\symfony_request;
 use phpbb\user;
 use phpbb\user_loader;
+use phpbb\webpush\subscription\validator as subscription_validator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
@@ -38,6 +39,12 @@ class webpush
 {
 	/** @var string UCP form token name */
 	public const FORM_TOKEN_UCP = 'ucp_webpush';
+
+	/** @var int Maximum number of stored subscriptions per user */
+	public const MAX_SUBSCRIPTIONS_PER_USER = 20;
+
+	/** @var int Maximum number of surplus subscriptions removed per query */
+	private const SUBSCRIPTION_PRUNE_BATCH_SIZE = 100;
 
 	/** @var config */
 	protected $config;
@@ -239,10 +246,15 @@ class webpush
 	{
 		$row_data = json_decode($notification_data, true);
 
-		// Old notification data is pre-parsed and just needs to be returned
+		// Old notification data is pre-parsed, but its URL may be relative to the board root.
 		if (isset($row_data['heading']))
 		{
-			return $notification_data;
+			if (is_string($row_data['url'] ?? null))
+			{
+				$row_data['url'] = $this->normalize_notification_url($row_data['url']);
+			}
+
+			return json_encode($row_data);
 		}
 
 		// Get notification from row_data
@@ -253,11 +265,40 @@ class webpush
 
 		return json_encode([
 			'heading'	=> html_entity_decode($this->config['sitename'], ENT_QUOTES, 'UTF-8'),
-			'title'		=> strip_tags(html_entity_decode($notification->get_title(), ENT_NOQUOTES, 'UTF-8')),
-			'text'		=> strip_tags(html_entity_decode($notification->get_reference(), ENT_NOQUOTES, 'UTF-8')),
-			'url'		=> htmlspecialchars_decode($notification->get_url()),
+			'title'		=> html_entity_decode(strip_tags($notification->get_title()), ENT_QUOTES, 'UTF-8'),
+			'text'		=> html_entity_decode(strip_tags($notification->get_reference()), ENT_QUOTES, 'UTF-8'),
+			'url'		=> $this->normalize_notification_url(htmlspecialchars_decode($notification->get_url())),
 			'avatar'	=> $notification->get_avatar(),
 		]);
+	}
+
+	/**
+	 * Convert a relative notification URL to an absolute URL
+	 *
+	 * @param string $url Notification URL
+	 * @return string
+	 */
+	protected function normalize_notification_url(string $url): string
+	{
+		if (parse_url($url, PHP_URL_SCHEME) !== null)
+		{
+			return $url;
+		}
+
+		$board_url = generate_board_url();
+
+		if (strpos($url, '//') === 0)
+		{
+			$scheme = parse_url($board_url, PHP_URL_SCHEME);
+			return (is_string($scheme) ? $scheme . ':' : '') . $url;
+		}
+
+		if (strpos($url, '/') === 0)
+		{
+			return generate_board_url(true) . $url;
+		}
+
+		return $board_url . '/' . preg_replace('#^(?:(?:\.\.?)/)+#', '', $url);
 	}
 
 	/**
@@ -272,12 +313,13 @@ class webpush
 	{
 		$content = $this->template->render('push_worker.js.twig', [
 			'U_WEBPUSH_GET_NOTIFICATION'	=> $this->controller_helper->route('phpbb_ucp_push_get_notification_controller'),
-			'U_BOARD_URL'					=> generate_board_url(),
 			'ASSETS_VERSION'				=> $this->config['assets_version'],
 		]);
 
 		$response = new Response($content);
-		$response->headers->set('Content-Type', 'text/javascript; charset=UTF-8');
+		$response->headers->set('Content-Type', 'application/javascript; charset=UTF-8');
+		$response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+		$response->headers->set('X-Robots-Tag', 'noindex, nofollow');
 
 		if (!empty($this->user->data['is_bot']))
 		{
@@ -321,6 +363,10 @@ class webpush
 
 		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
 		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
+		if ($endpoint === '')
+		{
+			throw new http_exception(Response::HTTP_BAD_REQUEST, 'NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
+		}
 		$previous_endpoint = is_string($data['previous_endpoint'] ?? null) ? $data['previous_endpoint'] : '';
 
 		if (!$this->verify_endpoint($endpoint))
@@ -356,10 +402,41 @@ class webpush
 			$this->db->sql_query($sql);
 		}
 
+		$this->prune_user_subscriptions($this->user->id());
+
 		return new JsonResponse([
 			'success'		=> true,
 			'form_tokens'	=> $this->form_helper->get_form_tokens(self::FORM_TOKEN_UCP),
 		]);
+	}
+
+	/**
+	 * Keep only the newest subscriptions for a user
+	 *
+	 * @param int $user_id User id
+	 * @return void
+	 */
+	protected function prune_user_subscriptions(int $user_id): void
+	{
+		do
+		{
+			$sql = 'SELECT subscription_id
+				FROM ' . $this->push_subscriptions_table . '
+				WHERE user_id = ' . $user_id . '
+				ORDER BY subscription_id DESC';
+			$result = $this->db->sql_query_limit($sql, self::SUBSCRIPTION_PRUNE_BATCH_SIZE, self::MAX_SUBSCRIPTIONS_PER_USER);
+			$surplus = array_map('intval', array_column($this->db->sql_fetchrowset($result), 'subscription_id'));
+			$this->db->sql_freeresult($result);
+
+			if (!empty($surplus))
+			{
+				$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
+					WHERE user_id = ' . $user_id . '
+						AND ' . $this->db->sql_in_set('subscription_id', $surplus);
+				$this->db->sql_query($sql);
+			}
+		}
+		while (count($surplus) === self::SUBSCRIPTION_PRUNE_BATCH_SIZE);
 	}
 
 	/**
@@ -370,25 +447,19 @@ class webpush
 	 */
 	protected function verify_endpoint(string $endpoint): bool
 	{
+		if (!subscription_validator::is_valid_endpoint_url($endpoint))
+		{
+			return false;
+		}
+
 		$parts = parse_url($endpoint);
-
-		// Basic URL structural check
-		if (!$parts || !isset($parts['scheme'], $parts['host']))
-		{
-			return false;
-		}
-
-		// MUST be HTTPS: https://datatracker.ietf.org/doc/html/rfc8030#section-8
-		if (strtolower($parts['scheme']) !== 'https')
-		{
-			return false;
-		}
 
 		// Only allow endpoints for known push services (e.g. Mozilla, Google)
 		// See https://github.com/pushpad/known-push-services for list of known services
 		$allowed_services = [
 			'android.googleapis.com',
 			'fcm.googleapis.com',
+			'jmt17.google.com',
 			'updates.push.services.mozilla.com',
 			'updates-autopush.stage.mozaws.net',
 			'updates-autopush.dev.mozaws.net',
@@ -400,7 +471,7 @@ class webpush
 		 * Event to modify allowed services for web push notifications
 		 *
 		 * @event core.ucp_webpush_controller_verify_endpoint
-		 * @var array allowed_services Allowed service URLs
+		 * @var array allowed_services Allowed exact hosts or leading-dot wildcard suffixes
 		 * @since 4.0.0-a2
 		 */
 		$vars = [
@@ -410,8 +481,14 @@ class webpush
 
 		foreach ($allowed_services as $allowed_host)
 		{
-			// Use str_ends_with to support subdomains like 'web.push.apple.com'
-			if (str_ends_with(strtolower($parts['host']), $allowed_host))
+			$host = strtolower($parts['host']);
+			$allowed_host = strtolower($allowed_host);
+			if ($allowed_host === '')
+			{
+				continue;
+			}
+			if (($allowed_host[0] === '.' && str_ends_with($host, $allowed_host))
+				|| ($allowed_host[0] !== '.' && $host === $allowed_host))
 			{
 				return true;
 			}
@@ -436,7 +513,7 @@ class webpush
 		$p256dh = is_string($keys['p256dh'] ?? null) ? $keys['p256dh'] : '';
 		$auth = is_string($keys['auth'] ?? null) ? $keys['auth'] : '';
 
-		if ($p256dh === '' || $auth === '')
+		if (!subscription_validator::is_valid($p256dh, $auth))
 		{
 			throw new http_exception(Response::HTTP_BAD_REQUEST, 'AJAX_ERROR_TEXT');
 		}
@@ -482,6 +559,10 @@ class webpush
 
 		$data = json_sanitizer::decode($symfony_request->request->get('data', ''));
 		$endpoint = is_string($data['endpoint'] ?? null) ? $data['endpoint'] : '';
+		if ($endpoint === '')
+		{
+			throw new http_exception(Response::HTTP_BAD_REQUEST, 'NOTIFY_WEB_PUSH_UNSUPPORTED_SERVICE');
+		}
 
 		$sql = 'DELETE FROM ' . $this->push_subscriptions_table . '
 			WHERE user_id = ' . (int) $this->user->id() . "
