@@ -151,7 +151,7 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		{
 			$values["config[search_type]"] = $this->search_backend;
 
-			if (strpos($this->search_backend, 'fulltext_sphinx'))
+			if ($this->search_backend === 'phpbb\search\backend\fulltext_sphinx')
 			{
 				// Set board Sphinx id in according to respective setup-sphinx.sh $ID value
 				$values["config[fulltext_sphinx_id]"] = 'saw9zf2fdhp1goue';

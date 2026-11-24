@@ -88,6 +88,22 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN'	=> 'The generated content of the sphinx config file. This data needs to be pasted into the sphinx.conf which is used by sphinx search daemon. Replace the [dbuser] and [dbpassword] placeholders with your database credentials.',
 	'FULLTEXT_SPHINX_NO_CONFIG_DATA'		=> 'The sphinx data directory path is not defined. Please define the path and submit to generate the config file.',
 
+	'FULLTEXT_SPHINXQL_CONFIG_FILE'				=> 'SphinxQL config file',
+	'FULLTEXT_SPHINXQL_CONFIG_FILE_EXPLAIN'		=> 'The generated content of the Sphinx Real-Time (rt) configuration file. Paste this configuration into the sphinx.conf file used by the Sphinx search daemon (searchd) and restart the daemon before creating the index.',
+	'FULLTEXT_SPHINXQL_CONFIGURE'				=> 'Configure the following settings to generate the SphinxQL config file',
+	'FULLTEXT_SPHINXQL_DATA_PATH'				=> 'Path to data directory',
+	'FULLTEXT_SPHINXQL_DATA_PATH_EXPLAIN'		=> 'Used by Sphinx to store Real-Time index chunks, binlogs, and log files. Create this directory outside web-accessible directories (include a trailing slash).',
+	'FULLTEXT_SPHINXQL_DISK_BYTES'				=> 'Real-Time index disk usage (bytes)',
+	'FULLTEXT_SPHINXQL_DRIVER_NOT_AVAILABLE'	=> 'SphinxQL search requires either the pdo_mysql or mysqli PHP extension to be enabled.',
+	'FULLTEXT_SPHINXQL_HOST'					=> 'SphinxQL search daemon host',
+	'FULLTEXT_SPHINXQL_HOST_EXPLAIN'			=> 'Host on which the Sphinx search daemon (searchd) mysql41 listener runs. Leave empty to use the default 127.0.0.1.',
+	'FULLTEXT_SPHINXQL_NO_CONFIG_DATA'			=> 'The Sphinx data directory path is not defined. Please define the path and submit to generate the config file.',
+	'FULLTEXT_SPHINXQL_PORT'					=> 'SphinxQL search daemon port',
+	'FULLTEXT_SPHINXQL_PORT_EXPLAIN'			=> 'Port on which the Sphinx search daemon (searchd) mysql41 protocol listener runs. Leave empty to use the default SphinxQL port 9306.',
+	'FULLTEXT_SPHINXQL_RAM_BYTES'				=> 'Real-Time index RAM usage (bytes)',
+	'FULLTEXT_SPHINXQL_RT_MEM_LIMIT'			=> 'Real-Time index RAM chunk limit',
+	'FULLTEXT_SPHINXQL_RT_MEM_LIMIT_EXPLAIN'	=> 'Maximum RAM size allocated for the Real-Time index before Sphinx flushes chunks to disk.',
+
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',
 

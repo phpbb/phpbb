@@ -151,6 +151,12 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_postgres_ts_name', 'simple');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_indexer_mem_limit', '512');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinx_stopwords', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_data_path', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_host', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_id', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_indexed', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_port', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_sphinxql_rt_mem_limit', '128');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('gzip_compress', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('help_send_statistics_time', '0');

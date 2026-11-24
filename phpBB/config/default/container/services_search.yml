@@ -68,6 +68,38 @@ services:
         tags:
             - { name: search.backend }
 
+    search.sphinxql.client:
+        class: phpbb\search\backend\sphinxql\client
+        arguments:
+            - '@config'
+
+    search.fulltext.sphinxql:
+        class: phpbb\search\backend\fulltext_sphinxql
+        arguments:
+            - '@auth'
+            - '@cache'
+            - '@config'
+            - '@dbal.conn'
+            - '@event_dispatcher'
+            - '@language'
+            - '@log'
+            - '@search.sphinxql.client'
+            - '@text_formatter.utils'
+            - '@user'
+            - '%tables.search_results%'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+        tags:
+            - { name: search.backend }
+
+    search.sphinxql.event_subscriber:
+        class: phpbb\search\backend\sphinxql\event_subscriber
+        arguments:
+            - '@config'
+            - '@search.fulltext.sphinxql'
+        tags:
+            - { name: kernel.event_subscriber }
+
 # Factory
     search.backend_factory:
         class: phpbb\search\search_backend_factory

@@ -602,8 +602,8 @@ class phpbb_functional_visibility_softdelete_test extends phpbb_functional_test_
 		$this->add_lang('search');
 		self::request('GET', "search.php?keywords=bang&sid={$this->sid}");
 
-		// Sphinx search doesn't apply to unapproved or softdeleted posts
-		if (strpos($this->get_search_type(), 'fulltext_sphinx'))
+		// Legacy Sphinx binary search backend doesn't apply to unapproved or softdeleted posts
+		if ($this->get_search_type() === 'phpbb\search\backend\fulltext_sphinx')
 		{
 			$this->assertStringContainsString(sprintf($this->lang['FOUND_SEARCH_MATCHES'][2], 0), self::get_content());
 		}
