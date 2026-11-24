@@ -103,6 +103,7 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_SPHINXQL_RAM_BYTES'				=> 'Real-Time index RAM usage (bytes)',
 	'FULLTEXT_SPHINXQL_RT_MEM_LIMIT'			=> 'Real-Time index RAM chunk limit',
 	'FULLTEXT_SPHINXQL_RT_MEM_LIMIT_EXPLAIN'	=> 'Maximum RAM size allocated for the Real-Time index before Sphinx flushes chunks to disk.',
+	'FULLTEXT_SPHINXQL_TOTAL_POSTS'				=> 'Total number of indexed posts',
 
 	'GENERAL_SEARCH_SETTINGS'				=> 'General search settings',
 	'GO_TO_SEARCH_INDEX'					=> 'Go to search index page',

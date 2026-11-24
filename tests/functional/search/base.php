@@ -231,8 +231,8 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		global $phpbb_root_path;
 
-		// Sphinx search doesn't use phpBB search results caching
-		if (strpos($this->search_backend, 'fulltext_sphinx'))
+		// Sphinx search backends don't use phpBB search results caching
+		if (in_array($this->search_backend, ['phpbb\search\backend\fulltext_sphinx', 'phpbb\search\backend\fulltext_sphinxql'], true))
 		{
 			$this->markTestSkipped("Sphinx search doesn't use phpBB search results caching");
 		}

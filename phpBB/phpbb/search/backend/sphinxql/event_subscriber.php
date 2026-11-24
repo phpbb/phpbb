@@ -48,8 +48,8 @@ class event_subscriber implements EventSubscriberInterface
 	{
 		return [
 			'core.set_post_visibility_after'	=> 'on_set_post_visibility_after',
-			'core.move_topics_after'			=> 'on_move_topics_after',
-			'core.move_posts_sync_after'		=> 'on_move_posts_sync_after',
+			'core.move_topics_after'			=> 'on_topics_changed',
+			'core.move_posts_sync_after'		=> 'on_topics_changed',
 			'core.mcp_change_poster_after'		=> 'on_mcp_change_poster_after',
 			'core.delete_user_after'			=> 'on_delete_user_after',
 		];
@@ -87,28 +87,13 @@ class event_subscriber implements EventSubscriberInterface
 	}
 
 	/**
-	 * Updates forum_id (or adds/removes posts based on destination forum indexing settings) when topics move.
+	 * Updates forum_id, topic_id, topic_first_post, and topic_last_post_time (or adds/removes posts
+	 * based on destination forum indexing settings) when topics move or posts are moved/split/merged.
 	 *
 	 * @param data $event
 	 * @return void
 	 */
-	public function on_move_topics_after(data $event): void
-	{
-		if (!$this->is_active() || empty($event['topic_ids']) || !is_array($event['topic_ids']))
-		{
-			return;
-		}
-
-		$this->sphinxql_backend->sync_topics_by_ids(array_map('intval', $event['topic_ids']));
-	}
-
-	/**
-	 * Updates topic_id, forum_id, topic_first_post, and topic_last_post_time after moving/splitting/merging posts.
-	 *
-	 * @param data $event
-	 * @return void
-	 */
-	public function on_move_posts_sync_after(data $event): void
+	public function on_topics_changed(data $event): void
 	{
 		if (!$this->is_active() || empty($event['topic_ids']) || !is_array($event['topic_ids']))
 		{

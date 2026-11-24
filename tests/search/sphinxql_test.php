@@ -12,7 +12,6 @@
  */
 
 use phpbb\auth\auth;
-use phpbb\cache\service;
 use phpbb\config\config;
 use phpbb\event\data as event_data;
 use phpbb\language\language;
@@ -60,12 +59,11 @@ class phpbb_search_sphinxql_test extends phpbb_database_test_case
 
 	protected function setUp(): void
 	{
-		global $phpbb_root_path, $phpEx, $cache;
+		global $phpbb_root_path, $phpEx;
 
 		parent::setUp();
 
 		$this->db = $this->new_dbal();
-		$cache = $this->createMock(service::class);
 		$this->auth = $this->createMock(auth::class);
 		$this->log = $this->createMock(log_interface::class);
 
@@ -123,7 +121,6 @@ class phpbb_search_sphinxql_test extends phpbb_database_test_case
 
 		$this->search = new fulltext_sphinxql(
 			$this->auth,
-			$cache,
 			$this->config,
 			$this->db,
 			$dispatcher,
@@ -131,10 +128,7 @@ class phpbb_search_sphinxql_test extends phpbb_database_test_case
 			$this->log,
 			$this->client,
 			$text_utils,
-			$user,
-			SEARCH_RESULTS_TABLE,
-			$phpbb_root_path,
-			$phpEx
+			$user
 		);
 	}
 
@@ -357,7 +351,7 @@ class phpbb_search_sphinxql_test extends phpbb_database_test_case
 
 		// 2. Moving topic into non-indexed forum 2 deletes its posts from RT index
 		$this->executed_sql = [];
-		$subscriber->on_move_topics_after(new event_data(['topic_ids' => [20]]));
+		$subscriber->on_topics_changed(new event_data(['topic_ids' => [20]]));
 		$this->assertSame(['DELETE FROM index_phpbb_unit12345 WHERE id IN (200)'], $this->executed_sql);
 
 		// 3. Retaining posts on user_delete updates poster_id to ANONYMOUS

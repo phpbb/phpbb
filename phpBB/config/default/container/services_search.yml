@@ -77,7 +77,6 @@ services:
         class: phpbb\search\backend\fulltext_sphinxql
         arguments:
             - '@auth'
-            - '@cache'
             - '@config'
             - '@dbal.conn'
             - '@event_dispatcher'
@@ -86,9 +85,6 @@ services:
             - '@search.sphinxql.client'
             - '@text_formatter.utils'
             - '@user'
-            - '%tables.search_results%'
-            - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
             - { name: search.backend }
 
