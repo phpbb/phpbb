@@ -52,22 +52,6 @@ services:
         tags:
             - { name: search.backend }
 
-    search.fulltext.sphinx:
-        class: phpbb\search\backend\fulltext_sphinx
-        arguments:
-            - '@auth'
-            - '@config'
-            - '@dbal.conn'
-            - '@dbal.tools'
-            - '@event_dispatcher'
-            - '@language'
-            - '@log'
-            - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
-        tags:
-            - { name: search.backend }
-
     search.sphinxql.client:
         class: phpbb\search\backend\sphinxql\client
         arguments:

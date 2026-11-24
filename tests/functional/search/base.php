@@ -151,12 +151,6 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 		{
 			$values["config[search_type]"] = $this->search_backend;
 
-			if ($this->search_backend === 'phpbb\search\backend\fulltext_sphinx')
-			{
-				// Set board Sphinx id in according to respective setup-sphinx.sh $ID value
-				$values["config[fulltext_sphinx_id]"] = 'saw9zf2fdhp1goue';
-			}
-
 			try
 			{
 				$form->setValues($values);
@@ -231,10 +225,10 @@ abstract class phpbb_functional_search_base extends phpbb_functional_test_case
 	{
 		global $phpbb_root_path;
 
-		// Sphinx search backends don't use phpBB search results caching
-		if (in_array($this->search_backend, ['phpbb\search\backend\fulltext_sphinx', 'phpbb\search\backend\fulltext_sphinxql'], true))
+		// SphinxQL search doesn't use phpBB search results caching
+		if ($this->search_backend === 'phpbb\search\backend\fulltext_sphinxql')
 		{
-			$this->markTestSkipped("Sphinx search doesn't use phpBB search results caching");
+			$this->markTestSkipped("SphinxQL search doesn't use phpBB search results caching");
 		}
 
 		$this->purge_cache();

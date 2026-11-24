@@ -15,7 +15,6 @@ namespace phpbb\db\migration\data\v400;
 
 use phpbb\search\backend\fulltext_mysql;
 use phpbb\search\backend\fulltext_postgres;
-use phpbb\search\backend\fulltext_sphinx;
 use phpbb\search\backend\fulltext_native;
 
 class search_backend_update extends \phpbb\db\migration\migration
@@ -36,9 +35,6 @@ class search_backend_update extends \phpbb\db\migration\migration
 			break;
 			case '\\phpbb\\search\\fulltext_postgres':
 				$new_search_type = fulltext_postgres::class;
-			break;
-			case '\\phpbb\\search\\fulltext_sphinx':
-				$new_search_type = fulltext_sphinx::class;
 			break;
 			default:
 				$new_search_type = fulltext_native::class;

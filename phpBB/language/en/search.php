@@ -115,8 +115,6 @@ $lang = array_merge($lang, array(
 	'SORT_FORUM'				=> 'Forum',
 	'SORT_POST_SUBJECT'			=> 'Post subject',
 	'SORT_TIME'					=> 'Post time',
-	'SPHINX_SEARCH_FAILED'		=> 'Search failed: %s',
-	'SPHINX_SEARCH_FAILED_LOG'	=> 'Sorry, search could not be performed. More information about this failure has been logged in the error log.',
 	'SPHINXQL_SEARCH_FAILED'		=> 'Search failed: %s',
 	'SPHINXQL_SEARCH_FAILED_LOG'	=> 'Sorry, search could not be performed. More information about this failure has been logged in the error log.',
 

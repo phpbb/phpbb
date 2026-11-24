@@ -751,7 +751,6 @@ $lang = array_merge($lang, array(
 
 	'LOG_SEARCH_INDEX_CREATED'	=> '<strong>Created search index for</strong><br />» %s',
 	'LOG_SEARCH_INDEX_REMOVED'	=> '<strong>Removed search index for</strong><br />» %s',
-	'LOG_SPHINX_ERROR'			=> '<strong>Sphinx Error</strong><br />» %s',
 	'LOG_SPHINXQL_ERROR'		=> '<strong>SphinxQL Error</strong><br />» %s',
 
 	'LOG_SPAMHAUS_OPEN_RESOLVER'		=> 'Spamhaus does not allow queries using an open resolver. Blacklist checking has been disabled. For more information, see https://www.spamhaus.com/product/help-for-spamhaus-public-mirror-users/.',
