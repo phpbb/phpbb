@@ -66,6 +66,7 @@
 		<li><a href="#update_patch">Patch file</a></li>
 		<li><a href="#update_advanced">Advanced update package</a></li>
 		<li><a href="#update_all">All package types</a></li>
+		<li><a href="#update_sphinx">Sphinx Fulltext search backend</a></li>
 	</ol>
 	</li>
 	<li><a href="#update30_31">Updating from phpBB 3.0.x/3.1.x to phpBB 3.2.x or phpBB 3.3.x</a></li>
@@ -323,6 +324,36 @@
 	<p>If you have non-English language packs installed, you may want to see if a new version has been made available. A number of missing strings may have been added which, though not essential, may be beneficial to users. Please note that at this time not all language packs have been updated so you should be prepared to periodically check for updates.</p>
 
 	<p>These update methods will only update the standard style <code>prosilver</code>, any other styles you have installed for your board will usually also need to be updated.</p>
+
+<a name="update_sphinx"></a><h3>4.vi. Sphinx Fulltext search backend</h3>
+
+	<p>If your board uses the <strong>Sphinx Fulltext</strong> search backend, search will not work after the update until the Sphinx index has been recreated. Earlier versions used plain indexes (<code>index_phpbb_*_main</code> and <code>index_phpbb_*_delta</code>) that were built by the Sphinx <code>indexer</code> through the Sphinx API on port 9312. phpBB now writes to a single Real-Time (rt) index through SphinxQL (default port 9306) and keeps it up to date while posts are created, edited, moved or deleted. The old indexes cannot be reused, because a plain index cannot be written to and its schema differs.</p>
+
+	<p>After updating phpBB:</p>
+
+	<ol>
+		<li>Go to <strong>Administration Control Panel -&gt; General -&gt; Search settings</strong>. In the Sphinx settings, check the data path, host and port (leave the port empty to use the SphinxQL default 9306), then submit.</li>
+		<li>Replace the old <code>source</code>, <code>index</code>, <code>indexer</code> and <code>searchd</code> sections of your <code>sphinx.conf</code> with the configuration generated on that page and restart the Sphinx search daemon (<code>searchd</code>). The old index files in the data directory are no longer needed and can be deleted, and the cron job that ran <code>indexer</code> can be removed.</li>
+		<li>Create the index in <strong>Administration Control Panel -&gt; Maintenance -&gt; Database -&gt; Search Index</strong>, or from the command line with <code>php bin/phpbbcli.php searchindex:create "phpbb\search\backend\fulltext_sphinx"</code>.</li>
+	</ol>
+
+	<p><strong>Optional bulk load for large boards (expert users):</strong> step 3 sends every post to <code>searchd</code> from PHP, which can take many hours on boards with millions of posts. If your board runs on MySQL/MariaDB or PostgreSQL and you have shell access to the Sphinx server, you can instead build the index once with the much faster Sphinx <code>indexer</code> and move it into the Real-Time index with <code>ATTACH INDEX</code>:</p>
+
+	<ol>
+		<li>Do steps 1 and 2 above, but do <em>not</em> create the index from the ACP.</li>
+		<li>Append the contents of <code>docs/sphinx_bulk_load.sample.conf</code> to <code>sphinx.conf</code>. Replace <code>{SPHINX_ID}</code> and <code>{DATA_PATH}</code> with the values used in the generated configuration (the Real-Time index is named <code>index_phpbb_{SPHINX_ID}</code>), fill in the database credentials and adjust the <code>phpbb_</code> table prefix if necessary. If you changed any text processing settings (for example <code>charset_table</code> or <code>min_word_len</code>) of the Real-Time index, apply the same changes to the bulk index.</li>
+		<li>Disable the board in <strong>Administration Control Panel -&gt; General -&gt; Board settings</strong> and avoid posting or moderating until the last step. Posts created or changed while the bulk index is being built would otherwise be missing from the search index.</li>
+		<li>Build the bulk index: <code>indexer --config /path/to/sphinx.conf index_phpbb_{SPHINX_ID}_bulk</code>, then restart <code>searchd</code> so that it loads the new index.</li>
+		<li>Connect to SphinxQL, for example with <code>mysql -h 127.0.0.1 -P 9306</code>, and run:
+			<pre>TRUNCATE RTINDEX index_phpbb_{SPHINX_ID};
+ATTACH INDEX index_phpbb_{SPHINX_ID}_bulk TO RTINDEX index_phpbb_{SPHINX_ID};
+SHOW INDEX index_phpbb_{SPHINX_ID} STATUS;</pre>
+			The Real-Time index must be empty for <code>ATTACH</code> to succeed, which is why it is truncated first. The <code>indexed_documents</code> value shown by the last statement should match the number of indexed posts. Recent Manticore Search versions also accept <code>ATTACH TABLE index_phpbb_{SPHINX_ID}_bulk TO TABLE index_phpbb_{SPHINX_ID};</code>.</li>
+		<li>Remove the <code>source_phpbb_{SPHINX_ID}_bulk</code> and <code>index_phpbb_{SPHINX_ID}_bulk</code> sections from <code>sphinx.conf</code> again. <code>ATTACH</code> moves the bulk index files into the Real-Time index, so <code>searchd</code> would otherwise complain about the missing index on its next start.</li>
+		<li>Enable the board again. The search index page in the ACP should now report the index as created, and phpBB keeps it up to date from here on.</li>
+	</ol>
+
+	<p>Posts loaded this way are indexed from the stored post text with Sphinx's own HTML stripping, as in earlier phpBB versions, so BBCode tag names such as <code>quote</code> or <code>url</code> may also be searchable for these posts until they are edited. Posts indexed by phpBB itself have their formatting removed before indexing.</p>
 
 		</div>
 

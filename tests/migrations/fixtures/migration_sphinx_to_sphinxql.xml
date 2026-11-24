@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_migrations">
+		<column>migration_name</column>
+		<column>migration_depends_on</column>
+		<column>migration_schema_done</column>
+		<column>migration_data_done</column>
+		<column>migration_data_state</column>
+		<column>migration_start_time</column>
+		<column>migration_end_time</column>
+	</table>
+	<table name="phpbb_config">
+		<column>config_name</column>
+		<column>config_value</column>
+		<row>
+			<value>fulltext_sphinx_data_path</value>
+			<value>/var/lib/sphinx/</value>
+		</row>
+		<row>
+			<value>fulltext_sphinx_host</value>
+			<value>10.0.0.15</value>
+		</row>
+		<row>
+			<value>fulltext_sphinx_id</value>
+			<value>existingid99</value>
+		</row>
+		<row>
+			<value>fulltext_sphinx_indexer_mem_limit</value>
+			<value>256</value>
+		</row>
+		<row>
+			<value>fulltext_sphinx_port</value>
+			<value>9312</value>
+		</row>
+		<row>
+			<value>fulltext_sphinx_stopwords</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>search_type</value>
+			<value>phpbb\search\backend\fulltext_sphinx</value>
+		</row>
+	</table>
+</dataset>

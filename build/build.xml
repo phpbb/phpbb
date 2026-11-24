@@ -88,7 +88,6 @@
 				${project.basedir}/phpBB/develop/*,
 				${project.basedir}/phpBB/ext/*,
 				${project.basedir}/phpBB/includes/diff/*.php,
-				${project.basedir}/phpBB/includes/sphinxapi.php,
 					${project.basedir}/phpBB/includes/utf/data/*,
 					${project.basedir}/phpBB/install/data/*,
 					${project.basedir}/phpBB/install/database_update.php,

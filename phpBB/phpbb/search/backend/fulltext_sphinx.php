@@ -1,78 +1,57 @@
 <?php
 /**
-*
-* This file is part of the phpBB Forum Software package.
-*
-* @copyright (c) phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
-*
-* For full copyright and license information, please see
-* the docs/CREDITS.txt file.
-*
-*/
+ *
+ * This file is part of the phpBB Forum Software package.
+ *
+ * @copyright (c) phpBB Limited <https://www.phpbb.com>
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ * For full copyright and license information, please see
+ * the docs/CREDITS.txt file.
+ *
+ */
 
 namespace phpbb\search\backend;
 
 use phpbb\auth\auth;
 use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
-use phpbb\db\tools\tools_interface;
 use phpbb\event\dispatcher_interface;
 use phpbb\language\language;
-use phpbb\log\log;
+use phpbb\log\log_interface;
+use phpbb\search\backend\sphinx\client;
+use phpbb\search\backend\sphinx\client_interface;
+use phpbb\search\backend\sphinx\exception as sphinx_exception;
+use phpbb\textformatter\utils_interface;
 use phpbb\user;
 
 /**
-* Fulltext search based on the sphinx search daemon
-*/
+ * Fulltext search based on Sphinx / Manticore Real-Time (rt) indexes using SphinxQL.
+ */
 class fulltext_sphinx implements search_backend_interface
 {
 	protected const SPHINX_MAX_MATCHES = 20000;
-	protected const SPHINX_CONNECT_RETRIES = 3;
-	protected const SPHINX_CONNECT_WAIT_TIME = 300;
+	protected const INDEX_BATCH_SIZE = 500;
+	protected const DELETE_BATCH_SIZE = 500;
+	protected const CHARSET_TABLE = 'U+FF10..U+FF19->0..9, 0..9, U+FF41..U+FF5A->a..z, U+FF21..U+FF3A->a..z, A..Z->a..z, a..z, U+0149, U+017F, U+0138, U+00DF, U+00FF, U+00C0..U+00D6->U+00E0..U+00F6, U+00E0..U+00F6, U+00D8..U+00DE->U+00F8..U+00FE, U+00F8..U+00FE, U+0100->U+0101, U+0101, U+0102->U+0103, U+0103, U+0104->U+0105, U+0105, U+0106->U+0107, U+0107, U+0108->U+0109, U+0109, U+010A->U+010B, U+010B, U+010C->U+010D, U+010D, U+010E->U+010F, U+010F, U+0110->U+0111, U+0111, U+0112->U+0113, U+0113, U+0114->U+0115, U+0115, U+0116->U+0117, U+0117, U+0118->U+0119, U+0119, U+011A->U+011B, U+011B, U+011C->U+011D, U+011D, U+011E->U+011F, U+011F, U+0130->U+0131, U+0131, U+0132->U+0133, U+0133, U+0134->U+0135, U+0135, U+0136->U+0137, U+0137, U+0139->U+013A, U+013A, U+013B->U+013C, U+013C, U+013D->U+013E, U+013E, U+013F->U+0140, U+0140, U+0141->U+0142, U+0142, U+0143->U+0144, U+0144, U+0145->U+0146, U+0146, U+0147->U+0148, U+0148, U+014A->U+014B, U+014B, U+014C->U+014D, U+014D, U+014E->U+014F, U+014F, U+0150->U+0151, U+0151, U+0152->U+0153, U+0153, U+0154->U+0155, U+0155, U+0156->U+0157, U+0157, U+0158->U+0159, U+0159, U+015A->U+015B, U+015B, U+015C->U+015D, U+015D, U+015E->U+015F, U+015F, U+0160->U+0161, U+0161, U+0162->U+0163, U+0163, U+0164->U+0165, U+0165, U+0166->U+0167, U+0167, U+0168->U+0169, U+0169, U+016A->U+016B, U+016B, U+016C->U+016D, U+016D, U+016E->U+016F, U+016F, U+0170->U+0171, U+0171, U+0172->U+0173, U+0173, U+0174->U+0175, U+0175, U+0176->U+0177, U+0177, U+0178->U+00FF, U+00FF, U+0179->U+017A, U+017A, U+017B->U+017C, U+017C, U+017D->U+017E, U+017E, U+0410..U+042F->U+0430..U+044F, U+0430..U+044F, U+4E00..U+9FFF';
 
 	/**
 	 * Associative array holding index stats
-	 * @var array
+	 * @var array<string, bool|int|string>
 	 */
-	protected $stats = array();
+	protected $stats = [];
 
 	/**
 	 * Holds the words entered by user, obtained by splitting the entered query on whitespace
-	 * @var array
+	 * @var array<int, string>
 	 */
-	protected $split_words = array();
+	protected $split_words = [];
 
 	/**
-	 * Holds unique sphinx id
+	 * Current match mode ('all' or 'any') set by split_keywords()
 	 * @var string
 	 */
-	protected $id;
-
-	/**
-	 * Stores the names of both main and delta sphinx indexes
-	 * separated by a semicolon
-	 * @var string
-	 */
-	protected $indexes;
-
-	/**
-	 * Sphinx search client object
-	 * @var \SphinxClient
-	 */
-	protected $sphinx;
-
-	/**
-	 * Relative path to board root
-	 * @var string
-	 */
-	protected $phpbb_root_path;
-
-	/**
-	 * PHP Extension
-	 * @var string
-	 */
-	protected $php_ext;
+	protected $match_terms = 'all';
 
 	/**
 	 * Auth object
@@ -93,32 +72,34 @@ class fulltext_sphinx implements search_backend_interface
 	protected $db;
 
 	/**
-	 * Database Tools object
-	 * @var tools_interface
-	 */
-	protected $db_tools;
-
-	/**
-	 * Stores the database type if supported by sphinx
-	 * @var string
-	 */
-	protected $dbtype;
-
-	/**
 	 * phpBB event dispatcher object
 	 * @var dispatcher_interface
 	 */
 	protected $phpbb_dispatcher;
 
 	/**
+	 * Language service
 	 * @var language
 	 */
 	protected $language;
 
 	/**
-	 * @var log
+	 * Log service
+	 * @var log_interface
 	 */
 	protected $log;
+
+	/**
+	 * SphinxQL client
+	 * @var client_interface
+	 */
+	protected $client;
+
+	/**
+	 * Text formatter utilities
+	 * @var utils_interface
+	 */
+	protected $text_formatter_utils;
 
 	/**
 	 * User object
@@ -141,20 +122,28 @@ class fulltext_sphinx implements search_backend_interface
 
 	/**
 	 * Constructor
-	 * Creates a new \phpbb\search\backend\fulltext_postgres, which is used as a search backend
 	 *
-	 * @param auth $auth Auth object
-	 * @param config $config Config object
-	 * @param driver_interface $db Database object
-	 * @param tools_interface $db_tools
-	 * @param dispatcher_interface $phpbb_dispatcher Event dispatcher object
-	 * @param language $language
-	 * @param log $log
-	 * @param user $user User object
-	 * @param string $phpbb_root_path Relative path to phpBB root
-	 * @param string $phpEx PHP file extension
+	 * @param auth					$auth
+	 * @param config				$config
+	 * @param driver_interface		$db
+	 * @param dispatcher_interface	$phpbb_dispatcher
+	 * @param language				$language
+	 * @param log_interface			$log
+	 * @param client_interface		$client
+	 * @param utils_interface		$text_formatter_utils
+	 * @param user					$user
 	 */
-	public function __construct(auth $auth, config $config, driver_interface $db, tools_interface $db_tools, dispatcher_interface $phpbb_dispatcher, language $language, log $log, user $user, string $phpbb_root_path, string $phpEx)
+	public function __construct(
+		auth $auth,
+		config $config,
+		driver_interface $db,
+		dispatcher_interface $phpbb_dispatcher,
+		language $language,
+		log_interface $log,
+		client_interface $client,
+		utils_interface $text_formatter_utils,
+		user $user
+	)
 	{
 		$this->auth = $auth;
 		$this->config = $config;
@@ -162,29 +151,9 @@ class fulltext_sphinx implements search_backend_interface
 		$this->phpbb_dispatcher = $phpbb_dispatcher;
 		$this->language = $language;
 		$this->log = $log;
+		$this->client = $client;
+		$this->text_formatter_utils = $text_formatter_utils;
 		$this->user = $user;
-
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->php_ext = $phpEx;
-
-		$this->db_tools = $db_tools;
-
-		if (!$this->config['fulltext_sphinx_id'])
-		{
-			$this->config->set('fulltext_sphinx_id', unique_id());
-		}
-		$this->id = $this->config['fulltext_sphinx_id'];
-		$this->indexes = 'index_phpbb_' . $this->id . '_delta;index_phpbb_' . $this->id . '_main';
-
-		if (!class_exists('SphinxClient'))
-		{
-			require($this->phpbb_root_path . 'includes/sphinxapi.' . $this->php_ext);
-		}
-
-		// Initialize sphinx client
-		$this->sphinx = new \SphinxClient();
-
-		$this->sphinx->SetServer(($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost'), ($this->config['fulltext_sphinx_port'] ? (int) $this->config['fulltext_sphinx_port'] : 9312));
 	}
 
 	/**
@@ -198,9 +167,17 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
+	public function get_type(): string
+	{
+		return static::class;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
 	public function is_available(): bool
 	{
-		return ($this->db->get_sql_layer() == 'mysqli' || $this->db->get_sql_layer() == 'postgres') && class_exists('SphinxClient');
+		return $this->client->is_driver_available();
 	}
 
 	/**
@@ -210,13 +187,41 @@ class fulltext_sphinx implements search_backend_interface
 	{
 		if (!$this->is_available())
 		{
-			return $this->language->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
+			return $this->language->lang('FULLTEXT_SPHINX_DRIVER_NOT_AVAILABLE');
 		}
 
-		// Move delta to main index each hour
-		$this->config->set('search_gc', 3600);
+		$this->get_id();
 
 		return false;
+	}
+
+	/**
+	 * Returns the sanitized unique Sphinx board identifier, generating one if empty.
+	 *
+	 * @return string
+	 */
+	public function get_id(): string
+	{
+		$id = (string) $this->config['fulltext_sphinx_id'];
+		$id = preg_replace('/[^a-zA-Z0-9_]/', '', $id) ?? '';
+
+		if ($id === '')
+		{
+			$id = unique_id();
+			$this->config->set('fulltext_sphinx_id', $id);
+		}
+
+		return $id;
+	}
+
+	/**
+	 * Returns the Real-Time index name for this board.
+	 *
+	 * @return string
+	 */
+	public function get_index_name(): string
+	{
+		return 'index_phpbb_' . $this->get_id();
 	}
 
 	/**
@@ -228,11 +233,21 @@ class fulltext_sphinx implements search_backend_interface
 	}
 
 	/**
+	 * Returns the split words array.
+	 *
+	 * @return array<int, string>
+	 */
+	public function get_split_words(): array
+	{
+		return $this->split_words;
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function get_common_words(): array
 	{
-		return array();
+		return [];
 	}
 
 	/**
@@ -246,380 +261,13 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function split_keywords(string &$keywords, string $terms): bool
-	{
-		// Keep quotes and new lines
-		$keywords = str_replace(['&quot;', "\n"], ['"', ' '], trim($keywords));
-
-		if ($terms == 'all')
-		{
-			// Replaces verbal operators OR and NOT with special characters | and -, unless appearing within quotation marks
-			$match		= ['#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i'];
-			$replace	= [' | ', ' -'];
-
-			$keywords = preg_replace($match, $replace, $keywords);
-			$this->sphinx->SetMatchMode(SPH_MATCH_EXTENDED);
-		}
-		else
-		{
-			$match = ['\\', '(',')', '|', '!', '@', '~', '/', '^', '$', '=', '&amp;', '&lt;', '&gt;'];
-
-			$keywords = str_replace($match, ' ', $keywords);
-			$this->sphinx->SetMatchMode(SPH_MATCH_ANY);
-		}
-
-		if (strlen($keywords) > 0)
-		{
-			$this->search_query = str_replace('"', '&quot;', $keywords);
-			return true;
-		}
-
-		return false;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
-	{
-		// No keywords? No posts.
-		if (!strlen($this->search_query) && !count($author_ary))
-		{
-			return false;
-		}
-
-		$id_ary = array();
-
-		// Sorting
-
-		if ($type == 'topics')
-		{
-			switch ($sort_key)
-			{
-				case 'a':
-					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'poster_id ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
-				break;
-
-				case 'f':
-					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'forum_id ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
-				break;
-
-				case 'i':
-
-				case 's':
-					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'post_subject ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
-				break;
-
-				case 't':
-
-				default:
-					$this->sphinx->SetGroupBy('topic_id', SPH_GROUPBY_ATTR, 'topic_last_post_time ' . (($sort_dir == 'a') ? 'ASC' : 'DESC'));
-				break;
-			}
-		}
-		else
-		{
-			switch ($sort_key)
-			{
-				case 'a':
-					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'poster_id');
-				break;
-
-				case 'f':
-					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'forum_id');
-				break;
-
-				case 'i':
-
-				case 's':
-					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'post_subject');
-				break;
-
-				case 't':
-
-				default:
-					$this->sphinx->SetSortMode(($sort_dir == 'a') ? SPH_SORT_ATTR_ASC : SPH_SORT_ATTR_DESC, 'post_time');
-				break;
-			}
-		}
-
-		// Most narrow filters first
-		if ($topic_id)
-		{
-			$this->sphinx->SetFilter('topic_id', array($topic_id));
-		}
-
-		/**
-		* Allow modifying the Sphinx search options
-		*
-		* @event core.search_sphinx_keywords_modify_options
-		* @var	string	type				Searching type ('posts', 'topics')
-		* @var	string	fields				Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
-		* @var	string	terms				Searching terms ('all', 'any')
-		* @var	int		sort_days			Time, in days, of the oldest possible post to list
-		* @var	string	sort_key			The sort type used from the possible sort types
-		* @var	int		topic_id			Limit the search to this topic_id only
-		* @var	array	ex_fid_ary			Which forums not to search on
-		* @var	string	post_visibility		Post visibility data
-		* @var	array	author_ary			Array of user_id containing the users to filter the results to
-		* @var	string	author_name			The username to search on
-		* @var	object	sphinx				The Sphinx searchd client object
-		* @since 3.1.7-RC1
-		*/
-		$sphinx = $this->sphinx;
-		$vars = array(
-			'type',
-			'fields',
-			'terms',
-			'sort_days',
-			'sort_key',
-			'topic_id',
-			'ex_fid_ary',
-			'post_visibility',
-			'author_ary',
-			'author_name',
-			'sphinx',
-		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_keywords_modify_options', compact($vars)));
-		$this->sphinx = $sphinx;
-		unset($sphinx);
-
-		$search_query_prefix = '';
-
-		switch ($fields)
-		{
-			case 'titleonly':
-				// Only search the title
-				if ($terms == 'all')
-				{
-					$search_query_prefix = '@title ';
-				}
-				// Weight for the title
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
-				// 1 is first_post, 0 is not first post
-				$this->sphinx->SetFilter('topic_first_post', array(1));
-			break;
-
-			case 'msgonly':
-				// Only search the body
-				if ($terms == 'all')
-				{
-					$search_query_prefix = '@data ';
-				}
-				// Weight for the body
-				$this->sphinx->SetFieldWeights(array("title" => 1, "data" => 5));
-			break;
-
-			case 'firstpost':
-				// More relative weight for the title, also search the body
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
-				// 1 is first_post, 0 is not first post
-				$this->sphinx->SetFilter('topic_first_post', array(1));
-			break;
-
-			default:
-				// More relative weight for the title, also search the body
-				$this->sphinx->SetFieldWeights(array("title" => 5, "data" => 1));
-			break;
-		}
-
-		if (count($author_ary))
-		{
-			$this->sphinx->SetFilter('poster_id', $author_ary);
-		}
-
-		// As this is not simply possible at the moment, we limit the result to approved posts.
-		// This will make it impossible for moderators to search unapproved and softdeleted posts,
-		// but at least it will also cause the same for normal users.
-		$this->sphinx->SetFilter('post_visibility', array(ITEM_APPROVED));
-
-		if (count($ex_fid_ary))
-		{
-			// All forums that a user is allowed to access
-			$fid_ary = array_unique(array_intersect(array_keys($this->auth->acl_getf('f_read', true)), array_keys($this->auth->acl_getf('f_search', true))));
-			// All forums that the user wants to and can search in
-			$search_forums = array_diff($fid_ary, $ex_fid_ary);
-
-			if (count($search_forums))
-			{
-				$this->sphinx->SetFilter('forum_id', $search_forums);
-			}
-		}
-
-		$this->sphinx->SetFilter('deleted', array(0));
-
-		$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
-		$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
-
-		// Could be connection to localhost:9312 failed (errno=111,
-		// msg=Connection refused) during rotate, retry if so
-		$retries = self::SPHINX_CONNECT_RETRIES;
-		while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
-		{
-			usleep(self::SPHINX_CONNECT_WAIT_TIME);
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
-		}
-
-		if ($this->sphinx->GetLastError())
-		{
-			$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_SPHINX_ERROR', false, array($this->sphinx->GetLastError()));
-			if ($this->auth->acl_get('a_'))
-			{
-				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED', $this->sphinx->GetLastError()));
-			}
-			else
-			{
-				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED_LOG'));
-			}
-		}
-
-		$result_count = $result['total_found'];
-
-		if ($result_count && $start >= $result_count)
-		{
-			$start = floor(($result_count - 1) / $per_page) * $per_page;
-
-			$this->sphinx->SetLimits((int) $start, (int) $per_page, max(self::SPHINX_MAX_MATCHES, (int) $start + $per_page));
-			$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
-
-			// Could be connection to localhost:9312 failed (errno=111,
-			// msg=Connection refused) during rotate, retry if so
-			$retries = self::SPHINX_CONNECT_RETRIES;
-			while (!$result && (strpos($this->sphinx->GetLastError(), "errno=111,") !== false) && $retries--)
-			{
-				usleep(self::SPHINX_CONNECT_WAIT_TIME);
-				$result = $this->sphinx->Query($search_query_prefix . $this->sphinx_clean_search_string(str_replace('&quot;', '"', $this->search_query)), $this->indexes);
-			}
-		}
-
-		$id_ary = array();
-		if (isset($result['matches']))
-		{
-			if ($type == 'posts')
-			{
-				$id_ary = array_keys($result['matches']);
-			}
-			else
-			{
-				foreach ($result['matches'] as $key => $value)
-				{
-					$id_ary[] = $value['attrs']['topic_id'];
-				}
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		$id_ary = array_slice($id_ary, 0, (int) $per_page);
-
-		return $result_count;
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
-	{
-		$this->search_query = '';
-
-		$this->sphinx->SetMatchMode(SPH_MATCH_FULLSCAN);
-		$fields = ($firstpost_only) ? 'firstpost' : 'all';
-		$terms = 'all';
-		return $this->keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page);
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
 	public function supports_phrase_search(): bool
 	{
-		return false;
+		return true;
 	}
 
 	/**
 	 * {@inheritdoc}
-	 */
-	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
-	{
-		/**
-		* Event to modify method arguments before the Sphinx search index is updated
-		*
-		* @event core.search_sphinx_index_before
-		* @var string	mode				Contains the post mode: edit, post, reply, quote
-		* @var int		post_id				The id of the post which is modified/created
-		* @var string	message				New or updated post content
-		* @var string	subject				New or updated post subject
-		* @var int		poster_id			Post author's user id
-		* @var int		forum_id			The id of the forum in which the post is located
-		* @since 3.2.3-RC1
-		*/
-		$vars = array(
-			'mode',
-			'post_id',
-			'message',
-			'subject',
-			'poster_id',
-			'forum_id',
-		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_index_before', compact($vars)));
-
-		if ($mode == 'edit')
-		{
-			$this->sphinx->UpdateAttributes($this->indexes, array('forum_id', 'poster_id'), array((int) $post_id => array((int) $forum_id, (int) $poster_id)));
-		}
-		else if ($mode != 'post' && $post_id)
-		{
-			// Update topic_last_post_time for full topic
-			$sql_array = array(
-				'SELECT'	=> 'p1.post_id',
-				'FROM'		=> array(
-					POSTS_TABLE	=> 'p1',
-				),
-				'LEFT_JOIN'	=> array(array(
-					'FROM'	=> array(
-						POSTS_TABLE	=> 'p2'
-					),
-					'ON'	=> 'p1.topic_id = p2.topic_id',
-				)),
-				'WHERE' => 'p2.post_id = ' . ((int) $post_id),
-			);
-
-			$sql = $this->db->sql_build_query('SELECT', $sql_array);
-			$result = $this->db->sql_query($sql);
-
-			$post_updates = array();
-			$post_time = time();
-			while ($row = $this->db->sql_fetchrow($result))
-			{
-				$post_updates[(int) $row['post_id']] = array($post_time);
-			}
-			$this->db->sql_freeresult($result);
-
-			if (count($post_updates))
-			{
-				$this->sphinx->UpdateAttributes($this->indexes, array('topic_last_post_time'), $post_updates);
-			}
-		}
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
-	{
-		$values = array();
-		foreach ($post_ids as $post_id)
-		{
-			$values[$post_id] = array(1);
-		}
-
-		$this->sphinx->UpdateAttributes($this->indexes, array('deleted'), $values);
-	}
-
-	/**
-	 * Nothing needs to be destroyed
 	 */
 	public function tidy(): void
 	{
@@ -629,394 +277,42 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function create_index(int &$post_counter = 0): array|null
+	public function split_keywords(string &$keywords, string $terms): bool
 	{
-		if (!$this->index_created())
+		$this->split_words = [];
+		$this->search_query = '';
+		$this->match_terms = ($terms === 'any') ? 'any' : 'all';
+
+		// Keep quotes and normalize whitespace/newlines
+		$keywords = str_replace(['&quot;', "\r\n", "\r", "\n"], ['"', ' ', ' ', ' '], trim($keywords));
+
+		if ($this->match_terms === 'all')
 		{
-			$table_data = array(
-				'COLUMNS'	=> array(
-					'counter_id'	=> array('UINT', 0),
-					'max_doc_id'	=> array('UINT', 0),
-				),
-				'PRIMARY_KEY'	=> 'counter_id',
-			);
-			$this->db_tools->sql_create_table(SPHINX_TABLE, $table_data);
+			// Replace verbal operators OR and NOT with | and -, unless appearing inside quotation marks
+			$match = ['#\sor\s(?=([^"]*"[^"]*")*[^"]*$)#i', '#\snot\s(?=([^"]*"[^"]*")*[^"]*$)#i'];
+			$replace = [' | ', ' -'];
 
-			$data = array(
-				'counter_id'	=> '1',
-				'max_doc_id'	=> '0',
-			);
-			$sql = 'INSERT INTO ' . SPHINX_TABLE . ' ' . $this->db->sql_build_array('INSERT', $data);
-			$this->db->sql_query($sql);
-		}
-
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	*/
-	public function delete_index(int|null &$post_counter = null): array|null
-	{
-		if ($this->index_created())
-		{
-			$this->db_tools->sql_table_drop(SPHINX_TABLE);
-		}
-
-		return null;
-	}
-
-	/**
-	 * {@inheritdoc}
-	*/
-	public function index_created($allow_new_files = true): bool
-	{
-		$created = false;
-
-		if ($this->db_tools->sql_table_exists(SPHINX_TABLE))
-		{
-			$created = true;
-		}
-
-		return $created;
-	}
-
-	/**
-	 * {@inheritdoc}
-	*/
-	public function index_stats()
-	{
-		if (empty($this->stats))
-		{
-			$this->get_stats();
-		}
-
-		return array(
-			$this->language->lang('FULLTEXT_SPHINX_MAIN_POSTS')			=> ($this->index_created()) ? $this->stats['main_posts'] : 0,
-			$this->language->lang('FULLTEXT_SPHINX_DELTA_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] - $this->stats['main_posts'] : 0,
-			$this->language->lang('FULLTEXT_MYSQL_TOTAL_POSTS')			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
-		);
-	}
-
-	/**
-	 * Computes the stats and store them in the $this->stats associative array
-	 */
-	protected function get_stats()
-	{
-		if ($this->index_created())
-		{
-			$sql = 'SELECT COUNT(post_id) as total_posts
-				FROM ' . POSTS_TABLE;
-			$result = $this->db->sql_query($sql);
-			$this->stats['total_posts'] = (int) $this->db->sql_fetchfield('total_posts');
-			$this->db->sql_freeresult($result);
-
-			$sql = 'SELECT COUNT(p.post_id) as main_posts
-				FROM ' . POSTS_TABLE . ' p, ' . SPHINX_TABLE . ' m
-				WHERE p.post_id <= m.max_doc_id
-					AND m.counter_id = 1';
-			$result = $this->db->sql_query($sql);
-			$this->stats['main_posts'] = (int) $this->db->sql_fetchfield('main_posts');
-			$this->db->sql_freeresult($result);
-		}
-	}
-
-	/**
-	 * Cleans search query passed into Sphinx search engine, as follows:
-	 * 1. Hyphenated words are replaced with keyword search for either the exact phrase with spaces
-	 *    or as a single word without spaces eg search for "know-it-all" becomes ("know it all"|"knowitall*")
-	 * 2. Words with apostrophes are contracted eg "it's" becomes "its"
-	 * 3. <, >, " and & are decoded from HTML entities.
-	 * 4. Following special characters used as search operators in Sphinx are preserved when used with correct syntax:
-	 *    (a) quorum matching: "the world is a wonderful place"/3
-	 *        Finds 3 of the words within the phrase. Number must be between 1 and 9.
-	 *    (b) proximity search: "hello world"~10
-	 *        Finds hello and world within 10 words of each other. Number can be between 1 and 99.
-	 *    (c) strict word order: aaa << bbb << ccc
-	 *        Finds "aaa" only where it appears before "bbb" and only where "bbb" appears before "ccc".
-	 *    (d) exact match operator: if lemmatizer or stemming enabled,
-	 *        search will find exact match only and ignore other grammatical forms of the same word stem.
-	 *        eg. raining =cats and =dogs
-	 *            will not return "raining cat and dog"
-	 *        eg. ="search this exact phrase"
-	 *            will not return "searched this exact phrase", "searching these exact phrases".
-	 * 5. Special characters /, ~, << and = not complying with the correct syntax
-	 *    and other reserved operators are escaped and searched literally.
-	 *    Special characters not explicitly listed in charset_table or blend_chars in sphinx.conf
-	 *    will not be indexed and keywords containing them will be ignored by Sphinx.
-	 *    By default, only $, %, & and @ characters are indexed and searchable.
-	 *    String transformation is in backend only and not visible to the end user
-	 *    nor reflected in the results page URL or keyword highlighting.
-	 *
-	 * @param string	$search_string
-	 * @return string
-	 */
-	protected function sphinx_clean_search_string($search_string)
-	{
-		$from = ['@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\''];
-		$to = ['\@', '\^', '\$', '\!', '<', '>', '"', '&', ''];
-
-		$search_string = str_replace($from, $to, $search_string);
-
-		$search_string = strrev($search_string);
-		$search_string = preg_replace(['#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'], ['/\\', '~\\'], $search_string);
-		$search_string = strrev($search_string);
-
-		$match = ['#(/|\\\\/)(?![1-9](\s|$))#', '#(~|\\\\~)(?!\d{1,2}(\s|$))#', '#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#i', '#<<\s*$#', '#(\S\K=|=(?=\s)|=$)#'];
-		$replace = ['\/', '\~', '("$1 $2 $3 $4"|$1$2$3$4*)', '\<\<', '\='];
-
-		$search_string = preg_replace($match, $replace, $search_string);
-		$search_string = preg_replace('#\s+"\|#', '"|', $search_string);
-
-		/**
-		 * OPTIONAL: Thousands separator stripped from numbers, eg search for '90,000' is queried as '90000'.
-		 * By default commas are stripped from search index so that '90,000' is indexed as '90000'
-		 */
-		// $search_string = preg_replace('#[0-9]{1,3}\K,(?=[0-9]{3})#', '', $search_string);
-
-		return $search_string ?: '';
-	}
-
-	/**
-	 * {@inheritdoc}
-	 */
-	public function get_acp_options(): array
-	{
-		$config_vars = array(
-			'fulltext_sphinx_data_path' => 'string',
-			'fulltext_sphinx_host' => 'string',
-			'fulltext_sphinx_port' => 'string',
-			'fulltext_sphinx_indexer_mem_limit' => 'int',
-		);
-
-		$tpl = '
-		<span class="error">' . $this->language->lang('FULLTEXT_SPHINX_CONFIGURE'). '</span>
-		<dl>
-			<dt><label for="fulltext_sphinx_data_path">' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH_EXPLAIN') . '</span></dt>
-			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . $this->config['fulltext_sphinx_data_path'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="fulltext_sphinx_host">' . $this->language->lang('FULLTEXT_SPHINX_HOST') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_HOST_EXPLAIN') . '</span></dt>
-			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . $this->config['fulltext_sphinx_host'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="fulltext_sphinx_port">' . $this->language->lang('FULLTEXT_SPHINX_PORT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_PORT_EXPLAIN') . '</span></dt>
-			<dd><input id="fulltext_sphinx_port" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_port]" value="' . $this->config['fulltext_sphinx_port'] . '" /></dd>
-		</dl>
-		<dl>
-			<dt><label for="fulltext_sphinx_indexer_mem_limit">' . $this->language->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_INDEXER_MEM_LIMIT_EXPLAIN') . '</span></dt>
-			<dd><input id="fulltext_sphinx_indexer_mem_limit" type="number" min="0" max="9999999999" name="config[fulltext_sphinx_indexer_mem_limit]" value="' . $this->config['fulltext_sphinx_indexer_mem_limit'] . '" /> ' . $this->language->lang('MIB') . '</dd>
-		</dl>
-		<dl>
-			<dt><label for="fulltext_sphinx_config_file">' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN') . '</span></dt>
-			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="6" id="sphinx_config_data">' . htmlspecialchars($this->config_file_data, ENT_COMPAT) . '</textarea>' : $this->config_file_data) . '</dd>
-		<dl>
-		';
-
-		// These are fields required in the config table
-		return array(
-			'tpl'		=> $tpl,
-			'config'	=> $config_vars
-		);
-	}
-
-	/**
-	 * Generates content of sphinx.conf
-	 *
-	 * @return bool True if sphinx.conf content is correctly generated, false otherwise
-	 */
-	protected function config_generate()
-	{
-		// Check if Database is supported by Sphinx
-		if ($this->db->get_sql_layer() == 'mysqli')
-		{
-			$this->dbtype = 'mysql';
-		}
-		else if ($this->db->get_sql_layer() == 'postgres')
-		{
-			$this->dbtype = 'pgsql';
+			$keywords = preg_replace($match, $replace, $keywords) ?? '';
 		}
 		else
 		{
-			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_WRONG_DATABASE');
+			$match = ['\\', '(', ')', '|', '!', '@', '~', '/', '^', '$', '=', '&amp;', '&lt;', '&gt;', '"'];
+			$keywords = trim(preg_replace('/\s+/', ' ', str_replace($match, ' ', $keywords)) ?? '');
+		}
+
+		if ($keywords === '')
+		{
 			return false;
 		}
 
-		// Check if directory paths have been filled
-		if (!$this->config['fulltext_sphinx_data_path'])
+		$this->search_query = str_replace('"', '&quot;', $keywords);
+		$tokens = preg_split('/\s+/', str_replace(['"', '|', '(', ')'], ' ', $keywords), -1, PREG_SPLIT_NO_EMPTY);
+		if (is_array($tokens))
 		{
-			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA');
-			return false;
+			$this->split_words = array_values(array_filter($tokens, static function (string $token): bool {
+				return $token !== '-';
+			}));
 		}
-
-		include($this->phpbb_root_path . 'config.' . $this->php_ext);
-
-		/* Now that we're sure everything was entered correctly,
-		generate a config for the index. We use a config value
-		fulltext_sphinx_id for this, as it should be unique. */
-		$config_object = new \phpbb\search\backend\sphinx\config();
-		/** @psalm-suppress UndefinedVariable */
-		$config_data = array(
-			'source source_phpbb_' . $this->id . '_main' => array(
-				array('type',						$this->dbtype . ' # mysql or pgsql'),
-				// This config value sql_host needs to be changed incase sphinx and sql are on different servers
-				array('sql_host',					$dbhost . ' # SQL server host sphinx connects to'),
-				array('sql_user',					'[dbuser]'),
-				array('sql_pass',					'[dbpassword]'),
-				array('sql_db',						$dbname),
-				array('sql_port',					$dbport . ' # optional, default is 3306 for mysql and 5432 for pgsql'),
-				array('sql_query_pre',				'SET NAMES \'utf8\''),
-				array('sql_query_pre',				'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = (SELECT MAX(post_id) FROM ' . POSTS_TABLE . ') WHERE counter_id = 1'),
-				array('sql_query_range',			'SELECT MIN(post_id), MAX(post_id) FROM ' . POSTS_TABLE . ''),
-				array('sql_range_step',				'5000'),
-				array('sql_query',					'SELECT
-						p.post_id AS id,
-						p.forum_id,
-						p.topic_id,
-						p.poster_id,
-						p.post_visibility,
-						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
-						p.post_time,
-						p.post_subject,
-						p.post_subject as title,
-						p.post_text as data,
-						t.topic_last_post_time,
-						0 as deleted
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-					WHERE
-						p.topic_id = t.topic_id
-						AND p.post_id >= $start AND p.post_id <= $end'),
-				array('sql_query_post',				''),
-				array('sql_query_post_index',		'UPDATE ' . SPHINX_TABLE . ' SET max_doc_id = $maxid WHERE counter_id = 1'),
-				array('sql_attr_uint',				'forum_id'),
-				array('sql_attr_uint',				'topic_id'),
-				array('sql_attr_uint',				'poster_id'),
-				array('sql_attr_uint',				'post_visibility'),
-				array('sql_attr_bool',				'topic_first_post'),
-				array('sql_attr_bool',				'deleted'),
-				array('sql_attr_timestamp',			'post_time'),
-				array('sql_attr_timestamp',			'topic_last_post_time'),
-				array('sql_attr_string',			'post_subject'),
-			),
-			'source source_phpbb_' . $this->id . '_delta : source_phpbb_' . $this->id . '_main' => array(
-				array('sql_query_pre',				'SET NAMES \'utf8\''),
-				array('sql_query_range',			''),
-				array('sql_range_step',				''),
-				array('sql_query',					'SELECT
-						p.post_id AS id,
-						p.forum_id,
-						p.topic_id,
-						p.poster_id,
-						p.post_visibility,
-						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post,
-						p.post_time,
-						p.post_subject,
-						p.post_subject as title,
-						p.post_text as data,
-						t.topic_last_post_time,
-						0 as deleted
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-					WHERE
-						p.topic_id = t.topic_id
-						AND p.post_id >=  ( SELECT max_doc_id FROM ' . SPHINX_TABLE . ' WHERE counter_id=1 )'),
-				array('sql_query_post_index',		''),
-			),
-			'index index_phpbb_' . $this->id . '_main' => array(
-				array('path',						$this->config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_main'),
-				array('source',						'source_phpbb_' . $this->id . '_main'),
-				array('docinfo',					'extern'),
-				array('morphology',					'none'),
-				array('stopwords',					''),
-				array('wordforms',					'  # optional, specify path to wordforms file. See ./docs/sphinx_wordforms.txt for example'),
-				array('exceptions',					'  # optional, specify path to exceptions file. See ./docs/sphinx_exceptions.txt for example'),
-				array('min_word_len',				'2'),
-				array('charset_table',				'U+FF10..U+FF19->0..9, 0..9, U+FF41..U+FF5A->a..z, U+FF21..U+FF3A->a..z, A..Z->a..z, a..z, U+0149, U+017F, U+0138, U+00DF, U+00FF, U+00C0..U+00D6->U+00E0..U+00F6, U+00E0..U+00F6, U+00D8..U+00DE->U+00F8..U+00FE, U+00F8..U+00FE, U+0100->U+0101, U+0101, U+0102->U+0103, U+0103, U+0104->U+0105, U+0105, U+0106->U+0107, U+0107, U+0108->U+0109, U+0109, U+010A->U+010B, U+010B, U+010C->U+010D, U+010D, U+010E->U+010F, U+010F, U+0110->U+0111, U+0111, U+0112->U+0113, U+0113, U+0114->U+0115, U+0115, U+0116->U+0117, U+0117, U+0118->U+0119, U+0119, U+011A->U+011B, U+011B, U+011C->U+011D, U+011D, U+011E->U+011F, U+011F, U+0130->U+0131, U+0131, U+0132->U+0133, U+0133, U+0134->U+0135, U+0135, U+0136->U+0137, U+0137, U+0139->U+013A, U+013A, U+013B->U+013C, U+013C, U+013D->U+013E, U+013E, U+013F->U+0140, U+0140, U+0141->U+0142, U+0142, U+0143->U+0144, U+0144, U+0145->U+0146, U+0146, U+0147->U+0148, U+0148, U+014A->U+014B, U+014B, U+014C->U+014D, U+014D, U+014E->U+014F, U+014F, U+0150->U+0151, U+0151, U+0152->U+0153, U+0153, U+0154->U+0155, U+0155, U+0156->U+0157, U+0157, U+0158->U+0159, U+0159, U+015A->U+015B, U+015B, U+015C->U+015D, U+015D, U+015E->U+015F, U+015F, U+0160->U+0161, U+0161, U+0162->U+0163, U+0163, U+0164->U+0165, U+0165, U+0166->U+0167, U+0167, U+0168->U+0169, U+0169, U+016A->U+016B, U+016B, U+016C->U+016D, U+016D, U+016E->U+016F, U+016F, U+0170->U+0171, U+0171, U+0172->U+0173, U+0173, U+0174->U+0175, U+0175, U+0176->U+0177, U+0177, U+0178->U+00FF, U+00FF, U+0179->U+017A, U+017A, U+017B->U+017C, U+017C, U+017D->U+017E, U+017E, U+0410..U+042F->U+0430..U+044F, U+0430..U+044F, U+4E00..U+9FFF'),
-				array('ignore_chars', 				'U+0027, U+002C'),
-				array('min_prefix_len',				'3 # Minimum number of characters for wildcard searches by prefix (min 1). Default is 3. If specified, set min_infix_len to 0'),
-				array('min_infix_len',				'0 # Minimum number of characters for wildcard searches by infix (min 2). If specified, set min_prefix_len to 0'),
-				array('html_strip',					'1'),
-				array('index_exact_words',			'0 # Set to 1 to enable exact search operator. Requires wordforms or morphology'),
-				array('blend_chars', 				'U+23, U+24, U+25, U+26, U+40'),
-			),
-			'index index_phpbb_' . $this->id . '_delta : index_phpbb_' . $this->id . '_main' => array(
-				array('path',						$this->config['fulltext_sphinx_data_path'] . 'index_phpbb_' . $this->id . '_delta'),
-				array('source',						'source_phpbb_' . $this->id . '_delta'),
-			),
-			'indexer' => array(
-				array('mem_limit',					$this->config['fulltext_sphinx_indexer_mem_limit'] . 'M'),
-			),
-			'searchd' => array(
-				array('listen'	,					($this->config['fulltext_sphinx_host'] ? $this->config['fulltext_sphinx_host'] : 'localhost') . ':' . ($this->config['fulltext_sphinx_port'] ? $this->config['fulltext_sphinx_port'] : '9312')),
-				array('log',						$this->config['fulltext_sphinx_data_path'] . 'log/searchd.log'),
-				array('query_log',					$this->config['fulltext_sphinx_data_path'] . 'log/sphinx-query.log'),
-				array('read_timeout',				'5'),
-				array('max_children',				'30'),
-				array('pid_file',					$this->config['fulltext_sphinx_data_path'] . 'searchd.pid'),
-				array('binlog_path',				rtrim($this->config['fulltext_sphinx_data_path'], '/\\')), // Trim trailing slash
-			),
-		);
-
-		$non_unique = array('sql_query_pre' => true, 'sql_attr_uint' => true, 'sql_attr_timestamp' => true, 'sql_attr_str2ordinal' => true, 'sql_attr_bool' => true);
-		$delete = array('sql_group_column' => true, 'sql_date_column' => true, 'sql_str2ordinal_column' => true);
-
-		/**
-		 * Allow adding/changing the Sphinx configuration data
-		 *
-		 * @event core.search_sphinx_modify_config_data
-		 * @var	array	config_data	Array with the Sphinx configuration data
-		 * @var	array	non_unique	Array with the Sphinx non-unique variables to delete
-		 * @var	array	delete		Array with the Sphinx variables to delete
-		 * @since 3.1.7-RC1
-		 */
-		$vars = array(
-			'config_data',
-			'non_unique',
-			'delete',
-		);
-		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_modify_config_data', compact($vars)));
-
-		foreach ($config_data as $section_name => $section_data)
-		{
-			$section = $config_object->get_section_by_name($section_name);
-			if (!$section)
-			{
-				$section = $config_object->add_section($section_name);
-			}
-
-			foreach ($delete as $key => $void)
-			{
-				$section->delete_variables_by_name($key);
-			}
-
-			foreach ($non_unique as $key => $void)
-			{
-				$section->delete_variables_by_name($key);
-			}
-
-			foreach ($section_data as $entry)
-			{
-				$key = $entry[0];
-				$value = $entry[1];
-
-				if (!isset($non_unique[$key]))
-				{
-					$variable = $section->get_variable_by_name($key);
-					if (!$variable)
-					{
-						$section->create_variable($key, $value);
-					}
-					else
-					{
-						$variable->set_value($value);
-					}
-				}
-				else
-				{
-					$section->create_variable($key, $value);
-				}
-			}
-		}
-		$this->config_file_data = $config_object->get_data();
 
 		return true;
 	}
@@ -1024,8 +320,1187 @@ class fulltext_sphinx implements search_backend_interface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function get_type(): string
+	public function keyword_search(string $type, string $fields, string $terms, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
 	{
-		return static::class;
+		// No keywords and no author filter? Nothing to search.
+		if ($this->search_query === '' && empty($author_ary))
+		{
+			return false;
+		}
+
+		$id_ary = [];
+		$select_columns = ['id', 'topic_id'];
+		$where = [];
+		$options = [];
+
+		// Build fulltext MATCH(...) clause when keywords are provided
+		if ($this->search_query !== '')
+		{
+			$effective_terms = ($terms === 'any' || $this->match_terms === 'any') ? 'any' : 'all';
+			$match_expr = $this->build_match_expression(str_replace('&quot;', '"', $this->search_query), $fields, $effective_terms);
+
+			if ($match_expr === null)
+			{
+				return false;
+			}
+
+			$where[] = 'MATCH(' . $this->client->quote_string($match_expr) . ')';
+		}
+
+		// Field weights and first-post restrictions
+		switch ($fields)
+		{
+			case 'titleonly':
+				$options['field_weights'] = '(title=5, data=1)';
+				$where[] = 'topic_first_post = 1';
+			break;
+
+			case 'msgonly':
+				$options['field_weights'] = '(title=1, data=5)';
+			break;
+
+			case 'firstpost':
+				$options['field_weights'] = '(title=5, data=1)';
+				$where[] = 'topic_first_post = 1';
+			break;
+
+			default:
+				$options['field_weights'] = '(title=5, data=1)';
+			break;
+		}
+
+		// Most narrow filters first
+		if ($topic_id > 0)
+		{
+			$where[] = 'topic_id = ' . $topic_id;
+		}
+
+		$author_ids = $this->sanitize_positive_ints($author_ary);
+		if (!empty($author_ids))
+		{
+			$where[] = (count($author_ids) === 1)
+				? 'poster_id = ' . $author_ids[0]
+				: 'poster_id IN (' . implode(', ', $author_ids) . ')';
+		}
+
+		if ((int) $sort_days > 0)
+		{
+			$min_post_time = time() - ((int) $sort_days * 86400);
+			$where[] = 'post_time >= ' . $min_post_time;
+		}
+
+		// Forum access & exclusions
+		if (!empty($ex_fid_ary))
+		{
+			// All forums that a user is allowed to access
+			$readable_forums = array_unique(array_intersect(
+				array_keys($this->auth->acl_getf('f_read', true)),
+				array_keys($this->auth->acl_getf('f_search', true))
+			));
+			// All forums that the user wants to and can search in
+			$search_forums = array_values(array_map('intval', array_diff($readable_forums, $ex_fid_ary)));
+
+			if (empty($search_forums))
+			{
+				return false;
+			}
+
+			// Include forum_id = 0 for global announcements
+			if (!in_array(0, $ex_fid_ary, true) && !in_array(0, $search_forums, true))
+			{
+				$search_forums[] = 0;
+			}
+
+			$where[] = 'forum_id IN (' . implode(', ', $search_forums) . ')';
+		}
+
+		// Post visibility (approved posts, plus all visibility states in forums moderated by the current user)
+		$approve_forums = array_values(array_map(
+			'intval',
+			array_diff(array_keys($this->auth->acl_getf('m_approve', true)), $ex_fid_ary)
+		));
+
+		if (!empty($approve_forums))
+		{
+			$select_columns[] = '(post_visibility = ' . (int) ITEM_APPROVED . ' OR IN(forum_id, ' . implode(', ', $approve_forums) . ')) AS is_visible';
+			$where[] = 'is_visible = 1';
+		}
+		else
+		{
+			$where[] = 'post_visibility = ' . (int) ITEM_APPROVED;
+		}
+
+		// Sorting & grouping
+		$direction = ($sort_dir === 'a') ? 'ASC' : 'DESC';
+		switch ($sort_key)
+		{
+			case 'a':
+				$sort_column = 'poster_id';
+			break;
+
+			case 'f':
+				$sort_column = 'forum_id';
+			break;
+
+			case 'i':
+			case 's':
+				$sort_column = 'post_subject';
+			break;
+
+			case 't':
+			default:
+				$sort_column = ($type === 'topics') ? 'topic_last_post_time' : 'post_time';
+			break;
+		}
+
+		$order_by = $sort_column . ' ' . $direction;
+		$group_by = ($type === 'topics') ? 'topic_id' : '';
+		$within_group_order_by = ($type === 'topics') ? $order_by : '';
+
+		$start = max(0, (int) $start);
+		$per_page = max(1, (int) $per_page);
+		$options['max_matches'] = (string) max(self::SPHINX_MAX_MATCHES, $start + $per_page);
+
+		/**
+		 * Allow modifying the SphinxQL query clauses before execution
+		 *
+		 * @event core.search_sphinx_keywords_modify_options
+		 * @var string	type					Searching type ('posts', 'topics')
+		 * @var string	fields					Searching fields ('titleonly', 'msgonly', 'firstpost', 'all')
+		 * @var string	terms					Searching terms ('all', 'any')
+		 * @var string	sort_days				Time, in days, of the oldest possible post to list
+		 * @var string	sort_key				The sort type used from the possible sort types
+		 * @var string	sort_dir				Sort direction ('a' or 'd')
+		 * @var int		topic_id				Limit the search to this topic_id only
+		 * @var array	ex_fid_ary				Which forums not to search on
+		 * @var string	post_visibility			Post visibility SQL data
+		 * @var array	author_ary				Array of user_id containing the users to filter the results to
+		 * @var string	author_name				The username to search on
+		 * @var array	select_columns			Columns/expressions for the SphinxQL SELECT clause
+		 * @var array	where					Conditions for the SphinxQL WHERE clause
+		 * @var string	group_by				Column for GROUP BY (empty for posts)
+		 * @var string	within_group_order_by	Clause for WITHIN GROUP ORDER BY
+		 * @var string	order_by				Clause for ORDER BY
+		 * @var array	options					Key-value map for the SphinxQL OPTION clause
+		 * @since 3.1.7-RC1
+		 * @changed 4.0.0-a3 Replace SphinxClient with SphinxQL query clauses
+		 */
+		$vars = [
+			'type',
+			'fields',
+			'terms',
+			'sort_days',
+			'sort_key',
+			'sort_dir',
+			'topic_id',
+			'ex_fid_ary',
+			'post_visibility',
+			'author_ary',
+			'author_name',
+			'select_columns',
+			'where',
+			'group_by',
+			'within_group_order_by',
+			'order_by',
+			'options',
+		];
+		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_keywords_modify_options', compact($vars)));
+
+		try
+		{
+			$sql = $this->compile_select_query($select_columns, $where, $group_by, $within_group_order_by, $order_by, $start, $per_page, $options);
+			$result = $this->client->select_with_meta($sql);
+			$result_count = (int) ($result['meta']['total_found'] ?? 0);
+
+			if ($result_count > 0 && $start >= $result_count)
+			{
+				$start = (int) (floor(($result_count - 1) / $per_page) * $per_page);
+				$options['max_matches'] = (string) max(self::SPHINX_MAX_MATCHES, $start + $per_page);
+				$sql = $this->compile_select_query($select_columns, $where, $group_by, $within_group_order_by, $order_by, $start, $per_page, $options);
+				$result = $this->client->select_with_meta($sql);
+			}
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->log_sphinx_error($e);
+			if ($this->auth->acl_get('a_'))
+			{
+				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED', $e->getMessage()));
+			}
+			else
+			{
+				trigger_error($this->language->lang('SPHINX_SEARCH_FAILED_LOG'));
+			}
+
+			return false;
+		}
+
+		if ($result_count <= 0 || empty($result['rows']))
+		{
+			return false;
+		}
+
+		$id_key = ($type === 'posts') ? 'id' : 'topic_id';
+		foreach (array_slice($result['rows'], 0, $per_page) as $row)
+		{
+			$id_ary[] = (int) $row[$id_key];
+		}
+
+		return $result_count;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function author_search(string $type, bool $firstpost_only, array $sort_by_sql, string $sort_key, string $sort_dir, string $sort_days, array $ex_fid_ary, string $post_visibility, int $topic_id, array $author_ary, string $author_name, array &$id_ary, int &$start, int $per_page)
+	{
+		if (empty($author_ary))
+		{
+			return false;
+		}
+
+		$this->search_query = '';
+		$fields = $firstpost_only ? 'firstpost' : 'all';
+
+		return $this->keyword_search($type, $fields, 'all', $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $post_visibility, $topic_id, $author_ary, $author_name, $id_ary, $start, $per_page);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index(string $mode, int $post_id, string &$message, string &$subject, int $poster_id, int $forum_id)
+	{
+		/**
+		 * Event to modify method arguments before the Sphinx search index is updated
+		 *
+		 * @event core.search_sphinx_index_before
+		 * @var string	mode		Contains the post mode: edit, post, reply, quote
+		 * @var int		post_id		The id of the post which is modified/created
+		 * @var string	message		New or updated post content
+		 * @var string	subject		New or updated post subject
+		 * @var int		poster_id	Post author's user id
+		 * @var int		forum_id	The id of the forum in which the post is located
+		 * @since 3.2.3-RC1
+		 */
+		$vars = [
+			'mode',
+			'post_id',
+			'message',
+			'subject',
+			'poster_id',
+			'forum_id',
+		];
+		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_index_before', compact($vars)));
+
+		if ($post_id <= 0 || !$this->client->index_exists($this->get_index_name()))
+		{
+			return;
+		}
+
+		$result = $this->db->sql_query($this->build_posts_select_sql('p.post_id = ' . (int) $post_id));
+		$row = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if (!$row)
+		{
+			return;
+		}
+
+		if ($forum_id === 0)
+		{
+			$indexing_enabled = true;
+		}
+		else if ($forum_id === (int) $row['forum_id'])
+		{
+			$indexing_enabled = (bool) $row['enable_indexing'];
+		}
+		else
+		{
+			$forum_sql = 'SELECT enable_indexing
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . (int) $forum_id;
+			$forum_result = $this->db->sql_query($forum_sql);
+			$indexing_enabled = (bool) $this->db->sql_fetchfield('enable_indexing');
+			$this->db->sql_freeresult($forum_result);
+		}
+
+		if (!$indexing_enabled)
+		{
+			return;
+		}
+
+		// Honor argument overrides from caller / core.search_sphinx_index_before
+		$row['post_subject'] = $subject;
+		$row['post_text'] = $message;
+		$row['poster_id'] = $poster_id;
+		$row['forum_id'] = $forum_id;
+
+		try
+		{
+			$this->upsert_documents([$this->build_document_from_row($row)]);
+
+			// Update topic_last_post_time across the full topic on reply/quote
+			if ($mode !== 'post' && $mode !== 'edit' && (int) $row['topic_id'] > 0)
+			{
+				$update_sql = sprintf(
+					'UPDATE %s SET topic_last_post_time = %d WHERE topic_id = %d',
+					$this->get_index_name(),
+					(int) $row['topic_last_post_time'],
+					(int) $row['topic_id']
+				);
+				$this->client->execute($update_sql);
+			}
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->log_sphinx_error($e);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index_remove(array $post_ids, array $author_ids, array $forum_ids): void
+	{
+		$post_ids = $this->sanitize_positive_ints($post_ids);
+		if (empty($post_ids) || !$this->client->index_exists($this->get_index_name()))
+		{
+			return;
+		}
+
+		try
+		{
+			foreach (array_chunk($post_ids, self::DELETE_BATCH_SIZE) as $chunk)
+			{
+				$this->client->execute(sprintf(
+					'DELETE FROM %s WHERE id IN (%s)',
+					$this->get_index_name(),
+					implode(', ', $chunk)
+				));
+			}
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->log_sphinx_error($e);
+		}
+	}
+
+	/**
+	 * Synchronizes all posts belonging to the given topic IDs in the Real-Time index.
+	 *
+	 * @param array<int, int> $topic_ids
+	 * @return void
+	 */
+	public function sync_topics_by_ids(array $topic_ids): void
+	{
+		$topic_ids = $this->sanitize_positive_ints($topic_ids);
+		if (!empty($topic_ids))
+		{
+			$this->sync_posts_where($this->db->sql_in_set('p.topic_id', $topic_ids));
+		}
+	}
+
+	/**
+	 * Synchronizes specific post IDs in the Real-Time index.
+	 *
+	 * @param array<int, int> $post_ids
+	 * @return void
+	 */
+	public function sync_posts_by_ids(array $post_ids): void
+	{
+		$post_ids = $this->sanitize_positive_ints($post_ids);
+		if (!empty($post_ids))
+		{
+			$this->sync_posts_where($this->db->sql_in_set('p.post_id', $post_ids), $post_ids);
+		}
+	}
+
+	/**
+	 * Reassigns poster_id in the Real-Time index for posts authored by the specified user IDs.
+	 *
+	 * @param array<int, int> $user_ids
+	 * @param int $new_poster_id
+	 * @return void
+	 */
+	public function update_poster_id_for_users(array $user_ids, int $new_poster_id): void
+	{
+		$user_ids = $this->sanitize_positive_ints($user_ids);
+		if (empty($user_ids) || !$this->client->index_exists($this->get_index_name()))
+		{
+			return;
+		}
+
+		try
+		{
+			$this->client->execute(sprintf(
+				'UPDATE %s SET poster_id = %d WHERE poster_id IN (%s)',
+				$this->get_index_name(),
+				$new_poster_id,
+				implode(', ', $user_ids)
+			));
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->log_sphinx_error($e);
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function create_index(int &$post_counter = 0): array|null
+	{
+		if ($error = $this->init())
+		{
+			throw new sphinx_exception($error);
+		}
+
+		$index_name = $this->get_index_name();
+		if (!$this->client->index_exists($index_name))
+		{
+			throw new sphinx_exception($this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND', $index_name));
+		}
+
+		if ($post_counter === 0)
+		{
+			$this->client->execute('TRUNCATE RTINDEX ' . $index_name);
+		}
+
+		$max_post_id = $this->get_max_post_id();
+		$starttime = microtime(true);
+		$row_count = 0;
+
+		while (still_on_time() && $post_counter < $max_post_id)
+		{
+			$sql = $this->build_posts_select_sql('p.post_id > ' . (int) $post_counter, 'p.post_id ASC');
+			$result = $this->db->sql_query_limit($sql, self::INDEX_BATCH_SIZE);
+
+			$batch_docs = [];
+			$batch_rows = 0;
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				$batch_rows++;
+				$post_counter = (int) $row['post_id'];
+				$indexing_enabled = ((int) $row['forum_id'] === 0) || (bool) $row['enable_indexing'];
+
+				if ($indexing_enabled)
+				{
+					$batch_docs[] = $this->build_document_from_row($row);
+				}
+			}
+			$this->db->sql_freeresult($result);
+
+			if ($batch_rows === 0)
+			{
+				$post_counter = $max_post_id;
+				break;
+			}
+
+			$this->upsert_documents($batch_docs);
+			$row_count += $batch_rows;
+
+			// With CLI process only one batch per call so progress bar updates smoothly
+			if (PHP_SAPI === 'cli')
+			{
+				break;
+			}
+		}
+
+		if ($post_counter < $max_post_id)
+		{
+			$totaltime = max(0.0001, microtime(true) - $starttime);
+
+			return [
+				'row_count'			=> $row_count,
+				'post_counter'		=> $post_counter,
+				'max_post_id'		=> $max_post_id,
+				'rows_per_second'	=> $row_count / $totaltime,
+			];
+		}
+
+		$this->config->set('fulltext_sphinx_indexed', 1);
+		$this->stats = [];
+
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function delete_index(int|null &$post_counter = null): array|null
+	{
+		$index_name = $this->get_index_name();
+		if ($this->client->index_exists($index_name))
+		{
+			$this->client->execute('TRUNCATE RTINDEX ' . $index_name);
+		}
+
+		$this->config->set('fulltext_sphinx_indexed', 0);
+		$this->stats = [];
+
+		return null;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index_created(): bool
+	{
+		if (empty($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		if (!$this->stats['index_exists'])
+		{
+			return false;
+		}
+
+		return ((int) $this->stats['total_posts'] > 0) || (bool) $this->config['fulltext_sphinx_indexed'];
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function index_stats()
+	{
+		if (empty($this->stats))
+		{
+			$this->get_stats();
+		}
+
+		$indexed = $this->index_created();
+		$stats = [
+			$this->language->lang('FULLTEXT_SPHINX_TOTAL_POSTS')	=> $indexed ? (int) $this->stats['total_posts'] : 0,
+		];
+
+		if (isset($this->stats['ram_bytes']))
+		{
+			$stats[$this->language->lang('FULLTEXT_SPHINX_RAM_BYTES')] = $indexed ? (int) $this->stats['ram_bytes'] : 0;
+		}
+
+		if (isset($this->stats['disk_bytes']))
+		{
+			$stats[$this->language->lang('FULLTEXT_SPHINX_DISK_BYTES')] = $indexed ? (int) $this->stats['disk_bytes'] : 0;
+		}
+
+		return $stats;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function get_acp_options(): array
+	{
+		$config_vars = [
+			'fulltext_sphinx_data_path'		=> 'string',
+			'fulltext_sphinx_host'			=> 'string',
+			'fulltext_sphinx_port'			=> 'string',
+			'fulltext_sphinx_rt_mem_limit'	=> 'int',
+		];
+
+		$tpl = $this->get_acp_index_notice() . '
+		<span class="error">' . $this->language->lang('FULLTEXT_SPHINX_CONFIGURE') . '</span>
+		<dl>
+			<dt><label for="fulltext_sphinx_data_path">' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_data_path" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_data_path]" value="' . htmlspecialchars((string) $this->config['fulltext_sphinx_data_path'], ENT_COMPAT) . '" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_sphinx_host">' . $this->language->lang('FULLTEXT_SPHINX_HOST') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_HOST_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_host" type="text" size="40" maxlength="255" name="config[fulltext_sphinx_host]" value="' . htmlspecialchars((string) $this->config['fulltext_sphinx_host'], ENT_COMPAT) . '" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_sphinx_port">' . $this->language->lang('FULLTEXT_SPHINX_PORT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_PORT_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_port" type="number" min="0" max="65535" name="config[fulltext_sphinx_port]" value="' . htmlspecialchars((string) $this->config['fulltext_sphinx_port'], ENT_COMPAT) . '" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="fulltext_sphinx_rt_mem_limit">' . $this->language->lang('FULLTEXT_SPHINX_RT_MEM_LIMIT') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_RT_MEM_LIMIT_EXPLAIN') . '</span></dt>
+			<dd><input id="fulltext_sphinx_rt_mem_limit" type="number" min="8" max="999999" name="config[fulltext_sphinx_rt_mem_limit]" value="' . (int) ($this->config['fulltext_sphinx_rt_mem_limit'] ?: 128) . '" /> ' . $this->language->lang('MIB') . '</dd>
+		</dl>
+		<dl>
+			<dt><label for="sphinx_config_data">' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN') . '</span></dt>
+			<dd>' . ($this->config_generate() ? '<textarea readonly="readonly" rows="6" id="sphinx_config_data">' . htmlspecialchars($this->config_file_data, ENT_COMPAT) . '</textarea>' : $this->config_file_data) . '</dd>
+		</dl>
+		';
+
+		return [
+			'tpl'		=> $tpl,
+			'config'	=> $config_vars,
+		];
+	}
+
+	/**
+	 * Returns an ACP notice when Sphinx is the active backend but its Real-Time index is not available,
+	 * e.g. right after updating from a version that used plain main/delta indexes.
+	 *
+	 * @return string
+	 */
+	protected function get_acp_index_notice(): string
+	{
+		// Only contact searchd when Sphinx is the active backend
+		if ($this->config['search_type'] !== $this->get_type() || !$this->is_available())
+		{
+			return '';
+		}
+
+		$index_name = $this->get_index_name();
+		if ($this->client->index_exists($index_name))
+		{
+			return '';
+		}
+
+		return '
+		<p class="error">' . $this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND', $index_name) . '<br />' . $this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND_EXPLAIN') . '</p>';
+	}
+
+	/**
+	 * Generates the content of sphinx.conf for a Real-Time (rt) index.
+	 *
+	 * @return bool
+	 */
+	protected function config_generate(): bool
+	{
+		if (!$this->is_available())
+		{
+			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_DRIVER_NOT_AVAILABLE');
+			return false;
+		}
+
+		$data_path = (string) $this->config['fulltext_sphinx_data_path'];
+		if ($data_path === '')
+		{
+			$this->config_file_data = $this->language->lang('FULLTEXT_SPHINX_NO_CONFIG_DATA');
+			return false;
+		}
+
+		$data_path_normalized = rtrim($data_path, '/\\') . '/';
+		$index_name = $this->get_index_name();
+		$listen_host = client::normalize_host((string) $this->config['fulltext_sphinx_host']);
+		$listen_port = client::normalize_port((string) $this->config['fulltext_sphinx_port']);
+		$rt_mem_limit = (int) ($this->config['fulltext_sphinx_rt_mem_limit'] ?: 128);
+
+		$config_data = [
+			'index ' . $index_name => [
+				['type',				'rt'],
+				['path',				$data_path_normalized . $index_name],
+				['rt_mem_limit',		$rt_mem_limit . 'M'],
+				['rt_field',			'title'],
+				['rt_field',			'data'],
+				['rt_attr_uint',		'forum_id'],
+				['rt_attr_uint',		'topic_id'],
+				['rt_attr_uint',		'poster_id'],
+				['rt_attr_uint',		'post_visibility'],
+				['rt_attr_uint',		'topic_first_post'],
+				['rt_attr_timestamp',	'post_time'],
+				['rt_attr_timestamp',	'topic_last_post_time'],
+				['rt_attr_string',		'post_subject'],
+				['morphology',			'none'],
+				['stopwords',			''],
+				['wordforms',			'# optional, specify path to wordforms file. See ./docs/sphinx_wordforms.txt for example'],
+				['exceptions',			'# optional, specify path to exceptions file. See ./docs/sphinx_exceptions.txt for example'],
+				['min_word_len',		'2'],
+				['charset_table',		self::CHARSET_TABLE],
+				['ignore_chars',		'U+0027, U+002C'],
+				['min_prefix_len',		'3 # Minimum number of characters for wildcard searches by prefix (min 1). Default is 3. If specified, set min_infix_len to 0'],
+				['min_infix_len',		'0 # Minimum number of characters for wildcard searches by infix (min 2). If specified, set min_prefix_len to 0'],
+				['html_strip',			'1'],
+				['index_exact_words',	'0 # Set to 1 to enable exact search operator. Requires wordforms or morphology'],
+				['blend_chars',			'U+23, U+24, U+25, U+26, U+40'],
+			],
+			'searchd' => [
+				['listen',			$listen_host . ':' . $listen_port . ':mysql41'],
+				['log',				$data_path_normalized . 'log/searchd.log'],
+				['query_log',		$data_path_normalized . 'log/sphinx-query.log'],
+				['read_timeout',	'5'],
+				['max_children',	'30'],
+				['pid_file',		$data_path_normalized . 'searchd.pid'],
+				['binlog_path',		rtrim($data_path, '/\\')],
+				['workers',			'threads'],
+			],
+		];
+
+		/**
+		 * Allow adding/changing the Sphinx configuration data
+		 *
+		 * @event core.search_sphinx_modify_config_data
+		 * @var array	config_data	Array of section_name => list of [key, value] pairs
+		 * @since 3.1.7-RC1
+		 * @changed 4.0.0-a3 Update Sphinx configuration structure for Real-Time (rt) indexes
+		 */
+		$vars = [
+			'config_data',
+		];
+		extract($this->phpbb_dispatcher->trigger_event('core.search_sphinx_modify_config_data', compact($vars)));
+
+		$lines = [];
+		foreach ($config_data as $section_name => $entries)
+		{
+			$lines[] = $section_name . "\n{";
+			foreach ($entries as [$key, $value])
+			{
+				$lines[] = "\t" . $key . ' = ' . $value;
+			}
+			$lines[] = "}\n";
+		}
+
+		$this->config_file_data = implode("\n", $lines);
+
+		return true;
+	}
+
+	/**
+	 * Queries live document count and RT index status from SphinxQL.
+	 *
+	 * @return void
+	 */
+	protected function get_stats(): void
+	{
+		$this->stats = [
+			'index_exists'	=> false,
+			'total_posts'	=> 0,
+		];
+
+		$index_name = $this->get_index_name();
+		if (!$this->client->index_exists($index_name))
+		{
+			return;
+		}
+
+		$this->stats['index_exists'] = true;
+
+		try
+		{
+			$count_result = $this->client->select_with_meta('SELECT id FROM ' . $index_name . ' LIMIT 0, 1');
+			$this->stats['total_posts'] = (int) ($count_result['meta']['total_found'] ?? 0);
+
+			$status_rows = $this->client->query('SHOW INDEX ' . $index_name . ' STATUS');
+			foreach ($status_rows as $status_row)
+			{
+				if (isset($status_row['Variable_name'], $status_row['Value']))
+				{
+					$var_name = (string) $status_row['Variable_name'];
+					if ($var_name === 'ram_bytes' || $var_name === 'disk_bytes')
+					{
+						$this->stats[$var_name] = (int) $status_row['Value'];
+					}
+				}
+			}
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->stats['total_posts'] = 0;
+		}
+	}
+
+	/**
+	 * Synchronizes RT index documents matching a SQL WHERE clause (upserting indexed forums, deleting non-indexed/missing).
+	 *
+	 * @param string $where_sql
+	 * @param array<int, int> $expected_post_ids
+	 * @return void
+	 */
+	protected function sync_posts_where(string $where_sql, array $expected_post_ids = []): void
+	{
+		if (!$this->client->index_exists($this->get_index_name()))
+		{
+			return;
+		}
+
+		$result = $this->db->sql_query($this->build_posts_select_sql($where_sql));
+		$found_ids = [];
+		$docs_to_upsert = [];
+		$ids_to_delete = [];
+
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$pid = (int) $row['post_id'];
+			$found_ids[] = $pid;
+			$indexing_enabled = ((int) $row['forum_id'] === 0) || (bool) $row['enable_indexing'];
+
+			if ($indexing_enabled)
+			{
+				$docs_to_upsert[] = $this->build_document_from_row($row);
+			}
+			else
+			{
+				$ids_to_delete[] = $pid;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		if (!empty($expected_post_ids))
+		{
+			$missing_ids = array_diff($expected_post_ids, $found_ids);
+			$ids_to_delete = array_values(array_unique(array_merge($ids_to_delete, $missing_ids)));
+		}
+
+		try
+		{
+			foreach (array_chunk($docs_to_upsert, self::INDEX_BATCH_SIZE) as $batch)
+			{
+				$this->upsert_documents($batch);
+			}
+
+			if (!empty($ids_to_delete))
+			{
+				$this->index_remove($ids_to_delete, [], []);
+			}
+		}
+		catch (sphinx_exception $e)
+		{
+			$this->log_sphinx_error($e);
+		}
+	}
+
+	/**
+	 * Builds a SELECT query joining posts, topics, and forums for RT document indexing.
+	 *
+	 * @param string $where_sql
+	 * @param string $order_by
+	 * @return string
+	 */
+	protected function build_posts_select_sql(string $where_sql, string $order_by = ''): string
+	{
+		$sql = 'SELECT p.post_id, p.forum_id, p.topic_id, p.poster_id, p.post_visibility,
+				p.post_time, p.post_subject, p.post_text,
+				t.topic_first_post_id, t.topic_last_post_time, f.enable_indexing
+			FROM ' . POSTS_TABLE . ' p
+			JOIN ' . TOPICS_TABLE . ' t ON (p.topic_id = t.topic_id)
+			LEFT JOIN ' . FORUMS_TABLE . ' f ON (p.forum_id = f.forum_id)
+			WHERE ' . $where_sql;
+
+		if ($order_by !== '')
+		{
+			$sql .= ' ORDER BY ' . $order_by;
+		}
+
+		return $sql;
+	}
+
+	/**
+	 * Returns the highest post_id in the posts table.
+	 *
+	 * @return int
+	 */
+	protected function get_max_post_id(): int
+	{
+		$sql = 'SELECT MAX(post_id) AS max_post_id
+			FROM ' . POSTS_TABLE;
+		$result = $this->db->sql_query($sql);
+		$max_post_id = (int) $this->db->sql_fetchfield('max_post_id');
+		$this->db->sql_freeresult($result);
+
+		return $max_post_id;
+	}
+
+	/**
+	 * Filters an array to unique positive integers.
+	 *
+	 * @param array<int|string, mixed> $ids
+	 * @return array<int, int>
+	 */
+	protected function sanitize_positive_ints(array $ids): array
+	{
+		return array_values(array_unique(array_filter(array_map('intval', $ids), static function (int $id): bool {
+			return $id > 0;
+		})));
+	}
+
+	/**
+	 * Logs a critical Sphinx error to the phpBB error log.
+	 *
+	 * @param sphinx_exception $e
+	 * @return void
+	 */
+	protected function log_sphinx_error(sphinx_exception $e): void
+	{
+		$this->log->add('critical', $this->user->data['user_id'], $this->user->ip, 'LOG_SPHINX_ERROR', false, [$e->getMessage()]);
+	}
+
+	/**
+	 * Builds a Sphinx extended2 MATCH() expression for the given raw search query, field scope, and term mode.
+	 * Returns null if no computable search terms remain.
+	 *
+	 * @param string $raw_query
+	 * @param string $fields
+	 * @param string $terms
+	 * @return string|null
+	 */
+	protected function build_match_expression(string $raw_query, string $fields, string $terms): string|null
+	{
+		$cleaned = $this->sphinx_clean_search_string($raw_query);
+
+		if ($terms === 'any')
+		{
+			// Split cleaned words into OR-ed terms for SphinxQL extended2 mode
+			$parts = preg_split('/\s+/', $cleaned, -1, PREG_SPLIT_NO_EMPTY);
+			if (!is_array($parts) || empty($parts))
+			{
+				return null;
+			}
+
+			$expr = implode(' | ', $parts);
+		}
+		else
+		{
+			if ($cleaned === '')
+			{
+				return null;
+			}
+
+			// Guard against pure-negative queries (e.g. "-foo -bar") which Sphinx rejects as non-computable
+			$without_negated = preg_replace('/(?:^|\s)-(?:"[^"]+"|\S+)/u', '', $cleaned) ?? '';
+			if (trim($without_negated) === '')
+			{
+				return null;
+			}
+
+			$expr = $cleaned;
+		}
+
+		if ($fields === 'titleonly')
+		{
+			return '@title (' . $expr . ')';
+		}
+
+		if ($fields === 'msgonly')
+		{
+			return '@data (' . $expr . ')';
+		}
+
+		return $expr;
+	}
+
+	/**
+	 * Cleans search query passed into Sphinx search engine, as follows:
+	 * 1. Hyphenated words are replaced with keyword search for either the exact phrase with spaces
+	 *    or as a single word without spaces, e.g. "know-it-all" becomes ("know it all"|"knowitall*").
+	 *    Standalone hyphens surrounded by whitespace and trailing word hyphens are stripped.
+	 * 2. Words with apostrophes are contracted, e.g. "it's" becomes "its".
+	 * 3. <, >, " and & are decoded from HTML entities.
+	 * 4. Following special characters used as search operators in Sphinx are preserved when used with correct syntax:
+	 *    (a) quorum matching: "the world is a wonderful place"/3 (number between 1 and 9)
+	 *    (b) proximity search: "hello world"~10 (number between 1 and 99)
+	 *    (c) strict word order: aaa << bbb << ccc
+	 *    (d) exact match operator: =cats and =dogs or ="search this exact phrase"
+	 * 5. Special characters /, ~, << and = not complying with the correct syntax
+	 *    and other reserved operators are escaped and searched literally.
+	 *
+	 * @param string $search_string
+	 * @return string
+	 */
+	protected function sphinx_clean_search_string(string $search_string): string
+	{
+		$from = ['@', '^', '$', '!', '&lt;', '&gt;', '&quot;', '&amp;', '\''];
+		$to = ['\\@', '\\^', '\\$', '\\!', '<', '>', '"', '&', ''];
+
+		$search_string = str_replace($from, $to, $search_string);
+
+		// Remove standalone hyphens (surrounded by spaces or at string boundaries) and trailing word hyphens
+		$search_string = preg_replace('/(?:^|\s)+-+(?=\s|$)/u', ' ', $search_string) ?? '';
+		$search_string = preg_replace('/(?<=[\p{L}\p{N}])-+(?=\s|$)/u', '', $search_string) ?? '';
+
+		$search_string = strrev($search_string);
+		$search_string = preg_replace(['#\/(?!"[^"]+")#', '#~(?!"[^"]+")#'], ['/\\', '~\\'], $search_string) ?? '';
+		$search_string = strrev($search_string);
+
+		$match = [
+			'#(/|\\\\/)(?![1-9](\s|$))#',
+			'#(~|\\\\~)(?!\d{1,2}(\s|$))#',
+			'#((?:\p{L}|\p{N})+)-((?:\p{L}|\p{N})+)(?:-((?:\p{L}|\p{N})+))?(?:-((?:\p{L}|\p{N})+))?#iu',
+			'#<<\s*$#',
+			'#(\S\K=|=(?=\s)|=$)#',
+		];
+		$replace = [
+			'\\/',
+			'\\~',
+			'("$1 $2 $3 $4"|$1$2$3$4*)',
+			'\\<\\<',
+			'\\=',
+		];
+
+		$search_string = preg_replace($match, $replace, $search_string) ?? '';
+		$search_string = preg_replace('#\s+"\|#', '"|', $search_string) ?? '';
+		$search_string = preg_replace('/\s+/u', ' ', $search_string) ?? '';
+
+		return trim($search_string);
+	}
+
+	/**
+	 * Compiles a SphinxQL SELECT statement from structured clauses.
+	 *
+	 * @param array<int, string> $select_columns
+	 * @param array<int, string> $where
+	 * @param string $group_by
+	 * @param string $within_group_order_by
+	 * @param string $order_by
+	 * @param int $start
+	 * @param int $per_page
+	 * @param array<string, string> $options
+	 * @return string
+	 */
+	protected function compile_select_query(
+		array $select_columns,
+		array $where,
+		string $group_by,
+		string $within_group_order_by,
+		string $order_by,
+		int $start,
+		int $per_page,
+		array $options
+	): string
+	{
+		$sql = 'SELECT ' . implode(', ', $select_columns)
+			. ' FROM ' . $this->get_index_name();
+
+		if (!empty($where))
+		{
+			$sql .= ' WHERE ' . implode(' AND ', $where);
+		}
+
+		if ($group_by !== '')
+		{
+			$sql .= ' GROUP BY ' . $group_by;
+			if ($within_group_order_by !== '')
+			{
+				$sql .= ' WITHIN GROUP ORDER BY ' . $within_group_order_by;
+			}
+		}
+
+		if ($order_by !== '')
+		{
+			$sql .= ' ORDER BY ' . $order_by;
+		}
+
+		$sql .= sprintf(' LIMIT %d, %d', $start, $per_page);
+
+		if (!empty($options))
+		{
+			$option_parts = [];
+			foreach ($options as $opt_key => $opt_val)
+			{
+				$option_parts[] = $opt_key . '=' . $opt_val;
+			}
+			$sql .= ' OPTION ' . implode(', ', $option_parts);
+		}
+
+		return $sql;
+	}
+
+	/**
+	 * Builds a normalized RT document array from a joined database row.
+	 *
+	 * @param array<string, mixed> $row
+	 * @return array<string, int|string>
+	 */
+	protected function build_document_from_row(array $row): array
+	{
+		$post_id = (int) $row['post_id'];
+		$clean_subject = $this->clean_post_subject((string) $row['post_subject']);
+
+		return [
+			'post_id'				=> $post_id,
+			'title'					=> $clean_subject,
+			'data'					=> $this->clean_post_text((string) $row['post_text']),
+			'forum_id'				=> (int) $row['forum_id'],
+			'topic_id'				=> (int) $row['topic_id'],
+			'poster_id'				=> (int) $row['poster_id'],
+			'post_visibility'		=> (int) $row['post_visibility'],
+			'topic_first_post'		=> ($post_id === (int) $row['topic_first_post_id']) ? 1 : 0,
+			'post_time'				=> (int) $row['post_time'],
+			'topic_last_post_time'	=> (int) $row['topic_last_post_time'],
+			'post_subject'			=> $clean_subject,
+		];
+	}
+
+	/**
+	 * Inserts or replaces a batch of documents in the Real-Time index.
+	 *
+	 * @param array<int, array<string, int|string>> $docs
+	 * @return void
+	 * @throws sphinx_exception
+	 */
+	protected function upsert_documents(array $docs): void
+	{
+		if (empty($docs))
+		{
+			return;
+		}
+
+		$values_sql = [];
+		foreach ($docs as $doc)
+		{
+			$values_sql[] = sprintf(
+				'(%d, %s, %s, %d, %d, %d, %d, %d, %d, %d, %s)',
+				(int) $doc['post_id'],
+				$this->client->quote_string((string) $doc['title']),
+				$this->client->quote_string((string) $doc['data']),
+				(int) $doc['forum_id'],
+				(int) $doc['topic_id'],
+				(int) $doc['poster_id'],
+				(int) $doc['post_visibility'],
+				(int) $doc['topic_first_post'],
+				(int) $doc['post_time'],
+				(int) $doc['topic_last_post_time'],
+				$this->client->quote_string((string) $doc['post_subject'])
+			);
+		}
+
+		$sql = 'REPLACE INTO ' . $this->get_index_name()
+			. ' (id, title, data, forum_id, topic_id, poster_id, post_visibility, topic_first_post, post_time, topic_last_post_time, post_subject)'
+			. ' VALUES ' . implode(', ', $values_sql);
+
+		$this->client->execute($sql);
+	}
+
+	/**
+	 * Cleans post XML/BBCode/HTML content into plain UTF-8 text for RT fulltext indexing.
+	 *
+	 * @param string $text
+	 * @return string
+	 */
+	protected function clean_post_text(string $text): string
+	{
+		if ($text === '')
+		{
+			return '';
+		}
+
+		$trimmed = ltrim($text);
+		if (str_starts_with($trimmed, '<'))
+		{
+			try
+			{
+				$text = $this->text_formatter_utils->clean_formatting($text);
+			}
+			catch (\Throwable $e)
+			{
+				$text = strip_tags($text);
+			}
+		}
+		else
+		{
+			$text = strip_tags($text);
+		}
+
+		$text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+		return trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+	}
+
+	/**
+	 * Cleans post subject HTML entities into plain UTF-8 text.
+	 *
+	 * @param string $subject
+	 * @return string
+	 */
+	protected function clean_post_subject(string $subject): string
+	{
+		if ($subject === '')
+		{
+			return '';
+		}
+
+		return trim(html_entity_decode($subject, ENT_QUOTES | ENT_HTML5, 'UTF-8'));
 	}
 }
