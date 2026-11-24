@@ -18,6 +18,7 @@ require_once __DIR__ . '/../dbal/migration/dummy_order_2.php';
 require_once __DIR__ . '/../dbal/migration/dummy_order_3.php';
 require_once __DIR__ . '/../dbal/migration/dummy_order_4.php';
 require_once __DIR__ . '/../dbal/migration/dummy_order_5.php';
+require_once __DIR__ . '/../dbal/migration/dummy_primary_keys.php';
 
 class schema_generator_test extends phpbb_test_case
 {
@@ -168,6 +169,26 @@ class schema_generator_test extends phpbb_test_case
 			$expected,
 			array_keys($tables[$this->table_prefix . 'column_order_test1']['COLUMNS']),
 			'The schema generator could not position the column correctly, using the "after" option in the migration script.'
+		);
+	}
+
+	public function test_add_drop_primary_keys()
+	{
+		$this->get_schema_generator([
+			'phpbb_dbal_migration_dummy_primary_keys',
+		]);
+
+		$tables = $this->generator->get_schema();
+
+		$this->assertSame(
+			'new_pk',
+			$tables[$this->table_prefix . 'dummy_primary_keys_test']['PRIMARY_KEY'],
+			'The schema generator should replace a dropped primary key with the new single-column key as a string.'
+		);
+		$this->assertSame(
+			['pk1', 'pk2'],
+			$tables[$this->table_prefix . 'dummy_primary_keys_composite']['PRIMARY_KEY'],
+			'The schema generator should set a composite primary key as an array.'
 		);
 	}
 }

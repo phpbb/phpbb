@@ -233,6 +233,10 @@ class schema_generator
 					$action($this->tables, $changes);
 				break;
 
+				case 'primary_keys':
+					$this->apply_primary_keys($schema_change_type, $changes);
+				break;
+
 				default:
 					$this->for_each_table(
 						$changes,
@@ -268,6 +272,27 @@ class schema_generator
 	}
 
 	/**
+	 * Apply primary key changes to the schema.
+	 *
+	 * @param string $change_type	The type of the change (add or drop).
+	 * @param array  $changes		Array describing the schema changes.
+	 */
+	private function apply_primary_keys(string $change_type, array $changes): void
+	{
+		foreach ($changes as $table => $columns)
+		{
+			if ($change_type === 'add')
+			{
+				$this->tables[$table]['PRIMARY_KEY'] = (is_array($columns) && count($columns) === 1) ? reset($columns) : $columns;
+			}
+			else
+			{
+				unset($this->tables[$table]['PRIMARY_KEY']);
+			}
+		}
+	}
+
+	/**
 	 * Set an array of key-value pairs in the schema.
 	 *
 	 * @param mixed			$schema				Reference to the schema entry.
@@ -285,14 +310,7 @@ class schema_generator
 			}
 			else
 			{
-				if (isset($schema) && is_string($schema))
-				{
-					$schema = $change;
-				}
-				else
-				{
-					$schema[$key] = $change;
-				}
+				$schema[$key] = $change;
 			}
 		}
 	}
