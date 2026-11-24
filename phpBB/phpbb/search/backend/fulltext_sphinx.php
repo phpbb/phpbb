@@ -192,7 +192,7 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function get_name(): string
 	{
-		return 'Sphinx Fulltext';
+		return 'Sphinx Fulltext (Legacy)';
 	}
 
 	/**
