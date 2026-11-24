@@ -502,7 +502,7 @@ class extension_guesser extends guesser_base
 	*/
 	protected function map_extension_to_type($file_name)
 	{
-		$extension = pathinfo($file_name, PATHINFO_EXTENSION);
+		$extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
 
 		return $this->extension_map[$extension] ?? null;
 	}
