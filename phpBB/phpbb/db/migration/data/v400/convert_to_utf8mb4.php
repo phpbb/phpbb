@@ -26,12 +26,20 @@ class convert_to_utf8mb4 extends migration
 	{
 		return [
 			'\phpbb\db\migration\data\v400\v400a1',
+			'\phpbb\db\migration\data\v400\convert_to_utf8mb4_check',
 		];
 	}
 
 	public function update_schema(): array
 	{
-		// Doctrine DBAL doesn't let to set primary key length, limit varchar columns length instead.
+		/** Doctrine DBAL doesn't let to set primary key length, limit varchar columns length instead.
+		 *  Shortened columns (former -> new, in characters) so their primary keys fit the
+		 *  767-byte InnoDB index limit under utf8mb4 (4 bytes per character):
+		 *   config.config_name        VARCHAR(255) -> VARCHAR(191)
+		 *   config_text.config_name   VARCHAR(255) -> VARCHAR(191)
+		 *   migrations.migration_name VARCHAR(255) -> VARCHAR(191)
+		 *   oauth_accounts.provider   VARCHAR(255) -> VARCHAR(189) (PK also holds bigint user_id)
+		 */
 		return [
 			'change_columns' => [
 				$this->table_prefix . 'config' => [
@@ -44,7 +52,7 @@ class convert_to_utf8mb4 extends migration
 					'migration_name'	=> ['VCHAR:191', ''],
 				],
 				$this->table_prefix . 'oauth_accounts' => [
-					'provider'	=> ['VCHAR:187', ''], // Limit to 187 as primary key is composed with int unsigned (4 bytes)
+					'provider'	=> ['VCHAR:189', ''], // Limit to 189 as primary key is composed with bigint unsigned (8 bytes)
 				],
 			],
 			'drop_keys' => [
@@ -93,7 +101,7 @@ class convert_to_utf8mb4 extends migration
 					'wrd_txt'	=> ['word_text(191)'],
 				],
 				$this->table_prefix . 'storage'		=> [
-					'uidx_storage'	=> ['file_path(85)', 'storage(85)'],
+					'uidx_storage'	=> ['file_path(95)', 'storage(95)'],
 				],
 				$this->table_prefix . 'styles'		=> [
 					'style_name'	=> ['style_name(191)'],
@@ -104,10 +112,10 @@ class convert_to_utf8mb4 extends migration
 			],
 			'add_index'	=> [
 				$this->table_prefix . 'groups'		=> [
-					'group_legend_name'	=> ['group_legend', 'group_name(187)'],
+					'group_legend_name'	=> ['group_legend', 'group_name(190)'],
 				],
 				$this->table_prefix . 'login_attempts'		=> [
-					'att_for'	=> ['attempt_forwarded_for(187)', 'attempt_time'],
+					'att_for'	=> ['attempt_forwarded_for(190)', 'attempt_time'],
 				],
 				$this->table_prefix . 'oauth_states'		=> [
 					'provider'	=> ['provider(191)'],
@@ -235,7 +243,7 @@ class convert_to_utf8mb4 extends migration
 		$existing_tables = array_keys($this->db_tools->sql_list_tables());
 		foreach ($existing_tables as $table_name)
 		{
-			$sql = "ALTER TABLE $table_name CONVERT TO CHARACTER SET $charset COLLATE {$charset}_bin";
+			$sql = 'ALTER TABLE ' . $this->db->sql_quote($table_name) . " CONVERT TO CHARACTER SET $charset COLLATE {$charset}_bin";
 			$this->db->sql_query($sql);
 		}
 	}
@@ -244,6 +252,6 @@ class convert_to_utf8mb4 extends migration
 	{
 		$phpbb_config_php_file = new \phpbb\config_php_file($this->phpbb_root_path, $this->php_ext);
 		$dbname = $phpbb_config_php_file->get('dbname');
-		$this->db->sql_query("ALTER DATABASE {$this->db->sql_escape($dbname)} CHARACTER SET $charset COLLATE {$charset}_bin");
+		$this->db->sql_query('ALTER DATABASE ' . $this->db->sql_quote($dbname) . " CHARACTER SET $charset COLLATE {$charset}_bin");
 	}
 }
