@@ -40,8 +40,11 @@ use phpbb\db\doctrine\table_helper;
  */
 class doctrine implements tools_interface
 {
-	private const MYSQL_MAX_INDEX_LENGTH = 1000;
-	private const MYSQL_UTF8_BYTES_PER_CHAR = 3;
+	/** InnoDB maximum index key length in bytes. 767 is the conservative limit
+	 * (COMPACT/REDUNDANT row format, innodb_large_prefix=OFF) that the utf8mb4
+	 * migration also targets when computing index prefixes.
+	 */
+	private const MYSQL_MAX_INDEX_LENGTH = 767;
 
 	/**
 	 * @var AbstractSchemaManager
@@ -1072,7 +1075,7 @@ class doctrine implements tools_interface
 	}
 
 	/**
-	 * Adds prefix lengths to MySQL string indexes that exceed MyISAM's key limit.
+	 * Adds prefix lengths to MySQL string indexes that exceed InnoDB's key limit.
 	 *
 	 * @param Table $table
 	 * @param array $columns
@@ -1088,6 +1091,7 @@ class doctrine implements tools_interface
 	{
 		$indexed_string_columns = [];
 		$index_length = 0;
+		$bytes_per_char = $this->get_mysql_bytes_per_char($table);
 
 		foreach ($columns as $column_index => $column_name)
 		{
@@ -1104,7 +1108,7 @@ class doctrine implements tools_interface
 
 			$length = $options['lengths'][$column_index] ?? null;
 			$length = ($length !== null) ? (int) $length : $this->get_mysql_indexed_string_column_length($column);
-			$index_length += $length * self::MYSQL_UTF8_BYTES_PER_CHAR;
+			$index_length += $length * $bytes_per_char;
 
 			if (empty($columns_with_explicit_lengths[$column_index]))
 			{
@@ -1121,11 +1125,11 @@ class doctrine implements tools_interface
 		foreach ($indexed_string_columns as $column_index => $column)
 		{
 			$explicit_index_length -= $this->get_mysql_indexed_string_column_length($column)
-				* self::MYSQL_UTF8_BYTES_PER_CHAR;
+				* $bytes_per_char;
 		}
 
 		$available_length = (int) floor(
-			max(0, self::MYSQL_MAX_INDEX_LENGTH - $explicit_index_length) / self::MYSQL_UTF8_BYTES_PER_CHAR
+			max(0, self::MYSQL_MAX_INDEX_LENGTH - $explicit_index_length) / $bytes_per_char
 		);
 		$length_per_column = (int) floor($available_length / count($indexed_string_columns));
 
@@ -1151,6 +1155,21 @@ class doctrine implements tools_interface
 	private function get_mysql_indexed_string_column_length(Column $column): int
 	{
 		return $column->getLength() ?? 255;
+	}
+
+	/**
+	 * Returns the number of bytes used per character by a table's charset.
+	 * utf8mb4 stores up to 4 bytes per character, utf8mb3 stores 3.
+	 *
+	 * @param Table $table
+	 *
+	 * @return int
+	 */
+	private function get_mysql_bytes_per_char(Table $table): int
+	{
+		$collation = $table->getOption('collation') ?? $table->getOption('charset') ?? '';
+
+		return str_contains($collation, 'utf8mb4') ? 4 : 3;
 	}
 
 	/**
