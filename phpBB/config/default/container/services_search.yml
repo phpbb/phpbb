@@ -52,21 +52,33 @@ services:
         tags:
             - { name: search.backend }
 
+    search.sphinx.client:
+        class: phpbb\search\backend\sphinx\client
+        arguments:
+            - '@config'
+
     search.fulltext.sphinx:
         class: phpbb\search\backend\fulltext_sphinx
         arguments:
             - '@auth'
             - '@config'
             - '@dbal.conn'
-            - '@dbal.tools'
             - '@event_dispatcher'
             - '@language'
             - '@log'
+            - '@search.sphinx.client'
+            - '@text_formatter.utils'
             - '@user'
-            - '%core.root_path%'
-            - '%core.php_ext%'
         tags:
             - { name: search.backend }
+
+    search.sphinx.event_subscriber:
+        class: phpbb\search\backend\sphinx\event_subscriber
+        arguments:
+            - '@config'
+            - '@search.fulltext.sphinx'
+        tags:
+            - { name: kernel.event_subscriber }
 
 # Factory
     search.backend_factory:
