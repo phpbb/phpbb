@@ -338,6 +338,13 @@ class phpbb_search_sphinx_test extends phpbb_database_test_case
 		// Non-empty post_ids deletes from RT index
 		$this->search->index_remove([100, 101], [], []);
 		$this->assertSame(['DELETE FROM index_phpbb_unit12345 WHERE id IN (100, 101)'], $this->executed_sql);
+
+		// Post in non-indexed forum 2 (e.g. from mcp_main fork) must be skipped
+		$this->executed_sql = [];
+		$non_indexed_msg = '<t>Forked post in non-indexed forum</t>';
+		$non_indexed_subj = 'Forked Subject';
+		$this->search->index('post', 200, $non_indexed_msg, $non_indexed_subj, 2, 2);
+		$this->assertEmpty($this->executed_sql);
 	}
 
 	public function test_event_subscriber_synchronizes_rt_index(): void

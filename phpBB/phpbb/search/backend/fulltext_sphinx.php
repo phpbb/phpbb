@@ -606,6 +606,29 @@ class fulltext_sphinx implements search_backend_interface
 			return;
 		}
 
+		if ($forum_id === 0)
+		{
+			$indexing_enabled = true;
+		}
+		else if ($forum_id === (int) $row['forum_id'])
+		{
+			$indexing_enabled = (bool) $row['enable_indexing'];
+		}
+		else
+		{
+			$forum_sql = 'SELECT enable_indexing
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . (int) $forum_id;
+			$forum_result = $this->db->sql_query($forum_sql);
+			$indexing_enabled = (bool) $this->db->sql_fetchfield('enable_indexing');
+			$this->db->sql_freeresult($forum_result);
+		}
+
+		if (!$indexing_enabled)
+		{
+			return;
+		}
+
 		// Honor argument overrides from caller / core.search_sphinx_index_before
 		$row['post_subject'] = $subject;
 		$row['post_text'] = $message;
@@ -727,10 +750,15 @@ class fulltext_sphinx implements search_backend_interface
 	 */
 	public function create_index(int &$post_counter = 0): array|null
 	{
+		if ($error = $this->init())
+		{
+			throw new sphinx_exception($error);
+		}
+
 		$index_name = $this->get_index_name();
 		if (!$this->client->index_exists($index_name))
 		{
-			throw new sphinx_exception('SPHINX_SEARCH_FAILED', ['Real-Time index ' . $index_name . ' was not found on the Sphinx server.']);
+			throw new sphinx_exception($this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND', $index_name));
 		}
 
 		if ($post_counter === 0)
