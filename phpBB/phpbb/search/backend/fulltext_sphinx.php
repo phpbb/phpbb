@@ -899,7 +899,7 @@ class fulltext_sphinx implements search_backend_interface
 			'fulltext_sphinx_rt_mem_limit'	=> 'int',
 		];
 
-		$tpl = '
+		$tpl = $this->get_acp_index_notice() . '
 		<span class="error">' . $this->language->lang('FULLTEXT_SPHINX_CONFIGURE') . '</span>
 		<dl>
 			<dt><label for="fulltext_sphinx_data_path">' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_DATA_PATH_EXPLAIN') . '</span></dt>
@@ -927,6 +927,30 @@ class fulltext_sphinx implements search_backend_interface
 			'tpl'		=> $tpl,
 			'config'	=> $config_vars,
 		];
+	}
+
+	/**
+	 * Returns an ACP notice when Sphinx is the active backend but its Real-Time index is not available,
+	 * e.g. right after updating from a version that used plain main/delta indexes.
+	 *
+	 * @return string
+	 */
+	protected function get_acp_index_notice(): string
+	{
+		// Only contact searchd when Sphinx is the active backend
+		if ($this->config['search_type'] !== $this->get_type() || !$this->is_available())
+		{
+			return '';
+		}
+
+		$index_name = $this->get_index_name();
+		if ($this->client->index_exists($index_name))
+		{
+			return '';
+		}
+
+		return '
+		<p class="error">' . $this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND', $index_name) . '<br />' . $this->language->lang('FULLTEXT_SPHINX_INDEX_NOT_FOUND_EXPLAIN') . '</p>';
 	}
 
 	/**

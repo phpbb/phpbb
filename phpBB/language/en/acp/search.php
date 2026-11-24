@@ -82,6 +82,7 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_SPHINX_HOST'						=> 'Sphinx search daemon host',
 	'FULLTEXT_SPHINX_HOST_EXPLAIN'				=> 'Host on which the Sphinx search daemon (searchd) mysql41 listener runs. Leave empty to use the default 127.0.0.1.',
 	'FULLTEXT_SPHINX_INDEX_NOT_FOUND'			=> 'Real-Time index “%s” was not found on the Sphinx search daemon. Make sure sphinx.conf is updated and searchd is running.',
+	'FULLTEXT_SPHINX_INDEX_NOT_FOUND_EXPLAIN'	=> 'Paste the configuration generated below into sphinx.conf, restart searchd and then create the search index. Indexes created by phpBB versions before 4.0 (index_phpbb_*_main and index_phpbb_*_delta) cannot be reused and should be removed from sphinx.conf. Large boards can bulk-load the new index with the Sphinx indexer instead; see the “Sphinx Fulltext search backend” section of docs/INSTALL.html.',
 	'FULLTEXT_SPHINX_NO_CONFIG_DATA'			=> 'The Sphinx data directory path is not defined. Please define the path and submit to generate the config file.',
 	'FULLTEXT_SPHINX_PORT'						=> 'Sphinx search daemon port',
 	'FULLTEXT_SPHINX_PORT_EXPLAIN'				=> 'Port on which the Sphinx search daemon (searchd) mysql41 protocol listener runs. Leave empty to use the default SphinxQL port 9306.',
