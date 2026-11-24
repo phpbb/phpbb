@@ -78,7 +78,6 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 		$this->config->initialise($this->cache);
 		$cache = $this->cache_service = new \phpbb\cache\service($this->cache, $this->config, $this->db, $phpbb_dispatcher, $phpbb_root_path, $phpEx);
 
-
 		$lang_loader = new \phpbb\language\language_file_loader($phpbb_root_path, $phpEx);
 		$lang = new \phpbb\language\language($lang_loader);
 		$user = $this->user = new \phpbb\user($lang, '\phpbb\datetime');
@@ -162,5 +161,10 @@ abstract class phpbb_migration_test_base extends phpbb_database_test_case
 		}
 
 		return !$this->migrator->migration_state($this->migration_class);
+	}
+
+	protected function get_schema()
+	{
+		return $this->doctrine_db->createSchemaManager()->introspectSchema();
 	}
 }
