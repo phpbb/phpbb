@@ -281,7 +281,6 @@ class client implements client_interface
 
 		if (extension_loaded('mysqli'))
 		{
-			mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 			$mysqli = mysqli_init();
 			if ($mysqli === false)
 			{
@@ -289,8 +288,21 @@ class client implements client_interface
 			}
 
 			$mysqli->options(MYSQLI_OPT_CONNECT_TIMEOUT, self::CONNECT_TIMEOUT);
-			$mysqli->real_connect($host, '', '', '', $port);
-			$mysqli->set_charset('utf8mb4');
+			if (!@$mysqli->real_connect($host, '', '', '', $port))
+			{
+				throw new \RuntimeException(
+					$mysqli->connect_error ?: 'Failed to connect to SphinxQL server.',
+					(int) $mysqli->connect_errno
+				);
+			}
+
+			if (!@$mysqli->set_charset('utf8mb4'))
+			{
+				throw new \RuntimeException(
+					$mysqli->error ?: 'Failed to set SphinxQL connection charset.',
+					(int) $mysqli->errno
+				);
+			}
 
 			$this->connection = $mysqli;
 			$this->connected_endpoint = $endpoint;
@@ -323,7 +335,12 @@ class client implements client_interface
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		}
 
-		$result = $conn->query($sql);
+		$result = @$conn->query($sql);
+		if ($result === false)
+		{
+			throw new \RuntimeException($conn->error ?: 'SphinxQL query failed.', (int) $conn->errno);
+		}
+
 		if ($result instanceof \mysqli_result)
 		{
 			$rows = $result->fetch_all(MYSQLI_ASSOC);
@@ -357,7 +374,12 @@ class client implements client_interface
 			return $affected;
 		}
 
-		$result = $conn->query($sql);
+		$result = @$conn->query($sql);
+		if ($result === false)
+		{
+			throw new \RuntimeException($conn->error ?: 'SphinxQL statement execution failed.', (int) $conn->errno);
+		}
+
 		if ($result instanceof \mysqli_result)
 		{
 			$result->free();
