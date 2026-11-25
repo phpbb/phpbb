@@ -66,11 +66,11 @@ jobs:
               id: php-ext
               shell: bash
               run: |
-                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv"
                   native="mysqli"
                   pdodrv="pdo_mysql"
                   if [ "${{ matrix.pdo }}" = '1' ]; then
-                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                      echo "extensions=$base, pdo, $native, $pdodrv" >> "$GITHUB_OUTPUT"
                   else
                       echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
                   fi
@@ -101,7 +101,11 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
-                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+                  COMPOSER_FLAGS=""
+                  if [ "${{ matrix.pdo }}" = '0' ]; then
+                      COMPOSER_FLAGS="--ignore-platform-req=ext-pdo"
+                  fi
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} $COMPOSER_FLAGS
 
             - name: Setup database
               env:
@@ -168,11 +172,11 @@ jobs:
               id: php-ext
               shell: bash
               run: |
-                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv"
                   native="pgsql"
                   pdodrv="pdo_pgsql"
                   if [ "${{ matrix.pdo }}" = '1' ]; then
-                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                      echo "extensions=$base, pdo, $native, $pdodrv" >> "$GITHUB_OUTPUT"
                   else
                       echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
                   fi
@@ -203,7 +207,11 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
-                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+                  COMPOSER_FLAGS=""
+                  if [ "${{ matrix.pdo }}" = '0' ]; then
+                      COMPOSER_FLAGS="--ignore-platform-req=ext-pdo"
+                  fi
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} $COMPOSER_FLAGS
 
             - name: Setup database
               env:
@@ -252,11 +260,11 @@ jobs:
               id: php-ext
               shell: bash
               run: |
-                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv"
                   native="sqlite3"
                   pdodrv="pdo_sqlite"
                   if [ "${{ matrix.pdo }}" = '1' ]; then
-                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                      echo "extensions=$base, pdo, $native, $pdodrv" >> "$GITHUB_OUTPUT"
                   else
                       echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
                   fi
@@ -287,7 +295,11 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
-                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+                  COMPOSER_FLAGS=""
+                  if [ "${{ matrix.pdo }}" = '0' ]; then
+                      COMPOSER_FLAGS="--ignore-platform-req=ext-pdo"
+                  fi
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} $COMPOSER_FLAGS
 
             - name: Setup database
               env:
@@ -353,11 +365,11 @@ jobs:
               id: php-ext
               shell: bash
               run: |
-                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv"
                   native="sqlsrv"
                   pdodrv="pdo_sqlsrv"
                   if [ "${{ matrix.pdo }}" = '1' ]; then
-                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                      echo "extensions=$base, pdo, $native, $pdodrv" >> "$GITHUB_OUTPUT"
                   else
                       echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
                   fi
@@ -388,7 +400,11 @@ jobs:
                   PHP_VERSION: ${{ matrix.php }}
                   NOTESTS: '0'
               run: |
-                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+                  COMPOSER_FLAGS=""
+                  if [ "${{ matrix.pdo }}" = '0' ]; then
+                      COMPOSER_FLAGS="--ignore-platform-req=ext-pdo"
+                  fi
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0} $COMPOSER_FLAGS
 
             - name: Setup database
               env:

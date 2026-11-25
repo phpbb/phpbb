@@ -14,6 +14,7 @@ set -x
 DB=$1
 PHP_VERSION=$2
 NOTESTS=$3
+COMPOSER_INSTALL_FLAGS=$4
 
 if [ "$NOTESTS" == '1' ]
 then
@@ -27,5 +28,5 @@ then
 fi
 
 cd phpBB
-php ../composer.phar install --dev --no-interaction
+php ../composer.phar install --dev --no-interaction ${COMPOSER_INSTALL_FLAGS:-}
 cd ..
