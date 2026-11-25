@@ -28,6 +28,15 @@ class phpbb_functional_test_case extends phpbb_test_case
 	protected static $root_url;
 	protected static $install_success = false;
 
+	/**
+	 * Whether the board is expected to already be installed before the tests
+	 * run (e.g. installed beforehand by the CLI installer). When true, the
+	 * in-process installation in install_board() is skipped.
+	 *
+	 * @var bool
+	 */
+	protected static $board_preinstalled = false;
+
 	protected $cache = null;
 	protected $db_doctrine = null;
 	protected $extension_manager = null;
@@ -89,7 +98,17 @@ class phpbb_functional_test_case extends phpbb_test_case
 
 		if (!self::$already_installed)
 		{
-			self::install_board();
+			if (static::$board_preinstalled)
+			{
+				// The board is already installed (e.g. by the CLI installer),
+				// so skip the in-process installation.
+				self::$install_success = true;
+			}
+			else
+			{
+				self::install_board();
+			}
+
 			self::$already_installed = true;
 		}
 

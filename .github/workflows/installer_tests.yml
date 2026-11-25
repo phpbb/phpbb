@@ -1,0 +1,408 @@
+name: Installer tests
+
+on:
+    push:
+        branches:
+            - master
+            - 'prep-release-*'
+    pull_request:
+        branches:
+            - master
+            - 'prep-release-*'
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    mysql-installer-tests:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.2'
+                      db: mysql
+                      db_image: mysql:8.4
+                      pdo: '1'
+                      label: 'MySQL 8.4 - PDO'
+                    - php: '8.2'
+                      db: mysql
+                      db_image: mysql:8.4
+                      pdo: '0'
+                      label: 'MySQL 8.4 - native'
+                    - php: '8.2'
+                      db: mariadb
+                      db_image: mariadb:11.4
+                      pdo: '1'
+                      label: 'MariaDB 11.4 - PDO'
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.label }}
+
+        services:
+            mysql:
+                image: ${{ matrix.db_image }}
+                env:
+                    MYSQL_ALLOW_EMPTY_PASSWORD: yes
+                    MYSQL_DATABASE: phpbb_tests
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd="mariadb-admin ping || mysqladmin ping"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=3
+
+        steps:
+            - name: Update Ubuntu package lists
+              run: |
+                  sudo apt-get update -y --allow-releaseinfo-change
+
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Determine PHP extensions
+              id: php-ext
+              shell: bash
+              run: |
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  native="mysqli"
+                  pdodrv="pdo_mysql"
+                  if [ "${{ matrix.pdo }}" = '1' ]; then
+                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ steps.php-ext.outputs.extensions }}
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  cd phpBB
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{ matrix.db }}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Install phpBB (CLI installer)
+              run: |
+                  .github/install-phpbb.sh ${{ matrix.db }}
+
+            - name: Run installer functional test
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-${{ matrix.db }}-github.xml tests/functional/installer_pages_test.php --display-all-issues --stop-on-error
+
+    postgres-installer-tests:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.2'
+                      db: postgres
+                      db_image: postgres:16
+                      pdo: '1'
+                      label: 'PostgreSQL 16 - PDO'
+                    - php: '8.2'
+                      db: postgres
+                      db_image: postgres:16
+                      pdo: '0'
+                      label: 'PostgreSQL 16 - native'
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.label }}
+
+        services:
+            postgres:
+                image: ${{ matrix.db_image }}
+                env:
+                    POSTGRES_HOST: localhost
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                ports:
+                    - 5432:5432
+                options: >-
+                    -v /var/run/postgresql:/var/run/postgresql
+                    --health-cmd "pg_isready -U postgres"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - name: Update Ubuntu package lists
+              run: |
+                  sudo apt-get update -y --allow-releaseinfo-change
+
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Determine PHP extensions
+              id: php-ext
+              shell: bash
+              run: |
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  native="pgsql"
+                  pdodrv="pdo_pgsql"
+                  if [ "${{ matrix.pdo }}" = '1' ]; then
+                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ steps.php-ext.outputs.extensions }}
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  cd phpBB
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{ matrix.db }}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Install phpBB (CLI installer)
+              run: |
+                  .github/install-phpbb.sh ${{ matrix.db }}
+
+            - name: Run installer functional test
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-${{ matrix.db }}-github.xml tests/functional/installer_pages_test.php --display-all-issues --stop-on-error
+
+    sqlite-installer-tests:
+        runs-on: ubuntu-latest
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.2'
+                      db: sqlite3
+                      pdo: '1'
+                      label: 'SQLite3 - PDO'
+                    - php: '8.2'
+                      db: sqlite3
+                      pdo: '0'
+                      label: 'SQLite3 - native'
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.label }}
+
+        steps:
+            - name: Update Ubuntu package lists
+              run: |
+                  sudo apt-get update -y --allow-releaseinfo-change
+
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Determine PHP extensions
+              id: php-ext
+              shell: bash
+              run: |
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  native="sqlite3"
+                  pdodrv="pdo_sqlite"
+                  if [ "${{ matrix.pdo }}" = '1' ]; then
+                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ steps.php-ext.outputs.extensions }}
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  cd phpBB
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{ matrix.db }}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Install phpBB (CLI installer)
+              run: |
+                  .github/install-phpbb.sh ${{ matrix.db }}
+
+            - name: Run installer functional test
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-${{ matrix.db }}-github.xml tests/functional/installer_pages_test.php --display-all-issues --stop-on-error
+
+    mssql-installer-tests:
+        runs-on: ubuntu-22.04
+        timeout-minutes: 30
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - php: '8.2'
+                      db: mssql
+                      db_image: mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04
+                      pdo: '1'
+                      label: 'MSSQL 2022 - PDO'
+                    - php: '8.2'
+                      db: mssql
+                      db_image: mcr.microsoft.com/mssql/server:2022-CU27-ubuntu-22.04
+                      pdo: '0'
+                      label: 'MSSQL 2022 - native'
+
+        name: PHP ${{ matrix.php }} - ${{ matrix.label }}
+
+        services:
+            mssql:
+                image: ${{ matrix.db_image }}
+                env:
+                    SA_PASSWORD: "Pssw0rd_12"
+                    ACCEPT_EULA: "y"
+                ports:
+                    - 1433:1433
+                options: >-
+                    --health-cmd="PATH=$PATH:/opt/mssql-tools18/bin:/opt/mssql-tools/bin sqlcmd -C -S localhost -U sa -P 'Pssw0rd_12' -Q \"Use [master]; CREATE DATABASE [phpbb_tests] COLLATE Latin1_General_CI_AS\" || exit 1"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+                    --health-start-period 10s
+
+        steps:
+            - name: Update Ubuntu package lists
+              run: |
+                  sudo apt-get update -y --allow-releaseinfo-change
+
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Determine PHP extensions
+              id: php-ext
+              shell: bash
+              run: |
+                  base="dom, curl, libxml, mbstring, zip, pcntl, intl, gd, exif, iconv, pdo"
+                  native="sqlsrv"
+                  pdodrv="pdo_sqlsrv"
+                  if [ "${{ matrix.pdo }}" = '1' ]; then
+                      echo "extensions=$base, $native, $pdodrv" >> "$GITHUB_OUTPUT"
+                  else
+                      echo "extensions=$base, $native" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ steps.php-ext.outputs.extensions }}
+                  coverage: none
+
+            - name: Get Composer Cache Directory
+              id: composer-cache
+              run: |
+                  cd phpBB
+                  echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+                  cd ..
+
+            - name: Cache Composer dependencies
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: composer-${{ matrix.php }}-${{ hashFiles('phpBB/composer.lock') }}
+
+            - name: Setup environment for phpBB
+              env:
+                  DB: ${{ matrix.db }}
+                  PHP_VERSION: ${{ matrix.php }}
+                  NOTESTS: '0'
+              run: |
+                  .github/setup-phpbb.sh $DB $PHP_VERSION ${NOTESTS:-0}
+
+            - name: Setup database
+              env:
+                  DB: ${{ matrix.db }}
+                  MYISAM: '0'
+              run: |
+                  .github/setup-database.sh $DB $MYISAM
+
+            - name: Install phpBB (CLI installer)
+              run: |
+                  .github/install-phpbb.sh ${{ matrix.db }}
+
+            - name: Run installer functional test
+              env:
+                  DB: ${{ matrix.db }}
+              run: |
+                  phpBB/vendor/bin/phpunit --configuration .github/phpunit-${{ matrix.db }}-github.xml tests/functional/installer_pages_test.php --display-all-issues --stop-on-error
