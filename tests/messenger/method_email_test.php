@@ -797,11 +797,63 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 	public function test_send_via_null_transport_intercepts_message(): void
 	{
+		$dispatcher = $this->setup_null_transport_email();
+		$this->config->set('email_package_size', 0);
+
+		$captured = [];
+		$this->register_mailer_capture($dispatcher, $captured);
+
+		$this->prepare_test_email();
+
+		$this->assertTrue($this->method_email->send());
+
+		$this->assert_intercepted_message($captured);
+	}
+
+	public function test_send_through_queue_via_null_transport_intercepts_message(): void
+	{
+		$dispatcher = $this->setup_null_transport_email();
+		$this->config->set('email_package_size', 100);
+
+		// Capture the message put into the queue by send().
+		$queued = [];
+		$this->queue->method('put')
+			->willReturnCallback(function (string $object, array $message_data) use (&$queued)
+			{
+				$this->assertSame('email', $object);
+				$queued[] = $message_data;
+			});
+
+		$this->prepare_test_email();
+
+		$this->assertTrue($this->method_email->send());
+		$this->assertCount(1, $queued);
+
+		// Process the queue through the null://null transport, intercepting the
+		// Symfony Mailer events fired during the actual send.
+		$captured = [];
+		$this->register_mailer_capture($dispatcher, $captured);
+
+		$queue_data = ['email' => ['data' => $queued]];
+		$this->method_email->process_queue($queue_data);
+
+		$this->assertEmpty($queue_data);
+
+		$this->assert_intercepted_message($captured);
+	}
+
+	/**
+	 * Rebuild the email method with a real event dispatcher and configure the
+	 * null://null transport so messages are dropped without any network access.
+	 *
+	 * @return \phpbb\event\dispatcher The real dispatcher wired into the email method
+	 */
+	protected function setup_null_transport_email(): \phpbb\event\dispatcher
+	{
 		global $phpbb_root_path;
 
-		// Use a real dispatcher so the Symfony Mailer events are actually dispatched
-		// through the null://null transport (which drops the message but still fires
-		// MessageEvent/SentMessageEvent). A mocked dispatcher would stub dispatch().
+		// A real dispatcher is required: a mocked one would stub dispatch() and the
+		// Symfony Mailer events (MessageEvent/SentMessageEvent) would never fire.
 		$dispatcher = new \phpbb\event\dispatcher();
 
 		// Rebuild the email method with the real dispatcher and do NOT mock get_mailer(),
@@ -823,11 +875,10 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 			$this->log
 		);
 
-		// null://null transport (empty SMTP host) and direct send without queue.
+		// null://null transport (empty SMTP host).
 		$this->config->set('email_enable', true);
 		$this->config->set('smtp_delivery', true);
 		$this->config->set('smtp_host', '');
-		$this->config->set('email_package_size', 0);
 		$this->config->set('board_email', 'admin@yourdomain.com');
 		$this->config->set('board_contact', 'nobody@example.com');
 		$this->config->set('board_contact_name', 'Board Admin');
@@ -835,7 +886,17 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 		$this->config->set('sitename', 'yourdomain.com');
 		$this->config->set('default_lang', 'en');
 
-		$captured = [];
+		return $dispatcher;
+	}
+
+	/**
+	 * Register listeners that capture the Symfony Mailer events fired during a send.
+	 *
+	 * @param \phpbb\event\dispatcher $dispatcher
+	 * @param array $captured Array filled with the intercepted message, envelope and sent message
+	 */
+	protected function register_mailer_capture(\phpbb\event\dispatcher $dispatcher, array &$captured): void
+	{
 		$dispatcher->addListener(\Symfony\Component\Mailer\Event\MessageEvent::class,
 			function (\Symfony\Component\Mailer\Event\MessageEvent $event) use (&$captured)
 			{
@@ -847,15 +908,27 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 			{
 				$captured['sent'] = $event->getMessage();
 			});
+	}
 
+	/**
+	 * Initialise the email method and fill it with a known recipient, subject and body.
+	 */
+	protected function prepare_test_email(): void
+	{
 		$this->method_email->init();
 		$this->method_email->set_transport();
 		$this->method_email->to('john@example.com', 'John');
 		$this->method_email->subject('Test subject');
 		$this->method_email->template('smtp_body', 'en', __DIR__ . '/../email/templates');
+	}
 
-		$this->assertTrue($this->method_email->send());
-
+	/**
+	 * Assert that an intercepted message has the expected headers and body.
+	 *
+	 * @param array $captured Captured data from register_mailer_capture()
+	 */
+	protected function assert_intercepted_message(array $captured): void
+	{
 		$this->assertArrayHasKey('message', $captured);
 		$this->assertArrayHasKey('envelope', $captured);
 		$this->assertArrayHasKey('sent', $captured);
