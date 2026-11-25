@@ -24,6 +24,7 @@ use phpbb\db\middleware\mysql\middleware as mysql_middleware;
 use phpbb\db\middleware\oracle\middleware as oracle_middleware;
 use phpbb\db\middleware\postgresql\middleware as postgresql_middleware;
 use phpbb\db\middleware\sqlsrv\middleware as sqlsrv_middleware;
+use phpbb\db\mysql_ssl;
 use phpbb\exception\runtime_exception;
 
 /**
@@ -39,7 +40,8 @@ class connection_factory
 	 * @return Connection Doctrine DBAL connection.
 	 *
 	 * @throws runtime_exception        If the database connection could not be established.
-	 * @throws InvalidArgumentException    If the provided driver name is not a valid phpBB database driver.
+	 * @throws InvalidArgumentException    If the provided driver name is not a valid phpBB database driver, or the
+	 *                                     ssl settings are invalid.
 	 */
 	public static function get_connection(config_php_file $config): Connection
 	{
@@ -49,6 +51,8 @@ class connection_factory
 		$pass = $config->get('dbpasswd');
 		$name = $config->get('dbname');
 		$port = $config->get('dbport');
+		$ssl_mode = $config->get('dbsslmode');
+		$ssl_ca = $config->get('dbsslca');
 
 		return self::get_connection_from_params(
 			$driver,
@@ -56,7 +60,9 @@ class connection_factory
 			$user,
 			$pass,
 			$name,
-			$port
+			$port,
+			$ssl_mode,
+			$ssl_ca
 		);
 	}
 
@@ -69,11 +75,14 @@ class connection_factory
 	 * @param string|null $password Password.
 	 * @param string|null $name     Database name.
 	 * @param string|null $port     Database port.
+	 * @param string|null $ssl_mode MySQL ssl-mode, see \phpbb\db\mysql_ssl.
+	 * @param string|null $ssl_ca   CA file for verify_identity.
 	 *
 	 * @return Connection Doctrine DBAL connection.
 	 *
 	 * @throws runtime_exception        If the database connection could not be established.
-	 * @throws InvalidArgumentException    If $driver is not a valid phpBB database driver.
+	 * @throws InvalidArgumentException    If $driver is not a valid phpBB database driver, or the ssl settings are
+	 *                                     invalid.
 	 */
 	public static function get_connection_from_params(
 		string $driver,
@@ -81,7 +90,9 @@ class connection_factory
 		string|null $user = null,
 		string|null $password = null,
 		string|null $name = null,
-		string|null $port = null): Connection
+		string|null $port = null,
+		string|null $ssl_mode = null,
+		string|null $ssl_ca = null): Connection
 	{
 		$available_drivers = DriverManager::getAvailableDrivers();
 		if (!in_array($driver, $available_drivers))
@@ -96,12 +107,14 @@ class connection_factory
 			$user,
 			$password,
 			$name,
-			$port
+			$port,
+			$ssl_mode,
+			$ssl_ca
 		);
 
 		$middleware = match($driver)
 		{
-			'pdo_mysql', 'mysqli'	=> [new mysql_middleware()],
+			'pdo_mysql', 'mysqli'	=> [new mysql_middleware(mysql_ssl::get_mode($ssl_mode) === mysql_ssl::PREFERRED)],
 			'pdo_oci', 'oci8'		=> [new oracle_middleware()],
 			'pdo_pgsql', 'pgsql'	=> [new postgresql_middleware()],
 			'pdo_sqlsrv', 'sqlsrv'	=> [new sqlsrv_middleware()],

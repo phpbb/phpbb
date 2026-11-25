@@ -13,6 +13,8 @@
 
 namespace phpbb\db\driver;
 
+use phpbb\db\mysql_ssl;
+
 /**
 * MySQLi Database Abstraction Layer
 * mysqli-extension has to be compiled with:
@@ -22,6 +24,26 @@ class mysqli extends \phpbb\db\driver\mysql_base
 {
 	var $multi_insert = true;
 	var $connect_error = '';
+
+	/** @var string MySQL ssl-mode, see \phpbb\db\mysql_ssl */
+	protected $ssl_mode = mysql_ssl::DISABLED;
+
+	/** @var string CA file for verify_identity; empty for the system's trusted CAs */
+	protected $ssl_ca = '';
+
+	/**
+	* Sets how the connection is encrypted. Call before sql_connect().
+	*
+	* @param string|null	$mode	MySQL ssl-mode: disabled, preferred, required or verify_identity. Empty means disabled.
+	* @param string|null	$ca		CA file for verify_identity. Empty means the system's trusted CAs.
+	*
+	* @return void
+	*/
+	public function set_ssl_options(string|null $mode, string|null $ca = null): void
+	{
+		$this->ssl_mode = (string) $mode;
+		$this->ssl_ca = (string) $ca;
+	}
 
 	/**
 	* {@inheritDoc}
@@ -64,7 +86,7 @@ class mysqli extends \phpbb\db\driver\mysql_base
 			$this->connect_error = 'Failed to initialize MySQLi object.';
 
 		}
-		else if (!@mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $sqlpassword, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS))
+		else if (!$this->real_connect($sqlpassword, $port, $socket) && !$this->connect_error)
 		{
 			$this->connect_error = 'Failed to establish a connection to the MySQL database engine. Please ensure MySQL server is running and the database configuration parameters are correct.';
 		}
@@ -120,6 +142,74 @@ class mysqli extends \phpbb\db\driver\mysql_base
 		}
 
 		return $this->sql_error('');
+	}
+
+	/**
+	* Connects $this->db_connect_id, encrypted as the ssl mode asks
+	*
+	* @param string			$password	Database password
+	* @param int|null		$port		Port, or null
+	* @param string|null	$socket		Socket, or null
+	*
+	* @return bool Whether the connection succeeded
+	*/
+	protected function real_connect(string $password, int|null $port, string|null $socket): bool
+	{
+		try
+		{
+			$mode = mysql_ssl::get_mode($this->ssl_mode);
+			$ca_locations = ($mode === mysql_ssl::VERIFY_IDENTITY) ? mysql_ssl::get_ca_locations($this->ssl_ca) : null;
+		}
+		catch (\InvalidArgumentException $e)
+		{
+			$this->connect_error = $e->getMessage();
+			$this->db_connect_id = false;
+			return false;
+		}
+
+		$flags = MYSQLI_CLIENT_FOUND_ROWS;
+		if ($ca_locations !== null)
+		{
+			mysqli_ssl_set($this->db_connect_id, null, null, $ca_locations[0], $ca_locations[1], null);
+			$flags |= MYSQLI_CLIENT_SSL;
+		}
+		else if ($mode !== mysql_ssl::DISABLED)
+		{
+			$flags |= MYSQLI_CLIENT_SSL | MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT;
+		}
+
+		if ($mode !== mysql_ssl::PREFERRED)
+		{
+			return @mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $password, $this->dbname, $port, $socket, $flags);
+		}
+
+		try
+		{
+			if (@mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $password, $this->dbname, $port, $socket, $flags))
+			{
+				return true;
+			}
+		}
+		catch (\mysqli_sql_exception $e)
+		{
+			if (!mysql_ssl::is_unavailable($e->getCode(), $e->getMessage()))
+			{
+				throw $e;
+			}
+		}
+
+		if (!mysql_ssl::is_unavailable(mysqli_connect_errno(), (string) mysqli_connect_error()))
+		{
+			return false;
+		}
+
+		// The server has no TLS, or none PHP can negotiate, so connect unencrypted
+		if (!$this->db_connect_id = mysqli_init())
+		{
+			return false;
+		}
+
+		return @mysqli_real_connect($this->db_connect_id, $this->server, $this->user, $password, $this->dbname, $port, $socket, MYSQLI_CLIENT_FOUND_ROWS);
 	}
 
 	/**

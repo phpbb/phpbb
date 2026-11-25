@@ -13,6 +13,8 @@
 
 namespace phpbb\db\doctrine;
 
+use phpbb\db\mysql_ssl;
+
 /**
  * Helper class to generate Doctrine DBAL configuration.
  */
@@ -27,10 +29,12 @@ class connection_parameter_factory
 	 * @param string|null	$password	Password.
 	 * @param string|null	$name		Database name.
 	 * @param string|null	$port		Database port.
+	 * @param string|null	$ssl_mode	MySQL ssl-mode, see \phpbb\db\mysql_ssl.
+	 * @param string|null	$ssl_ca		CA file for verify_identity.
 	 *
 	 * @return array Doctrine DBAL connection parameters.
 	 *
-	 * @throws \InvalidArgumentException If a required parameter is empty or null.
+	 * @throws \InvalidArgumentException If a required parameter is empty or null, or the ssl settings are invalid.
 	 */
 	public static function get_configuration(
 		string $driver,
@@ -38,7 +42,9 @@ class connection_parameter_factory
 		string|null $user = null,
 		string|null $password = null,
 		string|null $name = null,
-		string|null $port = null) : array
+		string|null $port = null,
+		string|null $ssl_mode = null,
+		string|null $ssl_ca = null) : array
 	{
 		$params = [
 			'driver' => $driver,
@@ -50,7 +56,9 @@ class connection_parameter_factory
 			$user,
 			$password,
 			$name,
-			$port
+			$port,
+			$ssl_mode,
+			$ssl_ca
 		);
 	}
 
@@ -63,10 +71,12 @@ class connection_parameter_factory
 	 * @param string|null	$password	Password.
 	 * @param string|null	$name		Database name.
 	 * @param string|null	$port		Database port.
+	 * @param string|null	$ssl_mode	MySQL ssl-mode, see \phpbb\db\mysql_ssl.
+	 * @param string|null	$ssl_ca		CA file for verify_identity.
 	 *
 	 * @return array Doctrine's DBAL configuration for SQLite.
 	 *
-	 * @throws \InvalidArgumentException If a required parameter is empty or null.
+	 * @throws \InvalidArgumentException If a required parameter is empty or null, or the ssl settings are invalid.
 	 */
 	private static function build_connection_parameters(
 		array $params,
@@ -74,7 +84,9 @@ class connection_parameter_factory
 		string|null $user = null,
 		string|null $password = null,
 		string|null $name = null,
-		string|null $port = null) : array
+		string|null $port = null,
+		string|null $ssl_mode = null,
+		string|null $ssl_ca = null) : array
 	{
 		if (in_array($params['driver'], ['pdo_sqlite', 'sqlite3']))
 		{
@@ -104,7 +116,49 @@ class connection_parameter_factory
 			$params['port'] = (int) $port;
 		}
 
+		if ($params['driver'] === 'pdo_mysql')
+		{
+			$params = self::add_mysql_ssl_parameters($params, $ssl_mode, $ssl_ca);
+		}
+
 		return self::enrich_parameters($params);
+	}
+
+	/**
+	 * Adds the PDO options that encrypt a MySQL connection.
+	 *
+	 * @param array			$params		Parameter array.
+	 * @param string|null	$ssl_mode	MySQL ssl-mode, see \phpbb\db\mysql_ssl.
+	 * @param string|null	$ssl_ca		CA file for verify_identity.
+	 *
+	 * @return array Parameter array with the options added.
+	 *
+	 * @throws \InvalidArgumentException If the ssl settings are invalid.
+	 */
+	private static function add_mysql_ssl_parameters(array $params, string|null $ssl_mode, string|null $ssl_ca) : array
+	{
+		$mode = mysql_ssl::get_mode($ssl_mode);
+		if ($mode === mysql_ssl::DISABLED)
+		{
+			return $params;
+		}
+
+		// PDO only starts TLS when it is given CAs, so they are set even when the certificate is not checked
+		[$ca_file, $ca_path] = mysql_ssl::get_ca_locations($ssl_ca);
+
+		$options = [mysql_ssl::get_pdo_attribute('SSL_VERIFY_SERVER_CERT') => $mode === mysql_ssl::VERIFY_IDENTITY];
+		if ($ca_file !== null)
+		{
+			$options[mysql_ssl::get_pdo_attribute('SSL_CA')] = $ca_file;
+		}
+		if ($ca_path !== null)
+		{
+			$options[mysql_ssl::get_pdo_attribute('SSL_CAPATH')] = $ca_path;
+		}
+
+		$params['driverOptions'] = $options + ($params['driverOptions'] ?? []);
+
+		return $params;
 	}
 
 	/**
