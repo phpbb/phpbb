@@ -129,3 +129,11 @@ then
 	echo "phpBB installer did not produce a config.php file." >&2
 	exit 1
 fi
+
+# The CLI installer writes PHPBB_ENVIRONMENT = "production" into config.php. In
+# the production environment the board disables itself while the install/
+# directory is still present (allow_install_dir defaults to false), so the
+# functional tests would render the "board disabled" page instead of the forum
+# list. Switch to the "test" environment, like the in-process installer used by
+# phpbb_functional_test_case, so the board behaves identically.
+sed -i "/PHPBB_ENVIRONMENT/s/production/test/" "$PHPBB_ROOT_PATH/config.php"
