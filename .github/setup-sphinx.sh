@@ -15,18 +15,11 @@ sudo apt-get install -q -y sphinxsearch
 
 DIR=$(dirname "$0")
 
-SPHINX_DAEMON_HOST="localhost"
-SPHINX_DAEMON_PORT="9312"
 SPHINX_CONF="$DIR/sphinx.conf"
 SPHINX_DATA_DIR="/var/run/sphinxsearch"
 SPHINX_LOG="$SPHINX_DATA_DIR/log/searchd.log"
 SPHINX_QUERY_LOG="$SPHINX_DATA_DIR/log/sphinx-query.log"
 ID="saw9zf2fdhp1goue" # Randomly generated via phpBB unique_id()
-
-PHPBB_TEST_DBHOST="0.0.0.0"
-PHPBB_TEST_DBNAME="phpbb_tests"
-PHPBB_TEST_DBUSER="root"
-PHPBB_TEST_DBPASSWD=""
 
 sudo service sphinxsearch stop
 sudo mkdir -p "$SPHINX_DATA_DIR/log"
@@ -34,76 +27,21 @@ sudo chown "sphinxsearch" "$SPHINX_DATA_DIR/log"
 
 # Generate configuration file for Sphinx
 echo "
-source source_phpbb_${ID}_main 
+index index_phpbb_${ID}
 {
-	type = mysql # mysql or pgsql
-	sql_host =  $PHPBB_TEST_DBHOST
-	sql_user = $PHPBB_TEST_DBUSER
-	sql_pass = $PHPBB_TEST_DBPASSWD
-	sql_db = $PHPBB_TEST_DBNAME
-	sql_port =
-	sql_query_pre = SET NAMES 'utf8'
-	sql_query_pre = UPDATE phpbb_sphinx SET max_doc_id = (SELECT MAX(post_id) FROM phpbb_posts) WHERE counter_id = 1
-	sql_query_range = SELECT MIN(post_id), MAX(post_id) FROM phpbb_posts
-	sql_range_step = 5000
-	sql_query = SELECT \
-						p.post_id AS id, \
-						p.forum_id, \
-						p.topic_id, \
-						p.poster_id, \
-						p.post_visibility, \
-						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post, \
-						p.post_time, \
-						p.post_subject, \
-						p.post_subject as title, \
-						p.post_text as data, \
-						t.topic_last_post_time, \
-						0 as deleted \
-					FROM phpbb_posts p, phpbb_topics t \
-					WHERE \
-						p.topic_id = t.topic_id \
-						AND p.post_id >= \$start AND p.post_id <= \$end
-	sql_query_post =
-	sql_query_post_index = UPDATE phpbb_sphinx SET max_doc_id = \$maxid WHERE counter_id = 1
-	sql_attr_uint = forum_id
-	sql_attr_uint = topic_id
-	sql_attr_uint = poster_id
-	sql_attr_uint = post_visibility
-	sql_attr_bool = topic_first_post
-	sql_attr_bool = deleted
-	sql_attr_timestamp = post_time
-	sql_attr_timestamp = topic_last_post_time
-	sql_attr_string = post_subject
-}
-source source_phpbb_${ID}_delta : source_phpbb_${ID}_main
-{
-	sql_query_pre = SET NAMES 'utf8'
-	sql_query_range =
-	sql_range_step =
-	sql_query = SELECT \
-						p.post_id AS id, \
-						p.forum_id, \
-						p.topic_id, \
-						p.poster_id, \
-						p.post_visibility, \
-						CASE WHEN p.post_id = t.topic_first_post_id THEN 1 ELSE 0 END as topic_first_post, \
-						p.post_time, \
-						p.post_subject, \
-						p.post_subject as title, \
-						p.post_text as data, \
-						t.topic_last_post_time, \
-						0 as deleted \
-					FROM phpbb_posts p, phpbb_topics t \
-					WHERE \
-						p.topic_id = t.topic_id \
-						AND p.post_id >=  ( SELECT max_doc_id FROM phpbb_sphinx WHERE counter_id=1 )
-	sql_query_post_index =
-}
-index index_phpbb_${ID}_main
-{
-	path = $SPHINX_DATA_DIR/index_phpbb_${ID}_main
-	source = source_phpbb_${ID}_main
-	docinfo = extern
+	type = rt
+	path = $SPHINX_DATA_DIR/index_phpbb_${ID}
+	rt_mem_limit = 128M
+	rt_field = title
+	rt_field = data
+	rt_attr_uint = forum_id
+	rt_attr_uint = topic_id
+	rt_attr_uint = poster_id
+	rt_attr_uint = post_visibility
+	rt_attr_uint = topic_first_post
+	rt_attr_timestamp = post_time
+	rt_attr_timestamp = topic_last_post_time
+	rt_attr_string = post_subject
 	morphology = none
 	stopwords =
 	wordforms =
@@ -117,27 +55,21 @@ index index_phpbb_${ID}_main
 	index_exact_words = 0
 	blend_chars = U+23, U+24, U+25, U+26, U+40
 }
-index index_phpbb_${ID}_delta : index_phpbb_${ID}_main
-{
-	path = $SPHINX_DATA_DIR/index_phpbb_${ID}_delta
-	source = source_phpbb_${ID}_delta
-}
-indexer
-{
-	mem_limit = 512M
-}
 searchd
 {
-	listen = $SPHINX_DAEMON_PORT
+	listen = 127.0.0.1:9306:mysql41
 	log = $SPHINX_LOG
 	query_log = $SPHINX_QUERY_LOG
 	read_timeout = 5
 	max_children = 30
 	pid_file = $SPHINX_DATA_DIR/searchd.pid
 	binlog_path = $SPHINX_DATA_DIR
+	workers = threads
 }
 " > $SPHINX_CONF
 
 sudo mv "$SPHINX_CONF" "/etc/sphinxsearch/sphinx.conf"
 sudo sed -i "s/START=no/START=yes/g" "/etc/default/sphinxsearch"
+sudo chown -R "sphinxsearch:sphinxsearch" "/var/run/sphinxsearch"
 sudo chmod 777 "/var/run/sphinxsearch"
+sudo service sphinxsearch start
