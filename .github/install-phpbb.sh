@@ -99,7 +99,28 @@ installer:
     extensions: []
 EOF
 
-php "$PHPBB_ROOT_PATH/install/phpbbcli.php" install "$CONFIG_FILE"
+INSTALL_LOG=$(mktemp)
+
+if ! php "$PHPBB_ROOT_PATH/install/phpbbcli.php" install "$CONFIG_FILE" > "$INSTALL_LOG" 2>&1
+then
+	cat "$INSTALL_LOG"
+	rm -f "$INSTALL_LOG"
+	exit 1
+fi
+
+# The installer swallows task-level errors (they are reported through the I/O
+# handler as "[ERROR] ..." lines) and still exits with code 0, so surface any
+# reported error and fail the step with the actual message.
+if grep -q '\[ERROR\]' "$INSTALL_LOG"
+then
+	echo "The installer reported errors:" >&2
+	cat "$INSTALL_LOG" >&2
+	rm -f "$INSTALL_LOG"
+	exit 1
+fi
+
+cat "$INSTALL_LOG"
+rm -f "$INSTALL_LOG"
 
 # The installer reports errors through the I/O handler without returning a
 # non-zero exit code, so verify that the config file was actually written.
