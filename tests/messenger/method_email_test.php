@@ -794,4 +794,97 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 		$this->assertEmpty($errors);
 	}
+
+	public function test_send_via_null_transport_intercepts_message(): void
+	{
+		global $phpbb_root_path;
+
+		// Use a real dispatcher so the Symfony Mailer events are actually dispatched
+		// through the null://null transport (which drops the message but still fires
+		// MessageEvent/SentMessageEvent). A mocked dispatcher would stub dispatch().
+		$dispatcher = new \phpbb\event\dispatcher();
+
+		// Rebuild the email method with the real dispatcher and do NOT mock get_mailer(),
+		// so the message actually goes through the real transport.
+		$this->method_email = new email(
+			$this->assets_bag,
+			$this->config,
+			$dispatcher,
+			$this->language,
+			$this->queue,
+			$this->path_helper,
+			$this->request,
+			$this->twig_extensions_collection,
+			$this->twig_lexer,
+			$this->user,
+			$phpbb_root_path,
+			$this->cache_path,
+			$this->extension_manager,
+			$this->log
+		);
+
+		// null://null transport (empty SMTP host) and direct send without queue.
+		$this->config->set('email_enable', true);
+		$this->config->set('smtp_delivery', true);
+		$this->config->set('smtp_host', '');
+		$this->config->set('email_package_size', 0);
+		$this->config->set('board_email', 'admin@yourdomain.com');
+		$this->config->set('board_contact', 'nobody@example.com');
+		$this->config->set('board_contact_name', 'Board Admin');
+		$this->config->set('board_email_sig', '-- Thanks');
+		$this->config->set('sitename', 'yourdomain.com');
+		$this->config->set('default_lang', 'en');
+
+		$captured = [];
+		$dispatcher->addListener(\Symfony\Component\Mailer\Event\MessageEvent::class,
+			function (\Symfony\Component\Mailer\Event\MessageEvent $event) use (&$captured)
+			{
+				$captured['message'] = $event->getMessage();
+				$captured['envelope'] = $event->getEnvelope();
+			});
+		$dispatcher->addListener(\Symfony\Component\Mailer\Event\SentMessageEvent::class,
+			function (\Symfony\Component\Mailer\Event\SentMessageEvent $event) use (&$captured)
+			{
+				$captured['sent'] = $event->getMessage();
+			});
+
+		$this->method_email->init();
+		$this->method_email->set_transport();
+		$this->method_email->to('john@example.com', 'John');
+		$this->method_email->subject('Test subject');
+		$this->method_email->template('smtp_body', 'en', __DIR__ . '/../email/templates');
+
+		$this->assertTrue($this->method_email->send());
+
+		$this->assertArrayHasKey('message', $captured);
+		$this->assertArrayHasKey('envelope', $captured);
+		$this->assertArrayHasKey('sent', $captured);
+
+		/** @var \Symfony\Component\Mime\Email $message */
+		$message = $captured['message'];
+		$this->assertInstanceOf(\Symfony\Component\Mime\Email::class, $message);
+
+		// Headers via structured getters.
+		$this->assertSame('Test subject', $message->getSubject());
+		$this->assertSame('john@example.com', $message->getTo()[0]->getAddress());
+		$this->assertSame('John', $message->getTo()[0]->getName());
+		$this->assertSame('nobody@example.com', $message->getFrom()[0]->getAddress());
+		$this->assertSame('Board Admin', $message->getFrom()[0]->getName());
+		$this->assertSame('nobody@example.com', $message->getReplyTo()[0]->getAddress());
+
+		// Service headers added by build_headers() via the serialized form.
+		$serialized = $message->toString();
+		$this->assertStringContainsString('X-Mailer: phpBB', $serialized);
+		$this->assertStringContainsString('Return-Path', $serialized);
+		$this->assertStringContainsString('admin@yourdomain.com', $serialized);
+		$this->assertStringContainsString('X-phpBB-Origin: phpbb://', $serialized);
+
+		// Body: the leading dot is NOT escaped at the MIME level (dot-stuffing is an
+		// SMTP-on-wire concern performed by the SMTP transport, not by null://null).
+		$this->assertSame("First line\nSecond line\n.dot begins\nFourth", $message->getTextBody());
+		$this->assertStringContainsString('.dot begins', $serialized);
+
+		// The SentMessageEvent carries the same message.
+		$this->assertStringContainsString('Test subject', $captured['sent']->toString());
+	}
 }
