@@ -189,7 +189,7 @@ class add_config_settings extends database_task
 		}
 
 		$this->stmt = $this->create_prepared_stmt(
-			'UPDATE ' . $this->config_table . ' SET config_value = :value WHERE config_name = :name'
+			'UPDATE ' . $this->config_table . ' SET config_value = ? WHERE config_name = ?'
 		);
 
 		if ($this->stmt !== null)
@@ -204,8 +204,8 @@ class add_config_settings extends database_task
 	protected function execute_step($key, $value) : void
 	{
 		$this->exec_prepared_stmt($this->stmt, [
-			'name' => $key,
 			'value' => $value,
+			'name' => $key,
 		]);
 	}
 

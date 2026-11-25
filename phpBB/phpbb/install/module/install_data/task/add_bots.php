@@ -237,7 +237,7 @@ class add_bots extends database_task
 
 		$sql = 'INSERT INTO ' . $this->bots_table . ' '
 			. '(bot_active, bot_name, user_id, bot_agent, bot_ip) VALUES '
-			. '(:bot_active, :bot_name, :user_id, :bot_agent, :bot_ip)';
+			. '(?, ?, ?, ?, ?)';
 		$this->stmt = $this->create_prepared_stmt($sql);
 		$this->execute($this->install_config, $this->bot_list);
 	}
