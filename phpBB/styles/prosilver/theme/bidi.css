@@ -20,7 +20,8 @@
 	float: right;
 }
 
-.rtl div.rules ul {
+.rtl div.rules ul,
+.rtl div.rules ol {
 	margin-right: 20px;
 	margin-left: 0;
 }
