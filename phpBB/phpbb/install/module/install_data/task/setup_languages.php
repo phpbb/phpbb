@@ -111,7 +111,7 @@ class setup_languages extends database_task
 
 		$sql = 'INSERT INTO ' . $this->profile_lang_table
 			. ' (field_id, lang_id, lang_name, lang_explain, lang_default_value)'
-			. " VALUES (:field_id, :lang_id, :lang_name, '', '')";
+			. " VALUES (?, ?, ?, '', '')";
 		$this->stmt = $this->create_prepared_stmt($sql);
 		$this->execute($this->config, $profile_fields);
 	}

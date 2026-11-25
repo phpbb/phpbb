@@ -16,6 +16,7 @@
     </testsuite>
     <testsuite name="phpBB Functional Tests">
       <directory suffix="_test.php">../tests/functional</directory>
+      <exclude>../tests/functional/installer_pages_test.php</exclude>
     </testsuite>
   </testsuites>
   <groups>

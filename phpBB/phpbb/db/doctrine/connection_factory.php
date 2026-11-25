@@ -87,7 +87,7 @@ class connection_factory
 		if (!in_array($driver, $available_drivers))
 		{
 			$driver = config_php_file::convert_30_dbms_to_31($driver);
-			$driver = self::to_doctrine_driver($driver);
+			$driver = self::select_doctrine_driver($driver, $available_drivers);
 		}
 
 		$params = connection_parameter_factory::get_configuration(
@@ -131,49 +131,49 @@ class connection_factory
 	}
 
 	/**
-	 * Converts phpBB driver names to Doctrine's equivalent.
+	 * Selects a Doctrine DBAL driver for a phpBB database driver.
 	 *
-	 * @param string $driver_name phpBB database driver name.
+	 * Prefers the PDO variant and falls back to the corresponding native
+	 * driver when the PDO variant is not available. This allows phpBB to
+	 * run without the PDO extension as long as a native driver is loaded.
+	 *
+	 * @param string	$driver_name		phpBB database driver name.
+	 * @param array		$available_drivers	Doctrine DBAL drivers available in the current PHP build.
 	 *
 	 * @return string Doctrine DBAL's driver name.
 	 *
 	 * @throws InvalidArgumentException If $driver_name is not a valid phpBB database driver.
 	 */
-	private static function to_doctrine_driver(string $driver_name): string
+	private static function select_doctrine_driver(string $driver_name, array $available_drivers): string
 	{
 		// Normalize driver name.
 		$name = str_replace('phpbb\db\driver', '', $driver_name);
 		$name = preg_replace('/mysql$/i', 'mysqli', $name);
 		$name = trim($name, '\\');
 
-		switch ($name)
+		// List Doctrine drivers in order of preference (PDO variant first,
+		// native driver as fallback).
+		$candidates = match ($name)
 		{
-			case 'mssql_odbc':
-			case 'mssqlnative':
-				$name = 'pdo_sqlsrv';
-			break;
+			'mssql_odbc', 'mssqlnative'	=> ['pdo_sqlsrv', 'sqlsrv'],
+			'mysqli'					=> ['pdo_mysql', 'mysqli'],
+			'oracle'					=> ['pdo_oci', 'oci8'],
+			'postgres'					=> ['pdo_pgsql', 'pgsql'],
+			'sqlite3'					=> ['pdo_sqlite', 'sqlite3'],
+			default						=> throw new InvalidArgumentException('Invalid phpBB database driver provided: ' . $driver_name),
+		};
 
-			case 'mysqli':
-				$name = 'pdo_mysql';
-			break;
-
-			case 'oracle':
-				$name = 'oci8';
-			break;
-
-			case 'postgres':
-				$name = 'pdo_pgsql';
-			break;
-
-			case 'sqlite3':
-				$name = 'pdo_sqlite';
-			break;
-
-			default:
-				throw new InvalidArgumentException('Invalid phpBB database driver provided: ' . $driver_name);
+		foreach ($candidates as $candidate)
+		{
+			if (in_array($candidate, $available_drivers, true))
+			{
+				return $candidate;
+			}
 		}
 
-		return $name;
+		// No driver is available. Return the preferred one and let the
+		// connection attempt report the error.
+		return $candidates[0];
 	}
 
 	/*

@@ -83,7 +83,7 @@ class add_languages extends database_task
 		$languages = $this->language_helper->get_available_languages();
 		$sql = 'INSERT INTO ' . $this->lang_table
 			. ' (lang_iso, lang_dir, lang_english_name, lang_local_name, lang_author)'
-			. ' VALUES (:lang_iso, :lang_dir, :lang_english_name, :lang_local_name, :lang_author)';
+			. ' VALUES (?, ?, ?, ?, ?)';
 		$this->stmt = $this->create_prepared_stmt($sql);
 		$this->execute($this->config, $languages);
 	}

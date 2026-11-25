@@ -129,16 +129,20 @@ abstract class database_task extends task_base
 	/**
 	 * Bind values and execute a prepared statement.
 	 *
+	 * Values are bound positionally (starting at index 1), in the order they
+	 * appear in $params. Positional placeholders work with every Doctrine
+	 * driver, while named placeholders are only supported by PDO drivers.
+	 *
 	 * @param Statement	$stmt	Prepared statement.
-	 * @param array		$params	Parameters.
+	 * @param array		$params	Parameters, in the same order as the placeholders.
 	 */
 	protected function exec_prepared_stmt(Statement $stmt, array $params)
 	{
 		try
 		{
-			foreach ($params as $name => $val)
+			foreach (array_values($params) as $index => $value)
 			{
-				$stmt->bindValue($name, $val);
+				$stmt->bindValue($index + 1, $value);
 			}
 			$stmt->executeStatement();
 		}

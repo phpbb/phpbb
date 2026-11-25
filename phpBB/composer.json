@@ -27,7 +27,6 @@
 	},
 	"require": {
 		"php": "^8.2",
-		"ext-pdo": "*",
 		"ext-zip": "*",
 		"ext-zlib": "*",
 		"ext-sodium": "*",
@@ -71,6 +70,14 @@
 		"symfony/http-client": "^7.4",
 		"vimeo/psalm": "^6.13.1",
 		"psalm/plugin-symfony": "^v5.1.0"
+	},
+	"suggest": {
+		"ext-pdo": "Allows using PDO database drivers (pdo_mysql, pdo_pgsql, pdo_sqlite, pdo_sqlsrv, pdo_oci).",
+		"ext-mysqli": "Native driver for MySQL/MariaDB.",
+		"ext-pgsql": "Native driver for PostgreSQL.",
+		"ext-sqlite3": "Native driver for SQLite3.",
+		"ext-sqlsrv": "Native driver for Microsoft SQL Server.",
+		"ext-oci8": "Native driver for Oracle."
 	},
 	"extra": {
 		"branch-alias": {
