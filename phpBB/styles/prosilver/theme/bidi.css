@@ -350,6 +350,11 @@
 	unicode-bidi: embed;
 }
 
+.rtl a[dir="ltr"] {
+	direction: ltr;
+	unicode-bidi: isolate;
+}
+
 .rtl li.breadcrumbs span:first-child > a {
 	padding-left: 0;
 }
