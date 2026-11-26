@@ -705,7 +705,7 @@
 	}
 
 	.rtl ul.topiclist.forums dt .list-inner {
-		margin-left: 250px;
+		margin-left: 0;
 	}
 
 	.rtl ul.topiclist dd.mark {
