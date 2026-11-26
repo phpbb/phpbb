@@ -846,12 +846,6 @@
 		border-bottom-left-radius: 5px;
 	}
 
-	.rtl .cp-menu,
-	.rtl .navigation,
-	.rtl .cp-main {
-		float: none;
-	}
-
 	.navigation a,
 	.rtl .navigation a {
 		background: #b2c2cf;

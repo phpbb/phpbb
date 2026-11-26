@@ -1010,4 +1010,12 @@
 	float: left;
 }
 
+@media (max-width: 900px) {
+	.rtl .cp-menu,
+	.rtl .navigation,
+	.rtl .cp-main {
+		float: none;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
