@@ -203,10 +203,6 @@ blockquote cite > span {
 	float: right;
 }
 
-.rtl blockquote cite > span {
-	float: left;
-}
-
 /* List */
 ol,
 ul {
