@@ -1010,4 +1010,12 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl table.responsive span.rank-img {
+		float: none;
+		padding-right: 0;
+		padding-left: 5px;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
