@@ -198,6 +198,11 @@ blockquote cite {
 	display: block;
 }
 
+blockquote cite > span {
+	font-weight: normal;
+	float: right;
+}
+
 /* List */
 ol,
 ul {

@@ -581,6 +581,10 @@
 	padding-left: 5px;
 }
 
+.rtl blockquote cite > span {
+	float: left;
+}
+
 .rtl blockquote .codebox {
 	margin-right: 0;
 }
