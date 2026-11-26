@@ -322,6 +322,12 @@
 	margin-left: 5px;
 }
 
+.rtl .phpbb_alert .alert_close {
+	float: left;
+	margin-right: 0;
+	margin-left: -22px;
+}
+
 
 /* Miscellaneous styles
 ---------------------------------------- */
