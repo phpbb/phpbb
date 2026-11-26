@@ -1010,4 +1010,10 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl li.header dl.row-item dt .list-inner {
+		padding-left: 0;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
