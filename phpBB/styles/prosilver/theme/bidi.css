@@ -687,8 +687,14 @@
 	left: 0;
 }
 
-.rtl .post-buttons li {
+.rtl .post-buttons > li {
 	float: right;
+	margin-right: 0;
+	margin-left: 3px;
+}
+
+.rtl .post-buttons .dropdown a {
+	text-align: left;
 }
 
 /* Poster contact icons
@@ -1008,6 +1014,18 @@
 
 .rtl .attach-controls {
 	float: left;
+}
+
+@media (max-width: 750px) {
+	.rtl .post-buttons-responsive-menu .dropdown-contents .c-button-icon {
+		padding-right: 2px;
+		padding-left: 5px;
+	}
+
+	.rtl .post-buttons-responsive-menu .dropdown-contents .o-icon + span {
+		padding-right: 4px;
+		padding-left: 0;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */
