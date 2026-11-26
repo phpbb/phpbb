@@ -5,6 +5,24 @@
 /* stylelint-disable selector-no-qualifying-type */
 
 /**
+* icons.css
+*/
+.rtl .o-icon + span {
+	padding-right: 4px;
+	padding-left: 0;
+}
+
+.rtl span + .o-icon {
+	padding-right: 4px;
+	padding-left: 0;
+}
+
+.rtl span + .o-icon-font,
+.rtl span + .o-icon-src-fa {
+	padding-left: 2px;
+}
+
+/**
 * common.css
 */
 .rtl h1 {
