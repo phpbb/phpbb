@@ -143,6 +143,10 @@ hr {
 	float: right;
 }
 
+.rtl .date {
+	text-align: left;
+}
+
 /* Don't want to print url for names or titles in content area */
 .postbody .author a:link,
 .postbody .author a:visited,
@@ -177,6 +181,12 @@ blockquote {
 	position: relative;
 	margin: 12px 154px 12px 34px;
 	padding: 6px;
+}
+
+.rtl .postquote,
+.rtl .content blockquote,
+.rtl .content blockquote blockquote {
+	margin: 12px 34px 12px 154px;
 }
 
 .postquote img {
