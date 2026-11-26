@@ -37,6 +37,11 @@
 	padding: 10px 10px 0 13px;
 }
 
+.rtl .c-hero-logo {
+	padding-right: 0;
+	padding-left: 16px;
+}
+
 /* Site Description
 --------------------------------------------- */
 .rtl .site-description {
@@ -1008,6 +1013,17 @@
 
 .rtl .attach-controls {
 	float: left;
+}
+
+@media (max-width: 750px) {
+	.rtl .site-description {
+		float: none;
+	}
+
+	.rtl .logo {
+		float: none;
+		padding: 10px;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */
