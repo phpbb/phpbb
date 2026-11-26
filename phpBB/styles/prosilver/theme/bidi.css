@@ -657,7 +657,7 @@
 }
 
 .rtl .postprofile .avatar {
-	float: left;
+	float: right;
 }
 
 .rtl dl.pmlist dd {
@@ -1008,6 +1008,18 @@
 
 .rtl .attach-controls {
 	float: left;
+}
+
+@media (max-width: 750px) {
+	.rtl .post .postprofile {
+		float: none;
+	}
+
+	.rtl .postprofile dt,
+	.rtl .postprofile dd.profile-rank,
+	.rtl .search .postprofile dd {
+		margin: 0;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */
