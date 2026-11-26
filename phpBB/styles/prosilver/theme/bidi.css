@@ -1015,4 +1015,10 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl.hastouch .has-profile .post-buttons {
+		margin: 5px;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
