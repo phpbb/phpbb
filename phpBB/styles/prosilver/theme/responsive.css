@@ -771,6 +771,11 @@
 	.rtl fieldset.fields2 dd {
 		margin-right: 20px;
 	}
+
+	.rtl .colour-palette td {
+		margin-right: 0;
+		margin-left: 2px;
+	}
 }
 
 @media (min-width: 701px) {
