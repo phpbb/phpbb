@@ -985,10 +985,12 @@
 	border-radius: 4px 0 0 4px;
 }
 
+.rtl .search-header .inputbox {
+	border: 0;
+}
+
 .rtl .search-header {
 	float: left;
-	margin-right: 0;
-	margin-left: 5px;
 }
 
 /* Form button styles
