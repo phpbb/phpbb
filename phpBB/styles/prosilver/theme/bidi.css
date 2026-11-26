@@ -691,6 +691,11 @@
 	float: right;
 }
 
+.rtl.hastouch .post-buttons {
+	margin-right: 0;
+	margin-left: 10px;
+}
+
 /* Poster contact icons
  ---------------------------------------- */
 .rtl .contact-icons a {
