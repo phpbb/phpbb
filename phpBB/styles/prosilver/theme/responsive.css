@@ -63,7 +63,8 @@
 		margin-left: 20px;
 	}
 
-	p.responsive-center {
+	p.responsive-center,
+	p.rightside.responsive-center {
 		text-align: center;
 		float: none;
 		margin-bottom: 5px;
