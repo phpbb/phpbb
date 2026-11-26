@@ -264,6 +264,16 @@
 	padding-left: 0;
 }
 
+.rtl fieldset.fields1 dd.recipients {
+	clear: right;
+	margin-right: 11px;
+	margin-left: 0;
+}
+
+.rtl fieldset.fields1 dl.pmlist dd.recipients {
+	margin-right: 0 !important;
+}
+
 /* Pagination
 ---------------------------------------- */
 .rtl .page-number {
