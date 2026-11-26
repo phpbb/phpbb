@@ -1010,4 +1010,17 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl ul.topiclist dt,
+	.rtl ul.topiclist dt .list-inner,
+	.rtl ul.topiclist.missing-column dt,
+	.rtl ul.topiclist.missing-column dt .list-inner,
+	.rtl ul.topiclist.two-long-columns dt,
+	.rtl ul.topiclist.two-long-columns dt .list-inner,
+	.rtl ul.topiclist.two-columns dt,
+	.rtl ul.topiclist.two-columns dt .list-inner {
+		margin-left: 0;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
