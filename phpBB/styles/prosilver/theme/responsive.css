@@ -737,6 +737,7 @@
 	.rtl .postbody,
 	.rtl .search .postbody {
 		float: none;
+		width: auto;
 	}
 
 	.rtl .post .postprofile {
