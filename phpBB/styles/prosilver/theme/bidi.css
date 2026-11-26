@@ -1015,6 +1015,7 @@
 	.rtl .column2,
 	.rtl .left-box.profile-details {
 		float: none;
+		clear: both;
 	}
 }
 
