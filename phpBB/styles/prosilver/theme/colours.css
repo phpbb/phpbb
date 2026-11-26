@@ -905,12 +905,6 @@ ul.cplist {
 	color: #212121;
 }
 
-.rtl .navigation a {
-	background: #afc5cf;
-	background-image: -webkit-gradient(linear, left top, right top, color-stop(50%, #c0d3dd), to(#aab9c0));
-	background-image: linear-gradient(to right, #c0d3dd 50%, #aab9c0 100%);
-}
-
 .navigation a:hover {
 	background: #aab9c0;
 	color: #d41142;
