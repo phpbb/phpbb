@@ -7,11 +7,6 @@
 /**
 * common.css
 */
-.rtl h1 {
-	margin-right: 0;
-	margin-left: 200px;
-}
-
 .rtl p.right {
 	text-align: left;
 }
@@ -41,10 +36,6 @@
 --------------------------------------------- */
 .rtl .site-description {
 	float: right;
-}
-
-.rtl .site-description h1 {
-	margin-left: 0;
 }
 
 /* Round cornered boxes and backgrounds
