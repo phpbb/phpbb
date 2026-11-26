@@ -447,12 +447,6 @@
 	float: right;
 }
 
-.rtl ul.topiclist li.row dt a.subforum {
-	background-position: right;
-	position: static;
-	padding-right: 12px;
-}
-
 .rtl .forum-image {
 	float: right;
 	margin-right: 0;
