@@ -1024,6 +1024,10 @@
 		float: none;
 		padding: 10px;
 	}
+
+	.rtl .site-description h1 {
+		margin: 5px;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */
