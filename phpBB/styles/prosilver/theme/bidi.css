@@ -687,8 +687,17 @@
 	left: 0;
 }
 
-.rtl .post-buttons li {
+.rtl .post-buttons > li {
 	float: right;
+}
+
+.rtl .post-buttons .dropdown a {
+	text-align: left;
+}
+
+.rtl .post-buttons-responsive-menu .dropdown-contents .c-button-icon {
+	padding-right: 0;
+	padding-left: 5px;
 }
 
 /* Poster contact icons
