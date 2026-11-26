@@ -1010,4 +1010,18 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl fieldset dt,
+	.rtl fieldset.fields1 dt,
+	.rtl fieldset.fields2 dt {
+		float: none;
+	}
+
+	.rtl fieldset dd,
+	.rtl fieldset.fields1 dd,
+	.rtl fieldset.fields2 dd {
+		margin-right: 0;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */

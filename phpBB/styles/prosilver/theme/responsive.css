@@ -769,7 +769,7 @@
 	.rtl fieldset dd,
 	.rtl fieldset.fields1 dd,
 	.rtl fieldset.fields2 dd {
-		margin-right: 20px;
+		margin-right: 0;
 	}
 }
 
