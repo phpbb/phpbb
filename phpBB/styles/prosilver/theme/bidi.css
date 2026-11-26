@@ -691,6 +691,11 @@
 	float: right;
 }
 
+.rtl.hastouch .post-buttons {
+	margin-right: 0;
+	margin-left: 10px;
+}
+
 /* Poster contact icons
  ---------------------------------------- */
 .rtl .contact-icons a {
@@ -1008,6 +1013,12 @@
 
 .rtl .attach-controls {
 	float: left;
+}
+
+@media (max-width: 750px) {
+	.rtl.hastouch .has-profile .post-buttons {
+		margin: 5px;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */
