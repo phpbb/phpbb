@@ -1010,4 +1010,10 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl .pagination > ul {
+		margin: 5px 0 0;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */

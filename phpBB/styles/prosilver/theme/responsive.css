@@ -129,6 +129,10 @@
 		text-align: center;
 		float: none;
 	}
+
+	.rtl .action-bar > .pagination li.page-jump {
+		margin: 0 2px;
+	}
 }
 
 @media (max-width: 550px) {
