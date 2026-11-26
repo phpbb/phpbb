@@ -267,6 +267,7 @@
 /* Pagination
 ---------------------------------------- */
 .rtl .page-number {
+	text-align: left;
 	float: left;
 }
 
