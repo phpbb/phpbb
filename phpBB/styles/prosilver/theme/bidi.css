@@ -789,6 +789,9 @@
 
 /* UCP navigation menu
 ---------------------------------------- */
+.rtl .navigation a {
+	border-radius: 0 4px 4px 0;
+}
 
 /* Preferences pane layout
 ---------------------------------------- */

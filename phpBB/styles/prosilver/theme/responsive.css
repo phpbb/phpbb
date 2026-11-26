@@ -833,7 +833,7 @@
 	}
 
 	.navigation a {
-		background-image: none;
+		background: #b2c2cf;
 	}
 
 	.navigation li:first-child a {
@@ -850,11 +850,6 @@
 	.rtl .navigation,
 	.rtl .cp-main {
 		float: none;
-	}
-
-	.navigation a,
-	.rtl .navigation a {
-		background: #b2c2cf;
 	}
 }
 
