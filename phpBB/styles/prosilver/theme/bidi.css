@@ -484,16 +484,27 @@
 }
 
 .rtl dl.row-item dt .list-inner {
-	padding-right: 45px; /* Space for folder icon */
+	padding-right: 54px; /* Space for folder icon */
 	padding-left: 5px;
 }
 
-.rtl dl a.row-item-link { /* topic row icon links */
+.rtl .row-item-link { /* topic row icon links */
 	right: 0;
 	left: auto;
-	display: inline-block;
-	margin-right: 2px;
+	margin-right: 9px;
 	margin-left: 0;
+}
+
+.rtl .row-item-link-mine {
+	right: 32px;
+	left: auto;
+	float: right;
+}
+
+.rtl .row-item-sub {
+	right: 4px;
+	left: auto;
+	float: right;
 }
 
 .rtl dd.lastpost > span,
