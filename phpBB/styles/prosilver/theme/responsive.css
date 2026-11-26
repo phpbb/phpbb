@@ -757,20 +757,6 @@
 	.rtl .has-profile .post-buttons {
 		left: 20px;
 	}
-
-	/* Forms
-	---------------------------------------- */
-	.rtl fieldset dt,
-	.rtl fieldset.fields1 dt,
-	.rtl fieldset.fields2 dt {
-		float: none;
-	}
-
-	.rtl fieldset dd,
-	.rtl fieldset.fields1 dd,
-	.rtl fieldset.fields2 dd {
-		margin-right: 0;
-	}
 }
 
 @media (min-width: 701px) {
