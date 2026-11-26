@@ -1010,4 +1010,25 @@
 	float: left;
 }
 
+@media (max-width: 750px) {
+	.rtl .column1,
+	.rtl .column2,
+	.rtl .left-box.profile-details {
+		float: none;
+	}
+}
+
+@media (max-width: 500px) {
+	.rtl dl.details dt,
+	.rtl dl.details dd {
+		text-align: right;
+		float: none;
+	}
+
+	.rtl dl.details dd {
+		margin-right: 20px;
+		margin-left: 0;
+	}
+}
+
 /* stylelint-enable selector-no-qualifying-type */
