@@ -1011,7 +1011,9 @@
 }
 
 @media (max-width: 750px) {
-	.rtl .post .postprofile {
+	.rtl .post .postprofile,
+	.rtl .post.pm .postprofile {
+		border-width: 0 0 1px;
 		float: none;
 	}
 

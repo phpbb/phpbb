@@ -739,16 +739,6 @@
 		float: none;
 	}
 
-	.rtl .post .postprofile {
-		border-width: 0 0 1px;
-	}
-
-	.rtl .postprofile dt,
-	.rtl .postprofile dd.profile-rank,
-	.rtl .search .postprofile dd {
-		margin: 0;
-	}
-
 	.rtl .postprofile .avatar {
 		margin-right: 0;
 		margin-left: 5px;
