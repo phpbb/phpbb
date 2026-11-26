@@ -563,12 +563,12 @@
 
 /* Quote block */
 .rtl blockquote {
-	margin: 5px 25px 0 1px;
+	margin: 10px 25px 10px 1px;
 }
 
 /* Nested quotes */
 .rtl blockquote blockquote {
-	margin: 5px 15px 0 1px;
+	margin: 10px 15px 10px 1px;
 }
 
 /* Username/source of quoter */
