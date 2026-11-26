@@ -361,6 +361,11 @@
 	left: 0;
 }
 
+.rtl .to-top-button {
+	right: auto;
+	left: var(--ps-line-height);
+}
+
 .rtl .back2top .top {
 	float: left;
 	margin-left: -10px;
