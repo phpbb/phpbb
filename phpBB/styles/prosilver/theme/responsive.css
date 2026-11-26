@@ -723,6 +723,11 @@
 		text-align: right !important;
 	}
 
+	.rtl table.responsive td > dfn:after {
+		padding-right: 0;
+		padding-left: 5px;
+	}
+
 	/* User profile
 	---------------------------------------- */
 	.rtl .column1,
