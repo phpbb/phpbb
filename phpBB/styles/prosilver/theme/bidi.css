@@ -511,12 +511,16 @@
 	float: left;
 }
 
-.rtl .postbody,
+.rtl .postbody {
+	float: right;
+}
+
 .rtl .postbody h3 {
 	float: right !important;
 }
 
 .rtl .has-profile .postbody h3 {
+	float: none !important;
 	margin-right: 0;
 	margin-left: 180px;
 }
@@ -535,6 +539,12 @@
 .rtl .topicreview {
 	padding-right: 0;
 	padding-left: 5px;
+}
+
+.rtl .topicreview .postbody {
+	float: none;
+	width: auto;
+	margin: 0;
 }
 
 /* Content container styles
@@ -1008,6 +1018,15 @@
 
 .rtl .attach-controls {
 	float: left;
+}
+
+@media (max-width: 750px) {
+	.rtl .postprofile,
+	.rtl .postbody,
+	.rtl .search .postbody {
+		float: none;
+		width: auto;
+	}
 }
 
 /* stylelint-enable selector-no-qualifying-type */

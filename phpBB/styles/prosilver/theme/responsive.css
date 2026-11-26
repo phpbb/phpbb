@@ -733,12 +733,6 @@
 
 	/* Post
 	---------------------------------------- */
-	.rtl .postprofile,
-	.rtl .postbody,
-	.rtl .search .postbody {
-		float: none;
-	}
-
 	.rtl .post .postprofile {
 		border-width: 0 0 1px;
 	}
