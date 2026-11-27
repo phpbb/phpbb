@@ -161,7 +161,7 @@ class add_ai_crawlers extends task_base
 				'username'				=> $crawler_name,
 				'user_regdate'			=> time(),
 				'user_password'			=> '',
-				'user_colour'			=> '7D9EAE',
+				'user_colour'			=> '486878',
 				'user_email'			=> '',
 				'user_lang'				=> $this->install_config->get('default_lang'),
 				'user_style'			=> 1,
