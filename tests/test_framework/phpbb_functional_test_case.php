@@ -603,6 +603,16 @@ class phpbb_functional_test_case extends phpbb_test_case
 			// "PHPUnit\Event\Code\NoTestCaseObjectOnCallStackException: Cannot find TestCase object on call stack"
 		}
 
+		// Use the database-backed storage provider for functional tests.
+		$db = self::get_db();
+		foreach (['attachment', 'avatar', 'backup'] as $storage_name)
+		{
+			$sql = 'UPDATE ' . self::$config['table_prefix'] . "config
+				SET config_value = '" . $db->sql_escape(\phpbb\tests\functional\storage\db_provider::class) . "'
+				WHERE config_name = '" . $db->sql_escape('storage\\' . $storage_name . '\\provider') . "'";
+			$db->sql_query($sql);
+		}
+
 		copy($config_file, $config_file_test);
 
 		self::$install_success = true;
