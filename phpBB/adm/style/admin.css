@@ -2389,7 +2389,6 @@ fieldset.permissions .permissions-switch {
 .permissions-category {
 	font-size: 0.85em;
 	line-height: normal;
-	min-width: 570px;
 	margin: 0 0 0 7px;
 }
 
@@ -2521,6 +2520,7 @@ fieldset.permissions .permissions-switch {
 	border-radius: 5px;
 	float: left;
 	overflow: hidden;
+	box-sizing: border-box;
 	width: 100%;
 	padding: 5px 0;
 }
