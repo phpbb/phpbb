@@ -65,7 +65,15 @@ class local implements adapter_interface
 	 */
 	public function configure(array $options): void
 	{
-		$this->root_path = filesystem_helper::realpath($this->phpbb_root_path . $options['path']) . DIRECTORY_SEPARATOR;
+		$raw_path = $options['path'] ?? '';
+		$real_path = filesystem_helper::realpath($this->phpbb_root_path . $raw_path);
+
+		if ($real_path === false || !is_dir($real_path))
+		{
+			throw new storage_exception('STORAGE_PATH_NOT_EXISTS', $raw_path);
+		}
+
+		$this->root_path = $real_path . DIRECTORY_SEPARATOR;
 	}
 
 	/**
