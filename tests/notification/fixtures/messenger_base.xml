@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_users">
+		<column>user_id</column>
+		<column>username</column>
+		<column>username_clean</column>
+		<column>user_email</column>
+		<column>user_lang</column>
+		<column>user_type</column>
+		<column>user_inactive_reason</column>
+		<column>user_permissions</column>
+		<column>user_sig</column>
+		<row>
+			<value>2</value>
+			<value>Recipient</value>
+			<value>recipient</value>
+			<value>recipient@example.com</value>
+			<value>en</value>
+			<value>0</value>
+			<value>0</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+</dataset>
