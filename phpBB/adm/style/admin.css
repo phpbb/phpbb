@@ -997,7 +997,7 @@ tr.row-highlight:hover td {
 /* Specific tables */
 table.forums td.folder {
 	text-align: center;
-	width: 27px;
+	width: 60px;
 }
 
 table td.actions {
@@ -1172,9 +1172,14 @@ table.fixed-width-table {
 
 	/* Specific tables */
 	table.responsive.forums td.folder {
+		text-align: center !important;
 		background: transparent;
 		float: left;
-		width: 27px;
+		width: 48px !important;
+	}
+
+	table.responsive.forums td.folder .fa-stack {
+		width: 2em;
 	}
 
 	.rtl table.responsive.forums td.folder {
@@ -1183,12 +1188,12 @@ table.fixed-width-table {
 
 	table.responsive.forums td.forum-desc {
 		background: transparent;
-		min-height: 27px;
-		margin-left: 35px;
+		min-height: 48px;
+		margin-left: 60px;
 	}
 
 	.rtl table.responsive.forums td.forum-desc {
-		margin-right: 35px;
+		margin-right: 60px;
 		margin-left: 0;
 	}
 
