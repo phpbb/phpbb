@@ -70,6 +70,7 @@ define('LOGIN_ERROR_ACTIVE', 12);
 define('LOGIN_ERROR_ATTEMPTS', 13);
 define('LOGIN_ERROR_EXTERNAL_AUTH', 14);
 define('LOGIN_ERROR_PASSWORD_CONVERT', 15);
+define('LOGIN_ERROR_COOLDOWN', 16);
 
 // Maximum login attempts
 // The value is arbitrary, but it has to fit into the user_login_attempts field.

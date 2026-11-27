@@ -2264,6 +2264,38 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 }
 
 /**
+* Format the login cooldown error message including the remaining wait time
+*
+* @param \phpbb\language\language $language Language object
+* @param int $cooldown_time Remaining cooldown time in seconds
+* @return string Formatted error message
+*/
+function phpbb_format_login_cooldown_message(\phpbb\language\language $language, $cooldown_time)
+{
+	$minutes = (int) ($cooldown_time / 60);
+	$seconds = $cooldown_time % 60;
+
+	if ($minutes && $seconds)
+	{
+		$wait = $language->lang(
+			'LOGIN_COOLDOWN_TIME_AND',
+			$language->lang('LOGIN_COOLDOWN_MINUTES', $minutes),
+			$language->lang('LOGIN_COOLDOWN_SECONDS', $seconds)
+		);
+	}
+	else if ($minutes)
+	{
+		$wait = $language->lang('LOGIN_COOLDOWN_MINUTES', $minutes);
+	}
+	else
+	{
+		$wait = $language->lang('LOGIN_COOLDOWN_SECONDS', max(1, $seconds));
+	}
+
+	return $language->lang('LOGIN_ERROR_COOLDOWN', $wait);
+}
+
+/**
 * Generate login box or verify password
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
@@ -2429,6 +2461,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					($config['email_enable']) ? '</a>' : '',
 					'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
 					'</a>'
+				);
+			break;
+
+			case LOGIN_ERROR_COOLDOWN:
+				$err = phpbb_format_login_cooldown_message(
+					$phpbb_container->get('language'),
+					(isset($result['cooldown_time'])) ? (int) $result['cooldown_time'] : 0
 				);
 			break;
 

@@ -122,6 +122,17 @@ class http_auth_subscriber implements EventSubscriberInterface
 			$event->setResponse($response);
 			return;
 		}
+		else if ($auth_result['status'] == LOGIN_ERROR_COOLDOWN)
+		{
+			// Login cooldown is active
+			$message = phpbb_format_login_cooldown_message(
+				$this->language,
+				(isset($auth_result['cooldown_time'])) ? (int) $auth_result['cooldown_time'] : 0
+			);
+			$response = new Response($message, Response::HTTP_UNAUTHORIZED);
+			$event->setResponse($response);
+			return;
+		}
 
 		// Authentication failed, send challenge
 		$this->send_auth_challenge($event);
