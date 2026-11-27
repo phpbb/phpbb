@@ -46,21 +46,20 @@
 		</tbody>
 		</table>
 
-	{% endif %}
-
-	<p class="quick">
-	{% if backend.S_INDEXED %}
-		<input type="hidden" name="action" value="delete" />
-		<input class="button2" type="submit" name="submit" value="{{ lang('DELETE_INDEX') }}" />
-	{% else %}
-		<input type="hidden" name="action" value="create" />
-		<input class="button2" type="submit" name="submit" value="{{ lang('CREATE_INDEX') }}" />
-	{% endif %}
-	</p>
-	{{ S_FORM_TOKEN }}
-	</fieldset>
+		<p class="quick">
+		{% if backend.S_INDEXED %}
+			<input type="hidden" name="action" value="delete" />
+			<input class="button2" type="submit" name="submit" value="{{ lang('DELETE_INDEX') }}" />
+		{% else %}
+			<input type="hidden" name="action" value="create" />
+			<input class="button2" type="submit" name="submit" value="{{ lang('CREATE_INDEX') }}" />
+		{% endif %}
+		</p>
+		{{ S_FORM_TOKEN }}
+		</fieldset>
 
 	</form>
+	{% endif %}
 {% endfor %}
 
 {% include 'overall_footer.html' %}
