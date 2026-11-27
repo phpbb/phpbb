@@ -34,7 +34,7 @@
 		<legend>{{ lang('BBCODE_HELPLINE') }}</legend>
 		<p>{{ lang('BBCODE_HELPLINE_EXPLAIN') }}</p>
 	<dl>
-		<dt><label for="bbcode_helpline">{{ lang('BBCODE_HELPLINE_TEXT') }}</label></dt>
+		<dt><label for="bbcode_helpline">{{ lang('BBCODE_HELPLINE_TEXT') ~ lang('COLON') }}</label></dt>
 		<dd><textarea id="bbcode_helpline" name="bbcode_helpline" cols="60" rows="4">{{ BBCODE_HELPLINE }}</textarea></dd>
 	</dl>
 	</fieldset>
@@ -42,7 +42,7 @@
 	<fieldset>
 		<legend>{L_SETTINGS}</legend>
 	<dl>
-		<dt><label for="display_on_posting">{L_DISPLAY_ON_POSTING}</label></dt>
+		<dt><label for="display_on_posting">{L_DISPLAY_ON_POSTING}{L_COLON}</label></dt>
 		<dd><input type="checkbox" class="radio" name="display_on_posting" id="display_on_posting" value="1"<!-- IF DISPLAY_ON_POSTING --> checked="checked"<!-- ENDIF --> /></dd>
 	</dl>
 	</fieldset>
@@ -50,7 +50,7 @@
 	<fieldset>
 		<legend>{{ lang('APPEARANCE') }}</legend>
 	<dl>
-		<dt><label for="bbcode_font_icon">{{ lang('BBCODE_FONT_ICON') }}</label><br><span>{{ lang('BBCODE_FONT_ICON_EXPLAIN', '<a href="https://fontawesome.com/v6/icons/" target="_blank">', '</a>') }}</span></dt>
+		<dt><label for="bbcode_font_icon">{{ lang('BBCODE_FONT_ICON') ~ lang('COLON') }}</label><br><span>{{ lang('BBCODE_FONT_ICON_EXPLAIN', '<a href="https://fontawesome.com/v6/icons/" target="_blank">', '</a>') }}</span></dt>
 		<dd>
 			<input type="text" name="bbcode_font_icon" id="bbcode_font_icon" value="{{ BBCODE_FONT_ICON }}" />
 			{{ Icon('font', ' ', '', false, '', {'id':'bbcode_icon_preview'}) }}

@@ -1216,6 +1216,7 @@ class acp_board
 
 		return [
 			'tag'			=> 'select',
+			'id'			=> $key,
 			'name'			=> 'config[' . $key . ']',
 			'options'		=> $timezone_select,
 		];
@@ -1504,6 +1505,7 @@ class acp_board
 				'tag'		=> 'radio',
 				'buttons'	=> [
 					[
+						'id'		=> $key,
 						'name'		=> "config[$key]",
 						'label'		=> $this->language->lang('YES'),
 						'type'		=> 'radio',
