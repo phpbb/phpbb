@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<dataset>
+	<table name="phpbb_profile_fields">
+		<column>field_id</column>
+		<column>field_name</column>
+		<column>field_ident</column>
+		<column>field_active</column>
+		<column>field_type</column>
+		<column>field_order</column>
+		<row>
+			<value>1</value>
+			<value>phpbb_icq</value>
+			<value>phpbb_icq</value>
+			<value>0</value>
+			<value>profilefields.type.string</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>phpbb_yahoo</value>
+			<value>phpbb_yahoo</value>
+			<value>0</value>
+			<value>profilefields.type.string</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>phpbb_skype</value>
+			<value>phpbb_skype</value>
+			<value>1</value>
+			<value>profilefields.type.string</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>phpbb_youtube</value>
+			<value>phpbb_youtube</value>
+			<value>1</value>
+			<value>profilefields.type.string</value>
+			<value>4</value>
+		</row>
+	</table>
+	<table name="phpbb_profile_fields_lang">
+		<column>field_id</column>
+		<column>lang_id</column>
+		<column>option_id</column>
+		<column>field_type</column>
+		<column>lang_value</column>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>0</value>
+			<value>profilefields.type.string</value>
+			<value>Skype</value>
+		</row>
+	</table>
+	<table name="phpbb_profile_lang">
+		<column>field_id</column>
+		<column>lang_id</column>
+		<column>lang_name</column>
+		<column>lang_explain</column>
+		<column>lang_default_value</column>
+		<row>
+			<value>1</value>
+			<value>1</value>
+			<value>ICQ</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>2</value>
+			<value>1</value>
+			<value>YAHOO</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>3</value>
+			<value>1</value>
+			<value>SKYPE</value>
+			<value></value>
+			<value></value>
+		</row>
+		<row>
+			<value>4</value>
+			<value>1</value>
+			<value>YOUTUBE</value>
+			<value></value>
+			<value></value>
+		</row>
+	</table>
+	<table name="phpbb_lang">
+		<column>lang_id</column>
+		<column>lang_iso</column>
+		<column>lang_dir</column>
+		<column>lang_english_name</column>
+		<column>lang_local_name</column>
+		<column>lang_author</column>
+		<row>
+			<value>1</value>
+			<value>en</value>
+			<value>en</value>
+			<value>British English</value>
+			<value>British English</value>
+			<value>phpBB Limited</value>
+		</row>
+	</table>
+</dataset>
