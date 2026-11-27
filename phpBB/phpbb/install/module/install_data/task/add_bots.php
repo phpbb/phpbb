@@ -258,7 +258,7 @@ class add_bots extends database_task
 			'username'				=> $key,
 			'user_regdate'			=> time(),
 			'user_password'			=> '',
-			'user_colour'			=> '9E8DA7',
+			'user_colour'			=> '6B5876',
 			'user_email'			=> '',
 			'user_lang'				=> $this->install_config->get('default_lang'),
 			'user_style'			=> 1,

@@ -129,7 +129,7 @@ function add_bots($bots)
 			'username'				=> $bot_name,
 			'user_regdate'			=> time(),
 			'user_password'			=> '',
-			'user_colour'			=> '9E8DA7',
+			'user_colour'			=> '6B5876',
 			'user_email'			=> '',
 			'user_lang'				=> $config['default_lang'],
 			'user_style'			=> 1,
