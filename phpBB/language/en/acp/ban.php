@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 	'30_MINS'		=> '30 minutes',
 	'6_HOURS'		=> '6 hours',
 
-	'ACP_BAN_EXPLAIN'	=> 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (maximum 3000 characters) reason for the ban if you wish. This will be displayed in the admin log. The duration of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <span style="text-decoration: underline;">Until -&gt;</span> for the ban length and enter a date in <kbd>YYYY-MM-DD</kbd> format.',
+	'ACP_BAN_EXPLAIN'	=> 'Here you can control the banning of users by name, IP or email address. These methods prevent a user reaching any part of the board. You can give a short (maximum 3000 characters) reason for the ban if you wish. This will be displayed in the admin log. The duration of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <em>Until &raquo;</em> for the ban length and enter a date in <kbd>YYYY-MM-DD</kbd> format.',
 
 	'BAN_LENGTH'			=> 'Length of ban',
 	'BAN_REASON'			=> 'Reason for ban',
@@ -72,7 +72,7 @@ $lang = array_merge($lang, array(
 
 	'UNTIL'						=> 'Until',
 	'USER_BAN'					=> 'Ban one or more users by username',
-	'USER_BAN_EXPLAIN'			=> 'You can ban multiple users in one go by entering each name on a new line. Use the <span style="text-decoration: underline;">Find a member</span> facility to look up and add one or more users automatically.',
+	'USER_BAN_EXPLAIN'			=> 'You can ban multiple users in one go by entering each name on a new line. Use the <em>Find a member</em> facility to look up and add one or more users automatically.',
 	'USER_NO_BANNED'			=> 'No banned usernames',
 	'USER_UNBAN'				=> 'Un-ban users by username',
 	'USER_UNBAN_EXPLAIN'		=> 'You can unban multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser.',
