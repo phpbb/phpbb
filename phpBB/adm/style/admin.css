@@ -1730,7 +1730,8 @@ input.permissions-checkbox {
 
 input.full,
 textarea.full {
-	width: 99%;
+	box-sizing: border-box;
+	width: 100%;
 }
 
 input.medium {
