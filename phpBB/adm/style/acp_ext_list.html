@@ -42,6 +42,11 @@
 		</tr>
 	</thead>
 	<tbody>
+		{% if not loops.enabled|length and not loops.disabled|length and not loops.not_installed|length %}
+		<tr class="row3">
+			<td colspan="4">{{ lang('ACP_NO_ITEMS') }}</td>
+		</tr>
+		{% else %}
 		{% for list in ['enabled', 'disabled', 'not_installed'] %}
 			{% set blockname = attribute(loops, list) %}
 			{% if blockname|length %}
@@ -88,6 +93,7 @@
 			{% endfor %}
 			{% endif %}
 		{% endfor %}
+		{% endif %}
 	</tbody>
 	</table>
 
