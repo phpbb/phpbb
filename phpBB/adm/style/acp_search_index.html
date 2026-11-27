@@ -20,6 +20,23 @@
 
 		<table class="table1">
 			<caption>{{ backend.NAME }} {% if backend.S_ACTIVE %}({{ lang('ACTIVE') }}) {% endif %}</caption>
+			{% if backend.S_STATS|length == 1 %}
+			<col class="col1" /><col class="col2" />
+		<thead>
+		<tr>
+			<th>{{ lang('STATISTIC') }}</th>
+			<th>{{ lang('VALUE') }}</th>
+		</tr>
+		</thead>
+		<tbody>
+		{% for key, value in backend.S_STATS %}
+			<tr>
+				<td>{{ key ~ lang('COLON') }}</td>
+				<td>{{ value }}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+			{% else %}
 			<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
 		<thead>
 		<tr>
@@ -44,6 +61,7 @@
 			</tr>
 		{% endfor %}
 		</tbody>
+			{% endif %}
 		</table>
 
 	{% endif %}

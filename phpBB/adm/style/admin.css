@@ -1301,6 +1301,12 @@ textarea.langvalue {
 	width: 90%;
 }
 
+#fulltext_sphinx_config_file {
+	font-family: Monaco, "Andale Mono", "Courier New", Courier, monospace;
+	box-sizing: border-box;
+	width: 100%;
+}
+
 input[type="number"] {
 	width: 60px;
 	-moz-padding-end: 0;

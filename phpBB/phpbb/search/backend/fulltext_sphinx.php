@@ -809,8 +809,8 @@ class fulltext_sphinx implements search_backend_interface
 		</dl>
 		<dl>
 			<dt><label for="fulltext_sphinx_config_file">' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE') . $this->language->lang('COLON') . '</label><br /><span>' . $this->language->lang('FULLTEXT_SPHINX_CONFIG_FILE_EXPLAIN') . '</span></dt>
-			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="6" id="sphinx_config_data">' . htmlspecialchars($this->config_file_data, ENT_COMPAT) . '</textarea>' : $this->config_file_data) . '</dd>
-		<dl>
+			<dd>' . (($this->config_generate()) ? '<textarea readonly="readonly" rows="8" id="fulltext_sphinx_config_file" dir="ltr">' . htmlspecialchars($this->config_file_data, ENT_COMPAT) . '</textarea>' : $this->config_file_data) . '</dd>
+		</dl>
 		';
 
 		// These are fields required in the config table
