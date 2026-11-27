@@ -1,5 +1,6 @@
 <dl>
-	<dt><div id="captcha_turnstile" data-language="{{ lang('TURNSTILE_LANG') }}"{% if TURNSTILE_THEME %} data-theme="{{ TURNSTILE_THEME }}"{% endif %}></div></dt>
+	<dt><label>{{ lang('PREVIEW') ~ lang('COLON') }}</label><br><span>{{ lang('CAPTCHA_PREVIEW_EXPLAIN') }}</span></dt>
+	<dd><div id="captcha_turnstile" data-language="{{ lang('TURNSTILE_LANG') }}"{% if TURNSTILE_THEME %} data-theme="{{ TURNSTILE_THEME }}"{% endif %}></div></dd>
 </dl>
 {% INCLUDEJS U_TURNSTILE_SCRIPT %}
 <script>
