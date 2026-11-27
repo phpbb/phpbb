@@ -202,6 +202,12 @@ ol {
 	list-style-position: inside;
 }
 
+.rtl ul,
+.rtl ol {
+	margin-right: 1em;
+	margin-left: 0;
+}
+
 li {
 	display: list-item;
 	list-style-type: inherit;
@@ -822,6 +828,11 @@ dt#color_palette_placeholder table {
 	margin-right: 5px;
 }
 
+.rtl dt#color_palette_placeholder table {
+	margin-right: 0;
+	margin-left: 5px;
+}
+
 #color_palette_placeholder td {
 	padding: 0;
 }
@@ -1050,6 +1061,12 @@ table.fixed-width-table {
 		margin: 0;
 	}
 
+	.rtl table.responsive.show-header thead,
+	.rtl table.responsive.show-header th:first-child,
+	.rtl table.responsive caption {
+		text-align: right !important;
+	}
+
 	table.responsive {
 		background: transparent none;
 		border-width: 0;
@@ -1147,6 +1164,11 @@ table.fixed-width-table {
 		content: ":";
 	}
 
+	.rtl table.responsive td > dfn:after {
+		padding-right: 0;
+		padding-left: 5px;
+	}
+
 	table.responsive.two-columns td {
 		float: left;
 		box-sizing: border-box;
@@ -1159,6 +1181,10 @@ table.fixed-width-table {
 
 	table.responsive.two-columns td:nth-child(2n+1) {
 		clear: left;
+	}
+
+	.rtl table.responsive.two-columns td:nth-child(2n+1) {
+		clear: right;
 	}
 
 	table.responsive span.rank-img {
@@ -1656,6 +1682,10 @@ textarea:focus {
 		float: left;
 	}
 
+	.rtl fieldset .responsive-columns dt {
+		float: right;
+	}
+
 	.ltr fieldset dd {
 		padding-left: 20px;
 	}
@@ -1839,12 +1869,25 @@ input.button2:focus {
 	margin-left: 8px;
 }
 
+.rtl .button-group + .button-group {
+	margin-right: 8px;
+	margin-left: 0;
+}
+
 .button-group > .button:first-child {
 	border-radius: 4px 0 0 4px;
 }
 
+.rtl .button-group > .button:first-child {
+	border-radius: 0 4px 4px 0;
+}
+
 .button-group > .button:last-child {
 	border-radius: 0 4px 4px 0;
+}
+
+.rtl .button-group > .button:last-child {
+	border-radius: 4px 0 0 4px;
 }
 
 .button-group > .button:not(:first-child):not(:last-child) {
@@ -1876,6 +1919,12 @@ input.button2:focus {
 	float: right;
 	margin-top: 2px;
 	margin-right: -22px;
+}
+
+.rtl .phpbb_alert .alert_close {
+	float: left;
+	margin-right: 0;
+	margin-left: -22px;
 }
 
 .phpbb_alert .alert_close:hover {
@@ -2426,6 +2475,8 @@ fieldset.permissions .permissions-switch {
 
 .rtl .permissions-category a {
 	float: right;
+	margin: 0 0 0 1px;
+	padding: 0 6px 0 0;
 }
 
 .permissions-category a span.tabbg {
@@ -2438,6 +2489,7 @@ fieldset.permissions .permissions-switch {
 
 .rtl .permissions-category a span.tabbg {
 	float: right;
+	padding: 7px 6px 6px 12px;
 }
 
 .permissions-category a span.tabbg,
@@ -2477,12 +2529,11 @@ fieldset.permissions .permissions-switch {
 	margin: 0 5px 0 0;
 }
 
-/* Most browsers will have to live with a left aligned icon in RTL mode, as (currently) only Firefox 3.0 Alpha 3 renders it correctly without destroying it
 .rtl .permissions-category a span.colour {
 	float: right;
 	margin: 0 0 0 5px;
 }
-*/
+
 .permissions-category .activetab span.colour {
 	border-color: #333333;
 }
@@ -3043,6 +3094,11 @@ fieldset.permissions .permissions-switch {
 	padding-right: 0.3em;
 }
 
+.rtl .send-stats-tile i {
+	padding-right: 0;
+	padding-left: 0.3em;
+}
+
 .send-stats-data-row {
 	background: #f9f9f9;
 	border: #dedede 1px solid;
@@ -3116,6 +3172,11 @@ fieldset.permissions .permissions-switch {
 	padding-left: 6px;
 }
 
+.rtl .send-stats-data-row i {
+	padding-right: 6px;
+	padding-left: 0;
+}
+
 .configlist {
 	word-wrap: break-word;
 	word-break: break-all;
@@ -3156,6 +3217,12 @@ fieldset.permissions .permissions-switch {
 .o-icon + span,
 span + .o-icon {
 	padding-left: 4px;
+}
+
+.rtl .o-icon + span,
+.rtl span + .o-icon {
+	padding-right: 4px;
+	padding-left: 0;
 }
 
 .acp-icon {

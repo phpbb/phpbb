@@ -166,7 +166,7 @@
 					<tr>
 						<td class="tabled">{{ lang('BOARD_VERSION') ~ lang('COLON') }}</td>
 						<td class="tabled">
-							<strong><a href="{{ U_VERSIONCHECK }}" {% if S_VERSION_UP_TO_DATE %}style="color: #228822;" {% elseif not S_VERSIONCHECK_FAIL %}style="color: #BC2A4D;" {% endif %}title="{{ lang('MORE_INFORMATION') }}">{{ BOARD_VERSION }}</a></strong> [&nbsp;<a href="{{ U_VERSIONCHECK_FORCE }}">{{ lang('VERSIONCHECK_FORCE_UPDATE') }}</a>&nbsp;]
+							<strong><a href="{{ U_VERSIONCHECK }}" dir="ltr" {% if S_VERSION_UP_TO_DATE %}style="color: #228822;" {% elseif not S_VERSIONCHECK_FAIL %}style="color: #BC2A4D;" {% endif %}title="{{ lang('MORE_INFORMATION') }}">{{ BOARD_VERSION }}</a></strong> [&nbsp;<a href="{{ U_VERSIONCHECK_FORCE }}">{{ lang('VERSIONCHECK_FORCE_UPDATE') }}</a>&nbsp;]
 						</td>
 					</tr>
 					{% endif %}
@@ -288,7 +288,7 @@
 
 		<p>{L_ADMIN_LOG_INDEX_EXPLAIN}</p>
 
-		<div style="text-align: right;"><a href="{U_ADMIN_LOG}">&raquo; {L_VIEW_ADMIN_LOG}</a></div>
+		<div style="text-align: {S_CONTENT_FLOW_END};"><a href="{U_ADMIN_LOG}">&raquo; {L_VIEW_ADMIN_LOG}</a></div>
 
 		<table class="table1 zebra-table">
 		<thead>
@@ -317,7 +317,7 @@
 
 		<p>{L_INACTIVE_USERS_EXPLAIN_INDEX}</p>
 
-		<div style="text-align: right;"><a href="{U_INACTIVE_USERS}">&raquo; {L_VIEW_INACTIVE_USERS}</a></div>
+		<div style="text-align: {S_CONTENT_FLOW_END};"><a href="{U_INACTIVE_USERS}">&raquo; {L_VIEW_INACTIVE_USERS}</a></div>
 
 		<table class="table1 zebra-table">
 		<thead>
