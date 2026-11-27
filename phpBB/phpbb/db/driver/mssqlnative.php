@@ -324,6 +324,10 @@ class mssqlnative extends \phpbb\db\driver\mssql_base
 		if (isset($this->open_queries[$safe_query_id]))
 		{
 			unset($this->open_queries[$safe_query_id]);
+		}
+
+		if (is_resource($query_id) && @sqlsrv_num_fields($query_id))
+		{
 			return sqlsrv_free_stmt($query_id);
 		}
 
