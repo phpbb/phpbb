@@ -220,7 +220,7 @@
 
 	<form id="acp_icons" method="post" action="{U_ACTION}">
 
-	<div style="text-align: right;"><a href="{U_IMPORT}">{L_IMPORT}</a> | <a href="{U_EXPORT}">{L_EXPORT}</a></div>
+	<div style="text-align: {S_CONTENT_FLOW_END};"><a href="{U_IMPORT}">{L_IMPORT}</a> | <a href="{U_EXPORT}">{L_EXPORT}</a></div>
 
 	<fieldset class="tabulated">
 
@@ -250,7 +250,7 @@
 				<td style="text-align: center;">{items.CODE}</td>
 				<td style="text-align: center;">{items.EMOTION}</td>
 			<!-- ENDIF -->
-			<td class="actions" style="text-align: right;">
+			<td class="actions" style="text-align: {S_CONTENT_FLOW_END};">
 				<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
 				<span class="up"><a href="{items.U_MOVE_UP}" data-ajax="row_up">{ICON_MOVE_UP}</a></span>
 				<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
