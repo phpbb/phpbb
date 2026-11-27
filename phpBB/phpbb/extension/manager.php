@@ -475,7 +475,7 @@ class manager
 		$md_manager = $this->create_extension_metadata_manager($name);
 		try
 		{
-			return $md_manager->get_metadata('all') && $md_manager->validate_enable();
+			return $md_manager->validate('all');
 		}
 		catch (\phpbb\extension\exception $e)
 		{

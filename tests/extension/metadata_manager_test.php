@@ -140,6 +140,48 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 		}
 	}
 
+	// Validation should load the file itself and fail from missing composer.json
+	public function test_validate_missing_file()
+	{
+		$ext_name = 'vendor3/bar';
+
+		$manager = $this->get_metadata_manager($ext_name);
+
+		try
+		{
+			$manager->validate();
+			$this->fail('Exception not triggered');
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('FILE_NOT_FOUND', $this->phpbb_root_path . $this->extension_manager->get_extension_path($ext_name) . 'composer.json'));
+		}
+	}
+
+	// Validation should load the file itself and pass without a prior get_metadata() call
+	public function test_validate_loads_metadata()
+	{
+		$ext_name = 'vendor2/foo';
+
+		$manager = $this->get_metadata_manager($ext_name);
+
+		try
+		{
+			$this->assertTrue($manager->validate('all'));
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
+		}
+
+		$json = json_decode(file_get_contents($this->phpbb_root_path . 'ext/vendor2/foo/composer.json'), true);
+		array_walk_recursive($json, array($manager, 'sanitize_json'));
+
+		$this->assertEquals($manager->get_metadata(), $json);
+	}
+
 	// Should be the same as a direct json_decode of the composer.json file
 	public function test_foo()
 	{
@@ -179,6 +221,12 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	public function test_validator_non_existing($field_name)
 	{
 		$manager = $this->get_metadata_manager('validator');
+
+		// Valid data without the field under test
+		$metadata = $this->get_valid_metadata();
+		unset($metadata[$field_name]);
+		$manager->set_metadata($metadata);
+
 		try
 		{
 			$manager->validate($field_name);
@@ -194,9 +242,15 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 	public function test_validator_non_existing_authors()
 	{
 		$manager = $this->get_metadata_manager('validator');
+
+		// Valid data without authors
+		$metadata = $this->get_valid_metadata();
+		unset($metadata['authors']);
+		$manager->set_metadata($metadata);
+
 		try
 		{
-			$manager->validate_authors();
+			$manager->validate('authors');
 			$this->fail('Exception not triggered');
 		}
 		catch (\phpbb\extension\exception $e)
@@ -213,7 +267,7 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 		try
 		{
-			$manager->validate_authors();
+			$manager->validate('authors');
 			$this->fail('Exception not triggered');
 		}
 		catch (\phpbb\extension\exception $e)
@@ -259,25 +313,39 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 
 	public function test_validator_valid()
 	{
-		$ext_name = 'validator';
-
-		$manager = $this->get_metadata_manager($ext_name);
+		$manager = $this->get_metadata_manager('test/foo');
 
 		// Valid data
-		$manager->set_metadata(array(
-			'name'		=> 'test/foo',
-			'type'		=> 'phpbb-extension',
-			'license'	=> 'GPL v2',
-			'version'	=> '1.0.0',
-		));
+		$manager->set_metadata($this->get_valid_metadata());
 
 		try
 		{
-			$this->assertEquals(true, $manager->validate('enable'));
+			$this->assertTrue($manager->validate('all'));
 		}
 		catch (\phpbb\extension\exception $e)
 		{
 			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->fail($message);
+		}
+	}
+
+	// Should not validate for enabling as the directory does not match the extension name
+	public function test_validator_invalid_dir()
+	{
+		$manager = $this->get_metadata_manager('validator');
+
+		// Valid data, but for a different extension name
+		$manager->set_metadata($this->get_valid_metadata());
+
+		try
+		{
+			$manager->validate('enable');
+			$this->fail('Exception not triggered');
+		}
+		catch (\phpbb\extension\exception $e)
+		{
+			$message = call_user_func_array(array($this->user, 'lang'), array_merge(array($e->getMessage()), $e->get_parameters()));
+			$this->assertEquals($message, $this->user->lang('EXTENSION_DIR_INVALID'));
 		}
 	}
 
@@ -356,8 +424,36 @@ class phpbb_extension_metadata_manager_test extends phpbb_database_test_case
 			),
 		));
 
-		$this->assertEquals($expected_php, $manager->validate_require_php());
-		$this->assertEquals($expected_phpbb, $manager->validate_require_phpbb());
+		$this->assertEquals($expected_php, $manager->validate('require_php'));
+		$this->assertEquals($expected_phpbb, $manager->validate('require_phpbb'));
+	}
+
+	/**
+	* Get metadata that passes all validations for the extension test/foo
+	*
+	* @return array
+	*/
+	private function get_valid_metadata()
+	{
+		return array(
+			'name'		=> 'test/foo',
+			'type'		=> 'phpbb-extension',
+			'license'	=> 'GPL v2',
+			'version'	=> '1.0.0',
+			'authors'	=> array(
+				array(
+					'name'	=> 'John Smith',
+				),
+			),
+			'require'	=> array(
+				'php'	=> '>=8.2',
+			),
+			'extra'		=> array(
+				'soft-require'	=> array(
+					'phpbb/phpbb'	=> '4.0.*@dev',
+				),
+			),
+		);
 	}
 
 	/**

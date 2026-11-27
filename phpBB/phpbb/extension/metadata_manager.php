@@ -37,6 +37,33 @@ class metadata_manager
 	protected $metadata_file;
 
 	/**
+	* Available validations
+	*
+	* An array lists the validations it is composed of, a string is the pattern
+	* a metadata field has to match and null points to a validate_<name>() method.
+	*
+	* @var array
+	*/
+	protected static $validations = [
+		// Composed validations
+		'all'			=> ['enable', 'display'],
+		'enable'		=> ['dir', 'require_phpbb', 'require_php'],
+		'display'		=> ['name', 'type', 'license', 'version', 'authors'],
+
+		// Validation methods
+		'authors'		=> null,
+		'dir'			=> null,
+		'require_phpbb'	=> null,
+		'require_php'	=> null,
+
+		// Fields with a pattern
+		'name'			=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
+		'type'			=> '#^phpbb-extension$#',
+		'license'		=> '#.+#',
+		'version'		=> '#.+#',
+	];
+
+	/**
 	* Creates the metadata manager
 	*
 	* @param string				$ext_name			Name (including vendor) of the extension
@@ -53,7 +80,8 @@ class metadata_manager
 	* Processes and gets the metadata requested
 	*
 	* @param  string $element			All for all metadata that it has and is valid, otherwise specify which section you want by its shorthand term.
-	* @return array					Contains all of the requested metadata, throws an exception on failure
+	* @return array|string				Contains all of the requested metadata, throws an exception on failure
+	* @throws \phpbb\extension\exception
 	*/
 	public function get_metadata($element = 'all')
 	{
@@ -121,53 +149,56 @@ class metadata_manager
 	}
 
 	/**
-	* Validate fields
+	* Validate the metadata
+	*
+	* The metadata file is loaded first if that has not happened yet, so this
+	* can be called without a prior call to get_metadata().
 	*
 	* @param string $name  ("all" for display and enable validation
-	* 						"display" for name, type, and authors
-	* 						"name", "type")
-	* @return Bool True if valid, throws an exception if invalid
+	* 						"display" for name, type, license, version and authors
+	* 						"enable" for dir, require_phpbb and require_php
+	* 						"name", "type", "license", "version" for a single field
+	* 						"authors", "dir", "require_phpbb", "require_php" for a single check)
+	* @return bool True if valid, throws an exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
 	public function validate($name = 'display')
 	{
-		// Basic fields
-		$fields = array(
-			'name'		=> '#^[a-zA-Z0-9_\x7f-\xff]{2,}/[a-zA-Z0-9_\x7f-\xff]{2,}$#',
-			'type'		=> '#^phpbb-extension$#',
-			'license'	=> '#.+#',
-			'version'	=> '#.+#',
-		);
-
-		switch ($name)
+		// Fetch and clean the metadata if not done yet
+		if ($this->metadata === array())
 		{
-			case 'all':
-				$this->validate_enable();
-			// no break
+			$this->fetch_metadata_from_file();
+		}
 
-			case 'display':
-				foreach ($fields as $field => $data)
-				{
-					$this->validate($field);
-				}
+		if (!array_key_exists($name, self::$validations))
+		{
+			return true;
+		}
 
-				$this->validate_authors();
-			break;
+		$validation = self::$validations[$name];
 
-			default:
-				if (isset($fields[$name]))
-				{
-					if (!isset($this->metadata[$name]))
-					{
-						throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
-					}
+		if (is_array($validation))
+		{
+			foreach ($validation as $validation_name)
+			{
+				$this->validate($validation_name);
+			}
+		}
+		else if ($validation === null)
+		{
+			$this->{'validate_' . $name}();
+		}
+		else
+		{
+			if (!isset($this->metadata[$name]))
+			{
+				throw new \phpbb\extension\exception('META_FIELD_NOT_SET', array($name));
+			}
 
-					if (!preg_match($fields[$name], $this->metadata[$name]))
-					{
-						throw new \phpbb\extension\exception('META_FIELD_INVALID', array($name));
-					}
-				}
-			break;
+			if (!preg_match($validation, $this->metadata[$name]))
+			{
+				throw new \phpbb\extension\exception('META_FIELD_INVALID', array($name));
+			}
 		}
 
 		return true;
@@ -176,10 +207,10 @@ class metadata_manager
 	/**
 	* Validates the contents of the authors field
 	*
-	* @return boolean True when passes validation, throws exception if invalid
+	* @return bool True when passes validation, throws exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
-	public function validate_authors()
+	protected function validate_authors()
 	{
 		if (empty($this->metadata['authors']))
 		{
@@ -198,24 +229,12 @@ class metadata_manager
 	}
 
 	/**
-	* This array handles the verification that this extension can be enabled on this board
-	*
-	* @return bool True if validation succeeded, throws an exception if invalid
-	* @throws \phpbb\extension\exception
-	*/
-	public function validate_enable()
-	{
-		// Check for valid directory & phpBB, PHP versions
-		return $this->validate_dir() && $this->validate_require_phpbb() && $this->validate_require_php();
-	}
-
-	/**
 	* Validates the most basic directory structure to ensure it follows <vendor>/<ext> convention.
 	*
-	* @return boolean True when passes validation, throws an exception if invalid
+	* @return bool True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
-	public function validate_dir()
+	protected function validate_dir()
 	{
 		if (substr_count($this->ext_name, '/') !== 1 || $this->ext_name != $this->get_metadata('name'))
 		{
@@ -225,14 +244,13 @@ class metadata_manager
 		return true;
 	}
 
-
 	/**
 	* Validates the contents of the phpbb requirement field
 	*
-	* @return boolean True when passes validation, throws an exception if invalid
+	* @return bool True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
-	public function validate_require_phpbb()
+	protected function validate_require_phpbb()
 	{
 		if (!isset($this->metadata['extra']['soft-require']['phpbb/phpbb']))
 		{
@@ -245,10 +263,10 @@ class metadata_manager
 	/**
 	* Validates the contents of the php requirement field
 	*
-	* @return boolean True when passes validation, throws an exception if invalid
+	* @return bool True when passes validation, throws an exception if invalid
 	* @throws \phpbb\extension\exception
 	*/
-	public function validate_require_php()
+	protected function validate_require_php()
 	{
 		if (!isset($this->metadata['require']['php']))
 		{

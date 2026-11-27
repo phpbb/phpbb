@@ -210,7 +210,7 @@ class acp_extensions
 			case 'enable_pre':
 				try
 				{
-					$md_manager->validate_enable();
+					$md_manager->validate('enable');
 				}
 				catch (exception_interface $e)
 				{
@@ -239,7 +239,7 @@ class acp_extensions
 			case 'enable':
 				try
 				{
-					$md_manager->validate_enable();
+					$md_manager->validate('enable');
 				}
 				catch (exception_interface $e)
 				{
