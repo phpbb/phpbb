@@ -284,8 +284,18 @@ li {
 
 #page-body.simple-page-body {
 	min-width: 0;
-	padding: 0;
-	padding-right: 10px;
+	padding: 0 10px;
+}
+
+.simple-panel {
+	background-color: #ffffff;
+	margin-top: 10px;
+	padding: 10px;
+}
+
+.simple-panel h3 {
+	margin-top: 0;
+	margin-bottom: 10px;
 }
 
 .w-50 {
@@ -2505,12 +2515,15 @@ fieldset.permissions .permissions-switch {
 	background-color: #b2bbdd;
 }
 
-.permissions-preset-never span.colour {
+.permissions-preset-never span.colour,
+.never {
+	font-weight: bold;
 	background-color: #dd0000;
+	color: #ffffff;
 }
 
 .permissions-preset-no span.colour,
-.never {
+.no {
 	background-color: #efb0b2;
 }
 
