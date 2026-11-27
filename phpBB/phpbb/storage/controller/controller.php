@@ -83,14 +83,28 @@ class controller
 		}
 
 		$response = new StreamedResponse();
-		$fp = $this->storage->read($file);
-		$output = fopen('php://output', 'w+b');
+		$storage = $this->storage;
 
-		$response->setCallback(function () use ($fp, $output) {
-			stream_copy_to_stream($fp, $output);
-			fclose($fp);
-			fclose($output);
-			flush();
+		$response->setCallback(function () use ($storage, $file) {
+			$fp = $storage->read($file);
+			$output = fopen('php://output', 'w+b');
+
+			try
+			{
+				stream_copy_to_stream($fp, $output);
+				flush();
+			}
+			finally
+			{
+				if (is_resource($fp))
+				{
+					fclose($fp);
+				}
+				if (is_resource($output))
+				{
+					fclose($output);
+				}
+			}
 
 			// Terminate script to avoid the execution of terminate events
 			// This avoids possible errors with db connection closed
