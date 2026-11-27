@@ -3141,7 +3141,7 @@ function phpbb_get_ban_end_text(\phpbb\language\language $language): array
 		10080	=> $language->lang('7_DAYS'),
 		20160	=> $language->lang('2_WEEKS'),
 		40320	=> $language->lang('1_MONTH'),
-		-1		=> $language->lang('UNTIL') . ' -&gt; ',
+		-1		=> $language->lang('UNTIL') . ' &raquo; ',
 	];
 }
 

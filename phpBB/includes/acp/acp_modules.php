@@ -444,11 +444,11 @@ class acp_modules
 
 				if ($row['module_id'] == $this->parent_id)
 				{
-					$navigation .= ' -&gt; ' . $langname;
+					$navigation .= ' &raquo; ' . $langname;
 				}
 				else
 				{
-					$navigation .= ' -&gt; <a href="' . $this->u_action . '&amp;parent_id=' . $row['module_id'] . '">' . $langname . '</a>';
+					$navigation .= ' &raquo; <a href="' . $this->u_action . '&amp;parent_id=' . $row['module_id'] . '">' . $langname . '</a>';
 				}
 			}
 		}

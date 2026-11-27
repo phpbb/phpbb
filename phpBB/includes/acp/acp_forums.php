@@ -819,11 +819,11 @@ class acp_forums
 			{
 				if ($row['forum_id'] == $this->parent_id)
 				{
-					$navigation .= ' -&gt; ' . $row['forum_name'];
+					$navigation .= ' &raquo; ' . $row['forum_name'];
 				}
 				else
 				{
-					$navigation .= ' -&gt; <a href="' . $this->u_action . '&amp;parent_id=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
+					$navigation .= ' &raquo; <a href="' . $this->u_action . '&amp;parent_id=' . $row['forum_id'] . '">' . $row['forum_name'] . '</a>';
 				}
 			}
 		}
