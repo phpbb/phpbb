@@ -158,38 +158,29 @@
 		</table>
 	<!-- ENDIF -->
 
-	<div class="clearfix">&nbsp;</div>
-
-	<form id="quick" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
-		<input type="hidden" name="action" value="quickadd" />
-
-		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
-		<input class="button2" name="quickadd" type="submit" value="{L_ADD_MODULE}" />
+	<form id="mselect" method="post" action="{U_SEL_ACTION}">
+	<fieldset class="quick">
+		{L_SELECT_MODULE}{L_COLON} <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select>
+		<input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
-
 	</form>
 
 	<form id="module" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
+	<fieldset class="quick">
 		<input type="hidden" name="action" value="add" />
 		<input type="hidden" name="module_parent_id" value="{PARENT_ID}" />
 
 		<input type="text" name="module_langname" maxlength="255" />
 		<input class="button2" name="addmodule" type="submit" value="{L_CREATE_MODULE}" />
 	</fieldset>
-
 	</form>
 
-	<div class="clearfix">&nbsp;</div><br style="clear: both;" />
-
-	<form id="mselect" method="post" action="{U_SEL_ACTION}">
+	<form id="quick" method="post" action="{U_ACTION}">
 	<fieldset class="quick">
-		{L_SELECT_MODULE}{L_COLON} <select name="parent_id" onchange="if(this.options[this.selectedIndex].value != -1){ this.form.submit(); }">{MODULE_BOX}</select>
+		<input type="hidden" name="action" value="quickadd" />
 
-		<input class="button2" type="submit" value="{L_GO}" />
+		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
+		<input class="button2" name="quickadd" type="submit" value="{L_ADD_MODULE}" />
 	</fieldset>
 	</form>
 
