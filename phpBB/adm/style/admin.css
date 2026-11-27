@@ -622,32 +622,23 @@ li {
 #menu li#activemenu a:hover span:before,
 #menu li#activemenu span:before {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	color: #515f77;
-	margin-right: 3px;
-	margin-left: -10px;
-	content: "\f105";
-}
-
-#menu li#activemenu a:hover span:before,
-#menu li#activemenu span:before {
-	margin-right: 1px;
+	margin-right: 2px;
 	margin-left: -8px;
+	content: "\f105";
 }
 
 .rtl #menu li#activemenu a span:before,
 .rtl #menu li#activemenu a:hover span:before,
 .rtl #menu li#activemenu span:before {
 	font-family: "Font Awesome 6 Free";
+	font-weight: 900;
 	color: #515f77;
-	margin-right: -10px;
-	margin-left: 3px;
-	content: "\f104";
-}
-
-.rtl #menu li#activemenu a:hover span:before,
-.rtl #menu li#activemenu span:before {
+	float: right;
 	margin-right: -8px;
-	margin-left: 1px;
+	margin-left: 2px;
+	content: "\f104";
 }
 
 #menu li a:active,
@@ -2059,9 +2050,9 @@ dl.icon .pagination ul li {
 }
 
 .pagination li a,
-.pagnation li span,
+.pagination li span,
 li .pagination li a,
-li .pagnation li span,
+li .pagination li span,
 .pagination li.active span,
 .pagination li.ellipsis span {
 	font-size: 0.9em;
