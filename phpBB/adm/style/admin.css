@@ -941,6 +941,17 @@ table.zebra-table tbody tr:nth-child(even) {
 	background-color: #dbdfe2;
 }
 
+thead tr.row3 th {
+	font-size: 0.85em;
+	font-weight: normal;
+	line-height: 1.2em;
+	text-transform: none;
+	background: #dbdfe2;
+	border: none;
+	color: #536482;
+	padding: 4px;
+}
+
 .row4 {
 	background-color: #e4e8eb;
 }

@@ -81,23 +81,23 @@
 	</tr>
 	<!-- IF .items or S_ADD_CODE -->
 	<tr class="row3">
-		<td>{L_URL}</td>
-		<td>{L_LOCATION}</td>
+		<th scope="col">{L_URL}</th>
+		<th scope="col">{L_LOCATION}</th>
 	<!-- IF S_SMILIES -->
-		<td>{L_SMILIES_CODE}</td>
-		<td>{L_SMILIES_EMOTION}</td>
+		<th scope="col">{L_SMILIES_CODE}</th>
+		<th scope="col">{L_SMILIES_EMOTION}</th>
 	<!-- ENDIF -->
-		<td>{L_WIDTH}</td>
-		<td>{L_HEIGHT}</td>
+		<th scope="col">{L_WIDTH}</th>
+		<th scope="col">{L_HEIGHT}</th>
 	<!-- IF not S_SMILIES -->
-		<td>{L_ALT_TEXT}</td>
+		<th scope="col">{L_ALT_TEXT}</th>
 	<!-- ENDIF -->
-		<td>{L_DISPLAY_ON_POSTING}</td>
+		<th scope="col">{L_DISPLAY_ON_POSTING}</th>
 	<!-- IF ID or S_ADD -->
-		<td>{L_ORDER}</td>
+		<th scope="col">{L_ORDER}</th>
 	<!-- ENDIF -->
 	<!-- IF S_ADD -->
-		<td>{L_ADD} <a href="#" onclick="marklist('smilies', 'add_img', true); return false;">({L_MARK_ALL})</a></td>
+		<th scope="col" data-dfn="{L_ADD}">{L_ADD} <a href="#" onclick="marklist('smilies', 'add_img', true); return false;">({L_MARK_ALL})</a></th>
 	<!-- ENDIF -->
 	</tr>
 	</thead>
@@ -109,7 +109,7 @@
 		<td style="vertical-align: top;">[{items.IMG}]</td>
 		<!-- IF S_SMILIES -->
 			<td><input class="text post" type="text" name="code[{items.IMG}]" value="{items.CODE}" size="10" maxlength="50" /></td>
-			<td><input class="text post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="10" maxlength="50" /></td>
+			<td><input class="text post" type="text" name="emotion[{items.IMG}]" value="{items.EMOTION}" size="18" maxlength="50" /></td>
 		<!-- ENDIF -->
 		<td><input class="text post" type="number" min="0" max="999" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="text post" type="number" min="0" max="999" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
@@ -141,7 +141,7 @@
 		<td style="text-align: center;"><select name="add_image" id="add_image" onchange="update_image(this.options[selectedIndex].value);">{S_IMG_OPTIONS}</select></td>
 		<td style="vertical-align: top;"><img src="{IMG_SRC}" id="add_image_src" alt="" title="" /></td>
 		<td><input class="text post" type="text" name="add_code" id="add_code" value="{CODE}" size="10" maxlength="50" /></td>
-		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="10" maxlength="50" /></td>
+		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="18" maxlength="50" /></td>
 		<td><input class="text post" type="number" min="0" max="999" name="add_width" id="add_width" value="{WIDTH}" /></td>
 		<td><input class="text post" type="number" min="0" max="999" name="add_height" id="add_height" value="{HEIGHT}" /></td>
 		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" onclick="toggle_select('add', this.checked, 'add_order');"/></td>
