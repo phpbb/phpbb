@@ -210,6 +210,7 @@ $template->assign_vars(array(
 if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
 {
 	page_footer();
+	return;
 }
 
 // Ok, if someone has only list-access, we only display the forum list.
@@ -221,6 +222,7 @@ if (!$auth->acl_gets('f_read', 'f_list_topics', $forum_id))
 	));
 
 	page_footer();
+	return;
 }
 
 // Handle marking posts

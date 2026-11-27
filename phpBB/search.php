@@ -1393,6 +1393,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
 
 	page_footer();
+	return;
 }
 
 // Search forum

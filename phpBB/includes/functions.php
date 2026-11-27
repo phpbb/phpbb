@@ -2154,6 +2154,13 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		return false;
 	}
 
+	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
+	if ($request->variable('confirm_key', ''))
+	{
+		// This should not occur, therefore we cancel the operation to safe the user
+		return false;
+	}
+
 	$s_hidden_fields = build_hidden_fields(array(
 		'confirm_uid'	=> $user->data['user_id'],
 		'sess'			=> $user->session_id,
@@ -2189,13 +2196,6 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$template->set_filenames(array(
 		'body' => $html_body)
 	);
-
-	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
-	if ($request->variable('confirm_key', ''))
-	{
-		// This should not occur, therefore we cancel the operation to safe the user
-		return false;
-	}
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
 	$use_page = ($u_action) ? $u_action : str_replace('&', '&amp;', $user->page['page']);
