@@ -50,7 +50,7 @@ function parse_document(container)
 	*/
 	container.find('table').not('.not-responsive').each(function() {
 		var $this = $(this),
-			th = $this.find('thead > tr > th'),
+			th = $this.find('thead > tr:last-child > th'),
 			columns = th.length,
 			headers = [],
 			totalHeaders = 0,
