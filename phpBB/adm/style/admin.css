@@ -35,18 +35,6 @@ td,
 li,
 dd {
 	font-size: small;
-	voice-family: "\"}\"";
-	voice-family: inherit;
-}
-
-html > body,
-html > div,
-html > p,
-html > th,
-html > td,
-html > li,
-html > dd {
-	font-size: small;
 }
 
 html {
@@ -123,6 +111,21 @@ ul {
 
 .rtl ul {
 	margin: 0 2em 1em 0;
+}
+
+.main td > ol,
+.main td > ul,
+.main > ol,
+.main > ul {
+	margin: 0 0 0.5em 1.5em;
+	list-style-position: outside;
+}
+
+.rtl .main td > ol,
+.rtl .main td > ul,
+.rtl .main > ol,
+.rtl .main > ul {
+	margin: 0 1.5em 0.5em 0;
 }
 
 hr {
@@ -1721,10 +1724,12 @@ fieldset.submit-buttons legend {
 ---------------------------------------- */
 input.radio,
 input.checkbox,
-input.permissions-checkbox {
+input.permissions-checkbox,
+input[type="file"] {
 	background-color: transparent;
 	border: none;
 	width: auto !important;
+	padding: 0;
 	cursor: pointer;
 }
 
@@ -2036,10 +2041,6 @@ li.pagination {
 
 .pagination ul {
 	display: inline-block;
-	*display: inline;
-
-	/* IE7 inline-block hack */
-	*zoom: 1;
 	margin-bottom: 0;
 	margin-left: 0;
 }
