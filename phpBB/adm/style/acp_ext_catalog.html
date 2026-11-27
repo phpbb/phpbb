@@ -16,8 +16,10 @@
 	</div>
 {% endif %}
 
+<div class="clearfix"></div>
+
 <form id="catalog_settings" method="post" action="{{ U_ACTION }}" style="display:none">
-	<fieldset style="clear: both;">
+	<fieldset>
 		<legend>{{ lang('EXTENSIONS_CATALOG_SETTINGS') }}</legend>
 		<dl>
 			<dt><label for="enable_on_install">{{ lang('ENABLE_ON_INSTALL') }}{{ lang('COLON') }}</label></dt>
@@ -82,9 +84,9 @@
 </form>
 
 {% if extensions is empty %}
-<tr>
-	<td colspan="4"><div class="errorbox notice">{{ lang('NO_EXTENSION_AVAILABLE') }}</div></td>
-</tr>
+<div class="errorbox notice">
+	<p>{{ lang('NO_EXTENSION_AVAILABLE') }}</p>
+</div>
 {% else %}
 <table class="table1">
 	<col class="row1" ><col class="row1" ><col class="row1" ><col class="row2" >
