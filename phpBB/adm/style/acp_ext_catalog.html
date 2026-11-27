@@ -20,14 +20,14 @@
 	<fieldset style="clear: both;">
 		<legend>{{ lang('EXTENSIONS_CATALOG_SETTINGS') }}</legend>
 		<dl>
-			<dt><label for="enable_on_install">{{ lang('ENABLE_ON_INSTALL') }}{{ lang('COLON') }}</label></dt>
+			<dt><label for="enable_on_install">{{ lang('ENABLE_ON_INSTALL') }}{{ lang('COLON') }}</label><br><span>{{ lang('ENABLE_ON_INSTALL_EXPLAIN') }}</span></dt>
 			<dd>
 				<label><input type="radio" id="enable_on_install" name="enable_on_install" class="radio" value="1"{% if settings.enable_on_install %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
 				<label><input type="radio" name="enable_on_install" class="radio" value="0"{% if not settings.enable_on_install %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
 			</dd>
 		</dl>
 		<dl>
-			<dt><label for="purge_on_remove">{{ lang('PURGE_ON_REMOVE') }}{{ lang('COLON') }}</label></dt>
+			<dt><label for="purge_on_remove">{{ lang('PURGE_ON_REMOVE') }}{{ lang('COLON') }}</label><br><span>{{ lang('PURGE_ON_REMOVE_EXPLAIN') }}</span></dt>
 			<dd>
 				<label><input type="radio" id="purge_on_remove" name="purge_on_remove" class="radio" value="1"{% if settings.purge_on_remove %} checked="checked" {% endif %} /> {{ lang('YES') }}</label>
 				<label><input type="radio" name="purge_on_remove" class="radio" value="0"{% if not settings.purge_on_remove %} checked="checked" {% endif %} /> {{ lang('NO') }}</label>
@@ -42,6 +42,8 @@
 			</dt>
 			<dd>
 				<textarea id="repositories" name="repositories" rows="5" cols="30">{{ settings.repositories|join('\n') }}</textarea>
+				<br />
+				<input class="button2" type="button" id="restore_default_repositories" value="{{ lang('RESTORE_DEFAULT_REPOSITORIES') }}" title="{{ lang('RESTORE_DEFAULT_REPOSITORIES_EXPLAIN') }}" data-default-repositories="{{ settings.default_repositories|json_encode|e('html_attr') }}" />
 			</dd>
 		</dl>
 		<dl>
@@ -126,5 +128,21 @@
 		{% include('pagination.html') %}
 	</div>
 {% endif %}
+
+<script>
+// Restores the repository field to phpBB's installed defaults.
+(function() {
+	'use strict';
+
+	var restoreButton = document.getElementById('restore_default_repositories');
+	var repositories = document.getElementById('repositories');
+
+	if (restoreButton && repositories) {
+		restoreButton.addEventListener('click', function() {
+			repositories.value = JSON.parse(restoreButton.dataset.defaultRepositories).join('\n');
+		});
+	}
+}());
+</script>
 
 {% include('overall_footer.html') %}

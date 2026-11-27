@@ -44,9 +44,9 @@ class extension_manager extends manager
 	protected $root_path;
 
 	/**
-	 * @var array
+	 * @var string[] Extensions that must be re-enabled after an update
 	 */
-	private $enabled_extensions;
+	private $enabled_extensions = [];
 
 	/**
 	 * @var bool Enables extensions when installing them?
@@ -144,14 +144,41 @@ class extension_manager extends manager
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
 			catch (\Exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), [], 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
+		}
+	}
+
+	/**
+	 * Updates extensions and restores their enabled state if Composer fails.
+	 *
+	 * {@inheritdoc}
+	 */
+	public function update(array $packages, IOInterface|null $io = null)
+	{
+		try
+		{
+			parent::update($packages, $io);
+		}
+		catch (\Exception $e)
+		{
+			foreach ($this->enabled_extensions as $package)
+			{
+				try
+				{
+					$this->extension_manager->enable($package);
+				}
+				catch (\Exception $ignored)
+				{
+					// Preserve the original Composer/lifecycle failure for the caller.
+				}
+			}
+
+			throw $e;
 		}
 	}
 
@@ -202,37 +229,37 @@ class extension_manager extends manager
 	 */
 	public function pre_remove(array $packages, IOInterface|null $io = null)
 	{
-		if ($this->purge_on_remove)
-		{
-			/** @psalm-suppress InvalidArgument */
-			$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
-		}
+		/** @psalm-suppress InvalidArgument */
+		$io->writeError([['DISABLING_EXTENSIONS', [], 1]]);
 
 		foreach ($packages as $package => $version)
 		{
 			try
 			{
-				if ($this->extension_manager->is_enabled($package))
+				if ($this->purge_on_remove && $this->extension_manager->is_configured($package))
 				{
-					if ($this->purge_on_remove)
-					{
-						$this->extension_manager->purge($package);
-					}
-					else
-					{
-						$this->extension_manager->disable($package);
-					}
+					$this->extension_manager->purge($package);
+				}
+				else if (!$this->purge_on_remove && $this->extension_manager->is_enabled($package))
+				{
+					$this->extension_manager->disable($package);
 				}
 			}
 			catch (\phpbb\exception\runtime_exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), $e->get_parameters(), 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
 			}
 			catch (\Exception $e)
 			{
-				/** @psalm-suppress InvalidArgument */
-				$io->writeError([[$e->getMessage(), [], 4]]);
+				throw new runtime_exception($this->exception_prefix, 'LIFECYCLE_ERROR', [$package], $e);
+			}
+
+			// Removing the files of a configured extension would leave an invalid
+			// entry in the extension manager. Respect the no-purge setting by
+			// requiring the administrator to delete its data explicitly first.
+			if (!$this->purge_on_remove && $this->extension_manager->is_configured($package))
+			{
+				throw new runtime_exception($this->exception_prefix, 'REMOVE_REQUIRES_PURGE', [$package]);
 			}
 		}
 	}
