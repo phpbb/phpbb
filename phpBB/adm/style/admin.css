@@ -2342,7 +2342,14 @@ fieldset.permissions legend input {
 /* Permission sections */
 fieldset.permissions .permissions-simple {
 	text-align: left;
+	overflow: visible;
 	padding-top: 3px;
+}
+
+fieldset.permissions .permissions-simple:after {
+	display: block;
+	clear: both;
+	content: "";
 }
 
 .rtl fieldset.permissions .permissions-simple {
@@ -2855,26 +2862,29 @@ fieldset.permissions .permissions-switch {
 }
 
 .roles-options > .dropdown {
-	top: 3.2em;
-	left: auto;
-	width: 250px;
+	border: 0;
+	top: 100%;
+	right: 0;
+	left: 0;
+	width: 100%;
+	margin-right: 0 !important;
+	margin-left: 0 !important;
+	padding: 2px 0 0;
 }
 
-.rtl .roles-options > .dropdown {
-	right: auto;
+.roles-options .dropdown-contents {
+	width: 100%;
+	padding: 4px;
 }
 
 .roles-options {
+	position: relative;
 	width: 250px;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	-o-user-select: none;
 	user-select: none;
-}
-
-.roles-options > .button:hover {
-	background: transparent;
 }
 
 .roles-options > .button:active {
@@ -2905,7 +2915,10 @@ fieldset.permissions .permissions-switch {
 }
 
 .roles-options li {
+	border-radius: 3px;
+	padding: 4px 6px;
 	list-style: none;
+	cursor: pointer;
 }
 
 .roles-highlight {
