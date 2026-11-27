@@ -32,9 +32,11 @@
 
 <!-- IF L_EXPLAIN --><p>{L_EXPLAIN}</p><!-- ENDIF -->
 
+<!-- IF not S_STYLE_DETAILS -->
 <fieldset class="quick">
-	<span class="small"><a href="https://www.phpbb.com/go/customise/styles/3.3" target="_blank">{L_BROWSE_STYLES_DATABASE}</a></span>
+	<span class="small"><a href="https://www.phpbb.com/go/customise/styles/{PHPBB_MAJOR}" target="_blank" rel="noopener noreferrer">{L_BROWSE_STYLES_DATABASE} {{ Icon('font', 'up-right-from-square', '', true) }}</a></span>
 </fieldset>
+<!-- ENDIF -->
 
 <form id="acp_styles" method="post" action="{U_ACTION}">
 {S_HIDDEN_FIELDS}
