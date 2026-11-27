@@ -247,15 +247,22 @@ function phpbb_build_radio(int|string $value, string $key, array $options): arra
 	global $language;
 
 	$buttons = [];
+	$first = true;
 	foreach ($options as $val => $title)
 	{
-		$buttons[] = [
+		$button = [
 			'type'		=> 'radio',
 			'value'		=> $val,
 			'name'		=> 'config[' . $key . ']',
 			'checked'	=> $val == $value,
 			'label'		=> $language->lang($title),
 		];
+		if ($first)
+		{
+			$button['id'] = $key;
+			$first = false;
+		}
+		$buttons[] = $button;
 	}
 
 	return [

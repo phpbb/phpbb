@@ -286,11 +286,11 @@
 	<fieldset>
 		<legend>{L_ADD_EXTENSION}</legend>
 	<dl>
-		<dt><label for="add_extension">{L_EXTENSION}</label></dt>
+		<dt><label for="add_extension">{L_EXTENSION}{L_COLON}</label></dt>
 		<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="{{ GROUP_SELECT_OPTIONS.id }}">{L_EXTENSION_GROUP}</label></dt>
+		<dt><label for="{{ GROUP_SELECT_OPTIONS.id }}">{L_EXTENSION_GROUP}{L_COLON}</label></dt>
 		<dd>
 			<select name="{{ GROUP_SELECT_OPTIONS.name }}" id="{{ GROUP_SELECT_OPTIONS.id }}">
 				{% for option in GROUP_SELECT_OPTIONS.options %}
