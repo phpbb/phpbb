@@ -1,0 +1,10 @@
+<!-- IF S_RECAPTCHA_AVAILABLE -->
+	<noscript>
+		<div>{L_RECAPTCHA_NOSCRIPT}</div>
+	</noscript>
+	{% INCLUDEJS RECAPTCHA_SERVER ~ '.js?onload=phpbbRecaptchaOnLoad&hl=' ~ lang('RECAPTCHA_LANG') %}
+	{# The g-recaptcha class is used in JavaScript #}
+	<div class="g-recaptcha" data-sitekey="{RECAPTCHA_PUBKEY}" data-callback="phpbbRecaptchaOnSubmit" data-size="invisible" data-tabindex="<!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->"></div>
+<!-- ELSE -->
+{L_RECAPTCHA_NOT_AVAILABLE}
+<!-- ENDIF -->

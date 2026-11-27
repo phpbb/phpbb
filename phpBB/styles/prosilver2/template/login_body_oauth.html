@@ -1,0 +1,6 @@
+<br>
+<div class="content">
+	{% for oauth in oauth %}
+		<a href="{{ oauth.REDIRECT_URL }}" class="button1 button button-form-bold">{{ oauth.SERVICE_NAME }}</a>
+	{% endfor %}
+</div>

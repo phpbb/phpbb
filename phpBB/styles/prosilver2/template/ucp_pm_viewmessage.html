@@ -1,0 +1,216 @@
+<!-- INCLUDE ucp_header.html -->
+
+<!-- INCLUDE ucp_pm_message_header.html -->
+
+	</div>
+</div>
+
+
+<!-- IF S_DISPLAY_HISTORY and (U_VIEW_PREVIOUS_HISTORY or U_VIEW_NEXT_HISTORY) -->
+	<fieldset class="display-options clearfix">
+		<!-- IF U_VIEW_PREVIOUS_HISTORY -->
+			<a href="{U_VIEW_PREVIOUS_HISTORY}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
+				{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('VIEW_PREVIOUS_HISTORY'), false, 'fas c-return-arrow-icon') }}
+			</a>
+		<!-- ENDIF -->
+		<!-- IF U_VIEW_NEXT_HISTORY -->
+			<a href="{U_VIEW_NEXT_HISTORY}" class="right-box arrow-{S_CONTENT_FLOW_END}">
+				{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_END, lang('VIEW_NEXT_HISTORY'), false, 'fas c-return-arrow-icon') }}
+			</a>
+		<!-- ENDIF -->
+	</fieldset>
+<!-- ENDIF -->
+
+
+<div id="post-{MESSAGE_ID}" class="post pm has-profile">
+	<div class="inner">
+
+		<dl class="postprofile" id="profile{MESSAGE_ID}">
+			<dt class="<!-- IF RANK_TITLE or RANK_IMG -->has-profile-rank<!-- ELSE -->no-profile-rank<!-- ENDIF --> <!-- IF AUTHOR_AVATAR_HTML -->has-avatar<!-- ELSE -->no-avatar<!-- ENDIF -->">
+				<div class="avatar-container">
+					<!-- EVENT ucp_pm_viewmessage_avatar_before -->
+					<!-- IF AUTHOR_AVATAR_HTML --><a href="{U_MESSAGE_AUTHOR}" class="avatar">{AUTHOR_AVATAR_HTML}</a><!-- ENDIF -->
+					<!-- EVENT ucp_pm_viewmessage_avatar_after -->
+				</div>
+				{% apply spaceless %}
+					{% EVENT ucp_pm_viewmessage_author_full_before %}
+					{MESSAGE_AUTHOR_FULL}
+					{% EVENT ucp_pm_viewmessage_author_full_after %}
+					<!-- IF S_ONLINE -->  {{ Icon('font', 'circle', lang('ONLINE'), true, 'fas c-online-icon') }}<!-- ENDIF -->
+				{% endapply %}
+			</dt>
+
+			<!-- EVENT ucp_pm_viewmessage_rank_before -->
+			{% if RANK_IMG or RANK_TITLE %}<dd class="profile-rank rank-img">{{ RANK_TITLE }}{% if RANK_IMG and RANK_TITLE %}<br />{% endif %}{{ RANK_IMG }}</dd>{% endif %}
+			<!-- EVENT ucp_pm_viewmessage_rank_after -->
+
+			<dd class="profile-posts"><strong>{L_POSTS}{L_COLON}</strong> <!-- IF U_AUTHOR_POSTS != '' --><a href="{U_AUTHOR_POSTS}">{AUTHOR_POSTS}</a><!-- ELSE -->{AUTHOR_POSTS}<!-- ENDIF --></dd>
+			<!-- IF AUTHOR_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {AUTHOR_JOINED}</dd><!-- ENDIF -->
+
+			<!-- EVENT ucp_pm_viewmessage_custom_fields_before -->
+			<!-- BEGIN custom_fields -->
+				<!-- IF not custom_fields.S_PROFILE_CONTACT -->
+					<dd class="profile-custom-field profile-{custom_fields.PROFILE_FIELD_IDENT}"><strong>{custom_fields.PROFILE_FIELD_NAME}{L_COLON}</strong> {custom_fields.PROFILE_FIELD_VALUE}</dd>
+				<!-- ENDIF -->
+			<!-- END custom_fields -->
+			<!-- EVENT ucp_pm_viewmessage_custom_fields_after -->
+
+			<!-- EVENT ucp_pm_viewmessage_contact_fields_before -->
+			<!-- IF .contact -->
+				<dd class="profile-contact">
+					<strong>{L_CONTACT}{L_COLON}</strong>
+					<div class="dropdown-container dropdown-left">
+						<a href="#" class="dropdown-trigger" title="{CONTACT_USER}">{{ Icon('font', 'comment-dots', CONTACT_USER, true, 'far') }}</a>
+						<div class="dropdown">
+							<div class="pointer"><div class="pointer-inner"></div></div>
+							<div class="dropdown-contents contact-icons">
+								<!-- BEGIN contact -->
+									{% set REMAINDER = contact.S_ROW_COUNT % 4 %}
+									<!-- DEFINE $S_LAST_CELL = ((REMAINDER eq 3) or (contact.S_LAST_ROW and contact.S_NUM_ROWS < 4)) -->
+									<!-- IF REMAINDER eq 0 -->
+										<div>
+									<!-- ENDIF -->
+										<a href="<!-- IF contact.U_CONTACT -->{contact.U_CONTACT}<!-- ELSE -->{contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF --><!-- IF contact.ID eq 'jabber' --> onclick="popup(this.href, 750, 320); return false;"<!-- ENDIF -->>
+											{% if contact.ID == 'pm' %}
+												{{ Icon('font', 'message', '', true, 'far contact-icon') }}
+											{% elseif contact.ID == 'email' %}
+												{{ Icon('font', 'at', '', true, 'fas contact-icon') }}
+											{% elseif contact.ID == 'phpbb_website' %}
+												{{ Icon('font', 'earth-americas', '', true, 'fas contact-icon') }}
+											{% elseif contact.ID == 'phpbb_facebook' %}
+												{{ Icon('font', 'square-facebook', '', true, 'fab contact-icon c-facebook-icon') }}
+											{% elseif contact.ID == 'phpbb_twitter' %}
+												{{ Icon('font', 'square-x-twitter', '', true, 'fab contact-icon c-twitter-icon') }}
+											{% elseif contact.ID == 'phpbb_skype' %}
+												{{ Icon('font', 'skype', '', true, 'fab contact-icon c-skype-icon') }}
+											{% elseif contact.ID == 'phpbb_youtube' %}
+												{{ Icon('font', 'youtube', '', true, 'fab contact-icon c-youtube-icon') }}
+											{% else %}
+												{{ Icon('svg', contact.ID, '', true, 'contact-icon') }}
+											{% endif %}
+										</a>
+									<!-- IF REMAINDER eq 3 or contact.S_LAST_ROW -->
+										</div>
+									<!-- ENDIF -->
+								<!-- END contact -->
+							</div>
+						</div>
+					</div>
+				</dd>
+			<!-- ENDIF -->
+			<!-- EVENT ucp_pm_viewmessage_contact_fields_after -->
+		</dl>
+
+		<div class="postbody">
+			<h3 class="first">{SUBJECT}</h3>
+
+			<!-- DEFINE $SHOW_PM_POST_BUTTONS = (U_EDIT or U_DELETE or U_REPORT or U_QUOTE) -->
+			<!-- EVENT ucp_pm_viewmessage_post_buttons_list_before -->
+			<!-- IF $SHOW_PM_POST_BUTTONS -->
+			<ul class="post-buttons">
+				<!-- EVENT ucp_pm_viewmessage_post_buttons_before -->
+				<!-- IF U_EDIT -->
+					<li>
+						<a href="{U_EDIT}" title="{L_POST_EDIT_PM}" class="button button-icon-only">
+							{{ Icon('font', 'pencil', lang('BUTTON_EDIT'), true, 'fas c-button-icon') }}
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_DELETE -->
+					<li>
+						<a href="{U_DELETE}" title="{L_DELETE_MESSAGE}" class="button button-icon-only">
+							{{ Icon('font', 'xmark', lang('BUTTON_DELETE'), true, 'fas c-button-icon') }}
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_REPORT -->
+					<li>
+						<a href="{U_REPORT}" title="{L_REPORT_PM}" class="button button-icon-only">
+							{{ Icon('font', 'exclamation', lang('BUTTON_REPORT'), true, 'fas c-button-icon') }}
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- IF U_QUOTE -->
+					<li>
+						<a href="{U_QUOTE}" title="{L_POST_QUOTE_PM}" class="button button-icon-only">
+							{{ Icon('font', 'quote-left', lang('BUTTON_QUOTE'), true, 'fas c-button-icon') }}
+						</a>
+					</li>
+				<!-- ENDIF -->
+				<!-- EVENT ucp_pm_viewmessage_post_buttons_after -->
+			</ul>
+			<!-- ENDIF -->
+			<!-- EVENT ucp_pm_viewmessage_post_buttons_list_after -->
+
+			<p class="author">
+				<strong>{L_SENT_AT}{L_COLON}</strong> {SENT_DATE}
+				<br /><strong>{L_PM_FROM}{L_COLON}</strong> {MESSAGE_AUTHOR_FULL}
+				<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}{L_COLON}</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}"<!-- IF to_recipient.COLOUR --> style="color:{to_recipient.COLOUR};"<!-- ENDIF -->><strong>{to_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
+				<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}{L_COLON}</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}"<!-- IF bcc_recipient.COLOUR --> style="color:{bcc_recipient.COLOUR};"<!-- ENDIF -->><strong>{bcc_recipient.NAME}</strong></a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
+			</p>
+
+
+			<div class="content">{MESSAGE}</div>
+
+			<!-- IF S_HAS_ATTACHMENTS -->
+				<dl class="attachbox">
+					<dt>
+						{L_ATTACHMENTS}
+					</dt>
+					<!-- BEGIN attachment -->
+						<dd>{attachment.DISPLAY_ATTACHMENT}</dd>
+					<!-- END attachment -->
+				</dl>
+			<!-- ENDIF -->
+
+			<!-- IF S_DISPLAY_NOTICE -->
+				<div class="post-notice error">{L_DOWNLOAD_NOTICE}</div>
+			<!-- ENDIF -->
+
+			<!-- IF EDITED_MESSAGE or EDIT_REASON -->
+			<div class="notice">{EDITED_MESSAGE}
+				<!-- IF EDIT_REASON --><br /><strong>{L_REASON}{L_COLON}</strong> <em>{EDIT_REASON}</em><!-- ENDIF -->
+			</div>
+			<!-- ENDIF -->
+
+			<!-- IF SIGNATURE -->
+				<div id="sig{MESSAGE_ID}" class="signature">{SIGNATURE}</div>
+			<!-- ENDIF -->
+		</div>
+
+		<div class="back2top">
+			<a href="#top" class="top" title="{L_BACK_TO_TOP}">
+				{{ Icon('font', 'circle-chevron-up', lang('BACK_TO_TOP'), true, 'fas c-top-icon') }}
+			</a>
+		</div>
+
+	</div>
+</div>
+
+<!-- EVENT ucp_pm_viewmessage_options_before -->
+<!-- IF S_VIEW_MESSAGE -->
+<fieldset class="display-options">
+
+	<!-- IF S_MARK_OPTIONS --><label for="mark_option"><select name="mark_option" id="mark_option">{S_MARK_OPTIONS}</select></label>&nbsp;<input class="button1 button button-form-bold" type="submit" name="submit_mark" value="{L_GO}" /><!-- ENDIF -->
+	<!-- IF U_PREVIOUS_PM -->
+		<a href="{U_PREVIOUS_PM}" class="left-box arrow-{S_CONTENT_FLOW_BEGIN}">
+			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_BEGIN, lang('VIEW_PREVIOUS_PM'), false, 'fas c-return-arrow-icon') }}
+		</a>
+	<!-- ENDIF -->
+	<!-- IF U_NEXT_PM -->
+		<a href="{U_NEXT_PM}" class="right-box arrow-{S_CONTENT_FLOW_END}">
+			{{ Icon('font', 'angle-' ~ S_CONTENT_FLOW_END, lang('VIEW_NEXT_PM'), false, 'fas c-return-arrow-icon') }}
+		</a>
+	<!-- ENDIF -->
+	<!-- IF not S_UNREAD and not S_SPECIAL_FOLDER --><label for="dest_folder"><!-- IF S_VIEW_MESSAGE -->{L_MOVE_TO_FOLDER}{L_COLON} <!-- ELSE -->{L_MOVE_MARKED_TO_FOLDER}<!-- ENDIF --> <select name="dest_folder" id="dest_folder">{S_TO_FOLDER_OPTIONS}</select></label> <input class="button1 button button-form-bold" type="submit" name="move_pm" value="{L_GO}" /><!-- ENDIF -->
+	<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
+	<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+	<input type="hidden" name="p" value="{MSG_ID}" />
+</fieldset>
+<!-- ENDIF -->
+
+<!-- INCLUDE ucp_pm_message_footer.html -->
+
+<!-- IF S_DISPLAY_HISTORY --><!-- INCLUDE ucp_pm_history.html --><!-- ENDIF -->
+
+<!-- INCLUDE ucp_footer.html -->
