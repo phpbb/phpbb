@@ -471,4 +471,32 @@ class phpbb_dbal_select_test extends phpbb_database_test_case
 			"Failed asserting that estimated row count of user table is greater than 1."
 		);
 	}
+
+	/**
+	 * Test fix for PHPBB3-17794. Only applies to MS SQL
+	 */
+	public function test_transaction_after_exec_statistics()
+	{
+		$db = $this->new_dbal();
+
+		if ($db->get_sql_layer() !== 'mssqlnative')
+		{
+			$this->markTestSkipped('PHPBB3-17794 fix test only applies to MS SQL');
+		}
+
+		// Emulate sql_index_exists()/sql_unique_index_exists() behavior.
+		$result = $db->sql_query("EXEC sp_statistics 'phpbb_users'");
+		while ($db->sql_fetchrow($result))
+		{
+		}
+		$db->sql_freeresult($result);
+
+		// Without the fix this fails with SQL error 3988.
+		$db->sql_transaction('begin');
+		$result = $db->sql_query('SELECT COUNT(*) FROM phpbb_users');
+		$db->sql_freeresult($result);
+		$db->sql_transaction('commit');
+
+		$this->addToAssertionCount(1);
+	}
 }
