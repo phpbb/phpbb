@@ -71,7 +71,10 @@
 										<div>
 									<!-- ENDIF -->
 										<a href="<!-- IF contact.U_CONTACT -->{contact.U_CONTACT}<!-- ELSE -->{contact.U_PROFILE_AUTHOR}<!-- ENDIF -->" title="{contact.NAME}"<!-- IF $S_LAST_CELL --> class="last-cell"<!-- ENDIF -->>
-											{% if contact.ID == 'pm' %}
+											{% if contact.ICON %}
+												{% set color = contact.ICON_COLOR ? ({style: 'color: #' ~ contact.ICON_COLOR}) : [] %}
+												{{ Icon('font', contact.ICON, '', true, '', color) }}
+											{% elseif contact.ID == 'pm' %}
 												{{ Icon('font', 'message', '', true, 'far contact-icon') }}
 											{% elseif contact.ID == 'email' %}
 												{{ Icon('font', 'at', '', true, 'fas contact-icon') }}
