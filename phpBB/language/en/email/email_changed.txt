@@ -1,0 +1,13 @@
+Subject: The email address on your account has been changed
+
+Hello {USERNAME},
+
+This is a confirmation that the email address associated with your account on "{SITENAME}" has just been changed to {NEW_EMAIL}.
+
+This message has been sent to your previous email address.
+
+If you made this change, no further action is required.
+
+If you did not change your email address, your account may have been compromised. Please contact the board administrator immediately.
+
+{EMAIL_SIG}
