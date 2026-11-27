@@ -192,11 +192,7 @@
 	<!-- END attach -->
 	</tbody>
 	</table>
-	<!-- ELSE -->
-	<div class="errorbox">
-		<p>{L_USER_NO_ATTACHMENTS}</p>
-	</div>
-	<!-- ENDIF -->
+
 	<fieldset class="display-options">
 		{L_SORT_BY}{L_COLON} <select name="sk">{S_SORT_KEY}</select> <select name="sd">{S_SORT_DIR}</select>
 		<input class="button2" type="submit" value="{L_GO}" name="sort" />
@@ -211,8 +207,13 @@
 	<fieldset class="quick">
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
 		<p class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></p>
-		{S_FORM_TOKEN}
 	</fieldset>
+	<!-- ELSE -->
+	<div class="errorbox">
+		<p>{L_USER_NO_ATTACHMENTS}</p>
+	</div>
+	<!-- ENDIF -->
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_PERMISSIONS -->

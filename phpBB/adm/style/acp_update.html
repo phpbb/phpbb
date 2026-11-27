@@ -27,19 +27,18 @@
 <!-- ENDIF -->
 
 <fieldset>
-	<legend></legend>
 	<!-- IF not S_UPDATE_INCOMPLETE -->
 	<dl>
-		<dt><label>{L_CURRENT_VERSION}</label></dt>
+		<dt><label>{L_CURRENT_VERSION}{L_COLON}</label></dt>
 		<dd><strong>{CURRENT_VERSION}</strong></dd>
 	</dl>
 	<!-- ELSE -->
 	<dl>
-		<dt><label>{L_FILES_VERSION}</label></dt>
+		<dt><label>{L_FILES_VERSION}{L_COLON}</label></dt>
 		<dd><strong>{FILES_VERSION}</strong></dd>
 	</dl>
 	<dl>
-		<dt><label>{L_DATABASE_VERSION}</label></dt>
+		<dt><label>{L_DATABASE_VERSION}{L_COLON}</label></dt>
 		<dd><strong>{CURRENT_VERSION}</strong></dd>
 	</dl>
 	<!-- ENDIF -->
@@ -47,13 +46,12 @@
 
 <!-- BEGIN updates_available -->
 	<fieldset>
-		<legend></legend>
 		<dl>
-			<dt><label>{L_LATEST_VERSION}</label></dt>
+			<dt><label>{L_LATEST_VERSION}{L_COLON}</label></dt>
 			<dd><strong>{updates_available.current}</strong></dd>
 		</dl>
 		<dl>
-			<dt><label>{L_RELEASE_ANNOUNCEMENT}</label></dt>
+			<dt><label>{L_RELEASE_ANNOUNCEMENT}{L_COLON}</label></dt>
 			<dd><strong><a href="{updates_available.announcement}">{updates_available.announcement}</a></strong></dd>
 		</dl>
 	</fieldset>
