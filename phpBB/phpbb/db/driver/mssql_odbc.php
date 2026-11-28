@@ -201,7 +201,7 @@ class mssql_odbc extends \phpbb\db\driver\mssql_base
 					$this->open_queries[$safe_query_id] = $this->query_result;
 					$this->query_result = $cache->sql_save($this, $query, $this->query_result, $cache_ttl);
 				}
-				else if (strpos($query, 'SELECT') === 0)
+				else if ((int) @sqlsrv_num_fields($this->query_result) > 0)
 				{
 					$this->open_queries[$safe_query_id] = $this->query_result;
 				}
