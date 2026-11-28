@@ -327,6 +327,10 @@ class ucp_register
 				{
 					$error[] = $user->lang['NEW_PASSWORD_ERROR'];
 				}
+				if ($data['new_password'] == $data['username'])
+				{
+					$error[] = $user->lang['USERNAME_PASSWORD_ERROR'];
+				}
 			}
 			/**
 			* Check UCP registration data after they are submitted
