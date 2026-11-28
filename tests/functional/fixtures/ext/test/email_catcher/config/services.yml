@@ -1,0 +1,5 @@
+services:
+    test.email_catcher.listener:
+        class: test\email_catcher\event\listener
+        tags:
+            - { name: event.listener }
