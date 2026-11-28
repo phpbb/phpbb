@@ -14,6 +14,8 @@
 namespace test\email_catcher\event;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mailer\Event\FailedMessageEvent;
+use Symfony\Component\Mailer\Event\SentMessageEvent;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
@@ -30,6 +32,8 @@ class listener implements EventSubscriberInterface
 		return [
 			'core.phpbb_mail_before'			=> 'capture_email',
 			'core.notification_message_process'	=> 'capture_queued_email',
+			SentMessageEvent::class				=> 'capture_sent_email',
+			FailedMessageEvent::class			=> 'capture_failed_email',
 		];
 	}
 
@@ -61,7 +65,54 @@ class listener implements EventSubscriberInterface
 	}
 
 	/**
-	 * Write the email to the capture file.
+	 * Capture a message after it has been accepted by the transport.
+	 *
+	 * @param SentMessageEvent $event Event
+	 * @return void
+	 */
+	public function capture_sent_email(SentMessageEvent $event): void
+	{
+		$sent_message = $event->getMessage();
+		$original_message = $sent_message->getOriginalMessage();
+		$email = $original_message instanceof Email ? $original_message : null;
+
+		$data = [
+			'envelope_from'	=> $this->get_address($sent_message->getEnvelope()->getSender()),
+			'envelope_to'	=> $this->get_addresses($sent_message->getEnvelope()->getRecipients()),
+			'message_id'	=> $sent_message->getMessageId(),
+			'subject'		=> $email ? $email->getSubject() : null,
+			'text'			=> $email ? $this->get_body($email->getTextBody()) : null,
+			'html'			=> $email ? $this->get_body($email->getHtmlBody()) : null,
+			'headers'		=> $email ? $email->getHeaders()->toString() : '',
+			'raw'			=> $sent_message->toString(),
+			'debug'			=> $sent_message->getDebug(),
+		];
+
+		$this->write_data($data, 'email_catcher_sent.jsonl');
+	}
+
+	/**
+	 * Capture a message that the transport rejected.
+	 *
+	 * @param FailedMessageEvent $event Event
+	 * @return void
+	 */
+	public function capture_failed_email(FailedMessageEvent $event): void
+	{
+		$error = $event->getError();
+		$message = $event->getMessage();
+
+		$data = [
+			'error_class'	=> get_class($error),
+			'error_message'	=> $error->getMessage(),
+			'raw'			=> method_exists($message, 'toString') ? $message->toString() : '',
+		];
+
+		$this->write_data($data, 'email_catcher_failed.jsonl');
+	}
+
+	/**
+	 * Write the generated email to the capture file.
 	 *
 	 * @param mixed $email Symfony Email object
 	 * @return void
@@ -86,8 +137,20 @@ class listener implements EventSubscriberInterface
 			'raw'			=> $email->toString(),
 		];
 
+		$this->write_data($data, 'email_catcher.jsonl');
+	}
+
+	/**
+	 * Append a JSON record to a capture file.
+	 *
+	 * @param array $data Data to write
+	 * @param string $filename Capture file name
+	 * @return void
+	 */
+	protected function write_data(array $data, string $filename): void
+	{
 		// The extension is located in <phpbb_root>/ext/test/email_catcher/event.
-		$file = dirname(__DIR__, 4) . '/store/email_catcher.jsonl';
+		$file = dirname(__DIR__, 4) . '/store/' . $filename;
 		$directory = dirname($file);
 
 		if (!is_dir($directory))
@@ -101,6 +164,20 @@ class listener implements EventSubscriberInterface
 		{
 			file_put_contents($file, $encoded . "\n", FILE_APPEND | LOCK_EX);
 		}
+	}
+
+	/**
+	 * Convert a single Symfony address to an array.
+	 *
+	 * @param Address $address Address
+	 * @return array
+	 */
+	protected function get_address(Address $address): array
+	{
+		return [
+			'address'	=> $address->getAddress(),
+			'name'		=> $address->getName(),
+		];
 	}
 
 	/**

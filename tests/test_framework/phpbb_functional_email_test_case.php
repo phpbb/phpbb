@@ -15,8 +15,11 @@
  * Base class for functional tests that need to inspect outgoing emails.
  *
  * Emails are captured by the test/email_catcher extension. The extension
- * writes one JSON object per email to store/email_catcher.jsonl so that the
- * PHPUnit process can inspect messages produced by the web server process.
+ * writes one JSON object per generated email to store/email_catcher.jsonl and
+ * one JSON object per message accepted by the transport to
+ * store/email_catcher_sent.jsonl. This allows the PHPUnit process to inspect
+ * both the phpBB-generated message and the prepared MIME message that the
+ * web server process passed to Symfony Mailer.
  */
 abstract class phpbb_functional_email_test_case extends phpbb_functional_test_case
 {
@@ -50,7 +53,13 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 			'enable_confirm',
 			'require_activation',
 			'coppa_enable',
+			'coppa_fax',
+			'coppa_mail',
 			'pass_complex',
+			'board_email_form',
+			'contact_admin_form_enable',
+			'flood_interval',
+			'allow_mentions',
 			'allow_topic_notify',
 			'allow_privmsg',
 			'allow_password_reset',
@@ -86,6 +95,8 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 		}
 
 		@unlink(self::get_email_catcher_file());
+		@unlink(self::get_sent_email_catcher_file());
+		@unlink(self::get_failed_email_catcher_file());
 
 		parent::tearDownAfterClass();
 	}
@@ -119,7 +130,7 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	}
 
 	/**
-	 * Get the path to the email capture file.
+	 * Get the path to the generated email capture file.
 	 *
 	 * @return string
 	 */
@@ -131,6 +142,30 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	}
 
 	/**
+	 * Get the path to the sent email capture file.
+	 *
+	 * @return string
+	 */
+	protected static function get_sent_email_catcher_file(): string
+	{
+		global $phpbb_root_path;
+
+		return $phpbb_root_path . 'store/email_catcher_sent.jsonl';
+	}
+
+	/**
+	 * Get the path to the failed email capture file.
+	 *
+	 * @return string
+	 */
+	protected static function get_failed_email_catcher_file(): string
+	{
+		global $phpbb_root_path;
+
+		return $phpbb_root_path . 'store/email_catcher_failed.jsonl';
+	}
+
+	/**
 	 * Remove all previously captured emails.
 	 *
 	 * @return void
@@ -138,16 +173,48 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	protected function clear_captured_emails(): void
 	{
 		@unlink(self::get_email_catcher_file());
+		@unlink(self::get_sent_email_catcher_file());
+		@unlink(self::get_failed_email_catcher_file());
 	}
 
 	/**
-	 * Get all captured emails.
+	 * Get all generated emails.
 	 *
 	 * @return array
 	 */
 	protected function get_captured_emails(): array
 	{
-		$file = self::get_email_catcher_file();
+		return $this->read_email_file(self::get_email_catcher_file());
+	}
+
+	/**
+	 * Get all emails accepted by the transport.
+	 *
+	 * @return array
+	 */
+	protected function get_sent_emails(): array
+	{
+		return $this->read_email_file(self::get_sent_email_catcher_file());
+	}
+
+	/**
+	 * Get all emails rejected by the transport.
+	 *
+	 * @return array
+	 */
+	protected function get_failed_emails(): array
+	{
+		return $this->read_email_file(self::get_failed_email_catcher_file());
+	}
+
+	/**
+	 * Read a JSONL email capture file.
+	 *
+	 * @param string $file File path
+	 * @return array
+	 */
+	protected function read_email_file(string $file): array
+	{
 		clearstatcache(true, $file);
 
 		if (!file_exists($file))
@@ -212,12 +279,103 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	}
 
 	/**
-	 * Assert that an email was sent.
+	 * Find an email accepted by the transport.
 	 *
 	 * @param string $to					Recipient address
 	 * @param string $subject_contains		Optional subject substring
 	 * @param string $body_contains			Optional text body substring
-	 * @return array Captured email
+	 * @return array|null
+	 */
+	protected function find_sent_email(string $to, string $subject_contains = '', string $body_contains = ''): ?array
+	{
+		foreach ($this->get_sent_emails() as $email)
+		{
+			$recipients = array_column($email['envelope_to'] ?? [], 'address');
+
+			if (!in_array($to, $recipients, true))
+			{
+				continue;
+			}
+
+			if ($subject_contains !== '' && !str_contains((string) ($email['subject'] ?? ''), $subject_contains))
+			{
+				continue;
+			}
+
+			if ($body_contains !== '' && !str_contains((string) ($email['text'] ?? ''), $body_contains))
+			{
+				continue;
+			}
+
+			return $email;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Assert that an email was accepted by the transport.
+	 *
+	 * @param string $to					Recipient address
+	 * @param string $subject_contains		Optional subject substring
+	 * @param string $body_contains			Optional text body substring
+	 * @return array Sent email
+	 */
+	protected function assert_sent_email(string $to, string $subject_contains = '', string $body_contains = ''): array
+	{
+		$email = $this->find_sent_email($to, $subject_contains, $body_contains);
+
+		if ($email === null)
+		{
+			$this->fail(sprintf(
+				'No sent email to "%s" matching subject "%s" and body "%s". Sent emails: %s. Failed emails: %s',
+				$to,
+				$subject_contains,
+				$body_contains,
+				json_encode($this->get_sent_emails(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+				json_encode($this->get_failed_emails(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+			));
+		}
+
+		$this->assert_common_sent_mime($email);
+
+		return $email;
+	}
+
+	/**
+	 * Assert headers and encoding shared by all phpBB emails.
+	 *
+	 * @param array $sent Sent email data
+	 * @return void
+	 */
+	protected function assert_common_sent_mime(array $sent): void
+	{
+		$this->assertNotEmpty($sent['envelope_from']['address'] ?? '', 'The transport envelope has no sender.');
+		$this->assertNotEmpty($sent['envelope_to'] ?? [], 'The transport envelope has no recipients.');
+		$this->assertNotEmpty($sent['message_id'] ?? '', 'The sent message has no transport-level message ID.');
+
+		$raw = (string) ($sent['raw'] ?? '');
+
+		$this->assertStringContainsString('MIME-Version: 1.0', $raw);
+		$this->assertMatchesRegularExpression('/^Date: .+/m', $raw);
+		$this->assertMatchesRegularExpression('/^Message-ID: <.+>/m', $raw);
+		$this->assertMatchesRegularExpression('/^From: .+/m', $raw);
+		$this->assertMatchesRegularExpression('/^To: .+/m', $raw);
+		$this->assertMatchesRegularExpression('/^Subject: .+/m', $raw);
+		$this->assertStringContainsString('Return-Path:', $raw);
+		$this->assertStringContainsString('Sender:', $raw);
+		$this->assertStringContainsString('X-Mailer: phpBB', $raw);
+		$this->assertStringContainsString('Content-Type: text/plain; charset=utf-8', $raw);
+		$this->assertStringContainsString('Content-Transfer-Encoding: quoted-printable', $raw);
+	}
+
+	/**
+	 * Assert that an email was generated and accepted by the transport.
+	 *
+	 * @param string $to					Recipient address
+	 * @param string $subject_contains		Optional subject substring
+	 * @param string $body_contains			Optional text body substring
+	 * @return array Generated email
 	 */
 	protected function assert_email_sent(string $to, string $subject_contains = '', string $body_contains = ''): array
 	{
@@ -234,7 +392,47 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 			));
 		}
 
+		$this->assert_sent_email($to, $subject_contains, $body_contains);
+
 		return $email;
+	}
+
+	/**
+	 * Assert that the transport did not reject any email.
+	 *
+	 * @return void
+	 */
+	protected function assert_no_failed_emails(): void
+	{
+		$this->assertSame([], $this->get_failed_emails(), 'The transport rejected one or more emails.');
+	}
+
+	/**
+	 * Assert the prepared MIME message of a sent email.
+	 *
+	 * @param array $sent				Sent email data
+	 * @param string $to				Expected envelope recipient
+	 * @param string $body_contains		Expected decoded body substring
+	 * @param string $subject_contains	Optional expected subject substring
+	 * @return void
+	 */
+	protected function assert_email_mime(array $sent, string $to, string $body_contains, string $subject_contains = ''): void
+	{
+		$recipients = array_column($sent['envelope_to'] ?? [], 'address');
+		$this->assertContains($to, $recipients, 'The transport envelope does not contain the expected recipient.');
+		$this->assert_common_sent_mime($sent);
+
+		$raw = (string) ($sent['raw'] ?? '');
+
+		if ($subject_contains !== '')
+		{
+			$this->assertStringContainsString($subject_contains, (string) ($sent['subject'] ?? ''));
+		}
+
+		$this->assertStringContainsString($body_contains, (string) ($sent['text'] ?? ''));
+		$this->assertStringContainsString($body_contains, quoted_printable_decode($raw));
+
+		$this->assert_no_failed_emails();
 	}
 
 	/**
@@ -348,6 +546,313 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 			'notify_status'	=> NOTIFY_YES,
 		]);
 		$db->sql_query($sql);
+	}
+
+	/**
+	 * Get a user row.
+	 *
+	 * @param int $user_id User ID
+	 * @return array
+	 */
+	protected function get_user_row(int $user_id): array
+	{
+		$db = self::get_db();
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . (int) $user_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		return $row ?: [];
+	}
+
+	/**
+	 * Get a user ID by username.
+	 *
+	 * @param string $username Username
+	 * @return int
+	 */
+	protected function get_user_id(string $username): int
+	{
+		$db = self::get_db();
+		$sql = 'SELECT user_id
+			FROM ' . USERS_TABLE . "
+			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		$result = $db->sql_query($sql);
+		$user_id = (int) $db->sql_fetchfield('user_id');
+		$db->sql_freeresult($result);
+
+		return $user_id;
+	}
+
+	/**
+	 * Get the administrator e-mail address.
+	 *
+	 * @return string
+	 */
+	protected function get_admin_email(): string
+	{
+		$row = $this->get_user_row($this->get_user_id('admin'));
+
+		return $row['user_email'] ?? '';
+	}
+
+	/**
+	 * Update a user row.
+	 *
+	 * @param int $user_id User ID
+	 * @param array $data Data to update
+	 * @return void
+	 */
+	protected function update_user(int $user_id, array $data): void
+	{
+		$db = self::get_db();
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $data) . '
+			WHERE user_id = ' . (int) $user_id;
+		$db->sql_query($sql);
+	}
+
+	/**
+	 * Make a user inactive and create an activation key.
+	 *
+	 * @param int $user_id User ID
+	 * @param int $reason Inactive reason
+	 * @param string $actkey Optional activation key
+	 * @return string Activation key
+	 */
+	protected function set_user_inactive(int $user_id, int $reason = INACTIVE_REGISTER, string $actkey = ''): string
+	{
+		$actkey = $actkey ?: gen_rand_string(10);
+
+		$this->update_user($user_id, [
+			'user_type'					=> USER_INACTIVE,
+			'user_inactive_reason'		=> (int) $reason,
+			'user_inactive_time'		=> time(),
+			'user_actkey'				=> $actkey,
+			'user_actkey_expiration'	=> time() + 86400,
+		]);
+
+		return $actkey;
+	}
+
+	/**
+	 * Expire a user's activation key.
+	 *
+	 * @param int $user_id User ID
+	 * @return void
+	 */
+	protected function expire_activation_key(int $user_id): void
+	{
+		$this->update_user($user_id, [
+			'user_actkey_expiration' => time() - 3600,
+		]);
+	}
+
+	/**
+	 * Configure the registration settings used by the e-mail tests.
+	 *
+	 * @param int $require_activation Activation mode
+	 * @param bool $coppa Enable COPPA
+	 * @return void
+	 */
+	protected function configure_registration(int $require_activation = USER_ACTIVATION_NONE, bool $coppa = false): void
+	{
+		self::set_board_config([
+			'coppa_enable'			=> $coppa ? 1 : 0,
+			'email_check_mx'		=> 0,
+			'enable_confirm'		=> 0,
+			'pass_complex'			=> 'PASS_TYPE_ANY',
+			'require_activation'	=> $require_activation,
+		]);
+	}
+
+	/**
+	 * Register a user through the UCP registration form.
+	 *
+	 * @param string $username Username
+	 * @param string $email E-mail address
+	 * @param string $password Password
+	 * @param bool $coppa Whether to register as COPPA user
+	 * @return \Symfony\Component\DomCrawler\Crawler
+	 */
+	protected function register_user(string $username, string $email, string $password = 'RegistrationPass1', bool $coppa = false)
+	{
+		$this->add_lang('ucp');
+
+		$crawler = self::request('GET', 'ucp.php?mode=register' . ($coppa ? '&coppa=1' : ''));
+
+		if ($coppa)
+		{
+			$form = $crawler->selectButton('coppa_yes')->form();
+			$crawler = self::submit($form);
+		}
+
+		$form = $crawler->selectButton($this->lang('AGREE'))->form();
+		$crawler = self::submit($form);
+
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
+			'username'			=> $username,
+			'email'				=> $email,
+			'new_password'		=> $password,
+			'password_confirm'	=> $password,
+		]);
+		$form['tz']->select('Europe/Berlin');
+
+		return self::submit($form);
+	}
+
+	/**
+	 * Submit the resend activation form.
+	 *
+	 * @param string $username Username
+	 * @param string $email E-mail address
+	 * @return \Symfony\Component\DomCrawler\Crawler
+	 */
+	protected function submit_resend_activation(string $username, string $email)
+	{
+		$this->add_lang('ucp');
+
+		$crawler = self::request('GET', 'ucp.php?mode=resend_act');
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
+			'username'	=> $username,
+			'email'		=> $email,
+		]);
+
+		return self::submit($form);
+	}
+
+	/**
+	 * Create a group and make a user its leader.
+	 *
+	 * Requires an administrator session.
+	 *
+	 * @param string $group_name Group name
+	 * @param string $leader Group leader username
+	 * @return int Group ID
+	 */
+	protected function create_group_with_leader(string $group_name, string $leader): int
+	{
+		$this->add_lang('acp/groups');
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&sid=' . $this->sid);
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$crawler = self::submit($form, ['group_name' => $group_name]);
+
+		$form = $crawler->selectButton($this->lang('SUBMIT'))->form();
+		$crawler = self::submit($form, ['group_name' => $group_name]);
+		$this->assertContainsLang('GROUP_CREATED', $crawler->filter('#main')->text());
+
+		$group_id = $this->get_group_id($group_name);
+		$this->assertGreaterThan(0, $group_id);
+
+		$crawler = self::request('GET', 'adm/index.php?i=acp_groups&mode=manage&action=list&g=' . $group_id . '&sid=' . $this->sid);
+		$form = $crawler->filter('input[name=addusers]')->selectButton($this->lang('SUBMIT'))->form();
+		$crawler = self::submit($form, [
+			'leader'	=> 1,
+			'usernames'	=> $leader,
+		]);
+		$this->assertContainsLang('GROUP_MODS_ADDED', $crawler->filter('#main')->text());
+
+		return $group_id;
+	}
+
+	/**
+	 * Set a group type and purge the cache.
+	 *
+	 * @param int $group_id Group ID
+	 * @param int $group_type Group type
+	 * @return void
+	 */
+	protected function set_group_type(int $group_id, int $group_type): void
+	{
+		$db = self::get_db();
+		$sql = 'UPDATE ' . GROUPS_TABLE . '
+			SET group_type = ' . (int) $group_type . '
+			WHERE group_id = ' . (int) $group_id;
+		$db->sql_query($sql);
+
+		self::purge_test_cache();
+	}
+
+	/**
+	 * Bookmark a topic for a user.
+	 *
+	 * @param int $user_id User ID
+	 * @param int $topic_id Topic ID
+	 * @return void
+	 */
+	protected function bookmark_topic(int $user_id, int $topic_id): void
+	{
+		$db = self::get_db();
+		$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', [
+			'topic_id'	=> (int) $topic_id,
+			'user_id'	=> (int) $user_id,
+		]);
+		$db->sql_query($sql);
+	}
+
+	/**
+	 * Get a report ID.
+	 *
+	 * @param int $post_id Post ID
+	 * @param int $pm_id Private message ID
+	 * @return int
+	 */
+	protected function get_report_id(int $post_id = 0, int $pm_id = 0): int
+	{
+		$db = self::get_db();
+		$where = $post_id ? 'post_id = ' . (int) $post_id : 'pm_id = ' . (int) $pm_id;
+		$sql = 'SELECT report_id
+			FROM ' . REPORTS_TABLE . '
+			WHERE ' . $where . '
+			ORDER BY report_id DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$report_id = (int) $db->sql_fetchfield('report_id');
+		$db->sql_freeresult($result);
+
+		return $report_id;
+	}
+
+	/**
+	 * Get a topic ID by title.
+	 *
+	 * @param string $title Topic title
+	 * @return int
+	 */
+	protected function get_topic_id_by_title(string $title): int
+	{
+		$db = self::get_db();
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . "
+			WHERE topic_title = '" . $db->sql_escape($title) . "'
+			ORDER BY topic_id DESC";
+		$result = $db->sql_query_limit($sql, 1);
+		$topic_id = (int) $db->sql_fetchfield('topic_id');
+		$db->sql_freeresult($result);
+
+		return $topic_id;
+	}
+
+	/**
+	 * Get a post ID by subject.
+	 *
+	 * @param string $subject Post subject
+	 * @return int
+	 */
+	protected function get_post_id_by_subject(string $subject): int
+	{
+		$db = self::get_db();
+		$sql = 'SELECT post_id
+			FROM ' . POSTS_TABLE . "
+			WHERE post_subject = '" . $db->sql_escape($subject) . "'
+			ORDER BY post_id DESC";
+		$result = $db->sql_query_limit($sql, 1);
+		$post_id = (int) $db->sql_fetchfield('post_id');
+		$db->sql_freeresult($result);
+
+		return $post_id;
 	}
 
 	/**

@@ -3,3 +3,11 @@ services:
         class: test\email_catcher\event\listener
         tags:
             - { name: event.listener }
+
+    test.email_catcher.controller.trigger:
+        class: test\email_catcher\controller\trigger
+        arguments:
+            - '@notification_manager'
+            - '@request'
+            - '@config'
+            - '@messenger.method.email'

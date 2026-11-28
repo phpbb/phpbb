@@ -1,0 +1,3 @@
+test_email_catcher_trigger:
+    path: /email-catcher/trigger
+    defaults: { _controller: test.email_catcher.controller.trigger:handle }
