@@ -597,6 +597,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$s and %2$s.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
 	'USERNAME_DISALLOWED_USERNAME'	=> 'The username you entered has been disallowed or contains a disallowed word. Please choose a different name.',
+	'USERNAME_PASSWORD_ERROR'		=> 'The password can not be the same than your username.',
 	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
 
 	'VIEW_AVATARS'				=> 'Display avatars',
