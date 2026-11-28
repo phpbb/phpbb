@@ -185,17 +185,25 @@ class phpbb_functional_user_email_test extends phpbb_functional_email_test_case
 
 		$crawler = self::request('GET', 'adm/index.php?i=acp_inactive&mode=list&users_per_page=999&sid=' . $this->sid);
 		$form = $crawler->filter('#inactive')->selectButton($this->lang('SUBMIT'))->form();
-		$marks = $form['mark'];
-		$marks = is_array($marks) ? $marks : [$marks];
-		foreach ($marks as $checkbox)
+
+		$mark_index = null;
+		foreach ($crawler->filter('#inactive input[name="mark[]"]') as $index => $node)
 		{
-			if ((int) $checkbox->getValue() === $user_id)
+			if ((int) $node->getAttribute('value') === (int) $user_id)
 			{
-				$checkbox->tick();
+				$mark_index = $index;
+				break;
 			}
 		}
+		$this->assertNotNull($mark_index, 'The inactive user is not listed in the ACP.');
+
+		$marks = $form['mark'];
+		$marks[$mark_index]->tick();
 		$form['action']->select('remind');
 		self::submit($form);
+
+		$user_row = $this->get_user_row($user_id);
+		$this->assertGreaterThan(0, (int) $user_row['user_reminded'], 'The ACP remind action did not run.');
 
 		$this->assert_email_sent($email, 'Inactive account reminder', $username);
 	}

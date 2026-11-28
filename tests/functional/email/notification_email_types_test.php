@@ -41,6 +41,8 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 		$this->logout();
 
 		$this->assert_email_sent('emailwatcher@example.com', 'Reply in', $topic_title);
+
+		$this->unwatch_forum($watcher_id, 2);
 	}
 
 	public function test_quote_notification()
@@ -82,8 +84,19 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 
 		$topic_title = 'Email mention topic ' . uniqid();
 
+		$this->login('emailmentioned');
+		$topic = $this->create_topic(2, $topic_title, 'Topic body for mention notification test');
+		$this->logout();
+
+		$this->clear_captured_emails();
+
 		$this->login('emailmentioner');
-		$this->create_topic(2, $topic_title, 'Hello @emailmentioned, this topic contains a mention.');
+		$this->create_post(
+			2,
+			$topic['topic_id'],
+			'Re: ' . $topic_title,
+			'Hello [mention user_id=' . $mentioned_id . ']emailmentioned[/mention], this reply contains a mention.'
+		);
 		$this->logout();
 
 		$this->assert_email_sent('emailmentioned@example.com', 'Topic reply notification', 'mentioned you');
@@ -150,6 +163,8 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 
 	public function test_post_report_and_closed_notifications()
 	{
+		$this->add_lang('mcp');
+
 		$reporter_id = $this->create_user('emailreporter', 'emailreporter@example.com');
 		$this->create_user('emailreported', 'emailreported@example.com');
 		$admin_id = $this->get_user_id('admin');
@@ -194,6 +209,8 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 
 	public function test_pm_report_and_closed_notifications()
 	{
+		$this->add_lang('mcp');
+
 		$reporter_id = $this->create_user('emailpmreporter', 'emailpmreporter@example.com');
 		$this->create_user('emailpmsender2', 'emailpmsender2@example.com');
 		$admin_id = $this->get_user_id('admin');
@@ -241,6 +258,8 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 
 	public function test_topic_moderation_notifications()
 	{
+		$this->add_lang(['posting', 'viewtopic', 'mcp']);
+
 		$admin_id = $this->get_user_id('admin');
 		$admin_email = $this->get_admin_email();
 		$author_id = $this->create_user('emailmodauthor', 'emailmodauthor@example.com');
@@ -295,6 +314,8 @@ class phpbb_functional_notification_email_types_test extends phpbb_functional_em
 
 	public function test_post_moderation_notifications()
 	{
+		$this->add_lang(['posting', 'viewtopic', 'mcp']);
+
 		$admin_id = $this->get_user_id('admin');
 		$admin_email = $this->get_admin_email();
 		$author_id = $this->create_user('emailpostmod', 'emailpostmod@example.com');

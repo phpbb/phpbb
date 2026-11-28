@@ -34,6 +34,9 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	/** @var array */
 	protected static $original_email_config = [];
 
+	/** @var array User ID => username created by this test case */
+	protected static $created_users = [];
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -76,6 +79,9 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 			self::set_board_config(self::$original_email_config);
 		}
 
+		self::delete_test_users(array_keys(self::$created_users));
+		self::$created_users = [];
+
 		if (self::$email_test_helpers instanceof phpbb_test_case_helpers)
 		{
 			try
@@ -113,6 +119,7 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 			'smtp_delivery'			=> 1,
 			'smtp_host'				=> '',
 			'email_package_size'	=> 0,
+			'flood_interval'		=> 0,
 			'allow_topic_notify'	=> 1,
 			'allow_privmsg'			=> 1,
 			'allow_password_reset'	=> 1,
@@ -549,6 +556,22 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 	}
 
 	/**
+	 * Remove a forum subscription.
+	 *
+	 * @param int $user_id User ID
+	 * @param int $forum_id Forum ID
+	 * @return void
+	 */
+	protected function unwatch_forum(int $user_id, int $forum_id): void
+	{
+		$db = self::get_db();
+		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
+			WHERE user_id = ' . (int) $user_id . '
+				AND forum_id = ' . (int) $forum_id;
+		$db->sql_query($sql);
+	}
+
+	/**
 	 * Get a user row.
 	 *
 	 * @param int $user_id User ID
@@ -700,7 +723,55 @@ abstract class phpbb_functional_email_test_case extends phpbb_functional_test_ca
 		]);
 		$form['tz']->select('Europe/Berlin');
 
-		return self::submit($form);
+		$crawler = self::submit($form);
+		$user_id = $this->get_user_id($username);
+
+		if ($user_id)
+		{
+			self::$created_users[$user_id] = $username;
+		}
+
+		return $crawler;
+	}
+
+	/**
+	 * Create a user and remember it for cleanup.
+	 *
+	 * @param string $username Username
+	 * @param string $email E-mail address
+	 * @return int User ID
+	 */
+	protected function create_user($username, $email = 'nobody@example.com')
+	{
+		$user_id = (int) parent::create_user($username, $email);
+
+		if ($user_id)
+		{
+			self::$created_users[$user_id] = $username;
+		}
+
+		return $user_id;
+	}
+
+	/**
+	 * Delete users created by this test case.
+	 *
+	 * @param array $user_ids User IDs
+	 * @return void
+	 */
+	protected static function delete_test_users(array $user_ids): void
+	{
+		$user_ids = array_filter(array_map('intval', $user_ids), static function (int $user_id): bool
+		{
+			return $user_id > 1;
+		});
+
+		if (empty($user_ids))
+		{
+			return;
+		}
+
+		self::request('GET', 'index.php/email-catcher/trigger?type=delete_users&user_ids=' . implode(',', $user_ids), [], false);
 	}
 
 	/**

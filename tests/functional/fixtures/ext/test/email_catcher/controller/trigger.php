@@ -67,6 +67,29 @@ class trigger
 
 		$type = $this->request->variable('type', '');
 
+		if ($type === 'delete_users')
+		{
+			$user_ids = $this->request->variable('user_ids', '');
+			$user_ids = array_filter(array_map('intval', explode(',', $user_ids)), static function (int $user_id): bool
+			{
+				return $user_id > 1;
+			});
+
+			if (!empty($user_ids))
+			{
+				global $phpbb_root_path, $phpEx;
+
+				if (!function_exists('user_delete'))
+				{
+					require_once $phpbb_root_path . 'includes/functions_user.' . $phpEx;
+				}
+
+				user_delete('retain', $user_ids);
+			}
+
+			return new Response('OK');
+		}
+
 		if ($type === 'installed')
 		{
 			$this->email_method->set_use_queue(false);

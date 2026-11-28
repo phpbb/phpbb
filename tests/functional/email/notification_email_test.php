@@ -102,28 +102,9 @@ class phpbb_functional_notification_email_test extends phpbb_functional_email_te
 
 	public function test_registration_welcome_email_notification()
 	{
-		self::set_board_config([
-			'coppa_enable'			=> 0,
-			'email_check_mx'		=> 0,
-			'enable_confirm'		=> 0,
-			'pass_complex'			=> 'PASS_TYPE_ANY',
-			'require_activation'	=> 0,
-		]);
+		$this->configure_registration(USER_ACTIVATION_NONE);
 
-		$this->add_lang('ucp');
-
-		$crawler = self::request('GET', 'ucp.php?mode=register');
-		$form = $crawler->selectButton($this->lang('AGREE'))->form();
-		$crawler = self::submit($form);
-
-		$form = $crawler->selectButton($this->lang('SUBMIT'))->form([
-			'username'			=> 'emailreguser',
-			'email'				=> 'emailreguser@example.com',
-			'new_password'		=> 'RegistrationPass1',
-			'password_confirm'	=> 'RegistrationPass1',
-		]);
-		$form['tz']->select('Europe/Berlin');
-		$crawler = self::submit($form);
+		$crawler = $this->register_user('emailreguser', 'emailreguser@example.com');
 
 		$this->assertContainsLang('ACCOUNT_ADDED', $crawler->filter('#message')->text());
 		$this->assert_email_sent('emailreguser@example.com', 'Welcome to', 'emailreguser');
