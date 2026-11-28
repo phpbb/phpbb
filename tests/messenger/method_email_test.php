@@ -794,4 +794,170 @@ class phpbb_messenger_method_email_test extends \phpbb_test_case
 
 		$this->assertEmpty($errors);
 	}
+
+	public function test_send_via_null_transport_intercepts_message(): void
+	{
+		$dispatcher = $this->setup_null_transport_email();
+		$this->config->set('email_package_size', 0);
+
+		$captured = [];
+		$this->register_mailer_capture($dispatcher, $captured);
+
+		$this->prepare_test_email();
+
+		$this->assertTrue($this->method_email->send());
+
+		$this->assert_intercepted_message($captured);
+	}
+
+	public function test_send_through_queue_via_null_transport_intercepts_message(): void
+	{
+		$dispatcher = $this->setup_null_transport_email();
+		$this->config->set('email_package_size', 100);
+
+		// Capture the message put into the queue by send().
+		$queued = [];
+		$this->queue->method('put')
+			->willReturnCallback(function (string $object, array $message_data) use (&$queued)
+			{
+				$this->assertSame('email', $object);
+				$queued[] = $message_data;
+			});
+
+		$this->prepare_test_email();
+
+		$this->assertTrue($this->method_email->send());
+		$this->assertCount(1, $queued);
+
+		// Process the queue through the null://null transport, intercepting the
+		// Symfony Mailer events fired during the actual send.
+		$captured = [];
+		$this->register_mailer_capture($dispatcher, $captured);
+
+		$queue_data = ['email' => ['data' => $queued]];
+		$this->method_email->process_queue($queue_data);
+
+		$this->assertEmpty($queue_data);
+
+		$this->assert_intercepted_message($captured);
+	}
+
+	/**
+	 * Rebuild the email method with a real event dispatcher and configure the
+	 * null://null transport so messages are dropped without any network access.
+	 *
+	 * @return \phpbb\event\dispatcher The real dispatcher wired into the email method
+	 */
+	protected function setup_null_transport_email(): \phpbb\event\dispatcher
+	{
+		global $phpbb_root_path;
+
+		// A real dispatcher is required: a mocked one would stub dispatch() and the
+		// Symfony Mailer events (MessageEvent/SentMessageEvent) would never fire.
+		$dispatcher = new \phpbb\event\dispatcher();
+
+		// Rebuild the email method with the real dispatcher and do NOT mock get_mailer(),
+		// so the message actually goes through the real transport.
+		$this->method_email = new email(
+			$this->assets_bag,
+			$this->config,
+			$dispatcher,
+			$this->language,
+			$this->queue,
+			$this->path_helper,
+			$this->request,
+			$this->twig_extensions_collection,
+			$this->twig_lexer,
+			$this->user,
+			$phpbb_root_path,
+			$this->cache_path,
+			$this->extension_manager,
+			$this->log
+		);
+
+		// null://null transport (empty SMTP host).
+		$this->config->set('email_enable', true);
+		$this->config->set('smtp_delivery', true);
+		$this->config->set('smtp_host', '');
+		$this->config->set('board_email', 'admin@yourdomain.com');
+		$this->config->set('board_contact', 'nobody@example.com');
+		$this->config->set('board_contact_name', 'Board Admin');
+		$this->config->set('board_email_sig', '-- Thanks');
+		$this->config->set('sitename', 'yourdomain.com');
+		$this->config->set('default_lang', 'en');
+
+		return $dispatcher;
+	}
+
+	/**
+	 * Register listeners that capture the Symfony Mailer events fired during a send.
+	 *
+	 * @param \phpbb\event\dispatcher $dispatcher
+	 * @param array $captured Array filled with the intercepted message, envelope and sent message
+	 */
+	protected function register_mailer_capture(\phpbb\event\dispatcher $dispatcher, array &$captured): void
+	{
+		$dispatcher->addListener(\Symfony\Component\Mailer\Event\MessageEvent::class,
+			function (\Symfony\Component\Mailer\Event\MessageEvent $event) use (&$captured)
+			{
+				$captured['message'] = $event->getMessage();
+				$captured['envelope'] = $event->getEnvelope();
+			});
+		$dispatcher->addListener(\Symfony\Component\Mailer\Event\SentMessageEvent::class,
+			function (\Symfony\Component\Mailer\Event\SentMessageEvent $event) use (&$captured)
+			{
+				$captured['sent'] = $event->getMessage();
+			});
+	}
+
+	/**
+	 * Initialise the email method and fill it with a known recipient, subject and body.
+	 */
+	protected function prepare_test_email(): void
+	{
+		$this->method_email->init();
+		$this->method_email->set_transport();
+		$this->method_email->to('john@example.com', 'John');
+		$this->method_email->subject('Test subject');
+		$this->method_email->template('smtp_body', 'en', __DIR__ . '/../email/templates');
+	}
+
+	/**
+	 * Assert that an intercepted message has the expected headers and body.
+	 *
+	 * @param array $captured Captured data from register_mailer_capture()
+	 */
+	protected function assert_intercepted_message(array $captured): void
+	{
+		$this->assertArrayHasKey('message', $captured);
+		$this->assertArrayHasKey('envelope', $captured);
+		$this->assertArrayHasKey('sent', $captured);
+
+		/** @var \Symfony\Component\Mime\Email $message */
+		$message = $captured['message'];
+		$this->assertInstanceOf(\Symfony\Component\Mime\Email::class, $message);
+
+		// Headers via structured getters.
+		$this->assertSame('Test subject', $message->getSubject());
+		$this->assertSame('john@example.com', $message->getTo()[0]->getAddress());
+		$this->assertSame('John', $message->getTo()[0]->getName());
+		$this->assertSame('nobody@example.com', $message->getFrom()[0]->getAddress());
+		$this->assertSame('Board Admin', $message->getFrom()[0]->getName());
+		$this->assertSame('nobody@example.com', $message->getReplyTo()[0]->getAddress());
+
+		// Service headers added by build_headers() via the serialized form.
+		$serialized = $message->toString();
+		$this->assertStringContainsString('X-Mailer: phpBB', $serialized);
+		$this->assertStringContainsString('Return-Path', $serialized);
+		$this->assertStringContainsString('admin@yourdomain.com', $serialized);
+		$this->assertStringContainsString('X-phpBB-Origin: phpbb://', $serialized);
+
+		// Body: the leading dot is NOT escaped at the MIME level (dot-stuffing is an
+		// SMTP-on-wire concern performed by the SMTP transport, not by null://null).
+		$this->assertSame("First line\nSecond line\n.dot begins\nFourth", $message->getTextBody());
+		$this->assertStringContainsString('.dot begins', $serialized);
+
+		// The SentMessageEvent carries the same message.
+		$this->assertStringContainsString('Test subject', $captured['sent']->toString());
+	}
 }

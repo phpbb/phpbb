@@ -1,0 +1,23 @@
+{
+	"name": "test/email_catcher",
+	"type": "phpbb-extension",
+	"description": "Captures outgoing emails for phpBB functional tests",
+	"version": "1.0.0",
+	"time": "2026-11-28 00:00:00",
+	"license": "GPL-2.0-only",
+	"authors": [{
+		"name": "phpBB Limited",
+		"email": "operations@phpbb.com",
+		"homepage": "https://www.phpbb.com",
+		"role": "Developer"
+	}],
+	"require": {
+		"php": ">=8.2"
+	},
+	"extra": {
+		"display-name": "Email Catcher (test fixture)",
+		"soft-require": {
+			"phpbb/phpbb": "4.0.*@dev"
+		}
+	}
+}
